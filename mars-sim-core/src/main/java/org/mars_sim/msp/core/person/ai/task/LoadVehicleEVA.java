@@ -49,7 +49,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	private LoadingController loadingPlan;
 
 	
-		/**
+	/**
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
@@ -75,13 +75,18 @@ public class LoadVehicleEVA extends EVAOperation {
 			endTask();
 			return;
 		}
-
+		
+		vehicle = vehicleMission.getVehicle();
+		if (vehicle == null) {
+			// Mission must be done
+			checkLocation();
+			return;
+		}
+		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
         	return;
 		}
-		
-		vehicle = vehicleMission.getVehicle();
 
 		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
@@ -100,8 +105,6 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Initialize task phase
 		addPhase(LOADING);
 	}
-
-
 
 	@Override
 	protected double performMappedPhase(double time) {

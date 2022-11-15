@@ -13,10 +13,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.PilotDrone;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -322,14 +322,11 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	private boolean unloadCargo(Person person, Drone drone) {
 		boolean result = false;
-		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
-			result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);			
-		}
+		TaskJob job =  UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), drone);
+		if (job != null) {
+			result = person.getMind().getTaskManager().addPendingTask(job, false);
+		}	
 
-		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person) 
-				&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
-			result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
-		}
 		return result;
 	}
 

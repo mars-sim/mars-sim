@@ -374,9 +374,6 @@ implements ResearchScientificStudy, Serializable {
 		
 		if (isDone()) {
         	// this task has ended
-    		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
 			endTask();
 			return time;
 		}
@@ -442,9 +439,6 @@ implements ResearchScientificStudy, Serializable {
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-    				+ " CUs Used.");
         	endTask();
         }
         

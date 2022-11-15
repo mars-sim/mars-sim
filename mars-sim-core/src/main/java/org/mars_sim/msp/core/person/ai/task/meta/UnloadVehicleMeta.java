@@ -73,7 +73,7 @@ public class UnloadVehicleMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
+            "Task.description.unloadVehicle"); //$NON-NLS-1$
 
     private static final double BASE_SCORE = 300D;
 
@@ -87,6 +87,7 @@ public class UnloadVehicleMeta extends MetaTask {
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
+        addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 
     @Override
@@ -110,7 +111,7 @@ public class UnloadVehicleMeta extends MetaTask {
     public List<TaskJob> getTaskJobs(Robot robot) {
 
         List<TaskJob> tasks = null;
-		if (robot.isInSettlement() && robot.getRobotType() == RobotType.DELIVERYBOT) {
+		if (robot.isInSettlement()) {
 			double modifier = robot.getPerformanceRating();
 
 			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);

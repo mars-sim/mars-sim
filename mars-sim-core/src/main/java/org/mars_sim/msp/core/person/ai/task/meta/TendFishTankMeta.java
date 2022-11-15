@@ -67,6 +67,8 @@ public class TendFishTankMeta extends MetaTask {
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
+        
+        addPreferredRobot(RobotType.GARDENBOT);
 	}
 
     /**
@@ -110,7 +112,7 @@ public class TendFishTankMeta extends MetaTask {
 
         List<TaskJob> tasks = new ArrayList<>();
 
-        if (robot.isInSettlement() && (robot.getRobotType() == RobotType.GARDENBOT)) {
+        if (robot.isInSettlement()) {
             List<Building> buildings = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.FISHERY);
             for(Building building : buildings) {
                 double result = 0D;

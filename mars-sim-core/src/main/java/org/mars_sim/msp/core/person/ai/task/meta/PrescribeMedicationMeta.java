@@ -41,6 +41,8 @@ public class PrescribeMedicationMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
 		setPreferredJob(JobType.MEDICS);
+
+        addPreferredRobot(RobotType.MEDICBOT);
 	}
     
     @Override
@@ -125,18 +127,14 @@ public class PrescribeMedicationMeta extends MetaTask {
         if (robot.isOutside())
         	return 0;
         
-        // Only medicbot or a doctor is allowed to perform this task.
-        if (robot.getRobotType() == RobotType.MEDICBOT) {
-        	
-            // Determine patient needing medication.
-        	Person patient = determinePatients(robot);
-            if (patient == null || numPatients == 0) {
-            	return 0;
-            }
-	
-            else {//if (patient != null) {
-            	result = numPatients * 100D;             
-            }
+        // Determine patient needing medication.
+        Person patient = determinePatients(robot);
+        if (patient == null || numPatients == 0) {
+            return 0;
+        }
+
+        else {//if (patient != null) {
+            result = numPatients * 100D;             
         }
 
         // Effort-driven task modifier.

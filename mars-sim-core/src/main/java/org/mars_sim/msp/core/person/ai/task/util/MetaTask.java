@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -67,6 +68,7 @@ public abstract class MetaTask {
 	private Set<FavoriteType> favourites = Collections.emptySet();
 	private boolean effortDriven = true;
 	private Set<JobType> preferredJobs = new HashSet<>();
+	private Set<RobotType> preferredRobots = new HashSet<>();
 	
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
@@ -140,19 +142,6 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Is this job type preferred ?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isPreferredJob(JobType type) {
-		if (preferredJobs.contains(type))
-			return true;
-		
-		return false;
-	}
-	
-	/**
 	 * Returns the scope for this Task is be done.
 	 * 
 	 */
@@ -186,7 +175,24 @@ public abstract class MetaTask {
 	public Set<FavoriteType> getFavourites() {
 		return favourites;
 	}
-	
+		
+	/**
+	 * Gets the Robots that is most suitable to this Task.
+	 * 
+	 * @return
+	 */
+	public Set<RobotType> getPreferredRobot() {
+		return preferredRobots;
+	}
+
+	/**
+	 * Add a type of robot as preferred.
+	 * @param rt New robotType
+	 */
+	protected void addPreferredRobot(RobotType rt) {
+		preferredRobots.add(rt);
+	}
+
 	/**
 	 * Constructs an instance of the associated task. Is a Factory method and should
 	 * be implemented by the subclass.

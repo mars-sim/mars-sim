@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
-
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -20,8 +14,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  * and other structures.
  */
 public class Constructionbot
-extends RobotJob
-implements Serializable {
+extends RobotJob { 
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,15 +24,7 @@ implements Serializable {
 	/** Constructor. */
 	public Constructionbot() {
 		// Use Job constructor.
-		super(Constructionbot.class);
-
-		// Add architect-related tasks.
-		jobTasks.add(ManufactureConstructionMaterials.class);
-		//jobTasks.add(ConstructBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-		//jobTasks.add(SalvageBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-        jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
+		super();
 
 		// Add architect-related missions.
 		//jobMissionStarts.add(BuildingConstructionMission.class);
@@ -48,25 +33,6 @@ implements Serializable {
 		//jobMissionJoins.add(BuildingSalvageMission.class);
 
 	}
-
-//	@Override
-//	public double getCapability(Person person) {
-//
-//		double result = 0D;
-//
-//		int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-//		result = constructionSkill;
-//
-//		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-//		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-//		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-//		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-//		result+= result * ((averageAptitude - 50D) / 100D);
-//
-//		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-//
-//		return result;
-//	}
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {

@@ -84,6 +84,8 @@ public class MaintainBuildingMeta extends MetaTask {
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
 		setPreferredJob(JobType.MECHANICS);
+
+		addPreferredRobot(RobotType.REPAIRBOT);
     }
 
 	@Override
@@ -113,7 +115,7 @@ public class MaintainBuildingMeta extends MetaTask {
 	public List<TaskJob> getTaskJobs(Robot robot) {
         
 		Settlement settlement = robot.getSettlement();
-		if ((settlement != null) && (robot.getRobotType() == RobotType.REPAIRBOT)) {
+		if (settlement != null) {
 			return getSettlementTasks(settlement, ROBOT_FACTOR, 0D);
 		}
 		return null;

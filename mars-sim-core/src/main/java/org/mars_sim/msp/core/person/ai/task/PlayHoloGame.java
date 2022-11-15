@@ -152,10 +152,6 @@ public class PlayHoloGame extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (isDone()) {
-        	// this task has ended
-    		logger.info(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
 			endTask();
 			return time;
 		}
@@ -204,9 +200,6 @@ public class PlayHoloGame extends Task implements Serializable {
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-    				+ " CUs Used.");
         	endTask();
         }
         
@@ -223,9 +216,6 @@ public class PlayHoloGame extends Task implements Serializable {
         condition.reduceStress(2 * time);
         
         if (condition.getHunger() > 666 || condition.getFatigue() > 666) {
-	    	logger.log(person, Level.INFO, 30_000L, "Playing holo games. " 
-	    			+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-	    			+ " CUs Used.");
 	        endTask();
 		}
         
@@ -254,7 +244,7 @@ public class PlayHoloGame extends Task implements Serializable {
                 successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
         	}
 	    	else
-	    		logger.info(person, 30_000L, "Can't set up for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "Can't set up for " + NAME + ".");
         	
         	if (successful) {
         		computingNeeded = computingNeeded - workPerMillisol;
@@ -263,7 +253,7 @@ public class PlayHoloGame extends Task implements Serializable {
         		}
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "Can't set up for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "Can't set up for " + NAME + ".");
 	    	}
 		}
 		

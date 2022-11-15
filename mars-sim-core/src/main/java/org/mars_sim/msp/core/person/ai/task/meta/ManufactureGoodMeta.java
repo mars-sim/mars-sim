@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -38,6 +39,10 @@ public class ManufactureGoodMeta extends FactoryMetaTask {
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
 						JobType.ENGINEER, JobType.PHYSICIST);
+                        
+        addPreferredRobot(RobotType.MAKERBOT);
+        addPreferredRobot(RobotType.REPAIRBOT);
+        addPreferredRobot(RobotType.CONSTRUCTIONBOT);
 	}
 
     @Override

@@ -305,7 +305,6 @@ public class Simulation implements ClockListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures();
 	}
 		
-	
 	public void testRun() {
 		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
@@ -343,7 +342,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-
+		malfunctionFactory = new MalfunctionFactory();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
@@ -357,6 +356,13 @@ public class Simulation implements ClockListener, Serializable {
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Initialize instances in TaskSchedule
 		TaskSchedule.initializeInstances(marsClock);
+
+		eventManager = new HistoricalEventManager();
+
+		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
 
 		doneInitializing = true;
 	}

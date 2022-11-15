@@ -180,7 +180,6 @@ public class Read extends Task implements Serializable {
 		if ((getTimeCompleted() + time > getDuration()) || isDone()) {
 	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
 	        setDescription(s);
-	        logger.info(person, 4_000, "Done " + s.toLowerCase() + ".");
 			endTask();
 			return time;
 		}
@@ -194,7 +193,6 @@ public class Read extends Task implements Serializable {
 	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
 	    	// Display reading on a particular subject (skill type)
 			setDescription(s);		
-	        logger.info(person, 4_000, "Started " + s.toLowerCase() + ".");
         }
 
 		// Reading serves to improve skill

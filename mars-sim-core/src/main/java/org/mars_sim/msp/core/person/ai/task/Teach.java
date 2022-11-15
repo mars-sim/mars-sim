@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
@@ -23,10 +24,12 @@ import org.mars_sim.msp.core.person.ai.fav.Preference;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -90,11 +93,7 @@ public class Teach extends Task implements Serializable {
 		Iterator<Person> i = candidates.iterator();
 		while (i.hasNext()) {
 			Person candidate = i.next();
-			if (worker.getUnitType() == UnitType.PERSON)
-				logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
-			else
-				logger.log(robot, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
-			
+			logger.log(worker, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
 			students.add(candidate);
 		}
 		
@@ -105,32 +104,27 @@ public class Teach extends Task implements Serializable {
 			
 				// Gets the task the student is doing
 				Task candidateTask = candidate.getMind().getTaskManager().getTask();
-				if (worker.getUnitType() == UnitType.ROBOT
-					&& ((Robot)worker).getBotMind().getRobotJob().isJobRelatedTask(candidateTask.getClass())) {
-					// nothing
+				MetaTask metaTask = MetaTaskUtil.getMetaTypeFromTask(candidateTask);
+				if (worker.getUnitType() == UnitType.ROBOT) {
+					Set<RobotType> robotTypes = metaTask.getPreferredRobot();
+					RobotType rt = ((Robot)worker).getRobotType();
+					if (!robotTypes.contains(rt)) {
+						continue;
+					}
+
 				}
-				else if (worker.getUnitType() == UnitType.PERSON) {
-					MetaTask metaTask = Preference.convertTask2MetaTask(candidateTask);
+				else {
 					JobType jobType = ((Person)worker).getMind().getJob();
 					
-					boolean isGood = metaTask.isPreferredJob(jobType);
-					if (isGood) {
-						// nothing
-					}
-					else {
+					Set<JobType> jobs = metaTask.getPreferredJob();
+					if (!jobs.contains(jobType)) {
 						// this task is not a part of this person's job
 						// Note: may need to relax on this criteria
 						continue;
 					}
 				
 				}
-				else {
-					// this robot cannot perform this task, go to next student candidate
-					continue;
-				}
-				
-				double teacherExp = 0;
-				
+								
 				List<SkillType> taughtSkills = candidateTask.getAssociatedSkills();
 		        if (taughtSkills == null) {
 		        	logger.severe(worker, 20_000L, "No taught skills found.");
@@ -142,29 +136,16 @@ public class Teach extends Task implements Serializable {
 					while (ii.hasNext() && teachingTask == null && student == null) {
 						SkillType candidateSkill = iii.next();
 
-						if (worker.getUnitType() == UnitType.PERSON) {
-							teacherExp = person.getSkillManager().getCumulativeExperience(candidateSkill);
-						}
-						else {
-							teacherExp = robot.getSkillManager().getCumulativeExperience(candidateSkill);
-						}
-				
+						double teacherExp = worker.getSkillManager().getCumulativeExperience(candidateSkill);
 						double studentExp = candidate.getSkillManager().getCumulativeExperience(candidateSkill);
-						
 						double diff = teacherExp - studentExp;
 		
 						if (diff > 0) {
 							teachingTask = candidateTask;
 							taskSkill = candidateSkill;
 							student = candidate;
-							if (worker.getUnitType() == UnitType.PERSON) {
-								logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
+							logger.log(worker, Level.INFO, 30_000, "Teaching " + student.getName() 
 										+ " on '" + teachingTask.getName(false) + "'.");
-							}
-							else {
-								logger.log(robot, Level.INFO, 30_000, "Teaching " + student.getName() 
-								+ " on '" + teachingTask.getName(false) + "'.");
-							}
 							
 							setDescription(
 								Msg.getString("Task.description.teach.detail", 
@@ -284,17 +265,8 @@ public class Teach extends Task implements Serializable {
 			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 			double studentExp = student.getSkillManager().getCumulativeExperience(taskSkill);
 
-			int teacherSkill = 0;
-			double teacherExp = 0;
-			
-			if (worker.getUnitType() == UnitType.PERSON) {
-				teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = person.getSkillManager().getCumulativeExperience(taskSkill);
-			}
-			else {
-				teacherSkill = robot.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = robot.getSkillManager().getCumulativeExperience(taskSkill);
-			}
+			int teacherSkill = worker.getSkillManager().getSkillLevel(taskSkill);
+			double teacherExp = worker.getSkillManager().getCumulativeExperience(taskSkill);
 	
 			int points = teacherSkill - studentSkill;
 			double reward = exp / 60 * RandomUtil.getRandomDouble(1);
@@ -315,11 +287,7 @@ public class Teach extends Task implements Serializable {
 				// Add exp to student
 				student.getSkillManager().addExperience(taskSkill, learned, time);
 				// Add exp to teacher
-				if (worker.getUnitType() == UnitType.PERSON) {
-					person.getSkillManager().addExperience(taskSkill, reward, time);
-				}
-				else
-					robot.getSkillManager().addExperience(taskSkill, reward, time);
+				worker.getSkillManager().addExperience(taskSkill, reward, time);
 	        }
 		}
 	}

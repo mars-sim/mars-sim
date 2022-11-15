@@ -89,6 +89,8 @@ public class RepairMalfunctionMeta extends MetaTask {
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
 		setPreferredJob(JobType.MECHANICS);
+
+		addPreferredRobot(RobotType.REPAIRBOT);
 	}
 
 	/**
@@ -127,16 +129,10 @@ public class RepairMalfunctionMeta extends MetaTask {
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
 
-		List<TaskJob> tasks = null;
+		double factor = robot.getPerformanceRating();
 
-        if (robot.getRobotType() == RobotType.REPAIRBOT) {
-			double factor = robot.getPerformanceRating();
-
-			tasks = getRepairTasks(MalfunctionFactory.getAssociatedMalfunctionables(robot.getSettlement()),
-									robot.getSettlement(), factor, 0D);
-		}
-
-        return tasks;
+		return getRepairTasks(MalfunctionFactory.getAssociatedMalfunctionables(robot.getSettlement()),
+								robot.getSettlement(), factor, 0D);
 	}
 	
 	/**

@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
-import org.mars_sim.msp.core.SimulationListener;
 
 public class SaveCommand extends ChatCommand {
 

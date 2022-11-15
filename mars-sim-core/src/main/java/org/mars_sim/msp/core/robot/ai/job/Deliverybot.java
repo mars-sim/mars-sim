@@ -6,49 +6,30 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
-import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Deliverybot
-extends RobotJob
-implements Serializable {
+extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static double TRADING_RANGE = 2500D;
-	private static double SETTLEMENT_MULTIPLIER = 3D;
+	private static final double TRADING_RANGE = 2500D;
+	private static final double SETTLEMENT_MULTIPLIER = 3D;
 
 	/**
 	 * Constructor.
 	 */
 	public Deliverybot() {
 		// Use Job constructor.
-		super(Deliverybot.class);
-
-		//jobTasks.add(LoadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-        jobTasks.add(LoadVehicleGarage.class);
-        //jobTasks.add(UnloadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-        jobTasks.add(UnloadVehicleGarage.class);
-        jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
-		jobTasks.add(ToggleResourceProcess.class);
-		jobTasks.add(ToggleFuelPowerSource.class);
+		super();
 		
         jobMissionStarts.add(Delivery.class);
         

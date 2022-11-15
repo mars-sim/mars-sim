@@ -35,6 +35,8 @@ public class CookMealMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);
+
+        addPreferredRobot(RobotType.CHEFBOT);
 	}
 
     @Override
@@ -96,8 +98,7 @@ public class CookMealMeta extends FactoryMetaTask {
 
         double result = 0D;
 
-        if (CookMeal.isMealTime(robot, CookMeal.PREP_TIME)
-            && robot.getRobotType() == RobotType.CHEFBOT) {
+        if (CookMeal.isMealTime(robot, CookMeal.PREP_TIME)) {
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
 
