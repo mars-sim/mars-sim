@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
@@ -30,7 +32,7 @@ public class MetaTaskUtil {
 	private static List<MetaTask> personMetaTasks;
 	private static List<MetaTask> robotMetaTasks = null;
 
-	private static List<MetaTask> allMetaTasks;
+	private static Map<String,MetaTask> nameToMetaTask;
 
 	/**
 	 * Private constructor for utility class.
@@ -43,13 +45,13 @@ public class MetaTaskUtil {
 	 */
 	public static synchronized void initializeMetaTasks() {
 
-		if (allMetaTasks != null) {
+		if (nameToMetaTask != null) {
 			// Created by another thread during the wait
 			return;
 		}
 		
 		// Would be nice to dynamically load based on what is in the package
-		allMetaTasks = new ArrayList<>();
+		List<MetaTask> allMetaTasks = new ArrayList<>();
 		allMetaTasks.add(new AnalyzeMapDataMeta());
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
 		allMetaTasks.add(new ChargeMeta());
@@ -110,6 +112,12 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new WriteReportMeta());
 		allMetaTasks.add(new YogaMeta());
 		
+		// Build the name lookup for later
+		nameToMetaTask = new HashMap<>();
+		for(MetaTask t : allMetaTasks) {
+			nameToMetaTask.put(t.getClass().getSimpleName().toLowerCase(), t);
+		}
+
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
@@ -186,16 +194,26 @@ public class MetaTaskUtil {
 	 * @return meta tasks.
 	 */
 	public static MetaTask getMetaTask(String name) {
-		MetaTask metaTask = null;
-		Iterator<MetaTask> i = allMetaTasks.iterator();
-		while (i.hasNext()) {
-			MetaTask t = i.next();
-			if (t.getClass().getSimpleName().equalsIgnoreCase(name)) {
-				metaTask = t;
-				break;
-			}
+		return nameToMetaTask.get(name.toLowerCase());
+	}
+
+	/**
+	 * Get a MetaTask instance that is assooicated wth a Task class.
+	 * This method logic ia fragile and needs a better solution.
+	 */
+	public static MetaTask getMetaTypeFromTask(Task task) {
+		String s = task.getClass().getSimpleName();
+		String ss = s.replace("EVA", "")
+				.replace("Inside", "")
+				.replace("Garage", "");
+		String metaTaskName = ss.trim() + "Meta";
+	
+		MetaTask mt = getMetaTask(metaTaskName);
+		if (mt == null) {
+			throw new IllegalArgumentException("Cannot find MetaTask from task " + metaTaskName);
 		}
-		return metaTask;
+
+		return mt;
 	}
 
 	public static List<MetaTask> getRobotMetaTasks() {

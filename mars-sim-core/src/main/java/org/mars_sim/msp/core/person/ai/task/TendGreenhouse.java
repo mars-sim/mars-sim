@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -205,7 +204,7 @@ public class TendGreenhouse extends Task {
 	public void setCropDescription(Crop needyCrop) {
 		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Tending " + needyCrop.getCropName() + ".");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.detail",
-				Conversion.capitalize(needyCrop.getCropName())), true);
+								needyCrop.getCropName()), false);
 	}
 
 	/**

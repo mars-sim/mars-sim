@@ -586,7 +586,10 @@ public abstract class TaskManager implements Serializable, Temporal {
 		if (changed.getPhase() != null)
 			newPhase = changed.getPhase().getName();
 		
-		if (!newDescription.equals("") && (lastActivity == null 
+		// If there is no details; then skip it
+		// Also compare to the last activity
+		if (!newDescription.equals("") && !newPhase.equals("")
+			&& (lastActivity == null 
 				|| !newDescription.equals(lastActivity.description)
 				|| !newPhase.equals(lastActivity.phase))) {
 			
@@ -684,7 +687,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
-		MetaTask mt = convertTask2MetaTask(taskName);
+		MetaTask mt = MetaTaskUtil.getMetaTask(taskName);
 		if (mt == null) {
 			logger.warning(worker, "Cannot find pending task called " + taskName);
 			return false;
@@ -734,15 +737,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 		return null;
 	}
 
-	/**
-	 * Converts a task to its corresponding meta task
-	 *
-	 * @param a task
-	 */
-	private static MetaTask convertTask2MetaTask(String task) {
-		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
-	}
-	
 	/**
 	 * Checks if the worker is currently performing this task.
 	 * 

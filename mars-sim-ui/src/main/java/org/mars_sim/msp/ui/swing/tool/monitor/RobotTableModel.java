@@ -283,7 +283,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				break;
 
 			case JOB: 
-				result = RobotJob.getName(robot.getRobotType());
+				result = robot.getRobotType().getName();
 				break;
 
 			case TASK: 

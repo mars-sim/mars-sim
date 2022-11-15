@@ -85,9 +85,10 @@ public class TaskCommand extends AbstractSettlementCommand {
 			String task = entry.getKey();
 			List<Robot> plist = entry.getValue();
 			String tableGroup = task;
-			if (task != null) {
+			if ((task != null) && !task.equals("")) {
 				tableGroup = task;
-			} else {
+			}
+			else {
 				tableGroup = "None";
 			}
 
