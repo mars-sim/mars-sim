@@ -127,14 +127,14 @@ public class AnalyzeMapData extends Task implements Serializable {
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		logger.info(person, 10_000, "Total computing needs: " 
-				+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
-				+ " CUs. score: " 
-				+ Math.round(score * 1000.0)/1000.0 + ". rand: "
-				+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
-				+ Math.round(seed * 1000.0)/1000.0 + ". "
-				+ num + " candidate sites identified. Final site selected: " 
-				+ site.getLocation().getCoordinateString() + ".");
+		// logger.info(person, 10_000, "Total computing needs: " 
+		// 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
+		// 		+ " CUs. score: " 
+		// 		+ Math.round(score * 1000.0)/1000.0 + ". rand: "
+		// 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
+		// 		+ Math.round(seed * 1000.0)/1000.0 + ". "
+		// 		+ num + " candidate sites identified. Final site selected: " 
+		// 		+ site.getLocation().getCoordinateString() + ".");
 		
        	// Add task phases
     	addPhase(ANALYZING);
@@ -230,9 +230,6 @@ public class AnalyzeMapData extends Task implements Serializable {
         	
 		if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
         	// this task has ended
-    		logger.info(person, 30_000L, "Done '" + NAME + "' - " 
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-    				+ " CUs Used.");
 			endTask();
 			return 0;
 		}
