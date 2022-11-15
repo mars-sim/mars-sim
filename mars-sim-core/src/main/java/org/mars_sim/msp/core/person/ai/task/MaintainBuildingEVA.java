@@ -6,10 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
