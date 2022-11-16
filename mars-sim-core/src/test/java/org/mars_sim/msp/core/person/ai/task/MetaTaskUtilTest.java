@@ -8,12 +8,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta;
-import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;

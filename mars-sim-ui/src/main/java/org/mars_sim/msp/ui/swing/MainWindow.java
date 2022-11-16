@@ -18,6 +18,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -1315,6 +1316,17 @@ extends JComponent implements ClockListener {
 		return isIconified;
 	}
 
+	/**
+	 * Create background tile when MainDesktopPane is first displayed. Center
+	 * logoLabel on MainWindow and set backgroundLabel to the size of
+	 * MainDesktopPane.
+	 *
+	 * @param e the component event
+	 */
+	public void componentResized(ComponentEvent e) {
+		desktop.componentResized(e);
+	}
+	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {

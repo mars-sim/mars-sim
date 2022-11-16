@@ -415,6 +415,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	/**
 	 * Sets the current task to null.
+	 * 
 	 * @param reason May ebe used in an override method
 	 */
 	public void clearAllTasks(String reason) {
@@ -486,7 +487,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected abstract TaskCache rebuildTaskCache();
 
 	/**
-	 * Start a new task for the worker based on tasks available at their location.
+	 * Starts a new task for the worker based on tasks available at their location.
 	 * Uses the task probability cache. If a task is found; then it is assigned
 	 * to the manager to start working.
 	 */
@@ -526,7 +527,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Simple method to capture some stats/metrics on cache rebuilds
+	 * Simple method to capture some stats/metrics on cache rebuilds.
 	 */
 	private void captureStats() {
 		Settlement scope = worker.getAssociatedSettlement();
@@ -710,7 +711,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets all pending tasks
+	 * Gets all pending tasks.
 	 *
 	 * @return
 	 */
@@ -764,7 +765,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the first pending meta task in the queue
+	 * Gets the first pending meta task in the queue.
 	 *
 	 * @return
 	 */
