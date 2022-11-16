@@ -7,6 +7,8 @@
 
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
@@ -33,7 +35,8 @@ public class BuildingCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		BuildingManager bm = settlement.getBuildingManager();
-		List<Building> i = bm.getBuildings();
+		List<Building> i = new ArrayList<>(bm.getBuildings());
+		Collections.sort(i);
 		
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Category", 12, "Power", 10,
 									"Dem. (kwh)", "Heat %",

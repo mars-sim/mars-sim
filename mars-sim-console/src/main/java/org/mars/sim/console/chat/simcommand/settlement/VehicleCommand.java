@@ -7,7 +7,9 @@
 
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,10 +44,9 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	
 		response.appendHeading("Vehicles");
 		
-		// Sort the vehicle list according to the type
-		Collection<Vehicle> list = settlement.getAllAssociatedVehicles();
-		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleTypeString().compareTo(p2.getVehicleTypeString()))
-				.collect(Collectors.toList());
+		// Sort the vehicle list according to the name
+		List<Vehicle> vlist = new ArrayList<>(settlement.getAllAssociatedVehicles());
+		Collections.sort(vlist);
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, 
 									"Status", 7, "Home", "Reserved", "Maint Due", "Mission", 25);

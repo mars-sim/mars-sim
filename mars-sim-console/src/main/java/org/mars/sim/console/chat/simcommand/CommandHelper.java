@@ -8,6 +8,7 @@
 package org.mars.sim.console.chat.simcommand;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -509,9 +510,12 @@ public class CommandHelper {
 		firstColumn.append(String.format("%-" + width + "s", bName));
 		firstColumn.append(processType);
 
+	    List<ResourceProcess> processes = new ArrayList<>(processor.getProcesses());
+		processes.sort((ResourceProcess h1, ResourceProcess h2) -> h1.getProcessName().compareTo(h2.getProcessName()));
+
 		response.appendTableHeading(firstColumn.toString(), PROCESS_WIDTH,
 					"Active", "Level", "Toggle");
-		for(ResourceProcess p : processor.getProcesses()) {
+		for(ResourceProcess p : processes) {
 			String nextToggle = null;
 			if (p.isToggleAvailable()) {
 				// Toggling is available

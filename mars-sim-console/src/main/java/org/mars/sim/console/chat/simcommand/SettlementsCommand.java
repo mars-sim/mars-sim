@@ -7,7 +7,10 @@
 
 package org.mars.sim.console.chat.simcommand;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
@@ -28,8 +31,9 @@ public class SettlementsCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 
-		Collection<Settlement> settlements = context.getSim().getUnitManager().getSettlements();
-		
+		List<Settlement> settlements = new ArrayList<>(context.getSim().getUnitManager().getSettlements());
+		Collections.sort(settlements);
+
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("Name",  CommandHelper.PERSON_WIDTH, "Sponsor", 
 									"Template", 12, "Pop", "Location");

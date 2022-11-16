@@ -7,6 +7,10 @@
 
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
@@ -37,7 +41,10 @@ public class ResourceProcessCommand extends AbstractSettlementCommand {
 		int missionMilliSol = (clock.getMissionSol() * 1000) + clock.getMillisolInt();
 		
 		// Loop buildings that do processing
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+		List<Building> processors = new ArrayList<>(
+					settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING));
+		Collections.sort(processors);
+		for(Building building : processors) {
 			CommandHelper.outputProcesses(response, "Resource process", missionMilliSol, building.getName(),
 							building.getResourceProcessing());
 		}
