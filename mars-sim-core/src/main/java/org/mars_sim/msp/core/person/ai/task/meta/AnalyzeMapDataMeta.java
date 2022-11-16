@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.AnalyzeMapData;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the AnalyzeMapData task.
  */
-public class AnalyzeMapDataMeta extends MetaTask {
+public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
 	private static final int VALUE = 5;
@@ -94,7 +94,7 @@ public class AnalyzeMapDataMeta extends MetaTask {
         if (result == 0) return 0;
 		result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-        result = applyPersonModifier(result, person);
+        result *= getPersonModifier(person);
 
         if (result < 0) result = 0;
         

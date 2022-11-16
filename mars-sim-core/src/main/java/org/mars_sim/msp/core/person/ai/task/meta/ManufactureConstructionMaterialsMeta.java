@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the ManufactureConstructionMaterials task.
  */
-public class ManufactureConstructionMaterialsMeta extends MetaTask {
+public class ManufactureConstructionMaterialsMeta extends FactoryMetaTask {
     
     private static final double CAP = 3000D;
     
@@ -88,10 +88,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
                     }
                     
                     // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
-                            manufacturingBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person,
-                            manufacturingBuilding);
+                    result *= getBuildingModifier(manufacturingBuilding, person);
 
                     // Manufacturing good value modifier.
                     result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
@@ -99,7 +96,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
                     
             		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
 
-            		result = applyPersonModifier(result, person);
+            		result *= getPersonModifier(person);
             		
                     // Capping the probability as manufacturing process values can be very large numbers.
                     if (result > CAP) {

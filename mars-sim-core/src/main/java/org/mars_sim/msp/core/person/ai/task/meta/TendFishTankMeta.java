@@ -89,8 +89,7 @@ public class TendFishTankMeta extends MetaTask {
                 result += fishTank.getWeedDemand();
                 
                 // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                result *= getBuildingModifier(building, person);
 
                 result *= getPersonModifier(person);
                 if (result > CAP)

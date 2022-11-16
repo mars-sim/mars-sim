@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SelfTreatHealthProblem;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.Treatment;
@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * Meta task for the SelfTreatHealthProblem task.
  */
-public class SelfTreatHealthProblemMeta extends MetaTask {
+public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 
 	private static final double VALUE = 1000.0;
 

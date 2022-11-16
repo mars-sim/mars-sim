@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 /**
  * Meta task for the CookMeal task.
  */
-public class CookMealMeta extends MetaTask {
+public class CookMealMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -74,12 +74,10 @@ public class CookMealMeta extends MetaTask {
                 if (kitchen.canCookMeal()) {
 
                     result = 200;
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    // Effort-driven task modifier.
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);  
+                    result *= getBuildingModifier(kitchenBuilding, person);
+
                     // Apply the standard Person modifiers
-                    result = applyPersonModifier(result, person);
+                    result *= getPersonModifier(person);
                 }
             }
         }

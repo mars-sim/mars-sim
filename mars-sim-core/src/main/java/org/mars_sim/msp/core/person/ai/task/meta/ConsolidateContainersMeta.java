@@ -10,7 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.robot.RobotType;
 /**
  * Meta task for the ConsolidateContainers task.
  */
-public class ConsolidateContainersMeta extends MetaTask {
+public class ConsolidateContainersMeta extends FactoryMetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -57,7 +57,7 @@ public class ConsolidateContainersMeta extends MetaTask {
                 result = 10D;
             }
 
-            result = applyPersonModifier(result, person);
+            result *= getPersonModifier(person);
         }
 
         return result;

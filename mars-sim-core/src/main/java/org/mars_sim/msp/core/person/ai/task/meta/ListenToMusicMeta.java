@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the ListenToMusic task.
  */
-public class ListenToMusicMeta extends MetaTask {
+public class ListenToMusicMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -74,17 +74,9 @@ public class ListenToMusicMeta extends MetaTask {
 	        }
 
 	        if (person.isInSettlement()) {
-
-	            try {
-	            	// Check if a person has a designated bed
-	                Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
-	                if (recBuilding != null) {
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-	                }
-	            } catch (Exception e) {
-	                logger.log(Level.SEVERE, e.getMessage());
-	            }
+				// Check if a person has a designated bed
+				Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
+				result *= getBuildingModifier(recBuilding, person);
 
 	            // Modify probability if during person's work shift.
 	            int now = marsClock.getMillisolInt();

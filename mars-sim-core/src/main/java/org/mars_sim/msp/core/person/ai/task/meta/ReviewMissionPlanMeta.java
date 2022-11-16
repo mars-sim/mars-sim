@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Meta task for the ReviewMissionPlan task.
  */
-public class ReviewMissionPlanMeta extends MetaTask {
+public class ReviewMissionPlanMeta extends FactoryMetaTask {
 		
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -128,8 +128,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
                 if (building != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+					result *= getBuildingModifier(building, person);
                 }
                 
                 else if (person.isInVehicle()) {	
@@ -145,7 +144,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
         	        	result += 10;
                 }
 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
             }
             
             if (result < 0) {

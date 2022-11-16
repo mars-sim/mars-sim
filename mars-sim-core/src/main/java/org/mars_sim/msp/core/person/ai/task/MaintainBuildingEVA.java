@@ -68,7 +68,7 @@ extends EVAOperation {
 		// Check suitability
 		entity = target;
 		MalfunctionManager manager = target.getMalfunctionManager();
-		if (!manager.hasMaintenanceParts(worker.getSettlement())) {		
+		if (!manager.hasMaintenanceParts(worker.getAssociatedSettlement())) {		
 			clearTask("No parts");
 			return;
 		}

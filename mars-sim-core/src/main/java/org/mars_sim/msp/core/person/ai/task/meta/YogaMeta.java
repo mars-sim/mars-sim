@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the Yoga task.
  */
-public class YogaMeta extends MetaTask {
+public class YogaMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -80,10 +80,7 @@ public class YogaMeta extends MetaTask {
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
-            if (building != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            }
+            result *= getBuildingModifier(building, person);
         }
         
         return result;

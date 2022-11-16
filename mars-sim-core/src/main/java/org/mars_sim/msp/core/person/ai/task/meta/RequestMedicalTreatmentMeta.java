@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * Meta task for the RequestMedicalTreatment task.
  */
-public class RequestMedicalTreatmentMeta extends MetaTask {
+public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
 
 	private static final int VALUE = 500;
 	

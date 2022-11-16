@@ -46,14 +46,6 @@ public class TaskCache {
 		totalProb += job.getScore();
 	}
 
-    /**
-     * This creates a basic Task Job delegated to a MetaType class with a default score.
-     */
-    public void putDefault(MetaTask metaTask) {
-        TaskJob newJob = new BasicTaskJob(metaTask, 1D);
-        put(newJob);
-    }
-
     public void add(List<TaskJob> jobs) {
         for(TaskJob j : jobs) {
             tasks.add(j);

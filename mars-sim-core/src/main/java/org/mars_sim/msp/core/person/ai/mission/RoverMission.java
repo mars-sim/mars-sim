@@ -566,7 +566,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getSettlement(), rover);
+		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
 		if (job != null) {
 			person.getMind().getTaskManager().addPendingTask(job, false);
 		}

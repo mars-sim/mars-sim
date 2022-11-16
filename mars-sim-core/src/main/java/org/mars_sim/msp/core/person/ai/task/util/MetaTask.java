@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -18,10 +17,12 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -192,104 +193,6 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Constructs an instance of the associated task. Is a Factory method and should
-	 * be implemented by the subclass.
-	 * Governed by the {@link #getSupported()} method.
-	 * 
-	 * @param person the person to perform the task.
-	 * @return task instance.
-	 */
-	public Task constructInstance(Person person) {
-		throw new UnsupportedOperationException("Can not create " + name + " for Person.");
-	}
-
-	/**
-	 * Constructs an instance of the associated task. Is a Factory method and should
-	 * be implemented by the subclass.
-	 * Governed by the {@link #getSupported()} method.
-	 * 
-	 * @param person the person to perform the task.
-	 * @return task instance.
-	 */
-	public Task constructInstance(Robot robot) {
-		throw new UnsupportedOperationException("Can not create " + name + " for Robot.");
-	}
-
-	/**
-	 * Gets the weighted probability value that the person might perform this task.
-	 * A probability weight of zero means that the task has no chance of being
-	 * performed by the person.
-	 * 
-	 * @param person the person to perform the task.
-	 * @return weighted probability value (0 -> positive value).
-	 */
-	public double getProbability(Person person) {
-		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Person.");
-	}
-
-	/**
-	 * Gets the weighted probability value that the person might perform this task.
-	 * A probability weight of zero means that the task has no chance of being
-	 * performed by the robot.
-	 * 
-	 * @param robot the robot to perform the task.
-	 * @return weighted probability value (0 -> positive value).
-	 */
-	public double getProbability(Robot robot) {
-		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
-	}
-	
-	/**
-	 * Gets the list of Task that this Person can perform all individually scored.
-	 * 
-	 * @param person the Person to perform the task.
-	 * @return List of TasksJob specifications.
-	 */
-	public List<TaskJob> getTaskJobs(Person person) {
-		return createTaskJob(getProbability(person));
-	}
-
-	/**
-	 * Gets the list of Task that this Robot can perform all individually scored.
-	 * 
-	 * @param robot the robot to perform the task.
-	 * @return List of TasksJob specifications.
-	 */
-	public List<TaskJob> getTaskJobs(Robot robot) {
-		return createTaskJob(getProbability(robot));
-	}
-
-	/**
-	 * Creates a TaskJob instance delegate where this instance handles Task creation.
-	 * @param score Score to the job to create.
-	 */
-	private List<TaskJob> createTaskJob(double score) {
-		// This is a convience to avoid a massive rework in the subclasses.
-		if (score <= 0) {
-			return null;
-		}
-
-		List<TaskJob> result = new ArrayList<>(1);
-		result.add(new BasicTaskJob(this, score));
-		return result;
-	}
-
-	/**
-	 * This will apply a number of modifier to the current score based on the Person.
-	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
-	 * 2. Apply the Job start modifier for this task
-	 * 3. Apply the Persons individual preference to this Task
-	 * 
-	 * @param score Current base score
-	 * @param person Person scoring Task
-	 * @return Modified score.
-	 * @deprecated Use {@link #getPersonModifier(Person)}
-	 */
-	protected double applyPersonModifier(double score, Person person) {
-		return score * getPersonModifier(person);
-	}
-
-	/**
 	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
 	 * 2. Apply the Job start modifier for this task
@@ -344,7 +247,7 @@ public abstract class MetaTask {
 	 * @param settlement
 	 * @return
 	 */
-    protected double getRadiationModifier(Settlement settlement) {
+    protected static double getRadiationModifier(Settlement settlement) {
         RadiationStatus exposed = settlement.getExposed();
         double result = 1D;
 
@@ -369,7 +272,7 @@ public abstract class MetaTask {
 	/**
 	 * Get the modifier for a Person doing an EVA Operation
 	 */
-	protected double getEVAModifier(Person person) {
+	protected static double getEVAModifier(Person person) {
 		// Check if an airlock is available
 		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 			return 0;
@@ -387,6 +290,41 @@ public abstract class MetaTask {
 			return 0;
 		
 		return 1D;
+	}
+
+	
+	/**
+	 * Get the modifier for a Person using a Building.
+	 * @param building Bulding the Person is entering
+	 * @param person Person working
+	 */
+	protected static double getBuildingModifier(Building building, Person person) {
+		double result = 1D;
+		if (building != null) {
+			result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+		}
+		return result;
+	}
+
+		/**
+	 * Gets the list of Task that this Person can perform all individually scored.
+	 * 
+	 * @param person the Person to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Person person) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Gets the list of Task that this Robot can perform all individually scored.
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Robot robot) {
+		return Collections.emptyList();
 	}
 
 	/**

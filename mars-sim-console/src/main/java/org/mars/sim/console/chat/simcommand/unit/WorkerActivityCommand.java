@@ -60,11 +60,12 @@ public class WorkerActivityCommand extends AbstractUnitCommand {
 		response.appendTableHeading("When", 8,
 									"Activity", -32,
 									"Phase");
-
-		for (OneActivity attr : activities) {
-			response.appendTableRow(String.format("%03.3f", attr.getStartTime()),
-									attr.getDescription(),
-									attr.getPhase());
+		if (activities != null) {
+			for (OneActivity attr : activities) {
+				response.appendTableRow(String.format("%03.3f", attr.getStartTime()),
+										attr.getDescription(),
+										attr.getPhase());
+			}
 		}
 		context.println(response.getOutput());
 		

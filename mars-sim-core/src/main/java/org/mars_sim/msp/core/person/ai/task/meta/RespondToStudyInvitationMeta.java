@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RespondToStudyInvitation task.
  */
-public class RespondToStudyInvitationMeta extends MetaTask {
+public class RespondToStudyInvitationMeta extends FactoryMetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -77,13 +77,11 @@ public class RespondToStudyInvitationMeta extends MetaTask {
 
 	        // Crowding modifier
             Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
-            }
+            result *= getBuildingModifier(adminBuilding, person);
+
             result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-            result = applyPersonModifier(result, person);
+            result *= getPersonModifier(person);
         }
 
         if (result <= 0) result = 0;

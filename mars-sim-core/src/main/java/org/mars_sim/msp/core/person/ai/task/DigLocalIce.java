@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -19,8 +17,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * collecting ice outside of a settlement.
  */
 public class DigLocalIce
-extends DigLocal
-implements Serializable {
+extends DigLocal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -42,7 +39,7 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person); 
         if (!isDone()) {
-        	setCollectionRate(getSettlement().getIceCollectionRate());
+        	setCollectionRate(person.getAssociatedSettlement().getIceCollectionRate());
         }
 	}
 }

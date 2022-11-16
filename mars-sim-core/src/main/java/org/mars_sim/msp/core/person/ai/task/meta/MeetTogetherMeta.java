@@ -11,14 +11,14 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 
 
 /**
  * Meta task for MeetTogether task.
  */
-public class MeetTogetherMeta extends MetaTask {
+public class MeetTogetherMeta extends FactoryMetaTask {
 
     /** default logger. */
 //    private static final SimLogger logger = SimLogger.getLogger(MeetTogetherMeta.class.getName());

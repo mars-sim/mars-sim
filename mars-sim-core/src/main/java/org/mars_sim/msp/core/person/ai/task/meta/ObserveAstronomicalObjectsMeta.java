@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 /**
  * Meta task for the ObserveAstronomicalObjects task.
  */
-public class ObserveAstronomicalObjectsMeta extends MetaTask {
+public class ObserveAstronomicalObjectsMeta extends FactoryMetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -132,7 +132,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
                 result *= (person.getAssociatedSettlement().getGoodsManager().getTourismFactor()
 	               		 + person.getAssociatedSettlement().getGoodsManager().getResearchFactor())/1.5;
                 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
             }
         }
 

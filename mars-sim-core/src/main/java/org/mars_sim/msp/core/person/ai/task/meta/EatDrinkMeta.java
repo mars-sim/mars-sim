@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the EatNDrink task.
  */
-public class EatDrinkMeta extends MetaTask {
+public class EatDrinkMeta extends FactoryMetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
@@ -192,11 +192,8 @@ public class EatDrinkMeta extends MetaTask {
 
 					// Check if there is a local dining building.
 					Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
-					if (diningBuilding != null) {
-						// Modify probability by social factors in dining building.
-						h0 *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
-						h0 *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-					}
+					h0 *= getBuildingModifier(diningBuilding, person);
+
 				}
 			}
 

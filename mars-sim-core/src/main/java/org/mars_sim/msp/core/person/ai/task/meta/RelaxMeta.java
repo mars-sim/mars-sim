@@ -6,13 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -20,7 +19,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the Relax task.
  */
-public class RelaxMeta extends MetaTask{
+public class RelaxMeta extends FactoryMetaTask{
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -56,17 +55,8 @@ public class RelaxMeta extends MetaTask{
           	result = result + result * pref/6D;
             if (result < 0) result = 0;
             
-            try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(person);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-            
+            Building recBuilding = Relax.getAvailableRecreationBuilding(person);
+            result *= getBuildingModifier(recBuilding, person);
 
             // Modify probability if during person's work shift.
             int now = marsClock.getMillisolInt();

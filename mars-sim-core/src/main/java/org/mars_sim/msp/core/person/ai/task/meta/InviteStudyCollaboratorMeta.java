@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the InviteStudyCollaborator task.
  */
-public class InviteStudyCollaboratorMeta extends MetaTask {
+public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -88,10 +88,8 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
                         
                         // Crowding modifier
                         Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
-                        if (adminBuilding != null) {
-                            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-                            result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
-                        }
+                        result *= getBuildingModifier(adminBuilding, person);
+
 
                         // Increase probability if person's current job is related to study's science.
                         JobType job = person.getMind().getJob();
@@ -101,7 +99,7 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
                         }
                         result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-                        result = applyPersonModifier(result, person);
+                        result *= getPersonModifier(person);
 	                }
 	            }
 	        }

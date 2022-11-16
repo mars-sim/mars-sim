@@ -33,7 +33,7 @@ public class TaskProbabilityUtil {
      * @param newBuilding the building the person is to go to.
      * @return probability modifier
      */
-    protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
+    public static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
         double modifier = 1D;
 
         Building currentBuilding = BuildingManager.getBuilding(person);
@@ -92,7 +92,7 @@ public class TaskProbabilityUtil {
      * @param building the building the person will need to be in for the task.
      * @return probability modifier
      */
-    protected static double getRelationshipModifier(Person person, Building building) {
+    public static double getRelationshipModifier(Person person, Building building) {
         double result = 1D;
 
          if ((person == null) || (building == null)) {
