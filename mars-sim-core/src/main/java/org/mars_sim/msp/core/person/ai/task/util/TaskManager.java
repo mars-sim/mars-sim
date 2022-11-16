@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -154,6 +156,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 	private OneActivity lastActivity = null;
 	/** The list of pending of tasks. */
 	private List<TaskJob> pendingTasks;
+
+	// THese are for metric capture
+	private static int totalRebuild = 0;
+	private static int reuseRebuild = 0;
+	private static Map<Settlement,MarsClock> metrics;
 	
 
 	protected TaskManager(Unit worker) {
@@ -493,6 +500,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 				|| (marsClock.getMillisol() - taskProbCache.getCreatedOn().getMillisol()) > TASK_MILLISOLS) {
 			taskProbCache = rebuildTaskCache();
 			
+			// Comment out to stop capturing stats
+			//captureStats();
+			
 			// Output shift
 			if (diagnosticFile != null) {
 				outputCache(taskProbCache);
@@ -512,6 +522,35 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 			// Start this new task
 			startTask(selectedTask);
+		}
+	}
+
+	/**
+	 * Simple method to capture some stats/metrics on cache rebuilds
+	 */
+	private void captureStats() {
+		Settlement scope = worker.getAssociatedSettlement();
+		if (metrics == null) {
+			metrics = new HashMap<>();
+		}
+		synchronized(metrics) {
+			MarsClock lastRebuild = metrics.get(scope);
+			totalRebuild++;
+
+			// If time has not changed since last rebuild; count as a reuse
+			if ((lastRebuild != null) && lastRebuild.equals(marsClock)) {
+				reuseRebuild++;
+			}
+			else {
+				metrics.put(scope, new MarsClock(marsClock));
+			}
+
+			// LImit output
+			if ((totalRebuild % 1000) == 0) {
+				String message = String.format("---- Cache Reuse stats %d/%d (%d%%)",
+									reuseRebuild, totalRebuild, (100*reuseRebuild/totalRebuild));
+				logger.info(message);
+			}
 		}
 	}
 
@@ -687,7 +726,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
-		MetaTask mt = MetaTaskUtil.getMetaTask(taskName);
+		// Potential ClassCast but only temp. measure
+		FactoryMetaTask mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(taskName);
 		if (mt == null) {
 			logger.warning(worker, "Cannot find pending task called " + taskName);
 			return false;
