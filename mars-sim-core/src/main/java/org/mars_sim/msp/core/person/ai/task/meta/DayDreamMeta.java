@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 
 /**
  * Meta task for the Day Dream task. It can always be done.
  */
-public class DayDreamMeta extends MetaTask {
+public class DayDreamMeta extends FactoryMetaTask {
 
     public DayDreamMeta() {
 		super(DayDream.NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

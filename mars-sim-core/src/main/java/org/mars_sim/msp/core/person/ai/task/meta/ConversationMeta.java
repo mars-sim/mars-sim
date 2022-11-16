@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for Conversation task.
  */
-public class ConversationMeta extends MetaTask {
+public class ConversationMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(

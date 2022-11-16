@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.robot.ai.task;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 /**
  * Meta task for the Charge task.
  */
-public class ChargeMeta extends MetaTask {
+public class ChargeMeta extends FactoryMetaTask {
 
 	private static SimLogger logger = SimLogger.getLogger(ChargeMeta.class.getName());
 
@@ -62,6 +62,10 @@ public class ChargeMeta extends MetaTask {
         		result += (100 - level) * 50;
         	
         	Building currentBldg = robot.getBuildingLocation();
+			if (currentBldg == null) {
+				logger.warning(robot, "Not in a building");
+				return 0;
+			}
         	
 			RoboticStation station = currentBldg.getRoboticStation();
 			if (station.getSleepers() < station.getSlots()) {

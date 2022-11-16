@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the Sleep task.
  */
-public class SleepMeta extends MetaTask {
+public class SleepMeta extends FactoryMetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
 

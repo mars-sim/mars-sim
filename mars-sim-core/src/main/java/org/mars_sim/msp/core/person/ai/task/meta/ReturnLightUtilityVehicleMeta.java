@@ -9,14 +9,14 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ReturnLightUtilityVehicle;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
 /**
  * Meta task for the ReturnLightUtilityVehicle task.
  */
-public class ReturnLightUtilityVehicleMeta extends MetaTask {
+public class ReturnLightUtilityVehicleMeta extends FactoryMetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(

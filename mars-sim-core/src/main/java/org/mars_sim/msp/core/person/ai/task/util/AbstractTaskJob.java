@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
@@ -41,6 +42,14 @@ public abstract class AbstractTaskJob implements TaskJob {
     @Override
     public Task createTask(Robot robot) {
         throw new UnsupportedOperationException("Robots cannot do " + description);
+    }
+
+    /**
+     * Default implementation throws an Unsupported operation exception.
+     */
+    @Override
+    public Task createTask(Person person) {
+        throw new UnsupportedOperationException("Persons cannot do " + description);
     }
     
     @Override

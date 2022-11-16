@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the DigLocal task.
  */
-public abstract class DigLocalMeta extends MetaTask {
+public abstract class DigLocalMeta extends FactoryMetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 

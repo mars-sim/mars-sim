@@ -12,6 +12,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 
 /**
@@ -179,9 +181,23 @@ public class PersonTaskManager extends TaskManager {
 	private static synchronized TaskCache getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
 			defaultInsideTasks = new TaskCache("Default Inside", null);
+			
+			// Create a fallback Task job that can always be done
+			TaskJob sleepJob = new AbstractTaskJob("Sleep", 1D) {
+				@Override
+				public Task createTask(Person person) {
+					return new Sleep(person);
+				}	
+			};
+			defaultInsideTasks.put(sleepJob);
 
-			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("SleepMeta"));
-			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("EatDrinkMeta"));
+			TaskJob eatJob = new AbstractTaskJob("Eat", 1D) {
+				@Override
+				public Task createTask(Person person) {
+					return new EatDrink(person);
+				}	
+			};
+			defaultInsideTasks.put(eatJob);
 		}
 		return defaultInsideTasks;
 	}

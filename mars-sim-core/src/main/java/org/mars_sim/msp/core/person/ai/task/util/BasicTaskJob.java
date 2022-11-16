@@ -16,9 +16,9 @@ import org.mars_sim.msp.core.robot.Robot;
 public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
-    private transient MetaTask mt;
+    private transient FactoryMetaTask mt;
 
-    BasicTaskJob(MetaTask metaTask, double score) {
+    BasicTaskJob(FactoryMetaTask metaTask, double score) {
         super(metaTask.getName(), score);
         this.mt = metaTask;
     }
@@ -26,9 +26,9 @@ public class BasicTaskJob extends AbstractTaskJob {
     /**
      * Reconnects to the MetaTask even fter a deserialised instance.
      */
-    private MetaTask getMeta() {
+    private FactoryMetaTask getMeta() {
         if (mt == null) {
-            mt = MetaTaskUtil.getMetaTask(getDescription());
+            mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(getDescription());
         }
 
         return mt;

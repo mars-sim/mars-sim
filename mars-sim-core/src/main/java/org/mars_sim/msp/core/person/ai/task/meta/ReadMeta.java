@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.Read;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the Read task.
  */
-public class ReadMeta extends MetaTask {
+public class ReadMeta extends FactoryMetaTask {
 
     private static final double VALUE = 2.5D;
     

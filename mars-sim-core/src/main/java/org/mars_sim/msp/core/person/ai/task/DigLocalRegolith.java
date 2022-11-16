@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -20,8 +18,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * collecting regolith outside a settlement.
  */
 public class DigLocalRegolith
-extends DigLocal
-implements Serializable {
+extends DigLocal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -44,7 +41,7 @@ implements Serializable {
         super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
         	  EquipmentType.WHEELBARROW, person);
         if (!isDone()) {
-        	setCollectionRate(getSettlement().getRegolithCollectionRate());
+        	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
         }
     }
 }
