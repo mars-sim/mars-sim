@@ -230,18 +230,18 @@ public class EquipmentInventory
 			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
 		}
 
-		if (shortfall > 0D) {
-			for (Equipment e: equipmentSet) {
-				if (e instanceof Container) {
-					// Only take resources out of Containers;
-					// other active Equipment, e.g. EVASuit need the resources to function
-					shortfall = e.retrieveAmountResource(resource, shortfall);
-					if (shortfall == 0D) {
-						return 0D;
-					}
-				}
-			}
-		}
+		// if (shortfall > 0D) {
+		// 	for (Equipment e: equipmentSet) {
+		// 		if (e instanceof Container) {
+		// 			// Only take resources out of Containers;
+		// 			// other active Equipment, e.g. EVASuit need the resources to function
+		// 			shortfall = e.retrieveAmountResource(resource, shortfall);
+		// 			if (shortfall == 0D) {
+		// 				return 0D;
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// Return any missing quantity
 		return shortfall;
@@ -285,15 +285,17 @@ public class EquipmentInventory
 	 */
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		double result = 0;
+		return microInventory.getCapacity(resource);
 
-		for (Equipment e: equipmentSet) {
-			if (e instanceof ResourceHolder) {
-				result += e.getAmountResourceCapacity(resource);
-			}
-		}
+		// double result = 0;
 
-		return result + microInventory.getCapacity(resource);
+		// for (Equipment e: equipmentSet) {
+		// 	if (e instanceof ResourceHolder) {
+		// 		result += e.getAmountResourceCapacity(resource);
+		// 	}
+		// }
+
+		// return result + microInventory.getCapacity(resource);
 	}
 
 	/**
@@ -308,13 +310,13 @@ public class EquipmentInventory
 		double cap = microInventory.getCapacity(resource);
 		double stored = microInventory.getAmountResourceStored(resource);
 
-		for (Equipment e: equipmentSet) {
+		// for (Equipment e: equipmentSet) {
 
-			if (e instanceof ResourceHolder) {
-				cap += e.getAmountResourceCapacity(resource);
-				stored += e.getAmountResourceStored(resource);
-			}
-		}
+		// 	if (e instanceof ResourceHolder) {
+		// 		cap += e.getAmountResourceCapacity(resource);
+		// 		stored += e.getAmountResourceStored(resource);
+		// 	}
+		// }
 
 		// Note: it should not include the general capacity,
 		// aka cargo capacity, getRemainingCargoCapacity(), 
@@ -338,16 +340,16 @@ public class EquipmentInventory
 		if (cap > stored)
 			return true;
 		
-		for (Equipment e: equipmentSet) {
+		// for (Equipment e: equipmentSet) {
 
-			if (e instanceof ResourceHolder) {
-				cap = e.getAmountResourceCapacity(resource);
-				stored = e.getAmountResourceStored(resource);
-			}
+		// 	if (e instanceof ResourceHolder) {
+		// 		cap = e.getAmountResourceCapacity(resource);
+		// 		stored = e.getAmountResourceStored(resource);
+		// 	}
 			
-			if (cap > stored)
-				return true;
-		}
+		// 	if (cap > stored)
+		// 		return true;
+		// }
 		
 		return false;
 	}
@@ -384,11 +386,13 @@ public class EquipmentInventory
 	public double getAmountResourceStored(int resource) {
 		double result = 0;
 
-		for(Equipment e: equipmentSet) {
-			if (e instanceof ResourceHolder) {
-				result += e.getAmountResourceStored(resource);
-			}
-		}
+		// Do not consume resources from container Equipment. THis is an expensive
+		// and can generate concurrency issues
+		// for(Equipment e: equipmentSet) {
+		// 	if (e instanceof ResourceHolder) {
+		// 		result += e.getAmountResourceStored(resource);
+		// 	}
+		// }
 
 		return result + microInventory.getAmountResourceStored(resource);
 	}
@@ -449,7 +453,7 @@ public class EquipmentInventory
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
+	 * @retu,rn instance of container or null if none.
 	 */
 	public Container findOwnedContainer(EquipmentType containerType, int personId, int resource) {
 		for (Equipment e : equipmentSet) {
@@ -474,14 +478,15 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		Set<Integer> set = new HashSet<>(microInventory.getItemsStored());
-		for (Equipment e: equipmentSet) {
-			if (e instanceof ItemHolder) {
-				set.addAll(((ItemHolder) e).getItemResourceIDs());
-			}
-		}
+		return microInventory.getItemsStored();
+		// Set<Integer> set = new HashSet<>(microInventory.getItemsStored());
+		// for (Equipment e: equipmentSet) {
+		// 	if (e instanceof ItemHolder) {
+		// 		set.addAll(((ItemHolder) e).getItemResourceIDs());
+		// 	}
+		// }
 
-		return set;
+		// return set;
 	}
 
 	/**
@@ -491,14 +496,15 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
-		Set<Integer> set = new HashSet<>(microInventory.getResourcesStored());
-		for (Equipment e: equipmentSet) {
-			if (e instanceof ResourceHolder) {
-				set.addAll(((ResourceHolder) e).getAmountResourceIDs());
-			}
-		}
+		return microInventory.getResourcesStored();
+		// Set<Integer> set = new HashSet<>(microInventory.getResourcesStored());
+		// for (Equipment e: equipmentSet) {
+		// 	if (e instanceof ResourceHolder) {
+		// 		set.addAll(((ResourceHolder) e).getAmountResourceIDs());
+		// 	}
+		// }
 
-		return set;
+		// return set;
 	}
 
 
