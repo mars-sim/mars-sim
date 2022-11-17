@@ -513,7 +513,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (pulse.isNewMSol()
 				&& pulse.getMarsTime().getMillisolInt() % 3 == 0) {
-			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
+			double maintFactor = (effectiveTimeSinceLastMaintenance/maintenancePeriod) + 1D;
 			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
 			double malfunctionChance = time * maintFactor * wearFactor;
 			malfunctionChance = Math.min(20, 1 + malfunctionChance);
