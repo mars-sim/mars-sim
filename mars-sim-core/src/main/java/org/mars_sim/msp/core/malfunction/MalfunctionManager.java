@@ -86,8 +86,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 2000;
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = .01;
-	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MALFUNCTION_FACTOR = .001;
 	/** Factor for chance of malfunction due to wear condition. */
 	private static final double WEAR_MALFUNCTION_FACTOR = .01;
 	/** Factor for chance of accident due to wear condition. */

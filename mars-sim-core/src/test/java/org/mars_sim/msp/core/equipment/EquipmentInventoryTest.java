@@ -60,22 +60,22 @@ extends TestCase {
 		inv.storeAmountResource(co2, co2Mass);
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
-		assertEquals("Bag can not store CO2", 0D, ((Container)bag).storeAmountResource(rock, rockMass));
+		assertEquals("Bag can not store Rock", 0D, ((Container)bag).storeAmountResource(rock, rockMass));
 
 		inv.addEquipment(bag);
 
 		assertEquals("CO2 stored", co2Mass, inv.getAmountResourceStored(co2));
-		assertEquals("Rock stored", rockMass, inv.getAmountResourceStored(rock));
+		assertEquals("Rock stored", 0D, inv.getAmountResourceStored(rock));
 
 		double expectedMass = co2Mass + rockMass + bag.getBaseMass();
 		assertEquals("Remaining cargo capacity after bag load", CAPACITY_AMOUNT - expectedMass, inv.getRemainingCargoCapacity());//.getAmountResourceRemainingCapacity(co2));
 		assertEquals("Total mass after bag load", expectedMass, inv.getStoredMass());
-		assertEquals("Resources held in inventory", Set.of(co2, rock), inv.getAmountResourceIDs());
+		assertEquals("Resources held in inventory", Set.of(co2), inv.getAmountResourceIDs());
 
 		// Remove some rock from bag
 		bag.retrieveAmountResource(rock, rockMass/2);
 		expectedMass = co2Mass + rockMass/2 + bag.getBaseMass();
-		assertEquals("Rock after bag unload", rockMass/2, inv.getAmountResourceStored(rock));
+		assertEquals("Rock after bag unload", rockMass/2, bag.getAmountResourceStored(rock));
 		assertEquals("Total mass after bag unload", expectedMass, inv.getStoredMass());
 
 		// Remove the bag
