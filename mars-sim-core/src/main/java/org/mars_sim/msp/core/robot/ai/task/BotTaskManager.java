@@ -38,7 +38,10 @@ public class BotTaskManager extends TaskManager {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
+	// This is a shared cache with the fixed Charge taskjob
 	private static TaskCache chargeMap;
+
+	// Mapping of RobotType to the applicable MetaTasks
 	private static Map<RobotType,List<MetaTask>> robotTasks;
 
 
@@ -136,7 +139,7 @@ public class BotTaskManager extends TaskManager {
 	 */
 	private static synchronized void buildRobotTasks() {
 		if (robotTasks == null) {
-			robotTasks = new EnumMap<>(RobotType.class);
+			Map<RobotType,List<MetaTask>> newTaskMap = new EnumMap<>(RobotType.class);
 
 			List<MetaTask> anyRobot = new ArrayList<>();
 			for(MetaTask mt : MetaTaskUtil.getRobotMetaTasks()) {
@@ -146,7 +149,7 @@ public class BotTaskManager extends TaskManager {
 				}
 				else {
 					for(RobotType rt : possibleRobots) {
-						robotTasks.computeIfAbsent(rt, k -> new ArrayList<>()).add(mt);
+						newTaskMap.computeIfAbsent(rt, k -> new ArrayList<>()).add(mt);
 					}
 				}
 			}
@@ -154,9 +157,12 @@ public class BotTaskManager extends TaskManager {
 			// If there are anyRobot tasks then add them to every possible Robot type
 			if (!anyRobot.isEmpty()) {
 				for(RobotType rt : RobotType.values()) {
-					robotTasks.computeIfAbsent(rt, k -> new ArrayList<>()).addAll(anyRobot);
+					newTaskMap.computeIfAbsent(rt, k -> new ArrayList<>()).addAll(anyRobot);
 				}
 			}
+
+			// Do not make it visible until fully created
+			robotTasks = newTaskMap;
 		}
 	}
 

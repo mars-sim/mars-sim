@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;

@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.person.ai.task;
+package org.mars_sim.msp.core;
 
 import java.util.ArrayList;
 import java.util.Iterator;
