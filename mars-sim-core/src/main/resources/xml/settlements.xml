@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE settlement-configuration [
-	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list)>
+	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, shifts, settlement-template-list)>
 
 	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
 	<!ELEMENT rover-life-support-range-error-margin EMPTY>
@@ -32,6 +32,15 @@
 	<!ELEMENT ventilation EMPTY>
 	<!ATTLIST ventilation low CDATA #REQUIRED>
 	<!ATTLIST ventilation high CDATA #REQUIRED>
+
+	<!ELEMENT shifts (shift-pattern*)>
+	<!ELEMENT shift-pattern (shift*)>
+	<!ATTLIST shift-pattern name CDATA #REQUIRED>
+	<!ELEMENT shift EMPTY>
+	<!ATTLIST shift name CDATA #REQUIRED>
+	<!ATTLIST shift start CDATA #REQUIRED>
+	<!ATTLIST shift end CDATA #REQUIRED>
+	<!ATTLIST shift pop-percentage CDATA #REQUIRED>
 
 	<!ELEMENT settlement-template-list (template*)>
 	<!ELEMENT template EMPTY>
@@ -85,6 +94,18 @@
 		<ventilation low="0.076" high="0.203" />
 
 	</life-support-requirements>
+
+	<shifts>
+		<shift-pattern name="3 Shifts">
+			<shift name="A" start="200" end="550" pop-percentage ="40"/>
+			<shift name="B" start="550" end="900" pop-percentage ="40"/>
+			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
+		</shift-pattern>
+		<shift-pattern name="2 Shifts">
+			<shift name="X" start="200" end="700" pop-percentage ="50"/>
+			<shift name="Y" start="700" end="200" pop-percentage ="50"/>
+		</shift-pattern>
+	</shifts>
 
 	<settlement-template-list>
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->

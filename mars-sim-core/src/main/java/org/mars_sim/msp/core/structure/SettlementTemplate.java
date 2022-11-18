@@ -46,22 +46,26 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	private boolean bundled;
 
+	private ShiftPattern shiftDefn;
+
 
 	/**
 	 * Constructor. Called by SettlementConfig.java
 	 * 
 	 * @param name
+	 * @param pattern
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
 	public SettlementTemplate(String name, String desription, boolean bundled,
-								String sponsor, int defaultPopulation, int defaultNumOfRobots) {
+								String sponsor, ShiftPattern shiftDefn, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.description = desription;
 		this.bundled = bundled;
 		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
+		this.shiftDefn = shiftDefn;
 
 		buildings = new ArrayList<>();
 		vehicles = new HashMap<>();
@@ -103,6 +107,13 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 		return name;
 	}
 
+	/**
+	 * Get the SHift defintition for this settlement
+	 * @return
+	 */
+	public ShiftPattern getShiftDefinition() {
+		return shiftDefn;
+	}
 	/**
 	 * Gets the default robot capacity of the template.
 	 * 

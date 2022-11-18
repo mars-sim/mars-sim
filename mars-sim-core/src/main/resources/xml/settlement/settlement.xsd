@@ -95,6 +95,7 @@
             <xs:attribute name="name" type="xs:string"/>
             <xs:attribute name="description" type="xs:string"/>
             <xs:attribute name="sponsor" type="xs:string"/>
+            <xs:attribute name="shift-pattern" type="xs:string"  use="optional"/>
             <xs:attribute name="default-population" type="xs:integer"/>
             <xs:attribute name="number-of-robots" type="xs:integer"/>
         </xs:complexType>

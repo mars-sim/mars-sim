@@ -81,12 +81,21 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
+	private static final String SHIFT_PATTERN = "shift-pattern";
+	private static final String SHIFT_PATTERNS = "shifts";
+	private static final String SHIFT_SPEC = "shift";
+	private static final String SHIFT_START = "start";
+	private static final String SHIFT_END = "end";
+	private static final String SHIFT_PERC = "pop-percentage ";
+
 
 	private double[] rover_values = new double[] { 0, 0 };
 	private double[][] life_support_values = new double[2][7];
 
 	// Data members
 	private PartPackageConfig partPackageConfig;
+	private Map<String,ShiftPattern> shiftDefinitions = new HashMap<>();
+	private String defaultShift;
 
 	/**
 	 * Constructor.
@@ -100,9 +109,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		setXSDName("settlement.xsd");
 
 		this.partPackageConfig = partPackageConfig;
-
-		loadMissionControl(settlementDoc);
-		loadLifeSupportRequirements(settlementDoc);
+		Element root = settlementDoc.getRootElement();
+		loadMissionControl(root.getChild(MISSION_CONTROL));
+		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
+		loadShiftPatterns(root.getChild(SHIFT_PATTERNS));
 		String [] defaults = loadSettlementTemplates(settlementDoc);
 
 		loadDefaults(defaults);
@@ -115,21 +125,47 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
+	 * Load the shift patterns details
+	 * @throws Exception if error reading XML document.
+	 */
+	private void loadShiftPatterns(Element shiftPatterns) {
+
+		List<Element> shiftNodes = shiftPatterns.getChildren(SHIFT_PATTERN);
+		for(Element node : shiftNodes) {
+			String name = node.getAttributeValue(NAME);
+
+			List<ShiftSpec> shiftSpecs = new ArrayList<>();
+			List<Element> specNodes = shiftPatterns.getChildren(SHIFT_SPEC);
+			for(Element spec : specNodes) {
+				String sname = spec.getAttributeValue(NAME);
+				if (defaultShift == null) {
+					defaultShift = sname;
+				}
+				int start = Integer.parseInt(spec.getAttributeValue(SHIFT_START));
+				int end = Integer.parseInt(spec.getAttributeValue(SHIFT_END));
+				int population = Integer.parseInt(spec.getAttributeValue(SHIFT_PERC));
+				
+				shiftSpecs.add(new ShiftSpec(sname, start, end, population));
+			}
+
+			shiftDefinitions.put(name, new ShiftPattern(name, shiftSpecs));
+		}
+	}
+
+	/**
 	 * Load the rover range margin error from the mission control parameters of a
 	 * settlement from the XML document.
 	 *
 	 * @return range margin.
 	 * @throws Exception if error reading XML document.
 	 */
-	private void loadMissionControl(Document settlementDoc) {
+	private void loadMissionControl(Element missionControlElement) {
 		if (rover_values[0] != 0 || rover_values[1] != 0) {
 			return;
 		}
 
-		Element root = settlementDoc.getRootElement();
-		Element missionControlElement = root.getChild(MISSION_CONTROL);
-		Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
-		Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
+		Element lifeSupportRange = missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
+		Element fuelRange = missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
 
 		rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
 		if (rover_values[0] < 1.0 || rover_values[0] > 3.0)
@@ -158,14 +194,11 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
-	private void loadLifeSupportRequirements(Document settlementDoc) {
+	private void loadLifeSupportRequirements(Element req) {
 		if (life_support_values[0][0] != 0) {
 			// testing only the value at [0][0]
 			return;
 		}
-
-		Element root = settlementDoc.getRootElement();
-		Element req = (Element) root.getChild(LIFE_SUPPORT_REQUIREMENTS);
 
 		String[] types = new String[] {
 				TOTAL_PRESSURE,
@@ -185,7 +218,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	private double[] getLowHighValues(Element element, String name) {
-		Element el = (Element) element.getChild(name);
+		Element el = element.getChild(name);
 
 		double a = Double.parseDouble(el.getAttributeValue(LOW));
 		double b = Double.parseDouble(el.getAttributeValue(HIGH));
@@ -228,12 +261,23 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		// Obtains the default numbers of robots
 		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
+		//Look up the shift pattern
+		String shiftPattern = templateElement.getAttributeValue(SHIFT_PATTERN);
+		if (shiftPattern == null) {
+			shiftPattern = defaultShift;
+		}
+		ShiftPattern pattern = shiftDefinitions.get(shiftPattern);
+		if (pattern == null) {
+			throw new IllegalArgumentException("No shift pattern called " +shiftPattern);
+		}
+
 		// Add templateID
 		SettlementTemplate template = new SettlementTemplate(
 				settlementTemplateName,
 				description,
 				predefined,
 				sponsor,
+				pattern,
 				defaultPopulation,
 				defaultNumOfRobots);
 
