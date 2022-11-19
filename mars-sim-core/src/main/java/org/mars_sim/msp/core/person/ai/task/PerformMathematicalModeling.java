@@ -42,7 +42,7 @@ implements ResearchScientificStudy, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-//    private static SimLogger logger = SimLogger.getLogger(PerformMathematicalModeling.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(PerformMathematicalModeling.class.getName());
   
     /** Task name */
     private static final String NAME = Msg.getString(
