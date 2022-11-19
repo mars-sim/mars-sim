@@ -127,14 +127,14 @@ public class AnalyzeMapData extends Task implements Serializable {
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		// logger.info(person, 10_000, "Total computing needs: " 
-		// 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
-		// 		+ " CUs. score: " 
-		// 		+ Math.round(score * 1000.0)/1000.0 + ". rand: "
-		// 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
-		// 		+ Math.round(seed * 1000.0)/1000.0 + ". "
-		// 		+ num + " candidate sites identified. Final site selected: " 
-		// 		+ site.getLocation().getCoordinateString() + ".");
+		 logger.log(person, Level.FINE, 10_000, "Total computing needs: " 
+		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
+		 		+ " CUs. score: " 
+		 		+ Math.round(score * 1000.0)/1000.0 + ". rand: "
+		 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
+		 		+ Math.round(seed * 1000.0)/1000.0 + ". "
+		 		+ num + " candidate sites identified. Final site selected: " 
+		 		+ site.getLocation().getCoordinateString() + ".");
 		
        	// Add task phases
     	addPhase(ANALYZING);
@@ -196,7 +196,7 @@ public class AnalyzeMapData extends Task implements Serializable {
         			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	}
 	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
         	
         	if (successful) {
         		if (computingNeeded <= seed)
@@ -208,15 +208,15 @@ public class AnalyzeMapData extends Task implements Serializable {
         		}
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
 	    	}
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-//    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
-//    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-//    				+ " CUs Used.");
-//        	endTask();
+    		logger.log(person, Level.FINE, 30_000L, NAME + " - " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+    				+ " CUs Used.");
+        	endTask();
         }
         
         effort += time * workPerMillisol;
@@ -253,7 +253,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 			ExploreSite.improveSiteEstimates(site, (int)Math.round(compositeSkill));
 
-			logger.log(person, Level.INFO, 10_000,
+			logger.log(person, Level.FINE, 10_000,
 					NAME + " for " + site.getLocation().getFormattedString()
 					+ ". # of estimation done: "
 					+ site.getNumEstimationImprovement() + ".");

@@ -668,7 +668,7 @@ public class EatDrink extends Task {
 				nameOfDessert = dessertKitchen.chooseADessert(person);
 
 				if (nameOfDessert != null) {
-					logger.log(worker, Level.INFO, 4_000, "Picked up a serving of '" 
+					logger.log(worker, Level.FINE, 4_000, "Picked up a serving of '" 
 							+ nameOfDessert.getName() + ".");
 					setPhase(EAT_DESSERT);
 					return remainingTime;
@@ -715,7 +715,7 @@ public class EatDrink extends Task {
 			// Change the hunger level after eating
 			pc.reduceHunger(hungerRelieved);
 
-			logger.log(worker, Level.INFO, 4_000, "Eating " + cookedMeal.getName() + ".");
+			logger.log(worker, Level.FINE, 4_000, "Eating " + cookedMeal.getName() + ".");
 
 			// Reduce person's stress over time from eating a cooked meal.
 			// This is in addition to normal stress reduction from eating task.
@@ -901,7 +901,7 @@ public class EatDrink extends Task {
 		}
 		
 		setDescription(text);
-		logger.log(worker, Level.INFO, 4_000, text + ".");
+		logger.log(worker, Level.FINE, 4_000, text + ".");
 	}
 
 	/**
@@ -992,7 +992,7 @@ public class EatDrink extends Task {
 		EVASuit suit = null;
 
 		if (containerUnit == null) {
-			logger.severe(person, 10_000L, "'s container unit is null.");
+			logger.fine(person, 4_000L, "'s container unit is null.");
 			endTask();
 		}
 		
@@ -1008,7 +1008,7 @@ public class EatDrink extends Task {
 			
 			// Test to see if there's enough water
 			if (available >= amount) {
-				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
+				logger.fine(person, 4_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
 				consumeWater(suit, amount, waterOnly);
 			}
 			else if (available > 0) {
@@ -1030,7 +1030,7 @@ public class EatDrink extends Task {
 			if (bottle == null && person.isInside()) {
 				// Assign the person a thermal bottle
 				bottle = person.assignThermalBottle();
-				logger.info(person, 10_000L, "Assigned a thermal bottle.");
+				logger.fine(person, 4_000L, "Assigned a thermal bottle.");
 			}
 
 			if (bottle != null)  {

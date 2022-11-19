@@ -42,7 +42,7 @@ implements ResearchScientificStudy, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static SimLogger logger = SimLogger.getLogger(PerformMathematicalModeling.class.getName());
+//    private static SimLogger logger = SimLogger.getLogger(PerformMathematicalModeling.class.getName());
   
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -98,7 +98,7 @@ implements ResearchScientificStudy, Serializable {
             }
             
             else {
-            	logger.log(person, Level.INFO, 5000, NO_LAB_SLOT);
+            	logger.log(person, Level.WARNING, 5000, NO_LAB_SLOT);
             	endTask();
             }
             
@@ -311,7 +311,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         catch (Exception e) {
-        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab", e);
+        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab. ", e);
         }
     }
 
@@ -374,6 +374,9 @@ implements ResearchScientificStudy, Serializable {
 		
 		if (isDone()) {
         	// this task has ended
+    		logger.fine(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
 			endTask();
 			return time;
 		}
@@ -422,7 +425,7 @@ implements ResearchScientificStudy, Serializable {
         			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	}
 	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
         	
         	if (successful) {
         		if (computingNeeded <= seed)
@@ -434,11 +437,14 @@ implements ResearchScientificStudy, Serializable {
         		}
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
 	    	}
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
+    		logger.log(person, Level.FINE, 30_000L, NAME + " - " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+    				+ " CUs Used.");
         	endTask();
         }
         
@@ -453,7 +459,7 @@ implements ResearchScientificStudy, Serializable {
 
         if (isPrimary) {
             if (study.isPrimaryResearchCompleted() && computingNeeded <= 0) {
-    			logger.log(person, Level.INFO, 0, "Just spent " 
+    			logger.log(person, Level.FINE, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in completing mathematical modeling" 
     					+ " in primary research on " + study.getName() + ".");	
@@ -462,7 +468,7 @@ implements ResearchScientificStudy, Serializable {
         }
         else {
             if (study.isCollaborativeResearchCompleted(person) && computingNeeded <= 0) {
-    			logger.log(person, Level.INFO, 0, "Just spent " 
+    			logger.log(person, Level.FINE, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative study on mathematical modeling on " 
     					+ " in " + study.getName() + ".");	

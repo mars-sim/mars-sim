@@ -182,7 +182,7 @@ public class PlayHoloGame extends Task implements Serializable {
         			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	}
 	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
         	
         	if (successful) {
         		if (computingNeeded <= seed)
@@ -194,7 +194,7 @@ public class PlayHoloGame extends Task implements Serializable {
         		}
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
 	    	}
         }
         else if (computingNeeded <= 0) {

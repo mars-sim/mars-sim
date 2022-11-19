@@ -5,7 +5,7 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build 7598) - 11 Nov 2022
+## v3.4.0 (build 7641) - 19 Nov 2022
 
 ### ISSUES ADDRESSED :
 
@@ -15,22 +15,24 @@ Copyright (C) 2022 Scott Davis
   <LI>  Computing : Add computing function and skill. Track computing resource usage. </LI>
   <LI>     Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
   <LI>  Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
+  <LI>Malfunction : Tidy up malfunction and maintenance logic on vehicles, buildings and equipment.</LI>
   <LI>    Mission : Restructure and simplify handling of Mission.</LI>
-  <LI>      Parts : Add wearing garment. </LI>
+  <LI>      Parts : Add garment and thermal bottle. </LI>
   <LI>     Person : Track exercise. Make a person's carrying capacity to be age-dependent.</LI>
   <LI >Processing : Unify resource and waste processes, food production and manufacturing under common super class.</LI>  
   <LI>      Robot : Track battery capacity and charging.</LI>
   <LI>    Trading : Compute and relate the cost, profit, and price of trade goods.</LI>
-  <LI>   Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
+  <LI>   Scenario : Configure arriving future Settlements from a scenario. Scenarios can be exported and shared. </LI>
   <LI>       Site : Explore, claim and track mining sites.</LI>
   <LI>     Social : Remove global relationship graph and simplify codes.</LI>
   <LI>   Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.</LI>
-  <LI>  Meta Task : Add TaskJob and remove duplicate computation of outstanding tasks.</LI>
+  <LI>  Meta Task : Implement TaskJob approach and remove duplicate computation of outstanding tasks.</LI>
   <LI>    Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
 
   
 ### UI IMPROVEMENT :
   <LI>  Authority : Add editor that customize sponsors/authorities.</LI> 
+  <LI>      Chart : Auto select bar and pie chart.</LI>  
   <LI>   Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
   <LI>      Icons : Replace word title of each tab with an icon in all Unit Windows.</LI>
   <LI>   Location : Show areocentric longitude of Mars in Time Tool. </LI>  
