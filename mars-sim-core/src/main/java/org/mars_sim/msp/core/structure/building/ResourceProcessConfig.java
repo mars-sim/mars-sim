@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.process.ProcessSpecConfig;
  * Parses a definition of Resource processes from XML and creates a lookup library.
  */
 public class ResourceProcessConfig extends ProcessSpecConfig<ResourceProcessSpec> {
+	
+	private static final long serialVersionUID = 1L;
 
     private static final String DEFAULT = "defaultOn";
 

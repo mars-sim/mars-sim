@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.robot.Robot;
  * This is an implementation of a TaskJob that delegates the Task creation to a
  * MetaTask instance. Tasks have no extra entities defined in the creation.
  */
+@SuppressWarnings("serial")
 public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
@@ -24,7 +25,7 @@ public class BasicTaskJob extends AbstractTaskJob {
     }
 
     /**
-     * Reconnects to the MetaTask even fter a deserialised instance.
+     * Reconnects to the MetaTask even after a deserialised instance.
      */
     private FactoryMetaTask getMeta() {
         if (mt == null) {

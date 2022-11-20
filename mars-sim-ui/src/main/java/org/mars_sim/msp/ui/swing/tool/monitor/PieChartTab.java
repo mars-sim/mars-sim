@@ -384,6 +384,7 @@ class PieChartTab extends MonitorTab {
 * The rotator.
 *
 */
+@SuppressWarnings("serial")
 class Rotator extends Timer implements ActionListener {
 
 	 /** The plot. */

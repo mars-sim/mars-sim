@@ -256,6 +256,7 @@ public class BarDrawer extends TexturedPanel {
     }
 }
 
+@SuppressWarnings("serial")
 class FileCollectionPanel extends JPanel {
 	
     private String title;

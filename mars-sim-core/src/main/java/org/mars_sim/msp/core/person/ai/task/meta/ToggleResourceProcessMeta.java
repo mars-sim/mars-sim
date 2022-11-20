@@ -37,6 +37,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	 * Represents a job to toggle a Resource process in a building.
 	 */
     private static class ToggleProcessJob extends AbstractTaskJob {
+		
+		private static final long serialVersionUID = 1L;
 
         private Building processBuilding;
 		private ResourceProcess process;

@@ -32,6 +32,8 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 public class TendGreenhouseMeta extends MetaTask {
 
     private static class CropTaskJob extends AbstractTaskJob {
+		
+		private static final long serialVersionUID = 1L;
 
         private Farming farm;
 

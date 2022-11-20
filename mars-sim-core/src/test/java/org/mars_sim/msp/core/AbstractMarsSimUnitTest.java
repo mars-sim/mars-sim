@@ -5,10 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;

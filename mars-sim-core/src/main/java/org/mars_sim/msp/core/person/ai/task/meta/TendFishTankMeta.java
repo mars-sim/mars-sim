@@ -36,6 +36,8 @@ public class TendFishTankMeta extends MetaTask {
      */
     private static class FishTaskJob extends AbstractTaskJob {
 
+		private static final long serialVersionUID = 1L;
+
         private Fishery tank;
 
         public FishTaskJob(Fishery tank, double score) {

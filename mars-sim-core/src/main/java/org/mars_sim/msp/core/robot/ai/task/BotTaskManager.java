@@ -207,6 +207,9 @@ public class BotTaskManager extends TaskManager {
 		if (chargeMap == null) {
 			chargeMap = new TaskCache("Robot Charge", null);
 			TaskJob chargeJob = new AbstractTaskJob("Charge", 1D) {
+				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Task createTask(Robot robot) {
 					return new Charge(robot);

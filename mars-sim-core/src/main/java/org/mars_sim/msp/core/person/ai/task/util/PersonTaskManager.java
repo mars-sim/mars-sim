@@ -175,8 +175,8 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Shared cache for peron who are Inside. Contains the basic Task
-	 * that can always be done
+	 * Shared cache for person who are Inside. Contains the basic Task
+	 * that can always be done.
 	 */
 	private static synchronized TaskCache getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
@@ -184,6 +184,9 @@ public class PersonTaskManager extends TaskManager {
 			
 			// Create a fallback Task job that can always be done
 			TaskJob sleepJob = new AbstractTaskJob("Sleep", 1D) {
+				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Task createTask(Person person) {
 					return new Sleep(person);
@@ -192,6 +195,9 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks.put(sleepJob);
 
 			TaskJob eatJob = new AbstractTaskJob("Eat", 1D) {
+				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Task createTask(Person person) {
 					return new EatDrink(person);
@@ -211,6 +217,9 @@ public class PersonTaskManager extends TaskManager {
 
 			// Create a MetaTask to return inside
 			TaskJob walkBack = new AbstractTaskJob("Return Inside", 1D) {
+				
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Task createTask(Person person) {
 					logger.info(person, "Returning inside to find work.");

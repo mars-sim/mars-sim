@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.structure.building.FunctionSpec;
  * building has a set of resource processes.
  */
 public class ResourceProcessing extends ResourceProcessor {
+	
+	private static final long serialVersionUID = 1L;
 
 	// These are a very fragile implementation
 	public static final String SABATIER = "sabatier";

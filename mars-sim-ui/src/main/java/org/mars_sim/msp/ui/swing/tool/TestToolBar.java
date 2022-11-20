@@ -65,7 +65,8 @@ public class TestToolBar {
         });
     }
 
-    public class TestPane extends JPanel {
+    @SuppressWarnings("serial")
+	public class TestPane extends JPanel {
 
         private BufferedImage bgImg;
 
@@ -100,7 +101,8 @@ public class TestToolBar {
         }
     }
 
-    public class CustomToolBar extends JToolBar {
+    @SuppressWarnings("serial")
+	public class CustomToolBar extends JToolBar {
 
         public CustomToolBar() {
             setBorder(new LineBorder(Color.BLACK, 2));

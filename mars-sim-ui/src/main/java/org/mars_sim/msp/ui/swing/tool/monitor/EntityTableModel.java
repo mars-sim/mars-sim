@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -28,10 +27,11 @@ import org.mars_sim.msp.core.Msg;
  * computation effort.
  * 
  */
+@SuppressWarnings("serial")
 public abstract class EntityTableModel<T> extends AbstractTableModel
             implements MonitorModel {
 
-    private static final Logger logger = Logger.getLogger(EntityTableModel.class.getName());
+//    private static final Logger logger = Logger.getLogger(EntityTableModel.class.getName());
 
 	private String name;
     private String[] columnNames;

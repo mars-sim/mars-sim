@@ -173,6 +173,7 @@ public class RowNumberTable extends JTable
 	/*
 	 *  Attempt to mimic the table header renderer
 	 */
+	@SuppressWarnings("serial")
 	private static class RowNumberRenderer extends DefaultTableCellRenderer
 	{
 		public RowNumberRenderer()

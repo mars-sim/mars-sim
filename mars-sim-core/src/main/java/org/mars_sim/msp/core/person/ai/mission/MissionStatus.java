@@ -14,6 +14,8 @@ import java.io.Serializable;
 
 public class MissionStatus implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Factory helper method to create a status based on a resource.
 	 */

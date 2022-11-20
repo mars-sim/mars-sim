@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 public class Makerbot
 extends RobotJob {
 
+	private static final long serialVersionUID = 1L;
+
 	//	private static final Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/** Constructor. */

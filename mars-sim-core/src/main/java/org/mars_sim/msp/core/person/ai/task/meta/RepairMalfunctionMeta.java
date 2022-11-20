@@ -38,6 +38,9 @@ import org.mars_sim.msp.core.robot.RobotType;
 public class RepairMalfunctionMeta extends MetaTask {
 	
 	private static class RepairEVATaskJob extends AbstractTaskJob {
+		
+		private static final long serialVersionUID = 1L;
+
 		private Malfunctionable entity;
 		private Malfunction mal;
 
@@ -54,6 +57,9 @@ public class RepairMalfunctionMeta extends MetaTask {
 	}
 
 	private static class RepairInsideTaskJob extends AbstractTaskJob {
+		
+		private static final long serialVersionUID = 1L;
+
 		private Malfunctionable entity;
 		private Malfunction mal;
 

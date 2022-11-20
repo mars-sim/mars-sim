@@ -490,6 +490,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		hsbLabel.setText(hsb);
 	}
 	
+	@SuppressWarnings("unused")
 	private class TransparentPanel extends JPanel {
 	    {
 	        setOpaque(false);

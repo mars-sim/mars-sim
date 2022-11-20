@@ -16,10 +16,14 @@ import org.mars_sim.msp.core.time.MarsClock;
  * Holds all log details about a Missiion
  */
 public class MissionLog implements Serializable  {
-    /**
+
+	private static final long serialVersionUID = 1L;
+
+	/**
      * POJO class for a log entry
      */
     public static class MissionLogEntry implements Serializable {
+    	
         private static final long serialVersionUID = 1L;
         
         private String time;

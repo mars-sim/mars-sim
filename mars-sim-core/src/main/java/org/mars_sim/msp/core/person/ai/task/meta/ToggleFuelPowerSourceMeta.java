@@ -39,6 +39,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
      * Represents a Job needed in a Fishery
      */
     private static class PowerTaskJob extends AbstractTaskJob {
+    	
+		private static final long serialVersionUID = 1L;
 
 		private FuelPowerSource powerSource;
 		private Building building;

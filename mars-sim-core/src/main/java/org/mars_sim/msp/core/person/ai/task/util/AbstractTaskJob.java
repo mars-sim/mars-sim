@@ -13,7 +13,10 @@ import org.mars_sim.msp.core.robot.Robot;
  * Abstract implement of a Task Job just holding the description & score.
  */
 public abstract class AbstractTaskJob implements TaskJob {
-    private static final double CAP = 1000D;
+
+	private static final long serialVersionUID = 1L;
+	
+	private static final double CAP = 1000D;
     private double score;
     private String description;
 

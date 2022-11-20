@@ -37,6 +37,8 @@ public class MaintainBuildingMeta extends MetaTask {
      */
     private static class MaintainInsideTaskJob extends AbstractTaskJob {
 
+		private static final long serialVersionUID = 1L;
+
         private Building target;
 
         public MaintainInsideTaskJob(Building target, double score) {
@@ -59,6 +61,8 @@ public class MaintainBuildingMeta extends MetaTask {
      * Represents a Job needed for external maintenance on a Building
      */
     private static class MaintainEVATaskJob extends AbstractTaskJob {
+
+		private static final long serialVersionUID = 1L;
 
         private Building target;
 

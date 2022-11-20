@@ -33,6 +33,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MaintainVehicleMeta extends MetaTask {
 	private static class GarageMaintenanceJob extends AbstractTaskJob {
 
+		private static final long serialVersionUID = 1L;
+
         private Vehicle target;
 
         public GarageMaintenanceJob(Vehicle target, double score) {
@@ -52,6 +54,8 @@ public class MaintainVehicleMeta extends MetaTask {
     }
 
 	private static class EVAMaintenanceJob extends AbstractTaskJob {
+
+		private static final long serialVersionUID = 1L;
 
         private Vehicle target;
 

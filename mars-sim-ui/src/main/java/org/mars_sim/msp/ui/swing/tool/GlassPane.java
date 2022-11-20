@@ -121,6 +121,7 @@ public class GlassPane {
 /**
  * We have to provide our own glass pane so that it can paint.
  */
+@SuppressWarnings("serial")
 class MyGlassPane extends JComponent
                   implements ItemListener {
     Point point;

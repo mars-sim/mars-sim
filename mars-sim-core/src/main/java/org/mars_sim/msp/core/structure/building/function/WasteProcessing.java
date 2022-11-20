@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.structure.building.FunctionSpec;
  * The WasteProcessing class is a building function for handling waste disposal and recycling.
  */
 public class WasteProcessing extends ResourceProcessor {
+	
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.

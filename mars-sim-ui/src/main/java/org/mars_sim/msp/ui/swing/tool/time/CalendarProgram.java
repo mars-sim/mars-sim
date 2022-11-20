@@ -31,6 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+@SuppressWarnings("serial")
 public class CalendarProgram{
 	static JLabel lblMonth, lblYear;
 	static JButton btnPrev, btnNext;
