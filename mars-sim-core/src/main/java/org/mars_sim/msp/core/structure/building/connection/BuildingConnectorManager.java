@@ -63,19 +63,7 @@ public class BuildingConnectorManager implements Serializable {
 	private Settlement settlement;
 	
 	private Set<BuildingConnector> buildingConnections;
-	
-	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-	
-	/**
-	 * Constructor
-	 * 
-	 * @param settlement the settlement.
-	 */
-	public BuildingConnectorManager(Settlement settlement) {
-		this(settlement, settlementConfig
-				.getItem(settlement.getTemplate()).getBuildingTemplates());
-	}
-
+		
 	/**
 	 * Constructor
 	 * 

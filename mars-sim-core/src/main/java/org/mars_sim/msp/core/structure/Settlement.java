@@ -483,11 +483,13 @@ public class Settlement extends Structure implements Temporal,
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
 
+		SettlementTemplate sTemplate = settlementConfig.getItem(template);
+
 		// Initialize building manager
-		buildingManager = new BuildingManager(this);
+		buildingManager = new BuildingManager(this, sTemplate.getBuildingTemplates());
 		
 		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this);
+		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
