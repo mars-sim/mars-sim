@@ -62,8 +62,7 @@ public class ConversationMeta extends FactoryMetaTask {
         if (person.isOutside())
         	result = 0;
         
-      	int now = marsClock.getMillisolInt();
-        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
+        boolean isOnShiftNow = person.isOnDuty();
         if (!isOnShiftNow)
         	result = result * 1.2;
         

@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -477,12 +476,8 @@ public class BuildingConstructionMission extends AbstractMission {
 			if (member.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) member;
 				person.getMind().setMission(this);
-				person.setShiftType(ShiftType.ON_CALL);
+				person.getShiftSlot().setOnCall(true);
 			}
-			// else if (member instanceof Robot) {
-			// Robot robot = (Robot) member;
-			// robot.getBotMind().setMission(this);
-			// }
 		}
 	}
 

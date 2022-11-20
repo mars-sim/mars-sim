@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Shift;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -116,12 +117,9 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= 1.0 / (1 + settlement.getNumOutsideEVA());
-        
-        // Effect of the beginning of a work shift
-        // shiftBonus will have a minimum of 10
-        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+
         // Encourage to get this task done early in a work shift
-        result *= shiftBonus;
+        result *= getShiftModifier(person);
 
         // Effect of the amount of sunlight that influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
@@ -135,6 +133,25 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
 
         if (result > CAP)
         	result = CAP;
+
+        return result;
+    }
+
+    /**
+     * Get a modifier based on the Shift start time
+     */
+    private static double getShiftModifier(Person person) {
+        double result = 1D;
+        if (person.isOnDuty()) {
+            Shift shift = person.getShiftSlot().getShift();
+            int shiftPast = marsClock.getMillisolInt() - shift.getStart();
+            if (shiftPast < 0) {
+                shiftPast += 1000;
+            }
+            if (shiftPast < 200) {
+                result += 0.1D;
+            }
+        }
 
         return result;
     }

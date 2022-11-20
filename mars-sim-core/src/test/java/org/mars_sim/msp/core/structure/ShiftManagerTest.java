@@ -20,7 +20,9 @@ public class ShiftManagerTest extends TestCase {
 
 	private ShiftManager buildManager(int [] endTimes, int [] allocations) {
         List<ShiftSpec> specs = new ArrayList<>();
-        int startTime = 0;
+
+        // Initial start time is end time of last shift as it's a cycle
+        int startTime = endTimes[endTimes.length-1];
         for(int i = 0; i < endTimes.length; i++) {
             int endTime = endTimes[i];
             specs.add(new ShiftSpec(Integer.toString(i), startTime, endTime, allocations[i]));
@@ -36,7 +38,7 @@ public class ShiftManagerTest extends TestCase {
      * Test that Shift switching between On duty & Off duty as the day progresses
      */
     public void testShiftDuty() {
-        int [] endTimes = {500, 1000};
+        int [] endTimes = {400, 900};
         int [] allocations = {50, 50};
         ShiftManager sm = buildManager(endTimes, allocations);
 
@@ -45,18 +47,19 @@ public class ShiftManagerTest extends TestCase {
             int time = t * 10;
             sm.timePassing(time);
 
-            if (endTimes[currentShift] <= time) {
+            if (endTimes[currentShift] == time) {
                 currentShift++;
+                currentShift %= endTimes.length;
             }
             List<Shift> shifts = sm.getShifts();
             for(int idx = 0; idx < shifts.size(); idx++) {
                 Shift s = shifts.get(idx);
 
                 if (idx == currentShift) {
-                    assertTrue("Current shift onduty", s.isOnDuty());
+                    assertTrue("Shift " + s.getName() + " On duty @ " + time, s.isOnDuty());
                 }
                 else {
-                    assertFalse("Shift offduty", s.isOnDuty());
+                    assertFalse("Shift " + s.getName() + " Off duty @ " + time, s.isOnDuty());
                 }
             }
 

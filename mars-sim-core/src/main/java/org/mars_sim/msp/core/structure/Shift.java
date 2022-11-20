@@ -44,7 +44,14 @@ public class Shift {
     boolean checkShift(int mSol) {
         boolean oldOnDuty = onDuty;
 
-        onDuty = (start <= mSol) && (mSol <  end);
+        if (start < end) {
+            // Start and end on same Sol
+            onDuty = (start <= mSol) && (mSol <  end);
+        }
+        else {
+            // Ends on the following Sol so 2 seperate segments
+            onDuty = (start <= mSol) || (mSol <  end);
+        }
         return (oldOnDuty != onDuty);
     }
 
@@ -65,6 +72,13 @@ public class Shift {
      */
     void increaseSlots() {
         members++;
+    }
+
+    /**
+     * Someone has left the Shift
+     */
+    public void leaveShift() {
+        members--;
     }
 
     /**

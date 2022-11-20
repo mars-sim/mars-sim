@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -387,8 +386,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Set the members' work shift to on-call to get ready
 			for (Worker m : getMembers()) {
 				Person pp = (Person) m;
-				if (pp.getShiftType() != ShiftType.ON_CALL)
-					pp.setShiftType(ShiftType.ON_CALL);
+				pp.getShiftSlot().setOnCall(true);
 			}
 
 			if (isEveryoneInRover()) {
@@ -1015,7 +1013,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Use Iterator's remove() method
 					i.remove();
 					// Adjust the work shift
-					adjustShift(member);
+					memberLeave(member);
 				}
 			 }
 			

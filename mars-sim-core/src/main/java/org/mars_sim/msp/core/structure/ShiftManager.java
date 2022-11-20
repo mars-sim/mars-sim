@@ -8,6 +8,7 @@ import java.util.List;
  * of On/Off Duty as the daya progresses.
  */
 public class ShiftManager {
+    
     private String name;
     private List<Shift> shifts = new ArrayList<>();
 
@@ -25,6 +26,8 @@ public class ShiftManager {
             shifts.add(new Shift(s));
         }
 
+        // Initialise the initial Shift onDuty
+        timePassing(0);
     }
 
     public String getName() {

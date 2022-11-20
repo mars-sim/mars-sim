@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -199,22 +198,6 @@ public class Settlement extends Structure implements Temporal,
 	private int templateID;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
-	// NOTE: can't be static since each settlement needs to keep tracking of it
-	private int numShiftsCache;
-	/** number of people with work shift A */
-	private int numA;
-	/** number of people with work shift B */
-	private int numB;
-	/** number of people with work shift X */
-	private int numX;
-	/** number of people with work shift Y */
-	private int numY;
-	/** number of people with work shift Z */
-	private int numZ;
-	/** number of people with work shift "On Call" */
-	private int numOnCall;
-	/** number of people with work shift "Off" */
-	private int numOff;
 	/** The cache for millisol. */
 	private int millisolCache = -5;
 	/** Numbers of citizens of this settlement. */
@@ -299,6 +282,8 @@ public class Settlement extends Structure implements Temporal,
 	private EquipmentInventory eqmInventory;
 	/** The settlement's CreditManager instance manages trade credit between settlements. */
 	private CreditManager creditManager;
+	/** Mamanges the shifts */
+	private ShiftManager shiftManager;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -490,6 +475,8 @@ public class Settlement extends Structure implements Temporal,
 		
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
+
+		shiftManager = new ShiftManager(sTemplate.getShiftDefinition());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
@@ -934,6 +921,8 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
+		shiftManager.timePassing(pulse.getMarsTime().getMillisolInt());
+
 		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off ?
@@ -1350,31 +1339,7 @@ public class Settlement extends Structure implements Temporal,
 	public void reassignWorkShift() {
 		// Should call this method at, say, 800 millisols, not right at 1000
 		// millisols
-		Collection<Person> people = citizens;
-		int pop = people.size();
-
-		for (Person p : people) {
-
-			// Skip the person who is dead or is on a mission
-			if (!p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead()
-					&& p.getMind().getMission() == null) {
-
-				assignWorkShift(p, pop);
-			}
-
-			// Just for sanity check for those on a vehicle mission
-			// Note: shouldn't be needed this way but currently, when currently when
-			// starting a trade mission,
-			// the code fails to change a person's work shift to On-call.
-			else if (p.getMind().getMission() != null && p.isInVehicle()) {
-
-				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
-				if (oldShift != ShiftType.ON_CALL) {
-					p.setShiftType(ShiftType.ON_CALL);
-				}
-			}
-		} // end of people for loop
+	
 	}
 
 	/**
@@ -1385,106 +1350,106 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void assignWorkShift(Person p, int pop) {
 
-		// Check if person is an astronomer.
-		boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
+		// // Check if person is an astronomer.
+		// boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
 
-		ShiftType oldShift = p.getTaskSchedule().getShiftType();
+		// ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
-		if (isAstronomer) {
-			// Find the darkest time of the day
-			// and set work shift to cover time period
+		// if (isAstronomer) {
+		// 	// Find the darkest time of the day
+		// 	// and set work shift to cover time period
 
-			// For now, we may assume it will usually be X or Z, NOT Y
-			// since Y is usually where midday is at unless a person is at polar region.
-			if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
+		// 	// For now, we may assume it will usually be X or Z, NOT Y
+		// 	// since Y is usually where midday is at unless a person is at polar region.
+		// 	if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
 
-				ShiftType newShift = ShiftType.X;
+		// 		ShiftType newShift = ShiftType.X;
 
-				p.setShiftType(newShift);
-			}
+		// 		p.setShiftType(newShift);
+		// 	}
 
-		} // end of if (isAstronomer)
+		// } // end of if (isAstronomer)
 
-		else {
-			// Not an astronomer
+		// else {
+		// 	// Not an astronomer
 
-			// Note: if a person's shift is over-filled or saturated,
-			// he will need to change shift
+		// 	// Note: if a person's shift is over-filled or saturated,
+		// 	// he will need to change shift
 
-			// Get an unfilled work shift
-			ShiftType newShift = getAnEmptyWorkShift(pop);
+		// 	// Get an unfilled work shift
+		// 	ShiftType newShift = getAnEmptyWorkShift(pop);
 
-			int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-			// Should find the person with the highest tendency to take this shift
+		// 	int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
+		// 	// Should find the person with the highest tendency to take this shift
 
-			// if the person just came back from a mission, he would have on-call shift
-			if (oldShift == ShiftType.ON_CALL) {
-				// Check a person's sleep habit map and request changing his work shift
-				// to avoid taking a work shift that overlaps his sleep hour
+		// 	// if the person just came back from a mission, he would have on-call shift
+		// 	if (oldShift == ShiftType.ON_CALL) {
+		// 		// Check a person's sleep habit map and request changing his work shift
+		// 		// to avoid taking a work shift that overlaps his sleep hour
 
-				if (newShift != oldShift) {// sanity check
+		// 		if (newShift != oldShift) {// sanity check
 
-					if (tendency > 50) {
-						p.setShiftType(newShift);
-					}
+		// 			if (tendency > 50) {
+		// 				p.setShiftType(newShift);
+		// 			}
 
-					else {
-						ShiftType anotherShift = getAnEmptyWorkShift(pop);
-						if (anotherShift == newShift) {
-							anotherShift = getAnEmptyWorkShift(pop);
-						}
+		// 			else {
+		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
+		// 				if (anotherShift == newShift) {
+		// 					anotherShift = getAnEmptyWorkShift(pop);
+		// 				}
 
-						tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
+		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 
-						if (newShift != oldShift && tendency > 50) { // sanity check
-							p.setShiftType(newShift);
-						}
-					}
-				}
-			}
+		// 				if (newShift != oldShift && tendency > 50) { // sanity check
+		// 					p.setShiftType(newShift);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
 
-			else {
-				// The old shift is NOT on-call
+		// 	else {
+		// 		// The old shift is NOT on-call
 
-				// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
-				// change shift
-				boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
+		// 		// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
+		// 		// change shift
+		// 		boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
 
-				// TODO: check a person's sleep habit map and request changing his work shift
-				// to avoid taking a work shift that overlaps his sleep hour
+		// 		// TODO: check a person's sleep habit map and request changing his work shift
+		// 		// to avoid taking a work shift that overlaps his sleep hour
 
-				if (!oldShift_ok) {
+		// 		if (!oldShift_ok) {
 
-					if (newShift != oldShift && tendency > 50) { // sanity check
-						p.setShiftType(newShift);
-					}
+		// 			if (newShift != oldShift && tendency > 50) { // sanity check
+		// 				p.setShiftType(newShift);
+		// 			}
 
-					else if (tendency <= 50) {
-						ShiftType anotherShift = getAnEmptyWorkShift(pop);
-						if (anotherShift == newShift) {
-							anotherShift = getAnEmptyWorkShift(pop);
-						}
+		// 			else if (tendency <= 50) {
+		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
+		// 				if (anotherShift == newShift) {
+		// 					anotherShift = getAnEmptyWorkShift(pop);
+		// 				}
 
-						tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
+		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 
-						if (newShift != oldShift && tendency > 50) { // sanity check
-							p.setShiftType(newShift);
-						}
+		// 				if (newShift != oldShift && tendency > 50) { // sanity check
+		// 					p.setShiftType(newShift);
+		// 				}
 
-						else {
-							ShiftType shift3 = getAnEmptyWorkShift(pop);
-							if (shift3 == newShift) {
-								shift3 = getAnEmptyWorkShift(pop);
-							}
+		// 				else {
+		// 					ShiftType shift3 = getAnEmptyWorkShift(pop);
+		// 					if (shift3 == newShift) {
+		// 						shift3 = getAnEmptyWorkShift(pop);
+		// 					}
 
-							if (shift3 != oldShift) { // sanity check
-								p.setShiftType(shift3);
-							}
-						}
-					}
-				}
-			}
-		} // end of if (isAstronomer)
+		// 					if (shift3 != oldShift) { // sanity check
+		// 						p.setShiftType(shift3);
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// } // end of if (isAstronomer)
 	}
 
 	/**
@@ -2662,413 +2627,10 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Decrements a particular shift type
-	 *
-	 * @param shiftType
+	 * Get the shift manager for this Settlement
 	 */
-	private void decrementShiftType(ShiftType shiftType) {
-
-		if (shiftType.equals(ShiftType.A)) {
-			numA--;
-		}
-
-		else if (shiftType.equals(ShiftType.B)) {
-			numB--;
-		}
-
-		else if (shiftType.equals(ShiftType.X)) {
-			numX--;
-		}
-
-		else if (shiftType.equals(ShiftType.Y)) {
-			numY--;
-		}
-
-		else if (shiftType.equals(ShiftType.Z)) {
-			numZ--;
-		}
-
-		else if (shiftType.equals(ShiftType.ON_CALL)) {
-			numOnCall--;
-		}
-
-		else if (shiftType.equals(ShiftType.OFF)) {
-			numOff--;
-		}
-
-	}
-
-	/**
-	 * Increments a particular shift type
-	 *
-	 * @param shiftType
-	 */
-	private void incrementShiftType(ShiftType shiftType) {
-
-		if (shiftType == ShiftType.A) {
-			numA++;
-		}
-
-		else if (shiftType == ShiftType.B) {
-			numB++;
-		}
-
-		else if (shiftType == ShiftType.X) {
-			numX++;
-		}
-
-		else if (shiftType == ShiftType.Y) {
-			numY++;
-		}
-
-		else if (shiftType == ShiftType.Z) {
-			numZ++;
-		}
-
-		else if (shiftType == ShiftType.ON_CALL) {
-			numOnCall++;
-		}
-
-		else if (shiftType == ShiftType.OFF) {
-			numOff++;
-		}
-	}
-
-	/**
-	 * Checks if a particular work shift has been saturated
-	 *
-	 * @param st                The ShiftType
-	 * @param inclusiveChecking
-	 * @return true/false
-	 */
-	private boolean isWorkShiftSaturated(ShiftType st, boolean inclusiveChecking) {
-		boolean result = false;
-
-		// Reduce the shiftType of interest to find out if it's saturated
-		if (inclusiveChecking)
-			decrementShiftType(st);
-
-		int pop = getNumCitizens();// getIndoorPeopleCount();
-		int quotient = pop / numShiftsCache;
-		int remainder = pop % numShiftsCache;
-
-		switch (numShiftsCache) {
-		case 1: // (numShift == 1)
-			if (st != ShiftType.ON_CALL)
-				result = false;
-			break;
-		case 2: // else if (numShift == 2) {
-
-			switch (remainder) {
-			case 0: // if (remainder == 0) {
-				if (numA < quotient && numB < quotient) {
-					result = true;
-					break;
-				}
-				if (quotient == 1) {
-					if (numA < 1) { // allow only 1 person with "A shift"
-						if (st == ShiftType.A)
-							result = true;
-					} else {
-						if (st == ShiftType.B)
-							result = true;
-					}
-				} else if (quotient == 2) {
-					if (numA < 2) { // allow 2 persons with "A shift"
-						if (st == ShiftType.A)
-							result = true;
-					} else {
-						if (st == ShiftType.B)
-							result = true;
-					}
-				}
-				break;
-			case 1: // else { //if (remainder == 1) {
-				if (numA < quotient && numB < quotient) {
-					result = true;
-					break;
-				}
-				if (quotient == 1) {
-					if (numA < 2) { // allow 1 person with "A shift"
-						if (st == ShiftType.A)
-							result = true;
-					} else {
-						if (st == ShiftType.B)
-							result = true;
-					}
-				} else if (quotient == 2) {
-					if (numA < 3) { // allow 2 persons with "A shift"
-						if (st == ShiftType.A)
-							result = true;
-					} else {
-						if (st == ShiftType.B)
-							result = true;
-					}
-				}
-				break;
-			} // end of switch (remainder)
-			break;
-		case 3: // else if (numShift == 3) {
-			switch (remainder) {
-			case 0: // if (remainder == 0) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					result = true;
-					break;
-				}
-				if (numX < quotient + 1) { // allow up to q persons with "X shift"
-					if (st == ShiftType.X)
-						result = true;
-				} else if (numY < quotient + 1) { // allow up to q persons with "Y shift"
-					if (st == ShiftType.Y)
-						result = true;
-				} else {
-					if (st == ShiftType.Z)
-						result = true;
-				}
-				break;
-			case 1: // else if (remainder == 1) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					result = true;
-					break;
-				}
-				if (numX < quotient + 1) { // allow up to q persons with "X shift"
-					if (st == ShiftType.X)
-						result = true;
-				} else if (numY < quotient + 2) { // allow up to q + 1 persons with "Y shift"
-					if (st == ShiftType.Y)
-						result = true;
-				} else {
-					if (st == ShiftType.Z)
-						result = true;
-				}
-				break;
-			case 2: // else {//if (remainder == 2) {
-				if (numX < quotient && numY < quotient && numZ < quotient) {
-					result = true;
-					break;
-				}
-				if (numX < quotient + 2) { // allow up to q+1 persons with "X // shift"
-					if (st == ShiftType.X)
-						result = true;
-				} else if (numY < quotient + 2) { // allow up to q+1 persons with "Y shift"
-					if (st == ShiftType.Y)
-						result = true;
-				} else {
-					if (st == ShiftType.Z)
-						result = true;
-				}
-				break;
-			} // end of switch for case 3
-			break;
-		} // end of switch
-
-		// fill back the shiftType of interest
-		if (inclusiveChecking)
-			incrementShiftType(st);
-
-		return result;
-	}
-
-	/**
-	 * Finds an empty work shift in a settlement
-	 *
-	 * @param pop If it wasn't known, use -1 to obtain the latest figure
-	 * @return The ShifType
-	 */
-	public ShiftType getAnEmptyWorkShift(int population) {
-		int pop = 0;
-		if (population == -1)
-			pop = this.getNumCitizens();
-		else
-			pop = population;
-
-		int rand = -1;
-		ShiftType shiftType = ShiftType.OFF;
-		int quotient = pop / numShiftsCache;
-		int remainder = pop % numShiftsCache;
-
-		int limX = 0;
-		int limY = 0;
-		int limZ = 0;
-
-		limX = quotient;
-
-		if (remainder == 0)
-			limZ = limX + 1;
-		else
-			limZ = limX + 2;
-
-		limY = pop - limX - limZ;
-
-		switch (numShiftsCache) {
-
-		case 1: // for numShift = 1
-			shiftType = ShiftType.ON_CALL;
-			break;
-
-		case 2: // for umShift = 2
-			switch (remainder) {
-			case 0: // if (remainder == 0) {
-				if (numA < quotient && numB < quotient) {
-					rand = RandomUtil.getRandomInt(1);
-					if (rand == 0) {
-						shiftType = ShiftType.A;
-					} else if (rand == 1) {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				if (quotient == 1) {
-					if (numA < 1) { // allow only 1 person with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				} else if (quotient == 2) {
-					if (numA < 2) { // allow 2 persons with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				break;
-
-			case 1: // else { //if (remainder == 1) {
-				if (numA < quotient && numB < quotient) {
-					rand = RandomUtil.getRandomInt(1);
-					if (rand == 0) {
-						shiftType = ShiftType.A;
-					} else if (rand == 1) {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				if (quotient == 1) {
-					if (numA < 2) { // allow 1 person with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				} else if (quotient == 2) {
-					if (numA < 3) { // allow 2 persons with "A shift"
-						shiftType = ShiftType.A;
-					} else {
-						shiftType = ShiftType.B;
-					}
-					break;
-				}
-				break;
-
-			} // end of switch (remainder)
-			break;
-
-		case 3: // for numShift = 3
-
-			if (numX < limX && numZ < limZ) {
-				rand = RandomUtil.getRandomInt(3);
-				if (rand == 0)
-					shiftType = ShiftType.X;
-				else if (rand == 1)
-					shiftType = ShiftType.Z;
-				else
-					shiftType = ShiftType.Y;
-			} else if (numX < limX) {
-				rand = RandomUtil.getRandomInt(2);
-				if (rand == 0)
-					shiftType = ShiftType.X;
-				else {
-					if (numY <= limY)
-						shiftType = ShiftType.Y;
-					else
-						shiftType = ShiftType.X;
-				}
-
-			} else if (numZ < limZ) {
-				rand = RandomUtil.getRandomInt(2);
-				if (rand == 0)
-					shiftType = ShiftType.Z;
-				else {
-					if (numY <= limY)
-						shiftType = ShiftType.Y;
-					else
-						shiftType = ShiftType.Z;
-				}
-			} else
-				shiftType = ShiftType.Y;
-
-			break;
-		} // end of switch
-
-		return shiftType;
-	}
-
-	/**
-	 * Sets the number of shift of a settlement
-	 *
-	 * @param numShift
-	 */
-	public void setNumShift(int numShift) {
-		this.numShiftsCache = numShift;
-	}
-
-	/**
-	 * Gets the current number of work shifts in a settlement
-	 *
-	 * @return a number, either 2 or 3
-	 */
-	public int getNumShift() {
-		return numShiftsCache;
-	}
-
-	/*
-	 * Increments the number of people in a particular work shift
-	 *
-	 * @param shiftType
-	 */
-	public void incrementAShift(ShiftType shiftType) {
-		if (shiftType != null) {
-			if (shiftType == ShiftType.A)
-				numA++;
-			else if (shiftType == ShiftType.B)
-				numB++;
-			else if (shiftType == ShiftType.X)
-				numX++;
-			else if (shiftType == ShiftType.Y)
-				numY++;
-			else if (shiftType == ShiftType.Z)
-				numZ++;
-			else if (shiftType == ShiftType.ON_CALL)
-				numOnCall++;
-			else if (shiftType == ShiftType.OFF)
-				numOff++;
-		}
-	}
-
-	/*
-	 * Decrements the number of people in a particular work shift
-	 *
-	 * @param shiftType
-	 */
-	public void decrementAShift(ShiftType shiftType) {
-		if (shiftType != null) {
-			if (shiftType == ShiftType.A)
-				numA--;
-			else if (shiftType == ShiftType.B)
-				numB--;
-			else if (shiftType == ShiftType.X)
-				numX--;
-			else if (shiftType == ShiftType.Y)
-				numY--;
-			else if (shiftType == ShiftType.Z)
-				numZ--;
-			else if (shiftType == ShiftType.ON_CALL)
-				numOnCall--;
-			else if (shiftType == ShiftType.OFF)
-				numOff--;
-		}
+	public ShiftManager getShiftManager() {
+		return shiftManager;
 	}
 
 	public RadiationStatus getExposed() {

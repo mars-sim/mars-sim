@@ -59,8 +59,7 @@ public class RelaxMeta extends FactoryMetaTask{
             result *= getBuildingModifier(recBuilding, person);
 
             // Modify probability if during person's work shift.
-            int now = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
+            boolean isShiftHour = person.isOnDuty();
             if (isShiftHour) {
                 result*= WORK_SHIFT_MODIFIER;
             }

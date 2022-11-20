@@ -11,10 +11,10 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -132,21 +132,22 @@ public class PersonTaskManager extends TaskManager {
 		// 		return getDefaultInsideTasks();
 		// }
 
-
-		String shiftDesc = null;
-		TaskSchedule taskSchedule = person.getTaskSchedule();
 		List<MetaTask> mtList = null;
-		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
-			mtList = MetaTaskUtil.getPersonMetaTasks();
-			shiftDesc = "Shift: OnCall";
-		}
-		else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
-			mtList = MetaTaskUtil.getDutyHourTasks();
-			shiftDesc = "Shift: Duty";
-		}
-		else {
-			mtList = MetaTaskUtil.getNonDutyHourTasks();
-			shiftDesc = "Shift: NonDuty";
+		String shiftDesc = null;
+		WorkStatus workStatus = person.getShiftSlot().getStatus();
+		switch(workStatus) {
+			case OFF_DUTY:
+				mtList = MetaTaskUtil.getNonDutyHourTasks();
+				shiftDesc = "Shift: NonDuty";
+				break;
+			case ON_CALL:
+				mtList = MetaTaskUtil.getPersonMetaTasks();
+				shiftDesc = "Shift: OnCall";
+				break;
+			case ON_DUTY:
+				mtList = MetaTaskUtil.getDutyHourTasks();
+				shiftDesc = "Shift: Duty";
+				break;
 		}
 
 		// Create new taskProbCache

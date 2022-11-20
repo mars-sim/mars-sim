@@ -58,7 +58,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -354,8 +353,6 @@ public class Simulation implements ClockListener, Serializable {
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-		// Initialize instances in TaskSchedule
-		TaskSchedule.initializeInstances(marsClock);
 
 		eventManager = new HistoricalEventManager();
 
@@ -429,8 +426,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		AirComposition.initializeInstances(pc);
-		// Initialize instances in TaskSchedule
-		TaskSchedule.initializeInstances(marsClock);
 		
 		// Gets the MarsSurface instance
 		Unit.setUnitManager(unitManager);
@@ -692,8 +687,7 @@ public class Simulation implements ClockListener, Serializable {
 		Weather.initializeInstances(this, marsClock, orbitInfo);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-		// Initialize instances in TaskSchedule
-		TaskSchedule.initializeInstances(marsClock);
+
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
 		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),

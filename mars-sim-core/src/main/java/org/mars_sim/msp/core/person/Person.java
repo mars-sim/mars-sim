@@ -50,7 +50,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.Role;
@@ -59,7 +58,6 @@ import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -69,6 +67,8 @@ import org.mars_sim.msp.core.science.ResearcherInterface;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.ShiftSlot;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -185,8 +185,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	private CircadianClock circadian;
 	/** Person's Favorite instance. */
 	private Favorite favorite;
-	/** Person's TaskSchedule instance. */
-	private TaskSchedule taskSchedule;
 	/** Person's JobHistory instance. */
 	private JobHistory jobHistory;
 	/** Person's Role instance. */
@@ -221,6 +219,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
+	private ShiftSlot shiftSlot;
 
 	static {
 		// personConfig is needed by maven unit test
@@ -338,8 +337,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		jobHistory = new JobHistory();
 		// Create the role
 		role = new Role(this);
-		// Create task schedule
-		taskSchedule = new TaskSchedule(this);
+		// Create shift schedule
+		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift();
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -652,11 +651,25 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	}
 
 	/**
+	 * Get details of the 
+	 */
+	public ShiftSlot getShiftSlot() {
+		return shiftSlot;
+	}
+
+	/**
+	 * Is this Person OnDuty. This does not include On Call.
+	 */
+	public boolean isOnDuty() {
+		return shiftSlot.getStatus() == WorkStatus.ON_DUTY;
+	}
+
+	/**
 	 * Gets the instance of the task schedule for a person.
 	 */
-	public TaskSchedule getTaskSchedule() {
-		return taskSchedule;
-	}
+	// public TaskSchedule getTaskSchedule() {
+	// 	return taskSchedule;
+	// }
 
 	/**
 	 * Creates a string representing the birth time of the person.
@@ -875,7 +888,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 						// On the first mission sol,
 						// adjust the sleep habit according to the current work shift
 						for (int i=0; i< 15; i++) {
-							int shiftEnd = getTaskSchedule().getShiftEnd();
+							int shiftEnd = shiftSlot.getShift().getEnd();
 							int m = shiftEnd - 20 * (i+1);
 							if (m < 0)
 								m = m + 1000;
@@ -889,21 +902,12 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 							circadian.updateSleepCycle(m, true);
 						}
 
-						if (getShiftType() == ShiftType.B) {
-							condition.increaseFatigue(RandomUtil.getRandomInt(500));
-						}
-						else if (getShiftType() == ShiftType.Y) {
-							condition.increaseFatigue(RandomUtil.getRandomInt(333));
-						}
-						else if (getShiftType() == ShiftType.Z) {
-							condition.increaseFatigue(RandomUtil.getRandomInt(667));
-						}
-
+						condition.increaseFatigue(RandomUtil.getRandomInt(333));
 					}
 					else {
 						// Adjust the sleep habit according to the current work shift
 						for (int i=0; i< 5; i++) {
-							int m = getTaskSchedule().getShiftEnd() + 10 * (i+1);
+							int m = shiftSlot.getShift().getEnd() + 10 * (i+1);
 							if (m > 1000)
 								m = m - 1000;
 							circadian.updateSleepCycle(m, true);
@@ -919,17 +923,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 						if (currentSol % 3 == 0) {
 							// Adjust the shiftChoice once every 3 sols based on sleep hour
 							int bestSleepTime[] = getPreferredSleepHours();
-							taskSchedule.adjustShiftChoice(bestSleepTime);
-						}
-
-						if (currentSol % 4 == 0) {
-							// Increment the shiftChoice once every 4 sols
-							taskSchedule.incrementShiftChoice();
-						}
-
-						if (currentSol % 7 == 0) {
-							// Normalize the shiftChoice once every week
-							taskSchedule.normalizeShiftChoice();
+							shiftSlot.adjustShiftChoice(bestSleepTime);
 						}
 					}
 				}
@@ -1393,14 +1387,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	@Override
 	public void setMission(Mission newMission) {
 		getMind().setMission(newMission);
-	}
-
-	public void setShiftType(ShiftType shiftType) {
-		taskSchedule.setShiftType(shiftType);
-	}
-
-	public ShiftType getShiftType() {
-		return taskSchedule.getShiftType();
 	}
 
 	public int[] getPreferredSleepHours() {
@@ -2442,7 +2428,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		circadian = null;
 		condition = null;
 		favorite = null;
-		taskSchedule = null;
 		jobHistory = null;
 		role = null;
 		preference = null;

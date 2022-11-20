@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,8 +27,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The duration of the task is by default chosen randomly, up to 100 millisols.
  */
 public class Relax
-extends Task
-implements Serializable {
+extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -58,7 +56,7 @@ implements Serializable {
 		
 		// If during person's work shift, only relax for short period.
 		int msols = marsClock.getMillisolInt();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(msols);
+        boolean isShiftHour = person.isOnDuty();
 		if (isShiftHour) {
 		    setDuration(10D);
 		}

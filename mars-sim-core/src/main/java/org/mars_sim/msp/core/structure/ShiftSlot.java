@@ -52,4 +52,7 @@ public class ShiftSlot {
     public Shift getShift() {
         return shift;
     }
+
+    public void adjustShiftChoice(int[] bestSleepTime) {
+    }
 }

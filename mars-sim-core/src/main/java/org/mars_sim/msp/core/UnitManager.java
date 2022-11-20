@@ -320,35 +320,6 @@ public class UnitManager implements Serializable, Temporal {
 		return commanderID;
 	}
 
-	/**
-	 * Determines the number of shifts for a settlement and assigns a work shift for
-	 * each person
-	 *
-	 * @param settlement
-	 * @param pop population
-	 */
-	public void setupShift(Settlement settlement, int pop) {
-
-		int numShift = 0;
-
-		if (pop == 1) {
-			numShift = 1;
-		} else if (pop < THREE_SHIFTS_MIN_POPULATION) {
-			numShift = 2;
-		} else {
-			numShift = 3;
-		}
-
-		settlement.setNumShift(numShift);
-
-		Collection<Person> people = settlement.getAllAssociatedPeople();
-
-		for (Person p : people) {
-			p.setShiftType(settlement.getAnEmptyWorkShift(pop));
-		}
-
-	}
-
 
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.

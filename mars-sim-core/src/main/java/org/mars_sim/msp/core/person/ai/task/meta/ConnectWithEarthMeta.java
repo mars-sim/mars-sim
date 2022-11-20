@@ -10,11 +10,11 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -90,9 +90,8 @@ public class ConnectWithEarthMeta extends FactoryMetaTask {
             }
         
             // Modify probability if during person's work shift.
-            int now = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
-            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
+            WorkStatus status = person.getShiftSlot().getStatus();
+            if (status == WorkStatus.ON_DUTY) {
                 result*= WORK_SHIFT_MODIFIER;
             }
             

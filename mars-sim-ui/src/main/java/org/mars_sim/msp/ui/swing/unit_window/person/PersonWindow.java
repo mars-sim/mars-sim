@@ -18,8 +18,7 @@ import javax.swing.event.ChangeEvent;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
+import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -47,12 +46,6 @@ public class PersonWindow extends UnitWindow {
 	
 	private static final String TWO_SPACES = "  ";
 	private static final String SIX_SPACES = "      ";
-
-	private static final String SHIFT_FROM = " Shift :  (From ";
-	private static final String TO = " to ";
-	private static final String MILLISOLS = " millisols)";
-	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
-	private static final String ONE_SPACE_SHIFT = " Shift";
 	
 	/** Is person dead? */
 	private boolean deadCache = false;
@@ -60,8 +53,6 @@ public class PersonWindow extends UnitWindow {
 	private String oldRoleString = "";
 	private String oldJobString = "";
 	private String oldTownString = "";
-
-	private ShiftType oldShiftType = null;
 	
 	private WebLabel townLabel;
 	private WebLabel jobLabel;
@@ -283,41 +274,12 @@ public class PersonWindow extends UnitWindow {
 			roleLabel.setText(TWO_SPACES + roleString);
 		}
 
-		ShiftType newShiftType = person.getTaskSchedule().getShiftType();
-		if (oldShiftType != newShiftType) {
-			oldShiftType = newShiftType;
-			shiftLabel.setText(TWO_SPACES + newShiftType.getName());
-			TooltipManager.setTooltip(shiftLabel, newShiftType.getName() + getTimePeriod(newShiftType),
-					TooltipWay.down);
-		}
+		ShiftSlot newShiftType = person.getShiftSlot();
+		String shiftDesc = TabPanelSchedule.getShiftDescription(newShiftType);
+		shiftLabel.setText(TWO_SPACES + newShiftType.getShift().getName());
+		TooltipManager.setTooltip(shiftLabel, shiftDesc, TooltipWay.down);
 	}
 	
-
-	/**
-	 * Gets the time period string
-	 *
-	 * @param shiftType
-	 * @return
-	 */
-	public String getTimePeriod(ShiftType shiftType) {
-		String time = null;
-		if (shiftType == ShiftType.A)
-			time = SHIFT_FROM + TaskSchedule.A_START + TO + TaskSchedule.A_END + MILLISOLS;
-		else if (shiftType == ShiftType.B)
-			time = SHIFT_FROM + TaskSchedule.B_START + TO + TaskSchedule.B_END + MILLISOLS;
-		else if (shiftType == ShiftType.X)
-			time = SHIFT_FROM + TaskSchedule.X_START + TO + TaskSchedule.Y_END + MILLISOLS;
-		else if (shiftType == ShiftType.Y)
-			time = SHIFT_FROM + TaskSchedule.Y_START + TO + TaskSchedule.Y_END + MILLISOLS;
-		else if (shiftType == ShiftType.Z)
-			time = SHIFT_FROM + TaskSchedule.Z_START + TO + TaskSchedule.Z_END + MILLISOLS;
-		else if (shiftType == ShiftType.ON_CALL)
-			time = SHIFT_ANYTIME;
-		else
-			time = ONE_SPACE_SHIFT;
-		return time;
-	}
-
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// nothing
@@ -330,7 +292,6 @@ public class PersonWindow extends UnitWindow {
 		person = null;
 		
 		statusPanel = null;
-		oldShiftType = null;
 		
 		townLabel = null;
 		jobLabel = null;

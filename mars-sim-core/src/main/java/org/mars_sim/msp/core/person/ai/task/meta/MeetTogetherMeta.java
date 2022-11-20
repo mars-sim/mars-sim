@@ -58,7 +58,7 @@ public class MeetTogetherMeta extends FactoryMetaTask {
 	        // TODO: Probability affected by the person's stress and fatigue.
 	
 	    	int now = marsClock.getMillisolInt();
-	        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
+	        boolean isOnShiftNow = person.isOnDuty();
 	        
 	        int size = person.getAssociatedSettlement().getIndoorPeopleCount();
 	        result /= 2 * Math.sqrt(size/8.0);

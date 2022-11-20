@@ -32,11 +32,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Shift;
+import org.mars_sim.msp.core.structure.ShiftSlot;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -50,7 +51,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -67,15 +67,10 @@ public class TabPanelSchedule extends TabPanel {
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
-	private int start;
-	private int end;
 	private int theme;
 	
 	private Integer selectedSol;
 	private Integer todayInteger;
-
-	private ShiftType shiftType;
-	private ShiftType shiftCache = null;
 
 	private JTable table;
 
@@ -96,7 +91,7 @@ public class TabPanelSchedule extends TabPanel {
 	/** The Robot instance. */
 	private Robot robot = null;
 	
-	private TaskSchedule taskSchedule;
+	private ShiftSlot taskSchedule;
 	private TaskManager taskManager;
 	
 	private static MarsClock marsClock;
@@ -134,7 +129,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Prepare combo box
 		if (person != null) {
-			taskSchedule = person.getTaskSchedule();
+			taskSchedule = person.getShiftSlot();
 			taskManager = person.getTaskManager();
 		} 
 		else {
@@ -147,21 +142,14 @@ public class TabPanelSchedule extends TabPanel {
 		Unit unit = getUnit();
 		if (unit instanceof Person) {
 
-			shiftType = taskSchedule.getShiftType();
-			shiftCache = shiftType;
 			shiftLabel = new WebLabel(Msg.getString("TabPanelSchedule.shift.label"), WebLabel.CENTER); //$NON-NLS-1$
 
 			TooltipManager.setTooltip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down); //$NON-NLS-1$
 			buttonPane.add(shiftLabel);
 
 			shiftTF = new WebTextField();
-			start = taskSchedule.getShiftStart();
-			end = taskSchedule.getShiftEnd();
-			
-			if (shiftCache == ShiftType.OFF || shiftCache == ShiftType.ON_CALL)
-				shiftTF.setText(shiftCache.toString());
-			else
-				shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
+			String shiftDesc = getShiftDescription(taskSchedule);
+			shiftTF.setText(shiftDesc);
 			
 			shiftTF.setEditable(false);
 			shiftTF.setColumns(15);
@@ -296,6 +284,21 @@ public class TabPanelSchedule extends TabPanel {
 			scheduleTableModel.update(selectedSol);
 	}
 
+	public static String getShiftDescription(ShiftSlot shift) {
+		WorkStatus status = shift.getStatus();
+		
+		Shift s = shift.getShift();
+		switch(status) {
+			case ON_CALL:
+				return "On Call";
+			case ON_DUTY:
+				return s.getName() + " : OnDuty ends @ " + s.getEnd();
+			case OFF_DUTY:
+				return s.getName() + " : Off Duty start @ " + s.getStart();
+		}
+		return "";
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */
@@ -311,19 +314,8 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		if (person != null) {
-			shiftType = taskSchedule.getShiftType();
-
-			// if (shiftCache != null)
-			if (shiftCache != shiftType) {
-				shiftCache = shiftType;
-				start = taskSchedule.getShiftStart();
-				end = taskSchedule.getShiftEnd();
-				
-				if (shiftCache == ShiftType.OFF || shiftCache == ShiftType.ON_CALL)
-					shiftTF.setText(shiftCache.toString());
-				else
-					shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
-			}
+			String shiftDesc = getShiftDescription(person.getShiftSlot());		
+			shiftTF.setText(shiftDesc);
 		}
 
 		today = marsClock.getMissionSol();

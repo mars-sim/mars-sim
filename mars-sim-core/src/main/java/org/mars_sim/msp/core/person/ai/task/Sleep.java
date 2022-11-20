@@ -17,11 +17,11 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.ShiftSlot;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -181,7 +181,7 @@ public class Sleep extends Task {
 		// Record the sleep time [in millisols]
 		circadian.recordSleep(time);
 
-		if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
+		if (person.isOnDuty()) {
 			// Reduce the probability if it's not the right time to sleep
 			refreshSleepHabit(person, circadian);
 		}
@@ -484,29 +484,21 @@ public class Sleep extends Task {
 	 * @return alarm time in millisols.
 	 */
 	private double getAlarmTime() {
-		double timeDiff = 0;
 		double time = 0;
 
 		if (person != null) {
-			ShiftType shiftType = person.getTaskSchedule().getShiftType();
-			// Set to 30 millisols prior to the beginning of the duty shift hour
-			if (shiftType == ShiftType.A)
-				time = TaskSchedule.A_START - 30.0; // 220
-			else if (shiftType == ShiftType.B)
-				time = TaskSchedule.B_START - 30.0; // 721;
-			else if (shiftType == ShiftType.X)
-				time = TaskSchedule.X_START - 30.0; // 970;
-			else if (shiftType == ShiftType.Y)
-				time = TaskSchedule.Y_START - 30.0; // 304;
-			else if (shiftType == ShiftType.Z)
-				time = TaskSchedule.Z_START - 30.0; // 637;
-			else if (shiftType == ShiftType.ON_CALL) {
+			ShiftSlot ss = person.getShiftSlot();
+			if (ss.getStatus() == WorkStatus.ON_CALL) {
 				// if a person is on a mission outside, assume the day begins with
 				// the sun rises at ~250 milisols at 0 longitude
-				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+				double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				time = BASE_ALARM_TIME - timeDiff;
-
 			}
+			else {
+				// Set to 30 millisols prior to the beginning of the duty shift hour
+				time = ss.getShift().getStart() - 30;
+			}
+
 			if (time < 0D) {
 				time += 1000D;
 			}
@@ -522,29 +514,26 @@ public class Sleep extends Task {
     public void refreshSleepHabit(Person person, CircadianClock circadian) {
     	int now = marsClock.getMillisolInt();
 
-        // if a person is NOT on-call
-        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
-	        // if a person is on shift right now
-           	if (person.getTaskSchedule().isShiftHour(now)) {
+		// if a person is on shift right now
+		if (person.isOnDuty()) {
 
-           		int habit = circadian.getSuppressHabit();
-           		int spaceOut = circadian.getSpaceOut();
-	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
-           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
-	           		// Discourage the person from forming the sleep habit at this time
-		  	  		person.updateSleepCycle(now, false);
+			int habit = circadian.getSuppressHabit();
+			int spaceOut = circadian.getSpaceOut();
+			// limit adjustment to 10 times and space it out to at least 50 millisols apart
+			if (spaceOut < now && habit < MAX_SUPPRESSION) {
+				// Discourage the person from forming the sleep habit at this time
+				person.updateSleepCycle(now, false);
 
-		  	  		int rand = RandomUtil.getRandomInt(2);
-		  	  		if (rand == 2) {
-				    	circadian.setSuppressHabit(habit+1);
-				    	spaceOut = now + 20;
-				    	if (spaceOut > 1000) {
-				    		spaceOut = spaceOut - 1000;
-				    	}
-				    	circadian.setSpaceOut(spaceOut);
-		  	  		}
-           		}
-		    }
-	    }
+				int rand = RandomUtil.getRandomInt(2);
+				if (rand == 2) {
+					circadian.setSuppressHabit(habit+1);
+					spaceOut = now + 20;
+					if (spaceOut > 1000) {
+						spaceOut = spaceOut - 1000;
+					}
+					circadian.setSpaceOut(spaceOut);
+				}
+			}
+		}
     }
 }

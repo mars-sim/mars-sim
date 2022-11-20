@@ -11,8 +11,7 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
+import org.mars_sim.msp.core.structure.ShiftSlot;
 
 /** 
  * 
@@ -27,17 +26,18 @@ public class ShiftCommand extends AbstractPersonCommand {
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
-		TaskSchedule ts = person.getTaskSchedule();
-		
-		ShiftType st0 = ts.getShiftType();
-		int score = ts.getShiftChoice().get(st0);
-		response.appendLabeledString("Current Work shift", st0 + " (score : " + score + ")");
+		ShiftSlot ts = person.getShiftSlot();
+		response.appendLabeledString("Current Work shift", ts.getShift().getName());
 
-		int p = 1;
-		for (ShiftType shiftType : ts.getPreferredShift()) {
-			score = ts.getShiftChoice().get(shiftType);
-			response.appendLabeledString("Preference #" + p++, shiftType + " (score : " + score + ")");			
-		}
+		// ShiftType st0 = ts.getShiftType();
+		// int score = ts.getShiftChoice().get(st0);
+		// response.appendLabeledString("Current Work shift", st0 + " (score : " + score + ")");
+
+		// int p = 1;
+		// for (ShiftType shiftType : ts.getPreferredShift()) {
+		// 	score = ts.getShiftChoice().get(shiftType);
+		// 	response.appendLabeledString("Preference #" + p++, shiftType + " (score : " + score + ")");			
+		// }
 		context.println(response.getOutput());
 		
 		return true;

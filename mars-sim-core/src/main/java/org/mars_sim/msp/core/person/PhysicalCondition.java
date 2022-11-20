@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -1524,7 +1523,7 @@ public class PhysicalCondition implements Serializable {
 		// Deregister the person's quarters
 		person.deregisterBed();
 		// Set work shift to OFF
-		person.setShiftType(ShiftType.OFF);
+		person.getShiftSlot().getShift().leaveShift();
 		// Backup the role type
 		deathDetails.setRoleType(person.getRole().getType());
 		// Relinquish his role

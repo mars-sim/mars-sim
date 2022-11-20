@@ -53,9 +53,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
         if (person.isInside()) {
 
             // Modify probability if during person's work shift.
-            int now = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
-            if (isShiftHour) {
+            if (person.isOnDuty()) {
                 return 0;
             }
         	

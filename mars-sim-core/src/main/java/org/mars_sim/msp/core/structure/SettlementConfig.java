@@ -86,7 +86,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String SHIFT_SPEC = "shift";
 	private static final String SHIFT_START = "start";
 	private static final String SHIFT_END = "end";
-	private static final String SHIFT_PERC = "pop-percentage ";
+	private static final String SHIFT_PERC = "pop-percentage";
 
 
 	private double[] rover_values = new double[] { 0, 0 };
@@ -135,7 +135,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String name = node.getAttributeValue(NAME);
 
 			List<ShiftSpec> shiftSpecs = new ArrayList<>();
-			List<Element> specNodes = shiftPatterns.getChildren(SHIFT_SPEC);
+			List<Element> specNodes = node.getChildren(SHIFT_SPEC);
 			for(Element spec : specNodes) {
 				String sname = spec.getAttributeValue(NAME);
 				if (defaultShift == null) {

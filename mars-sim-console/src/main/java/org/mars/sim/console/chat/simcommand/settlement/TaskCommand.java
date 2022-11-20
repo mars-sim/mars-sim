@@ -16,10 +16,11 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Shift;
+import org.mars_sim.msp.core.structure.ShiftSlot;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 
 /**
  * Command to display task allocation in a Settlement
@@ -43,7 +44,6 @@ public class TaskCommand extends AbstractSettlementCommand {
 		response.appendText("(A). Settlers");
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH,
 									"Shift");
-		int currentMillisoc = context.getSim().getMasterClock().getMarsClock().getMillisolInt();
 
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
@@ -60,16 +60,23 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 			// Add the rows for each person
 			for (Person p : plist) {
-				String shiftDesc;
-				TaskSchedule taskSchedule = p.getTaskSchedule();
-				if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
-					shiftDesc = "OnCall";
+				StringBuilder shift = new StringBuilder();
+				ShiftSlot slot = p.getShiftSlot();
+				Shift s = slot.getShift();
+				WorkStatus status = slot.getStatus();
+				switch(status) {
+					case OFF_DUTY:
+						shift.append("Off (").append(s.getName()).append(')');
+						break;
+					case ON_CALL:
+						shift.append("On Call (").append(s.getName()).append(')');
+						break;
+					case ON_DUTY:
+						shift.append("On (").append(s.getName()).append(')');
+						break;
 				}
-				else {
-					shiftDesc = taskSchedule.getShiftType().getName()
-						+ (taskSchedule.isShiftHour(currentMillisoc) ? " OnDuty" : " OffDuty");
-				}
-				response.appendTableRow(tableGroup, p.getName(), shiftDesc);
+
+				response.appendTableRow(tableGroup, p.getName(), shift.toString());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

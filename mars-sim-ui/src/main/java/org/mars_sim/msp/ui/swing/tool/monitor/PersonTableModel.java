@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -404,10 +403,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			case SHIFT: {
 				// If person is dead, disable it.
 				if (person.getPhysicalCondition().isDead())
-					result = ShiftType.OFF; 
+					result = "";
 				else {
-					ShiftType shift = person.getTaskSchedule().getShiftType();
-                    result = shift;
+					result = person.getShiftSlot().getShift().getName();
 				}
 			}
 		}

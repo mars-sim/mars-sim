@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -545,8 +544,7 @@ public class Resupply implements Serializable, Transportable {
 			immigrant.initialize();
 			// Assign a job 
 			immigrant.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-			// Set up work shift 
-			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
+
 			// Add preference
 			immigrant.getPreference().initializePreference();
 
