@@ -7,7 +7,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.4.0</version>
+		<version>pre-3.5.0</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
