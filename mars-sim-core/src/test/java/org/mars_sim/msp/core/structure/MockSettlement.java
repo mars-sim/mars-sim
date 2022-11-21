@@ -46,6 +46,7 @@ public class MockSettlement extends Settlement {
         // Initialize power grid
         powerGrid = new PowerGrid(this);
 
+
 	}
 	
 	@Override

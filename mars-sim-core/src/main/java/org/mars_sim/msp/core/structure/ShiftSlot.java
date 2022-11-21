@@ -6,10 +6,12 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.io.Serializable;
+
 /**
  * Represents a Slot on a specific Shift for work.
  */
-public class ShiftSlot {
+public class ShiftSlot implements Serializable {
 
     /**
      * The work status of this Slot.
@@ -34,7 +36,7 @@ public class ShiftSlot {
     }
 
     /**
-     * Extract teh status of this slot in terms of active work.
+     * Extract the status of this slot in terms of active work.
      */
     public WorkStatus getStatus() {
         if (onCall) {

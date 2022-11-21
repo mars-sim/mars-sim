@@ -6,10 +6,12 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.io.Serializable;
+
 /**
  * This is an activeShift that has a numebr of Slots forworks allocated.
  */
-public class Shift {
+public class Shift implements Serializable {
 
     private int start;
     private int end;

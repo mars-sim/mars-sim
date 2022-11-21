@@ -148,8 +148,17 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				shiftSpecs.add(new ShiftSpec(sname, start, end, population));
 			}
 
-			shiftDefinitions.put(name, new ShiftPattern(name, shiftSpecs));
+			shiftDefinitions.put(name.toLowerCase(), new ShiftPattern(name, shiftSpecs));
 		}
+	}
+
+	public ShiftPattern getShiftPattern(String name) {
+		ShiftPattern pattern = shiftDefinitions.get(name.toLowerCase());
+		if (pattern == null) {
+			throw new IllegalArgumentException("No shift pattern called " + name);
+		}
+
+		return pattern;
 	}
 
 	/**
@@ -266,10 +275,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		if (shiftPattern == null) {
 			shiftPattern = defaultShift;
 		}
-		ShiftPattern pattern = shiftDefinitions.get(shiftPattern);
-		if (pattern == null) {
-			throw new IllegalArgumentException("No shift pattern called " +shiftPattern);
-		}
+		ShiftPattern pattern = getShiftPattern(shiftPattern);
 
 		// Add templateID
 		SettlementTemplate template = new SettlementTemplate(

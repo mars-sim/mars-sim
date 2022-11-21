@@ -390,6 +390,10 @@ public class Settlement extends Structure implements Temporal,
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 		
 		creditManager = new CreditManager(this, unitManager);
+
+		// Mock use the default shifts
+		ShiftPattern shifts = settlementConfig.getShiftPattern("3 Shifts");
+		shiftManager = new ShiftManager(shifts);
 	}
 
 	/**

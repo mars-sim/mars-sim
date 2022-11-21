@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core.structure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * This class manages a set of Shifts. This invovles the initial allocation and the changing
  * of On/Off Duty as the daya progresses.
  */
-public class ShiftManager {
+public class ShiftManager implements Serializable {
     
     private String name;
     private List<Shift> shifts = new ArrayList<>();
