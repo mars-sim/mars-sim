@@ -458,7 +458,7 @@ public class Simulation implements ClockListener, Serializable {
      // Initialize RoleUtil
         RoleUtil.initialize();
 
-		// Initialize instances prior to UnitManager initiatiation
+		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());

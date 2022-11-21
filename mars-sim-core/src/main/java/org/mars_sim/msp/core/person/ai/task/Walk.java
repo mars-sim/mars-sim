@@ -928,7 +928,7 @@ public class Walk extends Task implements Serializable {
 						+ " inside " + garageBuilding + ".");
 				endTask();
 				
-				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
+				timeTraveled = distance / ROBOT_WALKING_SPEED_PER_MILLISOL;
 				remainingTime = time - timeTraveled;
 				if (remainingTime < 0)
 					remainingTime = 0;

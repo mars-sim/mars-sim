@@ -653,15 +653,21 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the buildings in a settlement that has a given function.
+	 * Gets a list of buildings in a settlement that has a given function.
 	 *
 	 * @param building function {@link FunctionType} the function of the building.
-	 * @return list of buildings.
+	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsWithoutFunctionType(FunctionType bf) {
 		return buildings.stream().filter(b -> !b.hasFunction(bf)).collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a list of buildings in a settlement that has a given science type.
+	 * 
+	 * @param type ScienceType
+	 * @return list of buildings
+	 */
 	public List<Building>getBuildingsWithScienceType(ScienceType type) {
 		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toList());
 	}
