@@ -15,9 +15,11 @@ import static com.almasb.fxgl.dsl.FXGL.getWorldProperties;
 import static com.almasb.fxgl.dsl.FXGL.onKeyDown;
 import static com.almasb.fxgl.dsl.FXGL.play;
 
+import java.util.EnumSet;
 import java.util.Map;
 
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -25,6 +27,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
+
 
 public class MarsWorld {
     
@@ -46,15 +49,18 @@ public class MarsWorld {
 		settings.setHeight(768);
 //		 settings.setStageStyle(StageStyle.UNDECORATED);
 		settings.setTitle(" Mars Simulation Project ");
-		settings.setVersion("pre-3.5.0");
+		settings.setVersion("3.5.0");
 		settings.setProfilingEnabled(false); // turn off fps
 		settings.setCloseConfirmation(false); // turn off exit dialog
 		settings.setIntroEnabled(false); // turn off intro
 //		settings.setMenuEnabled(false); // turn off menus
 		settings.setCloseConfirmation(true);
+        settings.setMainMenuEnabled(true);
+        settings.setEnabledMenuItems(EnumSet.allOf(MenuItem.class));
 	}
 
     public void initGame() {
+        
 //    	player = FXGL.entityBuilder()
 //                .at(400, 300)
 ////                .view(new Rectangle(40, 40, Color.BLUE))
@@ -81,7 +87,7 @@ public class MarsWorld {
     public void initSettlement() {
         hab = entityBuilder()
                 .type(EntityType.HAB)
-                .at(280, 300)
+                .at(300, 300)
                 .viewWithBBox("lander_hab_64.png")
                 .scale(2, 2)
                 .with(new CollidableComponent(true))
@@ -133,7 +139,7 @@ public class MarsWorld {
                     System.out.println(message + ": " + answer);
                     settlement.removeFromWorld();
 
-                    FXGL.getNotificationService().pushNotification(message);
+                    FXGL.getNotificationService().pushNotification("You are inside a settlement.");
                     
                     // Enter a settlement
 //                    initSettlement();
@@ -170,13 +176,13 @@ public class MarsWorld {
 
 
     public void initUI() {
-        Text textPixels = new Text();
-        textPixels.setTranslateX(20);
-        textPixels.setTranslateY(20);
-
-        textPixels.textProperty().bind(getWorldProperties().intProperty("pixelsMoved").asString());
-
-        getGameScene().addUINode(textPixels); // add to the scene graph
+//        Text textPixels = new Text();
+//        textPixels.setTranslateX(10);
+//        textPixels.setTranslateY(20);
+//
+//        textPixels.textProperty().bind(getWorldProperties().intProperty("pixelsMoved").asString());
+//
+//        getGameScene().addUINode(textPixels); // add to the scene graph
     }
     
     
@@ -194,7 +200,7 @@ public class MarsWorld {
     
     public void initInside() {
         var habTexture = getAssetLoader().loadTexture("lander_hab_64.png");
-        habTexture.setTranslateX(280);
+        habTexture.setTranslateX(300);
         habTexture.setTranslateY(300);
         getGameScene().addUINode(habTexture);
         
@@ -210,7 +216,7 @@ public class MarsWorld {
     }
 
     public void initGameVars(Map<String, Object> vars) {
-        vars.put("pixelsMoved", 0);
+//        vars.put("pixelsMoved", 0);
     }
 
 
