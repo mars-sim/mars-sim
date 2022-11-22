@@ -130,10 +130,15 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         // Check the reported allocations
         int changedShifts = 0;
         for(Entry<ShiftSlot, Shift> e : origAllocation.entrySet()) {
-            boolean changed = !e.getKey().getShift().equals(e.getValue());
+            ShiftSlot ss = e.getKey();
+            boolean changed = !ss.getShift().equals(e.getValue());
             if (changed) {
                 changedShifts++;
-                assertTrue("Changed shift on leave", onLeave.contains(e.getKey()));
+                assertTrue("Changed shift on leave", onLeave.contains(ss));
+                assertEquals("Person changing shift status", WorkStatus.ON_LEAVE, ss.getStatus());
+            }
+            else {
+                assertFalse("Person changing shift status", (WorkStatus.ON_LEAVE == ss.getStatus()));
             }
         }
 

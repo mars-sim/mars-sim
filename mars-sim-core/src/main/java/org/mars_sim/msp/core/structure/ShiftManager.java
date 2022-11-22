@@ -147,6 +147,7 @@ public class ShiftManager implements Serializable {
             Shift newShift = findSuitableShift(candidate.getShift());
             if (newShift != null) {
                 onLeave.add(candidate);
+                candidate.setOnLeave(true);
                 Shift oldShift = candidate.getShift();
                 candidate.setShift(newShift);
                 logger.info(p, "Changes shift from " + oldShift.getName() + " to " + newShift.getName());

@@ -48,7 +48,6 @@ public class PersonChat extends ConnectedUnitCommand {
 																	new PersonHealthCommand(),
 																    new PersonTrainingCommand(),
 																    RoleProspectCommand.ROLE_PROSPECT,
-																    ShiftCommand.SHIFT,
 																    SleepCommand.SLEEP,
 																    SocialCommand.SOCIAL,
 																    StatusCommand.STATUS,
