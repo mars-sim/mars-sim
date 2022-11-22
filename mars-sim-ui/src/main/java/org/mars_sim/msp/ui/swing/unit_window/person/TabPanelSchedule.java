@@ -295,6 +295,8 @@ public class TabPanelSchedule extends TabPanel {
 				return s.getName() + " : OnDuty ends @ " + s.getEnd();
 			case OFF_DUTY:
 				return s.getName() + " : Off Duty start @ " + s.getStart();
+			case ON_LEAVE:
+				return s.getName() + " : On Leave";
 		}
 		return "";
 	}

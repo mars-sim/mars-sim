@@ -72,7 +72,7 @@ public class Shift implements Serializable {
     /**
      * Increase how many shots have been allocationed to the Shift
      */
-    void increaseSlots() {
+    void joinShift() {
         members++;
     }
 

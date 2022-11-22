@@ -137,6 +137,7 @@ public class PersonTaskManager extends TaskManager {
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
 		switch(workStatus) {
 			case OFF_DUTY:
+			case ON_LEAVE:
 				mtList = MetaTaskUtil.getNonDutyHourTasks();
 				shiftDesc = "Shift: NonDuty";
 				break;

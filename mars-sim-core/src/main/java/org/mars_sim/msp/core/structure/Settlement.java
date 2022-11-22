@@ -393,7 +393,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern("3 Shifts");
-		shiftManager = new ShiftManager(shifts);
+		shiftManager = new ShiftManager(this, shifts);
 	}
 
 	/**
@@ -480,7 +480,7 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
 
-		shiftManager = new ShiftManager(sTemplate.getShiftDefinition());
+		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
@@ -925,7 +925,7 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
-		shiftManager.timePassing(pulse.getMarsTime().getMillisolInt());
+		shiftManager.timePassing(pulse);
 
 		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the

@@ -74,6 +74,9 @@ public class TaskCommand extends AbstractSettlementCommand {
 					case ON_DUTY:
 						shift.append("On (").append(s.getName()).append(')');
 						break;
+					case ON_LEAVE:
+						shift.append("On Leave (").append(s.getName()).append(')');
+						break;
 				}
 
 				response.appendTableRow(tableGroup, p.getName(), shift.toString());

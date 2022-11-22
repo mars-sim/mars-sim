@@ -36,6 +36,9 @@
 	<!ELEMENT shifts (shift-pattern*)>
 	<!ELEMENT shift-pattern (shift*)>
 	<!ATTLIST shift-pattern name CDATA #REQUIRED>
+	<!ATTLIST shift-pattern rotation-sols CDATA #IMPLIED>
+	<!ATTLIST shift-pattern leave-perc CDATA #IMPLIED>
+
 	<!ELEMENT shift EMPTY>
 	<!ATTLIST shift name CDATA #REQUIRED>
 	<!ATTLIST shift start CDATA #REQUIRED>
@@ -96,12 +99,12 @@
 	</life-support-requirements>
 
 	<shifts>
-		<shift-pattern name="3 Shifts">
+		<shift-pattern name="3 Shifts" rotation-sols="2">
 			<shift name="A" start="200" end="550" pop-percentage ="40"/>
 			<shift name="B" start="550" end="900" pop-percentage ="40"/>
 			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
 		</shift-pattern>
-		<shift-pattern name="2 Shifts">
+		<shift-pattern name="2 Shifts" leave-perc="3" rotation-sols="2">
 			<shift name="X" start="200" end="700" pop-percentage ="50"/>
 			<shift name="Y" start="700" end="200" pop-percentage ="50"/>
 		</shift-pattern>

@@ -919,12 +919,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 						// Checks if a person has a role
 						if (role.getType() == null)
 							role.obtainNewRole();
-
-						if (currentSol % 3 == 0) {
-							// Adjust the shiftChoice once every 3 sols based on sleep hour
-							int bestSleepTime[] = getPreferredSleepHours();
-							shiftSlot.adjustShiftChoice(bestSleepTime);
-						}
 					}
 				}
 			}

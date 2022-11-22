@@ -35,6 +35,14 @@ import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTempla
  */
 public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
 
+	/**
+	 *
+	 */
+
+	/**
+	 *
+	 */
+
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names
@@ -87,6 +95,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String SHIFT_START = "start";
 	private static final String SHIFT_END = "end";
 	private static final String SHIFT_PERC = "pop-percentage";
+	private static final String LEAVE_PERC = "leave-perc";
+	private static final String ROTATION_SOLS = "rotation-sols";
+
+
 
 
 	private double[] rover_values = new double[] { 0, 0 };
@@ -134,6 +146,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		for(Element node : shiftNodes) {
 			String name = node.getAttributeValue(NAME);
 
+			int rotSol = ConfigHelper.getOptionalAttributeInt(node, ROTATION_SOLS, 10);
+			int leave = ConfigHelper.getOptionalAttributeInt(node, LEAVE_PERC, 10);
 			List<ShiftSpec> shiftSpecs = new ArrayList<>();
 			List<Element> specNodes = node.getChildren(SHIFT_SPEC);
 			for(Element spec : specNodes) {
@@ -148,7 +162,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				shiftSpecs.add(new ShiftSpec(sname, start, end, population));
 			}
 
-			shiftDefinitions.put(name.toLowerCase(), new ShiftPattern(name, shiftSpecs));
+			shiftDefinitions.put(name.toLowerCase(), new ShiftPattern(name, shiftSpecs, rotSol, leave));
 		}
 	}
 
