@@ -22,10 +22,14 @@ public class Shift implements Serializable {
 
     /**
      * Create an active Shift defined by a shared specification
+     * @param spec The Specification of the Shift
+     * @param offset MSols offset 
      */
-    Shift(ShiftSpec spec) {
-        this.start = spec.getStart();
-        this.end = spec.getEnd();
+    Shift(ShiftSpec spec, int offset) {
+        // The Shift Spec assumes standard timezie; but an offset has to be applied to
+        // keep the Shift aligned with Sunrise/Sunset
+        this.start = (spec.getStart() + offset)%1000;
+        this.end = (spec.getEnd() + offset)%1000;
         this.name = spec.getName();
         this.targetPercentage = spec.getPopPercentage();
     }

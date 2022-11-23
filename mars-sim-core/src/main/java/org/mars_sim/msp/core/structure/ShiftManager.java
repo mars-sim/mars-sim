@@ -27,6 +27,7 @@ public class ShiftManager implements Serializable {
     private Settlement settlement;
     private int leavePercentage = 0;
     private int rotationSols = 0;
+    private int offset;
 
     /**
      * Create a SHift Manager based on a shared ShiftPattern
@@ -38,11 +39,19 @@ public class ShiftManager implements Serializable {
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
         
+        // Get the rotation about the planet and convert that to a fraction of the Sol.
+        double fraction = settlement.getCoordinates().getTheta()/(Math.PI * 2D); 
+        if (fraction == 1D) {
+            // Gone round the planet
+            fraction = 0D;
+        }
+        this.offset = (int) (100 * fraction) * 10; // Do the offset in units of 10
+
         if (shiftDefinition.getShifts().isEmpty()) {
             throw new  IllegalArgumentException("No shift defined in " + shiftDefinition.getName());
         }
         for(ShiftSpec s : shiftDefinition.getShifts()) {
-            shifts.add(new Shift(s));
+            shifts.add(new Shift(s, offset));
         }
     }
 
@@ -103,7 +112,7 @@ public class ShiftManager implements Serializable {
         int currentMSol = pulse.getMarsTime().getMillisolInt();
         for(Shift s : shifts) {
             if (s.checkShift(currentMSol) && s.isOnDuty()) {
-                logger.info(settlement, "OnDuty Shift is " + s.getName());
+                logger.fine(settlement, "OnDuty Shift is " + s.getName());
             }
         }
 
@@ -139,7 +148,7 @@ public class ShiftManager implements Serializable {
         // Select someone to change Shift
         int maxOnLeave = Math.max(1, (int)(potentials.size() * leavePercentage)/100);
         while(!potentials.isEmpty() && (onLeave.size() < maxOnLeave)) {
-            int idx = RandomUtil.getRandomInt(potentials.size());
+            int idx = RandomUtil.getRandomInt(potentials.size()-1);
             Person p = potentials.remove(idx);
             ShiftSlot candidate = p.getShiftSlot();
 
@@ -170,6 +179,13 @@ public class ShiftManager implements Serializable {
     public List<ShiftSlot> getOnLeave() {
 		return onLeave;
 	}
+
+    /**
+     * Get the time mSol offset for this shift.
+     */
+    public int getOffset() {
+        return offset;
+    }
 
     /**
      * How often does shifts get changes in terms of Sols.

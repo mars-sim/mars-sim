@@ -98,15 +98,26 @@
 
 	</life-support-requirements>
 
+	<!-- The Standard patterns are the default and but always be present. 
+		The others can be added/deleted -->
 	<shifts>
-		<shift-pattern name="3 Shifts" rotation-sols="2">
+		<shift-pattern name="Standard 3 Shift" rotation-sols="2">
 			<shift name="A" start="200" end="550" pop-percentage ="40"/>
 			<shift name="B" start="550" end="900" pop-percentage ="40"/>
 			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
 		</shift-pattern>
-		<shift-pattern name="2 Shifts" leave-perc="3" rotation-sols="2">
-			<shift name="X" start="200" end="700" pop-percentage ="50"/>
-			<shift name="Y" start="700" end="200" pop-percentage ="50"/>
+		<shift-pattern name="Standard 2 Shift" leave-perc="3" rotation-sols="4">
+			<shift name="Day" start="200" end="700" pop-percentage ="50"/>
+			<shift name="Night" start="700" end="200" pop-percentage ="50"/>
+		</shift-pattern>
+		<shift-pattern name="Skeleton Night Shift" leave-perc="3" rotation-sols="2">
+			<shift name="Day" start="500" end="930" pop-percentage ="90"/>
+			<shift name="Night" start="900" end="530" pop-percentage ="10"/>
+		</shift-pattern>
+		<shift-pattern name="Long 3 Shift" rotation-sols="4">
+			<shift name="A" start="200" end="600" pop-percentage ="40"/>
+			<shift name="B" start="500" end="900" pop-percentage ="40"/>
+			<shift name="Night" start="900" end="200" pop-percentage ="20"/>
 		</shift-pattern>
 	</shifts>
 

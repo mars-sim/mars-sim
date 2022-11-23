@@ -2,7 +2,6 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base" 
         default-population="24" number-of-robots="14" sponsor="MS"
-        shift-pattern="3 Shifts"
         description="Large Alpha Base">
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
