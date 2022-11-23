@@ -99,8 +99,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String ROTATION_SOLS = "rotation-sols";
 
 	/** Thrse must be present in the settlements.xml */
-	private static final String DEFAULT_3SHIFT = "Standard 3 Shift";
-	private static final String DEFAULT_2SHIFT = "Standard 2 Shift";
+	public static final String DEFAULT_3SHIFT = "Standard 3 Shift";
+	public static final String DEFAULT_2SHIFT = "Standard 2 Shift";
 
 	private double[] rover_values = new double[] { 0, 0 };
 	private double[][] life_support_values = new double[2][7];

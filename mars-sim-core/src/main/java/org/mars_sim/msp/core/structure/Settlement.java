@@ -392,7 +392,7 @@ public class Settlement extends Structure implements Temporal,
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
-		ShiftPattern shifts = settlementConfig.getShiftPattern("3 Shifts");
+		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
 		shiftManager = new ShiftManager(this, shifts);
 	}
 
