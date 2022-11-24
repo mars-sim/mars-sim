@@ -496,7 +496,7 @@ public class Sleep extends Task {
 			}
 			else {
 				// Set to 30 millisols prior to the beginning of the duty shift hour
-				time = ss.getShift().getStart() - 30;
+				time = ss.getShift().getStart() - 30.0;
 			}
 
 			if (time < 0D) {

@@ -125,7 +125,7 @@ public class TabPanelSponsorship extends TabPanel {
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
 		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-		ta.setColumns (25);
+		ta.setColumns (30);
 		ta.setLineWrap (true);
 		ta.setBorder(new MarsPanelBorder());
 		panel.add(ta);

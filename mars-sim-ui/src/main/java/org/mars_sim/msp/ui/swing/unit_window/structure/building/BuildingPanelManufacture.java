@@ -116,14 +116,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		center.add(labelPane, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		addTextField(labelPane, "Tech Level:", workshop.getTechLevel(), null);
+		addTextField(labelPane, "Tech Level:", workshop.getTechLevel(), 5, null);
 
 		// Prepare processCapacity label
-		addTextField(labelPane, "Process Capacity:", workshop.getMaxProcesses(), null);
+		addTextField(labelPane, "Process Capacity:", workshop.getMaxProcesses(), 5, null);
 
 		// Prepare processCapacity label
 		addTextField(labelPane, "# of Printers In Use: ",
-					 workshop.getNumPrintersInUse(), null);
+					 workshop.getNumPrintersInUse(), 5, null);
 			
 		// Create scroll pane for manufacturing processes
 		scrollPanel = new WebScrollPane();

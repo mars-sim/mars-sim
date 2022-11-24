@@ -161,13 +161,13 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	}
 	
 	/**
-	 * Adds a tab panel to the center panel.
+	 * Adds this tab panel as the first tab panel.
 	 *
 	 * @param panel the tab panel to add.
 	 */
-	protected final void addTopPanel(TabPanel panel) {
+	protected final void addFirstPanel(TabPanel panel) {
 		if (!tabPanels.contains(panel)) {
-			tabPanels.add(panel);
+			tabPanels.add(0, panel);
 		}
 	}
 

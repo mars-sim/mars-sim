@@ -69,17 +69,17 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 3, 1));
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
 		researchersLabel = addTextField(labelPanel, Msg.getString("BuildingPanelResearch.numberOfResearchers"),
-										researchersCache, null);
+										researchersCache, 5, null);
 
 		// Prepare researcher capacityLabel
 		addTextField(labelPanel, Msg.getString("BuildingPanelResearch.researcherCapacity"),
-					 lab.getLaboratorySize(), null);
+					 lab.getLaboratorySize(), 5, null);
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();

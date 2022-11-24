@@ -35,7 +35,6 @@ public class BuildingWindow extends UnitWindow {
         super(desktop, building, building.getSettlement().getName() + " - " + building.getNickName(), false);
 
         // Add tab panels
-        addTopPanel(new BuildingPanelGeneral(building, desktop));
         addTabPanel(new BuildingPanelMaintenance(building, desktop));
         addTabPanel(new BuildingPanelMalfunctionable(building, desktop));
 		addTabPanel(new BuildingPanelPower(building, desktop));
@@ -50,8 +49,10 @@ public class BuildingWindow extends UnitWindow {
 				addTabPanel( new BuildingPanelComputation(building.getComputation(), desktop));
 				break;
 			case COOKING:
-			case PREPARING_DESSERT:
 	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
+				break;
+			case PREPARING_DESSERT:
+				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
 				break;
 			case EVA:
 				addTabPanel( new BuildingPanelEVA(building.getEVA(), desktop));
@@ -64,7 +65,6 @@ public class BuildingWindow extends UnitWindow {
 				break;
 			case FOOD_PRODUCTION:
 				addTabPanel( new BuildingPanelFoodProduction(building.getFoodProduction(), desktop));
-				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
 				break;
 			case VEHICLE_MAINTENANCE:
 				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), desktop));
@@ -104,8 +104,14 @@ public class BuildingWindow extends UnitWindow {
         	}
 
         }
-
-		// Add to tab panels with icons. 
+        
+        // Sort tab panels
+        sortTabPanels();
+        
+        // Add general tab panel as the first panel
+        addFirstPanel(new BuildingPanelGeneral(building, desktop));
+        
+		// Add to tab panels with icons 
         addTabIconPanels();
     }
 

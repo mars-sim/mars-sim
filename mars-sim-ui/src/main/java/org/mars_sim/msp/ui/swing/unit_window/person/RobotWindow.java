@@ -49,13 +49,14 @@ public class RobotWindow extends UnitWindow {
 			inoperableCache = false;
 
 		addTabPanel(new InventoryTabPanel(robot, desktop));
-		addTopPanel(new LocationTabPanel(robot, desktop));
+		addTabPanel(new LocationTabPanel(robot, desktop));
 		addTabPanel(new NotesTabPanel(robot, desktop));
 		addTabPanel(new TabPanelSchedule(robot, desktop));
 		addTabPanel(new TabPanelSkill(robot, desktop));
-
+		
 		// Add tab sorting
-//		sortTabPanels();
+		sortTabPanels();
+		
 		// Add to tab panels. 
 		addTabIconPanels();
 	}

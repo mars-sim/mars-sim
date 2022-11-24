@@ -258,7 +258,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @return The JTextField that can be updated.
 	 */
 	private JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
-		parent.add(new WebLabel(label, SwingConstants.RIGHT));
+		parent.add(new WebLabel(label + " ", SwingConstants.RIGHT));
 						
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField typeTF = new JTextField();

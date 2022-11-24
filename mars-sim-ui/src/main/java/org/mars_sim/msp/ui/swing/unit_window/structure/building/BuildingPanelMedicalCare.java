@@ -74,19 +74,19 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 3, 1));
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
 		
 		// Create sick bed label
 		addTextField(labelPanel, Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
-					 medical.getSickBedNum(), null);
+					 medical.getSickBedNum(), 5, null);
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
 		physicianLabel = addTextField(labelPanel, Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
-									  physicianCache, null);
+									  physicianCache, 5, null);
 
 		// Create scroll panel for medical table
 		WebScrollPane scrollPanel = new WebScrollPane();

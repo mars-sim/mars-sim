@@ -108,10 +108,10 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		addTextField(labelPanel, "Tech Level:", foodFactory.getTechLevel(), null);
+		addTextField(labelPanel, "Tech Level:", foodFactory.getTechLevel(), 3, null);
 
 		// Prepare processCapacity label
-		addTextField(labelPanel, "Process Capacity:", foodFactory.getMaxProcesses(), null);
+		addTextField(labelPanel, "Process Capacity:", foodFactory.getMaxProcesses(), 3, null);
 
 
 		// Create scroll pane for food production processes

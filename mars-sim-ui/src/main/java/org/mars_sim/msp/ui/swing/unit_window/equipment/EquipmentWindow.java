@@ -57,7 +57,8 @@ public class EquipmentWindow extends UnitWindow {
         if (salvaged)
         	addTabPanel(new SalvageTabPanel(equipment, desktop));
 
-//    	sortTabPanels();
+    	sortTabPanels();
+
 		// Add to tab panels. 
 		addTabIconPanels();
     }

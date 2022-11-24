@@ -178,8 +178,6 @@ public class PersonWindow extends UnitWindow {
 	
 	public void initTabPanel(Person person) {
 		// Add tab panels	
-		addTabPanel(new TabPanelGeneral(person, desktop));
-
 		addTabPanel(new TabPanelActivity(person, desktop));
 		
 		addTabPanel(new TabPanelAttribute(person, desktop));
@@ -199,7 +197,7 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new InventoryTabPanel(person, desktop));
 
-		addTopPanel(new LocationTabPanel(person, desktop));
+		addTabPanel(new LocationTabPanel(person, desktop));
 
 		addTabPanel(new NotesTabPanel(person, desktop));
 		
@@ -214,7 +212,9 @@ public class PersonWindow extends UnitWindow {
 		addTabPanel(new TabPanelSocial(person, desktop));
 
 		addTabPanel(new TabPanelSponsor(person, desktop));
-
+		
+		addFirstPanel(new TabPanelGeneral(person, desktop));
+		
 		// Add to tab panels. 
 		addTabIconPanels();
 	}

@@ -63,7 +63,9 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI elements
+	 * Builds the UI elements.
+	 * 
+	 * @param center the panel to be built
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -74,19 +76,19 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 
 		// Create bed capacity label
 		bedCapLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.capacity"),
-								   living.getBedCap(), null);
+								   living.getBedCap(), 5, "Max number of beds available");
 
 		// Create # of assigned bed label
 		bedAssignsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.assigned"),
-									   living.getNumAssignedBeds(), null);
+									   living.getNumAssignedBeds(), 5, "Number of beds already assigned");
 
 		// Create bedOccupiedLabel
 		bedOccupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.occupied"),
-										living.getNumOccupiedActivitySpots(), null);
+										living.getNumOccupiedActivitySpots(), 5, "Number of beds already occupied");
 
 		// Create bedEmptyLabel
 		bedEmptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.empty"),
-									 living.getNumEmptyActivitySpots(), null);
+									 living.getNumEmptyActivitySpots(), 5, "Number of empty beds available");
 	}
 
 	@Override

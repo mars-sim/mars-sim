@@ -73,24 +73,24 @@ extends BuildingFunctionPanel {
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
 		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.numberOfCooks"), 
-				numCooksCache, null); //$NON-NLS-1$
+				numCooksCache, 5, null); //$NON-NLS-1$
 
 		// Prepare cook capacity label
 		addTextField(labelPanel, Msg.getString("BuildingPanelCooking.cookCapacity"), 
-				kitchen.getCookCapacity(), null);
+				kitchen.getCookCapacity(), 5, null);
 
 		// Prepare # of available meal label
 		numMealsCache = kitchen.getNumberOfAvailableCookedMeals();
 		numMealsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.availableMeals"), 
-				numMealsCache, null); //$NON-NLS-1$
+				numMealsCache, 5, null); //$NON-NLS-1$
 
 		// Prepare # of today cooked meal label
 		numMealsTodayCache = kitchen.getTotalNumberOfCookedMealsToday();
-		numMealsTodayLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.mealsToday"), numMealsTodayCache, null); //$NON-NLS-1$
+		numMealsTodayLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.mealsToday"), numMealsTodayCache, 5, null); //$NON-NLS-1$
 
 		// Prepare meal grade label
 		String grade = computeGrade(kitchen.getBestMealQualityCache());
-		mealGradeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.bestQualityOfMeals"), grade, null); //$NON-NLS-1$
+		mealGradeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.bestQualityOfMeals"), grade, 5, null); //$NON-NLS-1$
 	}
 
 	/**

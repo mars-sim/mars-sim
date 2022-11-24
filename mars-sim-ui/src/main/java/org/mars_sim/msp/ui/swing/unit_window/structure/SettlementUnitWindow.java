@@ -204,7 +204,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		
 		addTabPanel(new InventoryTabPanel(settlement, desktop));
 
-		addTopPanel(new LocationTabPanel(settlement, desktop));
+		addTabPanel(new LocationTabPanel(settlement, desktop));
 		
 		addTabPanel(new TabPanelMaintenance(settlement, desktop));
 
@@ -234,7 +234,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelWasteProcesses(settlement, desktop));
 
-//		sortTabPanels();
+		sortTabPanels();
 		
 		// Add to tab panels. 
 		addTabIconPanels();

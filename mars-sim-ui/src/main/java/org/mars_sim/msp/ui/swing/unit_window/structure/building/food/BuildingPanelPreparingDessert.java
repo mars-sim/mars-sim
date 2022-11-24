@@ -75,29 +75,29 @@ extends BuildingFunctionPanel {
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
 		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.numberOfCooks")
-				, numCooksCache, null); //$NON-NLS-1$
+				, numCooksCache, 5, null); //$NON-NLS-1$
 
 		// Prepare cook capacity label
 		addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.cookCapacity"), 
-				kitchen.getCookCapacity(), null); //$NON-NLS-1$
+				kitchen.getCookCapacity(), 5, null); //$NON-NLS-1$
 
 		// Prepare serving number label
 		servingsDessertCache = kitchen.getAvailableServingsDesserts();
 		servingsDessertLabel = addTextField(labelPanel, 
 				Msg.getString("BuildingPanelPreparingDessert.availableDesserts"),
-					servingsDessertCache, null); //$NON-NLS-1$
+					servingsDessertCache, 5, null); //$NON-NLS-1$
 
 		// Prepare servings dessert today label
 		servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
 		servingsDessertTodayLabel = addTextField(labelPanel, 
 				Msg.getString("BuildingPanelPreparingDessert.dessertsToday"),
-					servingsDessertTodayCache, null); //$NON-NLS-1$
+					servingsDessertTodayCache, 5, null); //$NON-NLS-1$
 
 		dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
 		// Update Dessert grade
 		dessertQualityLabel = addTextField(labelPanel, 
 				Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert"),
-						 dessertGradeCache, null); //$NON-NLS-1$
+						 dessertGradeCache, 5, null); //$NON-NLS-1$
 	}
 
 	/**

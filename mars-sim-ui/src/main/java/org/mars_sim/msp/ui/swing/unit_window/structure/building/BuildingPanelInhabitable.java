@@ -64,7 +64,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 3, 1));
+		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
