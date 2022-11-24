@@ -11,12 +11,11 @@ import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 import static com.almasb.fxgl.dsl.FXGL.getGameScene;
 import static com.almasb.fxgl.dsl.FXGL.getPhysicsWorld;
-import static com.almasb.fxgl.dsl.FXGL.getWorldProperties;
-import static com.almasb.fxgl.dsl.FXGL.onKeyDown;
 import static com.almasb.fxgl.dsl.FXGL.play;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
@@ -26,12 +25,14 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 
 import javafx.scene.input.KeyCode;
-import javafx.scene.text.Text;
 
 
 public class MarsWorld {
     
 //    private GameWorld world = FXGL.getGameWorld();
+    
+    /** initialized logger for this class. */
+    private static Logger logger = Logger.getLogger(MarsWorld.class.getName());
     
 	private Entity commander;
 	private Entity settlement;
@@ -136,9 +137,12 @@ public class MarsWorld {
 //                });
                 
                 FXGL.getDialogService().showConfirmationBox("Do you want to enter this settlement ?", answer -> {
-                    System.out.println(message + ": " + answer);
+                    
+                    play("drop.wav");
+                    
+                    logger.info(message + ": " + answer);
                     settlement.removeFromWorld();
-
+                    
                     FXGL.getNotificationService().pushNotification("You are inside a settlement.");
                     
                     // Enter a settlement
@@ -168,10 +172,6 @@ public class MarsWorld {
         FXGL.onKey(KeyCode.S, () -> {
             commander.translateY(2.5); // move down 5 pixels
         });
-
-        onKeyDown(KeyCode.F, () -> {
-            play("drop.wav");
-        });
     }
 
 
@@ -186,17 +186,17 @@ public class MarsWorld {
     }
     
     
-    public void initOutside() {   
-        var commanderTexture = getAssetLoader().loadTexture("astronaut_24.png");
-        commanderTexture.setTranslateX(50);
-        commanderTexture.setTranslateY(150);
-        getGameScene().addUINode(commanderTexture);
-        
-        var settlementTexture = getAssetLoader().loadTexture("colony_24.png");
-        settlementTexture.setTranslateX(300);
-        settlementTexture.setTranslateY(300);
-        getGameScene().addUINode(settlementTexture);
-    }
+//    public void initOutside() {   
+//        var commanderTexture = getAssetLoader().loadTexture("astronaut_24.png");
+//        commanderTexture.setTranslateX(50);
+//        commanderTexture.setTranslateY(150);
+//        getGameScene().addUINode(commanderTexture);
+//        
+//        var settlementTexture = getAssetLoader().loadTexture("colony_24.png");
+//        settlementTexture.setTranslateX(300);
+//        settlementTexture.setTranslateY(300);
+//        getGameScene().addUINode(settlementTexture);
+//    }
     
     public void initInside() {
         var habTexture = getAssetLoader().loadTexture("lander_hab_64.png");
