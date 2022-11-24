@@ -145,19 +145,6 @@ public class BuildingManager implements Serializable {
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 
-
-	/**
-	 * Constructor 1 : construct buildings from settlement config template. Called
-	 * by Settlement's initialize().
-	 *
-	 * @param settlement the manager's settlement.
-	 * @throws Exception if buildings cannot be constructed.
-	 */
-	public BuildingManager(Settlement settlement) {
-		this(settlement, settlementConfig
-				.getItem(settlement.getTemplate()).getBuildingTemplates());
-	}
-
 	/**
 	 * Constructor 2 : construct buildings from name list. Called by constructor 1.
 	 *
@@ -2252,7 +2239,7 @@ public class BuildingManager implements Serializable {
 	 * @param evaBuilding
 	 * @return
 	 */
-	public Building getEVAAttachedBuilding(Building evaBuilding) {
+	private Building getEVAAttachedBuilding(Building evaBuilding) {
 		SettlementTemplate settlementTemplate = simulationConfig
 				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
 		List<BuildingTemplate> templates = settlementTemplate.getBuildingTemplates();

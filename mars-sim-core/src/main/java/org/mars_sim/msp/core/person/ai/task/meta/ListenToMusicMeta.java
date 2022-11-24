@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -78,9 +77,7 @@ public class ListenToMusicMeta extends FactoryMetaTask {
 				result *= getBuildingModifier(recBuilding, person);
 
 	            // Modify probability if during person's work shift.
-	            int now = marsClock.getMillisolInt();
-	            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
-	            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
+	            if (person.isOnDuty()) {
 	                result*= WORK_SHIFT_MODIFIER;
 	            }
 	        }

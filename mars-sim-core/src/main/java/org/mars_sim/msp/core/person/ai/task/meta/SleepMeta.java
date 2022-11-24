@@ -11,10 +11,10 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -132,25 +132,19 @@ public class SleepMeta extends FactoryMetaTask {
                 result *= 2D;
             }
 
-            boolean isOnCall = (person.getShiftType() == ShiftType.ON_CALL);
-            
-            if (isOnCall)
+			int maxNumSleep = 4;
+			WorkStatus workStatus = person.getShiftSlot().getStatus();
+            if (workStatus == WorkStatus.ON_CALL) {
             	// Note: For on-call personnel, there is no longer a definite sleep 
             	// pattern, recommend resting as much as possible to get ready 
             	// when duties call.
             	result = result * 100;
-            
-            else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
+				maxNumSleep = 8;
+			}
+            else if (workStatus == WorkStatus.ON_DUTY) {
          	   // Reduce the probability of sleep
                result = result / 100D;
             }
-
-        	int maxNumSleep = 0;
-
-        	if (isOnCall)
-            	maxNumSleep = 8;
-            else
-            	maxNumSleep = 4;
 
         	int sol = marsClock.getMissionSol();
         	

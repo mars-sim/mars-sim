@@ -1,6 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 2-EU" default-population="8" description="Phase 2 base for European Space Agency"
+    shift-pattern="Skeleton Night Shift"
 	number-of-robots="5" sponsor="ESA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"

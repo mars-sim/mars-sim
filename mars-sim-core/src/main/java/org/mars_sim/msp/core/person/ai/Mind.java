@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
@@ -73,14 +72,11 @@ public class Mind implements Serializable, Temporal {
 	private Relation relation;
 	
 	private static MissionManager missionManager;
-	private static SurfaceFeatures surfaceFeatures;
 
 	static {
 		Simulation sim = Simulation.instance();
 		// Load the mission manager
 		missionManager = sim.getMissionManager();
-		// Load SurfaceFeatures
-		surfaceFeatures = sim.getSurfaceFeatures();
 	}
 
 	/**
@@ -342,12 +338,8 @@ public class Mind implements Serializable, Temporal {
 		// Check if mission creation at settlement (if any) is overridden.
 		overrideMission = person.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
 
-		// Check if it's within the mission request window
-		// Within the mission window since the beginning of the work shift
-		boolean isInMissionWindow = person.getTaskSchedule().isPersonAtStartOfWorkShift();
-
 		// See if this person can ask for a mission
-		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
+		return !hasActiveMission && !hasAMission && !overrideMission;
 	}
 
 	/**

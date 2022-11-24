@@ -1,6 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 3-MS" default-population="12" description="Phase 3 base for Mars Society"
+    shift-pattern="Long 3 Shift"
 	number-of-robots="7" sponsor="MS">
     
     

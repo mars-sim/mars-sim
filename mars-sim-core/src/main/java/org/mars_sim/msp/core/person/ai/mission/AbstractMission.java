@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -349,22 +348,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 		eventManager.registerNewEvent(newEvent);
 	}
 
-	public final void adjustShift(Worker member) {
+	/**
+	 * A Memeber leaves the Mission
+	 */
+	protected final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
-			person.getMind().stopMission();
 			member.setMission(null);
 
-			ShiftType shift = null;
-			if (person.getSettlement() != null) {
-				shift = person.getSettlement().getAnEmptyWorkShift(-1);
-				person.setShiftType(shift);
-			}
-			else if ((person.getVehicle() != null) && (person.getVehicle().getSettlement() != null)) {
-					shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
-					person.setShiftType(shift);
-			}
+			person.getShiftSlot().setOnCall(false);
 
 			registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
@@ -380,8 +373,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	public void removeMember(Worker member) {
 		if (members.contains(member)) {
 			members.remove(member);
-			// Adjust the work shift
-			adjustShift(member);
+
+			memberLeave(member);
 		}
 	}
 
@@ -726,8 +719,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
 			logger.info(startingMember, "Disbanding mission member(s): " + listOfMembers);
 			
-			for(Worker member : members) {
-				adjustShift(member);
+			// Take a copy as Worker will deregister themselves
+			List<Worker> oldMembers = new ArrayList<>(members);
+			for(Worker member : oldMembers) {
+				memberLeave(member);
 			}	
 			members.clear();
 		}
@@ -1165,7 +1160,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
 					for (Worker m : members) {
-						((Person) m).setShiftType(ShiftType.ON_CALL);
+						((Person) m).getShiftSlot().setOnCall(true);
 					}
 				}
 				setPhaseEnded(true);

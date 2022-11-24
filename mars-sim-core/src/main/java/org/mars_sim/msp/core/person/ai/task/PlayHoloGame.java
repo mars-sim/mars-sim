@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * This task lowers the stress and may increase or decrease fatigue. The
  * duration of the task is by default chosen randomly, up to 100 millisols.
  */
-public class PlayHoloGame extends Task implements Serializable {
+public class PlayHoloGame extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -66,8 +65,7 @@ public class PlayHoloGame extends Task implements Serializable {
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
 		// If during person's work shift, only relax for short period.
-		int millisols = marsClock.getMillisolInt();
-		boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+		boolean isShiftHour = person.isOnDuty();
 		if (isShiftHour) {
 			setDuration(5D);
 		}

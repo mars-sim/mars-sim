@@ -6,11 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -26,8 +24,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The duration of the task is by default chosen randomly, up to 100 millisols.
  */
 public class ListenToMusic
-extends Task
-implements Serializable {
+extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,8 +62,7 @@ implements Serializable {
 		}
 		
 		// If during person's work shift, reduce the time to 1/4.
-		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+        boolean isShiftHour = person.isOnDuty();
 		if (isShiftHour) {
 		    setDuration(getDuration()/4D);
 		}

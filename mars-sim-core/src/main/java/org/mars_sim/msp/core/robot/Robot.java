@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -710,11 +709,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public void setMission(Mission newMission) {
 		getBotMind().setMission(newMission);
-	}
-
-	//@Override
-	public void setShiftType(ShiftType shiftType) {
-		// taskSchedule.setShiftType(shiftType);
 	}
 
 	public int getProduceFoodSkill() {

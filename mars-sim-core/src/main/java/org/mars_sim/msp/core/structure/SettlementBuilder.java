@@ -371,9 +371,6 @@ public final class SettlementBuilder {
 			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
 		}
 
-		// Set up work shift
-		unitManager.setupShift(settlement, initPop);
-
 		// Establish a system of governance at a settlement.
 		settlement.getChainOfCommand().establishSettlementGovernance();
 	}

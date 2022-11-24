@@ -73,8 +73,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
-			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail",
-					person.getSettlement().getName())); // $NON-NLS-1$
+			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials"));
 		} else {
 			endTask();
 		}
@@ -106,8 +105,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		
 		// Initialize data members
 		if (robot.getSettlement() != null) {
-			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail",
-					robot.getSettlement().getName())); // $NON-NLS-1$
+			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials"));
 		} else {
 			endTask();
 		}

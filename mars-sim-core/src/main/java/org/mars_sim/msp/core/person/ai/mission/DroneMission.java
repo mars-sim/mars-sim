@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.PilotDrone;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
@@ -213,8 +212,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 				for (Worker m : getMembers()) {
 					if (m instanceof Person) {
 						Person pp = (Person) m;
-						if (pp.getShiftType() != ShiftType.ON_CALL)
-							pp.setShiftType(ShiftType.ON_CALL);
+						pp.getShiftSlot().setOnCall(true);
 					}
 				}
 

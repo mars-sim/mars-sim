@@ -124,7 +124,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 
-		settlement.setNumShift(1);
 		return settlement;
 	}
 

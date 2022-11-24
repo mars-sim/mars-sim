@@ -65,7 +65,7 @@ public class TendGreenhouseMeta extends MetaTask {
     private static final int MAX_FARMERS = 2;
 
     public TendGreenhouseMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
