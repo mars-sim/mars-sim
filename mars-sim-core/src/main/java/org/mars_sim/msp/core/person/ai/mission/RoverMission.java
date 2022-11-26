@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -271,12 +270,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Performs the embark from settlement phase of the mission.
+	 * Performs the departing from settlement phase of the mission.
 	 *
 	 * @param member the mission member currently performing the mission
 	 */
 	@Override
-	protected void performEmbarkFromSettlementPhase(Worker member) {
+	protected void performDepartingFromSettlementPhase(Worker member) {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
@@ -298,35 +297,39 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return;
 		}
 
-		// Add the rover to a garage if possible.
-		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
+		// Check if everyone is boarded
+		if (isEveryoneInRover()) {
+			// If the rover is in a garage, put the rover outside.
+			if (v.isInAGarage()) {
+				BuildingManager.removeFromGarage(v);
+			}
 
-		// Load vehicle if not fully loaded.
-		if (!isVehicleLoaded()
-			&& member.isInSettlement()
-			// Note: randomly select this member to load resources for the rover
-			// This allows person to do other important things such as eating
-			&& RandomUtil.lessThanRandPercent(75)) {
-			
-			if (member instanceof Person) {
-				Person person = (Person) member;
+			// Record the start mass right before departing the settlement
+			recordStartMass();
 
-				boolean hasAnotherMission = false;
-				Mission m = person.getMission();
-				if (m != null && m != this)
-					hasAnotherMission = true;
-				if (!hasAnotherMission) {
-					TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
-					if (job != null) {
-						person.getMind().getTaskManager().addPendingTask(job, false);
-					}
-				}
+			// Embark from settlement
+			if (v.transfer(unitManager.getMarsSurface())) {
+				setPhaseEnded(true);
+			}
+			else {
+				endMissionProblem(v, "Could not exit Settlement");
 			}
 		}
-
 		else {
+			// Add the rover to a garage if possible.
+			boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
+
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
+
+			// Set the members' work shift to on-call to get ready
+			// For Drone mission do everyone as they do not enter the vehicle
+			for (Worker m : getMembers()) {
+				if (m instanceof Person) {
+					Person pp = (Person) m;
+					pp.getShiftSlot().setOnCall(true);
+				}
+			}
 
 			if (member instanceof Person) {
 				Person person = (Person) member;
@@ -340,9 +343,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						if (!canDo) {
 							logger.warning(person, "Unable to start walk to " + v + ".");
 						}
-//						Task task = person.getMind().getTaskManager().getTask();
-//						if (task != null)
-//							task.addSubTask(walk);
 
 						if (!isDone() && isRoverInAGarage
 							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
@@ -371,45 +371,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (!canDo) {
 						logger.warning(robot, "Unable to walk to " + v + ".");
 					}
-//					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
 							v.getName()));
-				}
-			}
-		}
-
-		// If rover is loaded and everyone is aboard, embark from settlement.
-		if (!isDone()) {
-
-			// Set the members' work shift to on-call to get ready
-			for (Worker m : getMembers()) {
-				Person pp = (Person) m;
-				pp.getShiftSlot().setOnCall(true);
-			}
-
-			if (isEveryoneInRover()) {
-
-				// Double check, this shoud never happen
-				if (!isVehicleLoaded()) {
-					logger.warning(v, "Not fully loaded when travelling");
-				}
-
-				// If the rover is in a garage, put the rover outside.
-				if (v.isInAGarage()) {
-					BuildingManager.removeFromGarage(v);
-				}
-
-				// Record the start mass right before departing the settlement
-				recordStartMass();
-
-				// Embark from settlement
-				if (v.transfer(unitManager.getMarsSurface())) {
-					setPhaseEnded(true);
-				}
-				else {
-					endMissionProblem(v, "Could not exit Settlement");
 				}
 			}
 		}

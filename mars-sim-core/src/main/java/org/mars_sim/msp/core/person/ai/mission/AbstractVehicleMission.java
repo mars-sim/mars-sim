@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -38,6 +39,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -72,7 +75,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final double FUEL_OXIDIZER_FACTOR = 2.25;
 	
 	/** Mission phases. */
-	private static final MissionPhase EMBARKING = new MissionPhase("embarking", Stage.PREPARATION);
+	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);
+	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
 	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
 	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
 
@@ -215,7 +219,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else {
 			// Set initial mission phase.
 			createFullDesignation();
-			startEmbarkingPhase();
+			startLoadingPhase();
 		}
 
 		Worker startingMember = getStartingPerson();
@@ -634,10 +638,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected boolean determineNewPhase() {
 		boolean handled = true;
-		if (REVIEWING.equals(getPhase())) {
+		MissionPhase phase = getPhase();
+		if (REVIEWING.equals(phase)) {
 			// Check the vehicle is loadable before starting the embarking
 			if (isVehicleLoadable()) {
-				startEmbarkingPhase();
+				startLoadingPhase();
 			}
 			else {
 				logger.warning(vehicle, getName() + " cannot load Resources.");
@@ -645,11 +650,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 		}
 
-		else if (EMBARKING.equals(getPhase())) {
+		else if (LOADING.equals(phase)) {
+			setPhase(DEPARTING, getStartingSettlement().getName());	
+		}
+
+		else if (DEPARTING.equals(phase)) {
 			startTravellingPhase();
 		}
 
-		else if (DISEMBARKING.equals(getPhase())) {
+		else if (DISEMBARKING.equals(phase)) {
 			endMission(null);
 		}
 		else {
@@ -666,12 +675,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	@Override
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
-		
-		if (EMBARKING.equals(getPhase())) {
+
+		MissionPhase phase = getPhase();
+		if (LOADING.equals(phase)) {
+			performLoadingPhase(member);
+
+		} else if (DEPARTING.equals(phase)) {
 			checkVehicleMaintenance();
-			performEmbarkFromSettlementPhase(member);
+			performDepartingFromSettlementPhase(member);
 		}
-		else if (TRAVELLING.equals(getPhase())) {
+		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
 			
 			int msol = marsClock.getMillisolInt();
@@ -682,12 +695,62 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				computeTotalDistanceTravelled();
 			}
 		}
-		else if (DISEMBARKING.equals(getPhase())) {
+		else if (DISEMBARKING.equals(phase)) {
 			// if arriving at the settlement
 			if (isCurrentNavpointSettlement())
 				performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
 			else
 				logger.severe(getName() + ": Current navpoint is not a settlement.");
+		}
+	}
+
+	private void performLoadingPhase(Worker member) {
+		Vehicle v = getVehicle();
+
+		if (v == null) {
+			endMission(NO_AVAILABLE_VEHICLES);
+			return;
+		}
+
+		Settlement settlement = v.getSettlement();
+		if (settlement == null) {
+			logger.warning(member,
+					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
+			endMission(NO_AVAILABLE_VEHICLES);
+			return;
+		}
+
+		// While still in the settlement, check if the beacon is turned on and and endMission()
+		else if (v.isBeaconOn()) {
+			endMission(VEHICLE_BEACON_ACTIVE);
+			return;
+		}
+
+		if (!isVehicleLoaded()) {
+			// Load vehicle if not fully loaded.
+			if (member.isInSettlement()
+				// Note: randomly select this member to load resources for the rover
+				// This allows person to do other important things such as eating
+				&& RandomUtil.lessThanRandPercent(75)) {
+				
+				if (member instanceof Person) {
+					Person person = (Person) member;
+
+					boolean hasAnotherMission = false;
+					Mission m = person.getMission();
+					if (m != null && m != this)
+						hasAnotherMission = true;
+					if (!hasAnotherMission) {
+						TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+						if (job != null) {
+							person.getMind().getTaskManager().addPendingTask(job, false);
+						}
+					}
+				}
+			}
+		}
+		else {
+			setPhaseEnded(true);
 		}
 	}
 
@@ -811,11 +874,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			TaskPhase lastOperateVehicleTaskPhase);
 
 	/**
-	 * Performs the embark from settlement phase of the mission.
+	 * Performs the departing from settlement phase of the mission.
 	 *
 	 * @param member the mission member currently performing the mission.
 	 */
-	protected abstract void performEmbarkFromSettlementPhase(Worker member);
+	protected abstract void performDepartingFromSettlementPhase(Worker member);
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
@@ -1971,9 +2034,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Start the Embarking phase
 	 */
-	private void startEmbarkingPhase() {
-		setPhase(EMBARKING, getStartingSettlement().getName());
+	private void startLoadingPhase() {
+		setPhase(LOADING, getStartingSettlement().getName());
 		prepareLoadingPlan(getStartingSettlement());
+
+		// Move to a Garage if possible
+		Vehicle v = getVehicle();
+		Settlement settlement = v.getSettlement();
+		settlement.getBuildingManager().addToGarage(v);
 	}
 
 	/**

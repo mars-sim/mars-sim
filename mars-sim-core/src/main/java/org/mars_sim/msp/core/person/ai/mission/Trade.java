@@ -502,8 +502,8 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(Worker member) {
-		super.performEmbarkFromSettlementPhase(member);
+	protected void performDepartingFromSettlementPhase(Worker member) {
+		super.performDepartingFromSettlementPhase(member);
 
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
 			String vehicleType = getLoadVehicleType(false);
