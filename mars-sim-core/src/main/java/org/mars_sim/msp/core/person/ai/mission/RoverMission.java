@@ -6,9 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -32,7 +34,6 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -76,6 +77,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
+
+	/* Howlong do Worker have to complete departure */
+	private static final int DEPARTURE_DURATION = 150;
+	private static final int DEPARTURE_PREPARATION = 15;
 
 	/**
 	 * Constructor with min people and rover. Initiated by MissionDataBean.
@@ -271,12 +276,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Performs the embark from settlement phase of the mission.
+	 * Performs the departing from settlement phase of the mission.
 	 *
 	 * @param member the mission member currently performing the mission
 	 */
 	@Override
-	protected void performEmbarkFromSettlementPhase(Worker member) {
+	protected void performDepartingFromSettlementPhase(Worker member) {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
@@ -298,36 +303,55 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return;
 		}
 
-		// Add the rover to a garage if possible.
-		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
-
-		// Load vehicle if not fully loaded.
-		if (!isVehicleLoaded()
-			&& member.isInSettlement()
-			// Note: randomly select this member to load resources for the rover
-			// This allows person to do other important things such as eating
-			&& RandomUtil.lessThanRandPercent(75)) {
-			
-			if (member instanceof Person) {
-				Person person = (Person) member;
-
-				boolean hasAnotherMission = false;
-				Mission m = person.getMission();
-				if (m != null && m != this)
-					hasAnotherMission = true;
-				if (!hasAnotherMission) {
-					TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
-					if (job != null) {
-						person.getMind().getTaskManager().addPendingTask(job, false);
-					}
+		// Can depart if every is on the vehicle or time has run out
+		boolean canDepart = isEveryoneInRover();
+		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
+			// Find who has not boarded
+			List<Person> ejectedMembers = new ArrayList<>();
+			Rover r = getRover();
+			for(Worker m : getMembers()) {
+				Person p = (Person) m;
+				if (!r.isCrewmember(p)) {
+					ejectedMembers.add(p);
 				}
+			}
+
+			// Still enough members ? If so eject late arrivals
+			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+				for(Person ej : ejectedMembers) {
+					logger.info(ej, "Ejected from mission " + getName() + " missed Departure");
+					removeMember(ej);
+				}
+				canDepart = true;
 			}
 		}
 
+		// Check if everyone is boarded
+		if (canDepart) {
+			// If the rover is in a garage, put the rover outside.
+			if (v.isInAGarage()) {
+				BuildingManager.removeFromGarage(v);
+			}
+
+			// Record the start mass right before departing the settlement
+			recordStartMass();
+
+			// Embark from settlement
+			if (v.transfer(unitManager.getMarsSurface())) {
+				setPhaseEnded(true);
+			}
+			else {
+				endMissionProblem(v, "Could not exit Settlement");
+			}
+		}
 		else {
+			// Add the rover to a garage if possible.
+			boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
+
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
-
+			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
+			
 			if (member instanceof Person) {
 				Person person = (Person) member;
 
@@ -340,9 +364,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						if (!canDo) {
 							logger.warning(person, "Unable to start walk to " + v + ".");
 						}
-//						Task task = person.getMind().getTaskManager().getTask();
-//						if (task != null)
-//							task.addSubTask(walk);
 
 						if (!isDone() && isRoverInAGarage
 							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
@@ -371,45 +392,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (!canDo) {
 						logger.warning(robot, "Unable to walk to " + v + ".");
 					}
-//					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
 							v.getName()));
-				}
-			}
-		}
-
-		// If rover is loaded and everyone is aboard, embark from settlement.
-		if (!isDone()) {
-
-			// Set the members' work shift to on-call to get ready
-			for (Worker m : getMembers()) {
-				Person pp = (Person) m;
-				pp.getShiftSlot().setOnCall(true);
-			}
-
-			if (isEveryoneInRover()) {
-
-				// Double check, this shoud never happen
-				if (!isVehicleLoaded()) {
-					logger.warning(v, "Not fully loaded when travelling");
-				}
-
-				// If the rover is in a garage, put the rover outside.
-				if (v.isInAGarage()) {
-					BuildingManager.removeFromGarage(v);
-				}
-
-				// Record the start mass right before departing the settlement
-				recordStartMass();
-
-				// Embark from settlement
-				if (v.transfer(unitManager.getMarsSurface())) {
-					setPhaseEnded(true);
-				}
-				else {
-					endMissionProblem(v, "Could not exit Settlement");
 				}
 			}
 		}

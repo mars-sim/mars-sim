@@ -196,6 +196,19 @@ public class Sleep extends Task {
 	}
 
 	/**
+	 * Set an alarm for a duration in the future.
+	 * @param untilAlarm Time until the larm will go off. 
+	 */
+	public void setAlarm(int untilAlarm) {
+		if (getTimeLeft() > untilAlarm) {
+			double newDuration = getTimeCompleted() + untilAlarm;
+
+			logger.info(person,  "Alarm clock set for " + untilAlarm);
+			setDuration(newDuration);
+		}
+	}
+
+	/**
 	 * Walk to a destination
 	 */
 	private void walkToDestination() {

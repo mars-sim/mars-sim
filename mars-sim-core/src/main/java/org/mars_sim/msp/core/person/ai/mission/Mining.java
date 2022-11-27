@@ -245,8 +245,8 @@ public class Mining extends EVAMission
 
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(Worker member) {
-		super.performEmbarkFromSettlementPhase(member);
+	protected void performDepartingFromSettlementPhase(Worker member) {
+		super.performDepartingFromSettlementPhase(member);
 		performEmbarkFrom();
 	}
 

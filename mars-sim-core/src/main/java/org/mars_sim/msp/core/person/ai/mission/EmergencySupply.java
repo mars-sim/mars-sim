@@ -265,8 +265,8 @@ public class EmergencySupply extends RoverMission {
 	}
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(Worker member) {
-		super.performEmbarkFromSettlementPhase(member);
+	protected void performDepartingFromSettlementPhase(Worker member) {
+		super.performDepartingFromSettlementPhase(member);
 
 		// Set emergency vehicle (if any) to be towed.
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
