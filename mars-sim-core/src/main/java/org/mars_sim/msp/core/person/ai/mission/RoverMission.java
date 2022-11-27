@@ -6,9 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -75,6 +77,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
+
+	/* Howlong do Worker have to complete departure */
+	private static final int DEPARTURE_DURATION = 150;
+	private static final int DEPARTURE_PREPARATION = 15;
 
 	/**
 	 * Constructor with min people and rover. Initiated by MissionDataBean.
@@ -297,8 +303,31 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return;
 		}
 
+		// Can depart if every is on the vehicle or time has run out
+		boolean canDepart = isEveryoneInRover();
+		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
+			// Find who has not boarded
+			List<Person> ejectedMembers = new ArrayList<>();
+			Rover r = getRover();
+			for(Worker m : getMembers()) {
+				Person p = (Person) m;
+				if (!r.isCrewmember(p)) {
+					ejectedMembers.add(p);
+				}
+			}
+
+			// Still enough members ? If so eject late arrivals
+			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+				for(Person ej : ejectedMembers) {
+					logger.info(ej, "Ejected from mission " + getName() + " missed Departure");
+					removeMember(ej);
+				}
+				canDepart = true;
+			}
+		}
+
 		// Check if everyone is boarded
-		if (isEveryoneInRover()) {
+		if (canDepart) {
 			// If the rover is in a garage, put the rover outside.
 			if (v.isInAGarage()) {
 				BuildingManager.removeFromGarage(v);
@@ -321,16 +350,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
-
-			// Set the members' work shift to on-call to get ready
-			// For Drone mission do everyone as they do not enter the vehicle
-			for (Worker m : getMembers()) {
-				if (m instanceof Person) {
-					Person pp = (Person) m;
-					pp.getShiftSlot().setOnCall(true);
-				}
-			}
-
+			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
+			
 			if (member instanceof Person) {
 				Person person = (Person) member;
 

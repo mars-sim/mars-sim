@@ -31,9 +31,12 @@ public class ShiftSlot implements Serializable {
 
     /**
      * Update the OnCall override flag.
+     * @return Previous OnCall.
      */
-    public void setOnCall(boolean newOnCall) {
+    public boolean setOnCall(boolean newOnCall) {
+        boolean origOnCall = onCall;
         onCall = newOnCall;
+        return origOnCall;
     }
 
     /**

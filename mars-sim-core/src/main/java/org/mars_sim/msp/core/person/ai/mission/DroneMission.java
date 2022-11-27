@@ -188,14 +188,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		// If drone is loaded and everyone is aboard, embark from settlement.
 		if (!isDone()) {
 
-			// Set the members' work shift to on-call to get ready
-			// For Drone mission do everyone as they do not enter the vehicle
-			for (Worker m : getMembers()) {
-				if (m instanceof Person) {
-					Person pp = (Person) m;
-					pp.getShiftSlot().setOnCall(true);
-				}
-			}
+			// Set the members' work shift to on-call to get ready. No deadline
+			callMembersToMission(0);
 
 			// If the rover is in a garage, put the rover outside.
 			if (v.isInAGarage()) {

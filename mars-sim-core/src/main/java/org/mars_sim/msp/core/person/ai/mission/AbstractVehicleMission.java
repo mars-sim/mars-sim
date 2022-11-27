@@ -39,7 +39,9 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -888,6 +890,29 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	protected abstract void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement);
+
+	/**
+	 * Call the members to join the mission.
+	 * @param deadline How many mSols to they have to join; could be zero if no deadline
+	 */
+	protected void callMembersToMission(int deadline) {
+	
+		// Set the members' work shift to on-call to get ready
+		for (Worker m : getMembers()) {
+			if (m instanceof Person) {
+				Person pp = (Person) m;
+				// If first time this person has been caleld and there is a limit interrupt them
+				if (!pp.getShiftSlot().setOnCall(true) && (deadline > 0)) {
+					// First call so 
+					Task active = pp.getTaskManager().getTask();
+					if (active instanceof Sleep) {
+						// Not create but the only way
+						((Sleep) active).setAlarm(deadline);
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.

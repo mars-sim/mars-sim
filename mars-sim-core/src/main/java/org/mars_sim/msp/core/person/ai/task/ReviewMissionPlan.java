@@ -104,7 +104,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MANAGEMENT, RandomUtil.getRandomInt(20, 40));
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
+				RandomUtil.getRandomInt(20, 40), RandomUtil.getRandomInt(40, 80));
 				
 		if (person.isInSettlement()) {
 
