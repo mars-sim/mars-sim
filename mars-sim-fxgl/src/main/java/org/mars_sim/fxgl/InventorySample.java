@@ -115,7 +115,6 @@ public class InventorySample extends GameApplication {
 
         public InventoryView view = new InventoryView<>(playerInventory);
 
-
         public InventorySubScene() {
             getContentRoot().getChildren().addAll(view);
             getContentRoot().setTranslateX(300);

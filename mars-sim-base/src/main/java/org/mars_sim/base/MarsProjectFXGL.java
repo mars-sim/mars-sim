@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProjectFXGL.java
- * @date 2022-11-21
+ * @date 2022-11-25
  * @author Manny Kung
  */
 
@@ -12,19 +12,12 @@ import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
 import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
 import static com.almasb.fxgl.dsl.FXGL.getGameScene;
 import static com.almasb.fxgl.dsl.FXGL.getSaveLoadService;
-import static com.almasb.fxgl.dsl.FXGL.getUIFactoryService;
-import static com.almasb.fxgl.dsl.FXGL.getd;
-import static com.almasb.fxgl.dsl.FXGL.getdp;
-import static com.almasb.fxgl.dsl.FXGL.inc;
 import static com.almasb.fxgl.dsl.FXGL.onKeyDown;
 import static com.almasb.fxgl.dsl.FXGL.run;
 import static com.almasb.fxgl.dsl.FXGL.runOnce;
-import static com.almasb.fxgl.dsl.FXGL.set;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -38,11 +31,8 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.localization.Language;
-import com.almasb.fxgl.profile.DataFile;
-import com.almasb.fxgl.profile.SaveLoadHandler;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -57,19 +47,14 @@ public class MarsProjectFXGL extends GameApplication {
 	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(MarsProjectFXGL.class.getName());
 
-	private static final String TIME = "time";
-	
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
-    
-//	private static final String CH2_SAVE_FILE = SimulationFiles.getSaveDir() + File.separator + Simulation.CH2_SAVE_FILE;
+
 	private static final String CH2_SAVE_FILE = Simulation.CH2_SAVE_FILE;
 	        
 	private MarsWorld first = new MarsWorld();
 
     private StackPane mainRoot;
-	
-    private int i = 0;
-    
+
 	/**
 	 * Constructor
 	 */
@@ -84,7 +69,6 @@ public class MarsProjectFXGL extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put(TIME, 0.0);
     	first.initGameVars(vars);
     }
 
@@ -97,32 +81,19 @@ public class MarsProjectFXGL extends GameApplication {
 	     runOnce(() -> {
 //	         spawn("splashtext", 300, 500);
 	     }, Duration.seconds(0));
-	     
-	     run(() -> inc(TIME, 1.0), Duration.seconds(1.0));
-	     
+	          
 	     getGameScene().setBackgroundColor(new LinearGradient(
 	                0.5, 0, 0.5, 1, true, CycleMethod.NO_CYCLE,
 	                new Stop(0.0, Color.ROSYBROWN),
 	                new Stop(1.0, Color.SADDLEBROWN)
 	        ));
-	        
-        List<Language> languages = new ArrayList<>();//FXGL.getSettings().getSupportedLanguages());
-        languages.add(Language.ENGLISH);
-//	        languages.add(new Language("KOREAN"));
-//	        languages.add(new Language("CHINESE"));
-        
+
         FXGL.getLocalizationService().addLanguageData(Language.ENGLISH, Map.of("some.key", "Welcome to Mars Simulation Project !"));
-//	        FXGL.getLocalizationService().addLanguageData(new Language("KOREAN"), Map.of("some.key", "안녕 화성 !"));
-//	        FXGL.getLocalizationService().addLanguageData(new Language("CHINESE"), Map.of("some.key", "你好，火星 !"));
 
         run(() -> {
 
             FXGL.getNotificationService().pushNotification(FXGL.localize("some.key"));
-            FXGL.getSettings().getLanguage().setValue(languages.get(i));
-
-            i++;
-            if (i == languages.size())
-                i = 0;
+            FXGL.getSettings().getLanguage().setValue(Language.ENGLISH);
 
         }, Duration.seconds(60));
 	        
@@ -152,12 +123,6 @@ public class MarsProjectFXGL extends GameApplication {
 	 
 	 @Override
 	 protected void initUI() {
-	    var uptimeText = getUIFactoryService().newText("Uptime: ", Color.BLACK, 18.0);
-	    addUINode(uptimeText, 10, 20);
-        var text = getUIFactoryService().newText("", Color.BLACK, 18.0);
-        text.textProperty().bind(getdp(TIME).asString());
-        addUINode(text, 100, 20);
-	        
 		first.initUI();
 		
 		// Dispose the Splash Window
@@ -176,32 +141,7 @@ public class MarsProjectFXGL extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        getSaveLoadService().addHandler(new SaveLoadHandler() {
-            @Override
-            public void onSave(DataFile data) {
-                // create a new bundle to store your data
-                var bundle = new Bundle("gameData");
-
-                // store some data
-                double time = getd(TIME);
-                bundle.put(TIME, time);
-
-                // give the bundle to data file
-                data.putBundle(bundle);
-            }
-
-            @Override
-            public void onLoad(DataFile data) {
-                // get your previously saved bundle
-                var bundle = data.getBundle("gameData");
-
-                // retrieve some data
-                double time = bundle.get(TIME);
-
-                // update your game with saved data
-                set(TIME, time);
-            }
-        });
+        first.onPreInit();
     }
 
 	/**
@@ -235,7 +175,7 @@ public class MarsProjectFXGL extends GameApplication {
 			try {
 				LogManager.getLogManager().readConfiguration();
 			} catch (IOException e1) {
-				logger.log(Level.WARNING, "Could read logging default config", e);
+				logger.log(Level.WARNING, "Could read logging default config", e1);
 			}
 		}
 
