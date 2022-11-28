@@ -1,5 +1,6 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.4.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.3.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
@@ -179,7 +180,7 @@ planetary surface.
 </a>
 
 Currently, mars-sim supports Java 11. We will transition to Java 17 in near future
-as JDK 17 is one of the next long-term support (LTS) releases.
+as JDK 17 is the latest long-term support (LTS) release.
 
 * Requires only JRE 11 for running mars-sim
 * Requires only JDK 11 (or openjdk 11) for compiling binary
@@ -193,22 +194,26 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> Note 1 : Specifically, the official release of v3.1.0, v3.2.0 and v3.3.0 of mars-sim do not
-utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
+> Note 1 : Specifically, the official release of v3.1.0, v3.2.0, v3.3.0 and v3.4.0 of mars-sim do not
+utilize JavaFX / OpenJFX. 
 
-However, if you want to run any JavaFX apps, make sure you download and
+Therefore, it's NOT a requirement to install it for running mars-sim.
+
+Some unofficial releases of mars-sim in the past may have required JavaFX.
+
+However, if you want to run any other JavaFX apps, make sure you download and
 configure the OpenJFX or JavaFX package on top of the JDK.
 
 See ticket #156 to read the discussions on how to set up JavaFX to run it
 under Java 11.
 
+You may go to [Bellsoft](https://bell-sw.com/pages/downloads/) or 
+[OpenLogic](https://www.openlogic.com/openjdk-downloads) to
+obtain the latest JRE/JDK for your platform.
 
-You may go to [Bellsoft site](https://bell-sw.com/pages/downloads/#/java-16-current) to
-obtain the latest Liberica JDK for your platform.
+If you need JavaFX, we recommend downloading the `Full JDK` 64-bits package.
 
-We recommend downloading the `Full JDK` 64 bits JDK.
-
-`Full JDK` includes LibericaFX, which is based on OpenJFX, for
+In case of Liberica, the `Full JDK` includes LibericaFX, which is based on OpenJFX, for
 running other apps that requires JavaFX.
 
 For windows platform, choose MSI version that will automatically set up the environment path.
@@ -237,17 +242,17 @@ See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more 
 
 #### Windows
 
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.12\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.17\bin";%PATH%`.
 
 2. Alternatively, pre-set the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel.
 
-- a. Add `C:\Program Files\Java\jre-11.0.12\bin` to the `PATH` variable.
+- a. Add `C:\Program Files\Java\jre-11.0.17\bin` to the `PATH` variable.
 
 > Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
-- b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.12\bin\` or
-`C:\Program Files\Java\jre-11.0.12\bin`.
+- b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.17\bin\` or
+`C:\Program Files\Java\jre-11.0.17\bin`.
 
 > Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
@@ -257,7 +262,7 @@ variable to look for a valid JDK folder. If it's not found, java cannot start ma
 - c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check
 the order of precedence when it comes to searching for the JDK.
 
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.12)
+> Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.17)
 inside `PATH` and remove all other folders referencing other java versions/builds.
 
 3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
@@ -340,7 +345,7 @@ e.g. Include the followings :
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle JDK 11.0.12, AdoptOpenJDK 11.0.12, openjfx 11 etc.]
+ - Java version : [e.g. Oracle JDK 11.0.17, AdoptOpenJDK 11.0.17, openjfx 11 etc.]
  - mars-sim build version : [e.g. r4255, v3.1.1, etc.]
 
 **Additional context**
@@ -381,7 +386,7 @@ For a more detail description of this project, see our [project website](https:/
 Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).
 
 Also, see the previous and official release version at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/).
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.4.0/).
 
 If you like, click on the SF's button below to automatically sense the correct OS platform to download.
 
