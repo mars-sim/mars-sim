@@ -42,7 +42,7 @@ public abstract class MetaTask {
 	 *  Defines the scope of this Task
 	 */
 	protected enum TaskScope {
-		ANY_HOUR, WORK_HOUR, NONWORK_HOUR;
+		ANY_HOUR, WORK_HOUR, NONWORK_HOUR, SETTLEMENT;
 	}
 	
 	// Traits used to identify non-effort tasks

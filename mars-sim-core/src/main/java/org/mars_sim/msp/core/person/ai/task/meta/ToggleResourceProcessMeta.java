@@ -17,6 +17,8 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -32,19 +34,19 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 /**
  * Meta task for the ToggleResourceProcess task.
  */
-public class ToggleResourceProcessMeta extends MetaTask {
+public class ToggleResourceProcessMeta extends SettlementMetaTask {
 	/**
 	 * Represents a job to toggle a Resource process in a building.
 	 */
-    private static class ToggleProcessJob extends AbstractTaskJob {
+    private static class ToggleProcessJob extends SettlementTask {
 		
 		private static final long serialVersionUID = 1L;
 
         private Building processBuilding;
 		private ResourceProcess process;
 
-        public ToggleProcessJob(Building processBuilding, ResourceProcess process, double score) {
-			super("Toggle " + process.getProcessName() + " @ " + processBuilding.getName(), score);
+        public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process, double score) {
+			super(mt, "Toggle " + process.getProcessName() + " @ " + processBuilding.getName(), score);
             this.processBuilding = processBuilding;
 			this.process = process;
         }
@@ -66,50 +68,42 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double FACTOR = 1_000;
 	private static final double URGENT_FACTOR = 20;
 	
     public ToggleResourceProcessMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 	}
 
-	
-    /**
-     * Create a task for any Fishery that needs assistence
-     */
-    @Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
-		return buildTaskJobs(robot, false);
-	}
 
-	/**
-     * Create a task for any Fishery that needs assistence
-     */
-    @Override
-    public List<TaskJob> getTaskJobs(Person person) {
-		return buildTaskJobs(person, true);
-	}
-
-	/**
-	 * Build a list of TaskJob covering the most suitable Resproces Processes to toggle.
-	 */
-	private List<TaskJob> buildTaskJobs(Worker worker, boolean isPerson) {
-		List<TaskJob> tasks = new ArrayList<>();
-
-		if (!worker.isInSettlement()) {
-			return tasks;
+	@Override
+	public double getPersonSettlementModifier(Person p) {
+		if (p.isInSettlement()) {
+			return getPersonModifier(p);
 		}
-		
-		Settlement settlement = worker.getSettlement();
-		
+		return 0D;
+	}
+
+	@Override
+	public double getRobotSettlementModifier(Robot r) {
+        return 1D;
+    }
+
+	/**
+	 * Build a list of TaskJob covering the most suitable Resoruce Processes to toggle.
+	 * @param settlement Settlement to check
+	 */
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask> tasks = new ArrayList<>();
+
 		if ((settlement != null) && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 
 			// Get the most suitable process per Building; not each process as too many will be created
 			for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
-				TaskJob entry = selectMostPosNegResourceProcess(building, worker, isPerson);
+				SettlementTask entry = selectMostPosNegResourceProcess(building);
 				if (entry != null) {
 					tasks.add(entry);
 				}
@@ -123,11 +117,9 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	 * Select a resource process (from a building) based on its resource score.
 	 *
 	 * @param building the building
-	 * @param isPerson
-	 * @param worker
 	 * @return the resource process to toggle or null if none.
 	 */
-	private TaskJob selectMostPosNegResourceProcess(Building building, Worker worker, boolean isPerson) {
+	private SettlementTask selectMostPosNegResourceProcess(Building building) {
 		ResourceProcess mostPosProcess = null;
 		ResourceProcess mostNegProcess = null;
 		double highest = 0;
@@ -252,11 +244,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 		}
 
 		if (bestProcess != null) {
-			if (isPerson) {
-				// Not great
-				bestScore *= getPersonModifier((Person) worker);
-			}
-			return new ToggleProcessJob(building, bestProcess, bestScore);
+			return new ToggleProcessJob(this, building, bestProcess, bestScore);
 		}
 
 		return null;

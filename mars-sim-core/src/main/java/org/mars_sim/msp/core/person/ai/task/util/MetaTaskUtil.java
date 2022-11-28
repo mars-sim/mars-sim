@@ -89,6 +89,7 @@ public class MetaTaskUtil {
 	private static List<MetaTask> robotMetaTasks = null;
 
 	private static Map<String,MetaTask> nameToMetaTask;
+	private static List<SettlementMetaTask> settlementTasks;
 
 	/**
 	 * Private constructor for utility class.
@@ -194,6 +195,11 @@ public class MetaTaskUtil {
 				.filter(m -> m.getScope() == TaskScope.NONWORK_HOUR)
 				.collect(Collectors.toUnmodifiableList());
 
+		settlementTasks = allMetaTasks.stream()
+				.filter(m -> ((m.getScope() == TaskScope.SETTLEMENT)))
+				.map(s -> (SettlementMetaTask) s)
+				.collect(Collectors.toUnmodifiableList());
+				
 		List<MetaTask> anyHourMetaTasks = personMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
 				.collect(Collectors.toList());
@@ -206,6 +212,10 @@ public class MetaTaskUtil {
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(nonWorkHourMetaTasks);
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);
+
+		// Settlement tasks
+
+
 	}
 
 	/**
@@ -244,6 +254,16 @@ public class MetaTaskUtil {
 		return nonDutyHourTasks;
 	}
 	
+	
+	/**
+	 * Get a lists of MetaTasks that are applicable for a Settlement.
+	 * 
+	 * @return List of SettlementMetaTasks
+	 */
+    public static List<SettlementMetaTask> getSettlementMetaTasks() {
+        return settlementTasks;
+    }
+
 	/**
 	 * Converts a task name in String to Metatask
 	 * 
@@ -284,4 +304,5 @@ public class MetaTaskUtil {
 		LoadVehicleMeta.initialiseInstances(sim);
 		UnloadVehicleMeta.initialiseInstances(sim);
     }
+
 }

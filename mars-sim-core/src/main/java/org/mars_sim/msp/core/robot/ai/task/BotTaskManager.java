@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -197,6 +198,10 @@ public class BotTaskManager extends TaskManager {
 			}
 		}
 		
+		// Add in any Settlement Tasks
+		SettlementTaskManager stm = robot.getAssociatedSettlement().getTaskManager();
+		newCache.add(stm.getTasks(robot));
+
 		if (newCache.getTasks().isEmpty()) {
 			newCache = getChargeTaskMap();
 		}
