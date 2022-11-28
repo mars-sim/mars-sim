@@ -52,7 +52,7 @@ extends TabPanel {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
-	private static final String FLAG_ICON = Msg.getString("icon.flag"); //$NON-NLS-1$
+	private static final String FLAG_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
 	
 	// Data members
 	/** The Settlement instance. */

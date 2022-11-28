@@ -54,7 +54,7 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
 
-	private static final String NOTE_ICON = Msg.getString("icon.note"); //$NON-NLS-1$
+	private static final String NOTE_ICON = Msg.getString("icon.log"); //$NON-NLS-1$
 
 	private static final String SOL = "   Sol ";
 	
