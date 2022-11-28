@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * First.java
+ * MarsWorld.java
  * @date 2022-11-25
  * @author Manny Kung
  */
@@ -46,7 +46,6 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-
 
 public class MarsWorld {
     

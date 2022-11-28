@@ -79,7 +79,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	// Added an custom icon for each tab
 	public static final String COLONY_ICON = Msg.getString("icon.colony"); //$NON-NLS-1$
 	public static final String MARS_ICON = Msg.getString("icon.mars"); //$NON-NLS-1$
-	public static final String BOT_ICON = Msg.getString("icon.bot"); //$NON-NLS-1$
+	public static final String BOT_ICON = Msg.getString("icon.robot"); //$NON-NLS-1$
 	public static final String MISSION_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
 	public static final String VEHICLE_ICON = Msg.getString("icon.vehicle"); //$NON-NLS-1$
 	public static final String CROP_ICON = Msg.getString("icon.crop"); //$NON-NLS-1$
