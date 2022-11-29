@@ -47,9 +47,24 @@ as they interact and work with one another. They are there to live, dream, explo
 ---
 
 ## Operation Modeling
+
 mars-sim depicts near-term human exploration and settlement on Mars. It speaks of a rich scientific
 language selected from research journal and paper in defining operation paradigms and programming models
 that are based on present-day technologies.
+
+### Timekeeping
+
+Without a doubt, settlers need a timekeeping standard system for tracking the passage of time. 
+That's because living on Mars does require a functioning Martian calendar in which settlers may keep track 
+of sols that have elapsed. At the same time, astronomers would prefer to come up with a calendar that 
+is handy and intuitive in predicting the orbit of Mars around the sun. 
+
+The difficulties arises when each day on Mars has slightly more than 24 hours and there are 669 earth days 
+on one Martian years. Therefore, it is not a straight-foward exercise in converting the time and day 
+between Mars and Earth in the form of a simple equation.
+
+See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
+this topic.
 
 ### Indoor Atmospheric Modeling
 
@@ -111,24 +126,42 @@ measured in *milli-Severt*.
 
 ### Economic Modeling
 
-In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
+In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
 **Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
 As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
 by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
-### Job and Mission Modeling
+### Earth Space Agencies 
 
-Settlers spend much of their time learning to *live off the land*. Assigning meaningful
-[jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of
-the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
+A settler may come from any one of 29 major countries as listed in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Countries).
+
+Note that the European Space Agency (ESA) consists of 22 member nations who are funding the space development effort.
+
+Altogether, there's also 10 possible space agencies that can be acted as a sponsor to a settlement.
+
+
+### Job, Work Shift and Task Modeling
+
+Settlers spend much of their time learning to *live off the land*. Assigning a meaningful [role](https://github.com/mars-sim/mars-sim/wiki/Role) 
+with interesting [job](https://github.com/mars-sim/mars-sim/wiki/Jobs) to each settler is crucial. 
+Each settler is assigned a [work shift](https://github.com/mars-sim/mars-sim/wiki/Work-Shift) and 
+engages in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
 maintenance, ensuring life support resources are plentifully supplied, growing food crops in
 [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary
 [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts
-and equipment in workshops.
+and equipment in workshops, all of which are vital to the health of the economy of the settlements. 
 
-Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and
+### Mission Modeling
+
+Settlers also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and
 study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc.
 They may even decide to migrate from one settlement to another.
+
+### Weather Modeling
+
+The perils of living on Mars are very real. Even though we do not have a complete surface weather model for Mars,
+we do currently simulate a total of 9 outside [weather metrics](https://github.com/mars-sim/mars-sim/wiki/Weather)
+in mars-sim. 
 
 ### Reliability, Maintenance and Malfunction Modeling
 
@@ -136,8 +169,8 @@ The perils of living on Mars are very real. There is a total of 39 types of [Mal
 that can occur at a given moment. There are 3 metrics
 for tracking how reliable a part is, namely, [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
 percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
-that occur during the simulation. Workshops and machinery factories are to produce parts for
-replenishing parts to be used during [Maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
+that occur during the simulation. Besides malfunction, workshops and machinery factories are to produce parts for
+replenishing parts to be used during regular [maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
 ---
 
@@ -346,7 +379,7 @@ e.g. Include the followings :
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
  - Java version : [e.g. Oracle JDK 11.0.17, AdoptOpenJDK 11.0.17, openjfx 11 etc.]
- - mars-sim build version : [e.g. r4255, v3.1.1, etc.]
+ - mars-sim build version : [e.g. r7688, 3.4.0, pre-3.5.0, etc.]
 
 **Additional context**
  - Add any other context about the problem here.
