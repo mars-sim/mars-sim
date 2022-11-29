@@ -401,7 +401,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			}
 		}
 
-		// 7. proposed route distance (-10 to 10 points)
+		// 7. proposed route distance (note that a negative score represents a penalty)
 		int dist = 0;
 		if (m instanceof VehicleMission) {
 			int range = m.getAssociatedSettlement().getMissionRadius(mt);
@@ -410,11 +410,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				
 				// Scoring rule:
 				// At range = 0, the score is 10
-				// At full range, the score is -10
-				// The score for half the range is zero.
+				// The half the range, the score is -40
 
 				// Calculate the dist score
-				dist = (int)(- 20.0 / range * proposed + 10);
+				dist = (int)(- 100.0 / range * proposed + 10);
 			}
 		}
 		
@@ -515,16 +514,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			
 			// Why do we adjust these score ?
 			if (mt == MissionType.COLLECT_ICE) {
-				siteValue /= 40D;
+				siteValue /= 10D;
 			}
 			else if (mt == MissionType.COLLECT_REGOLITH) {
-				siteValue /= 30D;
+				siteValue /= 7.5;
 			}
 			else if (mt == MissionType.MINING) {
-				siteValue /= 20D;
+				siteValue /= 5D;
 			}
 			else if (mt == MissionType.EXPLORATION) {
-				siteValue /= 20D;
+				siteValue /= 5D;
 			}
 		}
 
@@ -552,7 +551,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		StringBuilder msg = new StringBuilder();
 		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
 		msg.append(" plan -");
-		msg.append(", Rels: ").append(relation); 
+		msg.append(" Rels: ").append(relation); 
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append(" = Subtotal: ").append(score);
