@@ -115,6 +115,8 @@ EVA suits, the operator will depressurize the chamber and gases would be re-capt
 outside air pressure. (6) At last, he/she would unlock and open the outer door and the whole team will
 exit to the outside surface of Mars.
 
+See [Airlock wiki](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
+
 ### Radiation Modeling 
 
 Another example is [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
@@ -133,7 +135,7 @@ by keeping track of the credits and deficit based on the VPs of the resources in
 
 ### Earth Space Agencies 
 
-A settler may come from any one of 29 major countries as listed in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Countries).
+A settler may come from any one of 29 major countries as listed in this [countries wiki](https://github.com/mars-sim/mars-sim/wiki/Countries).
 
 Note that the European Space Agency (ESA) consists of 22 member nations who are funding the space development effort.
 

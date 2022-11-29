@@ -168,7 +168,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	}
 
 	/**
-	 * Performs the reviewingPhasephase.
+	 * Performs the reviewing phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
@@ -224,8 +224,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				    // Simulate the person has just spent 90% duration for this task
 				    // Now a mission score will be calculated
 				    if (isAlmostTimeCompleted()) {
-				        // Execute the review 
-				    	completeReview(m, p, reviewerSettlement, mp);
+				    	
+						// 9. reviewer role weight
+						RoleType role = person.getRole().getType();
+						int reviewerRole = 0;
+						
+						if (role == RoleType.PRESIDENT
+								|| role == RoleType.MAYOR
+								|| role == RoleType.COMMANDER
+								|| role == RoleType.SUB_COMMANDER)
+					        // Perform the executive review 
+					    	completeExecutiveReview(m, p, reviewerSettlement, mp);
+						else
+							// Perform the general review 
+							completeReview(m, p, reviewerSettlement, mp);
 				    		
 						logger.log(worker, Level.INFO, 0, "Done reviewing " + requestedBy
 										+ "'s " + m.getName() + " mission plan.");
@@ -248,14 +260,14 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	}
 
 	/**
-	 * Completes the review.
+	 * Completes the executive review.
 	 * 
 	 * @param m
 	 * @param p
 	 * @param reviewerSettlement
 	 * @param mp
 	 */
-	private void completeReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
+	private void completeExecutiveReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
 		String requestedBy = p.getName();
 		
 	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
@@ -461,6 +473,88 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		msg.append(", Lead: ").append(leadership); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append(", Luck: ").append(luck); 
+		msg.append(" = Subtotal: ").append(score);
+		
+		logger.log(worker, Level.INFO, 0,  msg.toString());
+	}
+	
+	
+	/**
+	 * Completes the general review.
+	 * 
+	 * @param m
+	 * @param p
+	 * @param reviewerSettlement
+	 * @param mp
+	 */
+	private void completeReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
+		String requestedBy = p.getName();
+  
+    	MissionType mt = m.getMissionType();
+    	
+		// 2. Relationship Score 
+		
+		// 2a. Reviewer's view of the mission lead
+		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
+			
+		double relationshipWithOthers = 0;
+		int num = reviewerSettlement.getAllAssociatedPeople().size();
+		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
+			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
+		}
+		
+		// 2b. Others' view of the mission lead
+		relationshipWithOthers = (int)(relationshipWithOthers / num);
+		
+		int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
+		
+		// 6. Site Value
+		double siteValue = 0;
+		if (m instanceof SiteMission) {
+			siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
+			
+			// Why do we adjust these score ?
+			if (mt == MissionType.COLLECT_ICE) {
+				siteValue /= 40D;
+			}
+			else if (mt == MissionType.COLLECT_REGOLITH) {
+				siteValue /= 30D;
+			}
+			else if (mt == MissionType.MINING) {
+				siteValue /= 20D;
+			}
+			else if (mt == MissionType.EXPLORATION) {
+				siteValue /= 20D;
+			}
+		}
+
+		// 9. reviewer role weight
+		RoleType role = person.getRole().getType();
+		int reviewerRole = 0;
+		
+		if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
+			reviewerRole = 7;
+		else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+			reviewerRole = 6;
+		else if (role.isChief())
+			reviewerRole = 5;
+		else if (role == RoleType.MISSION_SPECIALIST)
+			reviewerRole = 4;
+		else
+			reviewerRole = 2;
+		
+		
+		double score = Math.round((relation + siteValue + reviewerRole)* 10.0)/10.0;
+
+		// Updates the mission plan status
+		missionManager.scoreMissionPlan(mp, score, person);
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
+		msg.append(" plan -");
+		msg.append(", Rels: ").append(relation); 
+		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
+		msg.append(", Review: ").append(reviewerRole); 
 		msg.append(" = Subtotal: ").append(score);
 		
 		logger.log(worker, Level.INFO, 0,  msg.toString());
