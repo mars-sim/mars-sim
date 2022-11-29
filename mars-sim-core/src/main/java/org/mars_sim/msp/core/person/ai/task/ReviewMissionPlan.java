@@ -227,7 +227,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				    	
 						// 9. reviewer role weight
 						RoleType role = person.getRole().getType();
-						int reviewerRole = 0;
 						
 						if (role == RoleType.PRESIDENT
 								|| role == RoleType.MAYOR
