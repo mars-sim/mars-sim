@@ -16,10 +16,9 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -33,20 +32,20 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Meta task for the ToggleFuelPowerSource task.
  */
-public class ToggleFuelPowerSourceMeta extends MetaTask {
+public class ToggleFuelPowerSourceMeta extends SettlementMetaTask {
 
 	/**
      * Represents a Job needed in a Fishery
      */
-    private static class PowerTaskJob extends AbstractTaskJob {
+    private static class PowerTaskJob extends SettlementTask {
     	
 		private static final long serialVersionUID = 1L;
 
 		private FuelPowerSource powerSource;
 		private Building building;
 
-        public PowerTaskJob(Building building, FuelPowerSource powerSource, double score) {
-            super("Toggle " + powerSource.getType().getName() + " @ " + building.getName(), score);
+        public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource, double score) {
+            super(owner, "Toggle " + powerSource.getType().getName() + " @ " + building.getName(), score);
 			this.building = building;
 			this.powerSource = powerSource;
 		}
@@ -67,60 +66,67 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	private static final double FACTOR = 20D;
 
     public ToggleFuelPowerSourceMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 	}
 
     /**
-     * Create a task for any Powersource that needs toggling
+     * Get the score for a Settlement task for a person. Considers EVA fitness and overcrowding for inside activities.
+	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-    public List<TaskJob> getTaskJobs(Person person) {
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+            Building building = ((PowerTaskJob)t).building;
+      
+            // Checks if this is a standalone power building that requires EVA to reach
+            if ((BuildingCategory.POWER == building.getCategory()) 
+                    &&     // Checks if the person is physically fit for heavy EVA tasks
+                    !EVAOperation.isEVAFit(p)) {
+                // Probability affected by the person's stress, hunger, thirst and fatigue.
+                return 0D;
+            }
+	                      
+            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+                // Factor in building crowding and relationship factors.
+                factor *= getBuildingModifier(building, p);
+            }
+            factor *= getPersonModifier(p);
+		}
+		return factor;
+	}
+    
+    /**
+     * Find any tasks realetd to toggle power supplies. Scans for POWER_GENERATION functions
+     * @param settlemetn Source Settlement to scna
+     * @return Lit of potential Tasks.
+     */
+    @Override
+    public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+        List<SettlementTask> tasks = new ArrayList<>();
+        BuildingManager manager = settlement.getBuildingManager();
+        for(Building building : manager.getBuildings(FunctionType.POWER_GENERATION)) {
+            // Select the best Fuel power source
+            double bestDiff = 0D;
+            FuelPowerSource bestSource = null;
+            PowerGeneration powerGeneration = building.getPowerGeneration();
+            for(PowerSource powerSource : powerGeneration.getPowerSources()) {
+                if (powerSource instanceof FuelPowerSource) {
+                    FuelPowerSource fuelSource = (FuelPowerSource) powerSource;
+                    double diff = scorePowerSource(settlement, fuelSource);
+                    if (diff > bestDiff) {
+                        bestDiff = diff;
+                        bestSource = fuelSource;
+                    }
+                }
+            }
 
-        List<TaskJob> tasks = new ArrayList<>();
-
-        if (person.isInSettlement()) {
-        
-	    	Settlement settlement = person.getSettlement();
-			BuildingManager manager = settlement.getBuildingManager();
-            for(Building building : manager.getBuildings(FunctionType.POWER_GENERATION)) {
-				// Select the best Fuel power source
-				double bestDiff = 0D;
-				FuelPowerSource bestSource = null;
-				PowerGeneration powerGeneration = building.getPowerGeneration();
-				for(PowerSource powerSource : powerGeneration.getPowerSources()) {
-					if (powerSource instanceof FuelPowerSource) {
-						FuelPowerSource fuelSource = (FuelPowerSource) powerSource;
-						double diff = scorePowerSource(settlement, fuelSource);
-						if (diff > bestDiff) {
-							bestDiff = diff;
-							bestSource = fuelSource;
-						}
-					}
-				}
-	               
-				// Checks if this is a standalone power building that requires EVA to reach
-				if ((BuildingCategory.POWER == building.getCategory() 
-						&&     // Checks if the person is physically fit for heavy EVA tasks
-						!EVAOperation.isEVAFit(person))
-					|| (bestDiff <= 0)) {
- 					// Probability affected by the person's stress, hunger, thirst and fatigue.
-					continue;
-				}
-	                
-	                
-	            double score = bestDiff * FACTOR;
-				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					// Factor in building crowding and relationship factors.
-                    score *= getBuildingModifier(building, person);
-				}
-				score *= getPersonModifier(person);
-
-				if (score > 0) {
-					tasks.add(new PowerTaskJob(building, bestSource, score));
-				}
-	        }
+            double score = bestDiff * FACTOR;
+            if (score > 0) {
+                tasks.add(new PowerTaskJob(this, building, bestSource, score));
+            }
         }
         
         return tasks;

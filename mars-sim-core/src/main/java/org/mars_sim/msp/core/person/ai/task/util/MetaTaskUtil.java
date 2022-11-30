@@ -284,12 +284,7 @@ public class MetaTaskUtil {
 				.replace("Garage", "");
 		String metaTaskName = ss.trim() + "Meta";
 	
-		MetaTask mt = getMetaTask(metaTaskName);
-		if (mt == null) {
-			throw new IllegalArgumentException("Cannot find MetaTask from task " + metaTaskName);
-		}
-
-		return mt;
+		return getMetaTask(metaTaskName);
 	}
 
 	public static List<MetaTask> getRobotMetaTasks() {

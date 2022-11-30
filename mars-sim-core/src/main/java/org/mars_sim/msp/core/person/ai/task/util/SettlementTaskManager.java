@@ -54,6 +54,8 @@ public class SettlementTaskManager implements Serializable {
     private List<SettlementTask> tasks;
 
     private int callCount;
+    private int buildCount = 0;
+    private int executedCount = 0;
 
     public SettlementTaskManager(Settlement owner) {
         this.owner = owner;
@@ -64,8 +66,8 @@ public class SettlementTaskManager implements Serializable {
      * @param source Item to remove.
      */
     void removeTask(SettlementTask source) {
+        executedCount++;
         if (tasks != null) {
-            logger.info(owner, "Remove used Settlement Task " + source.getDescription());
             tasks.remove(source);
         }
     }
@@ -79,6 +81,7 @@ public class SettlementTaskManager implements Serializable {
             for(SettlementMetaTask mt : MetaTaskUtil.getSettlementMetaTasks()) {
                 tasks.addAll(mt.getSettlementTasks(owner));
             }
+            buildCount++;
         }
         callCount++;
         return tasks;
@@ -102,10 +105,14 @@ public class SettlementTaskManager implements Serializable {
         List<TaskJob> result = new ArrayList<>();
         for(SettlementTask st : getTasks()) {
             SettlementMetaTask mt = st.getMeta();
-            double factor = mt.getRobotSettlementModifier(r);
-            if (factor > 0) {
-                double score = st.getScore() * factor;
-                result.add(new SettlementTaskProxy(this, st, score));
+
+            // Check this type of Robot can do the Job
+            if (mt.getPreferredRobot().contains(r.getRobotType())) {
+                double factor = mt.getRobotSettlementModifier(st,r);
+                if (factor > 0) {
+                    double score = st.getScore() * factor;
+                    result.add(new SettlementTaskProxy(this, st, score));
+                }
             }
         }
 
@@ -122,7 +129,7 @@ public class SettlementTaskManager implements Serializable {
         List<TaskJob> result = new ArrayList<>();
         for(SettlementTask st : getTasks()) {
             SettlementMetaTask mt = st.getMeta();
-            double factor = mt.getPersonSettlementModifier(p);
+            double factor = mt.getPersonSettlementModifier(st, p);
             if (factor > 0) {
                 double score = st.getScore() * factor;
                 result.add(new SettlementTaskProxy(this, st, score));
@@ -132,13 +139,22 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
+     * How many tasks have beene xecuted out of the shared pool?
+     */
+    public int getExecutedCount() {
+        return executedCount;
+    }
+    /**
+     * This is the reuse score of how many times a single Task list is reused by otehr Workers.
+     */
+    public double getReuseScore() {
+        return (double)callCount/buildCount;
+    }
+
+    /**
      * Time has progressed so clear any cached Tasks.
      */
     public void timePassing() {
-        if (callCount > 0) {
-            //logger.info(owner, "Called " + callCount);
-        }
         tasks = null;
-        callCount = 0;
     }
 }

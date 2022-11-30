@@ -32,19 +32,21 @@ public abstract class SettlementMetaTask extends MetaTask {
 
     /**
      * Get the Person applicable modifiers for this  Meta Task.
+     * @param t The Settlement task being evaluated
      * @param p Person in question
-     * @return Default returns 0 
+     * @return Default returns 0 being no applicable Task
      */
-    public double getPersonSettlementModifier(Person p) {
+    public double getPersonSettlementModifier(SettlementTask t, Person p) {
         return 0;
     }
 
     /**
      * Get the Robot applicable modifiers for this  Meta Task.
+     * @param t The Settlement task being evaluated
      * @param r Robot in question
      * @return Default returns 0 
      */
-    public double getRobotSettlementModifier(Robot r) {
+    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
         return 0;
     }
 }

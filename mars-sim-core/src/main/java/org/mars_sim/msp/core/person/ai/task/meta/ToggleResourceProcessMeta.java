@@ -15,13 +15,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.OverrideType;
@@ -76,19 +72,16 @@ public class ToggleResourceProcessMeta extends SettlementMetaTask {
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 	}
 
-
+	/**
+	 * Evaluates if a Person can do a Settlement task, based on in settlement.
+	 */
 	@Override
-	public double getPersonSettlementModifier(Person p) {
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
 		if (p.isInSettlement()) {
 			return getPersonModifier(p);
 		}
 		return 0D;
 	}
-
-	@Override
-	public double getRobotSettlementModifier(Robot r) {
-        return 1D;
-    }
 
 	/**
 	 * Build a list of TaskJob covering the most suitable Resoruce Processes to toggle.

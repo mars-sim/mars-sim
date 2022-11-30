@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -22,8 +21,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
@@ -35,108 +34,100 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the UnloadVehicleGarage task.
  */
-public class UnloadVehicleMeta extends MetaTask {
-    private static class GarageUnloadJob extends AbstractTaskJob {
+public class UnloadVehicleMeta extends SettlementMetaTask {
+    private static class UnloadJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
         private Vehicle target;
+        private boolean eva;
 
-        public GarageUnloadJob(Vehicle target, double score) {
-            super("Unload " + target.getName(), score);
+        public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
+            super(owner, "Unload " + (eva ? "via EVA " : "") + target.getName(), score);
             this.target = target;
+            this.eva = eva;
         }
 
         @Override
         public Task createTask(Person person) {
+            if (eva) {
+                return new UnloadVehicleEVA(person, target);
+            }
             return new UnloadVehicleGarage(person, target);
         }
 
         @Override
         public Task createTask(Robot robot) {
+            if (eva) {
+				// SHould not happen
+				throw new IllegalStateException("Robots can not do EVA unload vehicle");
+			}
             return new UnloadVehicleGarage(robot, target);
         }
     }
-
-	private static class EVAUnloadJob extends AbstractTaskJob {
-
-		private static final long serialVersionUID = 1L;
-
-        private Vehicle target;
-
-        public EVAUnloadJob(Vehicle target, double score) {
-            super("EVA Unload " + target.getName(), score);
-            this.target = target;
-        }
-
-        @Override
-        public Task createTask(Person person) {
-            return new UnloadVehicleEVA(person, target);
-        }
-    }
-
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicle"); //$NON-NLS-1$
 
     private static final double BASE_SCORE = 300D;
 
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleMeta.class.getName());
-
     private static MissionManager missionManager;
 	
     public UnloadVehicleMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH);
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 
+       
+    /**
+     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
     @Override
-    public List<TaskJob> getTaskJobs(Person person) {
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+			UnloadJob mtj = (UnloadJob) t;
 
-        List<TaskJob> tasks = null;
-		if (person.isInSettlement()) {
-            Settlement settlement = person.getSettlement();
-			double insideModifier = getPersonModifier(person);
-            insideModifier *= settlement.getGoodsManager().getTransportationFactor();
-
-			double evaModifier = insideModifier * getRadiationModifier(settlement)
-									* getEVAModifier(person);
-
-			tasks = getSettlementTasks(settlement, insideModifier, evaModifier);
+			factor = getPersonModifier(p);
+			if (mtj.eva) {
+				// EVA factor is the radition and the EVA modifiers applied extra
+				factor *= getRadiationModifier(p.getSettlement());
+				factor *= getEVAModifier(p);
+			}
 		}
-		return tasks;
+		return factor;
 	}
 
+    /**
+     * For a robot can not do EVA tasks so will return a zero factor in this case.
+	 * @param t Task being scored
+	 * @parma r Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
 	@Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
-
-        List<TaskJob> tasks = null;
-		if (robot.isInSettlement()) {
-			double modifier = robot.getPerformanceRating();
-
-			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);
-		}
-		return tasks;
-	}
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        UnloadJob mtj = (UnloadJob) t;
+        if (mtj.eva) {
+            return 0D;
+        }
+        return r.getPerformanceRating();
+    }
 
 	/**
 	 * Get a collection of Tasks for any vehicle that needs unloading
 	 * @param settlement Settlement to scan for vehicles
-	 * @param insideFactor Score modifier for inside jobs
-	 * @param evaFactor Score modifier for EVA tasks
 	 */
-	private List<TaskJob> getSettlementTasks(Settlement settlement, double insideModifier, double evaModifier) {
-		List<TaskJob> tasks = new ArrayList<>();
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask> tasks = new ArrayList<>();
 
 		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-		if (!insideTasks && (evaModifier <= 0)) {
-			// EVA tasks and on EVA allowed; then abort search
-			return tasks;
-		}
+        double modifier = settlement.getGoodsManager().getTransportationFactor();
 
         Set<Vehicle> assessed = new HashSet<>();
         
@@ -151,7 +142,7 @@ public class UnloadVehicleMeta extends MetaTask {
                         // being released before the mission is completed?
                         assessed.add(v);
 
-                        TaskJob job = scoreVehicle(settlement, v, insideTasks, insideModifier, evaModifier);
+                        SettlementTask job = scoreVehicle(settlement, v, insideTasks, modifier, this);
                         if (job != null) {
                             tasks.add(job);
                         }
@@ -163,7 +154,7 @@ public class UnloadVehicleMeta extends MetaTask {
         // Check non-mission vehicles
         for(Vehicle vehicle : settlement.getParkedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
-                TaskJob job = scoreVehicle(settlement, vehicle, insideTasks, insideModifier, evaModifier);
+                SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, modifier, this);
                 if (job != null) {
                     tasks.add(job);
                 }
@@ -177,37 +168,35 @@ public class UnloadVehicleMeta extends MetaTask {
      * @param settlement Location of Vehcile
      * @param vehicle Vehicle to unload
      * @param insideOnlyTasks Only do Garage inside Tasks
-     * @param insideModifier Modifier for inside task score
-     * @param evaModifier Modifier for EVA task score
+     * @param modifier Modifier for inside task score
      * @return
      */
-    private static TaskJob scoreVehicle(Settlement settlement, Vehicle vehicle, boolean insideOnlyTasks,
-                                double insideModifier, double evaModifier) {
-        TaskJob result = null;
+    private static SettlementTask scoreVehicle(Settlement settlement, Vehicle vehicle, boolean insideOnlyTasks,
+                                double modifier, SettlementMetaTask owner) {
         double remaining = vehicle.getStoredMass();
         if (remaining > 0D) {
             double score = BASE_SCORE + (100D * remaining)/vehicle.getCargoCapacity();
         
             boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
             if (insideOnlyTasks || inGarageAlready) {
-                score *= insideModifier;
+                score *= modifier;
                 if (inGarageAlready) {
                     // If in Garage already then boost score
                     score *= 2;
                 }
-                return new GarageUnloadJob(vehicle, score);
+                return new UnloadJob(owner, vehicle, false, score);
             }
-            return new EVAUnloadJob(vehicle, score * evaModifier);    
+            return new UnloadJob(owner, vehicle, true, score * modifier);    
         }
 
-        return result;
+        return null;
     }
 
     /**
      * Create an appropriate Unload job for a vehicle.
      */
     public static TaskJob createUnloadJob(Settlement settlement, Vehicle vehicle) {
-        return scoreVehicle(settlement, vehicle, false, 1D, 1D);
+        return scoreVehicle(settlement, vehicle, false, 1D, null);
     }
 
     /**

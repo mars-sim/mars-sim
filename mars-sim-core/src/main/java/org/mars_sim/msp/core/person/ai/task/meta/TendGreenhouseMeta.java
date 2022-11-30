@@ -16,29 +16,29 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
  * Meta task for the Tend Greenhouse task.
  */
-public class TendGreenhouseMeta extends MetaTask {
+public class TendGreenhouseMeta extends SettlementMetaTask {
 
-    private static class CropTaskJob extends AbstractTaskJob {
+    private static class CropTaskJob extends SettlementTask {
 		
 		private static final long serialVersionUID = 1L;
 
         private Farming farm;
 
-        public CropTaskJob(Farming farm, double score) {
-            super("Tend crop @ " + farm.getBuilding().getName(), score);
+        public CropTaskJob(SettlementMetaTask owner, Farming farm, double score) {
+            super(owner, "Tend crop @ " + farm.getBuilding().getName(), score);
             this.farm = farm;
         }
 
@@ -51,7 +51,6 @@ public class TendGreenhouseMeta extends MetaTask {
         public Task createTask(Robot robot) {
             return new TendGreenhouse(robot, farm);
         }
-
     }
     
 	/** default logger. */
@@ -65,7 +64,7 @@ public class TendGreenhouseMeta extends MetaTask {
     private static final int MAX_FARMERS = 2;
 
     public TendGreenhouseMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH);
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
@@ -73,73 +72,68 @@ public class TendGreenhouseMeta extends MetaTask {
         addPreferredRobot(RobotType.GARDENBOT);
 	}
 
+    /**
+     * Get the score for a Settlement task for a person. THis considers the number of Person farmers
+     * and any personal preferences.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
     @Override
-    public List<TaskJob> getTaskJobs(Person person) {
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+            Building b = ((CropTaskJob)t).farm.getBuilding();
 
-        List<TaskJob> tasks = new ArrayList<>();
-        if (person.isInSettlement()) {
-            GoodsManager gm = person.getSettlement().getGoodsManager();
-            double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
-
-            for(Building b : person.getSettlement().getBuildingManager().getFarmsNeedingWork()) {
-                Farming farm = b.getFarming();
-                if (farm.getFarmerNum() < MAX_FARMERS) {
-                    double result = getFarmScore(farm);
-
-                    // Crowding modifier.
-                    result *= getBuildingModifier(b, person);
-
-
-                    // Settlement factors
-                    result *= goodsFactor;
-                    
-                    result *= getPersonModifier(person);
-
-                    if (result > 0) {
-                        tasks.add(new CropTaskJob(farm, result));
-                    }
-                }
-            }
-        }
-
-        return tasks;
-    }
-
-    
-    @Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
-
-        List<TaskJob> tasks = new ArrayList<>();
-        if (robot.isInSettlement()) {
-            GoodsManager gm = robot.getSettlement().getGoodsManager();
-            double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
-
-            for(Building b : robot.getSettlement().getBuildingManager().getFarmsNeedingWork()) {
-                Farming farm = b.getFarming();
-
-                double result = getFarmScore(farm);
+            // Do not calculate farmers until we need it as expensive
+            Farming farm = b.getFarming();
+            if (farm.getFarmerNum() < MAX_FARMERS) {
+                factor = 1D;
 
                 // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, b);
-
-                // Settlement factors
-                result *= goodsFactor;
-
-                if (result > 0) {
-                    tasks.add(new CropTaskJob(farm, result));
-                }
+                factor *= getBuildingModifier(b, p);
+                                    
+                factor *= getPersonModifier(p);
             }
-        }
+		}
+		return factor;
+	}
 
-        return tasks;
+    /**
+     * For a robot the over crowding probability is considered
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        Farming f = ((CropTaskJob)t).farm;
+        
+        // Crowding modifier.
+        return TaskProbabilityUtil.getCrowdingProbabilityModifier(r, f.getBuilding());
     }
 
     /**
-     * Get a score for a farm
+     * Scan the settlement Farms for any that need tending. CReate one task per applicable Farming function.
+     * @param settlement Source to scan
+     * @return List of applicable tasks
      */
-    private static double getFarmScore(Farming farm) {
-        // This was originally multipled by VALUE but score was too high
-        return farm.getTendingNeed();
-    }
+    @Override
+    public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+        List<SettlementTask> tasks = new ArrayList<>();
 
+        GoodsManager gm = settlement.getGoodsManager();
+        double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
+
+        for(Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
+            Farming farm = b.getFarming();
+
+            double result = farm.getTendingNeed();
+
+            // Settlement factors
+            result *= goodsFactor;
+
+            if (result > 0) {
+                tasks.add(new CropTaskJob(this, farm, result));
+            }
+        }
+
+        return tasks;
+    }
 }

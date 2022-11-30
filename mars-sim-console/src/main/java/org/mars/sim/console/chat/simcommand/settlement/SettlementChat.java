@@ -29,6 +29,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 	public static final String SETTLEMENT_GROUP = "Settlement";
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
+																	BacklogCommand.BACKLOG,
 																	BedCommand.BED,
 																	BuildingCommand.BUILDING,
 																	CropCommand.CROP,

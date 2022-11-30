@@ -15,10 +15,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
 import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -30,43 +29,34 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the MaintainGarageVehicle task.
  */
-public class MaintainVehicleMeta extends MetaTask {
-	private static class GarageMaintenanceJob extends AbstractTaskJob {
+public class MaintainVehicleMeta extends SettlementMetaTask {
+	private static class VehicleMaintenanceJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
         private Vehicle target;
+		private boolean eva;
 
-        public GarageMaintenanceJob(Vehicle target, double score) {
-            super("Maintain " + target.getName(), score);
+        public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
+            super(owner, "Maintain " + (eva ? "via EVA " : "") + target.getName(), score);
             this.target = target;
+			this.eva = eva;
         }
 
         @Override
         public Task createTask(Person person) {
+			if (eva) {
+				return new MaintainEVAVehicle(person, target);
+			}
             return new MaintainGarageVehicle(person, target);
         }
 
         @Override
         public Task createTask(Robot robot) {
+			if (eva) {
+				throw new IllegalStateException("Robots can not do EVA Vehicel maintenance");
+			}
             return new MaintainGarageVehicle(robot, target);
-        }
-    }
-
-	private static class EVAMaintenanceJob extends AbstractTaskJob {
-
-		private static final long serialVersionUID = 1L;
-
-        private Vehicle target;
-
-        public EVAMaintenanceJob(Vehicle target, double score) {
-            super("EVA Maintain " + target.getName(), score);
-            this.target = target;
-        }
-
-        @Override
-        public Task createTask(Person person) {
-            return new MaintainEVAVehicle(person, target);
         }
     }
 
@@ -74,68 +64,68 @@ public class MaintainVehicleMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 	
     public MaintainVehicleMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH);
 		
 		setPreferredJob(JobType.MECHANICS);
 
 		addPreferredRobot(RobotType.REPAIRBOT);
 	}
 
-	@Override
-    public List<TaskJob> getTaskJobs(Person person) {
+	/**
+     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+			VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
 
-        List<TaskJob> tasks = null;
-		if (person.isInSettlement()) {
-			double insideModifier = getPersonModifier(person);
-			double evaModifier = insideModifier * getRadiationModifier(person.getSettlement())
-									* getEVAModifier(person);
-
-			tasks = getSettlementTasks(person.getSettlement(), insideModifier, evaModifier);
+			if (p.isInSettlement()) {
+				factor = getPersonModifier(p);
+				if (mtj.eva) {
+					// EVA factor is the radition and the EVA modifiers applied extra
+					factor *= getRadiationModifier(p.getSettlement());
+					factor *= getEVAModifier(p);
+				}
+			}
 		}
-		return tasks;
+		return factor;
 	}
 
-
+    /**
+     * For a robot can not do EVA tasks so will return a zero factor in this case.
+	 * @param t Task being scored
+	 * @parma r Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
 	@Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
-
-        List<TaskJob> tasks = null;
-		if (robot.isInSettlement()) {
-			double modifier = robot.getPerformanceRating();
-
-			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
+		if (!mtj.eva && r.isInSettlement()) {
+			return r.getPerformanceRating();
 		}
-		return tasks;
+		return 0D;
 	}
 
 	/**
 	 * Get a collection of Tasks for any Vehicle maintenance that is required.
 	 * @param settlement Settlement to scan for vehicles
-	 * @param insideFactor Score modifier for inside jobs
-	 * @param evaFactor Score modifier for EVA tasks
 	 */
-	private List<TaskJob> getSettlementTasks(Settlement settlement, double insideModifier, double evaModifier) {
-		List<TaskJob> tasks = new ArrayList<>();
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask> tasks = new ArrayList<>();
 
 		boolean insideTasks = getGarageSpaces(settlement) > 0;
-		if (!insideTasks && (evaModifier <= 0)) {
-			// EVA tasks and on EVA allowed; then abort search
-			return tasks;
-		}
 
 		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
 			double score = MaintainBuildingMeta.scoreMaintenance(vehicle);
 
-			// Vehcile in need of maintenance
+			// Vehicle in need of maintenance
 			if (score > 0) {
-				if (insideTasks) {
-					score *= insideModifier;
-					tasks.add(new GarageMaintenanceJob(vehicle, score));
-				}
-				else {
-					score *= evaModifier;
-					tasks.add(new EVAMaintenanceJob(vehicle, score));	
-				}
+				tasks.add(new VehicleMaintenanceJob(this, vehicle, !insideTasks, score));
 			}
 		}
 
