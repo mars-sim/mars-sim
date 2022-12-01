@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuildingEVA;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -30,7 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 /**
  * Meta task for maintaining buildings.
  */
-public class MaintainBuildingMeta extends SettlementMetaTask {
+public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 	/**
      * Represents a Job needed for intenral maintenance on a Building
      */
@@ -72,7 +73,7 @@ public class MaintainBuildingMeta extends SettlementMetaTask {
 	private static final double ROBOT_FACTOR = 2D;
 	
     public MaintainBuildingMeta() {
-		super(NAME, WorkerType.BOTH);
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
 		setPreferredJob(JobType.MECHANICS);

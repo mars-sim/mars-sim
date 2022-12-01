@@ -42,7 +42,7 @@ public abstract class MetaTask {
 	 *  Defines the scope of this Task
 	 */
 	protected enum TaskScope {
-		ANY_HOUR, WORK_HOUR, NONWORK_HOUR, SETTLEMENT;
+		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
 	// Traits used to identify non-effort tasks
@@ -305,26 +305,6 @@ public abstract class MetaTask {
 			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 		}
 		return result;
-	}
-
-		/**
-	 * Gets the list of Task that this Person can perform all individually scored.
-	 * 
-	 * @param person the Person to perform the task.
-	 * @return List of TasksJob specifications.
-	 */
-	public List<TaskJob> getTaskJobs(Person person) {
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Gets the list of Task that this Robot can perform all individually scored.
-	 * 
-	 * @param robot the robot to perform the task.
-	 * @return List of TasksJob specifications.
-	 */
-	public List<TaskJob> getTaskJobs(Robot robot) {
-		return Collections.emptyList();
 	}
 
 	/**

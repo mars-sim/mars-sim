@@ -77,7 +77,6 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @param person the Person to perform the task.
 	 * @return List of TasksJob specifications.
 	 */
-	@Override
 	public List<TaskJob> getTaskJobs(Person person) {
 		return createTaskJob(getProbability(person));
 	}
@@ -88,7 +87,6 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @param robot the robot to perform the task.
 	 * @return List of TasksJob specifications.
 	 */
-	@Override
 	public List<TaskJob> getTaskJobs(Robot robot) {
 		return createTaskJob(getProbability(robot));
 	}

@@ -10,15 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -32,7 +33,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Meta task for the ToggleFuelPowerSource task.
  */
-public class ToggleFuelPowerSourceMeta extends SettlementMetaTask {
+public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMetaTask {
 
 	/**
      * Represents a Job needed in a Fishery
@@ -55,9 +56,6 @@ public class ToggleFuelPowerSourceMeta extends SettlementMetaTask {
             return new ToggleFuelPowerSource(person, building, powerSource);
         }
     }
-
-    /** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ToggleFuelPowerSourceMeta.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -66,7 +64,7 @@ public class ToggleFuelPowerSourceMeta extends SettlementMetaTask {
 	private static final double FACTOR = 20D;
 
     public ToggleFuelPowerSourceMeta() {
-		super(NAME, WorkerType.PERSON);
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 	}
@@ -205,5 +203,11 @@ public class ToggleFuelPowerSourceMeta extends SettlementMetaTask {
         }
 
         return result;
+    }
+
+    @Override
+    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

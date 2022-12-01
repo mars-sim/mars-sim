@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -34,7 +35,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the UnloadVehicleGarage task.
  */
-public class UnloadVehicleMeta extends SettlementMetaTask {
+public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     private static class UnloadJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
@@ -74,7 +75,7 @@ public class UnloadVehicleMeta extends SettlementMetaTask {
     private static MissionManager missionManager;
 	
     public UnloadVehicleMeta() {
-		super(NAME, WorkerType.BOTH);
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);

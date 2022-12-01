@@ -81,12 +81,11 @@ import org.mars_sim.msp.core.robot.ai.task.ChargeMeta;
  */
 public class MetaTaskUtil {
 
-	private static List<MetaTask> dutyHourTasks = null;
-	private static List<MetaTask> nonDutyHourTasks = null;
-	private static List<MetaTask> nonWorkHourMetaTasks;
+	private static List<FactoryMetaTask> dutyHourTasks = null;
+	private static List<FactoryMetaTask> nonDutyHourTasks = null;
 
-	private static List<MetaTask> personMetaTasks;
-	private static List<MetaTask> robotMetaTasks = null;
+	private static List<FactoryMetaTask> personMetaTasks;
+	private static List<FactoryMetaTask> robotMetaTasks = null;
 
 	private static Map<String,MetaTask> nameToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
@@ -175,47 +174,40 @@ public class MetaTaskUtil {
 			nameToMetaTask.put(t.getClass().getSimpleName().toLowerCase(), t);
 		}
 
+		// Pick put settlement tasks
+		settlementTasks = allMetaTasks.stream()
+				.filter(m -> (m instanceof SettlementMetaTask))
+				.map(s -> (SettlementMetaTask) s)
+				.collect(Collectors.toUnmodifiableList());
+
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
+				.filter(m -> (m instanceof FactoryMetaTask))
+				.map(s -> (FactoryMetaTask) s)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.PERSON)))
 				.collect(Collectors.toUnmodifiableList());
 		robotMetaTasks = allMetaTasks.stream()
+				.filter(m -> (m instanceof FactoryMetaTask))
+				.map(s -> (FactoryMetaTask) s)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
 								|| (m.getSupported() == WorkerType.ROBOT)))
 				.collect(Collectors.toUnmodifiableList());
 		
 		// Build special Shift based lists
 		// Should these be just Person task?
-		List<MetaTask> workHourMetaTasks = personMetaTasks.stream()
-				.filter(m -> m.getScope() == TaskScope.WORK_HOUR)
-				.collect(Collectors.toList());		
-		
-		nonWorkHourMetaTasks = personMetaTasks.stream()
-				.filter(m -> m.getScope() == TaskScope.NONWORK_HOUR)
-				.collect(Collectors.toUnmodifiableList());
+		Map<TaskScope, List<FactoryMetaTask>> metaPerScope = personMetaTasks.stream()
+  					.collect(Collectors.groupingBy(MetaTask::getScope));
 
-		settlementTasks = allMetaTasks.stream()
-				.filter(m -> ((m.getScope() == TaskScope.SETTLEMENT)))
-				.map(s -> (SettlementMetaTask) s)
-				.collect(Collectors.toUnmodifiableList());
-				
-		List<MetaTask> anyHourMetaTasks = personMetaTasks.stream()
-				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
-				.collect(Collectors.toList());
-		List<MetaTask> tasks = new ArrayList<>();
-		tasks.addAll(anyHourMetaTasks);
-		tasks.addAll(workHourMetaTasks);
+		List<FactoryMetaTask> tasks = new ArrayList<>();
+		tasks.addAll(metaPerScope.get(TaskScope.ANY_HOUR));
+		tasks.addAll(metaPerScope.get(TaskScope.WORK_HOUR));
 		dutyHourTasks = Collections.unmodifiableList(tasks);
 
 		tasks = new ArrayList<>();
-		tasks.addAll(anyHourMetaTasks);
-		tasks.addAll(nonWorkHourMetaTasks);
+		tasks.addAll(metaPerScope.get(TaskScope.ANY_HOUR));
+		tasks.addAll(metaPerScope.get(TaskScope.NONWORK_HOUR));
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);
-
-		// Settlement tasks
-
-
 	}
 
 	/**
@@ -223,17 +215,8 @@ public class MetaTaskUtil {
 	 * 
 	 * @return list of meta tasks.
 	 */
-	public static List<MetaTask> getPersonMetaTasks() {
+	public static List<FactoryMetaTask> getPersonMetaTasks() {
 		return personMetaTasks;
-	}
-
-	/**
-	 * Gets a list of all non work hour meta tasks.
-	 * 
-	 * @return list of work hour meta tasks.
-	 */
-	public static List<MetaTask> getNonWorkHourMetaTasks() {
-		return nonWorkHourMetaTasks;
 	}
 
 	/**
@@ -241,7 +224,7 @@ public class MetaTaskUtil {
 	 * 
 	 * @return list of duty meta tasks.
 	 */
-	public static List<MetaTask> getDutyHourTasks() {
+	public static List<FactoryMetaTask> getDutyHourTasks() {
 		return dutyHourTasks;
 	}
 	
@@ -250,7 +233,7 @@ public class MetaTaskUtil {
 	 * 
 	 * @return list of non-duty meta tasks.
 	 */
-	public static List<MetaTask> getNonDutyHourTasks() {
+	public static List<FactoryMetaTask> getNonDutyHourTasks() {
 		return nonDutyHourTasks;
 	}
 	
@@ -287,7 +270,7 @@ public class MetaTaskUtil {
 		return getMetaTask(metaTaskName);
 	}
 
-	public static List<MetaTask> getRobotMetaTasks() {
+	public static List<FactoryMetaTask> getRobotMetaTasks() {
 		return robotMetaTasks;
 	}
 

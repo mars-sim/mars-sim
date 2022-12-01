@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -30,7 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 /**
  * Meta task for the ToggleResourceProcess task.
  */
-public class ToggleResourceProcessMeta extends SettlementMetaTask {
+public class ToggleResourceProcessMeta extends MetaTask implements SettlementMetaTask {
 	/**
 	 * Represents a job to toggle a Resource process in a building.
 	 */
@@ -67,7 +68,7 @@ public class ToggleResourceProcessMeta extends SettlementMetaTask {
 	private static final double URGENT_FACTOR = 20;
 	
     public ToggleResourceProcessMeta() {
-		super(NAME, WorkerType.PERSON);
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 	}
@@ -263,5 +264,15 @@ public class ToggleResourceProcessMeta extends SettlementMetaTask {
 			score = (score * 2) + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
 		return score;
+	}
+
+	/**
+	 * Robots can not toggle resource processes.
+	 * @param t Task 
+	 * @param r Robot making the request
+	 */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		return 0;
 	}
 }

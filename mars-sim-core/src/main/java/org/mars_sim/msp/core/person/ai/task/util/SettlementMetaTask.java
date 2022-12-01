@@ -7,9 +7,11 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -17,18 +19,21 @@ import org.mars_sim.msp.core.structure.Settlement;
  * instances itself. These are used but the ShiftTaskManager to maintain a shared pool of tasks.
  * @see SettlementTaskManager
  */
-public abstract class SettlementMetaTask extends MetaTask {
+public interface SettlementMetaTask {
 
-    protected SettlementMetaTask(String name, WorkerType workerType) {
-        super(name, workerType, TaskScope.SETTLEMENT);
-    }
-    
+    /**
+	 * Gets the Robots that is most suitable to this Task.
+	 * 
+	 * @return
+	 */
+	Set<RobotType> getPreferredRobot();
+
     /**
      * Get the potential pending Tasks for a Settlment. These have no person/robot modifiers applied.
      * @param settlement Swettlement to be scanned
      * @return List if SettlementTasks
      */
-    public abstract List<SettlementTask> getSettlementTasks(Settlement settlement);
+    List<SettlementTask> getSettlementTasks(Settlement settlement);
 
     /**
      * Get the Person applicable modifiers for this  Meta Task.
@@ -36,9 +41,7 @@ public abstract class SettlementMetaTask extends MetaTask {
      * @param p Person in question
      * @return Default returns 0 being no applicable Task
      */
-    public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        return 0;
-    }
+    double getPersonSettlementModifier(SettlementTask t, Person p);
 
     /**
      * Get the Robot applicable modifiers for this  Meta Task.
@@ -46,7 +49,5 @@ public abstract class SettlementMetaTask extends MetaTask {
      * @param r Robot in question
      * @return Default returns 0 
      */
-    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        return 0;
-    }
+    double getRobotSettlementModifier(SettlementTask t, Robot r);
 }

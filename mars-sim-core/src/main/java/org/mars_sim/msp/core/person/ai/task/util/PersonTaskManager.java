@@ -122,7 +122,7 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	protected TaskCache rebuildTaskCache() {
 
-		List<MetaTask> mtList = null;
+		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
 		switch(workStatus) {
@@ -147,7 +147,7 @@ public class PersonTaskManager extends TaskManager {
 		TaskCache newCache = new TaskCache(shiftDesc, marsClock);
 
 		// Determine probabilities.
-		for (MetaTask mt : mtList) {
+		for (FactoryMetaTask mt : mtList) {
 			List<TaskJob> job = mt.getTaskJobs(person);
 			if (job != null) {
 				newCache.add(job);

@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
 import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -29,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the MaintainGarageVehicle task.
  */
-public class MaintainVehicleMeta extends SettlementMetaTask {
+public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask {
 	private static class VehicleMaintenanceJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
@@ -64,7 +65,7 @@ public class MaintainVehicleMeta extends SettlementMetaTask {
 	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 	
     public MaintainVehicleMeta() {
-		super(NAME, WorkerType.BOTH);
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
 		setPreferredJob(JobType.MECHANICS);
 

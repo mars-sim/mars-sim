@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.goods.GoodsManager;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 /**
  * Meta task for the Tend Greenhouse task.
  */
-public class TendGreenhouseMeta extends SettlementMetaTask {
+public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
     private static class CropTaskJob extends SettlementTask {
 		
@@ -52,9 +52,6 @@ public class TendGreenhouseMeta extends SettlementMetaTask {
             return new TendGreenhouse(robot, farm);
         }
     }
-    
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -64,7 +61,7 @@ public class TendGreenhouseMeta extends SettlementMetaTask {
     private static final int MAX_FARMERS = 2;
 
     public TendGreenhouseMeta() {
-		super(NAME, WorkerType.BOTH);
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
@@ -43,7 +44,7 @@ public class BotTaskManager extends TaskManager {
 	private static TaskCache chargeMap;
 
 	// Mapping of RobotType to the applicable MetaTasks
-	private static Map<RobotType,List<MetaTask>> robotTasks;
+	private static Map<RobotType,List<FactoryMetaTask>> robotTasks;
 
 
 	// Data members
@@ -140,10 +141,10 @@ public class BotTaskManager extends TaskManager {
 	 */
 	private static synchronized void buildRobotTasks() {
 		if (robotTasks == null) {
-			Map<RobotType,List<MetaTask>> newTaskMap = new EnumMap<>(RobotType.class);
+			Map<RobotType, List<FactoryMetaTask>> newTaskMap = new EnumMap<>(RobotType.class);
 
-			List<MetaTask> anyRobot = new ArrayList<>();
-			for(MetaTask mt : MetaTaskUtil.getRobotMetaTasks()) {
+			List<FactoryMetaTask> anyRobot = new ArrayList<>();
+			for(FactoryMetaTask mt : MetaTaskUtil.getRobotMetaTasks()) {
 				Set<RobotType> possibleRobots = mt.getPreferredRobot();
 				if (possibleRobots.isEmpty()) {
 					anyRobot.add(mt);
@@ -189,8 +190,8 @@ public class BotTaskManager extends TaskManager {
 		TaskCache newCache = new TaskCache("Robot", marsClock);
 		
 		// Determine probabilities.
-		List<MetaTask> potentials = robotTasks.get(robot.getRobotType());
-		for (MetaTask mt : potentials) {
+		List<FactoryMetaTask> potentials = robotTasks.get(robot.getRobotType());
+		for (FactoryMetaTask mt : potentials) {
 			List<TaskJob> job = mt.getTaskJobs(robot);
 	
 			if (job != null) {
