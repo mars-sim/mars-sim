@@ -65,7 +65,7 @@ class PartGood extends Good {
 	private static final double METALLIC_DEMAND = 3;
 	private static final double UTILITY_DEMAND = 3;
 	private static final double TOOL_DEMAND = 4;
-	private static final double CONSTRUCTION_DEMAND = .8;
+	private static final double CONSTRUCTION_DEMAND = 2;
 	private static final double GLASS_SHEET_DEMAND = .1;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	
@@ -362,7 +362,7 @@ class PartGood extends Good {
 	}
 
 	/**
-	 * Calculate the part demand based on types.
+	 * Calculates the part demand based on types.
 	 * 
 	 * @param part
 	 * @return
@@ -470,7 +470,7 @@ class PartGood extends Good {
 
 
 	/**
-	 * Gets the eva related demand for a part.
+	 * Gets the EVA related demand for a part.
 	 *
 	 * @param part the part.
 	 * @return demand

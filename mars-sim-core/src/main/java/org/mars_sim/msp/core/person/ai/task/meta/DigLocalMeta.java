@@ -24,8 +24,8 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = .05;
-	private static final int MAX = 1_500;
+	private static final double VALUE = .1;
+	private static final int MAX = 2_000;
 	private static final int CAP = 3_000;
 	
 	private EquipmentType containerType;

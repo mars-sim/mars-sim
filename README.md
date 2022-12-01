@@ -56,12 +56,12 @@ that are based on present-day technologies.
 
 Without a doubt, settlers need a timekeeping standard system for tracking the passage of time. 
 That's because living on Mars does require a functioning Martian calendar in which settlers may keep track 
-of sols that have elapsed. At the same time, astronomers would prefer to come up with a calendar that 
+of days (or sols) that have elapsed. At the same time, astronomers would prefer to come up with a calendar that 
 is handy and intuitive in predicting the orbit of Mars around the sun. 
 
-The difficulties arises when each day on Mars has slightly more than 24 hours and there are 669 earth days 
-on one Martian years. Therefore, it is not a straight-foward exercise in converting the time and day 
-between Mars and Earth in the form of a simple equation.
+The difficulties arises when each sol on Mars has slightly more than 24 earth hours and there are 669 earth days 
+on one Martian orbit (or year). Therefore, it is not a straight-foward exercise in converting the time and day 
+between Mars and Earth by merely a simple equation.
 
 See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
 this topic.
@@ -140,7 +140,6 @@ A settler may come from any one of 29 major countries as listed in this [countri
 Note that the European Space Agency (ESA) consists of 22 member nations who are funding the space development effort.
 
 Altogether, there's also 10 possible space agencies that can be acted as a sponsor to a settlement.
-
 
 ### Job, Work Shift and Task Modeling
 

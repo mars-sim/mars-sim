@@ -358,7 +358,7 @@ public abstract class EVAOperation extends Task {
 					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					if (interiorObject instanceof Building)
 						logger.log(person, Level.INFO, 30_000,
-							"Found " + ((Airlock)interiorObject).getEntityName()
+							"Found " + ((Building)interiorObject).getName()
 							+ " to enter.");
 				}
 				else {

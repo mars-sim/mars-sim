@@ -1000,6 +1000,16 @@
 		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
 	</part>
 
+	<part name="Aerogel tile" type="construction" mass="0.5">
+		<description>A silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
+		contain over 97% air by volume and have some of the lowest measured thermal conductivities of 
+		any known material (of 0.02 W/m/K at 1 bar pressure or 0.01 W/m/K at Martian atmospheric 
+		pressure). It was already routinely employed in many engineering applications, including 
+		in NASA’s Mars Exploration Rovers where thin aerogel layers provided night-time thermal 
+		insulation. A 3 cm layer of silica aerogel can increase the temperature of the underlying 
+		surface by 45 K when it receives a flux of 150 W/m2. </description>
+	</part>
+	
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

@@ -3066,6 +3066,21 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<!-- Make aerogel tile" as rooftop tiles that could allow sunlight to penetrate and would trap heat. -->
+	<process name="Supercritical CO2 drying of aerogel tile" tech="2" skill="3" work-time="50" process-time="100"
+			power-required="1">
+		<description>Extracting the liquid from silica gel to create a thin, 2 to 3 cm (.8 to 1.2 inch) 
+			layer of aerogel by means of supercritical CO2 drying</description>			
+		<inputs>
+			<resource name="silica" amount="5" />		
+			<resource name="carbon dioxide" amount="5" />	
+		</inputs>
+		<outputs>
+			<part name="aerogel tile" number="10" />
+		</outputs>
+	</process>
+
+
 	<!-- To be added :
 
 	1. Zirconia, Silicon Nittride Si3N4, 	manufacturing ceramic tile.
