@@ -36,9 +36,9 @@ class BacklogCommand extends AbstractSettlementCommand {
 
         List<SettlementTask> tasks = stm.getAvailableTasks();
         if (tasks != null) {
-            response.appendTableHeading("Tasks", 40, "Score");
+            response.appendTableHeading("Tasks", 55, "#", 3, "Score");
             for(SettlementTask t : tasks) {
-                response.appendTableRow(t.getDescription(), 
+                response.appendTableRow(t.getDescription(), t.getDemand(),
                                 String.format(CommandHelper.DOUBLE_FORMAT, t.getScore()));
             }
         }

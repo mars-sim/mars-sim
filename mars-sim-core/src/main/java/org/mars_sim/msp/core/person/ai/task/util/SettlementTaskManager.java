@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class SettlementTaskManager implements Serializable {
     /**
      * Acts as a Proxy to a SettlementTask. The proxy ensures that the root Task which is shared
-     * is remvoed fromt he parent SettlemetnTaskmanager when it is created to avoid it being re-used.
+     * is removed from the parent SettlemetTaskmanager when it is created if there is no more demand.
+     * This avoids it being re-used.
      */
     class SettlementTaskProxy extends AbstractTaskJob  {
         
@@ -35,23 +36,34 @@ public class SettlementTaskManager implements Serializable {
             this.manager = owner;
         }
 
+        /**
+         * A Worker has selected this to be work on so reduce the demand
+         */
+        private void reduceDemand() {
+            // One demand taken, if none left remove from shared pool
+            if (source.reduceDemand()) {
+                manager.removeTask(source);
+            }
+        }
+
         @Override
         public Task createTask(Person person) {
-            manager.removeTask(source);
+            reduceDemand();
             return source.createTask(person);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            manager.removeTask(source);
+            reduceDemand();
             return source.createTask(robot);
         }
     }
 
-	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(SettlementTaskManager.class.getName());
 
     private Settlement owner;
-    private List<SettlementTask> tasks;
+    private transient List<SettlementTask> tasks;
+    private boolean refreshTasks = true;
 
     private int callCount;
     private int buildCount = 0;
@@ -73,14 +85,15 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Get the current cached Settlement Tasks. If there is no cahce; then a lsi is created.
+     * Get the current cached Settlement Tasks. If there is no cache or marked as refresh then a list is created.
      */
     private List<SettlementTask> getTasks() {
-        if (tasks == null) {
+        if (refreshTasks || (tasks == null)) {
             tasks = new ArrayList<>();
             for(SettlementMetaTask mt : MetaTaskUtil.getSettlementMetaTasks()) {
                 tasks.addAll(mt.getSettlementTasks(owner));
             }
+            refreshTasks = false;
             buildCount++;
         }
         callCount++;
@@ -152,9 +165,9 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Time has progressed so clear any cached Tasks.
+     * Time has progressed so mark the tasks to be refresh on the next demand.
      */
     public void timePassing() {
-        tasks = null;
+        refreshTasks = true;
     }
 }

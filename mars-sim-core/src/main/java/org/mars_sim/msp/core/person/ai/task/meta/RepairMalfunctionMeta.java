@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -24,9 +23,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -52,8 +49,9 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		private boolean eva;
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
-								boolean eva, double score) {
+							 int demand, boolean eva, double score) {
 			super(owner, "Repair EVA " + mal.getName() + " @ " + entity, score);
+			setDemand(demand);
 			this.entity = entity;
 			this.mal = mal;
 			this.eva = eva;
@@ -81,6 +79,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 5D;
+
+	private static final String INSIDE = null;
 	
     public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -108,7 +108,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 				double factor = getPersonSettlementModifier(t, person);
 
 				RepairTaskJob rtj = (RepairTaskJob) t;
-				tasks.add(new RepairTaskJob(this, rtj.entity, rtj.mal, rtj.eva, rtj.getScore() * factor));
+				tasks.add(new RepairTaskJob(this, rtj.entity, rtj.mal, rtj.getDemand(),
+											rtj.eva, rtj.getScore() * factor));
 			}
 		}
 
@@ -191,18 +192,18 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 			MalfunctionManager manager = entity.getMalfunctionManager();
 			
 			if (manager.hasMalfunction()) {
-				// Pick the worst inside malfunction
-				Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-				if (mal != null) {
-					double score = scoreMalfunction(partStore, mal, MalfunctionRepairWork.INSIDE);
-					tasks.add(new RepairTaskJob(this, entity, mal, false, score));
-				}
+				// Create repair tasks for all active malfunctions
+				for(Malfunction mal : manager.getMalfunctions()) {
+					SettlementTask task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.INSIDE);
+					if (task != null) {
+						tasks.add(task);
+					}
 
-				// Pick any EVA repair activities
-				Malfunction evamal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
-				if (evamal != null) {
-					double score = scoreMalfunction(partStore, evamal, MalfunctionRepairWork.EVA);
-					tasks.add(new RepairTaskJob(this, entity, evamal, true, score));
+					// Pick any EVA repair activities
+					task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.EVA);
+					if (task != null) {
+						tasks.add(task);
+					}
 				}
 			}
 		}
@@ -210,22 +211,29 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	}
 
 	/**
-     * Gets the initial score of the malfunction.
+     * Create a repair task for a Malfunction.
      * 
-     * @param malfunction
-     * @return
+	 * @param partsStore Where are spare parts coming from
+	 * @param entity Entity suffering the malfunction
+	 * @param workType Type of work to check for.
+     * @return It may return null if the Malfunction need no further repair work
      */
-    public static double scoreMalfunction(EquipmentOwner partsStore, Malfunction malfunction, MalfunctionRepairWork workType) {    
-    	double result = 0D;
+    private SettlementTask createRepairTask(EquipmentOwner partsStore, Malfunctionable entity,
+											Malfunction malfunction,
+											MalfunctionRepairWork workType) {    
 		if (!malfunction.isWorkDone(workType)
 				&& (malfunction.numRepairerSlotsEmpty(workType) > 0)) {
-	        result = WEIGHT * malfunction.getSeverity();
+	        double result = WEIGHT * malfunction.getSeverity();
 	        
 	        if (RepairHelper.hasRepairParts(partsStore, malfunction)) {
 	    		result *= 2;
 	    	}
+		
+			return new RepairTaskJob(this, entity, malfunction,
+									malfunction.numRepairerSlotsEmpty(workType),
+									(workType == MalfunctionRepairWork.EVA),
+									result);
 		}
-    	
-		return result;
+		return null;
     }
 }
