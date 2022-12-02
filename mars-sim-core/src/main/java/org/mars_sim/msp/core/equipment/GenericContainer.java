@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -269,6 +270,11 @@ class GenericContainer extends Equipment implements Container {
 		return this;
 	}
 
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.CONTAINER;
+	}
+	
 	/**
 	 * Cleans the container by resetting the assigned resource.
 	 */

@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -157,37 +158,36 @@ public class BuildingKit extends Equipment
 
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public double getAmountResourceCapacity(int resource) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public double getAmountResourceStored(int resource) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public boolean isEmpty(boolean brandNew) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public double getStoredMass() {
-		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.CONTAINER;
 	}
 }

@@ -72,7 +72,8 @@ public final class UnitDisplayInfoFactory {
 			}
 			else
 				return null;
-		} else if (unit.getUnitType() == UnitType.EQUIPMENT)
+		} else if (unit.getUnitType() == UnitType.EVA_SUIT
+					|| unit.getUnitType() == UnitType.CONTAINER)
 			return equipmentBean;
 		else
 			return null;

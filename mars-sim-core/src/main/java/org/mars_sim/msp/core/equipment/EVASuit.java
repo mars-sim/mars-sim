@@ -623,6 +623,11 @@ public class EVASuit extends Equipment
 		return microInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
+	@Override
+	public UnitType getUnitType() {
+		return UnitType.EVA_SUIT;
+	}
+	
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;

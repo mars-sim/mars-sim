@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -47,7 +46,6 @@ public class UnitWindowFactory {
         else if (unit.getUnitType() == UnitType.SETTLEMENT) return new SettlementUnitWindow(desktop, unit);
         else if (unit.getUnitType() == UnitType.BUILDING) return new BuildingWindow(desktop, (Building) unit);
         else if (unit.getUnitType() == UnitType.EVA_SUIT) return new EquipmentWindow(desktop, (EVASuit) unit);
-        else if (unit.getUnitType() == UnitType.EQUIPMENT) return new EquipmentWindow(desktop, (Equipment) unit);
         else return null;
     }
 }

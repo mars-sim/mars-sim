@@ -143,7 +143,8 @@ public class UnitManager implements Serializable, Temporal {
 		case BUILDING:
 			map = lookupBuilding;
 			break;
-		case EQUIPMENT:
+		case EVA_SUIT:
+		case CONTAINER:
 			map = lookupEquipment;
 			break;
 		case ROBOT:
@@ -260,7 +261,8 @@ public class UnitManager implements Serializable, Temporal {
 			   			(Vehicle) unit);
 				addDisplayUnit(unit);
 				break;
-			case EQUIPMENT:
+			case CONTAINER:
+			case EVA_SUIT:
 				lookupEquipment.put(unit.getIdentifier(),
 			   			(Equipment) unit);
 				break;
