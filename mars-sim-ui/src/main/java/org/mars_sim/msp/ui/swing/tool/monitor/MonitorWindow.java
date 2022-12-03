@@ -229,6 +229,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 		
 		addTab(new FoodInventoryTab(selectedSettlement, this));
+		addTab(new BacklogTab(selectedSettlement, this));
+
 		
 		addTab(new TradeTab(selectedSettlement, this));
 		
@@ -532,6 +534,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			// Hide the settlement box
 			enableSettlement = false;
+		}
+		else if (selectedTab instanceof BacklogTab) {
+			tabTableModel.setSettlementFilter(selectedSettlement);
 		}
 		else if (selectedTab instanceof FoodInventoryTab) {
 			tabTableModel.setSettlementFilter(selectedSettlement);

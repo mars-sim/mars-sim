@@ -121,7 +121,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for(Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            double result = farm.getTendingNeed();
+            // Using the raw tending needs creates too large scores.
+            double result = farm.getTendingNeed()/10D;
 
             // Settlement factors
             result *= goodsFactor;

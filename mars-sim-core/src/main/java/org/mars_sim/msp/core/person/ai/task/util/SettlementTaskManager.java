@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -95,6 +96,9 @@ public class SettlementTaskManager implements Serializable {
             }
             refreshTasks = false;
             buildCount++;
+
+            // Inform listeners
+            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT);
         }
         callCount++;
         return tasks;
