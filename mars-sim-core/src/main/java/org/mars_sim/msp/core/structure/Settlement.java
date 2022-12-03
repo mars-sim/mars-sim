@@ -163,8 +163,8 @@ public class Settlement extends Structure implements Temporal,
 	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 	/** Initial mission passing score. */
-	private static final double INITIAL_MISSION_SCORE = 400D;
-	/** Hvae a maximum mission score that can be recorded. */
+	private static final double INITIAL_MISSION_PASSING_SCORE = 100D;
+	/** The Maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;
 
 	/** Normal air pressure [in kPa]. */
@@ -216,7 +216,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
-	private double minimumPassingScore = INITIAL_MISSION_SCORE;
+	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
+	/** Goods manager update time. */
+	private double goodsManagerUpdateTime = 0D;
 	/** The settlement's current indoor temperature. */
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
@@ -504,7 +506,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
-		missionScores.add(INITIAL_MISSION_SCORE);
+		missionScores.add(INITIAL_MISSION_PASSING_SCORE);
 
 		// Create the water consumption map
 		waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
@@ -2915,7 +2917,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Checks if the last 20 mission scores are above the threshold
+	 * Checks if the last 20 mission scores are above the threshold.
 	 *
 	 * @param score
 	 * @return true/false
@@ -2926,7 +2928,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Calculates the current minimum passing score
+	 * Calculates the current minimum passing score.
 	 *
 	 * @return
 	 */
@@ -2935,7 +2937,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Saves the mission score
+	 * Saves the mission score.
 	 *
 	 * @param score
 	 */

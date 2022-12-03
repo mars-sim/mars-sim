@@ -579,7 +579,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 				vehicleUpdate((Vehicle) unit);
 			}
 
-			else if (unit.getUnitType() == UnitType.EQUIPMENT) {
+			else if (unit.getUnitType() == UnitType.CONTAINER
+					|| unit.getUnitType() == UnitType.EVA_SUIT) {
 				equipmentUpdate((Equipment) unit);
 			}
 		}

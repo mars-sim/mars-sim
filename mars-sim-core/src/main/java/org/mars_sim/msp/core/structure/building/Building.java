@@ -1500,7 +1500,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public Set<Integer> getItemResourceIDs() {
 		return getSettlement().getItemResourceIDs();
 	}
-
+	
+	@Override
+	public double getCargoCapacity() {
+		return 0;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);

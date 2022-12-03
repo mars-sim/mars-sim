@@ -172,10 +172,11 @@ extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(100);
+		table.getColumnModel().getColumn(0).setPreferredWidth(120);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
 		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());

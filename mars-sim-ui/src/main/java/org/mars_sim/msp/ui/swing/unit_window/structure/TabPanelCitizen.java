@@ -33,7 +33,7 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelCitizen extends TabPanel{
 
-	private static final String CITIZEN_ICON = Msg.getString("icon.citizen"); //$NON-NLS-1$
+	private static final String CITIZEN_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
 	
 	private int populationCitizensCache;
 	private int populationCapacityCache;

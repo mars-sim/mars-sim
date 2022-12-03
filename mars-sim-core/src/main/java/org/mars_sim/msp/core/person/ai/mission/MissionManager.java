@@ -223,10 +223,10 @@ public class MissionManager implements Serializable, Temporal {
 					probability *= sponsorRatio;
 
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
-							+ "' probability=" + Math.round(probability * 100.0)/100.0
-									+ " base prob=" + Math.round(baseProb * 100.0)/100.0
-									+ " boost=" + Math.round(boost * 100.0)/100.0
-									+ " sponsor=" + Math.round(sponsorRatio * 100.0)/100.0);
+							+ "' probability: " + Math.round(probability * 100.0)/100.0
+									+ " base prob: " + Math.round(baseProb * 100.0)/100.0
+									+ " boost: " + Math.round(boost * 100.0)/100.0
+									+ " sponsor: " + Math.round(sponsorRatio * 100.0)/100.0);
 
 					missionProbCache.put(metaMission, probability);
 					totalProbCache += probability;

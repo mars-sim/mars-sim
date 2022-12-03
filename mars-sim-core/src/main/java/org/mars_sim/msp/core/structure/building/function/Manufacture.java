@@ -321,7 +321,8 @@ public class Manufacture extends Function {
 		// Retrieve salvaged unit and remove from unit manager.
 		Unit salvagedUnit = process.getSalvagedUnit();
 		if (salvagedUnit != null) {
-			if (salvagedUnit.getUnitType() == UnitType.EQUIPMENT) {
+			if (salvagedUnit.getUnitType() == UnitType.CONTAINER
+					|| salvagedUnit.getUnitType() == UnitType.EVA_SUIT) {
 				building.getSettlement().removeEquipment((Equipment)salvagedUnit);
 			} else if (salvagedUnit.getUnitType() == UnitType.VEHICLE) {
 				building.getSettlement().removeOwnedVehicle((Vehicle)salvagedUnit);

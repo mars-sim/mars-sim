@@ -38,7 +38,8 @@ public class CollectionUtils {
 	) {
 		return units
 				.stream()
-				.filter(u -> UnitType.EQUIPMENT == u.getUnitType())
+				.filter(u -> UnitType.CONTAINER == u.getUnitType()
+							|| UnitType.EVA_SUIT == u.getUnitType())
 				.map(Equipment.class::cast)
 				.filter(u -> !u.isSalvaged())
 				.collect(Collectors.toList());

@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
@@ -161,40 +160,30 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		// constructors
 		switch (getUnitType()) {
 		case ROBOT:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-//			containerID = FIRST_SETTLEMENT_ID;
-			break;
 
-		case EQUIPMENT:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-//			containerID = FIRST_SETTLEMENT_ID;
-			break;
+		case CONTAINER:
 
 		case PERSON:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-//			containerID = FIRST_SETTLEMENT_ID;
-			break;
-
+			
 		case BUILDING:
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-//			containerID = FIRST_SETTLEMENT_ID;
-			break;
 
+		case EVA_SUIT:
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			break;
+			
 		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
 
 		case SETTLEMENT:
-			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			break;
 
 		case CONSTRUCTION:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
 
+			
 		case PLANET:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
@@ -489,8 +478,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public LocationStateType getNewLocationState(Unit newContainer) {
 
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (getUnitType() == UnitType.PERSON || getUnitType() == UnitType.ROBOT
-					|| getUnitType() == UnitType.EQUIPMENT)
+			if (getUnitType() == UnitType.PERSON 
+					|| getUnitType() == UnitType.ROBOT
+					|| getUnitType() == UnitType.CONTAINER)
 				return LocationStateType.INSIDE_SETTLEMENT;
 			else if (getUnitType() == UnitType.VEHICLE)
 				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
@@ -734,19 +724,19 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return false;
 	}
 
-	/**
-	 * Gets the total capacity of this unit.
-	 *
-	 * @return
-	 */
-	public double getCargoCapacity() {
-		if (getUnitType() == UnitType.EQUIPMENT) {
-			return ((Equipment) this).getCargoCapacity();
-		}
-
-		// if Inventory is presents, use getGeneralCapacity
-		return 0;
-	}
+//	/**
+//	 * Gets the total capacity of this unit.
+//	 *
+//	 * @return
+//	 */
+//	public double getCargoCapacity() {
+//		if (getUnitType() == UnitType.CONTAINER) {
+//			return ((Equipment) this).getCargoCapacity();
+//		}
+//
+//		// if Inventory is presents, use getGeneralCapacity
+//		return 0;
+//	}
 
 	/**
 	 * Loads instances.

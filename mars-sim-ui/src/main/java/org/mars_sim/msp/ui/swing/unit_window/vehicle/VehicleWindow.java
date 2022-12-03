@@ -19,7 +19,6 @@ import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelGeneral;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -55,20 +54,16 @@ public class VehicleWindow extends UnitWindow {
 		addTabPanel(new InventoryTabPanel(vehicle, desktop));
 	
 		addTabPanel(new LocationTabPanel(vehicle, desktop));
-		
+
 		if (vehicle instanceof Rover) {
 
-			addTabPanel(new TabPanelEVA(vehicle, desktop));
-			addTabPanel(new NavigationTabPanel(vehicle, desktop));
-						
+			addTabPanel(new TabPanelEVA(vehicle, desktop));		
 			Rover rover = (Rover) vehicle;
 			if (rover.hasLab())
 				addTabPanel(new LaboratoryTabPanel(rover, desktop));		
 			// Future: Add sickbay tab panel.
 		}		
-		else {
-			addTabPanel(new NavigationTabPanel(vehicle, desktop));
-		}
+
 
 		addTabPanel(new TabPanelLog(vehicle, desktop));
 		addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
@@ -83,7 +78,7 @@ public class VehicleWindow extends UnitWindow {
 		
 		sortTabPanels();
 
-		addFirstPanel(new TabPanelGeneral(vehicle, desktop));
+		addFirstPanel(new NavigationTabPanel(vehicle, desktop));
 		
 		// Add to tab panels. 
 		addTabIconPanels();

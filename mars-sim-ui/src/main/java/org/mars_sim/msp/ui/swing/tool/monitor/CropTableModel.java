@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -29,7 +28,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 public class CropTableModel extends UnitTableModel<Building> {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
+//	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
 
 	// Column indexes
 	private static final int GREENHOUSE_NAME = 0;
@@ -159,7 +158,9 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 * @return total num of crops
 	 */
 	private int getTotalNumOfAllCrops(Building b) {
-		return b.getFarming().getCrops().size();
+		if (!b.getFarming().getCrops().isEmpty())
+			return b.getFarming().getCrops().size();
+		return 0;
 	}
 
 	/**

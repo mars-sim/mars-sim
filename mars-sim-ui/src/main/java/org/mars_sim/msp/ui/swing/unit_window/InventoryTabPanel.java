@@ -78,6 +78,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private JTable resourceTable;
     private JTable itemTable;
     private JTable equipmentTable;
+    
+    private Unit unit;
 
     /**
      * Constructor.
@@ -88,6 +90,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(null, ImageLoader.getNewIcon(INVENTORY_ICON), "Inventory", unit, desktop);
+        
+        this.unit = unit;
 	}
 
 	@Override
@@ -179,56 +183,63 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(equipmentPanel);
 
-        // Create equipment table model
-        equipmentTableModel = new EquipmentTableModel(getUnit());
-
-        // Create equipment table
-        equipmentTable = new ZebraJTable(equipmentTableModel);
-        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        equipmentTable.setRowSelectionAllowed(true);
-        equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        equipmentTable.getSelectionModel().addListSelectionListener(this);
-        equipmentPanel.setViewportView(equipmentTable);
-
-        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
-
-        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(60);
-        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(80);
-        equipmentTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-        equipmentTable.getColumnModel().getColumn(3).setPreferredWidth(70);
-
-		// Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
-		renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
-		equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
-		equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
-		equipmentTable.getColumnModel().getColumn(2).setCellRenderer(renderer2);
-		equipmentTable.getColumnModel().getColumn(3).setCellRenderer(renderer2);
-
-		// Added sorting
-        equipmentTable.setAutoCreateRowSorter(true);
-
-		// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
-        equipmentTable.addMouseListener(new MouseAdapter() {
-		    public void mousePressed(MouseEvent event) {
-
-		    	// If double-click, open person window.
-				if (event.getClickCount() >= 2) {
-					Point p = event.getPoint();
-					int row = equipmentTable.rowAtPoint(p);
-					Equipment e = (Equipment)equipmentTable.getValueAt(row, 1);
-					if (e != null) {
-						getDesktop().openUnitWindow(e, false);
+        if (!(unit instanceof Container) && !(unit instanceof EVASuit)) {
+	        // Create equipment table model
+	        equipmentTableModel = new EquipmentTableModel(getUnit());
+	
+	        // Create equipment table
+	        equipmentTable = new ZebraJTable(equipmentTableModel);
+	        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+	        equipmentTable.setRowSelectionAllowed(true);
+	        equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        equipmentTable.getSelectionModel().addListSelectionListener(this);
+	        equipmentPanel.setViewportView(equipmentTable);
+	
+	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+	
+	        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+	        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+	        equipmentTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+	        equipmentTable.getColumnModel().getColumn(3).setPreferredWidth(70);
+	
+			// Align the preference score to the center of the cell
+			DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
+			renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
+			equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
+			equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
+			equipmentTable.getColumnModel().getColumn(2).setCellRenderer(renderer2);
+			equipmentTable.getColumnModel().getColumn(3).setCellRenderer(renderer2);
+	
+			// Added sorting
+	        equipmentTable.setAutoCreateRowSorter(true);
+	
+			// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
+	        equipmentTable.addMouseListener(new MouseAdapter() {
+			    public void mousePressed(MouseEvent event) {
+	
+			    	// If double-click, open person window.
+					if (event.getClickCount() >= 2) {
+						Point p = event.getPoint();
+						int row = equipmentTable.rowAtPoint(p);
+						
+						String name = (String)equipmentTable.getValueAt(row, 0);					
+						Equipment e = equipmentTableModel.getEquipment(name);
+	
+						if (e != null && e.getUnitType() != UnitType.EVA_SUIT 
+								&& e.getUnitType() != UnitType.CONTAINER) {
+							getDesktop().openUnitWindow(e, false);
+						}
 					}
-				}
-		    }
-		});
-
-		// Added setTableStyle()
-		TableStyle.setTableStyle(equipmentTable);
-
+			    }
+			});
+	
+			// Added setTableStyle()
+			TableStyle.setTableStyle(equipmentTable);
+        }
     }
 
+	
+	
     /**
      * Updates the info on this panel.
      */
@@ -540,7 +551,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/**
 	 * Internal class used as model for the equipment table.
 	 */
-	private class EquipmentTableModel extends AbstractTableModel {
+	public class EquipmentTableModel extends AbstractTableModel {
 
 		private List<Equipment> equipmentList = new ArrayList<>();
 
@@ -552,7 +563,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Unit unit;
 
 		/**
-		 * hidden constructor.
+		 * Constructor.
+		 * 
 		 * @param inventory {@link Inventory}
 		 */
 		public EquipmentTableModel(Unit unit) {
@@ -601,6 +613,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			}
 
 			return s;
+		}
+
+		public Equipment getEquipment(String name) {
+			for (Equipment e: equipmentList) {
+				if (e.getName().equalsIgnoreCase(name)) {
+					return e;
+				}
+			}
+			return null;
 		}
 		
 		public int getRowCount() {
