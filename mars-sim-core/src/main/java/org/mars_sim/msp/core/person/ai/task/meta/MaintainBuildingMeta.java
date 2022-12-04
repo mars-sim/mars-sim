@@ -17,10 +17,10 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuildingEVA;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -31,49 +31,38 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 /**
  * Meta task for maintaining buildings.
  */
-public class MaintainBuildingMeta extends MetaTask {
+public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 	/**
      * Represents a Job needed for intenral maintenance on a Building
      */
-    private static class MaintainInsideTaskJob extends AbstractTaskJob {
+    private static class MaintainTaskJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
         private Building target;
+		private boolean eva;
 
-        public MaintainInsideTaskJob(Building target, double score) {
-			super("Maintain @ " + target.getName(), score);
+        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, double score) {
+			super(owner, "Maintain " + (eva ? "via EVA " : "") + target.getName(), score);
             this.target = target;
+			this.eva = eva;
         }
 
         @Override
         public Task createTask(Person person) {
+			if (eva) {
+				return new MaintainBuildingEVA(person, target);
+			}
             return new MaintainBuilding(person, target);
         }
 
         @Override
         public Task createTask(Robot robot) {
+			if (eva) {
+				// SHould not happen
+				throw new IllegalStateException("Robots can not do EVA maintenance");
+			}
             return new MaintainBuilding(robot, target);
-        }
-    }
-
-	/**
-     * Represents a Job needed for external maintenance on a Building
-     */
-    private static class MaintainEVATaskJob extends AbstractTaskJob {
-
-		private static final long serialVersionUID = 1L;
-
-        private Building target;
-
-        public MaintainEVATaskJob(Building target, double score) {
-			super("EVA Maintenance @ " + target.getName(), score);
-            this.target = target;
-        }
-
-        @Override
-        public Task createTask(Person person) {
-            return new MaintainBuildingEVA(person, target);
         }
     }
 
@@ -92,60 +81,57 @@ public class MaintainBuildingMeta extends MetaTask {
 		addPreferredRobot(RobotType.REPAIRBOT);
     }
 
-	@Override
-	public List<TaskJob> getTaskJobs(Person person) {
-        
-		Settlement settlement = person.getSettlement();
-		
-		if (settlement != null) {
-            double factor = getPersonModifier(person);
+	/**
+     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+			MaintainTaskJob mtj = (MaintainTaskJob) t;
 
-			// EVA factor is the radition and teh EVA modifiers applied extra
-			double evaFactor = getRadiationModifier(settlement) * factor;
-			evaFactor *= getEVAModifier(person);
-
-			return getSettlementTasks(settlement, factor, evaFactor);
+			factor = getPersonModifier(p);
+			if (mtj.eva) {
+				// EVA factor is the radition and the EVA modifiers applied extra
+				factor *= getRadiationModifier(p.getSettlement());
+				factor *= getEVAModifier(p);
+			}
 		}
-		return null;
+		return factor;
 	}
 
-
-	/**
-	 * Get any maintenance jobs that can be performbed by a Robot. TThe Robot
-	 * must be a Repairbot.
-	 * @param robot Robot looking for work
-	 */
+    /**
+     * For a robot can not do EVA tasks so will return a zero factor in this case.
+	 * @param t Task being scored
+	 * @parma r Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
 	@Override
-	public List<TaskJob> getTaskJobs(Robot robot) {
-        
-		Settlement settlement = robot.getSettlement();
-		if (settlement != null) {
-			return getSettlementTasks(settlement, ROBOT_FACTOR, 0D);
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		MaintainTaskJob mtj = (MaintainTaskJob) t;
+		if (mtj.eva) {
+			return 0D;
 		}
-		return null;
+		return ROBOT_FACTOR;
 	}
 
 	/**
-	 * Find any buildings that need maintenance. These can crete either inside or EVA maintenance
+	 * Scan the Settlement for any Building that need maintenance.
+	 * @param settlement Settlemnt to scan.
 	 */
-	private List<TaskJob> getSettlementTasks(Settlement settlement, double insideFactor, double evaFactor) {
-		List<TaskJob>  tasks = new ArrayList<>();
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask>  tasks = new ArrayList<>();
 	
 		for (Building building: settlement.getBuildingManager().getBuildings()) {
 			double score = scoreMaintenance(building);
 
-			boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
-			if (habitableBuilding) {
-				score *= insideFactor;
-				if (score > 0) {
-					tasks.add(new MaintainInsideTaskJob(building, score));
-				}
-			}
-			else if (evaFactor > 0) {
-				score *= evaFactor;
-				if (score > 0) {
-					tasks.add(new MaintainEVATaskJob(building, score));
-				}
+			if (score > 0) {
+				boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
+				tasks.add(new MaintainTaskJob(this, building, !habitableBuilding, score));
 			}
 		}
 
@@ -156,6 +142,7 @@ public class MaintainBuildingMeta extends MetaTask {
 	 * Score the entity in terms of need for maintenance. Considers malfunction, condition & time
 	 * since last maintenance.
 	 * @param entity
+	 * @return A score on teh need for maintenance
 	 */
 	public static double scoreMaintenance(Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();

@@ -36,7 +36,10 @@ public enum UnitEventType {
 	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
 	
 	ROBOT_POWER_EVENT					("robot power event"),
-	
+
+	BACKLOG_EVENT						("backlog event"),
+
+
 //	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
 
 	// For PhysicalCondition
@@ -144,12 +147,10 @@ public enum UnitEventType {
 	}
 
 	public String getName() {
-		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 
 	public String toString() {
-		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 	

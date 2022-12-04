@@ -104,6 +104,11 @@ public class Teach extends Task implements Serializable {
 				// Gets the task the student is doing
 				Task candidateTask = candidate.getMind().getTaskManager().getTask();
 				MetaTask metaTask = MetaTaskUtil.getMetaTypeFromTask(candidateTask);
+				if (metaTask == null) {
+					// Some tasks don't have a MetaTask becaus ethey are explictly
+					// created, e.g. Negotiate Trade
+					continue;
+				}
 				if (worker.getUnitType() == UnitType.ROBOT) {
 					Set<RobotType> robotTypes = metaTask.getPreferredRobot();
 					RobotType rt = ((Robot)worker).getRobotType();

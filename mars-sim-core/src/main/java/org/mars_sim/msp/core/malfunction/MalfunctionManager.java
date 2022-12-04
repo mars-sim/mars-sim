@@ -141,7 +141,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The collection of affected scopes. */
 	private Set<String> scopes;
 	/** The current malfunctions in the unit. */
-	private Collection<Malfunction> malfunctions;
+	private List<Malfunction> malfunctions;
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
@@ -229,7 +229,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
-		return new ArrayList<>(malfunctions);
+		return Collections.unmodifiableList(malfunctions);
 	}
 
 	/**

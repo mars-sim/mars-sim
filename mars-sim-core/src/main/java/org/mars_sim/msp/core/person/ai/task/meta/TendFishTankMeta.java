@@ -10,18 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
@@ -29,19 +29,19 @@ import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 /**
  * Meta task for the Tend Fish Tank task.
  */
-public class TendFishTankMeta extends MetaTask {
+public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
     /**
      * Represents a Job needed in a Fishery
      */
-    private static class FishTaskJob extends AbstractTaskJob {
+    private static class FishTaskJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
         private Fishery tank;
 
-        public FishTaskJob(Fishery tank, double score) {
-            super("Tend fishtank @ " + tank.getBuilding().getName(), score);
+        public FishTaskJob(SettlementMetaTask owner, Fishery tank, double score) {
+            super(owner, "Tend fishtank @ " + tank.getBuilding().getName(), score);
             this.tank = tank;
         }
 
@@ -56,7 +56,6 @@ public class TendFishTankMeta extends MetaTask {
         }
     }
 
-    private static final SimLogger logger = SimLogger.getLogger(TendFishTankMeta.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -73,67 +72,63 @@ public class TendFishTankMeta extends MetaTask {
         addPreferredRobot(RobotType.GARDENBOT);
 	}
 
+    
     /**
-     * Create a task for any Fishery that needs assistence
+     * Get the score for a Settlement task for a person. THis considers the number of Person farmers
+     * and any personal preferences.
+	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-    public List<TaskJob> getTaskJobs(Person person) {
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+            factor = 1D;
+            Building b = ((FishTaskJob)t).tank.getBuilding();
 
-        List<TaskJob> tasks = new ArrayList<>();
+            // Crowding modifier.
+            factor *= getBuildingModifier(b, p);
 
-        if (person.isInSettlement()) {
-            List<Building> buildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.FISHERY);
-            for(Building building : buildings) {
-                Fishery fishTank = building.getFishery();
-                double result = (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D;
+            factor *= getPersonModifier(p);
+		}
+		return factor;
+	}
 
-                result += (fishTank.getSurplusStock() * 10D);
-                result += fishTank.getWeedDemand();
-                
-                // Crowding modifier.
-                result *= getBuildingModifier(building, person);
+    /**
+     * For a robot the over crowding probability is considered
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        
+        // Crowding modifier.
+        return r.getPerformanceRating();
 
-                result *= getPersonModifier(person);
-                if (result > CAP)
-                    result = CAP;
-                
-                if (result > 0) {
-                    tasks.add(new FishTaskJob(fishTank, result));
-                }
-            }
-        }
-        return tasks;
     }
 
-
     /**
-     * Create a task for any Fishery that needs assistence
+     * Scan the settlement tanks for any that need tending. CReate one task per applicable Fishery function.
+     * @param settlement Source to scan
+     * @return List of applicable tasks
      */
     @Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
+    public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+        List<SettlementTask> tasks = new ArrayList<>();
 
-        List<TaskJob> tasks = new ArrayList<>();
+        List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FISHERY);
+        for(Building building : buildings) {
+            Fishery fishTank = building.getFishery();
+            double result = (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D;
 
-        if (robot.isInSettlement()) {
-            List<Building> buildings = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.FISHERY);
-            for(Building building : buildings) {
-                double result = 0D;
+            result += (fishTank.getSurplusStock() * 10D);
+            result += fishTank.getWeedDemand();
+            
 
-                Fishery fishTank = building.getFishery();
-
-                // Robots just clean at the moment
-                int outstandingTasks = fishTank.getUncleaned().size();
-
-                result += outstandingTasks * 50D;
-                // Effort-driven task modifier.
-                result *= robot.getPerformanceRating();
-
-                if (result > 0) {
-                    tasks.add(new FishTaskJob(fishTank, result));
-                }
+            
+            if (result > 0) {
+                tasks.add(new FishTaskJob(this, fishTank, result));
             }
         }
 
         return tasks;
-	}
+    }
 }

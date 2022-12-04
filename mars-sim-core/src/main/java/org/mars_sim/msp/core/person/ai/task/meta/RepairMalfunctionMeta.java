@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -24,71 +23,64 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * Meta task for the RepairMalfunction task.
+ * Meta task for the RepairMalfunction task. It acts in 2 roles:
+ * - SettlementMetaTask to create tasks for the shared task board that handle malfunctions inside a Settlement
+ * - WorkerMetaTask to create individual Tasks to repair when a Person is inside a Vehicle
  */
-public class RepairMalfunctionMeta extends MetaTask {
+public class RepairMalfunctionMeta extends FactoryMetaTask implements SettlementMetaTask {
 	
-	private static class RepairEVATaskJob extends AbstractTaskJob {
+	private static class RepairTaskJob extends SettlementTask {
 		
 		private static final long serialVersionUID = 1L;
 
 		private Malfunctionable entity;
 		private Malfunction mal;
+		private boolean eva;
 
-		public RepairEVATaskJob(Malfunctionable entity, Malfunction mal, double score) {
-			super("Repair EVA " + mal.getName() + " @ " + entity, score);
+		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
+							 int demand, boolean eva, double score) {
+			super(owner, "Repair EVA " + mal.getName() + " @ " + entity, score);
+			setDemand(demand);
 			this.entity = entity;
 			this.mal = mal;
+			this.eva = eva;
 		}
 
 		@Override
 		public Task createTask(Person person) {
-			return new RepairEVAMalfunction(person, entity, mal);
-		}
-	}
-
-	private static class RepairInsideTaskJob extends AbstractTaskJob {
-		
-		private static final long serialVersionUID = 1L;
-
-		private Malfunctionable entity;
-		private Malfunction mal;
-
-		public RepairInsideTaskJob(Malfunctionable entity, Malfunction mal, double score) {
-			super("Repair " + mal.getName() + " @ " + entity, score);
-			this.entity = entity;
-			this.mal = mal;
-		}
-
-		@Override
-		public Task createTask(Person person) {
+			if (eva) {
+				return new RepairEVAMalfunction(person, entity, mal);
+			}
 			return new RepairInsideMalfunction(person, entity, mal);
 		}
 
 		@Override
 		public Task createTask(Robot robot) {
+			if (eva) {
+				throw new IllegalStateException("Robots cannot perform eva repairs");
+			}
 			return new RepairInsideMalfunction(robot, entity, mal);
 		}
-
 	}
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RepairMalfunctionMeta.class.getName());
 	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 5D;
+
+	private static final String INSIDE = null;
 	
     public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -100,57 +92,94 @@ public class RepairMalfunctionMeta extends MetaTask {
 	}
 
 	/**
-	 * Get repair tasks suitable for this Person to do inside.
+	 * Get repair tasks suitable for this Person as individual tasks if they are inside a Vehicle.
+	 * @param person Person looking for Repairs.
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
 
-		List<TaskJob> tasks = null;
+		List<TaskJob> tasks = new ArrayList<>();
 
-        if (person.isInSettlement() || person.isInVehicle()) {
-			double factor = getPersonModifier(person);
+        if (person.isInVehicle()) {
+			EquipmentOwner partStore = person.getVehicle();
+			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
+			for(SettlementTask t: getRepairTasks(source, partStore)) {
+				// Apply the Person modifier to create Personalised Tasks from the generic Settlemnt ones
+				double factor = getPersonSettlementModifier(t, person);
 
-			double evaFactor = factor * getRadiationModifier(person.getAssociatedSettlement());
-			evaFactor *= getEVAModifier(person);
-
-			EquipmentOwner partStore;
-			Collection<Malfunctionable> source;
-			if (person.isInSettlement()) {
-				partStore = person.getSettlement();
-				source = MalfunctionFactory.getAssociatedMalfunctionables(person.getSettlement());
+				RepairTaskJob rtj = (RepairTaskJob) t;
+				tasks.add(new RepairTaskJob(this, rtj.entity, rtj.mal, rtj.getDemand(),
+											rtj.eva, rtj.getScore() * factor));
 			}
-			else {
-				partStore = RepairHelper.getClosestRepairStore(person);
-				source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
-			}
-			tasks = getRepairTasks(source, partStore, factor, evaFactor);
 		}
 
         return tasks;
 	}
 
+	
 	/**
-	 * Get the repair tasks suitable for this Robot.
+	 * Robots do not get any individual repairs assigned as they never go in a Vehicle
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
-
-		double factor = robot.getPerformanceRating();
-
-		return getRepairTasks(MalfunctionFactory.getAssociatedMalfunctionables(robot.getSettlement()),
-								robot.getSettlement(), factor, 0D);
+		return null;
 	}
 	
+	/**
+     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+			RepairTaskJob mtj = (RepairTaskJob) t;
+
+			factor = getPersonModifier(p);
+			if (mtj.eva) {
+				// EVA factor is the radition and the EVA modifiers applied extra
+				factor *= getRadiationModifier(p.getSettlement());
+				factor *= getEVAModifier(p);
+			}
+		}
+		return factor;
+	}
+
+    /**
+     * For a robot can not do EVA tasks so will return a zero factor in this case.
+	 * @param t Task being scored
+	 * @parma r Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        RepairTaskJob mtj = (RepairTaskJob) t;
+        if (mtj.eva) {
+            return 0D;
+        }
+        return r.getPerformanceRating();
+    }
+
+	/**
+	 * Get a collection of Tasks for any vehicle that needs unloading
+	 * @param settlement Settlement to scan for vehicles
+	 */
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		Collection<Malfunctionable> source = MalfunctionFactory.getAssociatedMalfunctionables(settlement);
+
+		return getRepairTasks(source, settlement);
+	}
+
 	/**
 	 * Create any repair tasks needed for a set of Malfunctionable.
 	 * @parma source Source of repair tasks
 	 * @param partStore Where any needed Parts come from
-	 * @param insideFactor Score factor for inside repairs
-	 * @param evaFactor Score factor for EVA repairs
 	 */
-    private static List<TaskJob> getRepairTasks(Collection<Malfunctionable> source, EquipmentOwner partStore, double insideFactor, double evaFactor) {
+    private List<SettlementTask> getRepairTasks(Collection<Malfunctionable> source, EquipmentOwner partStore) {
 
-		List<TaskJob> tasks = new ArrayList<>();
+		List<SettlementTask> tasks = new ArrayList<>();
 		
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : source) {
@@ -163,23 +192,17 @@ public class RepairMalfunctionMeta extends MetaTask {
 			MalfunctionManager manager = entity.getMalfunctionManager();
 			
 			if (manager.hasMalfunction()) {
-				// Pick the worst inside malfunction
-				Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-				if (mal != null) {
-					double score = scoreMalfunction(partStore, mal, MalfunctionRepairWork.INSIDE);
-					score *= insideFactor;
+				// Create repair tasks for all active malfunctions
+				for(Malfunction mal : manager.getMalfunctions()) {
+					SettlementTask task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.INSIDE);
+					if (task != null) {
+						tasks.add(task);
+					}
 
-					tasks.add(new RepairInsideTaskJob(entity, mal, score));
-				}
-
-				if (evaFactor > 0) {
 					// Pick any EVA repair activities
-					Malfunction evamal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
-					if (evamal != null) {
-						double score = scoreMalfunction(partStore, evamal, MalfunctionRepairWork.EVA);
-						score *= evaFactor;
-
-						tasks.add(new RepairEVATaskJob(entity, evamal, score));
+					task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.EVA);
+					if (task != null) {
+						tasks.add(task);
 					}
 				}
 			}
@@ -188,22 +211,29 @@ public class RepairMalfunctionMeta extends MetaTask {
 	}
 
 	/**
-     * Gets the initial score of the malfunction.
+     * Create a repair task for a Malfunction.
      * 
-     * @param malfunction
-     * @return
+	 * @param partsStore Where are spare parts coming from
+	 * @param entity Entity suffering the malfunction
+	 * @param workType Type of work to check for.
+     * @return It may return null if the Malfunction need no further repair work
      */
-    public static double scoreMalfunction(EquipmentOwner partsStore, Malfunction malfunction, MalfunctionRepairWork workType) {    
-    	double result = 0D;
+    private SettlementTask createRepairTask(EquipmentOwner partsStore, Malfunctionable entity,
+											Malfunction malfunction,
+											MalfunctionRepairWork workType) {    
 		if (!malfunction.isWorkDone(workType)
 				&& (malfunction.numRepairerSlotsEmpty(workType) > 0)) {
-	        result = WEIGHT * malfunction.getSeverity();
+	        double result = WEIGHT * malfunction.getSeverity();
 	        
 	        if (RepairHelper.hasRepairParts(partsStore, malfunction)) {
 	    		result *= 2;
 	    	}
+		
+			return new RepairTaskJob(this, entity, malfunction,
+									malfunction.numRepairerSlotsEmpty(workType),
+									(workType == MalfunctionRepairWork.EVA),
+									result);
 		}
-    	
-		return result;
+		return null;
     }
 }

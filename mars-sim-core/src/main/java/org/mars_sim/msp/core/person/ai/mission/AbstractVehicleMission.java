@@ -438,7 +438,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			return result;
 		for (Drone v : list) {
 			if (!v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& !v.getMalfunctionManager().hasMalfunction()
 					&& isUsableVehicle(v)
 					&& !v.isReserved()) {
 				result.add(v);

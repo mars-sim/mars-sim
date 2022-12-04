@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -198,24 +199,13 @@ public class Settlement extends Structure implements Temporal,
 	private int templateID;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
-	/** The cache for millisol. */
-	private int millisolCache = -5;
 	/** Numbers of citizens of this settlement. */
 	private int numCitizens;
 	/** Numbers of bots owned by this settlement. */
 	private int numOwnedBots;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
-	/** Numbers of equipment owned by this settlement. */
-//	private int numOwnedEquipment;
-	/** Minimum amount of methane to stay in this settlement when considering a mission. */
-	private int minMethane = 50;
-	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
-	private int mineOxygen = 50;
-	/** Minimum amount of water to stay in this settlement when considering a mission. */
-	private int minWater = 50;
-	/** Minimum amount of food to stay in this settlement when considering a mission. */
-	private int minFood = 50;
+
 
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -284,6 +274,7 @@ public class Settlement extends Structure implements Temporal,
 	private CreditManager creditManager;
 	/** Mamanges the shifts */
 	private ShiftManager shiftManager;
+	private SettlementTaskManager taskManager;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -496,6 +487,8 @@ public class Settlement extends Structure implements Temporal,
 
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
+
+		taskManager = new SettlementTaskManager(this);
 
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
@@ -939,6 +932,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		goodsManager.timePassing(pulse);
+		taskManager.timePassing();
 
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
@@ -3554,6 +3548,11 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
+	
+    public SettlementTaskManager getTaskManager() {
+        return taskManager;
+    }
+
 	/**
 	 * Gets the credit manager.
 	 *
@@ -3650,4 +3649,5 @@ public class Settlement extends Structure implements Temporal,
 
 		scientificAchievement = null;
 	}
+
 }

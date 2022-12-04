@@ -122,17 +122,7 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	protected TaskCache rebuildTaskCache() {
 
-		// Check if a Person is in a bad physical condition and a slight random
-		// Taken out until the DatDrink task works correctly
-		// PhysicalCondition pc = person.getPhysicalCondition();
-		// if (person.isInside() && (pc.isThirsty() || pc.isHungry())
-		// 	&& (RandomUtil.lessThanRandPercent(50))) {
-		// 		// Force the person to do the basic tasks.
-		// 		logger.warning(person, "Need health tasks");
-		// 		return getDefaultInsideTasks();
-		// }
-
-		List<MetaTask> mtList = null;
+		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
 		switch(workStatus) {
@@ -149,17 +139,25 @@ public class PersonTaskManager extends TaskManager {
 				mtList = MetaTaskUtil.getDutyHourTasks();
 				shiftDesc = "Shift: Duty";
 				break;
+			default:
+				throw new IllegalStateException("Do not know status " + workStatus);
 		}
 
 		// Create new taskProbCache
 		TaskCache newCache = new TaskCache(shiftDesc, marsClock);
 
 		// Determine probabilities.
-		for (MetaTask mt : mtList) {
+		for (FactoryMetaTask mt : mtList) {
 			List<TaskJob> job = mt.getTaskJobs(person);
 			if (job != null) {
 				newCache.add(job);
 			}
+		}
+
+		// Add in any Settlement Tasks
+		if (workStatus == WorkStatus.ON_DUTY) {
+			SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
+			newCache.add(stm.getTasks(person));
 		}
 
 		// Check if the map cache is empty

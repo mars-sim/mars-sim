@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -21,8 +20,9 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
-import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
@@ -34,43 +34,37 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the LoadVehicleGarage task.
  */
-public class LoadVehicleMeta extends MetaTask {
-    private static class GarageLoadJob extends AbstractTaskJob {
+public class LoadVehicleMeta extends MetaTask 
+    implements SettlementMetaTask {
+        
+    private static class LoadJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
         private VehicleMission target;
+        private boolean eva;
 
-        public GarageLoadJob(VehicleMission target, double score) {
-            super("Load " + target.getName(), score);
+        private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
+            super(owner, "Load " + (eva ? "via EVA " : "") + target.getName(), score);
             this.target = target;
+            this.eva = eva;
         }
 
         @Override
         public Task createTask(Person person) {
+            if (eva) {
+                return new LoadVehicleEVA(person, target);
+            }
             return new LoadVehicleGarage(person, target);
         }
 
         @Override
         public Task createTask(Robot robot) {
+            if (eva) {
+				// SHould not happen
+				throw new IllegalStateException("Robots can not do EVA load vehicle");
+			}
             return new LoadVehicleGarage(robot, target);
-        }
-    }
-
-	private static class EVALoadJob extends AbstractTaskJob {
-
-		private static final long serialVersionUID = 1L;
-
-        private VehicleMission target;
-
-        public EVALoadJob(VehicleMission target, double score) {
-            super("EVA Load " + target.getName(), score);
-            this.target = target;
-        }
-
-        @Override
-        public Task createTask(Person person) {
-            return new LoadVehicleEVA(person, target);
         }
     }
 
@@ -81,9 +75,6 @@ public class LoadVehicleMeta extends MetaTask {
     private static final double GARAGE_DEFAULT_SCORE = 500D;
 
     private static final double EVA_DEFAULT_SCORE = 300D;
-
-    /** default logger. */
-    private static SimLogger logger = SimLogger.getLogger(LoadVehicleMeta.class.getName());
 
     /** The static instance of the MissionManager */
 	private static MissionManager missionManager;
@@ -96,50 +87,53 @@ public class LoadVehicleMeta extends MetaTask {
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}
     
-	@Override
-    public List<TaskJob> getTaskJobs(Person person) {
+    /**
+     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement()) {
+			LoadJob mtj = (LoadJob) t;
 
-        List<TaskJob> tasks = null;
-		if (person.isInSettlement()) {
-            Settlement settlement = person.getSettlement();
-			double insideModifier = getPersonModifier(person);
-            insideModifier *= settlement.getGoodsManager().getTransportationFactor();
-
-			double evaModifier = insideModifier * getRadiationModifier(settlement)
-									* getEVAModifier(person);
-
-			tasks = getSettlementTasks(settlement, insideModifier, evaModifier);
+			factor = getPersonModifier(p);
+			if (mtj.eva) {
+				// EVA factor is the radition and the EVA modifiers applied extra
+				factor *= getRadiationModifier(p.getSettlement());
+				factor *= getEVAModifier(p);
+			}
 		}
-		return tasks;
+		return factor;
 	}
 
-
+    /**
+     * For a robot can not do EVA tasks so will return a zero factor in this case.
+	 * @param t Task being scored
+	 * @parma r Robot requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
 	@Override
-    public List<TaskJob> getTaskJobs(Robot robot) {
-
-        List<TaskJob> tasks = null;
-		if (robot.isInSettlement()) {
-			double modifier = robot.getPerformanceRating();
-
-			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);
-		}
-		return tasks;
-	}
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+        LoadJob mtj = (LoadJob) t;
+        if (mtj.eva) {
+            return 0D;
+        }
+        return r.getPerformanceRating();
+    }
 
 	/**
 	 * Get a collection of Tasks for any mission that needs loading
 	 * @param settlement Settlement to scan for vehicles
-	 * @param insideFactor Score modifier for inside jobs
-	 * @param evaFactor Score modifier for EVA tasks
 	 */
-	private List<TaskJob> getSettlementTasks(Settlement settlement, double insideModifier, double evaModifier) {
-		List<TaskJob> tasks = new ArrayList<>();
+    @Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask> tasks = new ArrayList<>();
 
 		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
-		if (!insideTasks && (evaModifier <= 0)) {
-			// EVA tasks and on EVA allowed; then abort search
-			return tasks;
-		}
+        double factor = settlement.getGoodsManager().getTransportationFactor();
 
         // Find all Vehcile missions with an active loading plan
 		for(Mission mission : missionManager.getMissions()) {
@@ -149,7 +143,7 @@ public class LoadVehicleMeta extends MetaTask {
 
 				// Must have a local Loading Plan that is not complete
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
-                    TaskJob job = createLoadJob(vehicleMission, settlement, insideTasks, insideModifier, evaModifier);
+                    SettlementTask job = createLoadJob(vehicleMission, settlement, insideTasks, factor, this);
                     if (job != null) {
                         tasks.add(job);
                     }
@@ -165,11 +159,12 @@ public class LoadVehicleMeta extends MetaTask {
      * @param vehicleMission Mission needing a load
      * @param settlement Locaiton the load is occuring
      * @param insideOnlyTasks Only inside tasks
-     * @param insideModifier Scor emodifier for inside Task
-     * @parma evaModifier Scor emodifier for EVA Tasks
+     * @param modifier Score emodifier for  Task
+     * @param owner 
      */
-    private static TaskJob createLoadJob(VehicleMission vehicleMission, Settlement settlement, boolean insideOnlyTasks,
-                                        double insideModifier, double evaModifier) {
+    private static SettlementTask createLoadJob(VehicleMission vehicleMission, Settlement settlement,
+                                        boolean insideOnlyTasks,
+                                        double modifier, SettlementMetaTask owner) {
 
         Vehicle vehicle = vehicleMission.getVehicle();
         if (vehicle == null)
@@ -177,14 +172,14 @@ public class LoadVehicleMeta extends MetaTask {
 
         boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
         if (insideOnlyTasks || inGarageAlready) {
-            double score = GARAGE_DEFAULT_SCORE * insideModifier;
+            double score = GARAGE_DEFAULT_SCORE * modifier;
             if (inGarageAlready) {
                 // If in Garage already then boost score
                 score *= 2;
             }
-            return new GarageLoadJob(vehicleMission, score);
+            return new LoadJob(owner, vehicleMission, false, score);
         }
-        return new EVALoadJob(vehicleMission, EVA_DEFAULT_SCORE * evaModifier);
+        return new LoadJob(owner, vehicleMission, true, EVA_DEFAULT_SCORE * modifier);
     }
 
     /**
@@ -194,7 +189,7 @@ public class LoadVehicleMeta extends MetaTask {
      * @param settlement Locaiton the load is occuring
      */
     public static TaskJob createLoadJob(VehicleMission vehicleMission, Settlement settlement) {
-        return createLoadJob(vehicleMission, settlement, false, 1D, 1D);
+        return createLoadJob(vehicleMission, settlement, false, 1D, null);
     } 
 
     /**
