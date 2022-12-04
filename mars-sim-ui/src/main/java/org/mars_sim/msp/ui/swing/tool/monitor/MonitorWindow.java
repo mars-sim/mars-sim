@@ -46,8 +46,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
@@ -565,15 +563,23 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Configure the listeners
 		boolean activiateListeners = true;
 		if (previousTab != null) {
+			MonitorModel previousModel = previousTab.getModel();
+
 			// If a different tab then activate listeners
 			activiateListeners = !(previousTab.equals(selectedTab));
 			if (activiateListeners) {
-				previousTab.getModel().setMonitorEntites(false);
+				previousModel.setMonitorEntites(false);
 			}
+
+			// Stop listenering for table size changes
+			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
 			tabTableModel.setMonitorEntites(true);
 		}
+
+		// Listener for row changes
+		tabTableModel.addTableModelListener(this);
 		previousTab = selectedTab;
 
 		// Update the row count label with new numbers
@@ -607,8 +613,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		if (e.getType() != TableModelEvent.UPDATE) {
-			refreshTableStyle();
+		if ((e.getType() == TableModelEvent.INSERT) || (e.getType() == TableModelEvent.DELETE)) {
+			// Redisplay row count
+			MonitorTab selectedTab = getSelectedTab();
+			rowCount.setText(selectedTab.getCountString());
 		}
 	}
 
@@ -687,27 +695,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		EventTab events = eventsTab;
 		if (events != null) {
 			events.filterCategories(desktop);
-		}
-	}
-
-	/*
-	 * Refreshes the table theme style and row count.
-	 */
-	public void refreshTableStyle() {
-		MonitorTab selectedTab = getSelectedTab();
-
-		if (selectedTab instanceof TableTab) {
-			JTable table = ((TableTab) selectedTab).getTable();
-			TableStyle.setTableStyle(table);
-			RowNumberTable rowTable = new RowNumberTable(table);
-			TableStyle.setTableStyle(rowTable);
-			MonitorTab selected = getSelectedTab();
-			if (selected == eventsTab) {
-				// Update the row count label with new numbers
-				rowCount.setText(selected.getCountString());
-			}
-			
-			TableTab.adjustColumnWidth(table);
 		}
 	}
 
