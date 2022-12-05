@@ -1107,7 +1107,7 @@ public class Farming extends Function {
 	 *
 	 * @return average water consumption in kg/sol
 	 */
-	public double computeUsage(int type, String cropName) {
+	private double computeUsage(int type, String cropName) {
 		double result = 0;
 		SolMetricDataLogger<Integer> crop = cropUsage.get(cropName);
 		if (crop != null) {

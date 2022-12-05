@@ -34,6 +34,7 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
@@ -174,22 +175,22 @@ implements MouseListener {
 		cropsTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.numCrops.title"),
 							   cropsCache + "", null);
 
-		waterUsageCache = farm.computeUsage(0);
+		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
 		waterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.waterUsage.title"),
 									Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""),
 									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 
-		greyWaterUsageCache = farm.computeUsage(3);
+		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
 		greyWaterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
 									Msg.getString("BuildingPanelFarming.greyWaterUsage", greyWaterUsageCache + ""),
 									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
 		
-		o2Cache = farm.computeUsage(1);
+		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
 		o2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.o2.title"),
 							Msg.getString("BuildingPanelFarming.o2", o2Cache + ""),
 							Msg.getString("BuildingPanelFarming.o2.tooltip"));
 
-		co2Cache = farm.computeUsage(2);
+		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
 		co2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.co2.title"),
 							 Msg.getString("BuildingPanelFarming.co2", co2Cache + ""),
 							 Msg.getString("BuildingPanelFarming.co2.tooltip"));
@@ -524,28 +525,28 @@ implements MouseListener {
 		}
 
 		// Update the average water usage
-		double newWater = farm.computeUsage(0);
+		double newWater = farm.computeUsage(ResourceUtil.waterID);
 		if (waterUsageCache != newWater) {
 			waterUsageCache = newWater;
 			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", newWater));
 		}
 
 		// Update the average O2 generated
-		double newO2 = farm.computeUsage(1);
+		double newO2 = farm.computeUsage(ResourceUtil.oxygenID);
 		if (o2Cache != newO2) {
 			o2Cache = newO2;
 			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", newO2));
 		}
 
 		// Update the average CO2 consumed
-		double newCo2 = farm.computeUsage(2);
+		double newCo2 = farm.computeUsage(ResourceUtil.co2ID);
 		if (co2Cache != newCo2) {
 			co2Cache = newCo2;
 			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", newCo2));
 		}
 
 		// Update the average grey water usage
-		double newGreyWater = farm.computeUsage(3);
+		double newGreyWater = farm.computeUsage(ResourceUtil.greyWaterID);
 		if (greyWaterUsageCache != newGreyWater) {
 			greyWaterUsageCache = newGreyWater;
 			greyWaterUsageTF.setText(Msg.getString("BuildingPanelFarming.greyWaterUsage", newGreyWater));

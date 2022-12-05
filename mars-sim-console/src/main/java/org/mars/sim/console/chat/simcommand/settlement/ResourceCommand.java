@@ -120,7 +120,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(2);
+			usage += f.computeUsage(ResourceUtil.co2ID);
 			totalArea += f.getGrowingArea();
 		}
 		totalArea = (totalArea != 0 ? totalArea: 0.1D); // Guard against divide by zero
@@ -138,18 +138,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		// For consumption, use the '+ve' sign	
 		double usage = 0;
 		double totalArea = 0;
-		int type = 0;
 		// For production, use the '-ve' sign
 		double sign = -1.0;
-		if (id == ResourceUtil.greyWaterID) {
-			type = 3;
-		}
 		
 		// Prints greenhouse usage
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(type);
+			usage += f.computeUsage(id);
 			totalArea += f.getGrowingArea();
 		}
 
@@ -254,7 +250,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(1);
+			usage += f.computeUsage(ResourceUtil.oxygenID);
 			totalArea += f.getGrowingArea();
 		}
 
