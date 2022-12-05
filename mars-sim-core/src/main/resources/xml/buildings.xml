@@ -2037,12 +2037,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</living-accommodations>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-			<research tech-level="2" capacity="4">
+			<research tech-level="4" capacity="3">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="COMPUTING" />
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="MATHEMATICS" />
-
 				<activity>
 					<activity-spot xloc="1.45" yloc="1.35" />
 					<activity-spot xloc="-1.45" yloc="1.4" />
@@ -2056,7 +2054,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.6" yloc="-2.5" />
 				</activity>
 			</robotic-station>
-			<storage capacity="5000"/>
+			<storage capacity="5000">
+				<resource-storage resource="methane" capacity="2000.0" />
+			</storage>	
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />

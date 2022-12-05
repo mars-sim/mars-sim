@@ -81,7 +81,7 @@ extends BuildingFunctionPanel {
 
 		// Observer capacityLabel
 		addTextField(labelPanel, Msg.getString("BuildingPanelAstronomicalObservation.observerCapacity"),
-					 function.getObservatoryCapacity(), null);
+					 function.getObservatoryCapacity(), 5, null);
 		
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));

@@ -725,6 +725,42 @@ public class BuildingManager implements Serializable {
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toList());
 	}
+
+	
+	/**
+	 * Gets an available building of a particular function type that the person can use. 
+	 * Returns null if no building is currently available.
+	 *
+	 * @param person the person
+	 * @param functionType FunctionType 
+	 * @return available  building
+	 * @throws BuildingException if error finding dining building.
+	 */
+	public static Building getAvailableBuilding(Person person, FunctionType functionType) {
+		Building b = null;
+
+		// If this person is located in the settlement
+		Settlement settlement = person.getSettlement();	
+		if (settlement != null) {
+			BuildingManager manager = settlement.getBuildingManager();
+			List<Building> list0 = manager.getBuildings(functionType);
+			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
+			list1 = BuildingManager.getLeastCrowdedBuildings(list1);
+
+			if (!list1.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list1);
+				b = RandomUtil.getWeightedRandomObject(probs);
+			}
+			else if (!list0.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list0);
+				b = RandomUtil.getWeightedRandomObject(probs);
+			}
+		}
+
+		return b;
+	}
 	
 	/**
 	 * Gets an available dining building that the person can use. Returns null if no
@@ -739,11 +775,10 @@ public class BuildingManager implements Serializable {
 		Building b = null;
 
 		// If this person is located in the settlement
-		if (person.isInSettlement()) {
-			Settlement settlement = person.getSettlement();
+		Settlement settlement = person.getSettlement();	
+		if (settlement != null) {
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> list0 = manager.getDiningBuildings(person);
-
 			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
@@ -794,12 +829,22 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return
 	 */
-	public static List<Building> getBuildings(Person person, FunctionType functionType) {
+	public static List<Building> getBuildings(Person person, FunctionType functionType) {		
+		if (person.getBuildingLocation() != null) {
+			return person.getSettlement().getBuildingManager().getBuildings()
+					.stream()
+					.filter(b -> b.hasFunction(functionType)
+							&& b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toList());
+		}
+		
 		return person.getSettlement().getBuildingManager().getBuildings()
 				.stream()
 				.filter(b -> b.hasFunction(functionType)
+						&& b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())
-				.collect(Collectors.toList());
+				.collect(Collectors.toList());		
 	}
 
 	/**
