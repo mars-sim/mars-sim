@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -71,10 +72,24 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
+
+		addPreferredRobot(RobotType.REPAIRBOT);
+	}
+
+	/**
+	 * Robots can toggle resource processes.
+	 * @param t Task 
+	 * @param r Robot making the request
+	 */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		return 1D;
 	}
 
 	/**
 	 * Evaluates if a Person can do a Settlement task, based on in settlement.
+	 * @param t Task 
+	 * @param p Person making the request
 	 */
 	@Override
 	public double getPersonSettlementModifier(SettlementTask t, Person p) {
@@ -266,13 +281,4 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		return score;
 	}
 
-	/**
-	 * Robots can not toggle resource processes.
-	 * @param t Task 
-	 * @param r Robot making the request
-	 */
-	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		return 0;
-	}
 }

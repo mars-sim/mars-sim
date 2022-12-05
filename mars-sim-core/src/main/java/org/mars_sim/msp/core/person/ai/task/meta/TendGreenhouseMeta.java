@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
@@ -37,9 +38,11 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
         private Farming farm;
 
-        public CropTaskJob(SettlementMetaTask owner, Farming farm, double score) {
+        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, double score) {
             super(owner, "Tend crop @ " + farm.getBuilding().getName(), score);
             this.farm = farm;
+
+            setDemand(demand);
         }
 
         @Override
@@ -82,7 +85,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
             // Do not calculate farmers until we need it as expensive
             Farming farm = b.getFarming();
-            if (farm.getFarmerNum() < MAX_FARMERS) {
+            LifeSupport ls = b.getLifeSupport();
+            if (farm.getFarmerNum() < ls.getOccupantCapacity()) {
                 factor = 1D;
 
                 // Crowding modifier.
@@ -116,19 +120,21 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         List<SettlementTask> tasks = new ArrayList<>();
 
         GoodsManager gm = settlement.getGoodsManager();
-        double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
+        double goodsFactor = gm.getCropFarmFactor();
 
         for(Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            // Using the raw tending needs creates too large scores.
-            double result = farm.getTendingNeed()/10D;
+            double result = farm.getTendingScore() * 2;
 
             // Settlement factors
             result *= goodsFactor;
 
             if (result > 0) {
-                tasks.add(new CropTaskJob(this, farm, result));
+                int workTask = farm.getNumNeedTending() / 4; // Each farmer can do 4 crop per visit
+                workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
+                workTask = Math.max(1, workTask);
+                tasks.add(new CropTaskJob(this, farm, workTask, result));
             }
         }
 

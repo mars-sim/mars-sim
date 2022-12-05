@@ -767,16 +767,11 @@ public class Farming extends Function {
 		int result = 0;
 
 		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			try {
-				LifeSupport lifeSupport = building.getLifeSupport();
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Task task = i.next().getMind().getTaskManager().getTask();
-					if (task instanceof TendGreenhouse)
-						result++;
-				}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
+			LifeSupport lifeSupport = building.getLifeSupport();
+			for(Person p : lifeSupport.getOccupants()) {
+				Task task = p.getMind().getTaskManager().getTask();
+				if (task instanceof TendGreenhouse)
+					result++;
 			}
 		}
 
@@ -1191,16 +1186,16 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Gets the tending need of all growing crops.
+	 * Gets the tending score of all growing crops.
 	 * 
 	 * @return
 	 */
-	public double getTendingNeed() {
-		double need = 0;
+	public int getTendingScore() {
+		int score = 0;
 		for (Crop c : cropList) {
-			need += c.getCurrentWorkRequired();
+			score += c.getTendingScore();
 		}
-		return need;
+		return score;
 	}
 	
 	/**

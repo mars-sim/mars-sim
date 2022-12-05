@@ -440,6 +440,22 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	/**
+	 * Get the priority scroe for this crop based on the phase
+	 */
+	public int getTendingScore() {
+		switch (currentPhase.getPhaseType()) {
+			case HARVESTING:
+				return 3;
+			case PLANTING:
+				return 1;
+			case INCUBATION:
+				return 2;
+			default:
+				return (currentWorkRequired > CROP_TIME_OFFSET ? 1 : 0);
+		}
+	}
+
+	/**
 	 * Tracks the overall health condition of the crop.
 	 * 
 	 * @return condition as value from 0 (poor) to 1 (healthy)
