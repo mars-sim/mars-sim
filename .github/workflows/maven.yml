@@ -19,13 +19,3 @@ jobs:
     - name: Build with Maven
       run:
         mvn  --file pom.xml -B package
-        
-    - name: SonarCloud Analysis
-      if: ${{ github.ref == 'refs/heads/master' && github.repository == 'mars-sim/mars-sim' }}
-      env:
-        SONAR_PROJECT: ${{ secrets.SONAR_PROJECT }}
-        SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
-        SONAR_LABEL: ${{ github.workflow }}/${{ github.run_number }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-      run:
-        mvn  --file pom.xml -B -Dsonar.login=$SONAR_LOGIN -Dsonar.organization=$SONAR_PROJECT -Dsonar.projectVersion="$SONAR_LABEL" sonar:sonar
