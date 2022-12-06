@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;

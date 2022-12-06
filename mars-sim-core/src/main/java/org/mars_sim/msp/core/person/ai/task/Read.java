@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -89,7 +87,7 @@ public class Read extends Task implements Serializable {
 				}
 
 				else if (rand == 1) {
-					Building rec = getAvailableRecreationBuilding(person);
+					Building rec = BuildingManager.getAvailableBuilding(person, FunctionType.RECREATION);
 					if (rec != null) {
 						walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					}
@@ -128,33 +126,6 @@ public class Read extends Task implements Serializable {
 		} else {
 			endTask();
 		}
-	}
-
-	/**
-	 * Gets an available recreation building that the person can use. Returns null
-	 * if no recreation building is currently available.
-	 *
-	 * @param person the person
-	 * @return available recreation building
-	 */
-	public static Building getAvailableRecreationBuilding(Person person) {
-
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
-			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
-			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
-
-			if (recreationBuildings.size() > 0) {
-				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						recreationBuildings);
-				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
-			}
-		}
-
-		return result;
 	}
 
 	@Override
