@@ -1,18 +1,6 @@
 name: Docker
 
-on:
-  push:
-    # Publish `master` as Docker `latest` image.
-    branches:
-      - master
-
-    # Only auto build when a tag is made; otherwise manual
-    # Publish `v1.2.3` tags as releases.
-    tags:
-      - v*
-
-  # Run tests for any PRs.
-  pull_request:
+on: [workflow_dispatch]
 
 env:
   IMAGE_NAME: mars-sim
