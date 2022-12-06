@@ -10,12 +10,13 @@ Copyright (C) 2022 Scott Davis
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>   Parts : Add silica aerogel as transparent rooftop tiles. </LI>
-  <LI> Mission : Add deadline on rover mission departure. Split the Embarking phase into loading & departing. </LI> 
-  <LI>   Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
+  <LI>Settlement : Add task backlog showing a pool of shared tasks specific to a Settlement.</LI>
+  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>
+  <LI>   Mission : Add deadline on rover mission departure. Split the Embarking phase into loading & departing. </LI> 
+  <LI>     Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
 
 ### UI IMPROVEMENT :
- <LI>  </LI>
+  <LI>New tab to the Monitor Tool to show the Task Backlog in a Settlement. </LI>
 
 ### FIXES :
  <LI>  </LI>
