@@ -19,5 +19,6 @@ jobs:
       with:
         host: https://sonarcloud.io
         login: ${{ secrets.SONAR_LOGIN }}
-        projectKey: ${{secrets.SONAR_PROJECT }}
+        project: bevans2000mars_com.github.mars-sim:mars-sim
+        #projectKey: ${{secrets.SONAR_PROJECT }}
         projectVersion: ${{ github.workflow }}/${{ github.run_number }}
