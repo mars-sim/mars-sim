@@ -19,5 +19,5 @@ jobs:
       with:
         host: https://sonarcloud.io
         login: ${{ secrets.SONARQUBE_LOGIN }}
-        projectKey: ${{secrets.SONARQUBE_PROJECT_ID }}
+        projectKey: ${{secrets.SONARQUBE_PROJECT }}
         projectVersion: ${{ github.workflow }}/${{ github.run_number }}
