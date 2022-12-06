@@ -18,6 +18,6 @@ jobs:
       uses: kitabisa/sonarqube-action@v1.2.0
       with:
         host: https://sonarcloud.io
-        login: ${{ secrets.SONARQUBE_LOGIN }}
-        projectKey: ${{secrets.SONARQUBE_PROJECT }}
+        login: ${{ secrets.SONAR_LOGIN }}
+        projectKey: ${{secrets.SONAR_PROJECT }}
         projectVersion: ${{ github.workflow }}/${{ github.run_number }}
