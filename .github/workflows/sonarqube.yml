@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-
-name: SonarQube Scan
 jobs:
   sonarqube:
     name: SonarQube Trigger
