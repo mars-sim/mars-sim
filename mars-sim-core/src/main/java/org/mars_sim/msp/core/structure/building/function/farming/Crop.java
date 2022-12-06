@@ -1005,11 +1005,11 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	/**
-	 * Retrieve amount form the Settlment and record the usage in the Farm.
+	 * Retrieve water from the Settlment and record the usage in the Farm.
 	 * @param amount Amount being retrieved
 	 * @param id Resource id
 	 */
-	private void retrieveAmount(double amount, int id) {
+	private void retrieveWater(double amount, int id) {
 		if (amount > 0) {
 			retrieve(amount, id, true);
 			//  Records the daily water usage in the farm
@@ -1042,28 +1042,28 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// First water crops with grey water if it is available.
 		if (greyWaterAvailable >= waterRequired) {
 			greyWaterUsed = waterRequired;
-			retrieveAmount(greyWaterUsed, GREY_WATER_ID);
+			retrieveWater(greyWaterUsed, GREY_WATER_ID);
 			waterModifier = 1D;
 		}
 
 		else {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
-			retrieveAmount(greyWaterUsed, GREY_WATER_ID);
+			retrieveWater(greyWaterUsed, GREY_WATER_ID);
 
 			waterRequired = waterRequired - greyWaterUsed;
 			double waterAvailable = building.getSettlement().getAmountResourceStored(WATER_ID);
 
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
-				retrieveAmount(waterUsed, WATER_ID);
+				retrieveWater(waterUsed, WATER_ID);
 
 				waterModifier = 1D;
 			}
 			else {
 				// not enough water
 				waterUsed = waterAvailable;
-				retrieveAmount(waterUsed, WATER_ID);
+				retrieveWater(waterUsed, WATER_ID);
 
 				// Incur penalty if water is NOT available
 				// need to add .0001 in case waterRequired becomes zero
@@ -1120,17 +1120,13 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			if (o2Used > 0) {
-				o2Cache = retrieveGas(o2Used, o2Cache, OXYGEN_ID);
-			}
+			o2Cache = retrieveGas(o2Used, o2Cache, OXYGEN_ID);
 
 			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
-			if (cO2Gen > 0) {
-				co2Cache = storeGas(cO2Gen, co2Cache, CO2_ID);
-			}
+			co2Cache = storeGas(cO2Gen, co2Cache, CO2_ID);
 		}
 
 		else {
@@ -1148,9 +1144,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
-			if (cO2Used > 0) {
-				co2Cache = retrieveGas(cO2Used, co2Cache, CO2_ID);
-			}
+			co2Cache = retrieveGas(cO2Used, co2Cache, CO2_ID);
+			
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
 
@@ -1161,9 +1156,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			// Determine the amount of oxygen generated during the day when photosynthesis
 			// is taking place .
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
-			if (o2Gen > 0) {
-				o2Cache = storeGas(o2Gen, o2Cache, OXYGEN_ID);
-			}
+			o2Cache = storeGas(o2Gen, o2Cache, OXYGEN_ID);
 		}
 	}
 
@@ -1292,14 +1285,16 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @return
 	 */
 	private double retrieveGas(double amount, double gasCache, int gasId) {
-		if (gasCache - amount < -gasThreshold) {
-			retrieve(gasCache, gasId, true);
-			gasCache = -amount;
+		if (amount > 0) {
+			if (gasCache - amount < -gasThreshold) {
+				retrieve(gasCache, gasId, true);
+				gasCache = -amount;
+			}
+			else {
+				gasCache -= amount;
+			}
+			farm.addCropUsage(name, amount, gasId);
 		}
-		else {
-			gasCache -= amount;
-		}
-		farm.addCropUsage(name, amount, gasId);		
 		return gasCache;
 	}
 
@@ -1324,14 +1319,16 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @return
 	 */
 	private double storeGas(double amount, double gasCache, int gasId) {
-		if (gasCache + amount > gasThreshold) {
-			store(gasCache, gasId, "Crop::storeGas");
-			gasCache = amount;
+		if (amount > 0) {
+			if (gasCache + amount > gasThreshold) {
+				store(gasCache, gasId, "Crop::storeGas");
+				gasCache = amount;
+			}
+			else {
+				gasCache -= amount;
+			}
+			farm.addCropUsage(name, -amount, gasId);
 		}
-		else {
-			gasCache -= amount;
-		}
-		farm.addCropUsage(name, -amount, gasId);		
 		return gasCache;
 	}
 
