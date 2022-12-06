@@ -679,16 +679,16 @@ public class BuildingManager implements Serializable {
 			}
 
 			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildings(person, FunctionType.RESEARCH);
+				buildings = getBuildingsinSameZone(person, FunctionType.RESEARCH);
 			}
 			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildings(person, FunctionType.ADMINISTRATION);
+				buildings = getBuildingsinSameZone(person, FunctionType.ADMINISTRATION);
 			}
 			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildings(person, FunctionType.DINING);
+				buildings = getBuildingsinSameZone(person, FunctionType.DINING);
 			}
 			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
+				buildings = getBuildingsinSameZone(person, FunctionType.LIVING_ACCOMMODATIONS);
 			}
 
 			if (buildings != null && !buildings.isEmpty()) {
@@ -742,8 +742,7 @@ public class BuildingManager implements Serializable {
 		// If this person is located in the settlement
 		Settlement settlement = person.getSettlement();	
 		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> list0 = manager.getBuildings(functionType);
+			List<Building> list0 = BuildingManager.getBuildingsinSameZone(person, functionType);
 			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
 			list1 = BuildingManager.getLeastCrowdedBuildings(list1);
 
@@ -829,7 +828,7 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return
 	 */
-	public static List<Building> getBuildings(Person person, FunctionType functionType) {		
+	public static List<Building> getBuildingsinSameZone(Person person, FunctionType functionType) {		
 		if (person.getBuildingLocation() != null) {
 			return person.getSettlement().getBuildingManager().getBuildings()
 					.stream()
