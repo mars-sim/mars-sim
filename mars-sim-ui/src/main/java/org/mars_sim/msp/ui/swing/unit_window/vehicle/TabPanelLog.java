@@ -14,14 +14,12 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
@@ -34,7 +32,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -59,11 +56,8 @@ public class TabPanelLog extends TabPanel {
 	private static final String SOL = "   Sol ";
 	
 	// Data members
-	private int selectedSolCache;
-	
 	private Integer selectedSol;
 	private Integer todayInteger;
-	private Integer todayCache;
 	
 	private int theme;
 	
@@ -73,12 +67,7 @@ public class TabPanelLog extends TabPanel {
 	private JTextField odometerTF;
 	private JTextField maintTF;
 	
-	private DefaultComboBoxModel<Integer> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
-
-	private List<Integer> solList;
-	private Map<Integer, List<MSolDataItem<Set<StatusType>>>> allStatuses;
-	private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -121,27 +110,13 @@ public class TabPanelLog extends TabPanel {
 	    		                               7, 7);       //xPad, yPad     	
 		
 		todayInteger = getMarsClock().getMissionSol();
-		solList = new CopyOnWriteArrayList<>();
 
-		allStatuses = vehicle.getVehicleLog();
-		oneDayStatuses = allStatuses.get(todayInteger);
-		
-		for (int i = 1; i < todayInteger + 1; i++) {
-			if (!solList.contains(i))
-				solList.add(i);
-		}
-
-		// Create comboBoxModel
-		Collections.sort(solList, Collections.reverseOrder());
-		comboBoxModel = new DefaultComboBoxModel<>();
-		// Using internal iterator in lambda expression
-		solList.forEach(s -> comboBoxModel.addElement(s));
+		ComboBoxModel<Integer> solModel = createSolModel(todayInteger);
 
 		// Create comboBox
-		solBox = new JComboBoxMW<>(comboBoxModel);
+		solBox = new JComboBoxMW<>(solModel);
 		solBox.setPreferredSize(new Dimension(80, 25));
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
-		solBox.setSelectedItem(todayInteger);
 		solBox.setWide(true);
 		
 		solBox.setRenderer(new PromptComboBoxRenderer());
@@ -157,20 +132,9 @@ public class TabPanelLog extends TabPanel {
         content.add(northPanel, BorderLayout.NORTH);
 
 		box.add(Box.createHorizontalGlue());
-		selectedSol = (Integer) solBox.getSelectedItem();
-		
-		if (selectedSol == null)
-			solBox.setSelectedItem(todayInteger);
 
-		solBox.setSelectedItem((Integer) 1);
-		solBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				selectedSol = (Integer) solBox.getSelectedItem();
-			}
-		});
-		
 		// Create schedule table model
-		scheduleTableModel = new ScheduleTableModel(vehicle);
+		scheduleTableModel = new ScheduleTableModel();
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
@@ -193,16 +157,40 @@ public class TabPanelLog extends TabPanel {
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-		// SwingUtilities.invokeLater(() ->
-		// ColumnResizer.adjustColumnPreferredWidths(table));
+		solBox.setSelectedItem(todayInteger);
+		solBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setSolDisplayed((Integer) solBox.getSelectedItem());
+			}
+		});
+		selectedSol = todayInteger;
 
-		// Added sorting
-//		table.setAutoCreateRowSorter(true);
-
+		// Update will refresh data
 		update();
 		
 	}
 
+	/**
+	 * Build a combox box modle that hold sthe Sols in the vehcile log
+	 * @return
+	 */
+	private ComboBoxModel<Integer> createSolModel(Integer today) {
+
+		// Create comboBoxModel by takign the sols from the vehicle log.
+		DefaultComboBoxModel<Integer> solModel = new DefaultComboBoxModel<Integer>();
+
+		// Using internal iterator in lambda expression
+		for(int s = today; s > 0; s--) {
+			solModel.addElement(s);
+		}
+
+		return solModel;
+	}
+
+	protected void setSolDisplayed(Integer selectedItem) {
+		selectedSol = selectedItem;
+		update();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -221,49 +209,27 @@ public class TabPanelLog extends TabPanel {
 		// Update distance last maintenance 
 		maintTF.setText(DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
 				
-		todayInteger = getMarsClock().getMissionSol();
-
-		allStatuses = vehicle.getVehicleLog();
-		oneDayStatuses = allStatuses.get(todayInteger);
-		
-		selectedSol = (Integer) solBox.getSelectedItem(); 
+		int currentDay = getMarsClock().getMissionSol();
 
 		// Update the sol combobox at the beginning of a new sol
-		if (!todayInteger.equals(todayCache)) {
+		if (!todayInteger.equals(currentDay)) {
 	
-			for (int i = 1; i < todayInteger + 1; i++) {
-				if (!solList.contains(i))
-					solList.add(i);
-			}
-					
-			Collections.sort(solList, Collections.reverseOrder());
 
-//			for (int s : solList) {
-//				// Check if this element exist
-//				if (comboBoxModel.getIndexOf(s) == -1) {
-//					comboBoxModel.addElement(s);
-//				}
-//			}		
-			
 			// Update the solList comboBox
-			solBox.setModel(comboBoxModel);
+			solBox.setModel(createSolModel(currentDay));
 			solBox.setRenderer(new PromptComboBoxRenderer());
 			solBox.setMaximumRowCount(7);
 			
-			// Note: Below is needed or else users will be constantly interrupted
-			// as soon as the combobox got updated with the new day's schedule
-			// and will be swapped out without warning.
-			if (selectedSol != null)
-				solBox.setSelectedItem(selectedSol);
-			else {
-				solBox.setSelectedItem(todayInteger);
-				selectedSol = null;
+			// If SelectedSol is the previous current day; then automatically advance to ne day
+			if (selectedSol.equals(todayInteger)) {
+				selectedSol = currentDay;
 			}
-
-			todayCache = todayInteger;
+			solBox.setSelectedItem(selectedSol);
+			todayInteger = currentDay;
 		}
 		
-		scheduleTableModel.update();
+		List<MSolDataItem<Set<StatusType>>> solStatus = vehicle.getVehicleLog().get(selectedSol);
+		scheduleTableModel.update(solStatus);
 
 	}
 	
@@ -328,13 +294,14 @@ public class TabPanelLog extends TabPanel {
 	private class ScheduleTableModel extends AbstractTableModel {
 
 		DecimalFormat fmt = new DecimalFormat("000");
+		private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
 		
 		/**
 		 * hidden constructor.
 		 * 
 		 * @param person {@link Person}
 		 */
-		ScheduleTableModel(Unit unit) {
+		ScheduleTableModel() {
 		}
 
 		@Override
@@ -398,30 +365,12 @@ public class TabPanelLog extends TabPanel {
 		
 		/**
 		 * Prepares a list of activities done on the selected day
+		 * @param solStatus
 		 */
-		public void update() {
+		public void update(List<MSolDataItem<Set<StatusType>>> solStatus) {
 				
-//			for (int s : solList) {
-//				// Check if this element exist
-//				if (comboBoxModel.getIndexOf(s) == -1) {
-//					comboBoxModel.addElement(s);
-//				}
-//			}
-			
-			if (selectedSolCache != selectedSol) {
-				selectedSolCache = selectedSol;
+			oneDayStatuses = solStatus;
 
-				if (todayInteger.equals(selectedSolCache)) {
-					// Load today's schedule
-					oneDayStatuses = allStatuses.get(todayInteger);
-				} 
-				
-				else {
-					// Load the schedule of a particular sol
-					oneDayStatuses = allStatuses.get(selectedSolCache);
-				}
-			}
-			
 			fireTableDataChanged();
 		}
 	}
@@ -435,14 +384,8 @@ public class TabPanelLog extends TabPanel {
 		
 		if (solBox != null)
 			solBox.removeAllItems();
-		if (comboBoxModel != null)
-			comboBoxModel.removeAllElements();
 
-		oneDayStatuses = null;
-		allStatuses = null;
 		solBox = null;
-		comboBoxModel = null;
-		solList = null;
 		table = null;
 		scheduleTableModel = null;
 	}	
