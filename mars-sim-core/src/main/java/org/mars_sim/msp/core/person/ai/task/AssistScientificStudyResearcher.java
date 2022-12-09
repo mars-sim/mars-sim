@@ -216,7 +216,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task personsTask = person.getMind().getTaskManager().getTask();
-			if ((personsTask != null) && (personsTask instanceof ResearchScientificStudy)) {
+			if (personsTask instanceof ResearchScientificStudy && !personsTask.isDone()) {
 				ResearchScientificStudy researchTask = (ResearchScientificStudy) personsTask;
 				if (!researchTask.hasResearchAssistant() && researchTask.getResearchScience() != null) {
 					SkillType scienceSkill = researchTask.getResearchScience().getSkill();
@@ -240,24 +240,22 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 */
 	private static Collection<Person> getLocalPeople(Person person) {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
+		Collection<Person> potentials = null;
 		if (person.isInSettlement()) {
-			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
-			while (i.hasNext()) {
-				Person inhabitant = i.next();
-				if (person != inhabitant)
-					people.add(inhabitant);
-			}
-		} else if (person.isInVehicle()) {
+			potentials = person.getSettlement().getIndoorPeople();
+		}
+		else if (person.isInVehicle()) {
 			Crewable rover = (Crewable) person.getVehicle();
-			Iterator<Person> i = rover.getCrew().iterator();
-			while (i.hasNext()) {
-				Person crewmember = i.next();
-				if (person != crewmember)
-					people.add(crewmember);
-			}
+			potentials = rover.getCrew();
 		}
 
+		if (potentials != null) {
+			for(Person p : potentials) {
+				if (!person.equals(p)) {
+					people.add(p);
+				}
+			}
+		}
 		return people;
 	}
 
