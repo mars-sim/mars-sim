@@ -918,21 +918,24 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
-		shiftManager.timePassing(pulse);
-
-		// what to take into consideration the presence of robots ?
-		// If no current population at settlement for one sol, power down the
-		// building and turn the heat off ?
-
 		// Calls other time passings
-		otherTimePassings(pulse);
+		shiftManager.timePassing(pulse);
+		powerGrid.timePassing(pulse);
+		thermalSystem.timePassing(pulse);
+		buildingManager.timePassing(pulse);
+		goodsManager.timePassing(pulse);
+		taskManager.timePassing();
+
+		// Update citizens
+		timePassingCitizens(pulse);
+
+		// Updateremaining Units
+		timePassing(pulse, ownedVehicles);
+		timePassing(pulse, ownedRobots);
 
 		if (pulse.isNewSol()) {
 			performEndOfDayTasks(pulse.getMarsTime());
 		}
-
-		goodsManager.timePassing(pulse);
-		taskManager.timePassing();
 
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
@@ -957,29 +960,6 @@ public class Settlement extends Structure implements Temporal,
 			return .1D * overCrowding * time;
 		}
 		return 0;
-	}
-
-	/**
-	 * Calls other time passings.
-	 *
-	 * @param pulse
-	 */
-	private void otherTimePassings(ClockPulse pulse) {
-
-		powerGrid.timePassing(pulse);
-
-		thermalSystem.timePassing(pulse);
-
-		buildingManager.timePassing(pulse);
-
-		// Update citizens
-		timePassing(pulse, citizens);
-
-		// Update owned vehicles
-		timePassing(pulse, ownedVehicles);
-
-		// Update owned robots
-		timePassing(pulse, ownedRobots);
 	}
 
 	/**
@@ -1089,12 +1069,34 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private void timePassing(ClockPulse pulse, Collection<? extends Temporal> ownedUnits) {
 		for (Temporal t : ownedUnits) {
-//			try {
-				t.timePassing(pulse);
-//			}
-//			catch (RuntimeException rte) {
-//				logger.severe(this, "Problem applying pulse : " + rte.getMessage(), rte);
-//			}
+			t.timePassing(pulse);
+		}
+	}
+
+	/**
+	 * Pass pulse to Citizens that are not dead. Thos etht are buried are removed.
+	 */
+	private void timePassingCitizens(ClockPulse pulse) {
+		List<Person> remove = null;
+		for(Person p : citizens) {
+			if (p.isDeclaredDead()) {
+				// If also buried then remove it at the end of loop
+				if (p.isBuried()) {
+					if (remove == null) {
+						remove = new ArrayList<>();
+					}
+					remove.add(p);
+				}
+			}
+			else {
+				p.timePassing(pulse);
+			}
+		}
+
+		if (remove != null) {
+			for(Person r : remove) {
+				removeACitizen(r);
+			}
 		}
 	}
 
@@ -1760,7 +1762,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Checks for available airlocks.
 	 */
-	public void checkAvailableAirlocks() {
+	private void checkAvailableAirlocks() {
 		List<Building> pressurizedBldgs = new ArrayList<>();
 		List<Building> depressurizedBldgs = new ArrayList<>();
 

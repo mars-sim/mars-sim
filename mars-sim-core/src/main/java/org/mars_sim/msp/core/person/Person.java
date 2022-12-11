@@ -809,14 +809,12 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		isBuried = true;
 		// Back up the last container unit
 		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
-		// set container unit to null if not done so
-		setContainerUnit(null);
+
 		// Set his/her currentStateType
 		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		// Set his/her buried settlement
 		buriedSettlement = associatedSettlementID;
-		// Remove the person from the settlement's registry
-		setAssociatedSettlement(-1);
+
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
