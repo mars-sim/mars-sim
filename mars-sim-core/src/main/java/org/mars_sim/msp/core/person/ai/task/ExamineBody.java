@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A task for performing a physical exam over a patient or a postmortem exam on
  * a deceased person at a medical station.
  */
-public class ExamineBody extends Task implements Serializable {
+public class ExamineBody extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -71,11 +70,12 @@ public class ExamineBody extends Task implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param person the person to perform the task
+	 * @param body Body to examin
 	 */
-	public ExamineBody(Person person) {
+	public ExamineBody(Person person, DeathInfo body) {
 		super(NAME, person, true, true, STRESS_MODIFIER, SkillType.MEDICINE, 25D);
 
-		if (person.isInSettlement()) {
+		if (!person.isInSettlement()) {
 			endTask();
 			return;
 		}
@@ -94,52 +94,30 @@ public class ExamineBody extends Task implements Serializable {
 			return;
 		}
 
-		// Determine patient and health problem to treat.
-		List<DeathInfo> list = medicalManager.getPostmortemExams(person.getSettlement());
-		int num = list.size();
-		boolean done = false;
-		
-		if (num > 0) {
-			while (!done) {
-				for (int i=0; i < num; i++) {
-					if (list.get(i).getBodyRetrieved()) {
-						// Work on the body already retrieved
-						deathInfo = list.get(i);
-						done = true;
-					}
-				}
-				
-				// If no body has been examined yet, pick one
-				if (deathInfo == null) {
-					int rand = RandomUtil.getRandomInt(num-1);
-					deathInfo = list.get(rand);
-					retrieveBody();
-				}			
-			}
-						
-			patient = deathInfo.getPerson();
-
-			// Get the person's medical skill.
-			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-			if (skill == 0)
-				skill = .5;
-			// Get the person's emotion stability
-			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-			// Get the person's stress resilience						
-			int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-			
-			// Note: Need to refine in determining how long the exam would take. 
-			// Depends on the cause of death ?
-			double durationExam = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill 
-					+ 2 * RandomUtil.getRandomInt(num + 5);
-			
-			deathInfo.setEstTimeExam(durationExam);
-
-		} else {
-			logger.severe(person, "Could not find any bodies to do autopsy at " + medicalAid);
-			endTask();
-			return;
+	// Determine patient and health problem to treat.
+		deathInfo = body;
+		if (!deathInfo.getBodyRetrieved()) {
+			retrieveBody();
 		}
+					
+		patient = deathInfo.getPerson();
+
+		// Get the person's medical skill.
+		double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		if (skill == 0)
+			skill = .5;
+		// Get the person's emotion stability
+		int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+		// Get the person's stress resilience						
+		int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+		
+		// Note: Need to refine in determining how long the exam would take. 
+		// Depends on the cause of death ?
+		double durationExam = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill 
+				+ 2 * RandomUtil.getRandomInt(5);
+		
+		deathInfo.setEstTimeExam(durationExam);
+
 
 		// Walk to medical aid.
 		if (medicalAid instanceof MedicalCare) {
@@ -322,34 +300,28 @@ public class ExamineBody extends Task implements Serializable {
 
 		double timeLeft = 0D;
 
-		int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
-		
-		if (num > 0) {
-			// If medical aid has malfunction, end task.
-			if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
-				endTask();
-			}
-	
-			// Record the cause
-			recordCause(deathInfo.getProblem());
-			
-			// Bury the body
-			patient.buryBody();
-			
-			medicalManager.addDeathRegistry(person.getSettlement(), deathInfo);
-					
-			// Check for accident in medical aid.
-			checkForAccident(malfunctionable, 0.005D, time);
-	
-			// Add experience.
-			addExperience(time);
-	
+		// If medical aid has malfunction, end task.
+		if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
 			endTask();
-		
 		}
-		else
-			endTask();
+
+		// Record the cause
+		recordCause(deathInfo.getProblem());
 		
+		// Bury the body
+		patient.buryBody();
+		
+		medicalManager.addDeathRegistry(person.getSettlement(), deathInfo);
+				
+		// Check for accident in medical aid.
+		checkForAccident(malfunctionable, 0.005D, time);
+
+		// Add experience.
+		addExperience(time);
+
+		endTask();
+		
+
 		return timeLeft;
 	}
 

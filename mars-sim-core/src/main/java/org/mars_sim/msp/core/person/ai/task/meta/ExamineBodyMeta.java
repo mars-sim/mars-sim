@@ -6,34 +6,61 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ExamineBody;
-import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.MedicalManager;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.SickBay;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the ExamineBody task.
  */
-public class ExamineBodyMeta extends FactoryMetaTask {
+public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
+/**
+     * Represents a Job needed for body examination
+     */
+    private static class ExamineBodyJob extends SettlementTask {
+
+		private static final long serialVersionUID = 1L;
+
+        private DeathInfo patient;
+
+        public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, double score) {
+			super(owner, "Examine body of " + patient.getPerson().getName(), score);
+            this.patient = patient;
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new ExamineBody(person, patient);
+        }
+    }
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
-	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
+	// High score so that it gets done soon
+	private static final double DEFAULT_SCORE = 500D;
+
+	// Extra score for every day body not examined
+	private static final int SOL_SCORE = 50;
+
+	private static MedicalManager medicalManager;
 
     public ExamineBodyMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -42,82 +69,65 @@ public class ExamineBodyMeta extends FactoryMetaTask {
 		setPreferredJob(JobType.MEDICS);
 	}
 
-	@Override
-	public Task constructInstance(Person person) {
-		return new ExamineBody(person);
-	}
-
-	@Override
-	public double getProbability(Person person) {
-		double result = 0D;
-
-		if (person.isInSettlement()) {
-
-	        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-	        	return 0;
-	        }
-
-			int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
-
-			// Get the local medical aids to use.
-			if (num > 0 && hasNeedyMedicalAids(person)) {
-				result = 500.0 + 300 * num;
-			}
+	/**
+     * Get the score for a Settlement task for a person. to examine a body based on Job & Skill
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement() &&
+				p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
 			// Effort-driven task modifier.
-			result *= getPersonModifier(person);
+			factor = getPersonModifier(p);
 
-			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
+			double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
-				skill = .5;
-			result *= skill;
-
-
-			if (result < 0)
-				result = 0;
-
+				skill = 0.01D;
+			factor *= skill;
 		}
-
-		return result;
+		return factor;
 	}
 
+
 	/**
-	 * Checks if there are local medical aids that have people waiting for
-	 * treatment.
-	 *
-	 * @param person the person.
-	 * @return true if needy medical aids.
+	 * Scan the Settlement for any post mortems that are needed
+	 * @param settlement Settlemnt to scan.
 	 */
-	private boolean hasNeedyMedicalAids(Person person) {
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask>  tasks = new ArrayList<>();
+		List<DeathInfo> deaths = medicalManager.getPostmortemExams(settlement);
 
-		boolean result = false;
-
-		if (person.isInSettlement()) {
-			result = hasNeedyMedicalAidsAtSettlement(person);
-		} else if (person.isInVehicle()) {
-			result = hasNeedyMedicalAidsInVehicle(person);
+		if (!deaths.isEmpty() && hasNeedyMedicalAidsAtSettlement(settlement)) {
+			for(DeathInfo pm : deaths) {
+				if (!pm.getExamDone()) {
+					double score = DEFAULT_SCORE +
+							((marsClock.getMissionSol() - pm.getMissionSol()) * SOL_SCORE);
+					tasks.add(new ExamineBodyJob(this, pm, score));
+				}
+			}
 		}
 
-		return result;
+		return tasks;
 	}
 
 	/**
 	 * Checks if there are medical aids at a settlement that have people waiting for
 	 * treatment.
 	 *
-	 * @param person     the person.
 	 * @param settlement the settlement.
 	 * @return true if needy medical aids.
 	 */
-	private boolean hasNeedyMedicalAidsAtSettlement(Person person) {
+	private boolean hasNeedyMedicalAidsAtSettlement(Settlement settlement) {
 
 		// Check all medical care buildings.
-		Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)
-				.iterator();
-		while (i.hasNext()) {
+		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)) {
 			// Check if there are any sick beds at building.
-			MedicalCare medicalCare = i.next().getMedical();
+			MedicalCare medicalCare = b.getMedical();
 			if (medicalCare.hasEmptyBeds()) {
 				return true;
 			}
@@ -127,22 +137,14 @@ public class ExamineBodyMeta extends FactoryMetaTask {
 	}
 
 	/**
-	 * Checks if there are medical aids in a vehicle that have people waiting for
-	 * treatment.
-	 *
-	 * @param person  the person.
-	 * @param vehicle the vehicle.
-	 * @return true if needy medical aids.
+	 * Robots 
 	 */
-	private boolean hasNeedyMedicalAidsInVehicle(Person person) {
-		if (VehicleType.isRover(person.getVehicle().getVehicleType())) {
-			Rover rover = (Rover) person.getVehicle();
-			if (rover.hasSickBay()) {
-				SickBay sickBay = rover.getSickBay();
-                return sickBay.hasEmptyBeds();
-			}
-		}
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		return 0;
+	}
 
-		return false;
+	public static void initialiseInstances(MedicalManager mm) {
+		medicalManager = mm;
 	}
 }

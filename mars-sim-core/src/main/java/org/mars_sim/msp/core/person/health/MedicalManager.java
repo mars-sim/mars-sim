@@ -434,18 +434,9 @@ public class MedicalManager implements Serializable {
 	public List<DeathInfo> getPostmortemExams(Settlement s) {
 		if (awaitingPostmortemExam.containsKey(s.getIdentifier())) {
 			return awaitingPostmortemExam.get(s.getIdentifier());
-		} else {
-			List<DeathInfo> list = new CopyOnWriteArrayList<>();
-			return list;
 		}
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 */
-	public static void justReloaded() {
-//		initMedical();
+		
+		return Collections.emptyList();
 	}
 
 	/**
@@ -453,13 +444,7 @@ public class MedicalManager implements Serializable {
 	 */
 	public void destroy() {
 
-		environmentalComplaints.clear();
 		environmentalComplaints = null;
-//		complaints.clear();
-//		complaints = null;
-//		treatments.clear();
-//		treatments = null;
-		supportedTreatments.clear();
 		supportedTreatments = null;
 
 		starvation = null;
