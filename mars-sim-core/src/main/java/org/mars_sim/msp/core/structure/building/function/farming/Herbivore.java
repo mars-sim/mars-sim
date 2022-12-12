@@ -11,7 +11,6 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
 
 /******************************************************************************
 * A <CODE>Herbivore</CODE> is an <CODE>Animal</CODE> with extra methods that
@@ -31,7 +30,7 @@ import java.io.Serializable;
 * @see Plant
 ******************************************************************************/
 
-public class Herbivore extends Animal implements Serializable {
+public class Herbivore extends Animal {
 	
 	/** default serial id. */
     private static final long serialVersionUID = 1L;

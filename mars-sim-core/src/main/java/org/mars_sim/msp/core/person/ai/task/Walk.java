@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A general walking task that includes interior/exterior walking and
  * entering/exiting airlocks.
  */
-public class Walk extends Task implements Serializable {
+public class Walk extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

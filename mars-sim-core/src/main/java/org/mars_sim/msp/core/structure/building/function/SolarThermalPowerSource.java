@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -15,9 +14,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A solar thermal power source.
  */
-public class SolarThermalPowerSource
-extends PowerSource
-implements Serializable {
+public class SolarThermalPowerSource extends PowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

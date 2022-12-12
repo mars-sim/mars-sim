@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +33,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A task for responding to an invitation to collaborate on a scientific study.
  */
-public class RespondToStudyInvitation extends Task implements Serializable {
+public class RespondToStudyInvitation extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

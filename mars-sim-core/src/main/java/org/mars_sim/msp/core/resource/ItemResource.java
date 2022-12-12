@@ -7,15 +7,13 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.goods.GoodType;
 
 /**
  * The ItemResource class represents a type of resource measured in countable
  * units of quantity. It's for simple tools and parts.
  */
-public class ItemResource extends ResourceAbstract implements Serializable {
+public class ItemResource extends ResourceAbstract {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

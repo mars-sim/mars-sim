@@ -7,11 +7,9 @@
 
 package org.mars_sim.msp.core.environment;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 
-public class CollectionSite extends Site implements Serializable {
+public class CollectionSite extends Site {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

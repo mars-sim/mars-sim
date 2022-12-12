@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * Task for assisting a scientific study researcher.
  */
-public class AssistScientificStudyResearcher extends Task implements Serializable {
+public class AssistScientificStudyResearcher extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

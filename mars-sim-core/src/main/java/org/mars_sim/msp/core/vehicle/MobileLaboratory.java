@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import org.mars_sim.msp.core.structure.Lab;
 /**
  * The MobileLaboratory class represents the research laboratory in a vehicle.
  */
-public class MobileLaboratory implements Lab, Serializable {
+public class MobileLaboratory implements Lab {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;

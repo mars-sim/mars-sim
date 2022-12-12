@@ -6,17 +6,13 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * A power source that gives a constant supply of power.
  */
-public class StandardPowerSource
-extends PowerSource
-implements Serializable {
+public class StandardPowerSource extends PowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

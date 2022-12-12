@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.connection;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -15,7 +13,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A hatch on one side of a building connection.
  */
-public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocation {
+public class Hatch implements LocalBoundedObject, InsidePathLocation {
 
 	private static final long serialVersionUID = 1L;
 	

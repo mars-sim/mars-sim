@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.InventoryUtil;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The CollectResources class is a task for collecting resources at a site with
  * an EVA from a rover.
  */
-public class CollectResources extends EVAOperation implements Serializable {
+public class CollectResources extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

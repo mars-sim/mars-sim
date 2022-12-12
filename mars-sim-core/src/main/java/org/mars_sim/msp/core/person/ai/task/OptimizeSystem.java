@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * This class is a task for investigating what system to optimize.
  */
-public class OptimizeSystem extends Task implements Serializable {
+public class OptimizeSystem extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

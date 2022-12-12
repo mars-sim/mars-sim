@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +35,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A task for performing a medical treatment on a patient at a medical station.
  * This task is not for performing a medical treatment on one's self.
  */
-public class TreatMedicalPatient extends Task implements Serializable {
+public class TreatMedicalPatient extends Task {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;

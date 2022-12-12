@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -29,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
  * The Drive Ground Vehicle class is a task for driving a ground vehicle to a
  * destination.
  */
-public class DriveGroundVehicle extends OperateVehicle implements Serializable {
+public class DriveGroundVehicle extends OperateVehicle {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

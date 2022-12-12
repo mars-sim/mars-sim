@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,9 +31,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A task for peer reviewing a compiled study's paper.
  */
-public class PeerReviewStudyPaper
-extends Task
-implements Serializable {
+public class PeerReviewStudyPaper extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

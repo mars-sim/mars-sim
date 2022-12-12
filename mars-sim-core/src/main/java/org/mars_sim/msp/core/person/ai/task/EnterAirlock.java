@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -33,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * of a settlement or vehicle after an EVA operation outside have been
  * accomplished.
  */
-public class EnterAirlock extends Task implements Serializable {
+public class EnterAirlock extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

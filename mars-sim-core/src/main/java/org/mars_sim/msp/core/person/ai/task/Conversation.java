@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,9 +33,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Conversation class is the task of having a casual conversation with another person
  */
-public class Conversation
-extends Task
-implements Serializable {
+public class Conversation extends Task {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;

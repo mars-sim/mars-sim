@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,9 +36,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The DigLocal class is a task for collecting a resource outside a settlement.
  */
-public abstract class DigLocal
-extends EVAOperation
-implements Serializable {
+public abstract class DigLocal extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

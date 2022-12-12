@@ -7,14 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-public class PersonAttributeManager extends NaturalAttributeManager
-		implements Serializable {
+public class PersonAttributeManager extends NaturalAttributeManager {
 
 	/**
 	 * 

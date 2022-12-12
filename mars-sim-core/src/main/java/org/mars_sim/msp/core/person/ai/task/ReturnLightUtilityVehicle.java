@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -33,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A task for returning a light utility vehicle (LUV) to a rover or settlement
  * when a person finds oneself operating one.
  */
-public class ReturnLightUtilityVehicle extends Task implements Serializable {
+public class ReturnLightUtilityVehicle extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 /**
  * Task for constructing a building construction site stage.
  */
-public class ConstructBuilding extends EVAOperation implements Serializable {
+public class ConstructBuilding extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

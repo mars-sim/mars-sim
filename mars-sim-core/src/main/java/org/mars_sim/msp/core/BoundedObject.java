@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.core;
 
-import java.io.Serializable;
-
-public class BoundedObject implements LocalBoundedObject, Serializable {
+public class BoundedObject implements LocalBoundedObject {
 
 	/**
 	 * 

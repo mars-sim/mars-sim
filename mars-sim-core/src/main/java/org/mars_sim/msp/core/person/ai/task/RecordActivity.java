@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -20,7 +19,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The RecordActivity class is a task for recording events/activities
  */
-public class RecordActivity extends Task implements Serializable {
+public class RecordActivity extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

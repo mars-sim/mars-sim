@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +38,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 /**
  * This is a task for teaching a student a task.
  */
-public class Teach extends Task implements Serializable {
+public class Teach extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

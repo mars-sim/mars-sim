@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +37,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * A task for working on a manufacturing process.
  */
-public class ManufactureGood extends Task implements Serializable {
+public class ManufactureGood extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

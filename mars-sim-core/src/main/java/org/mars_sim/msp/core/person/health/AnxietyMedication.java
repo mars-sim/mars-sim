@@ -10,12 +10,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.time.ClockPulse;
 
-import java.io.Serializable;
 
 /**
  * A medication that reduces stress.
  */
-public class AnxietyMedication extends Medication implements Serializable {
+public class AnxietyMedication extends Medication {
 
 	private static final long serialVersionUID = 1L;
 

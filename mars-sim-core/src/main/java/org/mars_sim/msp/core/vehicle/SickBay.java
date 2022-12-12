@@ -7,16 +7,13 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.person.health.MedicalStation;
 
 /**
  * The SickBay class is a medical station for a vehicle.
  */
-public class SickBay
-extends MedicalStation
-implements Serializable {
+public class SickBay extends MedicalStation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 /**
  * The PowerGeneration class is a building function for generating power.
  */
-public class PowerGeneration extends Function implements Serializable {
+public class PowerGeneration extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

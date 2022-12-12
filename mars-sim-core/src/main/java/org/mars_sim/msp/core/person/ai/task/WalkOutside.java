@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,7 +34,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A subtask for walking between locations outside of a settlement or vehicle.
  */
-public class WalkOutside extends Task implements Serializable {
+public class WalkOutside extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -50,10 +49,6 @@ public class WalkOutside extends Task implements Serializable {
 	private static final double MIN_PULSE_TIME = 0.25;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
-	/** The base walking speed [km / hr] */
-	private static final double BASE_WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
-	/** The max walking speed [km / hr] */
-	private static final double MAX_WALKING_SPEED = 3 * BASE_WALKING_SPEED;
 	/** The greater than zero distance [km] */
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	/** The stress modified per millisol. */

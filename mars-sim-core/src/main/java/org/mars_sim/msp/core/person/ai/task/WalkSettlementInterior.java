@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -34,7 +33,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * Between two connected inhabitable buildings or two locations in a single
  * inhabitable building.)
  */
-public class WalkSettlementInterior extends Task implements Serializable {
+public class WalkSettlementInterior extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

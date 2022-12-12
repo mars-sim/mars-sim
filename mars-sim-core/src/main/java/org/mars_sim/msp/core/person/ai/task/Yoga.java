@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The Yoga class is a task for practicing yoga to reduce stress.
  */
-public class Yoga extends Task implements Serializable {
+public class Yoga extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

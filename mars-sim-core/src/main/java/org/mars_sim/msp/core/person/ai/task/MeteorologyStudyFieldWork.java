@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
@@ -25,7 +24,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A task for the EVA operation of performing meteorology field work at a
  * research site for a scientific study.
  */
-public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork implements Serializable {
+public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

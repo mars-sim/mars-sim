@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -15,9 +13,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * This class accounts for the effect of temperature via passive solar water heating or passive solar heat collector system.
  */
-public class SolarHeatSource
-extends HeatSource
-implements Serializable {
+public class SolarHeatSource extends HeatSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

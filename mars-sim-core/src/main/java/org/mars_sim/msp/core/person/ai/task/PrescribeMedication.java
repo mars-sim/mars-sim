@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -33,9 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
  */
-public class PrescribeMedication
-extends Task
-implements Serializable {
+public class PrescribeMedication extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

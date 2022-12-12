@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.health;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -15,7 +13,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * A medication that relieves radiation exposure sickness.
  */
-public class RadioProtectiveAgent extends Medication implements Serializable {
+public class RadioProtectiveAgent extends Medication {
 
 	private static final long serialVersionUID = 1L;
 

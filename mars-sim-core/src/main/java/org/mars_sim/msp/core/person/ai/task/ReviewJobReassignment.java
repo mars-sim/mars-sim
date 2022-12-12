@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,7 +32,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The ReviewJobReassignment class is a task for reviewing job reassignment
  * submission in an office space
  */
-public class ReviewJobReassignment extends Task implements Serializable {
+public class ReviewJobReassignment extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -47,8 +46,6 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	private static final TaskPhase REVIEWING = new TaskPhase(
 			Msg.getString("Task.phase.reviewJobReassignment")); //$NON-NLS-1$
 
-	private static final TaskPhase FINISHED = new TaskPhase(
-			Msg.getString("Task.phase.reviewJobReassignment.finished")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */

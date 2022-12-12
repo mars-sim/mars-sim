@@ -6,17 +6,13 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * This class accounts for the effect of temperature by nuclear reactor.
  */
-public class ThermalNuclearSource
-extends HeatSource
-implements Serializable {
+public class ThermalNuclearSource extends HeatSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
@@ -32,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * Task to perform a trade negotiation between the buyer and seller for a Trade
  * mission.
  */
-public class NegotiateTrade extends Task implements Serializable {
+public class NegotiateTrade extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

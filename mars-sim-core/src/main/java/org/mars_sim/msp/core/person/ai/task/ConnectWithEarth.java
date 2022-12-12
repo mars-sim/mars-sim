@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Connection;
@@ -25,7 +23,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The ConnectWithEarth class is a task of connecting with Earth's family,
  * relatives and friends
  */
-public class ConnectWithEarth extends Task implements Serializable {
+public class ConnectWithEarth extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

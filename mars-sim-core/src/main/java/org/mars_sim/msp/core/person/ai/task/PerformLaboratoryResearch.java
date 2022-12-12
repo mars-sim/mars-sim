@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A task for performing research for a scientific study in a laboratory.
  */
-public class PerformLaboratoryResearch extends Task implements ResearchScientificStudy, Serializable {
+public class PerformLaboratoryResearch extends Task implements ResearchScientificStudy {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

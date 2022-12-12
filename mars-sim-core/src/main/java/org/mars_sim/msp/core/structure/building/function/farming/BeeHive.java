@@ -7,15 +7,12 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 
-public class BeeHive
-extends Function
-implements Serializable {
+public class BeeHive extends Function {
 	
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -41,7 +38,6 @@ implements Serializable {
     private Bee queenBee;
     private Bee workerBee;
     private Bee maleBee;       
-    private Bee beeEgg; 
     private Bee beeLarvae;
     private Bee beePupa;
     

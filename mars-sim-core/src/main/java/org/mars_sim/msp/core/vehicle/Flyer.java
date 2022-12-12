@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.Direction;
@@ -25,7 +24,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The Flyer class represents an airborne.
  */
-public abstract class Flyer extends Vehicle implements Serializable {
+public abstract class Flyer extends Vehicle {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

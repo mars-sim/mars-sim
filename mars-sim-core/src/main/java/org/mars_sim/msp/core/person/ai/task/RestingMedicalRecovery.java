@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A task for resting at a medical station bed to recover from a health problem
  * which requires bed rest.
  */
-public class RestingMedicalRecovery extends Task implements Serializable {
+public class RestingMedicalRecovery extends Task {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -46,8 +45,6 @@ public class RestingMedicalRecovery extends Task implements Serializable {
     /** Task phases. */
     private static final TaskPhase RESTING = new TaskPhase(Msg.getString(
             "Task.phase.restingInBed")); //$NON-NLS-1$
-
-	private static final int MAX_FATIGUE = 1500;
 	
     /** Maximum resting duration (millisols) */
     private static final double RESTING_DURATION = 300D;

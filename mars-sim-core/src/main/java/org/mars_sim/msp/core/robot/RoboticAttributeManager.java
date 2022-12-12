@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.robot;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -17,8 +16,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The RoboticAttributeManager class manages a person's natural attributes.
  * There is only natural attribute manager for each person.
  */
-public class RoboticAttributeManager extends NaturalAttributeManager
-implements Serializable {
+public class RoboticAttributeManager extends NaturalAttributeManager {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

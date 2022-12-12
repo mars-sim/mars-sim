@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The CookMeal class is a task for cooking meals in a building with the Cooking
  * function. This is an effort driven task.
  */
-public class CookMeal extends Task implements Serializable {
+public class CookMeal extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

@@ -7,13 +7,10 @@
 
 package org.mars_sim.msp.core.data;
 
-import java.io.Serializable;
-
 /**
  * This logger records data in a DataLogger for each Sol. Datapoint is timstamped with the msol value as well.
  */
-public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>>
-	implements Serializable {
+public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>> {
 
 	/**
 	 * Creates a new logger.

@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.environment;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * MarsSurface is the object unit that represents the surface of Mars
  */
-public class MarsSurface extends Unit implements Serializable {
+public class MarsSurface extends Unit {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;

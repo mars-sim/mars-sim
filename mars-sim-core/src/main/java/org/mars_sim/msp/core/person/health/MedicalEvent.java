@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.health;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
@@ -17,8 +15,7 @@ import org.mars_sim.msp.core.person.Person;
  * This class represents the historical action of a medical problem occuring or
  * being resolved.  Death is also recorded with medical events.
  */
-public class MedicalEvent
-extends HistoricalEvent implements Serializable {
+public class MedicalEvent extends HistoricalEvent {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

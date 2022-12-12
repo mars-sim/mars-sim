@@ -7,13 +7,11 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -22,7 +20,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 
 public class BuildingKit extends Equipment
-	implements Serializable, Malfunctionable, Salvagable, Temporal {
+	implements Malfunctionable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

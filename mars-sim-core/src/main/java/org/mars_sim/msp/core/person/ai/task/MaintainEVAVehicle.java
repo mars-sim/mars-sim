@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -23,9 +22,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The MaintainEVAVehicle class is a task for performing
  * preventive maintenance on ground vehicles on the surface of Mars.
  */
-public class MaintainEVAVehicle
-extends EVAOperation
-implements Serializable {
+public class MaintainEVAVehicle extends EVAOperation {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;

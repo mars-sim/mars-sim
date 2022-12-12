@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -36,9 +35,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A task for inviting a researcher to collaborate on a scientific study.
  */
-public class InviteStudyCollaborator
-extends Task
-implements Serializable {
+public class InviteStudyCollaborator extends Task {
 
 	private final static class PersonScore  {
 		double score;

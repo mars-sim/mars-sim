@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.goods;
 
-import java.io.Serializable;
 import java.util.EventObject;
 
 import org.mars_sim.msp.core.Simulation;
@@ -17,7 +16,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * A credit change event.
  */
-public class CreditEvent extends EventObject implements Serializable {
+public class CreditEvent extends EventObject {
 
     private static final long serialVersionUID = 2L;
     

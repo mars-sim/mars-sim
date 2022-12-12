@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
@@ -14,7 +13,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
-public class FuelHeatSource extends HeatSource implements Serializable {
+public class FuelHeatSource extends HeatSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

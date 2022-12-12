@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -28,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Flyer;
  * The PilotDrone class is a task for piloting a drone to a
  * destination.
  */
-public class PilotDrone extends OperateVehicle implements Serializable {
+public class PilotDrone extends OperateVehicle {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -41,7 +40,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	/** Task phases. */
 	private static final TaskPhase AVOID_COLLISION = new TaskPhase(Msg.getString("Task.phase.avoidObstacle")); //$NON-NLS-1$
-//	private static final TaskPhase WINCH_VEHICLE = new TaskPhase(Msg.getString("Task.phase.winchVehicle")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;

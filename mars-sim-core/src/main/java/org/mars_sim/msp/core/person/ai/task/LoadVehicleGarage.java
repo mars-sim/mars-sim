@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The LoadVehicleGarage class is a task for loading a vehicle with fuel and
  * supplies in a vehicle maintenance garage.
  */
-public class LoadVehicleGarage extends Task implements Serializable {
+public class LoadVehicleGarage extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -70,7 +69,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	public LoadVehicleGarage(Worker worker, VehicleMission mission) {
 		// Use Task constructor.
-		super("Loading vehicle", worker, true, false, STRESS_MODIFIER,
+		super(NAME, worker, true, false, STRESS_MODIFIER,
 				RandomUtil.getRandomDouble(50D) + 10D);
 		this.vehicleMission = mission;
 

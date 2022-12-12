@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The VehicleMaintenance interface is a building function for a building
  * capable of maintaining vehicles.
  */
-public abstract class VehicleMaintenance extends Function implements Serializable {
+public abstract class VehicleMaintenance extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

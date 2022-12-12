@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +35,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 /**
  * Task for salvaging a building construction site stage.
  */
-public class SalvageBuilding
-extends EVAOperation
-implements Serializable {
+public class SalvageBuilding extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

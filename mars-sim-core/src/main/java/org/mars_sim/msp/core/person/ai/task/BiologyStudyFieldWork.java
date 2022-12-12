@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -19,8 +17,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * for a scientific study.
  */
 public class BiologyStudyFieldWork
-extends ScientificStudyFieldWork
-implements Serializable {
+extends ScientificStudyFieldWork {
 
     /** default serial id.*/
     private static final long serialVersionUID = 1L;

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -24,7 +23,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The ReportMissionControl class is a task for writing reports in an office space
  */
-public class ReportMissionControl extends Task implements Serializable {
+public class ReportMissionControl extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

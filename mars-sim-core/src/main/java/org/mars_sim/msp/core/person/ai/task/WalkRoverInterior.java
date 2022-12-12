@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalPosition;
@@ -23,9 +22,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A subtask for walking between two interior locations in a rover.
  */
-public class WalkRoverInterior
-extends Task
-implements Serializable {
+public class WalkRoverInterior extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

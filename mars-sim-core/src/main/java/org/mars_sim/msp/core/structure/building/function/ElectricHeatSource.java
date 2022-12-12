@@ -6,17 +6,13 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * An electric heat source is a type of electric furnace.
  */
-public class ElectricHeatSource
-extends HeatSource
-implements Serializable {
+public class ElectricHeatSource extends HeatSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
