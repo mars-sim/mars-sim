@@ -282,6 +282,6 @@ public class MetaTaskUtil {
 		LoadVehicleMeta.initialiseInstances(sim);
 		UnloadVehicleMeta.initialiseInstances(sim);
 		ExamineBodyMeta.initialiseInstances(sim.getMedicalManager());
+		ReviewMissionPlanMeta.initialiseInstances(sim.getMissionManager());
     }
-
 }

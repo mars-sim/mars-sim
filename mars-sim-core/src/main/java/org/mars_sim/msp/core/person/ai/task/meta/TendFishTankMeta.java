@@ -56,12 +56,9 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
         }
     }
 
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendFishTank"); //$NON-NLS-1$
-
-	private static final int CAP = 3_000;
 	
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);

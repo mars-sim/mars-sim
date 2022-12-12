@@ -1175,7 +1175,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
-		plan = new MissionPlanning(this);
+		plan = new MissionPlanning(this, marsClock.getMissionSol());
 	}
 	/**
 	 * Returns the mission plan.

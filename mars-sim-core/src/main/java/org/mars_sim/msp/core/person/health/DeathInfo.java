@@ -27,8 +27,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -90,8 +88,6 @@ public class DeathInfo implements Serializable {
 	/** The person's last word before departing. */
 	private String lastWord = "None";
 
-	/** the robot's job at time of being decomissioned. */
-	private RobotJob robotJob;
 	/** Medical problem contributing to the death. */
 	private HealthProblem problem;
 	/** Container unit at time of death. */
@@ -107,8 +103,6 @@ public class DeathInfo implements Serializable {
 	
 	/** Medical cause of death. */
 	private ComplaintType illness;
-	/** Bot's RoboType. */
-	private RobotType robotType;
 	/** Person's role type. */
 	private RoleType roleType;
 
@@ -276,9 +270,6 @@ public class DeathInfo implements Serializable {
 
 		if (mostSerious != null)
 			malfunction = mostSerious.getName();
-
-		this.robotType = robot.getRobotType();
-
 	}
 
 	/**

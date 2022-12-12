@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.MedicalCare;
  * Meta task for the ExamineBody task.
  */
 public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
-/**
+	/**
      * Represents a Job needed for body examination
      */
     private static class ExamineBodyJob extends SettlementTask {

@@ -217,8 +217,6 @@ public class Settlement extends Structure implements Temporal,
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
-	/** Goods manager update time. */
-	private double goodsManagerUpdateTime = 0D;
 	/** The settlement's current indoor temperature. */
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */

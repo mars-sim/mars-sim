@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -45,7 +44,6 @@ public class MissionManager implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
 
-	private static final double PERCENT_PER_SCORE = 10D;
 	/** static mission identifier */
 	private int missionIdentifer;
 
@@ -404,11 +402,10 @@ public class MissionManager implements Serializable, Temporal {
 	 * Approves a mission plan.
 	 *
 	 * @param missionPlan
-	 * @param person
 	 * @param d
 	 * @param status
 	 */
-	public void approveMissionPlan(MissionPlanning missionPlan, Person person,
+	public void approveMissionPlan(MissionPlanning missionPlan, 
 								   PlanType newStatus, double threshold) {
 
 		if (missionPlan.getStatus() == PlanType.PENDING) {
@@ -424,47 +421,6 @@ public class MissionManager implements Serializable, Temporal {
 				removeMission(missionPlan.getMission());
 			}
 		}
-	}
-
-	/**
-	 * Scores a mission plan.
-	 *
-	 * @param missionPlan
-	 * @param person
-	 * @param status
-	 */
-	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore, Person reviewer) {
-		double weight = 1D;
-		RoleType role = reviewer.getRole().getType();
-
-		double percent = missionPlan.getPercentComplete();
-		switch (role) {
-			case COMMANDER:
-					weight = 2.5; break;
-			case SUB_COMMANDER:
-			case CHIEF_OF_MISSION_PLANNING:
-				weight = 2D; break;
-			case CHIEF_OF_AGRICULTURE:
-			case CHIEF_OF_COMPUTING:
-			case CHIEF_OF_ENGINEERING:
-			case CHIEF_OF_LOGISTICS_N_OPERATIONS:
-			case CHIEF_OF_SAFETY_N_HEALTH:
-			case CHIEF_OF_SCIENCE:
-			case CHIEF_OF_SUPPLY_N_RESOURCES:
-			case MISSION_SPECIALIST:
-				weight = 1.5;  break;
-			default:
-				weight = 1; break;
-		}
-
-		double totalPercent = percent + weight * PERCENT_PER_SCORE;
-		if (totalPercent > 100)
-			totalPercent = 100;
-		missionPlan.setReviewPercentComplete(totalPercent);
-		double score = missionPlan.getScore();
-		missionPlan.setScore(score + weight * newScore);
-
-		missionPlan.setReviewedBy(reviewer.getName());
 	}
 
 	public Map<Integer, Map<String, Double>> getHistoricalMissions() {

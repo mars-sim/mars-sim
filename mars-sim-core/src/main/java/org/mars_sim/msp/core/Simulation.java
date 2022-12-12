@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relation;
@@ -157,9 +156,6 @@ public class Simulation implements ClockListener, Serializable {
 	public static final String TITLE = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
-
-	/** The minimum size of heap space in bytes */
-	private static final int MIN_HEAP_SPACE = 64*1024*1024;
 
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
@@ -746,7 +742,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Mission related class
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
-		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
 		unitManager.reinit();
@@ -857,22 +852,15 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("Heap Max Size: " + formatSize(heapMaxSize)
 						+ ", Heap Free Size: " + formatSize(heapFreeSize));
 	
-			//if (heapFreeSize > MIN_HEAP_SPACE){
-			if (true) {
 				// Save local machine timestamp
-				// Serialize the file
-				lastSaveTimeStamp = new Date();
-				sucessful = serialize(type, file, srcPath, destPath);
-	
-				if (sucessful && (type == SaveType.AUTOSAVE)) {
-					// Purge old auto backups
-					SimulationFiles.purgeAutoSave(simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
-				}
+			// Serialize the file
+			lastSaveTimeStamp = new Date();
+			sucessful = serialize(type, file, srcPath, destPath);
+
+			if (sucessful && (type == SaveType.AUTOSAVE)) {
+				// Purge old auto backups
+				SimulationFiles.purgeAutoSave(simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
 			}
-			else {
-				logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
-			}
-			
 		}
 		catch (IOException ioe) {
 			logger.severe("Problem saving simulation " + ioe.getMessage());

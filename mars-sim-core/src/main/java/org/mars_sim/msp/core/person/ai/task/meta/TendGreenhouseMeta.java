@@ -60,9 +60,6 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
-    // Desired number of active farmers per form
-    private static final int MAX_FARMERS = 2;
-
     public TendGreenhouseMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);

@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +43,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * This class is a task for reviewing mission plans
  */
-public class ReviewMissionPlan extends Task implements Serializable {
+public class ReviewMissionPlan extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -96,23 +94,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
+
+	private MissionPlanning mp;
     
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
 	 * @param person the person performing the task.
+	 * @param target Mission planning to review
 	 */
-	public ReviewMissionPlan(Person person) {
+	public ReviewMissionPlan(Person person, MissionPlanning target) {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
 				RandomUtil.getRandomInt(20, 40), RandomUtil.getRandomInt(40, 80));
 				
 		if (person.isInSettlement()) {
 
-			List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
-	        
-			if (missions.size() == 0)
-				endTask();
+			this.mp = target;
+			mp.setActiveReviewer(person);
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = Administration.getAvailableOffice(person);
@@ -176,84 +175,64 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	private double reviewingPhase(double time) {
     	Settlement reviewerSettlement = person.getAssociatedSettlement();
 
-        List<Mission> missions = missionManager.getPendingMissions(reviewerSettlement);
-        
-        if (missions.isEmpty())
-        	endTask();
-            
-		// Iterates through each pending mission 
-		for (Mission m : missions) {
-			MissionPlanning mp = m.getPlan();
-			
-        	if (m.getPlan() == null) {
-        		// Go to next mission
-        		continue;
-        	}
-
-            PlanType status = mp.getStatus();
-
-            if (status != null && status == PlanType.PENDING) {
-	            if (mp.getPercentComplete() >= 100) {
-	            	// Go to the finished phase and finalize the approval
-	            	setPhase(APPROVING);
-	            	
-	                return time / 4.0; // return time is needed
-	            }
-	            
-	            else if (mp.getPercentComplete() >= 60) {
-			    	int sol = marsClock.getMissionSol();
-			    	int solRequest = m.getPlan().getMissionSol();
-			    	if (sol - solRequest > 7) {
-			    		// If no one else is able to offer the review after x days, 
-			    		// do allow the review to go through even if the reviewer is not valid
-			        	setPhase(APPROVING);
-			        	
-			            return time / 4.0;
-			    	}
-			    }
-
-            	// if not 100% reviewed
-				Person p = m.getStartingPerson();
-				String reviewedBy = person.getName();
+		PlanType status = mp.getStatus();
+		if (status != null && status == PlanType.PENDING) {
+			if (mp.getPercentComplete() >= 100) {
+				// Go to the finished phase and finalize the approval
+				setPhase(APPROVING);
 				
-				String requestedBy = p.getName();
-
-				if (!reviewedBy.equals(requestedBy)
-						&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
+				return time / 4.0; // return time is needed
+			}
+			
+			else if (mp.getPercentComplete() >= 60) {
+				int sol = marsClock.getMissionSol();
+				int solRequest = mp.getMissionSol();
+				if (sol - solRequest > 7) {
+					// If no one else is able to offer the review after x days, 
+					// do allow the review to go through even if the reviewer is not valid
+					setPhase(APPROVING);
 					
-				    // Simulate the person has just spent 90% duration for this task
-				    // Now a mission score will be calculated
-				    if (isAlmostTimeCompleted()) {
-				    	
-						// 9. reviewer role weight
-						RoleType role = person.getRole().getType();
-						
-						if (role == RoleType.PRESIDENT
-								|| role == RoleType.MAYOR
-								|| role == RoleType.COMMANDER
-								|| role == RoleType.SUB_COMMANDER)
-					        // Perform the executive review 
-					    	completeExecutiveReview(m, p, reviewerSettlement, mp);
-						else
-							// Perform the general review 
-							completeReview(m, p, reviewerSettlement, mp);
-				    		
-						logger.log(worker, Level.INFO, 0, "Done reviewing " + requestedBy
-										+ "'s " + m.getName() + " mission plan.");
-						// Add experience
-						addExperience(time);
-						
-						endTask();
-						
-						return 0;
-				    }
-				    else {
-				    	logger.log(worker, Level.INFO, 20_000, "Reviewing " + requestedBy
-								+ "'s " + m.getName() + " mission plan.");
-				    }
+					return time / 4.0;
 				}
-			} // if (status != null && status == PlanType.PENDING)
-		} // end of while
+			}
+
+			// if not 100% reviewed
+			Mission m = mp.getMission();
+			String reviewedBy = person.getName();
+			
+			String requestedBy = m.getStartingPerson().getName();
+
+			if (!reviewedBy.equals(requestedBy)
+					&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
+				
+				// Simulate the person has just spent 90% duration for this task
+				// Now a mission score will be calculated
+				if (isAlmostTimeCompleted()) {
+					
+					// 9. reviewer role weight
+					RoleType role = person.getRole().getType();
+					
+					if (role == RoleType.PRESIDENT
+							|| role == RoleType.MAYOR
+							|| role == RoleType.COMMANDER
+							|| role == RoleType.SUB_COMMANDER)
+						// Perform the executive review 
+						completeExecutiveReview(m, reviewerSettlement, mp);
+					else
+						// Perform the general review 
+						completeReview(m, reviewerSettlement, mp);
+						
+					logger.log(worker, Level.INFO, 0, "Done reviewing " + requestedBy
+									+ "'s " + m.getName() + " mission plan.");
+					// Add experience
+					addExperience(time);
+					
+					endTask();
+					
+					return 0;
+				}
+			}
+		} // if (status != null && status == PlanType.PENDING)
 		
         return 0;
 	}
@@ -262,18 +241,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * Completes the executive review.
 	 * 
 	 * @param m
-	 * @param p
 	 * @param reviewerSettlement
 	 * @param mp
 	 */
-	private void completeExecutiveReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
-		String requestedBy = p.getName();
-		
+	private void completeExecutiveReview(Mission m, Settlement reviewerSettlement, MissionPlanning mp) {		
 	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
 	    
+		Person leader = m.getStartingPerson();
     	MissionType mt = m.getMissionType();
     	
-		List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
+		List<JobAssignment> list = leader.getJobHistory().getJobAssignmentList();
 		int last = list.size() - 1;
 		
 		// 1. Reviews requester's cumulative job rating
@@ -288,21 +265,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		rating = (rating + cumulative_rating);
 				
 		// 2. Relationship Score 
-		
-		// 2a. Reviewer's view of the mission lead
-		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
-			
-		double relationshipWithOthers = 0;
-		int num = reviewerSettlement.getAllAssociatedPeople().size();
-		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
-			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
-		}
-		
-		// 2b. Others' view of the mission lead
-		relationshipWithOthers = (int)(relationshipWithOthers / num);
-		
-		int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
-		
+		int relation = assessLeader(leader, reviewerSettlement);
+
 		// 3. Mission Qualification Score
 		double qual = 0;
 		
@@ -424,6 +388,62 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
 
 		// 9. reviewer role weight
+		int reviewerRole = assessReviewer();
+
+		// 10. luck
+		int luck = RandomUtil.getRandomInt(-5, 5);	
+		
+		// Future: 9. Go to him/her to have a chat
+		// Future: 10. mission lead's leadership/charisma
+		
+		double score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
+
+		// Updates the mission plan status
+		mp.scoreMissionPlan(score, person);
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Grading ").append(m.getName());
+		msg.append(" plan -");
+		msg.append(" Rating: ").append(rating); 
+		msg.append(", Rels: ").append(relation); 
+		msg.append(", Quals: ").append(qual); 
+		msg.append(", Obj: ").append(obj);
+		msg.append(", Emer: ").append(emer);
+		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
+		msg.append(", Dist: ").append(dist);
+		msg.append(", Lead: ").append(leadership); 							
+		msg.append(", Review: ").append(reviewerRole); 
+		msg.append(", Luck: ").append(luck); 
+		msg.append(" = Subtotal: ").append(score);
+		
+		logger.log(worker, Level.INFO, 0,  msg.toString());
+	}
+
+	/**
+	 * Assess the relationship of the reviewer with the Mission Leader
+	 * @param leader
+	 * @param reviewerSettlement
+	 */
+	private int assessLeader(Person leader, Settlement reviewerSettlement) {
+		// 2a. Reviewer's view of the mission lead
+		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, leader);
+			
+		double relationshipWithOthers = 0;
+		int num = reviewerSettlement.getAllAssociatedPeople().size();
+		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
+			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
+		}
+		
+		// 2b. Others' view of the mission lead
+		relationshipWithOthers = (int)(relationshipWithOthers / num);
+		
+		return (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
+	}	
+
+	/**
+	 * Assess the reviewer based on their Role
+	 */
+	private int assessReviewer() {
 		RoleType role = person.getRole().getType();
 		int reviewerRole = 0;
 		
@@ -445,66 +465,22 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			reviewerRole = 4;
 		else
 			reviewerRole = 2;
-		
-		
-		// 10. luck
-		int luck = RandomUtil.getRandomInt(-5, 5);	
-		
-		// Future: 9. Go to him/her to have a chat
-		// Future: 10. mission lead's leadership/charisma
-		
-		double score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
-
-		// Updates the mission plan status
-		missionManager.scoreMissionPlan(mp, score, person);
-
-		StringBuilder msg = new StringBuilder();
-		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
-		msg.append(" plan -");
-		msg.append(" Rating: ").append(rating); 
-		msg.append(", Rels: ").append(relation); 
-		msg.append(", Quals: ").append(qual); 
-		msg.append(", Obj: ").append(obj);
-		msg.append(", Emer: ").append(emer);
-		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
-		msg.append(", Dist: ").append(dist);
-		msg.append(", Lead: ").append(leadership); 							
-		msg.append(", Review: ").append(reviewerRole); 
-		msg.append(", Luck: ").append(luck); 
-		msg.append(" = Subtotal: ").append(score);
-		
-		logger.log(worker, Level.INFO, 0,  msg.toString());
+		return reviewerRole;
 	}
-	
 	
 	/**
 	 * Completes the general review.
 	 * 
 	 * @param m
-	 * @param p
 	 * @param reviewerSettlement
 	 * @param mp
 	 */
-	private void completeReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
-		String requestedBy = p.getName();
-  
+	private void completeReview(Mission m, Settlement reviewerSettlement, MissionPlanning mp) {  
     	MissionType mt = m.getMissionType();
     	
 		// 2. Relationship Score 
-		
-		// 2a. Reviewer's view of the mission lead
-		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
-			
-		double relationshipWithOthers = 0;
-		int num = reviewerSettlement.getAllAssociatedPeople().size();
-		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
-			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
-		}
-		
-		// 2b. Others' view of the mission lead
-		relationshipWithOthers = (int)(relationshipWithOthers / num);
-		
-		int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
+		Person leader = m.getStartingPerson();
+		int relation = assessLeader(leader, reviewerSettlement);
 		
 		// 6. Site Value
 		double siteValue = 0;
@@ -527,28 +503,15 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		}
 
 		// 9. reviewer role weight
-		RoleType role = person.getRole().getType();
-		int reviewerRole = 0;
-		
-		if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
-			reviewerRole = 7;
-		else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-			reviewerRole = 6;
-		else if (role.isChief())
-			reviewerRole = 5;
-		else if (role == RoleType.MISSION_SPECIALIST)
-			reviewerRole = 4;
-		else
-			reviewerRole = 2;
-		
+		int reviewerRole = assessReviewer();
 		
 		double score = Math.round((relation + siteValue + reviewerRole)* 10.0)/10.0;
 
 		// Updates the mission plan status
-		missionManager.scoreMissionPlan(mp, score, person);
+		mp.scoreMissionPlan(score, person);
 
 		StringBuilder msg = new StringBuilder();
-		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
+		msg.append("Grading ").append(m.getName());
 		msg.append(" plan -");
 		msg.append(" Rels: ").append(relation); 
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
@@ -575,74 +538,53 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	private double approvingPhase(double time) {
         
-		List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
-	     
-		if (missions.size() == 0) {
-			endTask();
-		}
-		
-		else { 
-	 		// Iterates through each pending mission 
-			Iterator<Mission> i = missions.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();		
-				MissionPlanning mp = m.getPlan();
+		PlanType status = mp.getStatus();
+
+		if (status != null && status == PlanType.PENDING
+				&& mp.getPercentComplete() >= 60) {
+									
+			logger.log(worker, Level.INFO, 0, "Going over the approval of mission plans.");
 				
-				if (mp != null) {
-		            PlanType status = mp.getStatus();
+
+			Mission m = mp.getMission();
+			String requestedBy = m.getStartingPerson().getName();
 		
-		            if (status != null && status == PlanType.PENDING
-		            		&& mp.getPercentComplete() >= 60) {
-		            							
-		        		logger.log(worker, Level.INFO, 0, "Going over the approval of mission plans.");
-		        	      
-						Person p = m.getStartingPerson();
-						String requestedBy = p.getName();
+			Settlement settlement = person.getAssociatedSettlement();
+			
+			double score = mp.getScore();
+			
+			if (settlement.passMissionScore(score)) {
+				// Approved
+				// Updates the mission plan status
+				missionManager.approveMissionPlan(mp, PlanType.APPROVED, settlement.getMinimumPassingScore());
 					
-						Settlement settlement = person.getAssociatedSettlement();
-						
-						double score = mp.getScore();
-						
-						if (settlement.passMissionScore(score)) {
-							// Approved
-							// Updates the mission plan status
-							missionManager.approveMissionPlan(mp, p, PlanType.APPROVED, settlement.getMinimumPassingScore());
+				logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
+						+ "'s " + m.getName() + " mission plan. Total Score: " 
+						+ Math.round(score*10.0)/10.0 
+						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
+			}
+			else {
+				// Not Approved
+				// Updates the mission plan status
+				missionManager.approveMissionPlan(mp, PlanType.NOT_APPROVED, settlement.getMinimumPassingScore());
+			
+				logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
+						+ "'s " + m.getName() + " mission plan. Total Score: " 
+						+ Math.round(score*10.0)/10.0 
+						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
+			}
 								
-							logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
-									+ "'s " + m.getName() + " mission plan. Total Score: " 
-									+ Math.round(score*10.0)/10.0 
-									+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
-						} else {
-							// Not Approved
-							// Updates the mission plan status
-							missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED, settlement.getMinimumPassingScore());
-						
-							logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
-									+ "'s " + m.getName() + " mission plan. Total Score: " 
-									+ Math.round(score*10.0)/10.0 
-									+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
-						}
-											
-						settlement.saveMissionScore(score);
-						
-					      // Add experience
-				        addExperience(time);
-			        
-						// Use up this time period 
-				        // Do NOT call endTask()
-				        // endTask();
-				        
-				        // Note: Do only one review each time
-				        return 0;
-					}
-				}
-			} // end of while
-	    }
-	    
-        return 0;
+			settlement.saveMissionScore(score);
+			
+			// Add experience
+			addExperience(time);
+		}
+
+		// Approval phase is a one shot activity so end task
+		endTask();
+		return 0;
 	}
 
-	
 	@Override
 	protected void addExperience(double time) {
         double newPoints = time / 20D;
@@ -667,5 +609,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		if (office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
+		mp.setActiveReviewer(null);
 	}
 }

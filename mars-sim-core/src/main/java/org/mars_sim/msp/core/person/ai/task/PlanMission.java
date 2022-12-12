@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * This class is a task for reviewing mission plans
  */
-public class PlanMission extends Task implements Serializable {
+public class PlanMission extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

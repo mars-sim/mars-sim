@@ -10,16 +10,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 
 public class MissionPlanning implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
+	private static final double PERCENT_PER_SCORE = 10D;
+
 	private int requestedSol;
-	private double proposalPercentComplete; // 0% to 100%
 	private double reviewPercentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
@@ -29,26 +30,55 @@ public class MissionPlanning implements Serializable {
 	private Mission mission;
 	
 	private List<String> reviewers;
+	private String activeReviewer = null;
 	
-	private static MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-
-	public MissionPlanning(Mission mission) {
-		this.requestedSol = clock.getMissionSol();
+	public MissionPlanning(Mission mission, int requestedOn) {
+		this.requestedSol = requestedOn;
 		this.mission = mission;
 		reviewers = new ArrayList<>();
 	}
 	
 	/**
-	 * Adds the name of the reviewer to the map.
-	 * 
-	 * @param name
+	 * Scores this mission plan for a reviewer
+	 *
+	 * @param newScore The new score 
+	 * @param reviewer 
 	 */
-	public void setReviewedBy(String name) {
-		if (!reviewers.contains(name)) {
-			reviewers.add(name);
+	public void scoreMissionPlan(double newScore, Person reviewer) {
+		double weight = 1D;
+		RoleType role = reviewer.getRole().getType();
+
+		switch (role) {
+			case COMMANDER:
+					weight = 2.5; break;
+			case SUB_COMMANDER:
+			case CHIEF_OF_MISSION_PLANNING:
+				weight = 2D; break;
+			case CHIEF_OF_AGRICULTURE:
+			case CHIEF_OF_COMPUTING:
+			case CHIEF_OF_ENGINEERING:
+			case CHIEF_OF_LOGISTICS_N_OPERATIONS:
+			case CHIEF_OF_SAFETY_N_HEALTH:
+			case CHIEF_OF_SCIENCE:
+			case CHIEF_OF_SUPPLY_N_RESOURCES:
+			case MISSION_SPECIALIST:
+				weight = 1.5;  break;
+			default:
+				weight = 1; break;
+		}
+
+		// Update stats
+		reviewPercentComplete += weight * PERCENT_PER_SCORE;
+		if (reviewPercentComplete > 100)
+			reviewPercentComplete = 100;
+		score += weight * newScore;
+
+		String reviewerName = reviewer.getName();
+		if (!reviewers.contains(reviewerName)) {
+			reviewers.add(reviewerName);
 		}
 	}
-	
+
 	/**
 	 * Checks if the person can review this mission plan
 	 * Note: the maximum number of reviews are limited with the size
@@ -109,18 +139,6 @@ public class MissionPlanning implements Serializable {
 		this.status = status;
 	}
 
-	public void setScore(double value) {
-		score = value;
-	}
-	
-	public void setReviewPercentComplete(double value) {
-		reviewPercentComplete = value;
-	}
-	
-	public void setProposalPercentComplete(double value) {
-		proposalPercentComplete = value;
-	}
-
 	public void setPassingScore(double threshold) {
 		passingScore = threshold;
 	}
@@ -141,10 +159,6 @@ public class MissionPlanning implements Serializable {
 		return reviewPercentComplete;
 	}
 	
-	public double getProposalPercentComplete() {
-		return proposalPercentComplete;
-	}
-	
 	public double getScore() {;
 		return score;
 	}
@@ -152,9 +166,17 @@ public class MissionPlanning implements Serializable {
 	public double getPassingScore() {
 		return passingScore;
 	}
-	
-	public static void initializeInstances(MarsClock c) {
-		clock = c;
+
+	public String getActiveReviewer() {
+		return activeReviewer;
 	}
 
+	public void setActiveReviewer(Person reviewer) {
+		if (reviewer != null) {
+			activeReviewer = reviewer.getName();
+		}
+		else {
+			activeReviewer = null;
+		}
+	}
 }

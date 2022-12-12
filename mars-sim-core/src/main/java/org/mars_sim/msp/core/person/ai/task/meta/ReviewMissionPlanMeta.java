@@ -6,156 +6,149 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
-import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.Administration;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Meta task for the ReviewMissionPlan task.
  */
-public class ReviewMissionPlanMeta extends FactoryMetaTask {
-		
+public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTask {
+	/**
+     * Represents a Job to review a specific Mission plan
+     */
+    private static class ReviewMissionPlanJob extends SettlementTask {
+
+		private static final long serialVersionUID = 1L;
+
+        private MissionPlanning plan;
+
+        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, double score) {
+			super(owner, "Review Mission " + plan.getMission().getName(), score);
+            this.plan = plan;
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new ReviewMissionPlan(person, plan);
+        }
+    }
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
     
     private static final int PENALTY_FACTOR = 2;
     
-    private static final double VALUE = 500.0;
+    private static final double BASE_SCORE = 400.0;
+	private static final double SOL_SCORE = 50.0;
+
+	private static MissionManager missionManager;
     
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
 	}
 
+	/**
+     * Get the score for a Settlement task for a person to review a mission.
+	 * @param t Task being scored
+	 * @parma p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
     @Override
-    public Task constructInstance(Person person) {
-        return new ReviewMissionPlan(person);
+	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+        double factor = 0D;
+        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
+			Mission m = mp.getMission();			
+			int pop = p.getAssociatedSettlement().getNumCitizens();				
+
+			// Is this Person allowed to review this Mission
+			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p.getName(), pop)) {
+				// This reviewer is valid
+				factor = 1D;
+
+				RoleType roleType = p.getRole().getType();   	
+				if (RoleType.MISSION_SPECIALIST == roleType)
+					factor *= 1.5;
+				else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
+					factor *= 3;
+				else if (RoleType.SUB_COMMANDER == roleType)
+					factor *= 4.5;
+				else if (RoleType.COMMANDER == roleType)
+					factor *= 6;
+				
+				factor *= getPersonModifier(p);
+			}
+		}
+		return factor;
+	}
+
+	/**
+	 * Scan the Settlement for any Mission that need reviewing
+	 * @param settlement Settlemnt to scan.
+	 */
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask>  tasks = new ArrayList<>();
+
+        for(Mission m : missionManager.getPendingMissions(settlement)) {
+        	MissionPlanning mp = m.getPlan();
+			if ((mp.getStatus() == PlanType.PENDING) && (mp.getActiveReviewer() == null)) {
+				double score = BASE_SCORE;               	
+
+				// Add adjustment based on how many sol the request has since been submitted
+				// if the job assignment submitted date is > 1 sol
+				int sol = marsClock.getMissionSol();
+				int solRequest = mp.getMissionSol();
+				int diff = sol - solRequest;
+
+				// Check if this reviewer has already exceeded the max # of reviews allowed
+				if (diff == 0) {
+					score /= PENALTY_FACTOR;
+				}
+				else {
+					// If no one else is able to offer the review after x days, 
+					// do allow the review to go through even if the reviewer is not valid
+					diff = Math.min(diff, 7); // CLip at 7 days
+					score += diff * SOL_SCORE;
+				}
+
+				tasks.add(new ReviewMissionPlanJob(this, mp, score));
+			}
+		}
+	
+        return tasks;
     }
 
-    @Override
-    public double getProbability(Person person) {
+	/**
+	 * Robots can not do review missions
+	 * @param t Task to bew reviewed
+	 * @param r Robot asking
+	 */
+	@Override
+	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+		return 0;
+	}
 
-        double result = 0D;
-        
-        if (person.isInSettlement()) {
+	public static void initialiseInstances(MissionManager mm) {
+		missionManager = mm;
+	}
 
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-
-        	Settlement target = person.getAssociatedSettlement();
-			int pop = target.getNumCitizens();
-
-            List<Mission> missions = Simulation.instance().getMissionManager().getPendingMissions(target);
-            if (missions.isEmpty())
-            	return 0;
-                
-            for (Mission m : missions) {
-            	
-            	if (m.getPlan() == null) {
-            		// Go to next mission
-            		continue;
-            	}
-
-        		MissionPlanning mp = m.getPlan();
-        		
-                if (mp.getStatus() == PlanType.PENDING) {
-					String reviewedBy = person.getName();
-					
-					Person p = m.getStartingPerson();
-					String requestedBy = p.getName();
-			
-					if (reviewedBy.equals(requestedBy)) {
-						// Skip this plan if the request and review is the same person
-						// Also, reviewer must be valid
-						continue;
-					}
-
-                	result += missions.size() * VALUE / Math.max(4, Math.min(24, pop));                       	
-
-                	// Add adjustment based on how many sol the request has since been submitted
-                    // if the job assignment submitted date is > 1 sol
-                    int sol = marsClock.getMissionSol();
-                    int solRequest = m.getPlan().getMissionSol();
-
-                    int diff = sol - solRequest;
-                    
-                    boolean valid = mp.isReviewerValid(reviewedBy, pop);
-                	// Check if this reviewer has already exceeded the max # of reviews allowed
-					if (valid) {
-						if (diff == 0) {
-							result /= PENALTY_FACTOR;
-						}
-						else if (diff > 7) {
-							// If no one else is able to offer the review after x days, 
-							// do allow the review to go through even if the reviewer is not valid
-							result += 800;
-						}
-						else {
-							result += (sol - solRequest) * 100.0;
-						}
-					}
-                }
-            }
-            
-            if (result > 0D) {
-            	RoleType roleType = person.getRole().getType();
-            	
-            	if (RoleType.MISSION_SPECIALIST == roleType)
-            		result *= 1.5;
-            	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
-            		result *= 3;
-            	else if (RoleType.SUB_COMMANDER == roleType)
-            		result *= 4.5;
-            	else if (RoleType.COMMANDER == roleType)
-            		result *= 6;
-            	
-                // Get an available office space.
-                Building building = Administration.getAvailableOffice(person);
-                if (building != null) {
-					result *= getBuildingModifier(building, person);
-                }
-                
-                else if (person.isInVehicle()) {	
-        	        // Check if person is in a moving rover.
-        	        if (Vehicle.inMovingRover(person)) {
-        		        // the bonus for proposing scientific study inside a vehicle, 
-        	        	// rather than having nothing to do if a person is not driving
-        	        	result += 40;
-        	        } 	       
-        	        else
-        		        // the bonus for proposing scientific study inside a vehicle, 
-        	        	// rather than having nothing to do if a person is not driving
-        	        	result += 10;
-                }
-
-                result *= getPersonModifier(person);
-            }
-            
-            if (result < 0) {
-                result = 0;
-            }
-        }
-
-//        if (result > 0) 
-//        	logger.info(person + " (" + person.getRole().getType() + ") had a probability score of " 
-//        			+ result + " at ReviewMissionPlanMeta");
-
-        return result;
-    }
 }
