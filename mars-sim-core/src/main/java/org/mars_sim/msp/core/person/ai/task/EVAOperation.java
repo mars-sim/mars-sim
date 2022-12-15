@@ -559,24 +559,34 @@ public abstract class EVAOperation extends Task {
 		
 		
 		if (!person.isBarelyFit()) {
-			checkLocation();
+			abortEVA("No fit");
 			return time;
 		}
 		return 0;
 	}
 	
 	/**
-	 * Checks to see if the person is supposed to be outside.
+	 * Checks to see if the person is supposed to be outside. This is used to abort an EVA.
+	 * Any call to this method that relates to a problem should be replaced with {@link #abortEVA(String)}
 	 */
 	protected void checkLocation() {
+		abortEVA(null);
+	}
+
+	/**
+	 * Abort an EVA, if the Person is outside get them to return otherwise end the Task.
+	 * @param reason Reason for ending.
+	 */
+	protected void abortEVA(String reason) {
+		if (reason != null) {
+ 			logger.warning(worker, "EVA " + getName() + " aborted:" + reason);
+		}
+		
 		if (person.isOutside())
             setPhase(WALK_BACK_INSIDE);
     	else
         	endTask();
 	}
-	
-
-
 	
 	/**
 	 * Checks if there is an EVA problem for a person.

@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
@@ -99,33 +98,25 @@ public abstract class DigLocal extends EVAOperation {
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
-        	logger.warning(person, "Not in a settlement to start a DigLocal Task.");
-    		checkLocation();
+        	abortEVA("Not in a settlement to start a DigLocal Task.");
 			return;
         }
 
-     	settlement = CollectionUtils.findSettlement(person.getCoordinates());
-     	if (settlement == null) {
-    		checkLocation();
-			return;
-     	}
+		settlement = person.getSettlement();
      		
         // Get an available airlock in a settlement
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
-	        	logger.log(person, Level.WARNING, 4_000, "No walkable airlock for egress.");
-	    		checkLocation();
+	    		abortEVA("No walkable airlock for egress.");
 				return;
 	        }
      	}
 
         // Take container for collecting resource.
         // If container are not available, end task.
-        if (transferContainer() == null) {
-        	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
-        				+ " for " + resourceName + " are available.");
-        	checkLocation();
+        if (collectContainer() == null) {
+        	abortEVA("No " + containerType.name() + " for " + resourceName + " are available.");
         	return;
         }
 
@@ -134,20 +125,17 @@ public abstract class DigLocal extends EVAOperation {
         	diggingLoc = determineDiggingLocation();
 	        if (diggingLoc != null) {
 	        	setOutsideSiteLocation(diggingLoc);
-//	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
 	        }
 	        else {
-	        	checkLocation();
+	        	abortEVA("No digging location");
 	        	return;
 	        }
         }
 
         if (binLoc == null) {
         	binLoc = determineBinLocation();
-	        if (diggingLoc != null) {
-//	           	logger.info(person, 4_000L, "Selected the drop-off bin at " + diggingLoc + ".");
-	        }
-	        else {
+	        if (binLoc == null) {
+				abortEVA("No storage bin");
 	        	return;
 	        }
         }
@@ -222,7 +210,7 @@ public abstract class DigLocal extends EVAOperation {
 		}
 			
      	if (person.isInSettlement()) {
-			checkLocation();
+			abortEVA("Person in settlement");
      		return time;
      	}
 
@@ -384,7 +372,7 @@ public abstract class DigLocal extends EVAOperation {
      * 
      * @return a container
      */
-    private Container transferContainer() {
+    private Container collectContainer() {
     	// Note: should take a container before leaving the airlock
     	// Note: also consider dropping off the resource in a shed
     	// or a shed outside of the workshop/landerhab for processing
@@ -396,13 +384,11 @@ public abstract class DigLocal extends EVAOperation {
             	boolean successful = container.transfer(person);
             	if (!successful) {
             		container = null;
-                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty container for " + resourceName + ".");
-        			checkLocation();
+                	abortEVA("Strangely unable to transfer an empty container for " + resourceName);
                 }
 	        }
 	        else {
-	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty container in the inventory for " + resourceName + ".");
-				checkLocation();
+	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName);
 	        }
         }
         return container;
@@ -421,11 +407,12 @@ public abstract class DigLocal extends EVAOperation {
     private LocalPosition determineBinLocation() {
     	LocalPosition p = null;
         if (binList == null) {
+			String target = resourceName.toLowerCase();
         	binList = worker.getSettlement().getBuildingManager()
         		.getBuildings(FunctionType.STORAGE).stream()
         		.filter(b -> b.getCategory() != BuildingCategory.HALLWAY
 				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-				&& b.getName().toLowerCase().contains(resourceName))
+				&& b.getName().toLowerCase().contains(target))
 				.collect(Collectors.toList());
         }
 	
@@ -507,45 +494,25 @@ public abstract class DigLocal extends EVAOperation {
      */
     @Override
     protected void clearDown() {
-		if (person.isOutside())
+		if (person.isOutside()) {
+			// THis has no effect as Task is closing down
             setPhase(WALK_BACK_INSIDE);
-    	else {
-	    	Container container = person.findContainer(containerType, false, resourceID);
-	    	if (container == null)
-	    		return;
-	    	
-            double amount = container.getAmountResourceStored(resourceID);
+		}
 
-            if (amount > 0) {
+		// This is the end of the Task so must return 
+		Container container = person.findContainer(containerType, false, resourceID);
+		if (container == null)
+			return;
 
-            	settlement = person.getSettlement();
-            	
-//	            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
-//
-//	            if (amount > settlementCap) {
-//	            	amount = settlementCap;
-//
-//	            	logger.warning(person,
-//	            			resourceName + " storage full. Could only check in "
-//	            			+ Math.round(amount*10.0)/10.0 + " kg.");
-//	            }
+		// Transfer the container back to the settlement
+		container.transfer(settlement);
 
-//	            else {
-//	            	logger.fine(person,
-//	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
-//	            }
-	                	
-		    	// Transfer the container back to the settlement
-		    	container.transfer(settlement);
-//				// Add to the daily output
-				settlement.addOutput(resourceID, amount, getTimeCompleted());
-//				// Store the amount in the settlement
-				settlement.storeAmountResource(resourceID, amount);
-//				
-//            	logger.info(person,
-//            			"Checking in " + Math.round(collectionTotal*10.0)/10.0 
-//            			+ " kg " + resourceName + ".");
-            }
-    	}
+		double amount = container.getAmountResourceStored(resourceID);
+		if (amount > 0) {
+			// Add to the daily output
+			settlement.addOutput(resourceID, amount, getTimeCompleted());
+			// Store the amount in the settlement
+			settlement.storeAmountResource(resourceID, amount);
+		}
     }
 }

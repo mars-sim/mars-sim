@@ -458,10 +458,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //		boolean transferred = false;
 		Unit cu = getContainerUnit();
 
-		if (cu.getUnitType() == UnitType.SETTLEMENT) {
-			canRetrieve = ((Settlement)cu).removeEquipment(this);
-		}
-		else if (cu.getUnitType() == UnitType.PLANET) {
+		if (cu.getUnitType() == UnitType.PLANET) {
 			// do nothing. mars surface currently doesn't track equipment
 			canRetrieve = true;
 		}
@@ -476,10 +473,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 		else {	
 
-			if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				canStore = ((Settlement)destination).addEquipment(this);
-			}
-			else if (destination.getUnitType() == UnitType.PLANET) {
+			if (destination.getUnitType() == UnitType.PLANET) {
 				// do nothing. mars surface currently doesn't track equipment
 				canStore = true;
 			}
