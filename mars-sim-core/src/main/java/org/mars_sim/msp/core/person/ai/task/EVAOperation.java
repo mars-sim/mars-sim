@@ -62,10 +62,7 @@ public abstract class EVAOperation extends Task {
 			Msg.getString("Task.phase.walkToOutsideSite")); //$NON-NLS-1$
 	protected static final TaskPhase WALK_BACK_INSIDE = new TaskPhase(
 			Msg.getString("Task.phase.walkBackInside")); //$NON-NLS-1$
-	protected static final TaskPhase DROP_OFF_RESOURCE = new TaskPhase(
-			Msg.getString("Task.phase.dropOffResource")); //$NON-NLS-1$
-	protected static final TaskPhase WALK_TO_BIN = new TaskPhase(
-			Msg.getString("Task.phase.walkToBin")); //$NON-NLS-1$
+
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -84,7 +81,6 @@ public abstract class EVAOperation extends Task {
 	private double siteDuration;
 	private double timeOnSite;
 	private LocalPosition outsideSitePos;
-	private LocalPosition dropOffLoc;
 
 	private LocalBoundedObject interiorObject;
 	private LocalPosition returnInsideLoc;
@@ -222,30 +218,6 @@ public abstract class EVAOperation extends Task {
 		outsideSitePos = pos;
 	}
 
-	/**
-	 * Sets the drop-off location next to a storage bin.
-	 * 
-	 * @param basePoint storage bin.
-	 */
-	protected void setBinDropOffLocation(LocalBoundedObject basePoint) {
-
-		LocalPosition newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(basePoint, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	basePoint);
-			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
-		}
-
-		if (goodLocation) {
-			dropOffLoc = newLocation;
-		}
-		else {
-			endTask();
-			logger.warning(worker, "Can not find a suitable drop-off location near " + basePoint);
-		}
-	}
-	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
@@ -262,10 +234,6 @@ public abstract class EVAOperation extends Task {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
 			return walkBackInsidePhase(time);
-		} else if (WALK_TO_BIN.equals(getPhase())) {
-			return walkToBin(time);
-		} else if (DROP_OFF_RESOURCE.equals(getPhase())) {
-			return dropOffResource(time);
 		}
 
 		return time;
@@ -303,42 +271,6 @@ public abstract class EVAOperation extends Task {
         }
 
         return time * .9;
-    }
-
-	/**
-	 * Walks to a storage bin by adding a walking sub task. 
-	 * 
-	 * @param time
-	 * @return
-	 */
-    protected double walkToBin(double time) {
-    	// Go to the drop off location
-        if (person.isOutside()) {
-			if (dropOffLoc == null) {
-				logger.severe(person, "No location for storage bin.");
-				endTask();
-			}
-        	else if (!person.getPosition().equals(dropOffLoc)) {
-        		addSubTask(new WalkOutside(person, person.getPosition(),
-        			dropOffLoc, true));
-        	}
-        	else {
-        		setPhase(DROP_OFF_RESOURCE);
-        	}
-        }
-        else {
-        	logger.severe(person, "Not outside. Can't walk to the storage bin.");
-            endTask();
-        }
-
-        return time * .9;
-    }
-
-    
-    public double dropOffResource(double time) {
-    	// Note: Do not delete. will use this to drop off resources at a shed
-    	// Go to the drop off location
-    	return time;
     }
 
 	/**
@@ -795,22 +727,17 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
 
-		LocalPosition newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(basePoint, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	basePoint);
-			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
-		}
-
-		if (goodLocation) {
+		LocalPosition newLocation = LocalAreaUtil.getCollisionFreeRandomPosition(basePoint, worker.getCoordinates(), 1D);
+		boolean found = false;
+		if (newLocation != null) {
 			setOutsideSiteLocation(newLocation);
+			found = true;
 		}
 		else {
 			endTask();
 			logger.warning(worker, "Can not find a suitable EVA location near " + basePoint);
 		}
-		return goodLocation;
+		return found;
 	}
 
 	/**

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -49,6 +51,11 @@ public abstract class DigLocal extends EVAOperation {
 	/** The loading speed of the resource at the storage bin [kg/millisols]. */
 	public static final double LOADING_RATE = 10.0;
 
+	private static final TaskPhase DROP_OFF_RESOURCE = new TaskPhase(
+												Msg.getString("Task.phase.dropOffResource")); //$NON-NLS-1$
+	private static final TaskPhase WALK_TO_BIN = new TaskPhase(
+												Msg.getString("Task.phase.walkToBin")); //$NON-NLS-1$
+
 	// Resource being collected
 	private int resourceID;
 
@@ -57,8 +64,6 @@ public abstract class DigLocal extends EVAOperation {
 	private double factor;
 	/** The amount of resource that can be collected by this person per trip [in kg]. */
 	private double collectionLimit;
-	/** The amount of resource that collected in one task session [in kg]. */
-	private double collectionTotal;
 	
 	private String resourceName;
 	
@@ -71,11 +76,7 @@ public abstract class DigLocal extends EVAOperation {
 
 	private LocalPosition diggingLoc;
 	
-	private LocalPosition binLoc;
-	
 	private LocalPosition dropOffLoc;
-	
-	private List<Building> binList;
 	
 	private EquipmentType containerType;
 
@@ -132,9 +133,9 @@ public abstract class DigLocal extends EVAOperation {
 	        }
         }
 
-        if (binLoc == null) {
-        	binLoc = determineBinLocation();
-	        if (binLoc == null) {
+        if (dropOffLoc == null) {
+        	dropOffLoc = determineBinLocation();
+	        if (dropOffLoc == null) {
 				abortEVA("No storage bin");
 	        	return;
 	        }
@@ -147,6 +148,7 @@ public abstract class DigLocal extends EVAOperation {
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
 	
+
 	/**
 	 * Gets the settlement where digging is taking place.
 	 * 
@@ -190,10 +192,41 @@ public abstract class DigLocal extends EVAOperation {
 	        else if (DROP_OFF_RESOURCE.equals(getPhase())) {
 	            time = dropOffResource(time);
 	        }
+			else if (WALK_TO_BIN.equals(getPhase())) {
+				time = walkToBin(time);
+			}
 		}
         return time;
     }
 
+	/**
+	 * Walks to a storage bin by adding a walking sub task. 
+	 * 
+	 * @param time
+	 * @return
+	 */
+    private double walkToBin(double time) {
+    	// Go to the drop off location
+        if (person.isOutside()) {
+			if (dropOffLoc == null) {
+				logger.severe(person, "No location for storage bin.");
+				endTask();
+			}
+        	else if (!person.getPosition().equals(dropOffLoc)) {
+        		addSubTask(new WalkOutside(person, person.getPosition(),
+        			dropOffLoc, true));
+        	}
+        	else {
+        		setPhase(DROP_OFF_RESOURCE);
+        	}
+        }
+        else {
+        	logger.severe(person, "Not outside. Can't walk to the storage bin.");
+            endTask();
+        }
+
+        return time * .9;
+    }
 
 	/**
      * Performs collect resource phase.
@@ -217,9 +250,7 @@ public abstract class DigLocal extends EVAOperation {
      	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
-        	logger.log(person, Level.WARNING, 4_000, "Has no " + containerType.getName()
-        			+ " for " + resourceName);
-        	checkLocation();
+        	abortEVA("Has no " + containerType.getName() + " for " + resourceName);
         	return time;
         }
      
@@ -242,7 +273,6 @@ public abstract class DigLocal extends EVAOperation {
     			finishedCollecting = true;
             }
 	     	collectionLimit += collected - excess;
-	     	collectionTotal += collectionLimit;
 	     	
 	     	person.getPhysicalCondition().stressMuscle(time);
         }
@@ -251,7 +281,6 @@ public abstract class DigLocal extends EVAOperation {
         	double loadCap = person.getCarryingCapacity();
             if (collectionLimit >= loadCap) {
             	collectionLimit = loadCap;
-            	collectionTotal += collectionLimit;
     			finishedCollecting = true;
     		}
         }
@@ -301,13 +330,12 @@ public abstract class DigLocal extends EVAOperation {
         return 0;
     }
 
-    @Override
-	public double dropOffResource(double time) {
+	private double dropOffResource(double time) {
     	double remainingTime = time;
     	
     	Container container = person.findContainer(containerType, false, resourceID);
     	if (container == null)
-    		return time;
+    		return 0D;
 	   	
     	double amount = container.getAmountResourceStored(resourceID);	
     	
@@ -319,35 +347,13 @@ public abstract class DigLocal extends EVAOperation {
            		portion = amount;
            	} 	
            	
-           	// Check if the bin runs out of storage space for that resource
-//          Building bin = getBinWithMostSpace(portion);
-        	
-//            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
-
-//            if (portion > settlementCap) {
-//            	portion = settlementCap;
-//
-//            	logger.info(person, 20_000L,
-//    	            	resourceName + " storage full in " + settlement + ". Could only check in "
-//    	            	+ Math.round(portion*10.0)/10.0 + " kg.");
-//            }
-//
-//            else {
-//            	logger.info(person, 4_000,
-//            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at storage bin.");
-//            }
-            
             if (portion > 0) {
 	        	double loadingTime = portion / LOADING_RATE;
 	        	
 	        	remainingTime = remainingTime - loadingTime;
 	        	
-	        	// Retrieve this amount from the container
-	        	container.retrieveAmountResource(resourceID, portion);
-				// Add to the daily output
-				settlement.addOutput(resourceID, portion, time);
-				// Store the amount in the settlement
-				settlement.storeAmountResource(resourceID, portion);
+				// Transfer the resource out of the Container
+				unloadContainer(container, portion, time);
 	            
 	        	if (isDone() || getTimeLeft() - time < 0) {
 	    			// Need to extend the duration so as to drop off the resources
@@ -367,7 +373,19 @@ public abstract class DigLocal extends EVAOperation {
     	return remainingTime;
     }
     
-    /**
+	/**
+	 * Unload resources from the Container
+	 */
+    private void unloadContainer(Container container, double amount, double effort) {
+		// Retrieve this amount from the container
+		container.retrieveAmountResource(resourceID, amount);
+		// Add to the daily output
+		settlement.addOutput(resourceID, amount, effort);
+		// Store the amount in the settlement
+		settlement.storeAmountResource(resourceID, amount);
+	}
+
+	/**
      * Transfers an empty container from a settlement to a person.
      * 
      * @return a container
@@ -405,60 +423,30 @@ public abstract class DigLocal extends EVAOperation {
      * @return a X and Y location of a storage bin
      */
     private LocalPosition determineBinLocation() {
-    	LocalPosition p = null;
-        if (binList == null) {
-			String target = resourceName.toLowerCase();
-        	binList = worker.getSettlement().getBuildingManager()
-        		.getBuildings(FunctionType.STORAGE).stream()
-        		.filter(b -> b.getCategory() != BuildingCategory.HALLWAY
-				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-				&& b.getName().toLowerCase().contains(target))
-				.collect(Collectors.toList());
-        }
+		// Find any Storage function that can hold the resource being collected but
+		// group by Buildings that are catogised as Storage
+		Map<Boolean, List<Building>> binMap = worker.getSettlement().getBuildingManager()
+			.getBuildings(FunctionType.STORAGE).stream()
+			.filter(b -> b.getStorage().getResourceStorageCapacity().containsKey(resourceID))
+			.collect(Collectors.groupingBy(x -> (x.getCategory() == BuildingCategory.STORAGE)));
 	
-        int size = binList.size();
-        
-        if (size == 0)
-        	return p;
-        
-        if (size == 1) {
-        	Building b = binList.get(0); 
-            // Set the bin drop off location (next to the bin)
-        	setBinDropOffLocation(b);
-        	return b.getPosition();
-        }
-        
-        int rand = RandomUtil.getRandomInt(size - 1);
+		// Preference is Storage buildings
+		List<Building> binList = binMap.get(true);
+		if (binList.isEmpty()) {
+			binList = binMap.get(false);
+			if (binList.isEmpty()) {
+				return null;
+			}
+		}
+        int rand = RandomUtil.getRandomInt(binList.size() - 1);
         Building b = binList.get(rand); 
-        // Set the bin drop off location (next to the bin)
-    	setBinDropOffLocation(b);
-    	
-    	return b.getPosition();
-    }
-    
-    /** 
-     * Gets a storage bin that has needed storage space.
-     * Return amount of storage space available.
-     * 
-     * @param amount
-     * @return amount available
-     */
-    private Building getBinWithMostSpace(double amount) {
-    	Building bestBin = null;
-    	double bestSpace = 0;
-    	
-        for (Building b: binList) {
-        	Map<Integer, Double> map = b.getStorage().getResourceStorageCapacity() ;
-        	if (map.containsKey(resourceID)) {
-        		double value = map.get(resourceID);
-        		if (value > bestSpace) {
-        			bestSpace = value;
-        			bestBin = b;
-        		}
-        	}
-        }
-        	
-        return bestBin;
+
+        // Set the bin drop off location (next to the bin)    	
+		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1D);
+		if (p == null) {
+			abortEVA("Can not find a suitable drop-off location near " + b);
+		}
+		return p;
     }
     
     /**
@@ -467,24 +455,11 @@ public abstract class DigLocal extends EVAOperation {
      * @return digging X and Y location outside settlement.
      */
     private LocalPosition determineDiggingLocation() {
-        boolean goodLocation = false;
-        for (int x = 0; (x < 5) && !goodLocation; x++) {
-            for (int y = 0; (y < 10) && !goodLocation; y++) {
-                if (airlock.getEntity() instanceof LocalBoundedObject) {
-                    LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
-
-                    double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
-                    double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-                    LocalPosition boundedLocalPoint = boundedObject.getPosition().getPosition(distance, radianDirection);
-
-                    LocalPosition newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, boundedObject);
-                    goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, person.getCoordinates());
-                    
-                    if (goodLocation)
-                    	return newLocation;
-                }
-            }
-        }
+		if (airlock.getEntity() instanceof LocalBoundedObject) {
+			LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
+			return  LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
+																 person.getCoordinates(), 100D);
+		}
 
         return null;
     }
@@ -509,10 +484,7 @@ public abstract class DigLocal extends EVAOperation {
 
 		double amount = container.getAmountResourceStored(resourceID);
 		if (amount > 0) {
-			// Add to the daily output
-			settlement.addOutput(resourceID, amount, getTimeCompleted());
-			// Store the amount in the settlement
-			settlement.storeAmountResource(resourceID, amount);
+			unloadContainer(container, amount, getTimeCompleted());
 		}
     }
 }

@@ -179,7 +179,7 @@ public class LocalAreaUtil {
 	 * @param distance      the distance away from the object.
 	 * @return random X/Y location relative to the center of the bounded object.
 	 */
-	public static LocalPosition getRandomExteriorPosition(LocalBoundedObject boundedObject, double distance) {
+	private static LocalPosition getRandomExteriorPosition(LocalBoundedObject boundedObject, double distance) {
 
 		int side = RandomUtil.getRandomInt(3);
 
@@ -242,7 +242,26 @@ public class LocalAreaUtil {
 
 		return result;
 	}
-	
+
+	/**
+	 * Get a random position near a base that is collision free.
+	 * @param b Base point for new local position.
+	 * @param maxDistance Maximum distance from the base
+	 * @param c The corrodinaet to avoid collision
+	 * @return Postiino or null if none found
+	 */
+	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
+		boolean goodLocation = false;
+		LocalPosition newLocation = null;
+		for (int x = 0; (x < 50) && !goodLocation; x++) {
+			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
+			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	b);
+			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, c);
+		}
+
+		return newLocation;
+	}
+
 
 	/**
 	 * Checks if a point location does not collide with any existing vehicle or
