@@ -41,12 +41,12 @@ public class PersonConfig implements Serializable {
 	private static final String PERSON_ATTRIBUTES = "person-attributes";
 
 	private static final String BASE_CAPACITY = "base-carrying-capacity";
-	private static final String AVERAGE_TALL_HEIGHT = "average-tall-height";//176.5;
-	private static final String AVERAGE_SHORT_HEIGHT = "average-short-height";//162.5;
+	private static final String AVERAGE_TALL_HEIGHT = "average-tall-height";// 176.5;
+	private static final String AVERAGE_SHORT_HEIGHT = "average-short-height";// 162.5;
 
 	private static final String AVERAGE_HIGH_WEIGHT = "average-high-weight";// 68.5;
 	private static final String AVERAGE_LOW_WEIGHT = "average-low-weight";
-	
+
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
 	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";
@@ -69,18 +69,18 @@ public class PersonConfig implements Serializable {
 
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String MIN_O2_PARTIAL_PRESSURE = "min-o2-partial-pressure";
-	
+
 	private static final String MIN_TEMPERATURE = "min-temperature";
 	private static final String MAX_TEMPERATURE = "max-temperature";
-	
+
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String FREEZING_TIME = "freezing-time";
-	
+
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	private static final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
 
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
-	
+
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
 
@@ -95,21 +95,21 @@ public class PersonConfig implements Serializable {
 	/** The base load-carrying capacity. */
 	private transient double baseCap = -1;
 	/** The upper and lower height. */
-	private transient double[] height = new double[] {-1, -1};
+	private transient double[] height = new double[] { -1, -1 };
 	/** The high and lor weight. */
-	private transient double[] weight = new double[] {-1, -1};
+	private transient double[] weight = new double[] { -1, -1 };
 	/** The 3 types of metabolic loads. */
-	private transient double[] o2ConsumptionRate = new double[] {-1, -1, -1};
+	private transient double[] o2ConsumptionRate = new double[] { -1, -1, -1 };
 	/** The consumption rate for water, dessert, food. */
-	private transient double[] consumptionRates = new double[] {-1, -1, -1};
-	/** The grey2BlackWaterRatio and the gender ratio. */
-	private transient double[] ratio = new double[] {-1, -1};
+	private transient double[] consumptionRates = new double[] { -1, -1, -1 };
 	/** The stress breakdown and high fatigue collapse chance. */
-	private transient double[] chance = new double[] {-1, -1};
+	private transient double[] chance = new double[] { -1, -1 };
 	/** Various time values. */
-	private transient double[] time = new double[] {-1, -1, -1, -1, -1, -1, -1};
+	private transient double[] time = new double[] { -1, -1, -1, -1, -1, -1, -1 };
 	/** The min and max temperature. */
-	private transient double[] temperature = new double[] {-1, -1};
+	private transient double[] temperature = new double[] { -1, -1 };
+	/** The grey2BlackWater ratio. */
+	private transient double grey2BlackWaterRatio = -1;
 	/** The average rate of water usage [kg/sol]. */
 	private transient double waterUsage = -1;
 	/** The min air pressure [kPa]. */
@@ -122,11 +122,12 @@ public class PersonConfig implements Serializable {
 	/** The personality distribution map. */
 	private transient Map<String, Double> personalityDistribution;
 
-	private transient Map<String,PersonNameSpec> namesByCountry = new HashMap<>();
-	
+	private transient Map<String, PersonNameSpec> namesByCountry = new HashMap<>();
+
 	private transient Commander commander;
 
 	private transient Map<String, String> personAttributes = new HashMap<>();
+
 
 	/**
 	 * Constructor.
@@ -141,17 +142,15 @@ public class PersonConfig implements Serializable {
 		createPersonalityDistribution(personDoc);
 	}
 
-
 	private void parsePersonAttrs(Document personDoc) {
 		// Scan the attributes
 		Element personAttributeEl = personDoc.getRootElement().getChild(PERSON_ATTRIBUTES);
 		for (Element personAttr : personAttributeEl.getChildren()) {
 			String str = personAttr.getAttributeValue(VALUE);
-			
+
 			personAttributes.put(personAttr.getName(), str);
 		}
 	}
-
 
 	/**
 	 * Parses the names element of the document.
@@ -164,10 +163,10 @@ public class PersonConfig implements Serializable {
 		Element countryListEl = doc.getRootElement().getChild(COUNTRY_LIST);
 		List<Element> countriesList = countryListEl.getChildren(COUNTRY);
 		for (Element countryElement : countriesList) {
-	
+
 			String country = countryElement.getAttributeValue(NAME);
 			PersonNameSpec countrySpec = new PersonNameSpec();
-					
+
 			// Scan first names
 			Element firstNameEl = countryElement.getChild(FIRST_NAME_LIST);
 			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
@@ -189,11 +188,11 @@ public class PersonConfig implements Serializable {
 			for (Element nameElement : lastNamesList) {
 				countrySpec.addLastName(nameElement.getAttributeValue(VALUE));
 			}
-			
+
 			namesByCountry.put(country, countrySpec);
 		}
 	}
-	
+
 	/**
 	 * Gets the base load capacity of a person.
 	 * 
@@ -207,8 +206,7 @@ public class PersonConfig implements Serializable {
 			return baseCap;
 		}
 	}
-	
-	
+
 	/**
 	 * Gets the upper average height of a person.
 	 * 
@@ -224,7 +222,7 @@ public class PersonConfig implements Serializable {
 			return r;
 		}
 	}
-	
+
 	/**
 	 * Gets the lower average height of a person.
 	 * 
@@ -240,10 +238,7 @@ public class PersonConfig implements Serializable {
 			return r;
 		}
 	}
-	
-	
-	
-	
+
 	/**
 	 * Gets the high average weight of a person.
 	 * 
@@ -259,7 +254,7 @@ public class PersonConfig implements Serializable {
 			return r;
 		}
 	}
-	
+
 	/**
 	 * Gets the low average weight of a person.
 	 * 
@@ -381,14 +376,10 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if the ratio could not be found.
 	 */
 	public double getGrey2BlackWaterRatio() {
-		double r = ratio[0];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
-			ratio[0] = r;
-			return r;
+		if (grey2BlackWaterRatio < 0) {
+			grey2BlackWaterRatio = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
 		}
+		return grey2BlackWaterRatio;
 	}
 
 	/**
@@ -524,7 +515,7 @@ public class PersonConfig implements Serializable {
 			return pressure;
 		}
 	}
-		
+
 	/**
 	 * Gets the absolute minimum oxygen partial pressure of a spacesuit.
 	 * 
@@ -539,7 +530,7 @@ public class PersonConfig implements Serializable {
 			return o2pressure;
 		}
 	}
-	
+
 	/**
 	 * Gets the max decompression time a person can survive.
 	 * 
@@ -644,24 +635,6 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the gender ratio between males and the total population on Mars.
-	 * 
-	 * @return gender ratio between males and total population.
-	 * @throws Exception if gender ratio could not be found.
-	 */
-	public double getGenderRatio() {
-		double r = ratio[1];
-		if (r >= 0)
-			return r;
-		else {
-			r = getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
-			ratio[1] = r;
-			return r;
-		}
-	}
-
-
-	/**
 	 * Gets the average percentages for personality types
 	 * 
 	 * @param personalityDistribution map
@@ -678,7 +651,7 @@ public class PersonConfig implements Serializable {
 	 */
 	private void createPersonalityDistribution(Document personDoc) {
 		personalityDistribution = new HashMap<>();
-		
+
 		double total = 0D;
 
 		Element personalityTypeList = personDoc.getRootElement().getChild(PERSONALITY_TYPES);
@@ -687,7 +660,7 @@ public class PersonConfig implements Serializable {
 		for (Element mbtiElement : personalityTypes) {
 			String type = mbtiElement.getAttributeValue(TYPE);
 			double result = Double.parseDouble(mbtiElement.getAttributeValue(PERCENTAGE));
-			
+
 			personalityDistribution.put(type, result);
 			total += result;
 		}
@@ -696,7 +669,6 @@ public class PersonConfig implements Serializable {
 			throw new IllegalStateException(
 					"PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + total + ")");
 	}
-
 
 	/**
 	 * Gets the value of an element as a double

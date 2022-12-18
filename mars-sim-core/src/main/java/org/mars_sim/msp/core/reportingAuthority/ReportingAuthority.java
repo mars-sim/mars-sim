@@ -45,13 +45,16 @@ implements UserConfigurable, Serializable {
 	private List<String> vehicleNames;
 
 	private boolean predefined;
+
+	private double genderRatio;
  
-	public ReportingAuthority(String name, String description, boolean predefined,
+	public ReportingAuthority(String name, String description, boolean predefined, double genderRatio,
 							  MissionAgenda agenda, List<String> countries,
 							  List<String> names, List<String> vehicleNames) {
 		this.description  = description;
 		this.name = name;
 		this.predefined = predefined;
+		this.genderRatio = genderRatio;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 		this.settlementNames = names;
@@ -214,6 +217,14 @@ implements UserConfigurable, Serializable {
 			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
 		}
  		return result;
+    }
+
+	/**
+	 * Get the male /female ratio for this Authority.
+	 * @return percetnage of Males to Females.
+	 */
+    public double getGenderRatio() {
+        return genderRatio;
     }
 
 }

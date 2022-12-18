@@ -18,6 +18,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -48,14 +49,15 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private static final String NAME_ATTR = "name";
 	private static final String SETTLEMENTNAME_EL = "settlement-name";
 	private static final String ROVERNAME_EL = "rover-name";
+	private static final String GENDER_ATTR = "gender-ratio";
 	
 	private Map<String,MissionAgenda> agendas;
 
-	public ReportingAuthorityFactory() {
+	public ReportingAuthorityFactory(Document governanceDoc) {
 		super("authority");
 		
 		// Load the defaults
-		loadGovernanceDetails();
+		loadGovernanceDetails(governanceDoc);
 		
 		// Load user defined authorities
 		loadUserDefined();
@@ -63,12 +65,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 
 	/**
 	 * Loads the Reporting authorities from an external XML.
-	 * 
-	 * @param config 
-	 * @return
 	 */
-	private void loadGovernanceDetails() {
-		Document doc = SimulationConfig.instance().parseXMLFileAsJDOMDocument("governance", true);
+	private void loadGovernanceDetails(Document doc) {
 
 		agendas = new HashMap<>();
 		
@@ -136,7 +134,9 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		if (agenda == null) {
 			 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);
 		}
-		 
+		double maleRatio = ConfigHelper.getOptionalAttributeDouble(authorityNode, GENDER_ATTR, 0.5D);
+
+		
 		// Get Countries
 		List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
 								.map(a -> a.getAttributeValue(NAME_ATTR))
@@ -152,7 +152,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				.map(a -> a.getAttributeValue(NAME_ATTR))
 				.collect(Collectors.toList());
 		
-		return new ReportingAuthority(code, name, predefined, agenda,
+		return new ReportingAuthority(code, name, predefined, maleRatio, agenda,
 									  countries, settlementNames,
 									  roverNames);
 	}
@@ -180,7 +180,9 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 		Element authorityNode = new Element(AUTHORITY_EL);
 		authorityNode.setAttribute(CODE_ATTR, item.getName());
 		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
-		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getName());			
+		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getName());	
+		authorityNode.setAttribute(GENDER_ATTR, Double.toString(item.getGenderRatio()));
+		
 		 
 		// Get Countries
 		addList(authorityNode, COUNTRY_EL, item.getCountries());

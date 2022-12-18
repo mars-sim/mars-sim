@@ -72,6 +72,23 @@ public class ConfigHelper {
 		return result;
 	}
 
+		
+	/**
+	 * A generic extract to get an optional Attribute as double value
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrname Attribute name to look for
+	 * @param defaultDouble Default int value if the attribute is not present
+	 * @return The Attribute value converted to an int OR the default
+	 */
+	public static double getOptionalAttributeDouble(Element sourceElement, String attrName, double defaultDouble) {
+		double result = defaultDouble;
+		String txt = sourceElement.getAttributeValue(attrName);
+		if (txt != null) {
+			result = Double.parseDouble(txt);
+		}
+		return result;
+	}
+
 	/**
 	 * A generic extract to get an optional Attribute as bool value
 	 * @param sourceElement The XML Element to extract Attribute from

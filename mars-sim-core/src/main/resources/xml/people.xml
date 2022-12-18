@@ -33,8 +33,7 @@
 	max-temperature,
 	freezing-time,
 	stress-breakdown-chance,
-	high-fatigue-collapse-chance,
-	gender-male-percentage)
+	high-fatigue-collapse-chance)
 	>
 
 	<!ELEMENT base-carrying-capacity EMPTY>
@@ -304,10 +303,6 @@
 		<!-- See medical complaint: "High Fatigue Collapse" in medical.xml. -->
 		<!-- Default: 10 [in percentage] -->
 		<high-fatigue-collapse-chance value="10.0" />
-
-		<!-- The average percentage of males to total population in the simulation. -->
-		<!-- Default 50 (equal numbers of males and females) -->
-		<gender-male-percentage value="50.0" />
 	</person-attributes>
 
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->

@@ -11,7 +11,9 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -134,6 +137,8 @@ public class AuthorityEditor  {
 
 	private JLabel agendaObjective;
 
+	private JSlider genderRatio;
+
 	
 	/**
 	 * Constructor.
@@ -162,6 +167,8 @@ public class AuthorityEditor  {
 		contentPane.setBorder(MainDesktopPane.newEmptyBorder());
 		mainPane.add(contentPane, BorderLayout.CENTER);
 				
+		JPanel leftPanel = new JPanel(new BorderLayout());
+
 		// Add Agenda panel
 		JPanel agendaPanel = new JPanel();
 		agendaPanel.setLayout(new BoxLayout(agendaPanel, BoxLayout.Y_AXIS));
@@ -202,7 +209,29 @@ public class AuthorityEditor  {
 		ta.setWrapStyleWord(true);
 		agendaPanel.add(ta);
 		
-		contentPane.add(agendaPanel);
+		leftPanel.add(agendaPanel, BorderLayout.CENTER);
+
+		// Add gender panel
+		Box genderPanel = Box.createHorizontalBox();
+		genderPanel.setBorder(BorderFactory.createTitledBorder("Details"));
+		genderRatio = new JSlider(JSlider.HORIZONTAL,0, 100, 50);
+
+		//Turn on labels at major tick marks.
+		genderRatio.setMajorTickSpacing(50);
+		genderRatio.setMinorTickSpacing(5);
+		genderRatio.setPaintTicks(true);
+		genderRatio.setPaintLabels(true);
+		Hashtable<Integer,JComponent> labelTable = new Hashtable<>();
+		labelTable.put(0, new JLabel("All Female") );
+		labelTable.put(50, new JLabel("Even") );
+		labelTable.put(100, new JLabel("All Male") );
+		genderRatio.setLabelTable( labelTable );
+		genderPanel.add(new JLabel("Male to Female Ratio"));
+		genderPanel.add(genderRatio);
+
+		leftPanel.add(genderPanel, BorderLayout.SOUTH);
+		contentPane.add(leftPanel);
+
 		
 		// Add List panels
 		JTabbedPane tabs = new JTabbedPane();
@@ -215,7 +244,7 @@ public class AuthorityEditor  {
 		contentPane.add(tabs);
 		
 		// Create button panel.
-		UserConfigurableControl<ReportingAuthority> control = new UserConfigurableControl<ReportingAuthority>(f, "Authority",
+		UserConfigurableControl<ReportingAuthority> control = new UserConfigurableControl<>(f, "Authority",
 																		raFactory) {
 			@Override
 			protected void displayItem(ReportingAuthority newDisplay) {
@@ -244,7 +273,8 @@ public class AuthorityEditor  {
 
 	private void loadAuthority(ReportingAuthority newDisplay) {
 		f.setTitle(TITLE + " - " + newDisplay.getName());
-				
+
+		genderRatio.setValue((int)(newDisplay.getGenderRatio() * 100));
 		agendaCB.setSelectedItem(newDisplay.getMissionAgenda().getName());
 		countries.loadItems(newDisplay.getCountries());
 		settlementNames.loadItems(newDisplay.getSettlementNames());
@@ -258,6 +288,7 @@ public class AuthorityEditor  {
 	private ReportingAuthority commitChanges(String name, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
 		ReportingAuthority newRA = new ReportingAuthority(name, description, false,
+														  genderRatio.getValue()/100D,
 														  raFactory.getAgenda(agendaName),
 														  countries.getItems(),
 														  settlementNames.getItems(),

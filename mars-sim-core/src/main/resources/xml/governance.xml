@@ -20,6 +20,7 @@
 	<!ATTLIST authority code CDATA #REQUIRED>
 	<!ATTLIST authority name CDATA #REQUIRED>
 	<!ATTLIST authority agenda CDATA #REQUIRED>
+	<!ATTLIST authority gender-ratio CDATA #REQUIRED>
 	<!ELEMENT country EMPTY>
 	<!ATTLIST country name CDATA #REQUIRED>
 	<!ELEMENT settlement-name EMPTY>
@@ -315,7 +316,7 @@
 		the ReportingAuthorityType enum -->
 	<authorities>
 		<authority code="CNSA" name="China National Space Administration"
-					agenda="Prospect Minerals">
+					agenda="Prospect Minerals" gender-ratio="0.75">
 			<country name="China"/>
 			<settlement-name name="Tian Cheng" />
 			<settlement-name name="Xin Cheng" />
@@ -346,7 +347,7 @@
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
-					agenda="Leapfrogs Science and Technology">
+					agenda="Leapfrogs Science and Technology"  gender-ratio="0.5">
 			<country name="Canada"/>
 			<settlement-name name="New Quebec" />
 			<settlement-name name="New Columbia" />
@@ -378,7 +379,7 @@
 			<rover-name name="St Lawrence" />
 		</authority>
 		<authority code="ESA" name="European Space Agency"
-					agenda="Surface Operations">
+					agenda="Surface Operations" gender-ratio="0.5">
 			<country name="Austria"/>
 			<country name="Belgium"/>
 			<country name="Czech Republic"/>
@@ -439,7 +440,7 @@
 		</authority>
 
 		<authority code="ISRO" name="The Indian Space Research Organisation"
-					agenda="Advanced Technology">
+					agenda="Advanced Technology" gender-ratio="0.9">
 			<country name="India"/>
 			<settlement-name name="New Bengal" />
 			<settlement-name name="New Chennai" />
@@ -468,7 +469,7 @@
 		</authority>
 
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
-					agenda="Human Habitation">
+					agenda="Human Habitation" gender-ratio="0.6">
 			<country name="Japan"/>
 			<settlement-name name="New Tokyo" />
 			<settlement-name name="New Seto" />
@@ -504,7 +505,7 @@
 		</authority>
 
 		<authority code="KARI" name="Korea Aerospace Research Institute"
-					agenda="Space Applications">
+					agenda="Space Applications" gender-ratio="0.4">
 			<country name="South Korea"/>
 			<settlement-name name="New Sacheon" />
 			<settlement-name name="New Gimhae" />
@@ -542,7 +543,7 @@
 		</authority>
 
 		<authority code="MS" name="Mars Society"
-					agenda="Settling Mars">
+					agenda="Settling Mars" gender-ratio="0.5">
 			<country name="Austria"/>
 			<country name="Belgium"/>
 			<country name="Canada"/>
@@ -613,7 +614,7 @@
 		</authority>
 
 		<authority code="NASA" name="National Aeronautics and Space Administration"
-					agenda="Finding Life">
+					agenda="Finding Life" gender-ratio="0.6">
 			<country name="USA"/>
 			<settlement-name name="Jamestown" />
 			<settlement-name name="Port Braun" />
@@ -658,7 +659,7 @@
 		</authority>
 
 		<authority code="RKA" name="Roscosmos"
-					agenda="Health Hazards">
+					agenda="Health Hazards" gender-ratio="0.75">
 			<country name="Russia"/>
 			<settlement-name name="Mir Town" />
 			<settlement-name name="Kosmosdrome" />
@@ -692,7 +693,7 @@
 		</authority>
 
 		<authority code="SPACEX" name="Space X"
-					agenda="Planet Life">
+					agenda="Planet Life" gender-ratio="0.5">
 			<country name="USA"/>
 			<country name="Canada"/>
 			<settlement-name name="MuskVille" />

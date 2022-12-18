@@ -82,6 +82,7 @@ public class SimulationConfig implements Serializable {
 	public static final String XML_FOLDER = "xml";
 	public static final String XML_EXTENSION = ".xml";
 	private static final String SIMULATION_FILE = "simulation";
+	private static final String GOVERNANCE_FILE = "governance";
 	private static final String PEOPLE_FILE = "people";
 	private static final String VEHICLE_FILE = "vehicles";
 	private static final String SETTLEMENT_FILE = "settlements";
@@ -1027,9 +1028,9 @@ public class SimulationConfig implements Serializable {
 	 * load the default config files
 	 */
 	private void loadDefaultConfiguration() {
-		raFactory = new ReportingAuthorityFactory();
 
 		// Load subset configuration classes.
+		raFactory = new ReportingAuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));

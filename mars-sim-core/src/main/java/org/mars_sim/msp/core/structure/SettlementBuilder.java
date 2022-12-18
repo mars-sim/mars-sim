@@ -337,7 +337,7 @@ public final class SettlementBuilder {
 		while (settlement.getIndoorPeopleCount() < initPop) {
 
 			GenderType gender = GenderType.FEMALE;
-			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
 				gender = GenderType.MALE;
 			}
 			Person person = null;
@@ -392,16 +392,17 @@ public final class SettlementBuilder {
 
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
+		// Get person's settlement or same sponsor
+		ReportingAuthority defaultSponsor = settlement.getSponsor();
+
 		// Create all configured people.
 		for (Member m : crew.getTeam()) {
 			if (settlement.getInitialPopulation() > settlement.getNumCitizens()) {
-
-				// Get person's settlement or same sponsor
-				ReportingAuthority sponsor = settlement.getSponsor();
+				ReportingAuthority sponsor = defaultSponsor;
 				if (m.getSponsorCode() != null) {
-					 sponsor = raFactory.getItem(m.getSponsorCode());
+					sponsor = raFactory.getItem(m.getSponsorCode());
 				}
-
+	
 				// Check name
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
@@ -416,7 +417,7 @@ public final class SettlementBuilder {
 				GenderType gender = m.getGender();
 				if (gender == null) {
 					gender = GenderType.FEMALE;
-					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+					if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
 						gender = GenderType.MALE;
 					}
 				}
