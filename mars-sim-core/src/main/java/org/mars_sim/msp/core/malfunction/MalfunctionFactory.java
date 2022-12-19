@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
@@ -111,7 +110,7 @@ public final class MalfunctionFactory implements Serializable {
 	 *
 	 * @return collection collection of malfunctionables.
 	 */
-	public static Collection<Malfunctionable> getLocalMalfunctionables(Worker source) {
+	private static Collection<Malfunctionable> getLocalMalfunctionables(Worker source) {
 
 		Collection<Malfunctionable> entities = new ArrayList<>();
 
@@ -146,7 +145,7 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param settlement the settlement.
 	 * @return collection of malfunctionables.
 	 */
-	public static Collection<Malfunctionable> getBuildingMalfunctionables(Settlement settlement) {
+	private static Collection<Malfunctionable> getBuildingMalfunctionables(Settlement settlement) {
 		// Should get a collection of buildings only
 		return new ArrayList<>(settlement.getBuildingManager().getBuildings());
 	}
@@ -163,33 +162,19 @@ public final class MalfunctionFactory implements Serializable {
 
 		entities.add(entity);
 
-		if (entity instanceof Robot) {
-			Collection<Equipment> inventoryUnits = ((EquipmentOwner)entity).getEquipmentSet();
-			if (inventoryUnits.size() > 0) {
-				for (Equipment e : inventoryUnits) {
-					if (e instanceof Malfunctionable) {
-						entities.add((Malfunctionable) e);
-					}
+		if (entity instanceof EquipmentOwner) {
+			for (Equipment e : ((EquipmentOwner)entity).getEquipmentSet()) {
+				if (e instanceof Malfunctionable) {
+					entities.add((Malfunctionable) e);
 				}
 			}
 		}
 		// must filter out drones
-		else if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
-			Collection<Person> inventoryUnits = ((Crewable)entity).getCrew();
-			if (inventoryUnits.size() > 0) {
-				for (Unit unit : inventoryUnits) {
-					if (unit instanceof Malfunctionable) {
-						entities.add((Malfunctionable) unit);
-					}
-				}
-			}
-
+		if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
 			Collection<Robot> inventoryUnits1 = ((Crewable)entity).getRobotCrew();
-			if (inventoryUnits.size() > 0) {
-				for (Unit unit : inventoryUnits1) {
-					if (unit instanceof Malfunctionable) {
-						entities.add((Malfunctionable) unit);
-					}
+			for (Unit unit : inventoryUnits1) {
+				if (unit instanceof Malfunctionable) {
+					entities.add((Malfunctionable) unit);
 				}
 			}
 		}
@@ -214,7 +199,7 @@ public final class MalfunctionFactory implements Serializable {
 
 		// Get all vehicles belong to the Settlement. Vehicles can have a malfunction
 		// in the Settlement or outside settlement
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
+		for (Vehicle vehicle : settlement.getParkedVehicles()) {
 			entities.addAll(getMalfunctionables(vehicle));
 		}
 
@@ -224,10 +209,10 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		// Get entities carried by people on EVA.
-		for (Person person : settlement.getAllAssociatedPeople()) {
-			if (person.isOutside())
-				entities.addAll(getLocalMalfunctionables(person));
-		}
+		// for (Person person : settlement.getAllAssociatedPeople()) {
+		// 	if (person.isOutside())
+		// 		entities.addAll(getLocalMalfunctionables(person));
+		// }
 
 		// Get entities carried by people on EVA.
 		for (Equipment e: settlement.getEquipmentSet()) {

@@ -28,9 +28,9 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -1190,41 +1190,23 @@ public class ExitAirlock extends Task {
 				airlock.resetCheckEVASuit();
 				return true;
 			}
+			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+					"Could not find a working EVA suit and needed to wait.");
 
-			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"Could not find a working EVA suit and needed to wait.");
+			Vehicle v = person.getVehicle();
+			Mission m = person.getMind().getMission();
 
-				Vehicle v = person.getVehicle();
-				Mission m = person.getMind().getMission();
-				String hasMission = "";
-				if (m != null)
-					hasMission = " for " + m.getName();
-				// Mission m = missionManager.getMission(person);
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
-						v.getName() + hasMission
-						+ ". No working EVA suit, awaiting response for rescue.");
+			// TODO: should at least wait for a period of time for the EVA suit to be fixed
+			// before calling for rescue
+			if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
 
-				// TODO: should at least wait for a period of time for the EVA suit to be fixed
-				// before calling for rescue
-				if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
-
-					// Repair this EVASuit by himself/herself
-					logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
-							v.getName() + hasMission
-							+ ". Will try to repair an EVA suit.");
-
-					if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RepairInsideMalfunction.SIMPLE_NAME))
-						person.getMind().getTaskManager().addAPendingTask(RepairInsideMalfunction.SIMPLE_NAME, false);
-
-					if (airlock.getCheckEVASuit() > 100)
-						// Set the emergency beacon on since no EVA suit is available
-						((VehicleMission) m).getHelp(NO_EVA_SUITS);
-				}
-
-				airlock.addCheckEVASuit();
-				return false;
+				if (airlock.getCheckEVASuit() > 100)
+					// Set the emergency beacon on since no EVA suit is available
+					((VehicleMission) m).getHelp(NO_EVA_SUITS);
 			}
+
+			airlock.addCheckEVASuit();
+			return false;
 		}
 
 		return true;

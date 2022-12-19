@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,9 +15,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -212,25 +209,6 @@ public class DeathInfo implements Serializable {
 			mission = mm.getName();
 			missionPhase = mm.getPhaseDescription();
 		}
-
-		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
-		Malfunction mostSerious = null;
-		int severity = 0;
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-			if (malfunctionMgr.hasMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
-				if (m != null && m.getSeverity() > severity) { // why java.lang.NullPointerException ?
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
-		}
-
-		if (mostSerious != null)
-			malfunction = mostSerious.getName();
-
 	}
 
 	public DeathInfo(Robot robot) {
@@ -253,23 +231,11 @@ public class DeathInfo implements Serializable {
 			}
 		}
 
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-		Malfunction mostSerious = null;
-		int severity = 0;
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-			if (malfunctionMgr.hasMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
-				if (m.getSeverity() > severity) {
-					mostSerious = m;
-					severity = m.getSeverity();
-				}
-			}
+		MalfunctionManager malfunctionMgr = robot.getMalfunctionManager();
+		if (malfunctionMgr.hasMalfunction()) {
+			Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
+			malfunction = m.getName();
 		}
-
-		if (mostSerious != null)
-			malfunction = mostSerious.getName();
 	}
 
 	/**

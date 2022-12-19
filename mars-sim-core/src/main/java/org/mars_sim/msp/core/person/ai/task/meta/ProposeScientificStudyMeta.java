@@ -105,7 +105,6 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
             				result += 10D;
 							break;
 						default:
-							result += 5D;
 							break;
             		}
 	            }
@@ -124,20 +123,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 				result *= getBuildingModifier(b, person);
 	        }
 
-	        else if (person.isInVehicle()) {
-		        // Check if person is in a moving rover.
-		        if (Vehicle.inMovingRover(person)) {
-			        // the bonus for proposing scientific study inside a vehicle,
-		        	// rather than having nothing to do if a person is not driving
-		        	result += 20;
-		        }
-		        else
-		        	// the bonus for proposing scientific study inside a vehicle,
-		        	// rather than having nothing to do if a person is not driving
-		        	result += 10;
-	        }
-
-	        result *= FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+	        result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        result *= getPersonModifier(person);
         }
 

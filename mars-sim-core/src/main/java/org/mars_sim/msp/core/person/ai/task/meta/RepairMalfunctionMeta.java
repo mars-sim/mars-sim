@@ -50,7 +50,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
 							 int demand, boolean eva, double score) {
-			super(owner, "Repair EVA " + mal.getName() + " @ " + entity, score);
+			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName()
+							+ " @ " + entity, score);
 			setDemand(demand);
 			this.entity = entity;
 			this.mal = mal;
@@ -79,8 +80,6 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 5D;
-
-	private static final String INSIDE = null;
 	
     public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -104,8 +103,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 			EquipmentOwner partStore = person.getVehicle();
 			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
 			for(SettlementTask t: getRepairTasks(source, partStore)) {
-				// Apply the Person modifier to create Personalised Tasks from the generic Settlemnt ones
-				double factor = getPersonSettlementModifier(t, person);
+				// Repairs in Vehicles are important so apply constant factor
+				double factor = 3D;
 
 				RepairTaskJob rtj = (RepairTaskJob) t;
 				tasks.add(new RepairTaskJob(this, rtj.entity, rtj.mal, rtj.getDemand(),
@@ -215,6 +214,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
      * 
 	 * @param partsStore Where are spare parts coming from
 	 * @param entity Entity suffering the malfunction
+	 * @param malfunction The problem to fix
 	 * @param workType Type of work to check for.
      * @return It may return null if the Malfunction need no further repair work
      */
@@ -235,5 +235,5 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 									result);
 		}
 		return null;
-    }
+	}
 }

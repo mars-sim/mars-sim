@@ -7,12 +7,15 @@
 
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.Collection;
+
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * Command to create a malfunction in a Settlement.
@@ -33,13 +36,15 @@ public class MalfunctionCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		StructuredResponse response = new StructuredResponse();
-		
-		for(Building building : settlement.getBuildingManager().getBuildings()) {
-			for(Malfunction m : building.getMalfunctionManager().getMalfunctions()) {
-				response.appendHeading(m.getName());
-				response.appendLabeledString("Building", building.getName());
-				CommandHelper.outputMalfunction(response, m);
-				response.appendBlankLine();
+		Collection<Malfunctionable> entities = MalfunctionFactory.getAssociatedMalfunctionables(settlement);
+
+
+		for(Malfunctionable e : entities) {
+			for(Malfunction m : e.getMalfunctionManager().getMalfunctions()) {
+				if (!m.isFixed()) {
+					CommandHelper.outputMalfunction(response, e, m);
+					response.appendBlankLine();
+				}
 			}
 		}
 
