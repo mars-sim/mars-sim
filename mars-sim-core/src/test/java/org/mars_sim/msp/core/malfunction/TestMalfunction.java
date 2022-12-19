@@ -1,31 +1,42 @@
 package org.mars_sim.msp.core.malfunction;
 
+import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 import junit.framework.TestCase;
 
-public class TestMalfunction extends TestCase {
+public class TestMalfunction extends AbstractMarsSimUnitTest {
 
 
 	private static final String INSIDE_MALFUNCTION = "Class A Fire";
 	
 	private int counter = 0;
 	private MalfunctionMeta insideMeta;
+
+	private MalfunctionManager mgr;
+
 	
     @Override
-    public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
-        MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+    public void setUp() {
+		super.setUp();
+
+        MalfunctionConfig config = simConfig.getMalfunctionConfiguration();
         for (MalfunctionMeta m : config.getMalfunctionList()) {
         	if (m.getName().equals(INSIDE_MALFUNCTION)) {
         		insideMeta = m;
         	}
         }
+
+		Settlement s = buildSettlement();
+		Rover r = buildRover(s, "Test", null);
+		mgr = r.getMalfunctionManager();
     }
     
     private Malfunction createInsideMalfunction() {
-		return new Malfunction(counter++, insideMeta, true);
+		return new Malfunction(mgr, counter++, insideMeta, true);
 	}
     
     public void testComplete() {

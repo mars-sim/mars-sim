@@ -859,7 +859,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 
 		// If I have a suit then record the use
 		if (suit != null) {
-			suit.timePassing(pulse);
+			suit.recordUsageTime(pulse);
 		}
 
 		if (!condition.isDead()) {

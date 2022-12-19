@@ -339,7 +339,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Unit actor) {
-		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m, supportsInside);
+		Malfunction malfunction = new Malfunction(this, factory.getNewIncidentNum(), m, supportsInside);
 
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
@@ -562,8 +562,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Check if resources is still draining
 		depleteResources(time);
 
-		checkFixedMalfunction();
-
 		// Add time passing.
 		timeSinceLastMaintenance += time;
 
@@ -584,55 +582,36 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if any malfunctions have been fixed.
-	 *
-	 * @param time
+	 * REmove a malfunction that has been fixed
+	 * @param fixed Malfunction fixed. 
 	 */
-	private void checkFixedMalfunction() {
-		Collection<Malfunction> fixedMalfunctions = new ArrayList<>();
-
-		// Check if any malfunctions are fixed.
-		if (hasMalfunction()) {
-			for (Malfunction m : malfunctions) {
-
-				if (m.isFixed()) {
-					fixedMalfunctions.add(m);
-				}
-			}
+	void removeFixedMalfunction(Malfunction fixed) {
+		if (!malfunctions.remove(fixed)) {
+			logger.warning(entity, "Fixed malfunction is unknown " + fixed.getName());
 		}
-
-		for (Malfunction m : fixedMalfunctions) {
-			// Reset the modifiers
-			Map<String, Double> effects = m.getLifeSupportEffects();
+		else {
+			Map<String, Double> effects = fixed.getLifeSupportEffects();
 			if (!effects.isEmpty()) {
 				if (effects.containsKey(OXYGEN))
 					resetModifiers(0);
-//					if (effects.containsKey(WATER))
-//						resetModifiers(1);
-//					if (effects.containsKey(PRESSURE))
-//						resetModifiers(2);
-//					if (effects.containsKey(TEMPERATURE))
-//						resetModifiers(3);
 			}
 
-			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
+			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, fixed);
 
-			String chiefRepairer = m.getMostProductiveRepairer();
+			String chiefRepairer = fixed.getMostProductiveRepairer();
 
-			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
-					m.getName(), "Repairing", chiefRepairer, 
+			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, fixed,
+					fixed.getName(), "Repairing", chiefRepairer, 
 					entity.getName(), 
 					entity.getAssociatedSettlement().getName(), 
 					entity.getCoordinates().getCoordinateString());
 
 			eventManager.registerNewEvent(newEvent);
 
-			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with.");
-
-			// Remove the malfunction
-			malfunctions.remove(m);
+			logger.log(entity, Level.INFO, 0,"The malfunction '" + fixed.getName() + "' had been dealt with.");
 		}
 	}
+
 
 	/**
 	 * Determine life support modifiers for given time.
@@ -1098,5 +1077,4 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 		partsNeededForMaintenance = null;
 	}
-
 }

@@ -156,7 +156,9 @@ public class Malfunction implements Serializable {
 
 	// Data members
 	private int incidentNum;
-
+	/* Owner of the Malfuncion */
+	private MalfunctionManager owner;
+	/* Name */
 	private String name;
 	/* The person who are being the most traumatized by this malfunction. */
 	private String mostTraumatized = "None";
@@ -169,15 +171,16 @@ public class Malfunction implements Serializable {
 
 
 	/**
-	 * Creates a new Malfunction instance based on a meta definition.
+	 * Creates a new Malfunction instance based on a meta definition
 	 *
+	 * @param instigator The owner of this Malfunction
 	 * @param incident the incident id
 	 * @param definition the MalfunctionMeta instance
 	 * @param supportsInside Does the entity supports inside repairs
 	 */
-	Malfunction(int incident, MalfunctionMeta definition, boolean supportsInside) {
+	Malfunction(MalfunctionManager instigator, int incident, MalfunctionMeta definition, boolean supportsInside) {
 		repairParts = new HashMap<>();
-
+		owner = instigator;
 		incidentNum = incident;
 		this.definition = definition;
 		StringBuilder builder = new StringBuilder().append(definition.getName()).append(INCIDENT_NUM)
@@ -357,9 +360,7 @@ public class Malfunction implements Serializable {
 	 * @return name of the malfunction
 	 */
 	public String getName() {
-		StringBuilder builder = new StringBuilder().append(definition.getName()).append(INCIDENT_NUM)
-				.append(incidentNum);
-		return builder.toString();
+		return name;
 	}
 
 	/**
@@ -498,6 +499,11 @@ public class Malfunction implements Serializable {
 
 				// Add effort from the worker
 				w.addTime(repairer, time);
+
+				// Check for completed
+				if (w.isCompleted() && isFixed()) {
+					owner.removeFixedMalfunction(this);
+				}
 			}
 		}
 

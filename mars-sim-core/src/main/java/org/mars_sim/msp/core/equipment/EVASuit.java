@@ -393,6 +393,21 @@ public class EVASuit extends Equipment
 	}
 
 	/**
+	 * Record usage of this suit
+	 *
+	 * @param pulse the amount of clock pulse passing (in millisols)
+	 * @throws Exception if error during time.
+	 */
+	public void recordUsageTime(ClockPulse pulse) {
+		Unit container = getContainerUnit();
+		if (container.getUnitType() == UnitType.PERSON
+			&& container.isOutside()
+			&& !((Person) container).getPhysicalCondition().isDead()) {
+				malfunctionManager.activeTimePassing(pulse);
+		}
+	}
+
+	/**
 	 * Time passing for EVA suit.
 	 *
 	 * @param pulse the amount of clock pulse passing (in millisols)
@@ -403,13 +418,6 @@ public class EVASuit extends Equipment
 		// EVA Suit doesn't check the pulse value like other units
 		// because it is not called consistently every pulse. It is only
 		// called when in use by a Person.
-		Unit container = getContainerUnit();
-		if (container.getUnitType() == UnitType.PERSON
-			&& container.isOutside()
-			&& !((Person) container).getPhysicalCondition().isDead()) {
-				malfunctionManager.activeTimePassing(pulse);
-		}
-
 		malfunctionManager.timePassing(pulse);
 
 		return true;
