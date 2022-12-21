@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -16,6 +15,7 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -23,10 +23,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * Provides configuration information about greenhouse crops. Uses a DOM
  * document to get the information.
  */
-public class CropConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class CropConfig {
 
 	public static final double INCUBATION_PERIOD = 10D;
 
@@ -137,7 +134,7 @@ public class CropConfig implements Serializable {
 			String lifeCycle = crop.getAttributeValue(LIFE_CYCLE);
 
 			// Add checking against the crop category enum
-			CropCategory cat = CropCategory.valueOf(cropCategory.toUpperCase());
+			CropCategory cat = CropCategory.valueOf(ConfigHelper.convertToEnumName(cropCategory));
 
 			// Get edibleBiomass
 			String edibleBiomassStr = crop.getAttributeValue(EDIBLE_BIOMASS);

@@ -88,21 +88,4 @@ public enum GoodType {
 	public String toString() {
 		return this.name;
 	}
-
-	/**
-	 * Obtains the enum type of the equipment with its name.
-	 * 
-	 * @param name
-	 * @return {@link GoodType}
-	 */
-	public static GoodType convertName2Enum(String name) {
-		if (name != null) {
-	    	for (GoodType et : GoodType.values()) {
-	    		if (name.equalsIgnoreCase(et.name)) {
-	    			return et;
-	    		}
-	    	}
-		}
-		throw new IllegalArgumentException("No good type called " + name);
-	}
 }

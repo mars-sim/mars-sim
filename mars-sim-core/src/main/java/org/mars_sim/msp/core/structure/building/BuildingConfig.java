@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,10 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  * Provides configuration information about settlement buildings. Uses a DOM
  * document to get the information.
  */
-public class BuildingConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class BuildingConfig {
 
 	// Element and attribute names
 	private static final String DESCRIPTION = "description";
@@ -150,8 +146,8 @@ public class BuildingConfig implements Serializable {
 		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
-			String name = element.getName().toUpperCase().trim().replace("-", "_");
-			FunctionType function = FunctionType.valueOf(name.toUpperCase());
+			String name = element.getName();
+			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
 
 			// Has any Activity spots ?
 			List<LocalPosition> spots = parsePositions(element, ACTIVITY, ACTIVITY_SPOT,
@@ -179,7 +175,7 @@ public class BuildingConfig implements Serializable {
 		String categoryString = buildingElement.getAttributeValue("category");
 		BuildingCategory category = null;
 		if (categoryString != null) {
-			category = BuildingCategory.valueOf(categoryString.toUpperCase());
+			category = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(categoryString));
 		}
 		else {
 			// Derive category from Functions
@@ -193,7 +189,7 @@ public class BuildingConfig implements Serializable {
 		
 		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
 		if (construction != null) {
-			newSpec.setConstruction(ConstructionType.valueOf(construction));
+			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
 		}
 
 		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
@@ -392,7 +388,7 @@ public class BuildingConfig implements Serializable {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
 			// The name of research-specialty in buildings.xml must conform to enum values of {@link
 			// ScienceType}
-			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+			result.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(value)));
 		}
 		newSpec.setScienceType(result);
 	}

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.malfunction;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -39,10 +39,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * Provides configuration information about malfunctions. Uses a DOM document to
  * get the information.
  */
-public class MalfunctionConfig implements Serializable {
-
-
-	private static final long serialVersionUID = 1L;
+public class MalfunctionConfig {
 
 	private static final Logger logger = Logger.getLogger(MalfunctionConfig.class.getName());
 
@@ -207,10 +204,11 @@ public class MalfunctionConfig implements Serializable {
 						.getChildren(MEDICAL_COMPLAINT);
 
 				for (Element medicalComplaintElement : medicalComplaintNodes) {
-					String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR).toUpperCase().replace(' ', '_');
+					String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR);
 					double complaintProbability = Double.parseDouble(
 							medicalComplaintElement.getAttributeValue(PROBABILITY_EL));
-					medicalComplaints.put(ComplaintType.valueOf(complaintName), complaintProbability);
+					medicalComplaints.put(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
+											complaintProbability);
 				}
 			}
 

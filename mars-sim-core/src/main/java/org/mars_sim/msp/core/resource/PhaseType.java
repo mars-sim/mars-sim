@@ -41,16 +41,4 @@ public enum PhaseType {
 	public String toString() {
 		return name;
 	}
-	
-	public static PhaseType fromString(String name) {
-		if (name != null) {
-	    	for (PhaseType pt : PhaseType.values()) {
-	    		if (name.equalsIgnoreCase(pt.name)) {
-	    			return pt;
-	    		}
-	    	}
-		}
-		
-		return null;
-	}
 }

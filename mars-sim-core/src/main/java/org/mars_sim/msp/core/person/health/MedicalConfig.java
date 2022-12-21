@@ -6,23 +6,20 @@
  */
 package org.mars_sim.msp.core.person.health;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 
 
 /**
  * Provides configuration information about a list of medical complaints and treatment.
  * Uses a JDOM document to get the information. 
  */
-public class MedicalConfig implements Serializable {
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class MedicalConfig {
     
 	// Element names
     private static final String NAME = "name";
@@ -44,8 +41,8 @@ public class MedicalConfig implements Serializable {
 	private static final String TREATMENT_TIME = "treatment-time";
 	private static final String SELF_ADMIN = "self-admin";
 	
-	private static List<Complaint> complaintList;
-	private static List<Treatment> treatmentList;
+	private List<Complaint> complaintList;
+	private List<Treatment> treatmentList;
 
 	/**
 	 * Constructor
@@ -220,10 +217,11 @@ public class MedicalConfig implements Serializable {
 
 			if (degradeComplaintElement != null) {
 			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
-			    degradeComplaint = getComplaintFromString(degradeComplaintName);
+			    degradeComplaint = ComplaintType.valueOf(ConfigHelper.convertToEnumName(degradeComplaintName));
 			}
 
-			Complaint complaint = new Complaint(getComplaintFromString(complaintName), seriousness, 
+			Complaint complaint = new Complaint(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
+										seriousness, 
 			        degradeTime * 1000D, recoveryTime * 1000D, probability, 
 			        treatment, degradeComplaint, performance, bedRestRecovery);
 
@@ -250,22 +248,4 @@ public class MedicalConfig implements Serializable {
 		// Assign the newList2 now built
 		complaintList = Collections.unmodifiableList(newList2);
 	}
-    
-    private static ComplaintType getComplaintFromString(String name) {
-		name = name.toUpperCase().replaceAll("\\s|/", "_");
-		return ComplaintType.valueOf(name);
-	}
-
-	/**
-     * Prepare the object for garbage collection.
-     */
-    public void destroy() {
-        if(complaintList !=  null){
-            complaintList = null;
-        }
-        
-        if(treatmentList != null){
-            treatmentList = null;
-        }
-    }
 }

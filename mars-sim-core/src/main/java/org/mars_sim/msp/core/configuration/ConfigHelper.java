@@ -29,7 +29,7 @@ public class ConfigHelper {
 	 * @return
 	 */
 	public static String convertToEnumName(String text) {
-		return text.replaceAll("[ -]", "_").toUpperCase().trim();
+		return text.replaceAll("[ -/]", "_").toUpperCase().trim();
 	}
 
 	/**
