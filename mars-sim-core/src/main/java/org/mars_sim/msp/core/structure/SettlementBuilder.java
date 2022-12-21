@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -266,12 +267,15 @@ public final class SettlementBuilder {
 		while (settlement.getIndoorRobotsCount() < initial) {
 			// Get a robotType randomly
 			RobotType robotType = Robot.selectNewRobotType(settlement);
+
 			// Adopt Static Factory Method and Factory Builder Pattern
 			String newName = Robot.generateName(robotType);
-			Robot robot = Robot.create(newName, settlement, robotType)
+
+			// Find the spec for this robot, take any model
+			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
+
+			Robot robot = Robot.create(newName, settlement, spec)
 					.setCountry(EARTH)
-					.setSkill(null, robotType)
-					.setAttribute(null)
 					.build();
 			robot.initialize();
 			// Set name at its parent class "Unit"
@@ -549,45 +553,45 @@ public final class SettlementBuilder {
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredRobots(Settlement settlement) {
-		int size = robotConfig.getNumberOfConfiguredRobots();
+		// int size = robotConfig.getNumberOfConfiguredRobots();
 
-		for (int x = 0; x < size; x++) {
-			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			if (settlement.getName().equals(preConfigSettlementName)
-					&& (settlement.getNumBots() <= settlement.getInitialNumOfRobots())) {
-				// Get robot's name (required)
-				String name = robotConfig.getConfiguredRobotName(x);
+		// for (int x = 0; x < size; x++) {
+		// 	String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
+		// 	if (settlement.getName().equals(preConfigSettlementName)
+		// 			&& (settlement.getNumBots() <= settlement.getInitialNumOfRobots())) {
+		// 		// Get robot's name (required)
+		// 		String name = robotConfig.getConfiguredRobotName(x);
 
-				// Get robotType
-				RobotType robotType = robotConfig.getConfiguredRobotType(x);
+		// 		// Get robotType
+		// 		RobotType robotType = robotConfig.getConfiguredRobotType(x);
 
-				// Set robot's job (if any).
-				String jobName = robotConfig.getConfiguredRobotJob(x);
-				if (jobName != null) {
-					// Create robot and add to the unit manager.
+		// 		// Set robot's job (if any).
+		// 		String jobName = robotConfig.getConfiguredRobotJob(x);
+		// 		if (jobName != null) {
+		// 			// Create robot and add to the unit manager.
 
-					// Set robot's configured skills (if any).
-					Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+		// 			// Set robot's configured skills (if any).
+		// 			Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
 
-					// Set robot's configured natural attributes (if any).
-					Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
+		// 			// Set robot's configured natural attributes (if any).
+		// 			Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
 
-					// Adopt Static Factory Method and Factory Builder Pattern
-					Robot robot = Robot.create(name, settlement, robotType)
-							.setCountry(EARTH)
-							.setSkill(skillMap, robotType)
-							.setAttribute(attributeMap)
-							.build();
-					robot.initialize();
+		// 			// Adopt Static Factory Method and Factory Builder Pattern
+		// 			Robot robot = Robot.create(name, settlement, robotType)
+		// 					.setCountry(EARTH)
+		// 					.setSkill(skillMap, robotType)
+		// 					.setAttribute(attributeMap)
+		// 					.build();
+		// 			robot.initialize();
 
-					unitManager.addUnit(robot);
+		// 			unitManager.addUnit(robot);
 
-					settlement.addOwnedRobot(robot);
-					// Set the container unit
-					robot.setContainerUnit(settlement);
-				}
-			}
-		}
+		// 			settlement.addOwnedRobot(robot);
+		// 			// Set the container unit
+		// 			robot.setContainerUnit(settlement);
+		// 		}
+		// 	}
+		// }
 	}
 
 	/**

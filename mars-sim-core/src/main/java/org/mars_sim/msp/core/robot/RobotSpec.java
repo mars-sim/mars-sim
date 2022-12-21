@@ -9,6 +9,9 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.SkillType;
+
 /** 
  * The Specification of a robot loaded from the external configuration.
  */
@@ -17,31 +20,26 @@ public class RobotSpec implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	private String name;
 	private RobotType robotType;
-	private String jobName;
-	private String settlementName;
+	private String makeModel;
 	
-	private Map<String, Integer> attributeMap;
-	private Map<String, Integer> skillMap;
+	private Map<NaturalAttributeType, Integer> attributeMap;
+	private Map<SkillType, Integer> skillMap;
 
-	public RobotSpec(String name, RobotType robotType, String settlementName, String jobName,
-			Map<String, Integer> attributeMap, Map<String, Integer> skillMap) {
-		this.name = name;
+	private double fcr;
+	private double standbyPower;
+	private double lowPowerMode;
+
+	public RobotSpec(RobotType robotType, String makeModel,
+			double standbyPower, double fcr, double lowPowerMode,
+			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
 		this.robotType = robotType;
-		this.settlementName = settlementName;
-		this.jobName = jobName;
+		this.makeModel = makeModel;
 		this.attributeMap = attributeMap;
 		this.skillMap = skillMap;
-	}
-
-	/**
-	 * Gets the name.
-	 * 
-	 * @return
-	 */
-	public final String getName() {
-		return name;
+		this.standbyPower = standbyPower;
+		this.lowPowerMode = lowPowerMode;
+		this.fcr = fcr;
 	}
 
 	/**
@@ -54,29 +52,42 @@ public class RobotSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the settlement name.
+	 * Gets the Make & Model value of this Robot Spec
 	 * 
 	 * @return
 	 */
-	public final String getSettlementName() {
-		return settlementName;
+	public final String getMakeModel() {
+		return makeModel;
 	}
 	
 	/**
-	 * Gets the robot job name.
-	 * 
-	 * @return
+	 * Get the stand by power consumption
 	 */
-	public final String getJobName() {
-		return jobName;
+	public double getStandbyPowerConsumption() {
+		return standbyPower;
 	}
-	
+
 	/**
-	 * Gets the attribute map.
+	 * Get teh fuel consumption for this Robot type.
+	 */
+	public double getFuelConsumption() {
+		return fcr;
+	}
+
+	/**
+	 * When is the low power mode enabked for this robot model
+	 * @return
+	 */
+	public double getLowPowerModePercent() {
+		return lowPowerMode;
+	}
+
+	/**
+	 * Gets the attpribute map.
 	 * 
 	 * @return
 	 */
-	public final Map<String, Integer> getAttributeMap() {
+	public final Map<NaturalAttributeType, Integer> getAttributeMap() {
 		return attributeMap;
 	}
 
@@ -85,7 +96,7 @@ public class RobotSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public final Map<String, Integer> getSkillMap() {
+	public final Map<SkillType, Integer> getSkillMap() {
 		return skillMap;
 	}
 }

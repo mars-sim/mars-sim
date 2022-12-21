@@ -40,6 +40,8 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -184,7 +186,7 @@ public class Resupply implements Serializable, Transportable {
 		}
 		
 		// Deliver the rest of the supplies and add people.
-		deliverOthers(sim.getUnitManager(), sc.getPersonConfig());
+		deliverOthers(sim.getUnitManager(), sc.getPersonConfig(), sc.getRobotConfiguration());
 	}
 
 	/**
@@ -432,7 +434,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @param unitManager 
 	 * @param personConfig 
 	 */
-	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig) {
+	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig, RobotConfig robotConfig) {
 		ReportingAuthority sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
@@ -495,14 +497,15 @@ public class Resupply implements Serializable, Transportable {
 			RobotType robotType = Robot.selectNewRobotType(settlement);
 			// Adopt Static Factory Method and Factory Builder Pattern
 			String newName = Robot.generateName(robotType);
-			Robot robot = Robot.create(newName, settlement, robotType)
+			
+			// Find the spec for this robot, take any model
+			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
+
+			Robot robot = Robot.create(newName, settlement, spec)
 					.setCountry(EARTH)
-					.setSkill(null, robotType)
-					.setAttribute(null)
 					.build();
 			robot.initialize();
-			// Set name at its parent class "Unit"
-			robot.setName(newName);
+
 
 			RobotJob robotJob = JobUtil.getRobotJob(robotType);
 			robot.getBotMind().setRobotJob(robotJob, true);

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -141,14 +142,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * 
 	 * @param name
 	 * @param settlement
-	 * @param robotType
+	 * @param spec
 	 */
-	protected Robot(String name, Settlement settlement, RobotType robotType) {
+	protected Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement.getCoordinates());
 
 		// Initialize data members.
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
-		this.robotType = robotType;
+		this.robotType = spec.getRobotType();
 		this.position = LocalPosition.DEFAULT_POSITION;
 
 		isSalvaged = false;
@@ -157,10 +158,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// set description for this robot
 		super.setDescription(OPERABLE);
 
+		// Construct the SystemCondition instance.
+		health = new SystemCondition(this, spec);
+
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
+		for(Entry<SkillType, Integer> e : spec.getSkillMap().entrySet()) {
+			skillManager.addNewSkillNExperience(e.getKey(), e.getValue());
+		}
+
 		// Construct the RoboticAttributeManager instance.
 		attributes = new RoboticAttributeManager();
+		for(Entry<NaturalAttributeType, Integer> a : spec.getAttributeMap().entrySet()) {
+			attributes.setAttribute(a.getKey(), a.getValue());
+		}
 	}
 
 	/*
@@ -171,8 +182,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @param robotType
 	 * @return
 	 */
-	public static RobotBuilder<?> create(String name, Settlement settlement, RobotType robotType) {
-		return new RobotBuilderImpl(name, settlement, robotType);
+	public static RobotBuilder<?> create(String name, Settlement settlement, RobotSpec spec) {
+		return new RobotBuilderImpl(name, settlement, spec);
 	}
 
 	/**
@@ -198,8 +209,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// Construct the BotMind instance.
 		botMind = new BotMind(this);
-		// Construct the SystemCondition instance.
-		health = new SystemCondition(this);
+
 		// Set base mass
 		setBaseMass(100);
 		// Set height

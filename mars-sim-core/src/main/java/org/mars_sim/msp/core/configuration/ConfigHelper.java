@@ -21,6 +21,17 @@ public class ConfigHelper {
 	private static final String LENGTH = "length";
 	private static final String FACING = "facing";
 	
+		
+	/**
+	 * Convert a text label into a format that is suitable to bne used for an Enum.valueof method.
+	 * This involves changing to upper case and repalicing ' ' & '-' with a '_'
+	 * @param text
+	 * @return
+	 */
+	public static String convertToEnumName(String text) {
+		return text.replaceAll("[ -]", "_").toUpperCase().trim();
+	}
+
 	/**
 	 * Parse an element that conforms to the Bounded Object pattern of x,y,w,h,f
 	 * @param element

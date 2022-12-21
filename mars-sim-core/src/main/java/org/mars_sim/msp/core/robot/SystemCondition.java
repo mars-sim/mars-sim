@@ -8,9 +8,7 @@
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -59,21 +57,13 @@ public class SystemCondition implements Serializable {
      * Constructor 2.
      * @param robot The robot requiring a physical presence.
      */
-    public SystemCondition(Robot newRobot) {
+    public SystemCondition(Robot newRobot, RobotSpec spec) {
         robot = newRobot;
         performance = 1.0D;
         operable = true;
 
-        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
-        try {
-        	lowPowerPercent = robotConfig.getLowPowerModePercent();
-        	standbyPower = robotConfig.getStandbyPowerConsumption();
-        }
-        catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot config low power mode start time: "+ e.getMessage());
-        }
-
+        lowPowerPercent = spec.getLowPowerModePercent();
+        standbyPower = spec.getStandbyPowerConsumption();
         updateLowPowerMode();
     }
 
