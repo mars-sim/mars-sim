@@ -162,7 +162,7 @@ public class RobotConfig {
 	 */
 	public RobotSpec getRobotSpec(RobotType type, String make) {
 		List<RobotSpec> matches = specs.stream().filter(s -> (s.getRobotType() == type)
-													&& ((make == null) || (make.equals(s.getMakeModel()))))
+													&& ((make == null) || (make.equalsIgnoreCase(s.getMakeModel()))))
 										.collect(Collectors.toList());
 		// Return the first match
 		if (matches.isEmpty()) {

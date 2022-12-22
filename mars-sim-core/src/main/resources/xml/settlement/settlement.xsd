@@ -38,6 +38,14 @@
         </xs:complexType>
     </xs:element>
     
+    <xs:element name="robot">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="name" type="xs:string"  use="optional"/>
+            <xs:attribute name="model" type="xs:string"  use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="equipment">
         <xs:complexType>
             <xs:attribute name="type" type="xs:string"/>
@@ -86,6 +94,7 @@
             <xs:sequence>
                 <xs:element ref="building"  maxOccurs="unbounded"/>
                 <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>

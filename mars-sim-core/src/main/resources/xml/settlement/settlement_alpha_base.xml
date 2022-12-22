@@ -323,6 +323,11 @@
     <vehicle type="Cargo Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="3" />
     <vehicle type="Delivery Drone" number="3" />
+ 
+    <!-- Robots -->
+    <robot name="Huey" type="GardenBot" model="Advanced"/>
+    <robot name="Dewey" type="GardenBot" model="Advanced"/>
+    <robot name="Louie" type="GardenBot"/>
 
     <equipment type="EVA Suit" number="48" />
 
@@ -334,7 +339,9 @@
 	<equipment type="specimen box" number="120" />
     <equipment type="thermal bottle" number="24" />	
  	<equipment type="wheelbarrow" number="24" />
- 
+
+
+
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4320" />
 	<resource type="water" amount="21600" />

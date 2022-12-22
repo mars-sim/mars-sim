@@ -48,7 +48,7 @@
 		<robot type="GardenBot" make="standard"
 				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Strength" value="35"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
 				<robotic-attribute name="Teaching" value="10"/>
@@ -58,6 +58,22 @@
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Biology" level="1"/>
+			</skill-list>
+		</robot>
+
+		<robot type="GardenBot" make="advanced"
+				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="15">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="55"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="40"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="2"/>
+				<skill name="Biology" level="2"/>
 			</skill-list>
 		</robot>
 		
