@@ -97,8 +97,6 @@ public class Resupply implements Serializable, Transportable {
 	/** Minimum length of a building connector (meters). */
 	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
-	private static final String EARTH = "Earth";
-
 	// Data members
 	private int newImmigrantNum;
 	private int newBotNum;
@@ -501,9 +499,7 @@ public class Resupply implements Serializable, Transportable {
 			// Find the spec for this robot, take any model
 			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
 
-			Robot robot = Robot.create(newName, settlement, spec)
-					.setCountry(EARTH)
-					.build();
+			Robot robot = new Robot(newName, settlement, spec);
 			robot.initialize();
 
 

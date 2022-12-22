@@ -45,12 +45,10 @@ public class SystemCondition implements Serializable {
 
     private double lowPowerPercent;
 
-	/** The max energy capacity of the robot in kWh. */
-	private static final double MAX_CAPACITY = 10D;
-
 	/** The current energy of the robot in kWh. */
-	private double currentEnergy = RandomUtil.getRandomDouble(1, MAX_CAPACITY);
-	
+	private double currentEnergy;
+	private double maxCapacity;
+
     private Robot robot;
 
     /**
@@ -64,6 +62,8 @@ public class SystemCondition implements Serializable {
 
         lowPowerPercent = spec.getLowPowerModePercent();
         standbyPower = spec.getStandbyPowerConsumption();
+        maxCapacity = spec.getMaxCapacity();
+        currentEnergy = RandomUtil.getRandomDouble(1, maxCapacity);
         updateLowPowerMode();
     }
 
@@ -77,7 +77,6 @@ public class SystemCondition implements Serializable {
      * @param time amount of time passing (in millisols)
      * @param support life support system.
      * @param config robot configuration.
-     * @return True still alive.
      */
     public boolean timePassing(double time) {
 
@@ -190,14 +189,14 @@ public class SystemCondition implements Serializable {
      * @return
      */
     public double getBatteryState() {
-    	return (currentEnergy * 100D) / MAX_CAPACITY;
+    	return (currentEnergy * 100D) / maxCapacity;
     }
     
     /**
      * Get teh maximum battery capacity in kWh.
      */
     public double getBatteryCapacity() {
-        return MAX_CAPACITY;
+        return maxCapacity;
     }
 
     /**
@@ -217,8 +216,9 @@ public class SystemCondition implements Serializable {
      */
     public double deliverEnergy(double kWh) {
     	double newEnergy = currentEnergy + kWh;
-    	if (newEnergy > .95 * MAX_CAPACITY) {
-    		newEnergy = .95 * MAX_CAPACITY;
+        double targetEnergy = 0.95 * maxCapacity;
+    	if (newEnergy > targetEnergy) {
+    		newEnergy = targetEnergy;
     		isCharging = false;
     	}
     	double diff = newEnergy - currentEnergy;

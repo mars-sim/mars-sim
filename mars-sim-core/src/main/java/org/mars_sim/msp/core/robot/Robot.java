@@ -108,14 +108,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
-	/** The birthplace of the robot. */
-	private String birthplace;
-	/** The birth time of the robot. */
-	private String birthTimeStamp;
-	/** The country of the robot made. */
-	private String country;
-	/** The sponsor of the robot. */
-	private String sponsor;
+	private String model;
 
 	/** Settlement position (meters) from settlement center. */
 	private LocalPosition position;
@@ -132,7 +125,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
-	protected MalfunctionManager malfunctionManager;
+	private MalfunctionManager malfunctionManager;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 
@@ -144,13 +137,19 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @param settlement
 	 * @param spec
 	 */
-	protected Robot(String name, Settlement settlement, RobotSpec spec) {
+	public Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement.getCoordinates());
 
 		// Initialize data members.
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 		this.robotType = spec.getRobotType();
 		this.position = LocalPosition.DEFAULT_POSITION;
+		this.model = spec.getMakeModel();
+
+		// Set base mass
+		setBaseMass(spec.getMass());
+		// Set height
+		height = spec.getHeight();
 
 		isSalvaged = false;
 		salvageInfo = null;
@@ -174,18 +173,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 	}
 
-	/*
-	 * Uses static factory method to create an instance of RobotBuilder.
-	 * 
-	 * @param name
-	 * @param settlement
-	 * @param robotType
-	 * @return
-	 */
-	public static RobotBuilder<?> create(String name, Settlement settlement, RobotSpec spec) {
-		return new RobotBuilderImpl(name, settlement, spec);
-	}
-
 	/**
 	 * Initializes the robot object.
 	 */
@@ -205,15 +192,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
 		// Set up the time stamp for the robot
-		birthTimeStamp = createBirthTimeStamp();
+		createBirthDate();
 
 		// Construct the BotMind instance.
 		botMind = new BotMind(this);
 
-		// Set base mass
-		setBaseMass(100);
-		// Set height
-		height = 150;
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set carry capacity
@@ -223,23 +206,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Create a string representing the birth time of the person.
+	 * Create birth time of the robot.
 	 *
-	 * @return birth time string.
 	 */
-	private String createBirthTimeStamp() {
-		StringBuilder s = new StringBuilder();
+	private void createBirthDate() {
 		// Set a birth time for the person
 		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
-		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
-		s.append(year);
-
 		month = RandomUtil.getRandomInt(11) + 1;
-		s.append("-");
-		if (month < 10)
-			s.append(0);
-		s.append(month).append("-");
-
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
 				day = RandomUtil.getRandomInt(28) + 1;
@@ -247,10 +220,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				day = RandomUtil.getRandomInt(27) + 1;
 			}
 		}
-
 		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
 			day = RandomUtil.getRandomInt(30) + 1;
-		} else {
+		}
+		else {
 			day = RandomUtil.getRandomInt(29) + 1;
 		}
 
@@ -259,27 +232,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			logger.warning(this, "date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
-
-		if (day < 10)
-			s.append(0);
-		s.append(day).append(" ");
-
-		int hour = RandomUtil.getRandomInt(23);
-		if (hour < 10)
-			s.append(0);
-		s.append(hour).append(":");
-
-		int minute = RandomUtil.getRandomInt(59);
-		if (minute < 10)
-			s.append(0);
-		s.append(minute).append(":");
-
-		int second = RandomUtil.getRandomInt(59);
-		if (second < 10)
-			s.append(0);
-		s.append(second).append(".000");
-
-		return s.toString();
 	}
 
 	/**
@@ -446,10 +398,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return health;
 	}
 
-	MedicalAid getAccessibleAid() {
-		return null;
-	}
-
 	/**
 	 * Returns the robot's mind
 	 *
@@ -525,19 +473,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return robotType;
 	}
 
-	public void setRobotType(RobotType t) {
-		this.robotType = t;
-	}
-
 	/**
-	 * Gets the birthplace of the robot
-	 *
-	 * @return the birthplace
-	 * @deprecated TODO internationalize the place of birth for display in user
-	 *             interface.
+	 * Get the mode of the robot.
 	 */
-	public String getBirthplace() {
-		return birthplace;
+	public String getModel() {
+		return model;
 	}
 
 	/**
@@ -726,25 +666,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
 		skill = (int) Math.round(skill / 7D);
 		return skill;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String c) {
-		this.country = c;
-		if (c != null)
-			birthplace = "Earth";
-		else
-			birthplace = "Mars";
-	}
-
-	/*
-	 * Sets sponsoring agency for the person
-	 */
-	public void setSponsor(String sponsor) {
-		this.sponsor = sponsor;
 	}
 
 	public Settlement findSettlementVicinity() {
@@ -1709,6 +1630,5 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		health = null;
 		skillManager.destroy();
 		skillManager = null;
-		birthTimeStamp = null;
 	}
 }

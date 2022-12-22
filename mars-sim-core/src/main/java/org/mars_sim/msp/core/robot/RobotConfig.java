@@ -47,6 +47,9 @@ public class RobotConfig {
 	private static final String SKILL_LIST = "skill-list";
 	private static final String SKILL = "skill";
 	private static final String LEVEL = "level";
+	private static final String MAX_CAPACITY = "max-capacity";
+	private static final String HEIGHT = "height";
+	private static final String MASS = "mass";
 
 	// min-air-pressure
 	private double minap;
@@ -107,6 +110,10 @@ public class RobotConfig {
 			double standbyPower = ConfigHelper.getOptionalAttributeDouble(listElement, STANDBY_POWER_CONSUMPTION, 0.05D);
 			double fcr = ConfigHelper.getOptionalAttributeDouble(listElement, FUEL_CONSUMPTION_RATE, 1D);
 			double lowPower = ConfigHelper.getOptionalAttributeDouble(listElement, LOW_POWER_MODE, 20D);
+			double maxCapacity = ConfigHelper.getOptionalAttributeDouble(listElement, MAX_CAPACITY, 10D);
+			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
+			int mass = ConfigHelper.getOptionalAttributeInt(listElement, MASS, 100);
+
 
 			// Attributes
 			Element attributeListElement = listElement.getChild(ROBOTIC_ATTRIBUTE_LIST);
@@ -138,7 +145,8 @@ public class RobotConfig {
 
 			RobotSpec spec = new RobotSpec(
 					robotType, robotMake, 
-					standbyPower, fcr, lowPower,
+					standbyPower, fcr, lowPower, maxCapacity,
+					height, mass,
 					attributeMap,
 					skillMap);
 

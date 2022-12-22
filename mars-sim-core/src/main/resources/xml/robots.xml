@@ -17,6 +17,9 @@
 	<!ATTLIST robot standby-power-consumption  CDATA #IMPLIED>
 	<!ATTLIST robot fuel-consumption-rate CDATA #IMPLIED>
 	<!ATTLIST robot low-power-mode CDATA #IMPLIED>
+	<!ATTLIST robot max-capacity CDATA #IMPLIED>
+	<!ATTLIST robot mass CDATA #IMPLIED>
+	<!ATTLIST robot height CDATA #IMPLIED>
 	<!ELEMENT robotic-attribute-list (robotic-attribute*)>
 	<!ELEMENT robotic-attribute EMPTY>
 	<!ATTLIST robotic-attribute name CDATA #REQUIRED>
@@ -45,7 +48,7 @@
 	<!-- List of robot type -->
 	<robot-list>
 
-		<robot type="GardenBot" make="standard"
+		<robot type="GardenBot" make="Standard" mass="60" height="100"
 				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="35"/>
@@ -61,8 +64,9 @@
 			</skill-list>
 		</robot>
 
-		<robot type="GardenBot" make="advanced"
-				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="15">
+		<robot type="GardenBot" make="Advanced" mass="60" height="100"
+				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="15"
+				max-capacity="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="55"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -77,7 +81,7 @@
 			</skill-list>
 		</robot>
 		
-		<robot type="MakerBot" make="standard"
+		<robot type="MakerBot" make="Standard"
 					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -93,7 +97,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot type="RepairBot" make="standard"
+		<robot type="RepairBot" make="Standard"
 					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -109,7 +113,7 @@
 			</skill-list>
 		</robot>			
 		
-		<robot type="ChefBot" make="standard"
+		<robot type="ChefBot" make="Standard"
 					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -125,7 +129,7 @@
 			</skill-list>
 		</robot>
 	
-		<robot type="MedicBot" make="standard"
+		<robot type="MedicBot" make="Standard" mass="90"
 					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -142,7 +146,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot type="ConstructionBot" make="standard"
+		<robot type="ConstructionBot" make="Standard" mass="120" height="160"
 				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -159,7 +163,7 @@
 			</skill-list>
 		</robot>
 		
-		<robot type="DeliveryBot" make="standard"
+		<robot type="DeliveryBot" make="Standard" mass="50" height="80" max-capacity="20"
 					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>

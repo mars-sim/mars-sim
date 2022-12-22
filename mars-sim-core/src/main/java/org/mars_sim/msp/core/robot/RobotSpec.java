@@ -29,9 +29,14 @@ public class RobotSpec implements Serializable {
 	private double fcr;
 	private double standbyPower;
 	private double lowPowerMode;
+	private double maxCapacity;
+
+	private int height;
+	private int mass;
 
 	public RobotSpec(RobotType robotType, String makeModel,
-			double standbyPower, double fcr, double lowPowerMode,
+			double standbyPower, double fcr, double lowPowerMode, double maxCapacity,
+			int height, int mass,
 			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
 		this.robotType = robotType;
 		this.makeModel = makeModel;
@@ -40,6 +45,9 @@ public class RobotSpec implements Serializable {
 		this.standbyPower = standbyPower;
 		this.lowPowerMode = lowPowerMode;
 		this.fcr = fcr;
+		this.maxCapacity = maxCapacity;
+		this.height = height;
+		this.mass = mass;
 	}
 
 	/**
@@ -99,4 +107,16 @@ public class RobotSpec implements Serializable {
 	public final Map<SkillType, Integer> getSkillMap() {
 		return skillMap;
 	}
+
+    public double getMaxCapacity() {
+        return maxCapacity;
+    }
+
+	public int getMass() {
+		return mass;
+	}
+
+    public int getHeight() {
+        return height;
+    }
 }

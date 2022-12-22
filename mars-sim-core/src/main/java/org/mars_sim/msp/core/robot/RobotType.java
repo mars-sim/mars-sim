@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.robot;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -27,8 +21,6 @@ public enum RobotType {
 	;
 	
 	private String name;
-
-	private static Set<Integer> idSet;
 	
 	/** hidden constructor. */
 	private RobotType(String name) {
@@ -53,55 +45,6 @@ public enum RobotType {
 		return this.name;
 	}
 
-	/**
-	 * Returns the robot type enum.
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static RobotType valueOfIgnoreCase(String s) {
-		return valueOf(s.toUpperCase());
-	}
-
-	/**
-	 * Gets an array of internationalized robot type in alphabetical order.
-	 * 
-	 * @return a string array
-	 */
-	public static String[] getNames() {
-		List<String> list = new ArrayList<String>();
-		for (RobotType value : RobotType.values()) {
-			list.add(value.getName());
-		}
-		Collections.sort(list);
-		return list.toArray(new String[] {});
-	}
-	
-	/**
-	 * Gets a set of robot resource ids
-	 * 
-	 * @return
-	 */
-	public static Set<Integer> getIDs() {
-		if (idSet == null) {
-			idSet = new HashSet<Integer>();
-			for (RobotType e : RobotType.values()) {
-				idSet.add(e.ordinal() + ResourceUtil.FIRST_ROBOT_RESOURCE_ID);
-			}
-		}
-		return idSet;
-	}
-	
-	/**
-	 * Convert robot id to vehicle type
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public static RobotType convertID2Type(int id) {
-		return RobotType.values()[id - ResourceUtil.FIRST_ROBOT_RESOURCE_ID];
-	}
-	
 	/**
 	 * Convert an robot type to the associated resourceID.
 	 * Note : Needs revisiting. Equipment should be referenced by the RobotType enum.

@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -62,15 +61,12 @@ public final class SettlementBuilder {
 	
 	private static SimLogger logger = SimLogger.getLogger(SettlementBuilder.class.getName());
 
-	public static final String EARTH = "Earth";
-
 	// Change this to fore details time measurement on creation
 	private static final boolean MEASURE_PHASES = false;
 
 	private UnitManager unitManager;
 
 	private SettlementConfig settlementConfig;
-	private PersonConfig personConfig;
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
 	private ReportingAuthorityFactory raFactory;
@@ -79,7 +75,6 @@ public final class SettlementBuilder {
 		super();
 		this.unitManager = sim.getUnitManager();
 		this.settlementConfig = simConfig.getSettlementConfiguration();
-		this.personConfig = simConfig.getPersonConfig();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
 	}
@@ -284,9 +279,7 @@ public final class SettlementBuilder {
 	 * @param name New name
 	 */
 	private void buildRobot(Settlement settlement, RobotSpec spec, String name) {
-		Robot robot = Robot.create(name, settlement, spec)
-				.setCountry(EARTH)
-				.build();
+		Robot robot = new Robot(name, settlement, spec);
 		robot.initialize();
 
 		RobotJob robotJob = JobUtil.getRobotJob(spec.getRobotType());
