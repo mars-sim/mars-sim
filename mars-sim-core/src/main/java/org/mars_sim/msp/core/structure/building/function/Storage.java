@@ -56,21 +56,21 @@ public class Storage extends Function {
 		Settlement owner = building.getSettlement();
 		// Set up equipment inventory
 		EquipmentInventory inv = owner.getEquipmentInventory();
-		// Set the capacities of resources from this building.
+		
+		// Set the specific capacities of resources from this building.
 		inv.setResourceCapacityMap(resourceCapacities, true);
-
+		
+		// Get the stock/general/cargo capacity
 		double stockCapacity = spec.getCapacity();
-		// Add stock or general or cargo capacity to this building.
+		// Add the stock/general/cargo capacity to this building.
 		inv.addCargoCapacity(stockCapacity);
 
+		// Account for the initial specific resources available for each building
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
-
-
 		// Add initial resources to this building.
 		for (Entry<Integer, Double> i : initialResources.entrySet()) {
 			double initialAmount = i.getValue();
 			int resourceId = i.getKey();
-
 			// Stores this resource in this building.
 			double excess = inv.storeAmountResource(resourceId, initialAmount);
 			if (excess > 0D) {
@@ -137,8 +137,7 @@ public class Storage extends Function {
 	}
 
 	/**
-	 * Gets a map of the resources this building is capable of storing and their
-	 * amounts in kg.
+	 * Gets a map of the resource capacities this building is capable of storing in kg.
 	 *
 	 * @return Map of resource keys and amount Double values.
 	 */

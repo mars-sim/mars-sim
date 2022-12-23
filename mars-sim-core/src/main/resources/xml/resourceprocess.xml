@@ -272,8 +272,7 @@
 		<output resource="akaganeite" rate="2.0"  />
 		<output resource="bassanite" rate="2.0"  />
 
-		<output resource="sand" rate="80.0"  />
-		<output resource="oxygen" rate="2.0"  />
+		<output resource="sand" rate="82.0"  />
 	</process>
 				
 	<process name="Extract nitrogen compounds from regolith" power-required="0.01" >
@@ -419,6 +418,12 @@
 			<output resource="copper" rate="28.7"  />
 			<output resource="carbon dioxide" rate="19.9"  />
 			<output resource="grey water" rate="4.1"  />
+	</process>
+	
+	<process name="Do Sylvite smelting" power-required="1.3" >
+			<input resource="sylvite" rate="50.0"  />
+			<output resource="potassium" rate="26.2"  />
+			<output resource="chlorine" rate="23.8"  />
 	</process>
 
 	<process name="Extract minerals from basaltic deposits" power-required="0.1" >

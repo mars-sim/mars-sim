@@ -1,12 +1,9 @@
 package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
-
-import junit.framework.TestCase;
 
 public class TestMalfunction extends AbstractMarsSimUnitTest {
 
