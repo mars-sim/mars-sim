@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotDemand;
 import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -126,14 +127,6 @@ public final class SettlementBuilder {
 		// TOCO get off the Initial Settlement
 		String crew = spec.getCrew();
 
-		// Create pre-configured robots as stated in Settlement template
-		createPreconfiguredRobots(template, settlement);
-		outputTimecheck(settlement, watch, "Create Preconfigured Robots");
-
-		// Create more robots to fill the settlement(s)
-		createRobots(settlement);
-		outputTimecheck(settlement, watch, "Create Robots");
-
 		// Create settlers to fill the settlement(s)
 		if ((crew != null) && (crewConfig != null)) {
 			createPreconfiguredPeople(settlement, crew);
@@ -141,10 +134,18 @@ public final class SettlementBuilder {
 		}
 		createPeople(settlement);
 		outputTimecheck(settlement, watch, "Create People");
-
+		
 		// Manually add job positions
 		settlement.tuneJobDeficit();
 		outputTimecheck(settlement, watch, "Tune Job");
+
+		// Create pre-configured robots as stated in Settlement template
+		createPreconfiguredRobots(template, settlement);
+		outputTimecheck(settlement, watch, "Create Preconfigured Robots");
+
+		// Create more robots to fill the settlement(s)
+		createRobots(settlement);
+		outputTimecheck(settlement, watch, "Create Robots");
 
 		watch.stop();
 		if (MEASURE_PHASES) {
@@ -257,10 +258,12 @@ public final class SettlementBuilder {
 	private void createRobots(Settlement settlement) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
 		int initial = settlement.getInitialNumOfRobots();
+		RobotDemand demand = new RobotDemand(settlement);
+
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
 		while (settlement.getIndoorRobotsCount() < initial) {
 			// Get a robotType randomly
-			RobotType robotType = Robot.selectNewRobotType(settlement);
+			RobotType robotType = demand.getBestNewRobot();
 
 			// Adopt Static Factory Method and Factory Builder Pattern
 			String newName = Robot.generateName(robotType);

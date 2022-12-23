@@ -62,7 +62,6 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
@@ -438,7 +437,6 @@ public class Simulation implements ClockListener, Serializable {
 		Crop.initializeInstances(cc);
 		Job.initializeInstances(unitManager, missionManager);
 
-
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 
@@ -734,8 +732,6 @@ public class Simulation implements ClockListener, Serializable {
 		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
 		ResourceProcess.initializeInstances(marsClock);
 		Job.initializeInstances(unitManager, missionManager);
-		RobotJob.initializeInstances(unitManager, missionManager);
-//		CreditEvent.initializeInstances(unitManager, missionManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		

@@ -7,17 +7,18 @@
 package org.mars_sim.msp.core.robot.ai.job;
 
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Architect class represents an architect job focusing on construction of buildings, settlement
  * and other structures.
  */
-public class Constructionbot
-extends RobotJob { 
+public class Constructionbot extends RobotJob { 
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static final double POP_PER_BOT = 25;
 
 	//private static final Logger logger = Logger.getLogger(Architect.class.getName());
 
@@ -25,26 +26,23 @@ extends RobotJob {
 	public Constructionbot() {
 		// Use Job constructor.
 		super();
-
-		// Add architect-related missions.
-		//jobMissionStarts.add(BuildingConstructionMission.class);
-		//jobMissionJoins.add(BuildingConstructionMission.class);
-		//jobMissionStarts.add(BuildingSalvageMission.class);
-		//jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
+	/**
+	 * Assessment is based on the Objective of the Settlement.
+	 */
 	@Override
-	public double getSettlementNeed(Settlement settlement) {
+	public double getOptimalCount(Settlement settlement) {
 		double result = 0D;
-		// Add number of buildings currently at settlement.
-		result += settlement.getBuildingManager().getNumBuildings() / 10D;
+
+		if (settlement.getObjective() == ObjectiveType.BUILDERS_HAVEN) {
+			result = 1D + (settlement.getAllAssociatedPeople().size() / POP_PER_BOT);
+		}
 		return result;
 	}
 
 	@Override
 	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }
