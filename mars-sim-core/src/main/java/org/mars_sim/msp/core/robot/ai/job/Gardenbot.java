@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -21,11 +18,11 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 /**
  * The Gardenbot class represents a job for a gardenbot.
  */
-public class Gardenbot
-extends RobotJob {
+public class Gardenbot extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static final double M_PER_BOT = 200;
 
 	//private static final Logger logger = Logger.getLogger(Botanist.class.getName());
 
@@ -42,7 +39,7 @@ extends RobotJob {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
-	// TODO: use capability of the person who programs it
+	@Override
 	public double getCapability(Robot robot) {
 
 		double result = 10D;
@@ -64,19 +61,15 @@ extends RobotJob {
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
-	public double getSettlementNeed(Settlement settlement) {
-		double result = 5D;
+	@Override
+	public double getOptimalCount(Settlement settlement) {
+		double growingArea = 0;
 
 		// Add (growing area in greenhouses) / 10
-		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
-		Iterator<Building> j = greenhouseBuildings.iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.FARMING)) {
 			Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
-			result += (farm.getGrowingArea() / 8D); // changed from /10D to /5D
+			growingArea += farm.getGrowingArea();
 		}
-	    //System.out.println("getSettlementNeed() : result is " + result);
-		return result;
+		return growingArea/M_PER_BOT;
 	}
-
 }

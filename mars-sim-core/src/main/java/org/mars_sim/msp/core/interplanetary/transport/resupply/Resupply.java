@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -40,6 +40,9 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotDemand;
+import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -94,8 +97,6 @@ public class Resupply implements Serializable, Transportable {
 
 	/** Minimum length of a building connector (meters). */
 	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
-
-	private static final String EARTH = "Earth";
 
 	// Data members
 	private int newImmigrantNum;
@@ -184,7 +185,7 @@ public class Resupply implements Serializable, Transportable {
 		}
 		
 		// Deliver the rest of the supplies and add people.
-		deliverOthers(sim.getUnitManager(), sc.getPersonConfig());
+		deliverOthers(sim.getUnitManager(), sc.getPersonConfig(), sc.getRobotConfiguration());
 	}
 
 	/**
@@ -432,7 +433,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @param unitManager 
 	 * @param personConfig 
 	 */
-	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig) {
+	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig, RobotConfig robotConfig) {
 		ReportingAuthority sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
@@ -488,21 +489,19 @@ public class Resupply implements Serializable, Transportable {
 		}
 
 		// Deliver Robots.
-		Collection<Robot> bots = new ConcurrentLinkedQueue<>();
-		
+		RobotDemand demand = new RobotDemand(settlement);
 		for (int x = 0; x < getNewBotNum(); x++) {
 			// Get a robotType randomly
-			RobotType robotType = Robot.selectNewRobotType(settlement);
+			RobotType robotType = demand.getBestNewRobot();
 			// Adopt Static Factory Method and Factory Builder Pattern
 			String newName = Robot.generateName(robotType);
-			Robot robot = Robot.create(newName, settlement, robotType)
-					.setCountry(EARTH)
-					.setSkill(null, robotType)
-					.setAttribute(null)
-					.build();
+			
+			// Find the spec for this robot, take any model
+			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
+
+			Robot robot = new Robot(newName, settlement, spec);
 			robot.initialize();
-			// Set name at its parent class "Unit"
-			robot.setName(newName);
+
 
 			RobotJob robotJob = JobUtil.getRobotJob(robotType);
 			robot.getBotMind().setRobotJob(robotJob, true);
@@ -513,8 +512,6 @@ public class Resupply implements Serializable, Transportable {
 			// Set the container unit
 			robot.setContainerUnit(settlement);
 
-			bots.add(robot);
-
 			logger.config(robot, "Arrived on Mars.");
 
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, robot);
@@ -523,7 +520,7 @@ public class Resupply implements Serializable, Transportable {
 		
 		// Deliver immigrants.
 		// Future: add a crew editor for user to define what team and who to send
-		Collection<Person> immigrants = new ConcurrentLinkedQueue<>();
+		Collection<Person> immigrants = new ArrayList<>();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {

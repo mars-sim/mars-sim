@@ -10,9 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -34,10 +31,6 @@ public abstract class RobotJob implements Serializable {
 	protected List<Class<?>> jobMissionStarts;
 	/** List of missions to be joined by a person with this job. */
 	protected List<Class<?>> jobMissionJoins;
-
-	private static Simulation sim = Simulation.instance();
-	public static MissionManager missionManager = sim.getMissionManager();
-	protected static UnitManager unitManager = sim.getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -85,21 +78,10 @@ public abstract class RobotJob implements Serializable {
 	}
 
 	/**
-	 * Gets the base settlement need for this job.
+	 * Gets the optimal number of this type of Robot a Settlement needs.
 	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
-	public abstract double getSettlementNeed(Settlement settlement);
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param u {@link UnitManager}
-	 * @param m {@link MissionManager}
-	 */
-	public static void initializeInstances(UnitManager u, MissionManager m) {
-		unitManager = u;
-		missionManager = m;
-	}
+	public abstract double getOptimalCount(Settlement settlement);
 }

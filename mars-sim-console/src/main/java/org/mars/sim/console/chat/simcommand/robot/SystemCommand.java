@@ -32,6 +32,9 @@ public class SystemCommand extends AbstractUnitCommand {
         StructuredResponse response = new StructuredResponse();
         Robot robot = ((Robot) source);
         SystemCondition sc = robot.getSystemCondition();
+        response.appendLabeledString("Type", robot.getRobotType().getName());
+        response.appendLabeledString("Model", robot.getModel());
+
         response.appendLabeledString("Battery Power", String.format(CommandHelper.PERC_FORMAT,
                                                                                         sc.getBatteryState()));
         response.appendLabeledString("Low Power Threshold", String.format(CommandHelper.PERC_FORMAT,

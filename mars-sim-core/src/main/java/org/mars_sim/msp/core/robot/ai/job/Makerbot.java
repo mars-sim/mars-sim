@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -21,10 +18,10 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 /**
  * The Makerbot class represents an engineer job focusing on manufacturing goods
  */
-public class Makerbot
-extends RobotJob {
+public class Makerbot extends RobotJob {
 
 	private static final long serialVersionUID = 1L;
+	private static final double PROCESSES_PER_BOT = 4;
 
 	//	private static final Logger logger = Logger.getLogger(Engineer.class.getName());
 
@@ -39,6 +36,7 @@ extends RobotJob {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
+	@Override
 	public double getCapability(Robot robot) {
 
 		double result = 0D;
@@ -54,24 +52,20 @@ extends RobotJob {
 	}
 
 	/**
-	 * Gets the base settlement need for this job.
+	 * Gets the base settlement need for this job. Based on the number of manufacturing points
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
-	public double getSettlementNeed(Settlement settlement) {
+	@Override
+	public double getOptimalCount(Settlement settlement) {
 
-		double result = 0D;
-
-		// Add (tech level * process number / 2) for all manufacture buildings.
-		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
-		Iterator<Building> i = manufactureBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		double processes = 0D;
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
 			Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
-			result += workshop.getTechLevel() * workshop.getMaxProcesses() / 2D;
+			processes += workshop.getMaxProcesses();
 		}
 
-		return result;
+		return processes/PROCESSES_PER_BOT;
 	}
 
 }

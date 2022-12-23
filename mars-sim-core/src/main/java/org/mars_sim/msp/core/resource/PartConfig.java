@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.goods.GoodType;
 
 
@@ -94,7 +95,7 @@ public final class PartConfig implements Serializable {
 			// Get type.
 			String type = partElement.getAttributeValue(TYPE);
 			
-			GoodType goodType = GoodType.convertName2Enum(type);
+			GoodType goodType = GoodType.valueOf(ConfigHelper.convertToEnumName(type));
 			
 			if (type == null || goodType == null)
 				throw new IllegalStateException(

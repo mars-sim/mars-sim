@@ -53,49 +53,7 @@ public class SkillManager implements Serializable {
 		skills = new ConcurrentHashMap<>();
 	}
 
-	/**
-	 * Sets some random skills for a bot.
-	 * 
-	 * @param t
-	 */
-	public void setBotSkills(RobotType t) {
-		// Add basic skills to a bot.
-		List<SkillType> skills = new ArrayList<>();
-		if (t == RobotType.MAKERBOT) {
-			skills.add(SkillType.MATERIALS_SCIENCE);
-			skills.add(SkillType.PHYSICS);
-		}
-		else if (t == RobotType.GARDENBOT) {
-			skills.add(SkillType.BOTANY);
-			skills.add(SkillType.BIOLOGY);
-		}
-		else if (t == RobotType.REPAIRBOT) {
-			skills.add(SkillType.MATERIALS_SCIENCE);
-			skills.add(SkillType.MECHANICS);
-		}
-		else if (t == RobotType.CHEFBOT) {
-			skills.add(SkillType.CHEMISTRY);
-			skills.add(SkillType.COOKING);
-		}
-		else if (t == RobotType.MEDICBOT) {
-			skills.add(SkillType.CHEMISTRY);
-			skills.add(SkillType.MEDICINE);
-			skills.add(SkillType.PSYCHOLOGY);
-		}
-		else if (t == RobotType.DELIVERYBOT) {
-			skills.add(SkillType.PILOTING);
-			skills.add(SkillType.TRADING);
-		}
-		else if (t == RobotType.CONSTRUCTIONBOT) {
-			skills.add(SkillType.AREOLOGY);
-			skills.add(SkillType.CONSTRUCTION);
-		}
-		
-		for (SkillType startingSkill : skills) {
-			int skillLevel = 1;
-			addNewSkillNExperience(startingSkill, skillLevel);
-		}
-	}
+
 	
 	/**
 	 * Sets some random skills for a person.
@@ -152,10 +110,6 @@ public class SkillManager implements Serializable {
 					skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6.0));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
-//				else if (rand == 3) {
-//					skillLevel = getInitialSkillLevel(3, (int)(1.25 + ageFactor/4));
-//					addNewSkillNExperience(startingSkill, skillLevel);
-//				}
 			}
 		}
 	}

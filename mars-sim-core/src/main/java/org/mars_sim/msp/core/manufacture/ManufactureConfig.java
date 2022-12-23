@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -23,10 +23,7 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
-public class ManufactureConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class ManufactureConfig {
 
 	private static final Logger logger = Logger.getLogger(ManufactureConfig.class.getName());
 
@@ -207,7 +204,7 @@ public class ManufactureConfig implements Serializable {
 			equipmentItem.setType(ItemType.EQUIPMENT);
 			String equipmentName = equipmentElement.getAttributeValue(NAME);
 
-			EquipmentType eType = EquipmentType.convertName2Enum(equipmentName);
+			EquipmentType eType = EquipmentType.valueOf(ConfigHelper.convertToEnumName(equipmentName));
 			if (eType != null) {
 				equipmentItem.setName(equipmentName);
 				equipmentItem.setAmount(Integer.parseInt(equipmentElement.getAttributeValue(NUMBER)));

@@ -6,23 +6,20 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Deliverybot
-extends RobotJob {
+public class Deliverybot extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double TRADING_RANGE = 2500D;
-	private static final double SETTLEMENT_MULTIPLIER = 3D;
+	private static final double POP_PER_BOT = 15D;
 
 	/**
 	 * Constructor.
@@ -32,12 +29,6 @@ extends RobotJob {
 		super();
 		
         jobMissionStarts.add(Delivery.class);
-        
-		//jobMissionStarts.add(Trade.class);
-		//jobMissionJoins.add(Trade.class);
-        //jobMissionStarts.add(TravelToSettlement.class);
-		//jobMissionJoins.add(TravelToSettlement.class);
-
 	}
 
 	/**
@@ -45,6 +36,7 @@ extends RobotJob {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
+	@Override
 	public double getCapability(Robot robot) {
 
 		double result = 0D;
@@ -70,18 +62,13 @@ extends RobotJob {
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
-	public double getSettlementNeed(Settlement settlement) {
+	@Override
+	public double getOptimalCount(Settlement settlement) {
 
-        double result = 0D;
-
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            Settlement otherSettlement = i.next();
-            if (otherSettlement != settlement) {
-                double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
-                if (distance <= TRADING_RANGE) result += SETTLEMENT_MULTIPLIER;
-            }
-        }
+        double result = settlement.getAllAssociatedPeople().size()/POP_PER_BOT;
+		if (settlement.getObjective() == ObjectiveType.TRADE_CENTER) {
+			result += 1D;
+		}
 
 		return result;
 	}

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,10 +28,8 @@ import org.mars_sim.msp.core.science.ScienceType;
  * Provides configuration information about vehicle units. Uses a DOM document
  * to get the information.
  */
-public class VehicleConfig implements Serializable {
+public class VehicleConfig {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 2L;
 
 	private static final Logger logger = Logger.getLogger(VehicleConfig.class.getName());
 	
@@ -166,11 +163,10 @@ public class VehicleConfig implements Serializable {
 				if (labElement != null) {
 					List<ScienceType> labTechSpecialties = new ArrayList<>();
 					int labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
-					for (Object tech : labElement.getChildren(TECH_SPECIALTY)) {
-						// TODO: make sure the value from xml config conforms with enum values
+					for (Element tech : labElement.getChildren(TECH_SPECIALTY)) {
+						String scienceName = tech.getAttributeValue(VALUE);
 						labTechSpecialties
-								.add(ScienceType.valueOf((((Element) tech).getAttributeValue(VALUE)).toUpperCase() 
-										.replace(" ", "_")));
+								.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(scienceName)));
 					}
 					
 					v.setLabSpec(labTechLevel, labTechSpecialties);
@@ -182,9 +178,9 @@ public class VehicleConfig implements Serializable {
 				List<Part> attachableParts = new ArrayList<>();
 				Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
 				int attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
-				for (Object part : attachmentElement.getChildren(PART)) {
+				for (Element part : attachmentElement.getChildren(PART)) {
 					attachableParts.add((Part) ItemResourceUtil
-							.findItemResource((((Element) part).getAttributeValue(NAME)).toLowerCase()));
+							.findItemResource(((part.getAttributeValue(NAME)).toLowerCase())));
 				}
 				v.setAttachments(attachmentSlots, attachableParts);
 			}

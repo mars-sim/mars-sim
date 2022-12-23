@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,6 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -43,6 +43,8 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotDemand;
+import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -60,15 +62,12 @@ public final class SettlementBuilder {
 	
 	private static SimLogger logger = SimLogger.getLogger(SettlementBuilder.class.getName());
 
-	public static final String EARTH = "Earth";
-
 	// Change this to fore details time measurement on creation
 	private static final boolean MEASURE_PHASES = false;
 
 	private UnitManager unitManager;
 
 	private SettlementConfig settlementConfig;
-	private PersonConfig personConfig;
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
 	private ReportingAuthorityFactory raFactory;
@@ -77,7 +76,6 @@ public final class SettlementBuilder {
 		super();
 		this.unitManager = sim.getUnitManager();
 		this.settlementConfig = simConfig.getSettlementConfiguration();
-		this.personConfig = simConfig.getPersonConfig();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
 	}
@@ -129,16 +127,6 @@ public final class SettlementBuilder {
 		// TOCO get off the Initial Settlement
 		String crew = spec.getCrew();
 
-		// Create pre-configured robots as stated in robots.xml
-		if (crewConfig != null) {
-			createPreconfiguredRobots(settlement);
-			outputTimecheck(settlement, watch, "Create Preconfigured Robots");
-		}
-
-		// Create more robots to fill the settlement(s)
-		createRobots(settlement);
-		outputTimecheck(settlement, watch, "Create Robots");
-
 		// Create settlers to fill the settlement(s)
 		if ((crew != null) && (crewConfig != null)) {
 			createPreconfiguredPeople(settlement, crew);
@@ -146,10 +134,18 @@ public final class SettlementBuilder {
 		}
 		createPeople(settlement);
 		outputTimecheck(settlement, watch, "Create People");
-
+		
 		// Manually add job positions
 		settlement.tuneJobDeficit();
 		outputTimecheck(settlement, watch, "Tune Job");
+
+		// Create pre-configured robots as stated in Settlement template
+		createPreconfiguredRobots(template, settlement);
+		outputTimecheck(settlement, watch, "Create Preconfigured Robots");
+
+		// Create more robots to fill the settlement(s)
+		createRobots(settlement);
+		outputTimecheck(settlement, watch, "Create Robots");
 
 		watch.stop();
 		if (MEASURE_PHASES) {
@@ -262,31 +258,41 @@ public final class SettlementBuilder {
 	private void createRobots(Settlement settlement) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
 		int initial = settlement.getInitialNumOfRobots();
+		RobotDemand demand = new RobotDemand(settlement);
+
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
 		while (settlement.getIndoorRobotsCount() < initial) {
 			// Get a robotType randomly
-			RobotType robotType = Robot.selectNewRobotType(settlement);
+			RobotType robotType = demand.getBestNewRobot();
+
 			// Adopt Static Factory Method and Factory Builder Pattern
 			String newName = Robot.generateName(robotType);
-			Robot robot = Robot.create(newName, settlement, robotType)
-					.setCountry(EARTH)
-					.setSkill(null, robotType)
-					.setAttribute(null)
-					.build();
-			robot.initialize();
-			// Set name at its parent class "Unit"
-			robot.setName(newName);
 
+			// Find the spec for this robot, take any model
+			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
 
-			RobotJob robotJob = JobUtil.getRobotJob(robotType);
-			robot.getBotMind().setRobotJob(robotJob, true);
-
-			unitManager.addUnit(robot);
-
-			settlement.addOwnedRobot(robot);
-			// Set the container unit
-			robot.setContainerUnit(settlement);
+			buildRobot(settlement, spec, newName);
 		}
+	}
+
+	/**
+	 * Build a single Robot in a settlement according to a spec.
+	 * @param settlement Home of the Robot
+	 * @param spec Sepcification of what to build
+	 * @param name New name
+	 */
+	private void buildRobot(Settlement settlement, RobotSpec spec, String name) {
+		Robot robot = new Robot(name, settlement, spec);
+		robot.initialize();
+
+		RobotJob robotJob = JobUtil.getRobotJob(spec.getRobotType());
+		robot.getBotMind().setRobotJob(robotJob, true);
+
+		unitManager.addUnit(robot);
+
+		settlement.addOwnedRobot(robot);
+		// Set the container unit
+		robot.setContainerUnit(settlement);
 	}
 
 	/**
@@ -545,48 +551,37 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates all configured Robots.
+	 * @param template
 	 *
 	 * @throws Exception if error parsing XML.
 	 */
-	private void createPreconfiguredRobots(Settlement settlement) {
-		int size = robotConfig.getNumberOfConfiguredRobots();
+	private void createPreconfiguredRobots(SettlementTemplate template, Settlement settlement) {
+		for(RobotTemplate rt : template.getPredefinedRobots()) {
+			String newName = rt.getName();
 
-		for (int x = 0; x < size; x++) {
-			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			if (settlement.getName().equals(preConfigSettlementName)
-					&& (settlement.getNumBots() <= settlement.getInitialNumOfRobots())) {
-				// Get robot's name (required)
-				String name = robotConfig.getConfiguredRobotName(x);
-
-				// Get robotType
-				RobotType robotType = robotConfig.getConfiguredRobotType(x);
-
-				// Set robot's job (if any).
-				String jobName = robotConfig.getConfiguredRobotJob(x);
-				if (jobName != null) {
-					// Create robot and add to the unit manager.
-
-					// Set robot's configured skills (if any).
-					Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-
-					// Set robot's configured natural attributes (if any).
-					Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-
-					// Adopt Static Factory Method and Factory Builder Pattern
-					Robot robot = Robot.create(name, settlement, robotType)
-							.setCountry(EARTH)
-							.setSkill(skillMap, robotType)
-							.setAttribute(attributeMap)
-							.build();
-					robot.initialize();
-
-					unitManager.addUnit(robot);
-
-					settlement.addOwnedRobot(robot);
-					// Set the container unit
-					robot.setContainerUnit(settlement);
+			if (newName != null) {
+				// Check predefined name does not exist already
+				int idx = 1;
+				Collection<Robot> robots = unitManager.getRobots();
+				boolean goodName = false;
+				while(!goodName) {
+					final String nextName = newName;
+					Optional<Robot> found = robots.stream().filter(r -> r.getName().equals(nextName)).findAny();
+					goodName = found.isEmpty();
+					if (!goodName) {
+						newName = rt.getName() + " #" + idx++;
+					}
 				}
 			}
+			else {
+				// Generate a name
+				newName = Robot.generateName(rt.getType());
+			}
+
+			// Find the spec for this robot, take any model
+			RobotSpec spec = robotConfig.getRobotSpec(rt.getType(), rt.getModel());
+
+			buildRobot(settlement, spec, newName);
 		}
 	}
 

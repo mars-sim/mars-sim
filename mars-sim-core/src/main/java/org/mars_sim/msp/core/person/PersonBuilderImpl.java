@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
@@ -74,7 +75,8 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 			while (i.hasNext()) {
 				String skillName = i.next();
 				int level = skillMap.get(skillName);
-				person.getSkillManager().addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+				person.getSkillManager().addNewSkill(new Skill(SkillType.valueOf(ConfigHelper.convertToEnumName(skillName)),
+													level));
 			}
 		}
 		return this;

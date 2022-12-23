@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 
 /**
@@ -97,10 +98,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String SHIFT_PERC = "pop-percentage";
 	private static final String LEAVE_PERC = "leave-perc";
 	private static final String ROTATION_SOLS = "rotation-sols";
+	private static final String MODEL = "model";
+	private static final String ROBOT = "robot";
 
 	/** Thrse must be present in the settlements.xml */
 	public static final String DEFAULT_3SHIFT = "Standard 3 Shift";
 	public static final String DEFAULT_2SHIFT = "Standard 2 Shift";
+
 
 	private double[] rover_values = new double[] { 0, 0 };
 	private double[][] life_support_values = new double[2][7];
@@ -402,6 +406,15 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String vehicleType = vehicleElement.getAttributeValue(TYPE);
 			int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
 			template.addVehicles(vehicleType, vehicleNumber);
+		}
+
+		// Load robots
+		List<Element> robotNodes = templateElement.getChildren(ROBOT);
+		for (Element robotElement : robotNodes) {
+			RobotType rType = RobotType.valueOf(ConfigHelper.convertToEnumName(robotElement.getAttributeValue(TYPE)));
+			String name = robotElement.getAttributeValue(NAME);
+			String model = robotElement.getAttributeValue(MODEL);
+			template.addRobot(new RobotTemplate(name, rType, model));
 		}
 
 		// Load equipment

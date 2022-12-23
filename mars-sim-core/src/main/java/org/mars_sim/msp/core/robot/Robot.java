@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -39,7 +40,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -107,14 +107,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
-	/** The birthplace of the robot. */
-	private String birthplace;
-	/** The birth time of the robot. */
-	private String birthTimeStamp;
-	/** The country of the robot made. */
-	private String country;
-	/** The sponsor of the robot. */
-	private String sponsor;
+	private String model;
 
 	/** Settlement position (meters) from settlement center. */
 	private LocalPosition position;
@@ -131,7 +124,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
-	protected MalfunctionManager malfunctionManager;
+	private MalfunctionManager malfunctionManager;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 
@@ -141,15 +134,21 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * 
 	 * @param name
 	 * @param settlement
-	 * @param robotType
+	 * @param spec
 	 */
-	protected Robot(String name, Settlement settlement, RobotType robotType) {
+	public Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement.getCoordinates());
 
 		// Initialize data members.
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
-		this.robotType = robotType;
+		this.robotType = spec.getRobotType();
 		this.position = LocalPosition.DEFAULT_POSITION;
+		this.model = spec.getMakeModel();
+
+		// Set base mass
+		setBaseMass(spec.getMass());
+		// Set height
+		height = spec.getHeight();
 
 		isSalvaged = false;
 		salvageInfo = null;
@@ -157,22 +156,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		// set description for this robot
 		super.setDescription(OPERABLE);
 
+		// Construct the SystemCondition instance.
+		health = new SystemCondition(this, spec);
+
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
+		for(Entry<SkillType, Integer> e : spec.getSkillMap().entrySet()) {
+			skillManager.addNewSkillNExperience(e.getKey(), e.getValue());
+		}
+
 		// Construct the RoboticAttributeManager instance.
 		attributes = new RoboticAttributeManager();
-	}
-
-	/*
-	 * Uses static factory method to create an instance of RobotBuilder.
-	 * 
-	 * @param name
-	 * @param settlement
-	 * @param robotType
-	 * @return
-	 */
-	public static RobotBuilder<?> create(String name, Settlement settlement, RobotType robotType) {
-		return new RobotBuilderImpl(name, settlement, robotType);
+		for(Entry<NaturalAttributeType, Integer> a : spec.getAttributeMap().entrySet()) {
+			attributes.setAttribute(a.getKey(), a.getValue());
+		}
 	}
 
 	/**
@@ -194,16 +191,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
 		// Set up the time stamp for the robot
-		birthTimeStamp = createBirthTimeStamp();
+		createBirthDate();
 
 		// Construct the BotMind instance.
 		botMind = new BotMind(this);
-		// Construct the SystemCondition instance.
-		health = new SystemCondition(this);
-		// Set base mass
-		setBaseMass(100);
-		// Set height
-		height = 150;
+
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set carry capacity
@@ -213,23 +205,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Create a string representing the birth time of the person.
+	 * Create birth time of the robot.
 	 *
-	 * @return birth time string.
 	 */
-	private String createBirthTimeStamp() {
-		StringBuilder s = new StringBuilder();
+	private void createBirthDate() {
 		// Set a birth time for the person
 		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
-		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
-		s.append(year);
-
 		month = RandomUtil.getRandomInt(11) + 1;
-		s.append("-");
-		if (month < 10)
-			s.append(0);
-		s.append(month).append("-");
-
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
 				day = RandomUtil.getRandomInt(28) + 1;
@@ -237,10 +219,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				day = RandomUtil.getRandomInt(27) + 1;
 			}
 		}
-
 		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
 			day = RandomUtil.getRandomInt(30) + 1;
-		} else {
+		}
+		else {
 			day = RandomUtil.getRandomInt(29) + 1;
 		}
 
@@ -249,27 +231,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			logger.warning(this, "date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
-
-		if (day < 10)
-			s.append(0);
-		s.append(day).append(" ");
-
-		int hour = RandomUtil.getRandomInt(23);
-		if (hour < 10)
-			s.append(0);
-		s.append(hour).append(":");
-
-		int minute = RandomUtil.getRandomInt(59);
-		if (minute < 10)
-			s.append(0);
-		s.append(minute).append(":");
-
-		int second = RandomUtil.getRandomInt(59);
-		if (second < 10)
-			s.append(0);
-		s.append(second).append(".000");
-
-		return s.toString();
 	}
 
 	/**
@@ -436,10 +397,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return health;
 	}
 
-	MedicalAid getAccessibleAid() {
-		return null;
-	}
-
 	/**
 	 * Returns the robot's mind
 	 *
@@ -515,19 +472,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return robotType;
 	}
 
-	public void setRobotType(RobotType t) {
-		this.robotType = t;
-	}
-
 	/**
-	 * Gets the birthplace of the robot
-	 *
-	 * @return the birthplace
-	 * @deprecated TODO internationalize the place of birth for display in user
-	 *             interface.
+	 * Get the mode of the robot.
 	 */
-	public String getBirthplace() {
-		return birthplace;
+	public String getModel() {
+		return model;
 	}
 
 	/**
@@ -718,25 +667,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return skill;
 	}
 
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String c) {
-		this.country = c;
-		if (c != null)
-			birthplace = "Earth";
-		else
-			birthplace = "Mars";
-	}
-
-	/*
-	 * Sets sponsoring agency for the person
-	 */
-	public void setSponsor(String sponsor) {
-		this.sponsor = sponsor;
-	}
-
 	public Settlement findSettlementVicinity() {
 		return getLocationTag().findSettlementVicinity();
 	}
@@ -793,313 +723,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public static String generateName(RobotType robotType) {
 		int number = unitManager.incrementTypeCount(robotType.name());
 		return String.format("%s %03d", robotType.getName(), number);
-	}
-
-
-	/**
-	 * Obtains a robot type for the specfied Settlement
-	 *
-	 * @param s The Settlement in question
-	 * @return
-	 */
-	public static RobotType selectNewRobotType(Settlement s) {
-
-		// Ordinal numbers: 
-		//  0 CHEFBOT
-		//  1 CONSTRUCTIONBOT
-		//  2 DELIVERYBOT
-		//  3 GARDENBOT
-		//  4 MAKERBOT
-		//  5 MEDICBOT
-		//  6 REPAIRBOT
-		
-		// Note: to be used in numBots[ordinalNum]
-
-		// 3 things that determine which robot type to make:
-		//   A. Based on # of settlers in a settlement (related to B.)
-		//   B. Based on # of bots allowed in a settlement (implemented in this method)
-		//   C. Based on sponsor/country's preference (to be implemented in future)
-
-		int[] numBots = new int[7];
-
-		RobotType robotType = null;
-		int initialNumBots = s.getInitialNumOfRobots();
-
-		// Find out how many in each robot type
-		// already exists in this settlement
-		Iterator<Robot> i = s.getRobots().iterator();
-		while (i.hasNext()) {
-			Robot robot = i.next();
-			RobotType type = robot.getRobotType();
-			int ordinalNum = type.ordinal();
-			numBots[ordinalNum]++;
-		}
-
-		// determine the robotType
-		if (initialNumBots <= 4) {
-			if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;			
-		}
-
-		else if (initialNumBots <= 6) {
-			if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;			
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 1)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
-						robotType = RobotType.DELIVERYBOT;
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 8) {
-			if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 1)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 1)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 12) {
-			if (numBots[4] < 2)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 1)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 2)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 1)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 18) {
-			if (numBots[4] < 2)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 2)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 2)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 2)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 24) {
-			if (numBots[4] < 3)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 3)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 3)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 3)
-				robotType = RobotType.DELIVERYBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 2)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 3)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 2)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 36) {
-			if (numBots[4] < 4)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 4)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 4)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 4)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 4)
-				robotType = RobotType.DELIVERYBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(4);
-				if (rand <= 2) {
-					if (numBots[5] < 3)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 3)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 3)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (initialNumBots <= 48) {
-			if (numBots[4] < 5)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 5)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 5)
-				robotType = RobotType.REPAIRBOT;	
-			else if (numBots[0] < 5)
-				robotType = RobotType.CHEFBOT;	
-			else if (numBots[5] < 3)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[2] < 5)
-				robotType = RobotType.DELIVERYBOT;		
-			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
-					if (numBots[5] < 1)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 2)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 2)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else {
-			if (numBots[4] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < (initialNumBots/12 + RandomUtil.getRandomInt(-2, 2)))
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[3] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
-				robotType = RobotType.GARDENBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
-					if (numBots[2] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else if (numBots[5] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
-						robotType = RobotType.MEDICBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		if (robotType == null) {
-			int rand = RandomUtil.getRandomInt(6);
-			robotType = RobotType.values()[rand];
-		}
-
-		return robotType;
 	}
 
 	/**
@@ -1699,6 +1322,5 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		health = null;
 		skillManager.destroy();
 		skillManager = null;
-		birthTimeStamp = null;
 	}
 }

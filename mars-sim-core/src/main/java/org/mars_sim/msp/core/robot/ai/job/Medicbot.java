@@ -6,26 +6,22 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 
 /** 
  * The Medicbot class represents a job for an medical treatment expert.
  */
-public class Medicbot
-extends RobotJob {
+public class Medicbot extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static final double POP_PER_BOT = 15;
+	private static final double SICKBAY_PER_BOT = 4;
 
 	/** Constructor. */
 	public Medicbot() {
@@ -38,6 +34,7 @@ extends RobotJob {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
+	@Override
 	public double getCapability(Robot robot) {
 
 		double result = 0D;
@@ -57,24 +54,17 @@ extends RobotJob {
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
-	public double getSettlementNeed(Settlement settlement) {
-
-		double result = 1D;
-
-		// Add total population / 10
-		int population = settlement.getNumCitizens();
-		result+= population / 15D; // changed from /10D to /15D
+	@Override
+	public double getOptimalCount(Settlement settlement) {
 
 		// Add (tech level / 2) for all medical infirmaries.
-		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
-		Iterator<Building> j = medicalBuildings.iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
-			MedicalCare infirmary = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
-			result+= (double) infirmary.getTechLevel() ;
-		}			
+		double result = settlement.getAllAssociatedPeople().size()/POP_PER_BOT;
 
-		return result;	
+		// Put a lower limit
+		if (result < 1D) {
+			result = 0D;
+		}
+		return result;
 	}
 
 }

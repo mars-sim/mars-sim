@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.food.FoodType;
 import org.mars_sim.msp.core.goods.GoodType;
 
@@ -21,10 +21,7 @@ import org.mars_sim.msp.core.goods.GoodType;
  * Provides configuration information about amount resources. Uses a DOM
  * document to get the information.
  */
-public class AmountResourceConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class AmountResourceConfig {
 
 	// Element names
 	private static final String TISSUE = FoodType.TISSUE.getName();
@@ -67,13 +64,12 @@ public class AmountResourceConfig implements Serializable {
 
 				String type = resourceElement.getAttributeValue(TYPE);
 
-				GoodType goodType = GoodType.convertName2Enum(type);
+				GoodType goodType = GoodType.valueOf(ConfigHelper.convertToEnumName(type));
 						
 				String description = resourceElement.getText();
 				// Get phase 
 				String phaseString = resourceElement.getAttributeValue(PHASE);
-				// PhaseType phase = PhaseType.valueOf(phaseString);
-				PhaseType phaseType = PhaseType.fromString(phaseString);
+				PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
 
 				// Get the demand modifier
 				double demand = 0;
@@ -135,10 +131,5 @@ public class AmountResourceConfig implements Serializable {
 
 	public int getNextID() {
 		return nextID;
-	}
-
-	public void destroy() {
-		resourceSet = null;
-		tissueCultureSet = null;
 	}
 }

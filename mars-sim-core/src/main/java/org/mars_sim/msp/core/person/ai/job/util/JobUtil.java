@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.job.Psychologist;
 import org.mars_sim.msp.core.person.ai.job.Reporter;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.job.Trader;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -194,33 +193,6 @@ public final class JobUtil {
 		
 		return result;
 	}
-
-	
-	/**
-	 * Gets the remaining settlement need.
-	 * 
-	 * NOTE: determine the need for this method since it promotes robotJob switching
-	 * 
-	 * @param settlement
-	 * @param robotJob
-	 * @return
-	 */
-	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
-		double result = robotJob.getSettlementNeed(settlement);
-
-		// Check all Robots associated with the settlement.
-		Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
-		while (j.hasNext()) {
-			Robot robot = j.next();
-			if (robot.getBotMind().getRobotJob() == robotJob)
-				result -= robotJob.getCapability(robot);
-		}
-
-		result = result / 2D;
-
-		return result;
-	}
-
 	
 	/**
 	 * Gets a new job for the person. Might be the person's current job.

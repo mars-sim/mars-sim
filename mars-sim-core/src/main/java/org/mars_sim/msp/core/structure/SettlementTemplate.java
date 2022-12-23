@@ -48,6 +48,8 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	private ShiftPattern shiftDefn;
 
+	private List<RobotTemplate> robots;
+
 
 	/**
 	 * Constructor. Called by SettlementConfig.java
@@ -73,6 +75,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 		resources = new HashMap<>();
 		parts = new HashMap<>();
 		resupplies = new ArrayList<>();
+		robots = new ArrayList<>();
 	}
 
 	/**
@@ -123,6 +126,13 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 		return defaultNumOfRobots;
 	}
 
+	void addRobot(RobotTemplate newRobot) {
+		robots.add(newRobot);
+	}
+
+	public List<RobotTemplate> getPredefinedRobots() {
+		return Collections.unmodifiableList(robots);
+	}
 	/**
 	 * Gets the default population capacity of the template.
 	 * 
@@ -262,24 +272,5 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {
 		return Collections.unmodifiableList(resupplies);
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		name = null;
-		buildings.clear();
-		buildings = null;
-		vehicles.clear();
-		vehicles = null;
-		equipment.clear();
-		equipment = null;
-		resources.clear();
-		resources = null;
-		parts.clear();
-		parts = null;
-		resupplies.clear();
-		resupplies = null;
 	}
 }
