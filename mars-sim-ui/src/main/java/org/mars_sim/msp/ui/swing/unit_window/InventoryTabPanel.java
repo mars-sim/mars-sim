@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
@@ -159,7 +160,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         itemTable.getColumnModel().getColumn(0).setPreferredWidth(110);
         itemTable.getColumnModel().getColumn(1).setPreferredWidth(30);
         itemTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-        itemTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+        itemTable.getColumnModel().getColumn(3).setPreferredWidth(30);
+        itemTable.getColumnModel().getColumn(4).setPreferredWidth(30);
 
         itemTable.setRowSelectionAllowed(true);
         itemPanel.setViewportView(itemTable);
@@ -417,7 +419,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Map<Resource, Number> resources = new HashMap<>();
+		private Map<Resource, Number> quantity = new HashMap<>();
+		private Map<Resource, Double> mass = new HashMap<>();		
 		private Map<Resource, Double> reliabilities = new HashMap<>();
 		private Map<Resource, Double> mtbf = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
@@ -426,10 +429,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         private ItemTableModel(Unit unit) {
         	this.unit = unit;
-        	loadItems(keys, resources, reliabilities, mtbf);
+        	loadItems(keys, quantity, mass, reliabilities, mtbf);
         }
 
-        private void loadItems(List<Resource> kys, Map<Resource, Number> res, Map<Resource, Double> rel, Map<Resource, Double> mtbf) {
+        private void loadItems(List<Resource> kys, Map<Resource, Number> quan, Map<Resource, Double> mass, Map<Resource, Double> rel, Map<Resource, Double> mtbf) {
            	// Has equipment resources
         	if (unit instanceof EVASuit) {
         		EVASuit e = (EVASuit) unit;
@@ -440,7 +443,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
             	kys.addAll(irItems);
  	            for(Resource resource : irItems) {
- 	                res.put(resource, e.getItemResourceStored(resource.getID()));
+ 	                quan.put(resource, e.getItemResourceStored(resource.getID()));
+ 	                mass.put(resource, ((ItemResource)resource).getMassPerItem());
  	                rel.put(resource, ((Part)resource).getReliability());
  	               mtbf.put(resource, ((Part)resource).getMTBF());
  	            }
@@ -456,7 +460,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
             	kys.addAll(irItems);
  	            for (Resource resource : irItems) {
- 	                res.put(resource, eo.getItemResourceStored(resource.getID()));
+ 	                quan.put(resource, eo.getItemResourceStored(resource.getID()));
+ 	                mass.put(resource, ((ItemResource)resource).getMassPerItem()); 	                
  	                rel.put(resource, ((Part)resource).getReliability());
  	               mtbf.put(resource, ((Part)resource).getMTBF());
  	            }
@@ -472,7 +477,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
             	kys.addAll(irItems);
  	            for(Resource resource : irItems) {
- 	                res.put(resource, holder.getItemResourceStored(resource.getID()));
+ 	                quan.put(resource, holder.getItemResourceStored(resource.getID()));
+ 	                mass.put(resource, ((ItemResource)resource).getMassPerItem());	                
  	                rel.put(resource, ((Part)resource).getReliability());
  	               mtbf.put(resource, ((Part)resource).getMTBF());
  	            }
@@ -487,7 +493,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public int getColumnCount() {
-            return 4;
+            return 5;
         }
 
         public Class<?> getColumnClass(int columnIndex) {
@@ -496,6 +502,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             else if (columnIndex >= 1) dataType = Integer.class;
             else if (columnIndex >= 2) dataType = Double.class;
             else if (columnIndex >= 3) dataType = Double.class;
+            else if (columnIndex >= 4) dataType = Double.class;
             return dataType;
         }
 
@@ -503,7 +510,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			// Internationalized and capitalized column headers
             if (columnIndex == 0) return Msg.getString("InventoryTabPanel.item.header.name");
             else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.item.header.quantity");
-            else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.item.header.reliability");
+            else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.item.header.mass");           
+            else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.item.header.reliability");
             else return Msg.getString("InventoryTabPanel.item.header.mtbf");
         }
 
@@ -513,12 +521,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-				return formatter0.format(resources.get(keys.get(row)));
+				return formatter0.format(quantity.get(keys.get(row)));
             }
             else if (column == 2) {
-            	return formatter2.format(reliabilities.get(keys.get(row)));
+            	return formatter2.format(mass.get(keys.get(row)));
             }
             else if (column == 3) {
+            	return formatter2.format(reliabilities.get(keys.get(row)));
+            }
+            else if (column == 4) {
             	return formatter2.format(mtbf.get(keys.get(row)));
             }
             return 0 + "";
@@ -526,18 +537,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public void update() {
         	List<Resource> newResourceKeys = new ArrayList<>();
-        	Map<Resource, Number> newResources = new HashMap<>();
+        	Map<Resource, Number> newQ = new HashMap<>();
+			Map<Resource, Double> newMass = new HashMap<>();
 			Map<Resource, Double> newReliabilities = new HashMap<>();
 			Map<Resource, Double> newMTBF = new HashMap<>();
 
-    		loadItems(newResourceKeys, newResources, newReliabilities, newMTBF);
+    		loadItems(newResourceKeys, newQ, newMass, newReliabilities, newMTBF);
 
     		if (!keys.equals(newResourceKeys)
-    				|| !resources.equals(newResources)
+    				|| !quantity.equals(newQ)
+    				|| !mass.equals(newQ)   				
     				|| !reliabilities.equals(newReliabilities)
     				|| !mtbf.equals(newMTBF)
     				) {
-    			resources = newResources;
+    			quantity = newQ;
+    			mass = newMass;
     			reliabilities = newReliabilities;
     			mtbf = newMTBF;
     			keys = newResourceKeys;
