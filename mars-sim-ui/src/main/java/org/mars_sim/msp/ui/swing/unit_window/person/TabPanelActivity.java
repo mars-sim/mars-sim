@@ -104,7 +104,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	public TabPanelActivity(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null, 
+			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(TASK_ICON),	
 			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
 			unit, desktop

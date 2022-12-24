@@ -51,7 +51,7 @@ extends TabPanel {
 	public TabPanelAttribute(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(ATTRIBUTE_ICON),	
 			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
 			person,	desktop
@@ -67,10 +67,9 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
-			null,
+			ImageLoader.getNewIcon(ATTRIBUTE_ICON),	
 			Msg.getString("TabPanelAttribute.tooltip"), //$NON-NLS-1$
-			robot,
-			desktop
+			robot, desktop
 		);
 	}
 
