@@ -44,9 +44,8 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.xml.sax.SAXException;
 
 /**
- * This is a manager class of a category of UserConfigurable class.
- * It provides a means to manage a static collection of them and read/write
- * to file system
+ * This is a manager class of a category of UserConfigurable class. It provides
+ * a means to manage a static collection of them and read/write to file system
  */
 public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
@@ -71,7 +70,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	private String itemPrefix;
-	private Map<String,T> knownItems = new HashMap<>();
+	private Map<String, T> knownItems = new HashMap<>();
 	private String xsdName;
 
 	/**
@@ -96,18 +95,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	protected void loadUserDefined() {
 		// Scan saved items folder
 		File configDir = new File(SimulationFiles.getUserConfigDir());
-		String [] found = configDir.list();
+		String[] found = configDir.list();
 		if (found != null) {
-		    for (String userFile : configDir.list()) {
-		    	if (userFile.startsWith(itemPrefix)
-		    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
-		    		try {
-		    			loadItem(userFile, false);
-		    		}
-		    		catch (Exception e) {
-		    			logger.warning("Problem loading user defined item in " + userFile + ": " + e.getMessage());
-		    		}
-		    	}
+			for (String userFile : configDir.list()) {
+				if (userFile.startsWith(itemPrefix) && userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+					try {
+						loadItem(userFile, false);
+					} catch (Exception e) {
+						logger.warning("Problem loading user defined item in " + userFile + ": " + e.getMessage());
+					}
+				}
 			}
 		}
 	}
@@ -117,7 +114,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * 
 	 * @param predefined The predefined items that are bundled with the release.
 	 */
-	protected void loadDefaults(String [] predefined) {
+	protected void loadDefaults(String[] predefined) {
 		// Load predefined
 		for (String name : predefined) {
 			// Put a null entry to load on demand later
@@ -138,30 +135,27 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		}
 
 		Document doc;
-        try {
+		try {
 			SAXBuilder builder = null;
 			if (xsdName != null) {
 				// Should we load the XSD schema just once and have the Schema a field.
-				SchemaFactory schemafac =
-					SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-				Schema schema = schemafac.newSchema(new File(SimulationFiles.getXMLDir() + File.separator
-															+ itemPrefix, xsdName));
+				SchemaFactory schemafac = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				Schema schema = schemafac
+						.newSchema(new File(SimulationFiles.getXMLDir() + File.separator + itemPrefix, xsdName));
 				XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
-    		 	builder = new SAXBuilder(factory);
-    		 	builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		 	builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			}
-			else {
-				builder = new SAXBuilder(XMLReaders.NONVALIDATING);	
+				builder = new SAXBuilder(factory);
+				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			} else {
+				builder = new SAXBuilder(XMLReaders.NONVALIDATING);
 				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			}
-	        doc = builder.build(contents);
-	    }
-	    catch (JDOMException | SAXException | IOException e) {
-          	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
+			doc = builder.build(contents);
+		} catch (JDOMException | SAXException | IOException e) {
+			logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
 			throw new IllegalStateException("Problem parsing " + file, e);
-	    }
+		}
 
 		T result = parseItemXML(doc, predefined);
 		knownItems.put(result.getName(), result);
@@ -210,7 +204,6 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		}
 	}
 
-
 	/**
 	 * Gets the filename for an item based on its name.
 	 * 
@@ -229,15 +222,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @return
 	 */
 	protected static String getEstimateName(String configFile) {
-		return Conversion.capitalize(configFile.replace('_', ' ')
-						 .substring(0, configFile.length() - SimulationConfig.XML_EXTENSION.length()));
+		return Conversion.capitalize(configFile.replace('_', ' ').substring(0,
+				configFile.length() - SimulationConfig.XML_EXTENSION.length()));
 	}
 
 	/**
-	 * Gets the Location and streams the contents of the required configuration item.
+	 * Gets the Location and streams the contents of the required configuration
+	 * item.
 	 * 
 	 * @param filename Name of the item to locate
-	 * @param bundled Is it bundled with the application
+	 * @param bundled  Is it bundled with the application
 	 * @throws FileNotFoundException
 	 */
 	protected InputStream getRawConfigContents(String filename, boolean bundled) {
@@ -248,9 +242,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 			// Bundled XML files need to be copied out of the CONF sub folder.
 			// Must use the '/' for paths in the classpath.
-			SimulationConfig.instance().getBundledXML(itemPrefix + "/" + filename );
-		}
-		else { // for user
+			SimulationConfig.instance().getBundledXML(itemPrefix + "/" + filename);
+		} else { // for user
 			path = SimulationFiles.getUserConfigDir();
 		}
 
@@ -261,15 +254,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		if (f.exists() && f.canRead()) {
 			try {
 				return new FileInputStream(f);
-			}
-			catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				logger.warning("Problem reading file " + f.getAbsolutePath() + ":" + e);
 			}
 		}
 
-	    return null;
+		return null;
 	}
-
 
 	/**
 	 * Saves the XML document for this item.
@@ -293,28 +284,27 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			try {
 				if (Files.deleteIfExists(itemBackup.toPath())) {
 					// Delete old backup file
-				    logger.config("Old " + itemBackup.getName() + " deleted.");
+					logger.config("Old " + itemBackup.getName() + " deleted.");
 				}
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName()  + ": " + e.getMessage());
+				logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName() + ": " + e.getMessage());
 			}
-
 
 			try {
 				// Back up the previous version of the crew xml file
 				FileUtils.moveFile(itemFile, itemBackup);
-			    logger.config(itemFile.getName() + " --> " + itemBackup.getName());
+				logger.config(itemFile.getName() + " --> " + itemBackup.getName());
 			} catch (IOException e1) {
-	          	logger.log(Level.SEVERE, "Cannot move " + itemBackup.getName()  + ": "  + e1.getMessage());
+				logger.log(Level.SEVERE, "Cannot move " + itemBackup.getName() + ": " + e1.getMessage());
 			}
 
 			try {
 				if (Files.deleteIfExists(itemFile.toPath())) {
-				    logger.config("Old " + itemFile.getName() + " deleted.");
+					logger.config("Old " + itemFile.getName() + " deleted.");
 				}
 
 			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName() + ": " + e.getMessage());
+				logger.log(Level.SEVERE, "Cannot delete " + itemBackup.getName() + ": " + e.getMessage());
 			}
 		}
 
@@ -334,10 +324,10 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			fmt.setFormat(Format.getPrettyFormat());
 
 			try (FileOutputStream stream = new FileOutputStream(itemFile);
-				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {
+					OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {
 				fmt.output(outputDoc, writer);
-			    logger.config("New " + itemFile.getName() + " created and saved.");
-			    stream.close();
+				logger.config("New " + itemFile.getName() + " created and saved.");
+				stream.close();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot create " + itemFile.getName() + e.getMessage());
 			}
@@ -377,7 +367,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	/**
 	 * Parses an XML document to create an item instance.
 	 * 
-	 * @param doc Document of details
+	 * @param doc        Document of details
 	 * @param predefined Is this item predefined or user defined.
 	 * @see #createItemDoc(UserConfigurable)
 	 * @return

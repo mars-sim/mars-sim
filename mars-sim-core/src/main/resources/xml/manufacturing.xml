@@ -1551,7 +1551,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<part name="vehicle frame - small" number="1" />
 			<part name="motor - large" number="1" />
-			<part name="chemical battery" number="1" />
+			<part name="battery module" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -1578,7 +1578,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover chassis panel" number="2" />
 			<part name="motor - small" number="4" />
 			<part name="methane fuel cell stack" number="3" />
-			<part name="chemical battery" number="1" />
+			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="2" />
@@ -1642,7 +1642,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover generator" number="1" />
 			<part name="methane fuel cell stack" number="4" />
 			<part name="motor - large" number="3" />
-			<part name="chemical battery" number="2" />
+			<part name="battery module" number="2" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -1682,7 +1682,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover generator" number="1" />
 			<part name="methane fuel cell stack" number="5" />
 			<part name="motor - large" number="4" />
-			<part name="chemical battery" number="3" />
+			<part name="battery module" number="3" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -1722,7 +1722,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover generator" number="1" />
 			<part name="methane fuel cell stack" number="6" />
 			<part name="motor - large" number="5" />
-			<part name="chemical battery" number="4" />
+			<part name="battery module" number="4" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -2132,13 +2132,12 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 
-	<process name="Manufacture chemical battery" tech="2" skill="3" work-time="500" process-time="50"
+	<process name="Manufacture chemical battery" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
 		 For a cathode material (LiMn1.5Ni0.5O4) on a lithium ion battery, when cycled at C/30 
 		 in the 2.5-4.3V voltage range, the theoretical capacity of LiNMC Q_specific is 165 mAh g-1.
-		 or 160 Ah kg-1. At 3.8V, 3.8V * 160 mAh g-1 = 608 Wh kg-1. Content is 1.6447 kg/kWh
-		 Assume li-ion battery capacity is 17 kWh.
+		 or 160 Ah kg-1. At 3.8V, 3.8V * 160 mAh g-1 = 608 Wh kg-1. Content is 1.6447 kg/kWh.
 		</description> 	
 		<inputs>
 			<resource name="nickel" amount="2" />
@@ -2151,15 +2150,15 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="12" />			
 		</inputs>
 		<outputs>
-			<part name="chemical battery" number="1" />
+			<part name="battery module" number="1" />
 		</outputs>
 	</process>
 
 	<!-- Manufacturing a nickel-iron (NiFe) battery for use in EVA suits. -->
 	<!-- http://en.wikipedia.org/wiki/Nickel-iron_battery -->
-	<process name="Manufacture eva battery" tech="2" skill="3" work-time="200" process-time="50"
+	<process name="Manufacture eva battery" tech="2" skill="3" work-time="100" process-time="50"
 			power-required="1.0">
-		<description>  Assume a small EVA battery has the capacity of 0.5kWh.
+		<description> Assume a small EVA battery has the capacity of 0.5kWh.
 		</description>			
 		<inputs>
 			<resource name="nickel" amount="3.0" />
@@ -3119,7 +3118,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="motor - large" number="3" />
-		<part-salvage name="chemical battery" number="2" />
+		<part-salvage name="battery module" number="2" />
 		<part-salvage name="methane fuel cell stack" number="4" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
@@ -3152,7 +3151,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methane fuel cell stack" number="5" />
 		<part-salvage name="motor - large" number="4" />
-		<part-salvage name="chemical battery" number="3" />
+		<part-salvage name="battery module" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3184,7 +3183,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methane fuel cell stack" number="6" />
 		<part-salvage name="motor - large" number="5" />
-		<part-salvage name="chemical battery" number="3" />
+		<part-salvage name="battery module" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3211,7 +3210,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame - small" number="1" />
 		<part-salvage name="methane fuel cell stack" number="1" />
 		<part-salvage name="motor - large" number="2" />
-		<part-salvage name="chemical battery" number="1" />
+		<part-salvage name="battery module" number="1" />
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />

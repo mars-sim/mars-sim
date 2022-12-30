@@ -313,11 +313,11 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA Battery" type="EVA" mass="2.4" >
-		<description>Assuming the achievement of 500 Wh/kg, this 
+	<part name="EVA Battery" type="EVA" mass="1.2" >
+		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this 
 		rechargeable battery module is rated for 150 W at 18V 
 		for providing 8 hrs of electrical power to the EVA suit. 
-		Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/.5 = 2.4 kg
+		Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/1 = 1.2 kg
 		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
@@ -341,9 +341,8 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Chemical Battery" type="vehicle" mass="225.0">
-		<description>Assuming the achievement of 15 kg/kWh 
-		for a full battery with supportive structures, 
+	<part name="Battery Module" type="vehicle" mass="15.0">
+		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
 		this 15kWh rechargeable battery provides 'auxiliary' 
 		electrical power to the vehicle, on top of the primary
 		fuel cell stack. It operates at 400V. With 15 kWh capacity,
