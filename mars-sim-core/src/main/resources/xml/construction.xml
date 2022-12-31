@@ -605,7 +605,7 @@
 
 		<building name="medium battery array" width="5.0" length="10.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="array frame" >
-			<part name="chemical battery" number="20" />
+			<part name="battery module" number="20" />
 			<part name="fiberglass cloth" number="10" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />

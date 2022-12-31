@@ -90,15 +90,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName("chemical battery");
+	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName("battery module");
 	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName("rover wheel");
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNamesToResourceIDs(
 															new String[] {
-																	"laser", "stepper motor","oven",
-																	"blender", "refrigerator", "stove",
-																	"microwave", "polycarbonate roofing",
-																	"lens", "fiberglass", "sheet",
-																	"prism"});
+																	"fiberglass"});
 																	
 	// Travel Mission status
 	protected static final String AT_NAVPOINT = "At a navpoint";

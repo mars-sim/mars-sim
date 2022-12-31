@@ -85,7 +85,11 @@ public class LoadVehicleGarage extends Task {
 			return;
 		}
 		loadController = vehicleMission.getLoadingPlan();
-
+		if (loadController == null) {
+			clearTask("Vehicle has no loading plan");
+			return;
+		}
+ 
 		// Rover may already be in the Garage
 		Building garage = vehicle.getGarage();
 		if (garage == null) {

@@ -162,8 +162,13 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	public static ItemResource findItemResource(String name) {
 		// Use Java 8 stream
-		return getItemResources().stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst()
+		Part ir = getItemResources().stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst()
 				.orElse(null);
+		if (ir == null) {
+			throw new IllegalArgumentException("No ItemResource called " + name);	
+		}
+
+		return ir;
 	}
 
 	/**
@@ -222,10 +227,7 @@ public class ItemResourceUtil implements Serializable {
 	
 	public static Integer findIDbyItemResourceName(String name) {
 		ItemResource ir = findItemResource(name);
-		if (ir != null)
-			return ir.getID();
-		
-		return 0;
+		return ir.getID();
 	}
 
 	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, Set<Integer> unneeded) {
