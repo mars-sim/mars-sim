@@ -24,7 +24,7 @@ public class ChargeMeta extends FactoryMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$
 		
-	private static final double MAX = 1000;
+	private static final double LOW_FACTOR = 5;
     
     public ChargeMeta() {
 		super(NAME, WorkerType.ROBOT, TaskScope.ANY_HOUR);
@@ -50,16 +50,15 @@ public class ChargeMeta extends FactoryMetaTask {
         
         // Crowding modifier.
         else if (robot.isInSettlement()) {
-        	result += 1D;
      
         	double level = robot.getSystemCondition().getBatteryState();
         	
         	// Checks if the battery is low
         	if (robot.getSystemCondition().isLowPower()) {
-        		result += (100 - level) * MAX;
+        		result += (100 - level) * LOW_FACTOR;
         	}
         	else
-        		result += (100 - level) * 50;
+        		result += (100 - level);
         	
         	Building currentBldg = robot.getBuildingLocation();
 			if (currentBldg == null) {
@@ -68,17 +67,11 @@ public class ChargeMeta extends FactoryMetaTask {
 			}
         	
 			RoboticStation station = currentBldg.getRoboticStation();
-			if (station.getSleepers() < station.getSlots()) {
+			if (station.getSleepers() >= station.getSlots()) {
 				// This is a good building to sleep and charge up
-				result *= 10;
+				result /= 2;
 				return result;
 			}
-        	
-            Building building = Charge.getAvailableRoboticStationBuilding(robot);
-            if (building != null) {
-            	// has empty slot
-            	result *= 5;
-            }
             
             if (result <= 0)
             	logger.info(robot, "level: " + level + "  prob: " + result);

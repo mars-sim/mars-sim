@@ -259,7 +259,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				if (robot.getSystemCondition().isInoperable())
 					result = null;
 				else
-					result = getBatteryStatus(robot.getSystemCondition().getcurrentEnergy());
+					result = getBatteryStatus(robot.getSystemCondition().getBatteryState());
 				break;
 
 			case HEALTH: 
@@ -319,7 +319,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			status = Msg.getString("RobotTableModel.column.battery.level2");
 		else if (level < 60)
 			status = Msg.getString("RobotTableModel.column.battery.level3");
-		else if (level < 80)
+		else if (level < 99)
 			status = Msg.getString("RobotTableModel.column.battery.level4");
 		else
 			status = Msg.getString("RobotTableModel.column.battery.level5");
