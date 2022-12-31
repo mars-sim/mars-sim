@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.github</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.1.2</version>
+    <version>3.4.1</version>
   </parent>
   <groupId>com.github.mars-sim</groupId>
   <artifactId>mars-sim-javafx</artifactId>
