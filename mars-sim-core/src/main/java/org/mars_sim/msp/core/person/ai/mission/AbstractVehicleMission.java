@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2022-08-09
+ * @date 2022-12-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -90,11 +90,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName("battery module");
-	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName("rover wheel");
+	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.BATTERY_MODULE);
+	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNamesToResourceIDs(
 															new String[] {
-																	"fiberglass"});
+																	ItemResourceUtil.FIBERGLASS});
 																	
 	// Travel Mission status
 	protected static final String AT_NAVPOINT = "At a navpoint";

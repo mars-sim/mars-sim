@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2022-07-12
+ * @date 2022-12-31
  * @author Manny Kung
  */
 
@@ -26,6 +26,10 @@ public class ItemResourceUtil implements Serializable {
 
 	private static final String PRESSURE_SUIT = "pressure suit";
 	private static final String GARMENT = "garment";
+	
+	public static final String BATTERY_MODULE = "battery module";
+	public static final String ROVER_WHEEL = "rover wheel";
+	public static final String FIBERGLASS = "fiberglass";
 	
 	// Light utility vehicle attachment parts for mining or construction.
 	private static final String BACKHOE = "backhoe";
