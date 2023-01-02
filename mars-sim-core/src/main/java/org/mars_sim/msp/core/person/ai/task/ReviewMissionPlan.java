@@ -609,6 +609,8 @@ public class ReviewMissionPlan extends Task {
 		if (office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
-		mp.setActiveReviewer(null);
+		if (mp != null) {
+			mp.setActiveReviewer(null);
+		}
 	}
 }

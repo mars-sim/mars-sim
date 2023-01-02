@@ -387,7 +387,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
-		shiftManager = new ShiftManager(this, shifts, marsClock.getMillisolInt());
+		shiftManager = new ShiftManager(this, shifts, 0, marsClock.getMillisolInt());
 	}
 
 	/**
@@ -476,13 +476,22 @@ public class Settlement extends Structure implements Temporal,
 
 		futureEvents = new ScheduledEventManager(marsClock);
 
-		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(), marsClock.getMillisolInt());
+		// Get the rotation about the planet and convert that to a fraction of the Sol.
+		double fraction = getCoordinates().getTheta()/(Math.PI * 2D); 
+		if (fraction == 1D) {
+			// Gone round the planet
+			fraction = 0D;
+		}
+		int sunRiseOffSet = (int) (100 * fraction) * 10; // Do the offset in units of 10
+
+		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
+										sunRiseOffSet, marsClock.getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
 		
 		// Initialize goods manager.
-		goodsManager = new GoodsManager(this);
+		goodsManager = new GoodsManager(this, sunRiseOffSet);
 
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
@@ -919,7 +928,6 @@ public class Settlement extends Structure implements Temporal,
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
-		goodsManager.timePassing(pulse);
 		taskManager.timePassing();
 
 		// Update citizens

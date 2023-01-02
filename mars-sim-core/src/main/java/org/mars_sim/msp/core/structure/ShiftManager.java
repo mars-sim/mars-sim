@@ -55,21 +55,15 @@ public class ShiftManager implements Serializable {
      * Create a SHift Manager based on a shared ShiftPattern
      * @param settlement Owning Settlment
      * @param shiftDefinition Definition of the shift pattern
+     * @param sunRiseOffset Offet to Sunrise at this location
      * @param mSol Current millisol
      */
-    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int mSol) {
+    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int sunriseOffset, int mSol) {
         this.name = shiftDefinition.getName();
         this.settlement = settlement;
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
-        
-        // Get the rotation about the planet and convert that to a fraction of the Sol.
-        double fraction = settlement.getCoordinates().getTheta()/(Math.PI * 2D); 
-        if (fraction == 1D) {
-            // Gone round the planet
-            fraction = 0D;
-        }
-        this.offset = (int) (100 * fraction) * 10; // Do the offset in units of 10
+        this.offset = sunriseOffset;
 
         // Create future event to rotate shifts
         ScheduledEventManager futures = settlement.getFutureManager();

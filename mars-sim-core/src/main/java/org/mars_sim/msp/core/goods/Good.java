@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
@@ -57,12 +56,11 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	// TODO Initialise explicitly
 	protected static MissionManager missionManager;
-	protected static MarsClock marsClock;
 
     // TODO should load of an instance and not a static
-    protected static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+    protected static VehicleConfig vehicleConfig;
+	protected static PersonConfig personConfig;
+	protected static CropConfig cropConfig;
 
 
 	// Data members
@@ -682,9 +680,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/**
 	 * Initialise the constant configs
 	 */
-	static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m) {
+	static void initializeInstances(SimulationConfig sc, MissionManager m) {
 		missionManager = m;
-		marsClock = c;
 
 		vehicleConfig = sc.getVehicleConfiguration();
 		personConfig = sc.getPersonConfig();
