@@ -1284,8 +1284,6 @@ public class Settlement extends Structure implements Temporal,
 
 		removeAllReservations();
 
-		reassignWorkShift();
-
 		tuneJobDeficit();
 
 		refreshResourceStat();
@@ -1335,125 +1333,6 @@ public class Settlement extends Structure implements Temporal,
 				p.getCircadianClock().inflateSleepHabit();
 			}
 		}
-	}
-
-	/*
-	 * Reassigns the work shift for all
-	 */
-	public void reassignWorkShift() {
-		// Should call this method at, say, 800 millisols, not right at 1000
-		// millisols
-	
-	}
-
-	/**
-	 * Assign this person a work shift, based on the need of the settlement
-	 *
-	 * @param p
-	 * @param pop
-	 */
-	public void assignWorkShift(Person p, int pop) {
-
-		// // Check if person is an astronomer.
-		// boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
-
-		// ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
-		// if (isAstronomer) {
-		// 	// Find the darkest time of the day
-		// 	// and set work shift to cover time period
-
-		// 	// For now, we may assume it will usually be X or Z, NOT Y
-		// 	// since Y is usually where midday is at unless a person is at polar region.
-		// 	if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
-
-		// 		ShiftType newShift = ShiftType.X;
-
-		// 		p.setShiftType(newShift);
-		// 	}
-
-		// } // end of if (isAstronomer)
-
-		// else {
-		// 	// Not an astronomer
-
-		// 	// Note: if a person's shift is over-filled or saturated,
-		// 	// he will need to change shift
-
-		// 	// Get an unfilled work shift
-		// 	ShiftType newShift = getAnEmptyWorkShift(pop);
-
-		// 	int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-		// 	// Should find the person with the highest tendency to take this shift
-
-		// 	// if the person just came back from a mission, he would have on-call shift
-		// 	if (oldShift == ShiftType.ON_CALL) {
-		// 		// Check a person's sleep habit map and request changing his work shift
-		// 		// to avoid taking a work shift that overlaps his sleep hour
-
-		// 		if (newShift != oldShift) {// sanity check
-
-		// 			if (tendency > 50) {
-		// 				p.setShiftType(newShift);
-		// 			}
-
-		// 			else {
-		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
-		// 				if (anotherShift == newShift) {
-		// 					anotherShift = getAnEmptyWorkShift(pop);
-		// 				}
-
-		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-
-		// 				if (newShift != oldShift && tendency > 50) { // sanity check
-		// 					p.setShiftType(newShift);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	else {
-		// 		// The old shift is NOT on-call
-
-		// 		// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
-		// 		// change shift
-		// 		boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
-
-		// 		// TODO: check a person's sleep habit map and request changing his work shift
-		// 		// to avoid taking a work shift that overlaps his sleep hour
-
-		// 		if (!oldShift_ok) {
-
-		// 			if (newShift != oldShift && tendency > 50) { // sanity check
-		// 				p.setShiftType(newShift);
-		// 			}
-
-		// 			else if (tendency <= 50) {
-		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
-		// 				if (anotherShift == newShift) {
-		// 					anotherShift = getAnEmptyWorkShift(pop);
-		// 				}
-
-		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-
-		// 				if (newShift != oldShift && tendency > 50) { // sanity check
-		// 					p.setShiftType(newShift);
-		// 				}
-
-		// 				else {
-		// 					ShiftType shift3 = getAnEmptyWorkShift(pop);
-		// 					if (shift3 == newShift) {
-		// 						shift3 = getAnEmptyWorkShift(pop);
-		// 					}
-
-		// 					if (shift3 != oldShift) { // sanity check
-		// 						p.setShiftType(shift3);
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// } // end of if (isAstronomer)
 	}
 
 	/**

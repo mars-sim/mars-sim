@@ -561,8 +561,6 @@ public class Resupply implements Serializable, Transportable {
 		// Update command/governance and work shift schedules at settlement with new
 		// immigrants.
 		if (!immigrants.isEmpty()) {
-			// Reset work shift schedules at settlement.
-			settlement.reassignWorkShift();
 			// Reset command/government system at settlement.
 			settlement.getChainOfCommand().establishSettlementGovernance();
 		}

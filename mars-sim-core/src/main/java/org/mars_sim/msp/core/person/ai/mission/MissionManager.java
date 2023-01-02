@@ -26,8 +26,6 @@ import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -36,7 +34,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * <br>
  * The simulation has only one mission manager.
  */
-public class MissionManager implements Serializable, Temporal {
+public class MissionManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -358,19 +356,6 @@ public class MissionManager implements Serializable, Temporal {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Updates mission based on passing time.
-	 *
-	 * @param pulse Simulation time has advanced
-	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		// Remove inactive missions
-		//TODO Create a history mission, e.g. keep aborted & completed seperate and purge
-
-		return true;
 	}
 
 	/**

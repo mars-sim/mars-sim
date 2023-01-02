@@ -1270,8 +1270,6 @@ public class Simulation implements ClockListener, Serializable {
 			weather.timePassing(pulse);
 
 			surfaceFeatures.timePassing(pulse);
-			
-			missionManager.timePassing(pulse);
 
 			unitManager.timePassing(pulse);
 
