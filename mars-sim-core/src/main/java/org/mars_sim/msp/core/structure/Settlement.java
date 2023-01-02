@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
+import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -273,6 +274,7 @@ public class Settlement extends Structure implements Temporal,
 	/** Mamanges the shifts */
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
+	private ScheduledEventManager futureEvents;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -377,12 +379,15 @@ public class Settlement extends Structure implements Temporal,
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		
+
+
+		futureEvents = new ScheduledEventManager(marsClock);
+
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
-		shiftManager = new ShiftManager(this, shifts);
+		shiftManager = new ShiftManager(this, shifts, 0, marsClock.getMillisolInt());
 	}
 
 	/**
@@ -469,13 +474,24 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
 
-		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition());
+		futureEvents = new ScheduledEventManager(marsClock);
+
+		// Get the rotation about the planet and convert that to a fraction of the Sol.
+		double fraction = getCoordinates().getTheta()/(Math.PI * 2D); 
+		if (fraction == 1D) {
+			// Gone round the planet
+			fraction = 0D;
+		}
+		int sunRiseOffSet = (int) (100 * fraction) * 10; // Do the offset in units of 10
+
+		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
+										sunRiseOffSet, marsClock.getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
 		
 		// Initialize goods manager.
-		goodsManager = new GoodsManager(this);
+		goodsManager = new GoodsManager(this, sunRiseOffSet);
 
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
@@ -634,15 +650,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setDessertsReplenishmentRate(double rate) {
 		dessertsReplenishmentRate = rate;
-	}
-
-	/**
-	 * Gets the settlement template's unique ID.
-	 *
-	 * @return ID number.
-	 */
-	public int getID() {
-		return templateID;
 	}
 
 	/**
@@ -917,11 +924,10 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		// Calls other time passings
-		shiftManager.timePassing(pulse);
+		futureEvents.timePassing(pulse);
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
-		goodsManager.timePassing(pulse);
 		taskManager.timePassing();
 
 		// Update citizens
@@ -1278,8 +1284,6 @@ public class Settlement extends Structure implements Temporal,
 
 		removeAllReservations();
 
-		reassignWorkShift();
-
 		tuneJobDeficit();
 
 		refreshResourceStat();
@@ -1329,125 +1333,6 @@ public class Settlement extends Structure implements Temporal,
 				p.getCircadianClock().inflateSleepHabit();
 			}
 		}
-	}
-
-	/*
-	 * Reassigns the work shift for all
-	 */
-	public void reassignWorkShift() {
-		// Should call this method at, say, 800 millisols, not right at 1000
-		// millisols
-	
-	}
-
-	/**
-	 * Assign this person a work shift, based on the need of the settlement
-	 *
-	 * @param p
-	 * @param pop
-	 */
-	public void assignWorkShift(Person p, int pop) {
-
-		// // Check if person is an astronomer.
-		// boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
-
-		// ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
-		// if (isAstronomer) {
-		// 	// Find the darkest time of the day
-		// 	// and set work shift to cover time period
-
-		// 	// For now, we may assume it will usually be X or Z, NOT Y
-		// 	// since Y is usually where midday is at unless a person is at polar region.
-		// 	if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
-
-		// 		ShiftType newShift = ShiftType.X;
-
-		// 		p.setShiftType(newShift);
-		// 	}
-
-		// } // end of if (isAstronomer)
-
-		// else {
-		// 	// Not an astronomer
-
-		// 	// Note: if a person's shift is over-filled or saturated,
-		// 	// he will need to change shift
-
-		// 	// Get an unfilled work shift
-		// 	ShiftType newShift = getAnEmptyWorkShift(pop);
-
-		// 	int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-		// 	// Should find the person with the highest tendency to take this shift
-
-		// 	// if the person just came back from a mission, he would have on-call shift
-		// 	if (oldShift == ShiftType.ON_CALL) {
-		// 		// Check a person's sleep habit map and request changing his work shift
-		// 		// to avoid taking a work shift that overlaps his sleep hour
-
-		// 		if (newShift != oldShift) {// sanity check
-
-		// 			if (tendency > 50) {
-		// 				p.setShiftType(newShift);
-		// 			}
-
-		// 			else {
-		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
-		// 				if (anotherShift == newShift) {
-		// 					anotherShift = getAnEmptyWorkShift(pop);
-		// 				}
-
-		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-
-		// 				if (newShift != oldShift && tendency > 50) { // sanity check
-		// 					p.setShiftType(newShift);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	else {
-		// 		// The old shift is NOT on-call
-
-		// 		// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
-		// 		// change shift
-		// 		boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
-
-		// 		// TODO: check a person's sleep habit map and request changing his work shift
-		// 		// to avoid taking a work shift that overlaps his sleep hour
-
-		// 		if (!oldShift_ok) {
-
-		// 			if (newShift != oldShift && tendency > 50) { // sanity check
-		// 				p.setShiftType(newShift);
-		// 			}
-
-		// 			else if (tendency <= 50) {
-		// 				ShiftType anotherShift = getAnEmptyWorkShift(pop);
-		// 				if (anotherShift == newShift) {
-		// 					anotherShift = getAnEmptyWorkShift(pop);
-		// 				}
-
-		// 				tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
-
-		// 				if (newShift != oldShift && tendency > 50) { // sanity check
-		// 					p.setShiftType(newShift);
-		// 				}
-
-		// 				else {
-		// 					ShiftType shift3 = getAnEmptyWorkShift(pop);
-		// 					if (shift3 == newShift) {
-		// 						shift3 = getAnEmptyWorkShift(pop);
-		// 					}
-
-		// 					if (shift3 != oldShift) { // sanity check
-		// 						p.setShiftType(shift3);
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// } // end of if (isAstronomer)
 	}
 
 	/**
@@ -3566,6 +3451,10 @@ public class Settlement extends Structure implements Temporal,
 		creditManager = cm;
 	}
 	
+	public ScheduledEventManager getFutureManager() {
+		return futureEvents;
+	}
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
@@ -3649,5 +3538,6 @@ public class Settlement extends Structure implements Temporal,
 
 		scientificAchievement = null;
 	}
+
 
 }

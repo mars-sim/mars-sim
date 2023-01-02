@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * ShiftManagerTest.java
  * @date 2022-11-20
- * @author Barry DavEvansis
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
 
@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
+import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -36,7 +36,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         ShiftPattern sp = new ShiftPattern("Test", specs, 20, 0);
 
-        return new ShiftManager(owner, sp);
+        return new ShiftManager(owner, sp, 0, 0);
     }
 
     /**
@@ -48,13 +48,15 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         int [] endTimes = {400, 900};
         int [] allocations = {50, 50};
         ShiftManager sm = buildManager(settlement, endTimes, allocations);
+        ScheduledEventManager futures = settlement.getFutureManager();
 
         int currentShift = 0;
+        int quantum = 10;
         for(int t = 0; t < 100; t++) {
-            int time = t * 10;
-            sm.timePassing(createPulse(1, time, false));
+            futures.timePassing(createPulse(quantum));
+            MarsClock marsTime = sim.getMasterClock().getMarsClock();
 
-            if (endTimes[currentShift] == time) {
+            if (endTimes[currentShift] == marsTime.getMillisolInt()) {
                 currentShift++;
                 currentShift %= endTimes.length;
             }
@@ -63,10 +65,10 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
                 Shift s = shifts.get(idx);
 
                 if (idx == currentShift) {
-                    assertTrue("Shift " + s.getName() + " On duty @ " + time, s.isOnDuty());
+                    assertTrue("Shift " + s.getName() + " On duty @ " + marsTime.getMillisolInt(), s.isOnDuty());
                 }
                 else {
-                    assertFalse("Shift " + s.getName() + " Off duty @ " + time, s.isOnDuty());
+                    assertFalse("Shift " + s.getName() + " Off duty @ " + marsTime.getMillisolInt(), s.isOnDuty());
                 }
             }
 
@@ -86,7 +88,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         Map<Shift,Integer> actuals = new HashMap<>();
         // Allocation 100 sloys
         for(int i = 0; i < 100; i++) {
-            ShiftSlot ss = sm.allocationShift();
+            ShiftSlot ss = sm.allocationShift(buildPerson("Worker #" + i, settlement));
             actuals.merge(ss.getShift(), 1, (a,b) -> a+b);
         }
      
@@ -106,6 +108,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     public void testShiftRotation() {
         // This test invovles PErsons so have to take the Shiftmanager belonging to teh Settlmenet
         Settlement settlement = buildSettlement();
+        ScheduledEventManager futures = settlement.getFutureManager();
         ShiftManager sm = settlement.getShiftManager();
 
         int personCount = 20;
@@ -118,14 +121,18 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         assertTrue("Shiftmanger has leave allowance", sm.getMaxOnLeave() > 0);
 
+
         // Check shifts don;t change
-        sm.timePassing(createPulse(sm.getRotationSols() - 1, 10, true));
-        assertEquals("No shift changes on normal day", 0, sm.getOnLeave().size());
+        futures.timePassing(createPulse((sm.getRotationSols() * 1000) - 1));
+        long leaveCount = origAllocation.keySet().stream()
+                            .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
+                            .count();
+        assertEquals("No shift changes on normal day", 0, leaveCount);
 
         // Rotate shifts. mission sol new sol flag set
-        sm.timePassing(createPulse(sm.getRotationSols(), 10, true));
+        futures.timePassing(createPulse(2));
 
-        List<ShiftSlot> onLeave = sm.getOnLeave();
+        List<ShiftSlot> onLeave = new ArrayList<>();
 
         // Check the reported allocations
         int changedShifts = 0;
@@ -134,21 +141,23 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
             boolean changed = !ss.getShift().equals(e.getValue());
             if (changed) {
                 changedShifts++;
-                assertTrue("Changed shift on leave", onLeave.contains(ss));
                 assertEquals("Person changing shift status", WorkStatus.ON_LEAVE, ss.getStatus());
+                onLeave.add(ss);
             }
             else {
-                assertFalse("Person changing shift status", (WorkStatus.ON_LEAVE == ss.getStatus()));
+                assertFalse("Person not changing shift not on leave", (WorkStatus.ON_LEAVE == ss.getStatus()));
             }
         }
 
-        assertFalse("Someone is on leave", onLeave.isEmpty());
         assertEquals("Report changed shift and actuals", onLeave.size(), changedShifts);
         assertEquals("On leave against target", (sm.getMaxOnLeave() * personCount)/100, onLeave.size());
 
         // Check day after rotation. mission sol new sol flag set
-        sm.timePassing(createPulse(sm.getRotationSols() + 1, 10, true));
-        assertTrue("SomLeave has been cleared", onLeave.isEmpty());
+        futures.timePassing(createPulse(ShiftManager.ROTATION_LEAVE));
+        leaveCount = origAllocation.keySet().stream()
+                            .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
+                            .count();
+        assertEquals("Worker on leave post rotation", 0, leaveCount);
     }
 
     /**
@@ -156,29 +165,32 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
      */
     public void testOnCal() {
         Settlement settlement = buildSettlement();
+        ScheduledEventManager futures = settlement.getFutureManager();
+
+        Person worker = buildPerson("OnCall Worker", settlement);
 
         int [] endTimes = {500, 1000};
         int [] allocations = {40, 20};
         ShiftManager sm = buildManager(settlement, endTimes, allocations);
 
         // Allocate a slot and get the allocated Shift 
-        ShiftSlot slot = sm.allocationShift();
+        ShiftSlot slot = sm.allocationShift(worker);
         int shiftEnd = slot.getShift().getEnd();
 
         // Shift on duty standard
-        testWorkStatus(sm, slot, shiftEnd, "Standard worker", WorkStatus.ON_DUTY, WorkStatus.OFF_DUTY);
+        testWorkStatus(futures, slot, shiftEnd, "Standard worker", WorkStatus.ON_DUTY, WorkStatus.OFF_DUTY);
 
         // Check OnCall
         slot.setOnCall(true);
-        testWorkStatus(sm, slot, shiftEnd, "OnCall worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
+        testWorkStatus(futures, slot, shiftEnd, "OnCall worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave & OnCall. On Call takes precedence
-        slot.setOnLeave(true);
-        testWorkStatus(sm, slot, shiftEnd, "OnCall & OnLeave worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
+        slot.setOnLeave(1000);
+        testWorkStatus(futures, slot, shiftEnd, "OnCall & OnLeave worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave 
         slot.setOnCall(false);
-        testWorkStatus(sm, slot, shiftEnd, "OnLeave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
+        testWorkStatus(futures, slot, shiftEnd, "OnLeave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
     }
 
     /**
@@ -191,7 +203,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
      * @param postEnd Work statu after the SHift ends
      * 
      */
-    private void testWorkStatus(ShiftManager sm, ShiftSlot slot, int shiftEnd, String scenario,
+    private void testWorkStatus(ScheduledEventManager sm, ShiftSlot slot, int shiftEnd, String scenario,
                                 WorkStatus preEnd, WorkStatus postEnd) {
         // Shift on duty but on call
         sm.timePassing(createPulse(1, shiftEnd - 10, false));
@@ -200,17 +212,5 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         // Shift of duty bu on call
         sm.timePassing(createPulse(1, shiftEnd, false));
         assertEquals(scenario + " after shift", postEnd, slot.getStatus());
-    }
-
-    /**
-     * Creates a Clokc pulse that just contains a MarsClock.
-     * @param missionSol Sol in the current mission
-     * @param mSol MSol throught the day
-     * @param newSol Is the new Sol flag set
-     * @return
-     */
-    private ClockPulse createPulse(int missionSol, int mSol, boolean newSol) {
-        MarsClock marsTime = new MarsClock(1, 1, 2, mSol, missionSol);
-        return new ClockPulse(1, 1D, marsTime, null, null, newSol, true);
     }
 }

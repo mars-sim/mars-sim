@@ -6,12 +6,13 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
+
+import org.mars_sim.msp.core.events.ScheduledEventHandler;
 
 /**
  * This is an activeShift that has a numebr of Slots forworks allocated.
  */
-public class Shift implements Serializable {
+public class Shift implements ScheduledEventHandler {
 
     private int start;
     private int end;
@@ -43,13 +44,11 @@ public class Shift implements Serializable {
     }
 
     /**
-     * Check the on duty stats of this Shift
+     * Initialise the Shift to the current msol.
      * @param mSol The time in the day to check for.
-     * @return True if the onduty flag has changed status
+     * @return Duratino millisols to the next shift change
      */
-    boolean checkShift(int mSol) {
-        boolean oldOnDuty = onDuty;
-
+    int initialize(int mSol) {
         if (start < end) {
             // Start and end on same Sol
             onDuty = (start <= mSol) && (mSol <  end);
@@ -58,7 +57,18 @@ public class Shift implements Serializable {
             // Ends on the following Sol so 2 seperate segments
             onDuty = (start <= mSol) || (mSol <  end);
         }
-        return (oldOnDuty != onDuty);
+
+        int duration = 0;
+        if (onDuty) {
+            duration = end - mSol;
+        }
+        else {
+            duration = start - mSol;
+        }
+        if (duration < 0) {
+            duration += 1000;
+        }
+        return duration;
     }
 
     /**
@@ -99,5 +109,28 @@ public class Shift implements Serializable {
      */
     public int getEnd() {
         return end;
+    }
+
+    @Override
+    public String getEventDescription() {
+        return "Shift " + name + (onDuty ? " off duty" : " on duty");
+    }
+
+    @Override
+    public int execute() {
+        // Flip the on duty flag
+        onDuty = !onDuty;
+
+        int duration = 0;
+        if (onDuty) {
+            duration = end - start;
+        }
+        else {
+            duration = start - end;
+        }
+        if (duration < 0) {
+            duration += 1000;
+        }
+        return duration;
     }
 }
