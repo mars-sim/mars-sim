@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
+import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -273,6 +274,7 @@ public class Settlement extends Structure implements Temporal,
 	/** Mamanges the shifts */
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
+	private ScheduledEventManager futureEvents;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
@@ -377,12 +379,15 @@ public class Settlement extends Structure implements Temporal,
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		
+
+
+		futureEvents = new ScheduledEventManager(marsClock);
+
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
-		shiftManager = new ShiftManager(this, shifts);
+		shiftManager = new ShiftManager(this, shifts, marsClock.getMillisolInt());
 	}
 
 	/**
@@ -469,7 +474,9 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
 
-		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition());
+		futureEvents = new ScheduledEventManager(marsClock);
+
+		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(), marsClock.getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
@@ -634,15 +641,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setDessertsReplenishmentRate(double rate) {
 		dessertsReplenishmentRate = rate;
-	}
-
-	/**
-	 * Gets the settlement template's unique ID.
-	 *
-	 * @return ID number.
-	 */
-	public int getID() {
-		return templateID;
 	}
 
 	/**
@@ -917,7 +915,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		// Calls other time passings
-		shiftManager.timePassing(pulse);
+		futureEvents.timePassing(pulse);
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
@@ -3566,6 +3564,10 @@ public class Settlement extends Structure implements Temporal,
 		creditManager = cm;
 	}
 	
+	public ScheduledEventManager getFutureManager() {
+		return futureEvents;
+	}
+
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
@@ -3649,5 +3651,6 @@ public class Settlement extends Structure implements Temporal,
 
 		scientificAchievement = null;
 	}
+
 
 }

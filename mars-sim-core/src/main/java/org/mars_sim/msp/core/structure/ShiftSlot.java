@@ -6,12 +6,13 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
+import org.mars_sim.msp.core.events.ScheduledEventHandler;
+import org.mars_sim.msp.core.person.Person;
 
 /**
  * Represents a Slot on a specific Shift for work.
  */
-public class ShiftSlot implements Serializable {
+public class ShiftSlot implements ScheduledEventHandler {
 
     /**
      * The work status of this Slot.
@@ -23,9 +24,11 @@ public class ShiftSlot implements Serializable {
     private boolean onCall = false;
     private boolean onLeave = false;
     private Shift shift;
+    private Person worker;
 
-    ShiftSlot(Shift shift) {
+    ShiftSlot(Shift shift, Person worker) {
         this.shift = shift;
+        this.worker = worker;
         shift.joinShift();
     }
 
@@ -41,10 +44,13 @@ public class ShiftSlot implements Serializable {
 
     /**
      * Set this worker on a leave day.
-     * @param newOnLeave
+     * @param duration Duration of the leave
      */
-    public void setOnLeave(boolean newOnLeave) {
-        onLeave = newOnLeave;
+    public void setOnLeave(int duration) {
+        onLeave = true;
+
+        // Scheduled end of leave
+        worker.getAssociatedSettlement().getFutureManager().addEvent(duration, this);
     }
 
     /**
@@ -77,5 +83,16 @@ public class ShiftSlot implements Serializable {
         shift.leaveShift();
         shift = newShift;
         shift.joinShift();
+    }
+
+    @Override
+    public String getEventDescription() {
+        return "Leave end for " + worker.getName();
+    }
+
+    @Override
+    public int execute() {
+        onLeave = false;
+        return 0;
     }
 }

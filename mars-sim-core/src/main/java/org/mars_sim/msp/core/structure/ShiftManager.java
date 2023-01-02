@@ -5,25 +5,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.events.ScheduledEventHandler;
+import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class manages a set of Shifts. This invovles the initial allocation and the changing
  * of On/Off Duty as the daya progresses.
  */
-public class ShiftManager implements Serializable {
+public class ShiftManager implements Serializable { 
+    /**
+     * Handles rotating the shifts
+     */
+    private class RotationHandler implements ScheduledEventHandler {
+        @Override
+        public String getEventDescription() {
+           return "Shift Rotation";
+        }
+
+        @Override
+        public int execute() {
+            rotateShift();
+            return rotationSols * 1000;
+        }
+
+    }
+
     	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ShiftManager.class.getName());
+    
+    /**
+     * Default leave duration after a shift rotation
+     */
+    static final int ROTATION_LEAVE = 1000;   
 
     private String name;
     private List<Shift> shifts = new ArrayList<>();
-    private List<ShiftSlot> onLeave = new ArrayList<>();
     private Settlement settlement;
     private int leavePercentage = 0;
     private int rotationSols = 0;
@@ -31,9 +53,11 @@ public class ShiftManager implements Serializable {
 
     /**
      * Create a SHift Manager based on a shared ShiftPattern
+     * @param settlement Owning Settlment
      * @param shiftDefinition Definition of the shift pattern
+     * @param mSol Current millisol
      */
-    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition) {
+    public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int mSol) {
         this.name = shiftDefinition.getName();
         this.settlement = settlement;
         this.leavePercentage = shiftDefinition.getLeavePercentage();
@@ -47,11 +71,20 @@ public class ShiftManager implements Serializable {
         }
         this.offset = (int) (100 * fraction) * 10; // Do the offset in units of 10
 
+        // Create future event to rotate shifts
+        ScheduledEventManager futures = settlement.getFutureManager();
+        futures.addEvent((rotationSols * 1000) + offset, new RotationHandler());
+
         if (shiftDefinition.getShifts().isEmpty()) {
             throw new  IllegalArgumentException("No shift defined in " + shiftDefinition.getName());
         }
-        for(ShiftSpec s : shiftDefinition.getShifts()) {
-            shifts.add(new Shift(s, offset));
+        for(ShiftSpec ss : shiftDefinition.getShifts()) {
+            Shift s = new Shift(ss, offset);
+            shifts.add(s);
+
+            // Create future event for shift change
+            int duration = s.initialize(mSol);
+            futures.addEvent(duration, s);
         }
     }
 
@@ -61,15 +94,16 @@ public class ShiftManager implements Serializable {
 
     /**
      * Allocation a Shift slot to a worker. This is based on looking at the percentage currently allocated.
+     * @param worker 
      * @return
      */
-    public ShiftSlot allocationShift() {
+    public ShiftSlot allocationShift(Person worker) {
         Shift selectedShift = findSuitableShift(null);
         if (selectedShift == null) {
             throw new IllegalStateException("No shift selected for allocation");
         }
 
-        return new ShiftSlot(selectedShift);
+        return new ShiftSlot(selectedShift, worker);
     }
     
     private int getTotalAllocated() {
@@ -103,39 +137,12 @@ public class ShiftManager implements Serializable {
         return selectedShift;
     }
 
-
-    /**
-     * Time has changed during the day so update Shift duty flags.
-     * @param pulse Current time frame
-     */
-    public void timePassing(ClockPulse pulse) {
-        int currentMSol = pulse.getMarsTime().getMillisolInt();
-        for(Shift s : shifts) {
-            if (s.checkShift(currentMSol) && s.isOnDuty()) {
-                logger.fine(settlement, "OnDuty Shift is " + s.getName());
-            }
-        }
-
-        // If a new day then decide changes
-        if (pulse.isNewSol()) {
-            // Release persons on leave
-            for(ShiftSlot ss : onLeave) {
-                ss.setOnLeave(false);
-            }
-            onLeave.clear();
-
-            // Rotate shifts
-            if ((pulse.getMarsTime().getMissionSol() % rotationSols) == 0) {
-                rotateShift();
-            }
-        }
-    }
-
     /**
      * Look to see if any Shift reallocations ca be done. Any holidayers come off leave
      * and some are selected to change Shift
      */
 	private void rotateShift() {
+        logger.info(settlement, "Rotating shifts");
 
         // Get anyone who is not dead and is not returning from holiday
         // and not onCall
@@ -147,7 +154,8 @@ public class ShiftManager implements Serializable {
 
         // Select someone to change Shift
         int maxOnLeave = Math.max(1, (int)(potentials.size() * leavePercentage)/100);
-        while(!potentials.isEmpty() && (onLeave.size() < maxOnLeave)) {
+        int changedCount = 0;
+        while(!potentials.isEmpty() && (changedCount < maxOnLeave)) {
             int idx = RandomUtil.getRandomInt(potentials.size()-1);
             Person p = potentials.remove(idx);
             ShiftSlot candidate = p.getShiftSlot();
@@ -155,8 +163,8 @@ public class ShiftManager implements Serializable {
             // Find a new Shift but exclude the current one
             Shift newShift = findSuitableShift(candidate.getShift());
             if (newShift != null) {
-                onLeave.add(candidate);
-                candidate.setOnLeave(true);
+                candidate.setOnLeave(ROTATION_LEAVE);
+                changedCount++;
                 Shift oldShift = candidate.getShift();
                 candidate.setShift(newShift);
                 logger.info(p, "Changes shift from " + oldShift.getName() + " to " + newShift.getName());
@@ -170,14 +178,6 @@ public class ShiftManager implements Serializable {
      */
     public List<Shift> getShifts() {
 		return shifts;
-	}
-
-    /**
-     * Get those on Leave Shifts
-     * @return
-     */
-    public List<ShiftSlot> getOnLeave() {
-		return onLeave;
 	}
 
     /**

@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import junit.framework.TestCase;
@@ -39,6 +41,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Simulation sim;
 	private FunctionSpec evaFunction;
 	protected SimulationConfig simConfig;
+	private int pulseID = 1;
 
 	public AbstractMarsSimUnitTest() {
 		super();
@@ -180,4 +183,29 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		return maxCalls - callsLeft;
 	}
 
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * @param missionSol Sol in the current mission
+     * @param mSol MSol throught the day
+     * @param newSol Is the new Sol flag set
+     * @return
+     */
+    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol) {
+        MarsClock marsTime = new MarsClock(1, 1, missionSol, mSol, missionSol);
+		return createPulse(marsTime, newSol);
+	}
+
+	/**
+	 * Create a clock pulse by advancing the simuaktino clock a certain duration.
+	 * @param duration Millisols to advanced the clock 
+	 */
+	protected ClockPulse createPulse(int duration) {
+		MarsClock marsTime = sim.getMasterClock().getMarsClock();
+		marsTime.addTime(duration);
+        return createPulse(marsTime, false);
+    }
+
+	protected ClockPulse createPulse(MarsClock marsTime, boolean newSol) {
+        return new ClockPulse(pulseID++, 1D, marsTime, null, null, newSol, true);
+    }
 }
