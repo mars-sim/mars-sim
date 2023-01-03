@@ -231,52 +231,19 @@ public class EatDrink extends Task {
 	private void checkVehicle(Unit container, boolean hungry, boolean thirsty, double waterAmount) {
 		 
 		if (UnitType.VEHICLE == container.getUnitType()) {
-			Vehicle vehicle = (Vehicle)container;
+
+			ResourceHolder rh = (ResourceHolder) container;
+			if (foodAmount == 0)
+				foodAmount = rh.getAmountResourceStored(FOOD_ID);
+			if (waterAmount == 0)
+				waterAmount = rh.getAmountResourceStored(WATER_ID);
 			
-			if (vehicle.isInSettlement()) {
-				// How to make a person walk out of vehicle back to settlement 
-				// if hunger is >500 ?
-				
-				ResourceHolder rh = vehicle.getSettlement();
-
-				if (foodAmount == 0)
-					foodAmount = rh.getAmountResourceStored(FOOD_ID);
-				if (waterAmount == 0)
-					waterAmount = rh.getAmountResourceStored(WATER_ID);
-				
-				if (hungry && (foodAmount > 0 || desserts > 0)) {
-					food = true;
-				}
-
-				if (thirsty && waterAmount > 0) {
-					water = true;
-				}
-				
-				if (food || water) {
-					
-					// Check if there is a local dining building.
-		        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person.getSettlement(), person);
-		        	
-		        	if (diningBuilding != null) {
-		        		// Initiates a walking task to go back to the settlement
-		        		walkToDiningLoc(diningBuilding, false);
-		        	}
-				}
+			if (hungry && (foodAmount > 0 || desserts > 0)) {
+				food = true;
 			}
-			else {
-				ResourceHolder rh = (ResourceHolder) container;
-				if (foodAmount == 0)
-					foodAmount = rh.getAmountResourceStored(FOOD_ID);
-				if (waterAmount == 0)
-					waterAmount = rh.getAmountResourceStored(WATER_ID);
-				
-				if (hungry && (foodAmount > 0 || desserts > 0)) {
-					food = true;
-				}
 
-				if (thirsty && waterAmount > 0) {
-					water = true;
-				}
+			if (thirsty && waterAmount > 0) {
+				water = true;
 			}
 		}
 		
