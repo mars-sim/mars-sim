@@ -338,7 +338,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		// Create the role
 		role = new Role(this);
 		// Create shift schedule
-		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift();
+		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift(this);
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map

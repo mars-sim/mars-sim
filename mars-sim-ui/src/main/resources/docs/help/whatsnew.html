@@ -6,25 +6,32 @@
 <LINK rel="stylesheet" href="../msp.css">
 </HEAD>
 <BODY>
-<div id="my_message"><H2>What's New in v3.5.0</H2></div>
-<center>3rd December 2022</center>
+<div id="my_message"><H2>What's New in v3.4.1</H2></div>
+<center>3 Jan 2023</center>
 
 <H4> CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
-  <LI>Settlement : Add task backlog showing a pool of shared tasks specific to a Settlement.</LI>
-  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>
-  <LI>   Mission : Add deadline on rover mission departure. Split the Embarking phase into loading & departing. </LI> 
+  <LI>   Battery : Standardize battery capacity. </LI>
+  <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
+  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
+  <LI>     Robot : Define specifications using RobotSpec class. </LI>  
   <LI>     Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
+  <LI> Stock Cap : Increase general/cargo capacities and specific resource storage capacity. </LI>
+  <LI>Settlement : Define SettlementMetaTask and track a pool of shared tasks.</LI>
+  <LI>   Storage : Allow selection of storage bin in DigLocal task based on building resource capacity. </LI>
 </OL>
   
 <H4> UI IMPROVEMENT :</H4>
 <OL>
-  <LI>New tab to the Monitor Tool to show the Task Backlog in a Settlement</LI>
+  <LI>Row Count : Correct row count on Monitor Window. </LI> 
+  <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
 </OL>  
 
 <H4> FIXES :</H4>
 <OL>
-  <LI></LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
+ <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
+ <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
 <OL>
 
 <br>

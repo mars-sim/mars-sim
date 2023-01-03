@@ -52,17 +52,13 @@ public class ItemResourceUtil implements Serializable {
 
 	public static int garmentID;
 	public static int pressureSuitID;
-
 	public static int pneumaticDrillID;
 	public static int backhoeID;
-
 	public static int printerID;
 
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
-
 	private static Set<Part> partSet;
-
 	private static List<Part> sortedParts;
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
@@ -97,7 +93,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Prepares the id's of a few item resources
+	 * Prepares the id's of a few item resources.
 	 */
 	public static void createIDs() {
 
@@ -114,7 +110,8 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Convet a array of ItemResources into their equivalent ID.
+	 * Converts a array of ItemResources into their equivalent ID.
+	 * 
 	 * @param names
 	 * @return
 	 */
@@ -130,7 +127,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Prepares maps for storing all item resources
+	 * Prepares maps for storing all item resources.
 	 */
 	private static void createMaps() {
 		itemResourceMap = new HashMap<>();
@@ -148,7 +145,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Register a new part in all 3 item resource maps
+	 * Registers a new part in all 3 item resource maps.
 	 *
 	 * @param p {@link Part}
 	 */
@@ -187,7 +184,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Creates a set of item resources
+	 * Creates a set of item resources.
 	 *
 	 * @return
 	 */
@@ -200,7 +197,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Gets a list of sorted parts
+	 * Gets a list of sorted parts.
 	 *
 	 * @return
 	 */
@@ -240,7 +237,4 @@ public class ItemResourceUtil implements Serializable {
 		}
 		return parts;
 	}
-	
-	
-
 }

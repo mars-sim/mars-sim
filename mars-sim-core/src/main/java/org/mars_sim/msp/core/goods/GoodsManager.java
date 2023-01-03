@@ -20,13 +20,12 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -34,6 +33,22 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * A manager for computing the values of goods at a settlement.
  */
 public class GoodsManager implements Serializable {
+
+	private class FutureHandler implements ScheduledEventHandler {
+
+		@Override
+		public String getEventDescription() {
+			return "Refresh Buy/Sell list";
+		}
+
+		@Override
+		public int execute() {
+			calculateBuyList();
+			calculateSellList();
+			return LIST_VALIDITY;
+		}
+		
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -117,9 +132,7 @@ public class GoodsManager implements Serializable {
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
-	private transient double buyListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
 	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
-	private transient double sellListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
 	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
 	private Settlement settlement;
@@ -132,10 +145,13 @@ public class GoodsManager implements Serializable {
 	 * Constructor.
 	 *
 	 * @param settlement the settlement this manager is for.
+	 * @param sunRiseOffSet Offset to sunrise
 	 */
-	public GoodsManager(Settlement settlement) {
+	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
 		this.settlement = settlement;
 
+		// Schedule an event to recalculate shopping lists just after sunrise
+		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
 		populateGoodsValues();
 	}
 
@@ -687,13 +703,12 @@ public class GoodsManager implements Serializable {
 	 * Reloads instances after loading from a saved sim
 	 *
 	 * @param s  {@link SimulationConfg}
-	 * @param c  {@link MarsClock}
 	 * @param m  {@link MissionManager}
 	 * @param u  {@link UnitManager}
 	 */
-	public static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m, UnitManager u) {
+	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
 		unitManager = u;
-		Good.initializeInstances(sc, c, m);
+		Good.initializeInstances(sc, m);
 		CommerceUtil.initializeInstances(m, u);
 	}
 
@@ -761,20 +776,8 @@ public class GoodsManager implements Serializable {
 		sellList = Collections.emptyMap();
 	}
 
-	public void timePassing(ClockPulse pulse) {
-		MarsClock marsTime = pulse.getMarsTime();
-		if (marsTime.getTotalMillisols() > buyListTimeout) {
-			// Scan the demand cache and build the buy list
-			calculateBuyList(marsTime);
-		}
-
-		if (marsTime.getTotalMillisols() > sellListTimeout) {
-			// Scan the demand cache and build the buy list
-			calculateSellList(marsTime);
-		}
-	}
 	
-	private void calculateSellList(MarsClock marsTime) {
+	private void calculateSellList() {
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newSell = new HashMap<>();
 		List<Good> excluded = GoodsManager.getExclusionBuyList();
@@ -799,7 +802,6 @@ public class GoodsManager implements Serializable {
 		}
 
 		sellList = Collections.unmodifiableMap(newSell);
-		sellListTimeout = marsTime.getTotalMillisols() + LIST_VALIDITY; 
 
 		// Any deal are now invalid
 		deals.clear();
@@ -808,7 +810,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Calaculate the current buying list for this Settlement.
 	 */
-	private void calculateBuyList(MarsClock marsTime) {
+	private void calculateBuyList() {
 
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newBuy = new HashMap<>();
@@ -832,7 +834,6 @@ public class GoodsManager implements Serializable {
 		}
 
 		buyList = Collections.unmodifiableMap(newBuy);
-		buyListTimeout = marsTime.getTotalMillisols() + LIST_VALIDITY;
 
 		// Any deal are now invalid
 		deals.clear();

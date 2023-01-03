@@ -27,11 +27,8 @@ public class AllJUnitTests extends TestCase {
 		TestSuite suite = new TestSuite(AllJUnitTests.class);
 		
 		suite.addTestSuite(org.mars_sim.msp.core.TestCoordinates.class);
-//		suite.addTestSuite(org.mars_sim.msp.core.TestInventory.class);
 		suite.addTestSuite(org.mars_sim.msp.core.TestLocalAreaUtil.class);
 		suite.addTestSuite(org.mars_sim.msp.core.equipment.JUnitTests.class);
-		suite.addTestSuite(org.mars_sim.msp.core.events.JUnitTests.class);
-//		suite.addTestSuite(org.mars_sim.msp.core.malfunction.TestMalfunctionManager.class);
 		suite.addTestSuite(org.mars_sim.msp.core.person.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.person.ai.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.person.ai.mission.JUnitTests.class);

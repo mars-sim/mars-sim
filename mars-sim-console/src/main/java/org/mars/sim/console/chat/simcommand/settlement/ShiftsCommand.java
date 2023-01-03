@@ -35,8 +35,7 @@ public class ShiftsCommand extends AbstractSettlementCommand {
 
 		response.appendLabeledString("Name", sm.getName());
 		response.appendLabeledString("Shift Rotation", sm.getRotationSols() + " sols");
-		response.appendLabeledString("Maximum Leave", sm.getMaxOnLeave() + "%");
-		response.appendLabelledDigit("On Leave", sm.getOnLeave().size());
+		response.appendLabeledString("Maximum Worker Rotation", sm.getMaxOnLeave() + "%");
 		response.appendLabeledString("Offset", sm.getOffset() + " mSol");
 
 		response.appendTableHeading("Name", 10, "Allocated", "Start", "End");
