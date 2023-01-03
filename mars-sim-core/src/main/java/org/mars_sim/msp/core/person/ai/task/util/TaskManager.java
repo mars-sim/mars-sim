@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -61,7 +62,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		public OneActivity(double startTime, String taskName, String description, String phase, String missionName) {
 			this.taskName = taskName;
-			this.missionName = missionName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
@@ -110,9 +110,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	/** Number of days to record Tack Activities. */
 	public static final int NUM_SOLS = 7;
-	
-	/** Amount of millisols elapsed before the task cache is rebuilt. */
-	private static final double TASK_MILLISOLS  = 0.1;
 	
 	protected static MarsClock marsClock;
 
@@ -498,7 +495,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
 		// ignore the cache
 		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
-				|| (marsClock.getMillisol() - taskProbCache.getCreatedOn().getMillisol()) > TASK_MILLISOLS) {
+				|| (marsClock.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
 			taskProbCache = rebuildTaskCache();
 			
 			// Comment out to stop capturing stats
@@ -619,25 +616,47 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param changed The active task.
 	 * @param mission Associated mission.
 	 */
-	void recordTask(Task changed, String mission) {
-		double newStartTime = now;
+	void recordTask(Task changed, Mission mission) {
 		String newDescription = changed.getDescription();
 		String newPhase = "";
 		if (changed.getPhase() != null)
 			newPhase = changed.getPhase().getName();
 		
 		// If there is no details; then skip it
+		if (!newDescription.equals("") && !newPhase.equals("")) {
+			String newTask = changed.getName(false);
+
+			recordActivity(newTask, newPhase, newDescription, mission);
+		}
+	}
+
+	/**
+	 * Record an activity on the Task Activity log
+	 */
+	public void recordActivity(String newTask, String newPhase, String newDescription, Mission mission) {
 		// Also compare to the last activity
-		if (!newDescription.equals("") && !newPhase.equals("")
-			&& (lastActivity == null 
+		if (lastActivity == null 
 				|| !newDescription.equals(lastActivity.description)
-				|| !newPhase.equals(lastActivity.phase))) {
+				|| !newPhase.equals(lastActivity.phase)) {
+			String missionName = (mission != null ? mission.getName() : null);
 			
-			OneActivity newActivity = new OneActivity(newStartTime, 
-												changed.getName(false),
+			// This is temp.
+			String location = " in";
+			if (worker.isInVehicle()) {
+				location += " V";
+			}
+			if (worker.isInSettlement()) {
+				location += " S";
+			}
+			if (worker.isOutside()) {
+				location += " O";
+			}
+
+			OneActivity newActivity = new OneActivity(now, 
+												newTask + location,
 												newDescription,
 												newPhase, 
-												mission);
+												missionName);
 
 			allActivities.addData(newActivity);
 			lastActivity = newActivity;

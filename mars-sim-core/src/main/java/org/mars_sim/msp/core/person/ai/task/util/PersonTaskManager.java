@@ -155,7 +155,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 
 		// Add in any Settlement Tasks
-		if (workStatus == WorkStatus.ON_DUTY) {
+		if ((workStatus == WorkStatus.ON_DUTY) && person.isInSettlement()) {
 			SettlementTaskManager stm = person.getAssociatedSettlement().getTaskManager();
 			newCache.add(stm.getTasks(person));
 		}

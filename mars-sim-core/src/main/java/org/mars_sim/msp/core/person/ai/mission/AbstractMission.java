@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -356,6 +357,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
 			member.setMission(null);
+			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
 			person.getShiftSlot().setOnCall(false);
 
@@ -572,6 +574,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// Perform phase.
 		if (!done) {
+			// Check for issue #786
+			if (member.isInSettlement() && (phase.getStage() == Stage.ACTIVE) && (member instanceof Person)) {
+				logger.severe(member, "In a Settlement during ACTIVE mission phase " + phase.getName());
+			}
+
 			performPhase(member);
 		}
 		return true;

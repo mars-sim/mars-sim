@@ -46,7 +46,7 @@ public class WorkoutMeta extends FactoryMetaTask {
 
         double result = 0D;
                
-        if (person.isInside()) {
+        if (person.isInSettlement()) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();

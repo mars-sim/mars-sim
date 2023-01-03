@@ -51,7 +51,7 @@ public class Workout extends Task {
 		super(NAME, person, true, false, STRESS_MODIFIER,
 				10.0 + RandomUtil.getRandomInt(-7, 7));
 
-		if (person.isInside()) {
+		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find a gym.
 			Building gymBuilding = getAvailableGym(person);

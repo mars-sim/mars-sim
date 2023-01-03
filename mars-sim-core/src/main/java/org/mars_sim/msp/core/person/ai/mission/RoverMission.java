@@ -316,13 +316,21 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 
-			// Still enough members ? If so eject late arrivals
-			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
-				for(Person ej : ejectedMembers) {
-					logger.info(ej, "Ejected from mission " + getName() + " missed Departure");
-					removeMember(ej);
+			// Must have the leader
+			if (!ejectedMembers.contains(getStartingPerson())) {
+				// Still enough members ? If so eject late arrivals
+				if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+					for(Person ej : ejectedMembers) {
+						logger.info(ej, "Ejected from mission " + getName() + " missed Departure");
+						removeMember(ej);
+						addMissionLog(ej.getName() + " evicted");
+					}
+					canDepart = true;
 				}
-				canDepart = true;
+			}
+			else {
+				// Too many generated
+				//logger.info(member, "Leader " + getStartingPerson().getName() + " still not boarded for mission " + getName());
 			}
 		}
 
@@ -342,6 +350,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			else {
 				endMissionProblem(v, "Could not exit Settlement");
+			}
+
+			// Marks everyone departed
+			for(Worker m : getMembers()) {
+				Person p = (Person) m;
+				p.getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
 		}
 		else {
