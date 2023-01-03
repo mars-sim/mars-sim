@@ -1,25 +1,32 @@
 # Mars Simulation Project
-Copyright (C) 2022 Scott Davis
+Copyright (C) 2023 Scott Davis
 [Project Website](https://mars-sim.github.io)
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
 
-## v3.5.0 (build ____) - __ ___ 2022
+## v3.4.1 (build ____) - __ Jan 2023
 
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>Settlement : Add task backlog showing a pool of shared tasks specific to a Settlement.</LI>
-  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>
-  <LI>   Mission : Add deadline on rover mission departure. Split the Embarking phase into loading & departing. </LI> 
+  <LI>   Battery : Standardize battery capacity. </LI>
+  <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
+  <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
+  <LI>     Robot : Define specifications using RobotSpec class. </LI>  
   <LI>     Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
-
+  <LI> Stock Cap : Increase general/cargo capacities and specific resource storage capacity. </LI>
+  <LI>Settlement : Define SettlementMetaTask and track a pool of shared tasks.</LI>
+  <LI>   Storage : Allow selection of storage bin in DigLocal task based on building resource capacity. </LI>
+      
 ### UI IMPROVEMENT :
-  <LI>New tab to the Monitor Tool to show the Task Backlog in a Settlement. </LI>
-
+  <LI>Row Count : Correct row count on Monitor Window. </LI> 
+  <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
+  
 ### FIXES :
- <LI>  </LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
+ <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
+ <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
  
 ------------------------------------------|--------------------- 
  
