@@ -33,7 +33,9 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -71,16 +73,9 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.window.WebFrame;
-import com.alee.managers.UIManagers;
-import com.alee.managers.style.StyleId;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -170,7 +165,7 @@ public class SimulationConfigEditor {
 
 	private JLabel errorLabel;
 	private JButton startButton;
-	private WebFrame<?> f;
+	private JFrame f;
 
 	private CrewEditor crewEditor;
 
@@ -207,18 +202,7 @@ public class SimulationConfigEditor {
 
 		hasError = false;
 
-		try {
-			// use the weblaf skin
-			WebLookAndFeel.install();
-			UIManagers.initialize();
-		} catch (Exception ex) {
-			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
-		}
-
-		// Setup weblaf's IconManager
-		MainWindow.initIconManager();
-
-		f = new WebFrame();
+		f = new JFrame();
 
 		f.setIconImage(MainWindow.getIconImage());
 
@@ -256,34 +240,30 @@ public class SimulationConfigEditor {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
-			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setStyleId(StyleId.labelShadow);
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(DIALOG_16);
 			topPanel.add(gameModeLabel);
 
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
 			topPanel.add(ccPanel);
 
-			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
+			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
 					commanderName), JLabel.LEFT); //$NON-NLS-1$
 			commanderLabel.setFont(DIALOG_14);
-			commanderLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(commanderLabel);
 
 			ccPanel.add(new JLabel());
 
-			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
+			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
 			sponsorLabel.setFont(DIALOG_14);
-			sponsorLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(sponsorLabel);
 
 		}
 
 		else {
-			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(DIALOG_16);
-			gameModeLabel.setStyleId(StyleId.labelShadow);
 			topPanel.add(gameModeLabel);
 		}
 
@@ -591,7 +571,7 @@ public class SimulationConfigEditor {
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL);
-		JComboBoxMW<String> crewCB = new JComboBoxMW<>();
+		JComboBox<String> crewCB = new JComboBox<>();
 		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 
@@ -610,7 +590,7 @@ public class SimulationConfigEditor {
 
 	private void setTemplateEditor(JTable table, int column) {
 		TableColumn templateColumn = table.getColumnModel().getColumn(column);
-		JComboBoxMW<String> templateCB = new JComboBoxMW<>();
+		JComboBox<String> templateCB = new JComboBox<>();
 		for (String st : settlementConfig.getItemNames()) {
 			templateCB.addItem(st);
 		}
@@ -655,7 +635,7 @@ public class SimulationConfigEditor {
 
 	private void setSponsorEditor(JTable table, int column) {
 		TableColumn sponsorColumn = table.getColumnModel().getColumn(column);
-		WebComboBox sponsorCB = new WebComboBox();
+		JComboBox<String> sponsorCB = new JComboBox<>();
 		sponsorCB.setModel(new UserConfigurableComboModel(raFactory, false));
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 	}
@@ -811,7 +791,7 @@ public class SimulationConfigEditor {
 		return new Coordinates(Coordinates.getRandomLatitude(), Coordinates.getRandomLongitude());
 	}
 
-	public WebFrame<?> getFrame() {
+	public JFrame getFrame() {
 		return f;
 	}
 
