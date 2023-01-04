@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.geom.Dimension2D;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.awt.Image;
 
 import javax.swing.Icon;
 
@@ -73,26 +75,10 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
      * @param h The height of the icon.
      */
     public SVGIcon(String uri, int w, int h) throws TranscoderException {
+       //InputStream source = getClass().getClassLoader().getResourceAsStream(uri);
+
         generateBufferedImage(new TranscoderInput(uri), w, h);
     }
-
-//    /**
-//     * Create a new SVGIcon object.
-//     * @param doc The SVG document.
-//     */
-//    public SVGIcon(Document doc) throws TranscoderException {
-//        this(doc, 0, 0);
-//    }
-
-//    /**
-//     * Create a new SVGIcon object.
-//     * @param doc The SVG document.
-//     * @param w The width of the icon.
-//     * @param h The height of the icon.
-//     */
-//    public SVGIcon(Document doc, int w, int h) throws TranscoderException {
-//        generateBufferedImage(new TranscoderInput(doc), w, h);
-//    }
 
     /**
      * Generate the BufferedImage.
@@ -153,6 +139,14 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
             hints.put(KEY_WIDTH, (float) w);
             hints.put(KEY_HEIGHT, (float) h);
         }
+    }
+
+    /**
+     * Get the underlyign backing image
+     * @return
+     */
+    public Image getImage() {
+        return bufferedImage;
     }
 
     // Icon //////////////////////////////////////////////////////////////////

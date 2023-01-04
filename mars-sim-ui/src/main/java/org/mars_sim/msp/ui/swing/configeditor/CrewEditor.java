@@ -28,14 +28,15 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.event.DocumentEvent;
 
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.Crew;
@@ -50,23 +51,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
-import com.alee.api.annotations.NotNull;
-import com.alee.api.annotations.Nullable;
-import com.alee.api.data.BoxOrientation;
-import com.alee.extended.button.WebSwitch;
-import com.alee.extended.overlay.AlignedOverlay;
-import com.alee.extended.overlay.WebOverlay;
-import com.alee.extended.svg.SvgIcon;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.radiobutton.WebRadioButton;
-import com.alee.laf.text.WebTextField;
-import com.alee.laf.window.WebDialog;
-import com.alee.managers.icon.IconManager;
-import com.alee.managers.style.StyleId;
-import com.alee.utils.CoreSwingUtils;
-import com.alee.utils.swing.extensions.DocumentEventRunnable;
+
 
 /**
  * CrewEditor allows users to design the crew manifest for an initial settlement
@@ -76,13 +61,13 @@ public class CrewEditor implements ActionListener {
 	 * Represents a single Crew member in a dedicated panel.
 	 */
 	private class MemberPanel implements ItemListener, ActionListener {
-		private WebComboBox countryCB;
-		private WebComboBox sponsorCB;
-		private WebComboBox jobCB;
+		private JComboBox<String> countryCB;
+		private JComboBox<String> sponsorCB;
+		private JComboBox<String> jobCB;
 		private List<JRadioButton> radioButtons;
 		private Box displayPanel;
-		private WebTextField nametf;
-		private WebSwitch webSwitch;
+		private JTextField nametf;
+		private JComboBox<String> genderCB;
 		private JTextField agetf;
 
 		/**
@@ -91,37 +76,29 @@ public class CrewEditor implements ActionListener {
 		 * @return
 		 */
 		MemberPanel(int i, CrewEditor parent) {
-	    	SvgIcon icon = IconManager.getIcon ("info_red");//new LazyIcon("info").getIcon();
-			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
-	        final WebLabel overlayLabel = new WebLabel(icon);
-
 			displayPanel = Box.createVerticalBox();
 
 			// Name 
-			nametf = new WebTextField(15);
-			nametf.setMargin(3, 0, 3, 0);
-			overlay.setContent(nametf);
-			onChange(nametf, overlayLabel, overlay);
-			WebPanel namePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
-			namePanel.add(new WebLabel("   Name : "));
+			nametf = new JTextField(15);
+			nametf.setMargin(new Insets(3, 0, 3, 0));
+
+			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+			namePanel.add(new JLabel("   Name : "));
 			namePanel.add(nametf);
 			displayPanel.add(namePanel);
 			
 			// Gender
-			webSwitch = new WebSwitch(true);		
-			webSwitch.setSwitchComponents(
-					"M", 
-					"F");
-			webSwitch.setToolTipText("Choose male or female");
-			WebPanel genderPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
-			genderPanel.add(new WebLabel(" Gender : "));
-			genderPanel.add(webSwitch);
+			genderCB = new JComboBox<>(setUpGenderCBModel());
+			genderCB.setToolTipText("Choose male or female");
+			JPanel genderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+			genderPanel.add(new JLabel(" Gender : "));
+			genderPanel.add(genderCB);
 			displayPanel.add(genderPanel);	
 			
 			// Age
 			agetf = new JTextField(5);
 			JPanel agePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
-			agePanel.add(new WebLabel("      Age : "));
+			agePanel.add(new JLabel("      Age : "));
 			agePanel.add(agetf);
 			displayPanel.add(agePanel);
 					
@@ -133,13 +110,8 @@ public class CrewEditor implements ActionListener {
 			fullPane.setMaximumSize(new Dimension(PANEL_WIDTH, 200));	
 			radioButtons = new ArrayList<>();
 			for (int row = 0; row < 4; row++) {
-				WebRadioButton ra = new WebRadioButton(StyleId.radiobuttonStyled, 
-								QUADRANT_A[row]);
-				//ra.addActionListener(this);
-				
-				WebRadioButton rb = new WebRadioButton(StyleId.radiobuttonStyled, 
-								QUADRANT_B[row]);
-				//rb.addActionListener(this);	
+				JRadioButton ra = new JRadioButton(QUADRANT_A[row]);
+				JRadioButton rb = new JRadioButton(QUADRANT_B[row]);
 				radioButtons.add(ra);
 				radioButtons.add(rb);
 				
@@ -157,19 +129,15 @@ public class CrewEditor implements ActionListener {
 				fullPane.add(quadPane);
 			}
 			displayPanel.add(fullPane);
-			
+
 			// Job
-			jobCB = setUpCB(2);// 2 = Job
+			jobCB = new JComboBox<>(setUpJobCBModel());
 			jobCB.setToolTipText("Choose the job of this person");
 			jobCB.setMaximumRowCount(8);
 			displayPanel.add(jobCB);
 			
 			// Sponsor
-			DefaultComboBoxModel<String> m = setUpSponsorCBModel();
-			sponsorCB = new WebComboBox(StyleId.comboboxHover, m);
-			sponsorCB.setWidePopup(true);
-			sponsorCB.setPreferredWidth(PANEL_WIDTH);
-			sponsorCB.setMaximumWidth(PANEL_WIDTH);
+			sponsorCB = new JComboBox<>(setUpSponsorCBModel());
 			sponsorCB.setToolTipText("Choose the sponsor of this person");
 			sponsorCB.setMaximumRowCount(8);
 			displayPanel.add(sponsorCB);
@@ -178,7 +146,7 @@ public class CrewEditor implements ActionListener {
 			sponsorCB.addItemListener(this);		    
 		    
 			// Country
-			countryCB = setUpCB(3); // 3 = Country
+			countryCB = new JComboBox<>(setUpCountryCBModel());
 			countryCB.setToolTipText("Choose the country of origin of this person");
 			countryCB.setMaximumRowCount(8);
 			displayPanel.add(countryCB);
@@ -189,8 +157,8 @@ public class CrewEditor implements ActionListener {
 			displayPanel.add(removeButton);
 			
 			// Add the Crewman title border
-			String num = i + 1 + "";
-			displayPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num));
+			int num = i + 1;
+			displayPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num + " "));
 		}
 		
 		@Override
@@ -245,7 +213,7 @@ public class CrewEditor implements ActionListener {
 			m.setAge(ageStr);
 			
 			GenderType gender;			
-			if (webSwitch.isSelected())
+			if (genderCB.getSelectedItem().equals(MALE))
 				gender = GenderType.MALE;
 			else 
 				gender = GenderType.FEMALE;
@@ -293,7 +261,7 @@ public class CrewEditor implements ActionListener {
 		 */
 		private void loadMember(Member m) {			
 			nametf.setText(m.getName());
-			webSwitch.setSelected(m.getGender() == GenderType.MALE);
+			genderCB.setSelectedItem((m.getGender() == GenderType.MALE ? MALE : FEMALE));
 	        
 			// Age
 			int age = 0;
@@ -332,16 +300,15 @@ public class CrewEditor implements ActionListener {
 		}
 		
 		// This method is called only if a new item has been selected.
-		@SuppressWarnings("unchecked")
 		public void itemStateChanged(ItemEvent evt) {
 		
 			if (evt.getStateChange() == ItemEvent.SELECTED) {
 				// Item was just selected
-		        WebComboBox m = sponsorCB;
+		        JComboBox<String> m = sponsorCB;
 		        String sponsor = (String) m.getSelectedItem();
 		        
 				// Get combo box model
-		        WebComboBox combo = countryCB;
+		        JComboBox<String> combo = countryCB;
 		        DefaultComboBoxModel<String> model =
 		        		(DefaultComboBoxModel<String>) combo.getModel();
 		        
@@ -349,8 +316,7 @@ public class CrewEditor implements ActionListener {
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED) {
 				// Item is no longer selected
-				
-		        WebComboBox combo = countryCB;
+		        JComboBox<String> combo = countryCB;
 		        DefaultComboBoxModel<String> model =
 		        		(DefaultComboBoxModel<String>) combo.getModel();
 		        
@@ -369,22 +335,25 @@ public class CrewEditor implements ActionListener {
 
 	private static final String ADD_MEMBER = "Add Member";
 	private static final String REMOVE_MEMBER = "Remove member";
-		
-	public static final int PANEL_WIDTH = 180;
-	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
-	public static final int HEIGHT = 512;
 
-	private static final String[] QUADRANT_A = {"{E:u}xtravert",
-			"I{N:u}tuition", "{F:u}eeling", "{J:u}udging"};
-	private static final String[] QUADRANT_B = {"{I:u}ntrovert",
-			"{S:u}ensing", "{T:u}hinking", "{P:u}erceiving"};
+	private static final String MALE = "Male";
+	private static final String FEMALE = "Female";
+		
+	private static final int PANEL_WIDTH = 180;
+	private static final int WIDTH = (int)(PANEL_WIDTH * 4);
+	private static final int HEIGHT = 512;
+
+	private static final String[] QUADRANT_A = {"<html><b>E</b>xtravert",
+			"<html>I<b>N</b>tuition", "<html><b>F</b>eeling", "<html><b>J</b>udging"};
+	private static final String[] QUADRANT_B = {"<html><b>I</b>ntrovert",
+			"<html><b>S</b>ensing", "<html><b>T</b>hinking", "<html><b>P</b>erceiving"};
 	private static final String[] CATEGORY = {"World",
 			"Information", "Decision", "Structure"};
 
 	private static final String SETTLEMENT_SPONSOR = "Settlement Sponsor";
 	
 	// Data members		
-	private WebDialog<?> f;
+	private JDialog f;
 	
 	private JPanel mainPane;
 	private JPanel scrollPane;
@@ -449,10 +418,9 @@ public class CrewEditor implements ActionListener {
 	 */
 	private void createGUI(UserConfigurableConfig<Crew> crewConfig) {
 	
-		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
+		f = new JDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(MainWindow.getIconImage());
-//		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		f.setResizable(false);
+		f.setResizable(true);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent ev) {
@@ -466,21 +434,15 @@ public class CrewEditor implements ActionListener {
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
-//		f.setContentPane(mainPane);
 		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		scrollPane = new JPanel();
 		scrollPane.setLayout(new BoxLayout(scrollPane, BoxLayout.X_AXIS));
-//		scrollPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//		scrollPane.setAlignmentX(LEFT_ALIGNMENT);
 		scrollPane.setBorder(MainDesktopPane.newEmptyBorder());
 
 		// Prepare scroll panel.
 		JScrollPane scrollPanel = new JScrollPane(scrollPane);
-//		scrollPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//		scrollPanel.getVerticalScrollBar().setUnitIncrement(CREW_WIDTH);
-//		scrollPanel.getHorizontalScrollBar().setUnitIncrement(CREW_WIDTH * 2);
 		mainPane.add(scrollPanel, BorderLayout.CENTER);
 				
 		// Create button panel.
@@ -513,7 +475,7 @@ public class CrewEditor implements ActionListener {
 		f.setVisible(true);
 	}
 	
-	public WebDialog getJFrame() {
+	public JDialog getJFrame() {
 		return f;
 	}
 
@@ -574,77 +536,6 @@ public class CrewEditor implements ActionListener {
 		}  
 	}
 
-	private void onChange(WebTextField tf, WebLabel overlayLabel, WebOverlay overlay) {
-		tf.onChange(new DocumentEventRunnable<WebTextField> () {
-            @Override
-            public void run(@NotNull final WebTextField component, @Nullable final DocumentEvent event ) {
-                CoreSwingUtils.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String text = tf.getText();
-                        if (text.length() == 0) {
-                        	overlayLabel.setToolTipText("This name textfield cannot be blank !");
-                            if (overlay.getOverlayCount() == 0){
-                                overlay.addOverlay(
-                                        new AlignedOverlay(
-                                                overlayLabel,
-                                                BoxOrientation.right,
-                                                BoxOrientation.top,
-                                                new Insets(0, 0, 0, 3)
-                                        )
-                                );
-                            }
-                        }
-                        else {
-//                        	System.out.println("The name textfield is not blank.");
-                            if (overlay.getOverlayCount() > 0) {
-                                overlay.removeOverlay(overlayLabel);
-                            }
-                        }
-                    }
-                } );
-            }
-        } );
-	}
-	
-
-
-	/**
-	 * Sets up the combo box for a few attributes
-	 * 
-	 * @param choice
-	 * @param s
-	 * @return
-	 */
-	private WebComboBox setUpCB(int choice) {
-		DefaultComboBoxModel<String> m = null;
-		if (choice == 2)
-			m = setUpJobCBModel();
-		
-		else if (choice == 3) 
-			m = setUpCountryCBModel();
-		
-		final WebComboBox g = new WebComboBox(StyleId.comboboxHover, m);
-		g.setWidePopup(true);
-//		g.setPreferredSize(new Dimension(CREW_WIDTH, 25));
-//		g.setSize(CREW_WIDTH, 25);
-		g.setPreferredWidth(PANEL_WIDTH);
-//		g.setMinimumWidth(CREW_WIDTH);
-		g.setMaximumWidth(PANEL_WIDTH);
-		
-		g.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e1) {
-				String s = (String) g.getSelectedItem();
-
-				g.setSelectedItem(s);
-			}
-		});
-
-		return g;
-	}
-
-
-
 	/**
 	 * Retrieves the crew's specific MBTI
 	 * 
@@ -701,7 +592,21 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @return DefaultComboBoxModel<String>
 	 */
-	private DefaultComboBoxModel<String> setUpJobCBModel() {
+	private static DefaultComboBoxModel<String> setUpGenderCBModel() {
+
+		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
+		m.addElement(MALE);
+		m.addElement(FEMALE);
+		return m;
+	}
+
+	
+	/**
+	 * Set up the job comboxbox model
+	 * 
+	 * @return DefaultComboBoxModel<String>
+	 */
+	private static DefaultComboBoxModel<String> setUpJobCBModel() {
 
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		for (JobType jt : JobType.values()) {
@@ -718,7 +623,7 @@ public class CrewEditor implements ActionListener {
 	 * @return DefaultComboBoxModel<String>
 	 */
 	private DefaultComboBoxModel<String> setUpCountryCBModel() {
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
 
 		populateCountryCombo(SETTLEMENT_SPONSOR, m);
 		return m;

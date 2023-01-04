@@ -69,6 +69,8 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
+import org.mars_sim.msp.ui.swing.utils.IconManager;
 
 import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
@@ -82,7 +84,6 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.UIManagers;
-import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.icon.set.IconSet;
 import com.alee.managers.icon.set.RuntimeIconSet;
@@ -144,8 +145,6 @@ extends JComponent implements ClockListener {
 	public static final int WEATHER_ICON_SIZE = 64;
 	/** The timer for update the status bar labels. */
 	private static final int TIME_DELAY = 2_000;
-	/** Keeps track of whether icons have been added to the IconManager . */
-	private static boolean iconsConfigured = false;
 
 	/** The main window frame. */
 	private static JFrame frame;
@@ -157,6 +156,8 @@ extends JComponent implements ClockListener {
 	private static SplashWindow splashWindow;
 
 	private static InteractiveTerm interactiveTerm;
+
+	private static IconManager iconManager;
 	
 	/** The four types of theme types. */
 	public enum ThemeType {
@@ -489,141 +490,108 @@ extends JComponent implements ClockListener {
 	}
 
 	public static void initIconManager() {
-		iconsConfigured = true;
 		// Set up an icon set for use throughout mars-sim
-		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
+		iconManager = new IconManager();
 
 		int size = 24;
 
-		iconSet.addIcon(new SvgIconSource (
-		        "info_red",
-		        new ClassResource(MainWindow.class, INFO_RED_SVG),
-		        new Dimension(12, 12)));
+		iconManager.addSVGIcon("info_red", INFO_RED_SVG, 12, 12);
+		iconManager.addSVGIcon("pause_orange", PAUSE_ORANGE_SVG, 300, 300);
 
-		iconSet.addIcon(new SvgIconSource (
-		        "pause_orange",
-		        new ClassResource(MainWindow.class, PAUSE_ORANGE_SVG),
-		        new Dimension(300, 300)));
-
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "calendar_mars",
-		        new ClassResource(MainWindow.class, MARS_CALENDAR_SVG),
-		        new Dimension(16, 16)));
+		        MARS_CALENDAR_SVG,16, 16);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "lander",
-		        new ClassResource(MainWindow.class, LANDER_SVG),
-		        new Dimension(16, 16)));
+		        LANDER_SVG,16, 16);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "info",
-		        new ClassResource(MainWindow.class, INFO_SVG),
-		        new Dimension(size, size)));
+		        INFO_SVG,size, size);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "edit",
-		        new ClassResource(MainWindow.class, EDIT_SVG),
-		        new Dimension(size, size)));
+		        EDIT_SVG,size, size);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "left",
-		        new ClassResource(MainWindow.class, LEFT_SVG),
-		        new Dimension(size, size)));
+		        LEFT_SVG,size, size);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "right",
-		        new ClassResource(MainWindow.class, RIGHT_SVG),
-		        new Dimension(size, size)));
+		        RIGHT_SVG,size, size);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "center",
-		        new ClassResource(MainWindow.class, CENTER_SVG),
-		        new Dimension(size, size)));
+		        CENTER_SVG,size, size);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "stack",
-		        new ClassResource(MainWindow.class, STACK_SVG),
-		        new Dimension(size, size)));
+		        STACK_SVG,size, size);
 
 		/////////////////////////////////////////////////////////
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "sandstorm",
-		        new ClassResource(MainWindow.class, SANDSTORM_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        SANDSTORM_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "dustDevil",
-		        new ClassResource(MainWindow.class, DUST_DEVIL_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        DUST_DEVIL_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
 		////////////////////
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "frost_wind",
-		        new ClassResource(MainWindow.class, FROST_WIND_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        FROST_WIND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "cold_wind",
-		        new ClassResource(MainWindow.class, COLD_WIND_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        COLD_WIND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
 		////////////////////
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "sun",
-		        new ClassResource(MainWindow.class, SUN_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        SUN_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "desert_sun",
-		        new ClassResource(MainWindow.class, DESERT_SUN_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        DESERT_SUN_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "cloudy",
-		        new ClassResource(MainWindow.class, CLOUDY_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        CLOUDY_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "snowflake",
-		        new ClassResource(MainWindow.class, SNOWFLAKE_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        SNOWFLAKE_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "ice",
-		        new ClassResource(MainWindow.class, ICE_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        ICE_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
 		////////////////////
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "sand",
-		        new ClassResource(MainWindow.class, SAND_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        SAND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		        "hazy",
-		        new ClassResource(MainWindow.class, HAZY_SVG),
-		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
+		        HAZY_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
 
 		////////////////////
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 		      "mars",
-		      new ClassResource(MainWindow.class, MARS_SVG),
-		      new Dimension(18, 18)));
+		      MARS_SVG, 18, 18);
 
-		iconSet.addIcon(new SvgIconSource (
+		iconManager.addSVGIcon(
 			      "telescope",
-			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
-			      new Dimension(14, 14)));
+			      TELESCOPE_SVG,14, 14);
 
-		// Add the icon set to the icon manager
-		IconManager.addIconSet(iconSet);
-
-		landerIcon = new LazyIcon("lander").getIcon();
 	}
 
 	/**
@@ -1133,7 +1101,7 @@ extends JComponent implements ClockListener {
 			WebLookAndFeel.install();
 			UIManagers.initialize();
 			// Start the weblaf icon manager
-			if (!iconsConfigured)
+			if (iconManager == null)
 				initIconManager();
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
@@ -1249,11 +1217,15 @@ extends JComponent implements ClockListener {
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
-		return landerIcon;
+		if (iconManager == null) {
+			initIconManager();
+		}
+		return iconManager.getIcon("lander");
 	}
 
 	public static Image getIconImage() {
-		return ((ImageIcon)landerIcon).getImage();
+		// Not great
+		return ((SVGIcon) getLanderIcon()).getImage();
 	}
 
 	/**
