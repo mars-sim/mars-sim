@@ -11,13 +11,14 @@ Copyright (C) 2023 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>   Battery : Standardize battery capacity. </LI>
+  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI>    
   <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
   <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
   <LI>     Robot : Define specifications using RobotSpec class. </LI>  
   <LI>     Shift : Add shift manager to handle work shift change and add on leave status. </LI> 
   <LI> Stock Cap : Increase general/cargo capacities and specific resource storage capacity. </LI>
-  <LI>Settlement : Define SettlementMetaTask and track a pool of shared tasks.</LI>
   <LI>   Storage : Allow selection of storage bin in DigLocal task based on building resource capacity. </LI>
+  <LI>      Task : Define SettlementMetaTask and track a pool of shared tasks. </LI>  
       
 ### UI IMPROVEMENT :
   <LI>Row Count : Correct row count on Monitor Window. </LI> 
