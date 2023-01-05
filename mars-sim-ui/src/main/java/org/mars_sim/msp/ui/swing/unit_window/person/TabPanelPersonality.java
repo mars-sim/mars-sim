@@ -15,6 +15,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
@@ -28,11 +29,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextArea;
-import com.alee.managers.style.StyleId;
 
 /**
  * The TabPanelPersonality is a tab panel for personality information about a person.
@@ -103,7 +99,7 @@ public class TabPanelPersonality extends TabPanel {
 		int[] scores = new int[4];
 		
 		// Prepare MBTI text area
-		WebTextArea ta = new WebTextArea();
+		JTextArea ta = new JTextArea();
 		ta.setAlignmentX(Component.CENTER_ALIGNMENT);
 		ta.setAlignmentY(Component.CENTER_ALIGNMENT);
 		String tip =  "<html>Introvert (I) / Extrovert  (E) : -50 to 0 / 0 to 50" 
@@ -117,19 +113,19 @@ public class TabPanelPersonality extends TabPanel {
 		ta.setColumns(15);
 		ta.setBorder(new MarsPanelBorder());
 		
-		WebPanel mbtiPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel mbtiPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		mbtiPanel.add(ta);
 		
-		WebPanel listPanel = new WebPanel(new BorderLayout(1, 1));
+		JPanel listPanel = new JPanel(new BorderLayout(1, 1));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		listPanel.setPreferredSize(110, 90);
-		listPanel.setMaximumSize(110, 110);
+		//listPanel.setPreferredSize(110, 90);
+		//listPanel.setMaximumSize(110, 110);
 		listPanel.add(mbtiPanel, BorderLayout.NORTH);
 		
 		String type = p.getTypeString();
 		String descriptor = p.getDescriptor();
-		WebLabel descriptorLabel = new WebLabel(StyleId.labelShadow, type + " : " + descriptor, JLabel.CENTER);
+		JLabel descriptorLabel = new JLabel(type + " : " + descriptor, JLabel.CENTER);
 		descriptorLabel.setToolTipText(Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));//$NON-NLS-1$
 		descriptorLabel.setFont(RESULT_FONT);
 		listPanel.add(descriptorLabel, BorderLayout.CENTER);
@@ -211,7 +207,7 @@ public class TabPanelPersonality extends TabPanel {
     	}
     	
 		// Prepare MBTI text area
-		WebTextArea ta = new WebTextArea();
+		JTextArea ta = new JTextArea();
 		ta.setAlignmentX(Component.CENTER_ALIGNMENT);
 		ta.setAlignmentY(Component.CENTER_ALIGNMENT);
 		ta.setEditable(false);
@@ -226,10 +222,10 @@ public class TabPanelPersonality extends TabPanel {
 				  	  + "<br>       Neuroticism : 0 to 100</html>";
 		ta.setToolTipText(tip);
 	
-		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		listPanel.setToolTipText(Msg.getString("TabPanelPersonality.bigFive.label"));//$NON-NLS-1$
-		listPanel.setPreferredSize(110, 160);
+		//listPanel.setPreferredSize(110, 160);
 		listPanel.add(ta);
 
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " Big Five Personality Traits",

@@ -17,9 +17,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -53,14 +57,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-//import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
-
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job
  * history.
@@ -92,14 +88,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	private JTable table;
 
-	private WebLabel jobLabel;
-	private WebLabel roleLabel;
-	private WebLabel jobChangeLabel;
-	private WebLabel roleChangeLabel;
-	private WebLabel ratingLabel;
+	private JLabel jobLabel;
+	private JLabel roleLabel;
+	private JLabel jobChangeLabel;
+	private JLabel roleChangeLabel;
+	private JLabel ratingLabel;
 
-	private WebComboBox jobComboBox;
-	private WebComboBox roleComboBox;
+	private JComboBox<String> jobComboBox;
+	private JComboBox<String> roleComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
 
@@ -132,7 +128,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		person = (Person) unit;
 
 		if (marsClock == null)
-			marsClock	= Simulation.instance().getMasterClock().getMarsClock();
+			marsClock	= desktop.getSimulation().getMasterClock().getMarsClock();
 
 		if (person.getAssociatedSettlement() != null) {
 			settlement = person.getAssociatedSettlement();
@@ -161,44 +157,43 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		dead = person.getPhysicalCondition().isDead();
 		deathInfo = person.getPhysicalCondition().getDeathDetails();
 
-		WebPanel firstPanel = new WebPanel(new BorderLayout());
+		JPanel firstPanel = new JPanel(new BorderLayout());
 		northPanel.add(firstPanel, BorderLayout.NORTH);
 
 		// Prepare job spring panel
-		WebPanel topSpringPanel = new WebPanel(new SpringLayout());
+		JPanel topSpringPanel = new JPanel(new SpringLayout());
 		firstPanel.add(topSpringPanel, BorderLayout.NORTH);
 
 		// Prepare job label
-		jobLabel = new WebLabel(Msg.getString("TabPanelCareer.jobType"), WebLabel.RIGHT); //$NON-NLS-1$
+		jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.RIGHT); //$NON-NLS-1$
 		topSpringPanel.add(jobLabel);
-		TooltipManager.setTooltip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip"), TooltipWay.down);
+		jobLabel.setToolTipText(Msg.getString("TabPanelCareer.jobType.tooltip"));
 
 		// Prepare job combo box
 		jobCache = mind.getJob();
-		List<String> jobNames = new ArrayList<String>();
+		Vector<String> jobNames = new Vector<>();
 		for (Job job : JobUtil.getJobs()) {
 			jobNames.add(job.getName(person.getGender()));
 		}
 		Collections.sort(jobNames);
 
 		// Prepare job combo box
-		jobComboBox = new WebComboBox(jobNames.toArray());
+		jobComboBox = new JComboBox<>(jobNames);
 		jobComboBox.setSelectedItem(jobCache.getName());
 		jobComboBox.addActionListener(this);
 
 		// Prepare job panel
-		WebPanel jobPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT)); // new GridLayout(3, 1, 0, 0)); //
+		JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // new GridLayout(3, 1, 0, 0)); //
 		jobPanel.add(jobComboBox);
 		topSpringPanel.add(jobPanel);
 
-		TooltipManager.setTooltip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip"),
-				TooltipWay.down);
+		jobComboBox.setToolTipText(Msg.getString("TabPanelCareer.jobComboBox.tooltip"));
 
 		// check if a job reassignment is still pending for review
 		// if true, disable the combobox
 
 		// Prepare role label
-		roleLabel = new WebLabel(Msg.getString("TabPanelCareer.roleType"), WebLabel.RIGHT); //$NON-NLS-1$
+		roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.RIGHT); //$NON-NLS-1$
 		roleLabel.setSize(10, 2);
 		topSpringPanel.add(roleLabel);// , JLabel.BOTTOM);
 
@@ -206,61 +201,59 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		List<String> roleNames = RoleUtil.getRoleNames(settlement.getNumCitizens());
 
 		// Prepare role combo box
-		roleComboBox = new WebComboBox(roleNames.toArray());
+		roleComboBox = new JComboBox<>(roleNames.toArray(new String[0]));
 		roleComboBox.setSelectedItem(roleCache.getName());
 		roleComboBox.addActionListener(this);
 
 		// Prepare role panel
-		WebPanel rolePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		rolePanel.add(roleComboBox);
 		topSpringPanel.add(rolePanel);
 
-		TooltipManager.setTooltip(roleComboBox, Msg.getString("TabPanelCareer.roleComboBox.tooltip"),
-				TooltipWay.down);
+		roleComboBox.setToolTipText(Msg.getString("TabPanelCareer.roleComboBox.tooltip"));
 
-		jobChangeLabel = new WebLabel("");
+		jobChangeLabel = new JLabel("");
 		jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		jobChangeLabel.setFont(courierNew12);
 		jobChangeLabel.setForeground(Color.blue);
 		firstPanel.add(jobChangeLabel, BorderLayout.CENTER);
-		TooltipManager.setTooltip(jobChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
+		jobChangeLabel.setToolTipText(Msg.getString("TabPanelCareer.roleType.tooltip"));//$NON-NLS-1$
 
-		roleChangeLabel = new WebLabel("");
+		roleChangeLabel = new JLabel("");
 		roleChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		roleChangeLabel.setFont(courierNew12);
 		roleChangeLabel.setForeground(Color.blue);
 		firstPanel.add(roleChangeLabel, BorderLayout.SOUTH);
-		TooltipManager.setTooltip(roleChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
+		roleChangeLabel.setToolTipText(Msg.getString("TabPanelCareer.roleType.tooltip"));//$NON-NLS-1$
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topSpringPanel, 2, 2, // rows, cols
 				150, 3, // initX, initY
 				3, 1); // xPad, yPad
 
-		WebPanel ratingPanel = new WebPanel(new BorderLayout());
+		JPanel ratingPanel = new JPanel(new BorderLayout());
 		northPanel.add(ratingPanel, BorderLayout.CENTER);
 
 		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 
-		WebPanel springPanel = new WebPanel(new SpringLayout());
+		JPanel springPanel = new JPanel(new SpringLayout());
 		ratingPanel.add(springPanel, BorderLayout.CENTER);
 
-		WebLabel aveRatingLabel = new WebLabel("Overall Performance : ", WebLabel.RIGHT);
+		JLabel aveRatingLabel = new JLabel("Overall Performance : ", JLabel.RIGHT);
 		springPanel.add(aveRatingLabel);
 
 		aveRater = new StarRater(5, calculateAveRating(list));
 		aveRater.setEnabled(false);
 		springPanel.add(aveRater);
 
-		TooltipManager.setTooltip(aveRatingLabel, Msg.getString("TabPanelCareer.aveRater.tooltip"), //$NON-NLS-1$
-				TooltipWay.down);
+		aveRatingLabel.setToolTipText(Msg.getString("TabPanelCareer.aveRater.tooltip"));
 
-		WebLabel raterLabel = new WebLabel("Your Rating : ", WebLabel.RIGHT);
+		JLabel raterLabel = new JLabel("Your Rating : ", JLabel.RIGHT);
 		springPanel.add(raterLabel);
 		starRater = new StarRater(5, 0, 0);
 
-		TooltipManager.setTooltip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip"), TooltipWay.down);//$NON-NLS-1$
-		TooltipManager.setTooltip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip"), TooltipWay.down);//$NON-NLS-1$
+		raterLabel.setToolTipText(Msg.getString("TabPanelCareer.raterLabel.tooltip"));//$NON-NLS-1$
+		starRater.setToolTipText(Msg.getString("TabPanelCareer.starRater.tooltip"));//$NON-NLS-1$
 
 		starRater.addStarListener(new StarRater.StarListener() {
 			public void handleSelection(int selection) {
@@ -298,7 +291,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				80, 10, // initX, initY
 				5, 10); // xPad, yPad
 
-		ratingLabel = new WebLabel("");
+		ratingLabel = new JLabel("");
 		// ratingLabel.setSize(300, 30);
 		ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		ratingLabel.setFont(courierNew12);
@@ -324,21 +317,21 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			checkJobReassignment(person, list);
 
 		// Prepare job title panel
-		WebPanel jobHistoryPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel jobHistoryPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(jobHistoryPanel, BorderLayout.CENTER);
 
 		// Prepare job title label
-		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
+		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
 		// historyLabel.setBounds(0, 0, width, height);
 		historyLabel.setFont(SUBTITLE_FONT);
-		historyLabel.setPadding(7, 0, 1, 0);
+		//historyLabel.setPadding(7, 0, 1, 0);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
 		jobHistoryTableModel = new JobHistoryTableModel();
 
 		// Create attribute scroll panel
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 //		scrollPanel.setBorder(new MarsPanelBorder());
 		jobHistoryPanel.add(scrollPanel, BorderLayout.CENTER);
 

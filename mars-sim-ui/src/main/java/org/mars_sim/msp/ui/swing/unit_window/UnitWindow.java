@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -133,7 +134,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @param imageLocation
 	 * @param label
 	 */
-	public void setImage(String imageLocation, WebLabel label) {
+	public void setImage(String imageLocation, JLabel label) {
 		ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
 		label.setIcon(imageIcon);
 	}
