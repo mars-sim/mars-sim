@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -39,14 +42,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
-//import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The HealthTabPanel is a tab panel for a person's health.
@@ -75,20 +70,20 @@ extends TabPanel {
 	private int ghrelinCache;
 	private int ghrelinTCache;
 	
-	private WebLabel thirstLabel;
-	private WebLabel fatigueLabel;
-	private WebLabel hungerLabel;
-	private WebLabel energyLabel;
-	private WebLabel stressLabel;
-	private WebLabel performanceLabel;
+	private JLabel thirstLabel;
+	private JLabel fatigueLabel;
+	private JLabel hungerLabel;
+	private JLabel energyLabel;
+	private JLabel stressLabel;
+	private JLabel performanceLabel;
 	
-	private WebLabel leptinLabel;
-	private WebLabel ghrelinLabel;
-	private WebLabel leptinTLabel;
-	private WebLabel ghrelinTLabel;
+	private JLabel leptinLabel;
+	private JLabel ghrelinLabel;
+	private JLabel leptinTLabel;
+	private JLabel ghrelinTLabel;
 	
 	/** The sleep hour text field. */	
-	private WebTextField sleepTF;
+	private JTextField sleepTF;
 	
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
@@ -141,104 +136,104 @@ extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
 		// Prepare condition panel
-		WebPanel conditionPanel = new WebPanel(new SpringLayout());
+		JPanel conditionPanel = new JPanel(new SpringLayout());
 		northPanel.add(conditionPanel);
 
 		// Prepare fatigue name label
-		WebLabel fatigueNameLabel = new WebLabel(Msg.getString("TabPanelHealth.fatigue"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(fatigueNameLabel);
 		
 		// Prepare fatigue label
 		fatigueCache = (int)condition.getFatigue();
-		fatigueLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, fatigueCache)), SwingConstants.RIGHT);
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
-		WebLabel thirstNameLabel = new WebLabel(Msg.getString("TabPanelHealth.thirst"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel thirstNameLabel = new JLabel(Msg.getString("TabPanelHealth.thirst"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(thirstNameLabel);
 
 		// Prepare hunger label
 		thirstCache = (int)condition.getThirst();
-		thirstLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		thirstLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, thirstCache)), SwingConstants.RIGHT);
 		conditionPanel.add(thirstLabel);
 		
 		// Prepare hunger name label
-		WebLabel hungerNameLabel = new WebLabel(Msg.getString("TabPanelHealth.hunger"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(hungerNameLabel);
 
 		// Prepare hunger label
 		hungerCache = (int)condition.getHunger();
-		hungerLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, hungerCache)), SwingConstants.RIGHT);
 		conditionPanel.add(hungerLabel);
 
 		//
 		// Prepare energy name label
-		WebLabel energyNameLabel = new WebLabel(Msg.getString("TabPanelHealth.energy"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(energyNameLabel);
 
 		// Prepare energy label
 		energyCache = (int)condition.getEnergy();
-		energyLabel = new WebLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
+		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
 				String.format(S6, energyCache)), SwingConstants.RIGHT);
 		conditionPanel.add(energyLabel);
 
 
 		// Prepare stress name label
-		WebLabel stressNameLabel = new WebLabel(Msg.getString("TabPanelHealth.stress"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
 		stressCache = (int)condition.getStress();
-		stressLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 				String.format(S4, stressCache)), SwingConstants.RIGHT);
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
-		WebLabel performanceNameLabel = new WebLabel(Msg.getString("TabPanelHealth.performance"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(performanceNameLabel);
 
 		// Performance rating label
 		performanceCache = (int)(person.getPerformanceRating() * 100);
-		performanceLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 				String.format(S4, performanceCache)), SwingConstants.RIGHT);
 		conditionPanel.add(performanceLabel);
 
 		// Prepare leptin label
-		WebLabel leptinNameLabel = new WebLabel(Msg.getString("TabPanelHealth.leptin"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel leptinNameLabel = new JLabel(Msg.getString("TabPanelHealth.leptin"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(leptinNameLabel);
 
 		leptinCache = (int)(person.getCircadianClock().getLeptin());
-		leptinLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		leptinLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, leptinCache)), SwingConstants.RIGHT);
 		conditionPanel.add(leptinLabel);
 		
 		// Prepare ghrelin label
-		WebLabel ghrelinNameLabel = new WebLabel(Msg.getString("TabPanelHealth.ghrelin"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel ghrelinNameLabel = new JLabel(Msg.getString("TabPanelHealth.ghrelin"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(ghrelinNameLabel);
 
 		ghrelinCache = (int)(person.getCircadianClock().getGhrelin());
-		ghrelinLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		ghrelinLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, ghrelinCache)), SwingConstants.RIGHT);
 		conditionPanel.add(ghrelinLabel);
 
 		// Prepare leptin threshold label
-		WebLabel leptinTNameLabel = new WebLabel(Msg.getString("TabPanelHealth.leptin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel leptinTNameLabel = new JLabel(Msg.getString("TabPanelHealth.leptin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(leptinTNameLabel);
 
 		leptinTCache = (int)(person.getCircadianClock().getLeptinT());
-		leptinTLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		leptinTLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, leptinTCache)), SwingConstants.RIGHT);
 		conditionPanel.add(leptinTLabel);
 		
 		// Prepare ghrelin threshold label
-		WebLabel ghrelinTNameLabel = new WebLabel(Msg.getString("TabPanelHealth.ghrelin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel ghrelinTNameLabel = new JLabel(Msg.getString("TabPanelHealth.ghrelin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(ghrelinTNameLabel);
 
 		ghrelinTCache = (int)(person.getCircadianClock().getGhrelinT());
-		ghrelinTLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+		ghrelinTLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
 				String.format(S4, ghrelinTCache)), SwingConstants.RIGHT);
 		conditionPanel.add(ghrelinTLabel);
 
@@ -250,16 +245,16 @@ extends TabPanel {
 		
 
 		// Prepare SpringLayout for info panel.
-		WebPanel springPanel = new WebPanel(new SpringLayout());
+		JPanel springPanel = new JPanel(new SpringLayout());
 		northPanel.add(springPanel);
 		
 		// Prepare sleep hour name label
-		WebLabel sleepHrLabel = new WebLabel(Msg.getString("TabPanelFavorite.sleepHour"), SwingConstants.RIGHT); //$NON-NLS-1$
+		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelFavorite.sleepHour"), SwingConstants.RIGHT); //$NON-NLS-1$
 		springPanel.add(sleepHrLabel);
 
 		// Checks the 3 best sleep time
     	int bestSleepTime[] = person.getPreferredSleepHours();		
-		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
@@ -273,14 +268,14 @@ extends TabPanel {
 			if (i != size - 1)
 				text.append(",  ");
 		}
-		sleepTF = new WebTextField(text.toString());
+		sleepTF = new JTextField(text.toString());
 		sleepTF.setEditable(false);
 		sleepTF.setColumns(20);
 		sleepTF.setCaretPosition(0);
 		wrapper5.add(sleepTF);
 		springPanel.add(wrapper5);
 
-		TooltipManager.setTooltip (sleepTF, "3 best times to go to bed [msol (weight)]", TooltipWay.down); //$NON-NLS-1$
+		sleepTF.setToolTipText("3 best times to go to bed [msol (weight)]"); //$NON-NLS-1$
 				
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
@@ -297,17 +292,17 @@ extends TabPanel {
 
 		// Add radiation dose info
 		// Prepare radiation panel
-		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
 		tablesPanel.add(radiationPanel, BorderLayout.NORTH);
 
 		// Prepare radiation label
-		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
 		radiationLabel.setFont(SUBTITLE_FONT);
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
-		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.radiation.tooltip"), TooltipWay.down); //$NON-NLS-1$
+		radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.radiation.tooltip")); //$NON-NLS-1$
 			 
 		// Prepare radiation scroll panel
-		WebScrollPane radiationScrollPanel = new WebScrollPane();
+		JScrollPane radiationScrollPanel = new JScrollPane();
 		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
 
 		// Prepare radiation table model
@@ -363,16 +358,16 @@ extends TabPanel {
 		TableStyle.setTableStyle(radiationTable);
 
 		// Prepare sleep time panel
-		WebPanel sleepPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
 		tablesPanel.add(sleepPanel, BorderLayout.CENTER);
 
 		// Prepare sleep time label
-		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleepExercise"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel sleepLabel = new JLabel(Msg.getString("TabPanelHealth.sleepExercise"), SwingConstants.CENTER); //$NON-NLS-1$
 		sleepLabel.setFont(SUBTITLE_FONT);
 		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
 
 		// Prepare sleep time scroll panel
-		WebScrollPane sleepScrollPanel = new WebScrollPane();
+		JScrollPane sleepScrollPanel = new JScrollPane();
 		sleepPanel.add(sleepScrollPanel, BorderLayout.CENTER);
 
 		// Prepare sleep time table model
@@ -401,16 +396,16 @@ extends TabPanel {
 		/////////////////////////////////////////////////////////
 		
 		// Prepare exercise time panel
-		WebPanel foodPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel foodPanel = new JPanel(new BorderLayout(0, 0));
 		tablesPanel.add(foodPanel, BorderLayout.SOUTH);
 
 		// Prepare exercise time label
-		WebLabel foodLabel = new WebLabel(Msg.getString("TabPanelHealth.food"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel foodLabel = new JLabel(Msg.getString("TabPanelHealth.food"), SwingConstants.CENTER); //$NON-NLS-1$
 		foodLabel.setFont(SUBTITLE_FONT);
 		foodPanel.add(foodLabel, BorderLayout.NORTH);
 
 		// Prepare exercise time scroll panel
-		WebScrollPane foodScrollPanel = new WebScrollPane();
+		JScrollPane foodScrollPanel = new JScrollPane();
 		foodPanel.add(foodScrollPanel, BorderLayout.CENTER);
 
 		// Prepare exercise time table model
@@ -444,17 +439,17 @@ extends TabPanel {
 		
 		
 		// Prepare health problem panel
-		WebPanel healthProblemPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
 		tablesPanel.add(healthProblemPanel);
 
 		// Prepare health problem label
-		WebLabel healthProblemLabel = new WebLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
-		healthProblemLabel.setPadding(7, 0, 0, 0);
+		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
+		//healthProblemLabel.setPadding(7, 0, 0, 0);
 		healthProblemLabel.setFont(SUBTITLE_FONT);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
-		WebScrollPane healthProblemScrollPanel = new WebScrollPane();
+		JScrollPane healthProblemScrollPanel = new JScrollPane();
 		healthProblemPanel.add(healthProblemScrollPanel, BorderLayout.CENTER);
 
 		// Prepare health problem table model
@@ -472,17 +467,17 @@ extends TabPanel {
 		
 		
 		// Prepare medication panel.
-		WebPanel medicationPanel = new WebPanel(new BorderLayout());
+		JPanel medicationPanel = new JPanel(new BorderLayout());
 		tablesPanel.add(medicationPanel);
 
 		// Prepare medication label.
-		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
-		medicationLabel.setPadding(7, 0, 0, 0);
+		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
+		//medicationLabel.setPadding(7, 0, 0, 0);
 		medicationLabel.setFont(SUBTITLE_FONT);
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
-		WebScrollPane medicationScrollPanel = new WebScrollPane();
+		JScrollPane medicationScrollPanel = new JScrollPane();
 		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
 
 		// Prepare medication table model.

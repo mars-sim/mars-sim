@@ -70,7 +70,7 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
-import org.mars_sim.msp.ui.swing.utils.IconManager;
+import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
 import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
@@ -157,7 +157,7 @@ extends JComponent implements ClockListener {
 
 	private static InteractiveTerm interactiveTerm;
 
-	private static IconManager iconManager;
+	private static MSPIconManager iconManager;
 	
 	/** The four types of theme types. */
 	public enum ThemeType {
@@ -491,7 +491,7 @@ extends JComponent implements ClockListener {
 
 	public static void initIconManager() {
 		// Set up an icon set for use throughout mars-sim
-		iconManager = new IconManager();
+		iconManager = new MSPIconManager();
 
 		int size = 24;
 
@@ -1211,21 +1211,31 @@ extends JComponent implements ClockListener {
 		return mainPane;
 	}
 
+	
+	/**
+	 * Gets the icon instance
+	 *
+	 * @return
+	 */
+	public static Icon getIcon(String id) {
+		if (iconManager == null) {
+			initIconManager();
+		}
+		return iconManager.getIcon(id);
+	}
+
 	/**
 	 * Gets the lander hab icon instance
 	 *
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
-		if (iconManager == null) {
-			initIconManager();
-		}
-		return iconManager.getIcon("lander");
+		return getIcon("lander");
 	}
 
 	public static Image getIconImage() {
 		// Not great
-		return ((SVGIcon) getLanderIcon()).getImage();
+		return ((SVGIcon) getIcon("lander")).getImage();
 	}
 
 	/**

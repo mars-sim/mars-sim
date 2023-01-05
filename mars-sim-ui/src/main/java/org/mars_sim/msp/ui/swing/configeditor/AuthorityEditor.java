@@ -148,7 +148,6 @@ public class AuthorityEditor  {
 		
 		f = new JDialog(simulationConfigEditor.getFrame(), TITLE, true);
 		f.setIconImage(MainWindow.getIconImage());
-		//f.setResizable(false);
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());

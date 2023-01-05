@@ -14,8 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -34,11 +37,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
 
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
@@ -80,17 +78,17 @@ extends TabPanel {
 		content.add(topPanel, BorderLayout.NORTH);
 		
 		// Prepare SpringLayout for info panel.
-		WebPanel infoPanel = new WebPanel(new SpringLayout());
+		JPanel infoPanel = new JPanel(new SpringLayout());
 		topPanel.add(infoPanel);
 
 		// Prepare main dish name label
-		WebLabel mainDishNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.mainDish"), WebLabel.RIGHT); //$NON-NLS-1$
+		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(mainDishNameLabel);
 
 		// Prepare main dish label
 		String mainDish = person.getFavorite().getFavoriteMainDish();
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField mainDishTF = new WebTextField(mainDish);
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JTextField mainDishTF = new JTextField(mainDish);
 		mainDishTF.setEditable(false);
 		mainDishTF.setColumns(17);
 		//mainDishTF.requestFocus();
@@ -99,13 +97,13 @@ extends TabPanel {
 		infoPanel.add(wrapper1);
 
 		// Prepare side dish name label
-		WebLabel sideDishNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.sideDish"), WebLabel.RIGHT); //$NON-NLS-1$
+		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(sideDishNameLabel);
 
 		// Prepare side dish label
 		String sideDish = person.getFavorite().getFavoriteSideDish();
-		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField sideDishTF = new WebTextField(sideDish);
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JTextField sideDishTF = new JTextField(sideDish);
 		sideDishTF.setEditable(false);
 		sideDishTF.setColumns(17);
 		//sideDishTF.requestFocus();
@@ -114,13 +112,13 @@ extends TabPanel {
 		infoPanel.add(wrapper2);
 
 		// Prepare dessert name label
-		WebLabel dessertNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.dessert"), WebLabel.RIGHT); //$NON-NLS-1$
+		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(dessertNameLabel);
 
 		// Prepare dessert label
 		String dessert = person.getFavorite().getFavoriteDessert();
-		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField dessertTF = new WebTextField(dessert);
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JTextField dessertTF = new JTextField(dessert);
 		dessertTF.setEditable(false);
 		dessertTF.setColumns(17);
 		//dessertTF.requestFocus();
@@ -129,13 +127,13 @@ extends TabPanel {
 		infoPanel.add(wrapper3);
 
 		// Prepare activity name label
-		WebLabel activityNameLabel = new WebLabel(Msg.getString("TabPanelFavorite.activity"), WebLabel.RIGHT); //$NON-NLS-1$
+		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(activityNameLabel);
 
 		// Prepare activity label
 		FavoriteType activity = person.getFavorite().getFavoriteActivity();
-		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField activityTF = new WebTextField(activity.getName());
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JTextField activityTF = new JTextField(activity.getName());
 		activityTF.setEditable(false);
 		activityTF.setColumns(17);
 		//activityTF.requestFocus();
@@ -150,18 +148,18 @@ extends TabPanel {
 		                                10, 2);       //xPad, yPad
 
 		// Create label panel.
-		WebPanel labelPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel labelPanel = new JPanel(new BorderLayout(0, 0));
 		topPanel.add(labelPanel);
 		
 		// Create preference title label
-		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.CENTER); //$NON-NLS-1$
+		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.CENTER); //$NON-NLS-1$
 		preferenceLabel.setFont(SUBTITLE_FONT);
 		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
 		
 		// Create scroll panel
-		WebScrollPane scrollPane = new WebScrollPane();
+		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		topPanel.add(scrollPane, BorderLayout.CENTER);
 		
 		// Create skill table
@@ -275,8 +273,8 @@ extends TabPanel {
 					table, value, isSelected, hasFocus,
 					row, column);
 
-			if (theResult instanceof WebLabel) {
-				WebLabel cell = (WebLabel) theResult;
+			if (theResult instanceof JLabel) {
+				JLabel cell = (JLabel) theResult;
 				cell.setText((String)value);
 			}
 

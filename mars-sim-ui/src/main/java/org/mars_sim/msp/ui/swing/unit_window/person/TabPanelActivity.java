@@ -13,7 +13,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -32,14 +36,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextArea;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and
@@ -80,20 +76,20 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** The Robot instance. */
 	private Robot robot = null;
 
-	private WebTextArea taskTextArea;
-	private WebTextArea taskPhaseArea;
+	private JTextArea taskTextArea;
+	private JTextArea taskPhaseArea;
 
-	private WebTextArea subTaskTextArea;
-	private WebTextArea subTaskPhaseArea;
+	private JTextArea subTaskTextArea;
+	private JTextArea subTaskPhaseArea;
 
-	private WebTextArea subTask2TextArea;
-	private WebTextArea subTask2PhaseArea;
+	private JTextArea subTask2TextArea;
+	private JTextArea subTask2PhaseArea;
 
-	private WebTextArea missionTextArea;
-	private WebTextArea missionPhaseTextArea;
+	private JTextArea missionTextArea;
+	private JTextArea missionPhaseTextArea;
 
-	private WebButton monitorButton;
-	private WebButton missionButton;
+	private JButton monitorButton;
+	private JButton missionButton;
 
 	/**
 	 * Constructor.
@@ -144,22 +140,22 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 
 		// Prepare activity panel
-		WebPanel activityPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel activityPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(activityPanel, BorderLayout.NORTH);
 
 		// Prepare task top panel
-		WebPanel taskTopPanel = new WebPanel(new GridLayout(6, 1, 0, 0));
+		JPanel taskTopPanel = new JPanel(new GridLayout(6, 1, 0, 0));
 //		taskTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(taskTopPanel, BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
 
 		// Prepare current task panel
-		WebPanel currentTaskPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel currentTaskPanel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(currentTaskPanel);
 
 		// Prepare task label
-		WebLabel taskLabel = new WebLabel(Msg.getString("TabPanelActivity.task"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel taskLabel = new JLabel(Msg.getString("TabPanelActivity.task"), JLabel.LEFT); //$NON-NLS-1$
 		currentTaskPanel.add(taskLabel, BorderLayout.NORTH);
 
 		// Prepare task text area
@@ -172,18 +168,18 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				taskTextCache = t;
 		}
 
-		taskTextArea = new WebTextArea(2, COL_WDITH);
+		taskTextArea = new JTextArea(2, COL_WDITH);
 		taskTextArea.setText(taskTextCache);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
-		currentTaskPanel.add(new WebScrollPane(taskTextArea), BorderLayout.CENTER);
+		currentTaskPanel.add(new JScrollPane(taskTextArea), BorderLayout.CENTER);
 
 		// Prepare task phase panel
-		WebPanel taskPhasePanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel taskPhasePanel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(taskPhasePanel);
 
 		// Prepare task phase label
-		WebLabel taskPhaseLabel = new WebLabel(Msg.getString("TabPanelActivity.taskPhase"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel taskPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.taskPhase"), JLabel.LEFT); //$NON-NLS-1$
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare task phase text area
@@ -199,20 +195,20 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		taskPhaseArea = new WebTextArea(2, COL_WDITH);
+		taskPhaseArea = new JTextArea(2, COL_WDITH);
 		taskPhaseArea.setText(taskPhaseCache);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
-		taskPhasePanel.add(new WebScrollPane(taskPhaseArea), BorderLayout.CENTER);
+		taskPhasePanel.add(new JScrollPane(taskPhaseArea), BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
 
 		// Prepare sub task 1 panel
-		WebPanel subTaskPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel subTaskPanel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTaskPanel);
 
 		// Prepare sub task 1 label
-		WebLabel subtaskLabel = new WebLabel(Msg.getString("TabPanelActivity.subTask"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel subtaskLabel = new JLabel(Msg.getString("TabPanelActivity.subTask"), JLabel.LEFT); //$NON-NLS-1$
 		subTaskPanel.add(subtaskLabel, BorderLayout.NORTH);
 
 		// Prepare sub task 1 text area
@@ -227,18 +223,18 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				subTaskTextCache = "";
 		}
 
-		subTaskTextArea = new WebTextArea(2, COL_WDITH);
+		subTaskTextArea = new JTextArea(2, COL_WDITH);
 		subTaskTextArea.setText(subTaskTextCache);
 		subTaskTextArea.setLineWrap(true);
 		subTaskTextArea.setEditable(false);
-		subTaskPanel.add(new WebScrollPane(subTaskTextArea), BorderLayout.CENTER);
+		subTaskPanel.add(new JScrollPane(subTaskTextArea), BorderLayout.CENTER);
 
 		// Prepare sub task 1 phase panel
-		WebPanel subTaskPhasePanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel subTaskPhasePanel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTaskPhasePanel);
 
 		// Prepare sub task 1 phase label
-		WebLabel subTaskPhaseLabel = new WebLabel(Msg.getString("TabPanelActivity.subTaskPhase"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel subTaskPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.subTaskPhase"), JLabel.LEFT); //$NON-NLS-1$
 		subTaskPhasePanel.add(subTaskPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare sub task 1 phase text area
@@ -257,20 +253,20 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		subTaskPhaseArea = new WebTextArea(2, COL_WDITH);
+		subTaskPhaseArea = new JTextArea(2, COL_WDITH);
 		subTaskPhaseArea.setText(subTaskPhaseCache);
 		subTaskPhaseArea.setLineWrap(true);
 		subTaskPhaseArea.setEditable(false);
-		subTaskPhasePanel.add(new WebScrollPane(subTaskPhaseArea), BorderLayout.CENTER);
+		subTaskPhasePanel.add(new JScrollPane(subTaskPhaseArea), BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
 
 		// Prepare sub task 2 panel
-		WebPanel subTask2Panel = new WebPanel(new BorderLayout(0, 0));
+		JPanel subTask2Panel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTask2Panel);
 
 		// Prepare sub task 2 label
-		WebLabel subtask2Label = new WebLabel(Msg.getString("TabPanelActivity.subTask2"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel subtask2Label = new JLabel(Msg.getString("TabPanelActivity.subTask2"), JLabel.LEFT); //$NON-NLS-1$
 		subTask2Panel.add(subtask2Label, BorderLayout.NORTH);
 
 		// Prepare sub task 2 text area
@@ -285,18 +281,18 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				subTask2TextCache = "";
 		}
 
-		subTask2TextArea = new WebTextArea(2, COL_WDITH);
+		subTask2TextArea = new JTextArea(2, COL_WDITH);
 		subTask2TextArea.setText(subTask2TextCache);
 		subTask2TextArea.setLineWrap(true);
 		subTask2TextArea.setEditable(false);
-		subTask2Panel.add(new WebScrollPane(subTask2TextArea), BorderLayout.CENTER);
+		subTask2Panel.add(new JScrollPane(subTask2TextArea), BorderLayout.CENTER);
 
 		// Prepare sub task 1 phase panel
-		WebPanel subTask2PhasePanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel subTask2PhasePanel = new JPanel(new BorderLayout(0, 0));
 		taskTopPanel.add(subTask2PhasePanel);
 
 		// Prepare sub task 1 phase label
-		WebLabel subTask2PhaseLabel = new WebLabel(Msg.getString("TabPanelActivity.subTask2Phase"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel subTask2PhaseLabel = new JLabel(Msg.getString("TabPanelActivity.subTask2Phase"), JLabel.LEFT); //$NON-NLS-1$
 		subTask2PhasePanel.add(subTask2PhaseLabel, BorderLayout.NORTH);
 
 		// Prepare sub task 1 phase text area
@@ -314,36 +310,36 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		subTask2PhaseArea = new WebTextArea(2, COL_WDITH);
+		subTask2PhaseArea = new JTextArea(2, COL_WDITH);
 		subTask2PhaseArea.setText(subTask2PhaseCache);
 		subTask2PhaseArea.setLineWrap(true);
 		subTask2PhaseArea.setEditable(false);
-		subTask2PhasePanel.add(new WebScrollPane(subTask2PhaseArea), BorderLayout.CENTER);
+		subTask2PhasePanel.add(new JScrollPane(subTask2PhaseArea), BorderLayout.CENTER);
 
 		/////////////////////////////////////////////////////////////////////////
 
 		// Prepare mission top panel
-		WebPanel missionTopPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
+		JPanel missionTopPanel = new JPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
 		// missionTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(missionTopPanel, BorderLayout.SOUTH);
 
 		// Prepare mission center panel
-		WebPanel missionCenterPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
+		JPanel missionCenterPanel = new JPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
 		// missionCenterPanel.setBorder(new MarsPanelBorder());
 
-//		missionTopPanel.add(new WebPanel(), BorderLayout.NORTH);
+//		missionTopPanel.add(new JPanel(), BorderLayout.NORTH);
 		missionTopPanel.add(missionCenterPanel, BorderLayout.CENTER);
-//		missionTopPanel.add(new WebPanel(), BorderLayout.SOUTH);
-//		missionTopPanel.add(new WebPanel(), BorderLayout.EAST);
-//		missionTopPanel.add(new WebPanel(), BorderLayout.WEST);
+//		missionTopPanel.add(new JPanel(), BorderLayout.SOUTH);
+//		missionTopPanel.add(new JPanel(), BorderLayout.EAST);
+//		missionTopPanel.add(new JPanel(), BorderLayout.WEST);
 
 		// Prepare mission panel
-		WebPanel missionTextPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel missionTextPanel = new JPanel(new BorderLayout(0, 0));
 		// missionLeftPanel.add(missionTextPanel);
 		missionCenterPanel.add(missionTextPanel, BorderLayout.CENTER);
 
 		// Prepare mission label
-		WebLabel missionLabel = new WebLabel(Msg.getString("TabPanelActivity.missionDesc"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel missionLabel = new JLabel(Msg.getString("TabPanelActivity.missionDesc"), JLabel.LEFT); //$NON-NLS-1$
 		missionTextPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
@@ -372,19 +368,19 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		missionTextArea = new WebTextArea(2, COL_WDITH);
+		missionTextArea = new JTextArea(2, COL_WDITH);
 		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
-		missionTextPanel.add(new WebScrollPane(missionTextArea), BorderLayout.CENTER);
+		missionTextPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
 
 		// Prepare mission phase panel
-		WebPanel missionPhasePanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
 		// missionLeftPanel.add(missionPhasePanel);
 		missionCenterPanel.add(missionPhasePanel, BorderLayout.SOUTH);
 
 		// Prepare mission phase label
-		WebLabel missionPhaseLabel = new WebLabel(Msg.getString("TabPanelActivity.missionPhase"), WebLabel.LEFT); //$NON-NLS-1$
+		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.missionPhase"), JLabel.LEFT); //$NON-NLS-1$
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
 		String missionPhaseText = "";
@@ -402,23 +398,23 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				missionPhaseText = botMind.getMission().getPhaseDescription();
 		}
 
-		missionPhaseTextArea = new WebTextArea(2, COL_WDITH);
+		missionPhaseTextArea = new JTextArea(2, COL_WDITH);
 		// if (missionPhase.equals(""))
 		missionPhaseTextArea.setText(missionPhaseText);
 		missionPhaseTextArea.setLineWrap(true);
 		missionPhaseTextArea.setEditable(false);
-		missionPhasePanel.add(new WebScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
+		missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
 
 		// Prepare mission button panel.
-		WebPanel missionButtonPanel = new WebPanel(new GridLayout(1, 6, 10, 10));
+		JPanel missionButtonPanel = new JPanel(new GridLayout(1, 6, 10, 10));
 		missionButtonPanel.setSize(480, 20);
 		missionCenterPanel.add(missionButtonPanel, BorderLayout.NORTH);
 
 		// Prepare mission tool button.
-		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
+		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
 		missionButton.setSize(20, 20);
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		TooltipManager.setTooltip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission"), TooltipWay.down);
+		missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission"));
 		// missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission"));
 		// //$NON-NLS-1$
 		// Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
@@ -430,15 +426,15 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			missionButton.setEnabled(botMind.getMission() != null);
 		}
 
-		missionButtonPanel.add(new WebPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
-		missionButtonPanel.add(new WebPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 		missionButtonPanel.add(missionButton);
 
 		// Prepare mission monitor button
-		monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setSize(20, 20);
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		TooltipManager.setTooltip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
+		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
 		monitorButton.addActionListener(this);
 
 		if (mind != null) {
@@ -448,8 +444,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 
 		missionButtonPanel.add(monitorButton);
-		missionButtonPanel.add(new WebPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
-		missionButtonPanel.add(new WebPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 
 	}
 
