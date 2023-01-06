@@ -12,6 +12,7 @@ import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
@@ -26,9 +27,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextArea;
 
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
@@ -72,11 +70,11 @@ public class LaboratoryTabPanel extends TabPanel {
 		Lab lab = rover.getLab();
 		
 		// Prepare laboratory panel
-		WebPanel laboratoryPanel = new WebPanel(new BorderLayout());
+		JPanel laboratoryPanel = new JPanel(new BorderLayout());
 		content.add(laboratoryPanel, BorderLayout.NORTH);
 		
 		// Prepare the top panel using spring layout.
-		WebPanel springPanel = new WebPanel(new SpringLayout());
+		JPanel springPanel = new JPanel(new SpringLayout());
 		laboratoryPanel.add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare researcher number label
@@ -98,7 +96,7 @@ public class LaboratoryTabPanel extends TabPanel {
 		int size = specialties.length;
 		
 		// Prepare specialty text area
-		WebTextArea specialtyTA = new WebTextArea();
+		JTextArea specialtyTA = new JTextArea();
 		specialtyTA.setEditable(false);
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(10);
@@ -106,7 +104,7 @@ public class LaboratoryTabPanel extends TabPanel {
 		specialtyTA.setBorder(new MarsPanelBorder());
 		
 		
-		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setSize(150, 80);
 		listPanel.add(specialtyTA);
 		

@@ -18,8 +18,6 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.alee.laf.panel.WebPanel;
-
 
 /**
  * The BuildingPanelLiving class is a building function panel representing
@@ -71,7 +69,7 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(5, 2, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 0, 0));
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Create bed capacity label

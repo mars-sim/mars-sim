@@ -24,6 +24,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -45,8 +46,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
@@ -94,7 +93,7 @@ public class TabPanelLog extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 		
         // Create spring layout dataPanel
-        WebPanel springPanel = new WebPanel(new SpringLayout());
+        JPanel springPanel = new JPanel(new SpringLayout());
         northPanel.add(springPanel);
 
 		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
@@ -122,7 +121,7 @@ public class TabPanelLog extends TabPanel {
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 				
-		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		solPanel.add(solBox);
         northPanel.add(solPanel);
 				
@@ -137,7 +136,7 @@ public class TabPanelLog extends TabPanel {
 		scheduleTableModel = new ScheduleTableModel();
 
 		// Create attribute scroll panel
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 		content.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table

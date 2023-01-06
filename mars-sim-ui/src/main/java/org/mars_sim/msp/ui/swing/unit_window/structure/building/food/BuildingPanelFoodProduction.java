@@ -24,10 +24,12 @@ import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
@@ -43,10 +45,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A building panel displaying the foodProduction building function.
@@ -64,8 +62,8 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	/** The foodProduction building. */
 	private FoodProduction foodFactory;
 	/** Panel for displaying process panels. */
-	private WebPanel processListPane;
-	private WebScrollPane scrollPanel;
+	private JPanel processListPane;
+	private JScrollPane scrollPanel;
 	/** List of foodProduction processes in building. */
 	private List<FoodProductionProcess> processCache;
 	/** Process selector. */
@@ -74,7 +72,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	private Vector<FoodProductionProcessInfo> processComboBoxCache;
 
 	/** Process selection button. */
-	private WebButton newProcessButton;
+	private JButton newProcessButton;
 
 	/**
 	 * Constructor.
@@ -102,7 +100,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		WebPanel labelPanel = new WebPanel();
+		JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new GridLayout(2, 2, 0, 0));
 
 		center.add(labelPanel, BorderLayout.NORTH);
@@ -115,17 +113,17 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 
 		// Create scroll pane for food production processes
-		scrollPanel = new WebScrollPane();
+		scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
 		addBorder(scrollPanel, "Preparation");
 		
 		// Create process list main panel
-		WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(processListMainPane);
 
 		// Create process list panel
-		processListPane = new WebPanel(new FlowLayout(10, 10 ,10));
+		processListPane = new JPanel(new FlowLayout(10, 10 ,10));
 		processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
@@ -138,7 +136,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 			processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
 
 		// Create interaction panel.
-		WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 10, 10));
+		JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 10, 10));
 		addBorder(interactionPanel, "Add Food");
 		center.add(interactionPanel, BorderLayout.SOUTH);
 
@@ -154,8 +152,8 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 			processComboBox.setSelectedIndex(0);
 
 		// Create new process button.
-		WebPanel btnPanel = new WebPanel(new FlowLayout());
-		newProcessButton = new WebButton("Create New Process");
+		JPanel btnPanel = new JPanel(new FlowLayout());
+		newProcessButton = new JButton("Create New Process");
 		btnPanel.add(newProcessButton);
 
 		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);

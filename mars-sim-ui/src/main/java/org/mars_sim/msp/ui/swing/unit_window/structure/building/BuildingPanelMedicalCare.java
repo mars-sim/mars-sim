@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
@@ -23,8 +24,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The MedicalCareBuildingPanel class is a building function panel representing
@@ -74,7 +73,7 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
+		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -89,7 +88,7 @@ extends BuildingFunctionPanel {
 									  physicianCache, 5, null);
 
 		// Create scroll panel for medical table
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(160, 80));
 		center.add(scrollPanel, BorderLayout.CENTER);
 	    scrollPanel.getViewport().setOpaque(false);

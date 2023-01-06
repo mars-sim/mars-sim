@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
@@ -19,9 +20,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 
 
 /**
@@ -63,20 +61,20 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 
 		// Create resource storage panel.
-		WebPanel resourceStoragePanel = new WebPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
+		JPanel resourceStoragePanel = new JPanel(new GridLayout(resourceStorage.size(), 2, 0, 5));
 		addBorder(resourceStoragePanel, "Capacities");
 		center.add(resourceStoragePanel, BorderLayout.NORTH);
 
 		SortedSet<Integer> keys = new TreeSet<>(resourceStorage.keySet());
 		for (Integer resource : keys) {
 			// Create resource label.
-			WebLabel resourceLabel = new WebLabel(
+			JLabel resourceLabel = new JLabel(
 					ResourceUtil.findAmountResourceName(resource)
-					+ ":", WebLabel.LEFT);
+					+ ":", JLabel.LEFT);
 			resourceStoragePanel.add(resourceLabel);
 
 			double capacity = resourceStorage.get(resource);
-			WebLabel capacityLabel = new WebLabel((int) capacity + " kg", WebLabel.RIGHT);
+			JLabel capacityLabel = new JLabel((int) capacity + " kg", JLabel.RIGHT);
 			resourceStoragePanel.add(capacityLabel);
 		}
 	}

@@ -22,7 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -52,10 +54,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
@@ -107,7 +105,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         
 		// Create crew count panel
-		WebPanel crewCountPanel = new WebPanel(new SpringLayout());
+		JPanel crewCountPanel = new JPanel(new SpringLayout());
 		northPanel.add(crewCountPanel, BorderLayout.CENTER);
 
 		// Create crew num header label
@@ -127,18 +125,18 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create crew monitor button
-		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelCrew.tooltip.monitor")); //$NON-NLS-1$
 
-		WebPanel crewButtonPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel crewButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		crewButtonPanel.add(monitorButton);
 		northPanel.add(crewButtonPanel, BorderLayout.SOUTH);
        	content.add(northPanel, BorderLayout.NORTH);
 
 		// Create scroll panel for member list.
-		WebScrollPane memberScrollPane = new WebScrollPane();
+		JScrollPane memberScrollPane = new JScrollPane();
 		memberScrollPane.setPreferredSize(new Dimension(300, 300));
 		content.add(memberScrollPane, BorderLayout.CENTER);
 

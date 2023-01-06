@@ -23,6 +23,7 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -43,10 +44,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-
 /**
  * The BuildingPanelMaintenance class is a building function panel representing
  * the maintenance state of a settlement building.
@@ -66,7 +63,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	private MalfunctionManager manager;
 	
 	/** The wear condition label. */
-	private WebLabel wearConditionLabel;
+	private JLabel wearConditionLabel;
 	/** The last completed label. */
 	private JLabel lastCompletedLabel;
 	/** Label for parts. */
@@ -111,12 +108,12 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 	
-		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 2, 1));
+		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 2, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		// Create wear condition label.
 		wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
-		wearConditionLabel = new WebLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
+		wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 				JLabel.CENTER);
 		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		labelPanel.add(wearConditionLabel);
@@ -152,8 +149,8 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		labelPanel.add(partsLabel);
 		
 		// Create the parts panel
-		WebScrollPane partsPane = new WebScrollPane();
-		WebPanel tablePanel = new WebPanel();
+		JScrollPane partsPane = new JScrollPane();
+		JPanel tablePanel = new JPanel();
 		tablePanel.add(partsPane);
 		center.add(tablePanel, BorderLayout.CENTER);
 		addBorder(tablePanel, Msg.getString("BuildingPanelMaintenance.tableBorder"));
