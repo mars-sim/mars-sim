@@ -68,10 +68,19 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * @param newCenter the new center location
 	 */
 	public void drawMap(Coordinates newCenter) {
-		if ((newCenter != null) && (!newCenter.equals(currentCenter))) {
+		if ((newCenter != null && currentCenter == null)
+			|| (newCenter != null && currentCenter != null && !newCenter.equals(currentCenter))) {
+			
 			mapImage = createMapImage(newCenter);
 
+			if (displayArea == null) {
+				logger.severe("displayArea is null.");
+			}
+			
 			MediaTracker mt = new MediaTracker(displayArea);
+			if (mapImage == null) {
+				logger.severe("mapImage is null.");
+			}
 			mt.addImage(mapImage, 0);
 			try {
 				mt.waitForID(0);

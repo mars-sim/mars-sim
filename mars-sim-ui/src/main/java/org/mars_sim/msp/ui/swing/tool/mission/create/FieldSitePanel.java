@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.logging.Logger;
 
 /**
  * A wizard panel for determining a field site to research for the mission.
@@ -23,12 +25,14 @@ import java.awt.event.MouseMotionAdapter;
 @SuppressWarnings("serial")
 public class FieldSitePanel extends WizardPanel {
 
+	private static final Logger logger = Logger.getLogger(FieldSitePanel.class.getName());
  
     // The wizard panel name.
-    private final static String NAME = "Field Research Site";
+    private static final String NAME = "Field Research Site";
     
     // Range modifier.
-    private final static double RANGE_MODIFIER = .95D;
+    private static final double RANGE_MODIFIER = .95D;
+	private static final double MAX_RANGE = Settlement.MAX_RANGE;
     
     // Data members.
     private MapPanel mapPane;
@@ -120,18 +124,22 @@ public class FieldSitePanel extends WizardPanel {
             ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
             IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
             navLayer.addNavpointPosition(initialNavpointPos);
+            
             Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
                     CannedMarsMap.PIXEL_RHO);
             locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
-            mapPane.showMap(getCenterCoords());
+            mapPane.showMap(initialNavpoint);
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+			logger.severe("updatePanel encounters an exception in FieldSitePanel.");
+        }
         
         getWizard().setButtons(true);
     }
     
     /**
      * Gets the center coordinates.
+     * 
      * @return center coordinates.
      */
     private Coordinates getCenterCoords() {
@@ -140,6 +148,7 @@ public class FieldSitePanel extends WizardPanel {
     
     /**
      * Converts radius (km) into pixel range on map.
+     * 
      * @param radius the radius (km).
      * @return pixel radius.
      */
@@ -147,6 +156,19 @@ public class FieldSitePanel extends WizardPanel {
         return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
     }
     
+	/**
+	 * Gets the mission rover range.
+	 * 
+	 * @return range (km)
+	 * @throws Exception if error getting mission rover.
+	 */
+	private double getRoverRange() {
+		double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER;
+		if (range > MAX_RANGE)
+			range = MAX_RANGE;
+		return range / 2D;
+	}
+	
     /**
      * Inner class for listening to mouse events on the navpoint display.
      */
@@ -224,13 +246,19 @@ public class FieldSitePanel extends WizardPanel {
          * @return true if within boundaries.
          */
         private boolean withinBounds(IntPoint position) {
-            boolean result = navLayer.withinDisplayEdges(position);
-
+			
+			if (!navLayer.withinDisplayEdges(position)) 
+				return false;
+			
+			pixelRange = convertRadiusToMapPixels(getRoverRange());
+			
             int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) +
-                    Math.pow(150D - position.getY(), 2D)));
-            if (radius > pixelRange) result = false;
+			        Math.pow(150D - position.getY(), 2D)));
             
-            return result;
+			if (radius > pixelRange) 
+				return false;
+			else
+				return true;
         }
     }
 }

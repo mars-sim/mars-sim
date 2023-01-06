@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -29,12 +31,14 @@ import javax.swing.BoxLayout;
 @SuppressWarnings("serial")
 class ProspectingSitePanel extends WizardPanel {
 
+	private static final Logger logger = Logger.getLogger(ProspectingSitePanel.class.getName());
+	
 	// Wizard panel name.
-	private final static String NAME = "Prospecting Site";
+	private static final String NAME = "Prospecting Site";
 	
 	// Range modifier.
-	private final static double RANGE_MODIFIER = .95D;
-	private final static double MAX_RANGE = 2500D;
+	private static final double RANGE_MODIFIER = .95D;
+	private static final double MAX_RANGE = Settlement.MAX_RANGE;
 	
 	// Data members.
 	private MapPanel mapPane;
@@ -46,7 +50,8 @@ class ProspectingSitePanel extends WizardPanel {
 	private int pixelRange;
 	
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param wizard the create mission wizard.
 	 */
 	ProspectingSitePanel(CreateMissionWizard wizard) {
@@ -59,15 +64,21 @@ class ProspectingSitePanel extends WizardPanel {
 		// Set the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Create a vertical strut to add some UI space.
+		add(Box.createVerticalStrut(10));
+		
 		// Create the title label.
 		String resource = "";
 		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.COLLECT_ICE == type) resource = "ice";
-		else if (MissionType.COLLECT_REGOLITH == type) resource = "regolith";
-		WebLabel titleLabel = new WebLabel("Choose " + resource + " collection site.");
+		if (MissionType.COLLECT_ICE == type) resource = "Ice";
+		else if (MissionType.COLLECT_REGOLITH == type) resource = "Regolith";
+		WebLabel titleLabel = new WebLabel("Choose Your " + resource + " Collection Site : ");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
+		
+		// Create a vertical strut to add some UI space.
+		add(Box.createVerticalStrut(10));
 		
 		// Create the map panel.
 		mapPane = new MapPanel(wizard.getDesktop(), 200L);
@@ -105,6 +116,7 @@ class ProspectingSitePanel extends WizardPanel {
 	
 	/**
 	 * Gets the wizard panel name.
+	 * 
 	 * @return panel name.
 	 */
 	String getPanelName() {
@@ -113,6 +125,7 @@ class ProspectingSitePanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * 
 	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
@@ -128,7 +141,7 @@ class ProspectingSitePanel extends WizardPanel {
 	}
 
 	/**
-	 * Clear information on the wizard panel.
+	 * Clears information on the wizard panel.
 	 */
 	void clearInfo() {
 		getWizard().setButtons(false);
@@ -140,27 +153,27 @@ class ProspectingSitePanel extends WizardPanel {
 	 */
 	void updatePanel() {
 		try {
-			//double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
-			double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER;
-			if (range > MAX_RANGE)
-				range = MAX_RANGE;
-			range = range / 2D;
-			pixelRange = convertRadiusToMapPixels(range);
+			
+			pixelRange = convertRadiusToMapPixels(getRoverRange());
+			
 			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
 			        CannedMarsMap.PIXEL_RHO);
 			locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
-			mapPane.showMap(getCenterCoords());
+			mapPane.showMap(initialNavpoint);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			logger.severe("updatePanel encounters an exception in ProspectingSitePanel.");
+		}
 		
 		getWizard().setButtons(true);
 	}
 	
 	/**
 	 * Gets the center coordinates.
+	 * 
 	 * @return center coordinates.
 	 */
 	private Coordinates getCenterCoords() {
@@ -169,11 +182,25 @@ class ProspectingSitePanel extends WizardPanel {
 	
 	/**
 	 * Converts radius (km) into pixel range on map.
+	 * 
 	 * @param radius the radius (km).
 	 * @return pixel radius.
 	 */
 	private int convertRadiusToMapPixels(double radius) {
 		return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
+	}
+	
+	/**
+	 * Gets the mission rover range.
+	 * 
+	 * @return range (km)
+	 * @throws Exception if error getting mission rover.
+	 */
+	private double getRoverRange() {
+		double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER;
+		if (range > MAX_RANGE)
+			range = MAX_RANGE;
+		return range / 2D;
 	}
 	
 	/**
@@ -248,18 +275,25 @@ class ProspectingSitePanel extends WizardPanel {
 		}
 		
 		/**
-		 * Checks if mouse location is within range boundaries and edge of map display. 
+		 * Checks if mouse location is within range boundaries and edge of map display.
+		 * 
 		 * @param position the mouse location.
 		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position) {
-			boolean result = navLayer.withinDisplayEdges(position);
-
+			
+			if (!navLayer.withinDisplayEdges(position)) 
+				return false;
+			
+			pixelRange = convertRadiusToMapPixels(getRoverRange());
+			
             int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) +
 			        Math.pow(150D - position.getY(), 2D)));
-			if (radius > pixelRange) result = false;
-			
-			return result;
+            
+			if (radius > pixelRange) 
+				return false;
+			else
+				return true;
 		}
 	}
 }

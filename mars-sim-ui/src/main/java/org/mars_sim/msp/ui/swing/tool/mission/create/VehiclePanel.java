@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -236,7 +237,7 @@ class VehiclePanel extends WizardPanel {
 					if (column == 0)
 						result = vehicle.getName();
 					else if (column == 1)
-						result = vehicle.getDescription();
+						result = Conversion.capitalize(vehicle.getDescription());
 					else if (column == 2)
 						result = vehicle.getCrewCapacity();
 					else if (column == 3)

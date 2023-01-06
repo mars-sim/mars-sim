@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -59,6 +60,8 @@ import com.alee.laf.table.WebTable;
 @SuppressWarnings("serial")
 class ExplorationSitesPanel extends WizardPanel {
 
+	private static final Logger logger = Logger.getLogger(ExplorationSitesPanel.class.getName());
+	
 	/** Wizard panel name. */
 	private final static String NAME = "Exploration Sites";
 
@@ -255,17 +258,22 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * Updates the wizard panel information.
 	 */
 	void updatePanel() {
-		range = getRange();
-		missionTimeLimit = getMissionTimeLimit();
-		timePerSite = getTimePerSite();
-
-		Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 4D);
-		SitePanel startingSitePane = new SitePanel(0, startingSite);
-		siteListPane.add(startingSitePane);
-		navLayer.addNavpointPosition(
-				MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
-		mapPane.showMap(getCenterCoords());
-		addButton.setEnabled(canAddMoreSites());
+		try {
+			range = getRange();
+			missionTimeLimit = getMissionTimeLimit();
+			timePerSite = getTimePerSite();
+	
+			Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 4D);
+			SitePanel startingSitePane = new SitePanel(0, startingSite);
+			siteListPane.add(startingSitePane);
+			navLayer.addNavpointPosition(
+					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+	//		mapPane.setCenterCoords(startingSite);
+			mapPane.showMap(startingSite);
+			addButton.setEnabled(canAddMoreSites());
+		} catch (Exception e) {
+			logger.severe("updatePanel encounters an exception in ExplorationSitesPanel.");
+		}
 		getWizard().setButtons(true);
 	}
 

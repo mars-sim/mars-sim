@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -34,6 +35,7 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -59,15 +61,17 @@ import com.alee.laf.table.WebTable;
 @SuppressWarnings("serial")
 public class MiningSitePanel extends WizardPanel {
 
+	private static final Logger logger = Logger.getLogger(MiningSitePanel.class.getName());
+	
 	/** Wizard panel name. */
-	private final static String NAME = "Mining Site";
+	private static final String NAME = "Mining Site";
 
 	/** Range modifier. */
-	private final static double RANGE_MODIFIER = .95D;
-	private final static double MAX_RANGE = 2500D;
+	private static final double RANGE_MODIFIER = .95D;
+	private static final double MAX_RANGE = Settlement.MAX_RANGE;
 
 	/** Click range. */
-	private final static double CLICK_RANGE = 50D;
+	private static final double CLICK_RANGE = 50D;
 
 	// Data members.
 	private MapPanel mapPane;
@@ -295,6 +299,7 @@ public class MiningSitePanel extends WizardPanel {
 			selectMiningSite(null);
 			mapPane.showMap(getCenterCoords());
 		} catch (Exception e) {
+			logger.severe("updatePanel encounters an exception in MiningSitePanel.");
 		}
 	}
 

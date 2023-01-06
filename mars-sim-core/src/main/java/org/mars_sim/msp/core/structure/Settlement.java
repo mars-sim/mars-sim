@@ -107,6 +107,10 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
+	public static final int MAX_RANGE = 4000;
+	public static final int HALF_RANGE = MAX_RANGE / 2;
+	public static final int QUARTER_RANGE = MAX_RANGE / 4;
+	
 	private static final int MAX = 3000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
@@ -530,18 +534,18 @@ public class Settlement extends Structure implements Temporal,
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 
 		// Set default mission radius
-		missionRange.put(MissionType.AREOLOGY, 500);
-		missionRange.put(MissionType.BIOLOGY,500);
-		missionRange.put(MissionType.COLLECT_ICE,500);
-		missionRange.put(MissionType.COLLECT_REGOLITH,500);
-		missionRange.put(MissionType.DELIVERY,4000);
-		missionRange.put(MissionType.EMERGENCY_SUPPLY,1000);
-		missionRange.put(MissionType.EXPLORATION, 500);
-		missionRange.put(MissionType.METEOROLOGY, 500);
-		missionRange.put(MissionType.MINING, 500);
-		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, 1000);
-		missionRange.put(MissionType.TRADE, 2000);
-		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, 4000);
+		missionRange.put(MissionType.AREOLOGY, QUARTER_RANGE);
+		missionRange.put(MissionType.BIOLOGY, QUARTER_RANGE);
+		missionRange.put(MissionType.COLLECT_ICE, QUARTER_RANGE);
+		missionRange.put(MissionType.COLLECT_REGOLITH, QUARTER_RANGE);
+		missionRange.put(MissionType.DELIVERY, MAX_RANGE);
+		missionRange.put(MissionType.EMERGENCY_SUPPLY, HALF_RANGE);
+		missionRange.put(MissionType.EXPLORATION, QUARTER_RANGE);
+		missionRange.put(MissionType.METEOROLOGY, QUARTER_RANGE);
+		missionRange.put(MissionType.MINING, QUARTER_RANGE);
+		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, QUARTER_RANGE);
+		missionRange.put(MissionType.TRADE, MAX_RANGE);
+		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
 		
 		// Check nearby mineral concentration
 		mineralConcentrationMap = checkNearbyMineral();

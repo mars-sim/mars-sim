@@ -50,6 +50,7 @@ implements ActionListener {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param missionWindow The owner frame.
 	 */
 	public CreateMissionWizard(MainDesktopPane desktop, MissionWindow missionWindow) {
@@ -141,6 +142,7 @@ implements ActionListener {
 
 	/**
 	 * Gets the current displayed wizard panel.
+	 * 
 	 * @return wizard panel.
 	 */
 	private WizardPanel getCurrentWizardPanel() {
@@ -264,7 +266,9 @@ implements ActionListener {
 		else if (source == finalButton) buttonClickedFinal();
 	}
 
-	/** Go to previous wizard panel. */
+	/** 
+	 * Go to previous wizard panel. 
+	 */
 	public void buttonClickedPrev() {
 		getCurrentWizardPanel().clearInfo();
 		displayPanelIndex--;
@@ -274,7 +278,9 @@ implements ActionListener {
 		if (displayPanelIndex == 0) prevButton.setEnabled(false);
 	}
 
-	/** Go to next wizard panel. */
+	/** 
+	 * Go to next wizard panel. 
+	 */
 	public void buttonClickedNext() {
 		if (getCurrentWizardPanel().commitChanges()) {
 			displayPanelIndex++;
