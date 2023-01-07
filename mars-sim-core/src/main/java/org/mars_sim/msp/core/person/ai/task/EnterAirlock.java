@@ -440,11 +440,16 @@ public class EnterAirlock extends Task {
 
 			setPhase(STEP_THRU_OUTER_DOOR);
 			
-			AirlockMode airlockMode = airlock.getAirlockMode();
+//			AirlockMode airlockMode = airlock.getAirlockMode();
+//			
+//			if (airlockMode != AirlockMode.INGRESS
+//				&& (airlock.isEmpty() || airlockMode != AirlockMode.EGRESS))
+//					airlock.setAirlockMode(AirlockMode.INGRESS);
 			
-			if (airlockMode != AirlockMode.INGRESS
-				&& (airlock.isEmpty() || airlockMode != AirlockMode.EGRESS))
-					airlock.setAirlockMode(AirlockMode.INGRESS);
+			if (airlock.isEmpty())
+				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
+			else
+				airlock.setAirlockMode(AirlockMode.INGRESS);
 		}
 		
 		return 0;
@@ -533,6 +538,8 @@ public class EnterAirlock extends Task {
 			logger.log(unit, person, Level.FINE, 4_000,
 					"Just entered through the outer door into " + airlock.getEntity().toString() + ".");
 
+			airlock.setAirlockMode(AirlockMode.INGRESS);
+			
 			// Add experience
 			addExperience(time);
 
