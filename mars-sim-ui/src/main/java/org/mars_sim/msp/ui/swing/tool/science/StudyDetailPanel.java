@@ -121,7 +121,7 @@ extends JPanel {
 		topSpringPane.add(phaseHeader);
 		topSpringPane.add(phaseLabel);
 		
-		JLabel noneLabel = new JLabel("{None:i;c(blue);background(grey)}"); // StyleId.styledlabelTag, 
+		JLabel noneLabel = new JLabel(); // StyleId.styledlabelTag, 
 
 		topicPanel = new JPanel(new BorderLayout());
 		topicPanel.add(topicHeader, BorderLayout.WEST);
@@ -182,7 +182,7 @@ extends JPanel {
 			List<String> topics = study.getTopic();
 			if (topics != null && !topics.isEmpty()) {
 				for (String t: topics) {
-					JLabel label = new JLabel(t);//"{None:i;c(blue);background(grey)}");//"{None:b;c(blue)}");
+					JLabel label = new JLabel(t);
 					topicPanel.add(label);
 				}			
 			}
@@ -236,10 +236,6 @@ extends JPanel {
 	 * Clear all labels.
 	 */
 	private void clearLabels() {
-//		scienceHeader.setText(Msg.getString("StudyDetailPanel.science")); //$NON-NLS-1$
-//		levelHeader.setText(Msg.getString("StudyDetailPanel.level")); //$NON-NLS-1$
-//		phaseHeader.setText(Msg.getString("StudyDetailPanel.phase")); //$NON-NLS-1$
-//		topicHeader.setText(Msg.getString("StudyDetailPanel.topic")); //$NON-NLS-1$
 		topicPanel.removeAll();
 	}
 

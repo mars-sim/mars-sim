@@ -340,6 +340,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
 		model.addAll(startingSettlements);
+		model.setSelectedItem(startingSettlements.get(0));
 		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setSize(getNameLength() * 12, 30);
 		settlementComboBox.setOpaque(false);

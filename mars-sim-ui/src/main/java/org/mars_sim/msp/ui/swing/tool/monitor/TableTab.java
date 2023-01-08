@@ -121,11 +121,11 @@ abstract class TableTab extends MonitorTab {
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
 				 */
-				@Override
-                public String getToolTipText(MouseEvent e) {
-                	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
-                    return getCellText(e);
-                };
+				// @Override
+                // public String getToolTipText(MouseEvent e) {
+                // 	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
+                //     return getCellText(e);
+                // };
 
 			};
 
@@ -206,10 +206,10 @@ abstract class TableTab extends MonitorTab {
 				 * Displays the cell contents as a tooltip. Useful when cell contents in wider
 				 * than the cell
 				 */
-				@Override
-				public String getToolTipText(MouseEvent e) {
-					return getCellText(e);
-				};
+				// @Override
+				// public String getToolTipText(MouseEvent e) {
+				// 	return getCellText(e);
+				// };
 			};
 		}
 
@@ -356,25 +356,25 @@ abstract class TableTab extends MonitorTab {
 	 * @param e MouseEvent triggering tool tip.
 	 * @return Tooltip text.
 	 */
-	private String getCellText(MouseEvent e) {
-		Point p = e.getPoint();
-		int column = table.columnAtPoint(p);
-		int row = table.rowAtPoint(p);
-		String result = null;
-		if ((column >= 0) && (row >= 0)) {
-			Object cell = table.getValueAt(row, column);
-			if (cell != null) {
-				if (cell instanceof Integer) {
-					return ((Integer) cell).intValue()  + "" ;
-				}
-				else if (cell instanceof Double) {
-					return Math.round(((Double) cell).doubleValue() * 10_000.0)/10_000.0 + "" ;
-				}
-				result = cell.toString();
-			}
-		}
-		return result;
-	}
+	// private String getCellText(MouseEvent e) {
+	// 	Point p = e.getPoint();
+	// 	int column = table.columnAtPoint(p);
+	// 	int row = table.rowAtPoint(p);
+	// 	String result = null;
+	// 	if ((column >= 0) && (row >= 0)) {
+	// 		Object cell = table.getValueAt(row, column);
+	// 		if (cell != null) {
+	// 			if (cell instanceof Integer) {
+	// 				return ((Integer) cell).intValue()  + "" ;
+	// 			}
+	// 			else if (cell instanceof Double) {
+	// 				return Math.round(((Double) cell).doubleValue() * 10_000.0)/10_000.0 + "" ;
+	// 			}
+	// 			result = cell.toString();
+	// 		}
+	// 	}
+	// 	return result;
+	// }
 
 	/**
 	 * Removes this tab.
