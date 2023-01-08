@@ -37,8 +37,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-import com.alee.laf.scroll.WebScrollPane;
-
 /**
  * This class represents a table view displayed within the Monitor Window. It
  * displays the contents of a UnitTableModel in a WebTable window. It supports
@@ -232,7 +230,7 @@ abstract class TableTab extends MonitorTab {
 		// scroller.setBorder(new MarsPanelBorder());
 
 		scroller.setRowHeaderView(rowTable);
-		scroller.setCorner(WebScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
+		scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		

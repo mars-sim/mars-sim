@@ -13,16 +13,16 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * A dialog for creating a new transport item.
@@ -40,12 +40,12 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 	// Data members.
 	private TransportItemEditingPanel editingPanel;
-	private WebPanel mainEditingPanel;
+	private JPanel mainEditingPanel;
 	private CardLayout mainEditingLayout;
-	private WebPanel emptyPanel;
+	private JPanel emptyPanel;
 	private TransportItemEditingPanel resupplyMissionPanel;
 	private TransportItemEditingPanel arrivingSettlementPanel;
-	private WebButton createButton;
+	private JButton createButton;
 
 	private ResupplyWindow resupplyWindow;
 	
@@ -64,14 +64,14 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		setSize(580, 600);
 
 		 // Create main panel
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
         setContentPane(mainPane);
 
 		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
 		// Create transport type panel.
-		WebPanel transportTypePanel = new WebPanel(new FlowLayout(10, 10, FlowLayout.CENTER));
+		JPanel transportTypePanel = new JPanel(new FlowLayout(10, 10, FlowLayout.CENTER));
 		getContentPane().add(transportTypePanel, BorderLayout.NORTH);
 
 		// Create combo box for determining transport item type.
@@ -90,11 +90,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 		// Create main editing panel.
 		mainEditingLayout = new CardLayout();
-		mainEditingPanel = new WebPanel(mainEditingLayout);
+		mainEditingPanel = new JPanel(mainEditingLayout);
 		getContentPane().add(mainEditingPanel, BorderLayout.CENTER);
 
 		// Create empty default panel.
-		emptyPanel = new WebPanel();
+		emptyPanel = new JPanel();
 		emptyPanel.setBorder(new MarsPanelBorder());
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
@@ -107,11 +107,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(arrivingSettlementPanel, ARRIVING_SETTLEMENT);
 
 		// Create the button pane.
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		// Create create button.
-		createButton = new WebButton("Create");
+		createButton = new JButton("Create");
 		createButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Create transport item and close dialog.
@@ -122,7 +122,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		buttonPane.add(createButton);
 
 		// Create cancel button.
-		WebButton cancelButton = new WebButton("Cancel");
+		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close dialog.

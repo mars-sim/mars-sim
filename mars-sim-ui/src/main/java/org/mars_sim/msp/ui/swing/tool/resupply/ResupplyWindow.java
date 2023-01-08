@@ -13,9 +13,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -26,8 +28,6 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * Window for the resupply tool.
@@ -47,8 +47,8 @@ implements ListSelectionListener {
 	private IncomingListPanel incomingListPane;
 	private ArrivedListPanel arrivedListPane;
 	private TransportDetailPanel detailPane;
-	private WebButton modifyButton;
-	private WebButton cancelButton;
+	private JButton modifyButton;
+	private JButton cancelButton;
 
 	/**
 	 * Constructor.
@@ -59,12 +59,12 @@ implements ListSelectionListener {
 		super(NAME, desktop);
 
 		// Create main panel.
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create list panel.
-		WebPanel listPane = new WebPanel(new GridLayout(2, 1));
+		JPanel listPane = new JPanel(new GridLayout(2, 1));
 		mainPane.add(listPane, BorderLayout.WEST);
 
 		// Create incoming list panel.
@@ -87,12 +87,12 @@ implements ListSelectionListener {
 		mainPane.add(detailPane, BorderLayout.CENTER);
 
 		// Create button panel.
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create new button.
 		// Change button text from "New"  to "New Mission"
-		WebButton newButton = new WebButton("New Mission");
+		JButton newButton = new JButton("New Mission");
 		newButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -103,7 +103,7 @@ implements ListSelectionListener {
 
 		// Create modify button.
 		// Change button text from "Modify"  to "Modify Mission"
-		modifyButton = new WebButton("Modify Mission");
+		modifyButton = new JButton("Modify Mission");
 		modifyButton.setEnabled(false);
 		modifyButton.addActionListener(new ActionListener() {
 			@Override
@@ -115,7 +115,7 @@ implements ListSelectionListener {
 
 		// Create cancel button.
 		// Change button text from "Discard"  to "Discard Mission"
-		cancelButton = new WebButton("Discard Mission");
+		cancelButton = new JButton("Discard Mission");
 		cancelButton.setEnabled(false);
 		cancelButton.addActionListener(new ActionListener() {
 			@Override

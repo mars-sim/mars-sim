@@ -21,7 +21,13 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -42,12 +48,6 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.checkbox.WebCheckBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
 
 /**
  * The SearchWindow is a tool window that allows the user to search
@@ -105,17 +105,17 @@ extends ToolWindow {
 	/** Model for unit select list. */
 	private UnitListModel unitListModel;
 	/** Selection text field. */
-	private WebTextField selectTextField;
+	private JTextField selectTextField;
 	/** Status label for displaying warnings. */
-	private WebLabel statusLabel;
+	private JLabel statusLabel;
 	/** Checkbox to indicate if unit window is to be opened. */
-	private WebCheckBox openWindowCheck;
+	private JCheckBox openWindowCheck;
 	/** Checkbox to indicate if mars navigator map is to be centered on unit. */
-	private WebCheckBox marsNavCheck;
+	private JCheckBox marsNavCheck;
 	/** Checkbox to indicate if the settlement map is to be centered on unit. */
-	private WebCheckBox settlementCheck;
+	private JCheckBox settlementCheck;
 	/** Button to execute the search of the selected unit. */
-	private WebButton searchButton;
+	private JButton searchButton;
 
 	private UnitManager unitManager;
 
@@ -141,17 +141,17 @@ extends ToolWindow {
 		unitCategoryNames[3] = UnitCategory.BOTS.getName();
 		
 		// Get content pane
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
 		// Create search for panel
-		WebPanel searchForPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		JPanel searchForPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		searchForPane.setPreferredSize(new Dimension(240, 26));
 		mainPane.add(searchForPane, BorderLayout.NORTH);
 
 		// Create search for label
-		WebLabel searchForLabel = new WebLabel(Msg.getString("SearchWindow.searchFor")); //$NON-NLS-1$
+		JLabel searchForLabel = new JLabel(Msg.getString("SearchWindow.searchFor")); //$NON-NLS-1$
 		searchForPane.add(searchForLabel);
 
 		// Create search for select
@@ -171,11 +171,11 @@ extends ToolWindow {
 		searchForPane.add(searchForSelect);
 
 		// Create select unit panel
-		WebPanel selectUnitPane = new WebPanel(new BorderLayout());
+		JPanel selectUnitPane = new JPanel(new BorderLayout());
 		mainPane.add(selectUnitPane, BorderLayout.CENTER);
 
 		// Create select text field
-		selectTextField = new WebTextField();
+		selectTextField = new JTextField();
 		selectTextField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent event) {
 				// Not needed
@@ -209,40 +209,40 @@ extends ToolWindow {
 				}
 			}
 		});
-		selectUnitPane.add(new WebScrollPane(unitList), BorderLayout.CENTER);
+		selectUnitPane.add(new JScrollPane(unitList), BorderLayout.CENTER);
 
 		// Create bottom panel
-		WebPanel bottomPane = new WebPanel(new BorderLayout());
+		JPanel bottomPane = new JPanel(new BorderLayout());
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
 
 		// Create select options panel
-		WebPanel selectOptionsPane = new WebPanel(new GridLayout(2, 1));
+		JPanel selectOptionsPane = new JPanel(new GridLayout(2, 1));
 		bottomPane.add(selectOptionsPane, BorderLayout.NORTH);
 
 		// Create open the unit window
-		openWindowCheck = new WebCheckBox(Msg.getString("SearchWindow.openWindow")); //$NON-NLS-1$
+		openWindowCheck = new JCheckBox(Msg.getString("SearchWindow.openWindow")); //$NON-NLS-1$
 		openWindowCheck.setSelected(true);
 		selectOptionsPane.add(openWindowCheck);
 
 		// Create open the mars navigator
-		marsNavCheck = new WebCheckBox(Msg.getString("SearchWindow.openNav")); //$NON-NLS-1$
+		marsNavCheck = new JCheckBox(Msg.getString("SearchWindow.openNav")); //$NON-NLS-1$
 		selectOptionsPane.add(marsNavCheck);
 
 		// Create open the settlement map
-		settlementCheck = new WebCheckBox(Msg.getString("SearchWindow.openSettlement")); //$NON-NLS-1$
+		settlementCheck = new JCheckBox(Msg.getString("SearchWindow.openSettlement")); //$NON-NLS-1$
 		selectOptionsPane.add(settlementCheck);
 
 		// Create status label
-		statusLabel = new WebLabel(" ", WebLabel.CENTER); //$NON-NLS-1$
+		statusLabel = new JLabel(" ", JLabel.CENTER); //$NON-NLS-1$
 		statusLabel.setBorder(new EtchedBorder());
 		bottomPane.add(statusLabel, BorderLayout.CENTER);
 
 		// Create search button panel
-		WebPanel searchButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel searchButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPane.add(searchButtonPane, BorderLayout.SOUTH);
 
 		// Create search button
-		searchButton = new WebButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
+		searchButton = new JButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				search();

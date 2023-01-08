@@ -33,6 +33,11 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -72,12 +77,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.radiobutton.WebRadioButton;
-import com.alee.laf.scroll.WebScrollPane;
-
 
 /**
  * A panel for creating or editing a resupply mission.
@@ -104,20 +103,20 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private Integer[] bots = new Integer[MAX_BOTS];
 	
 	private JComboBoxMW<Settlement> destinationCB;
-	private WebRadioButton arrivalDateRB;
-	private WebRadioButton solsUntilArrivalRB;
+	private JRadioButton arrivalDateRB;
+	private JRadioButton solsUntilArrivalRB;
 	private MartianSolComboBoxModel martianSolCBModel;
-	private WebLabel arrivalDateTitleLabel;
-	private WebLabel solsUntilArrivalLabel;
-	private WebLabel solLabel;
-	private WebLabel monthLabel;
-	private WebLabel orbitLabel;
-	private WebLabel solInfoLabel;
-	private WebLabel errorLabel;
+	private JLabel arrivalDateTitleLabel;
+	private JLabel solsUntilArrivalLabel;
+	private JLabel solLabel;
+	private JLabel monthLabel;
+	private JLabel orbitLabel;
+	private JLabel solInfoLabel;
+	private JLabel errorLabel;
 	private JComboBoxMW<?> solsUntilCB, immigrantsCB, botsCB, monthCB, orbitCB, solCB;
 	private SupplyTableModel supplyTableModel;
 	private JTable supplyTable;
-	private WebButton removeSupplyButton;
+	private JButton removeSupplyButton;
 
 	private Resupply resupply;
 	private NewTransportItemDialog newTransportItemDialog = null;
@@ -145,15 +144,15 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		// Create top edit pane.
-		WebPanel topEditPane = new WebPanel(new BorderLayout(10, 10));
+		JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
 		add(topEditPane, BorderLayout.NORTH);
 
 		// Create destination pane.
-		WebPanel destinationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		topEditPane.add(destinationPane, BorderLayout.NORTH);
 
 		// Create destination title label.
-		WebLabel destinationTitleLabel = new WebLabel("Destination : ");
+		JLabel destinationTitleLabel = new JLabel("Destination : ");
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination combo box.
@@ -169,7 +168,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		destinationPane.add(destinationCB);
 
 		// Create arrival date pane.
-		WebPanel arrivalDatePane = new WebPanel(new GridLayout(4, 1, 10, 10));
+		JPanel arrivalDatePane = new JPanel(new GridLayout(4, 1, 10, 10));
 		arrivalDatePane.setBorder(new TitledBorder("Arrival"));
 		topEditPane.add(arrivalDatePane, BorderLayout.CENTER);
 
@@ -177,16 +176,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		ButtonGroup dateTypeRBGroup = new ButtonGroup();
 
 		// Create arrival date selection pane.
-		WebPanel arrivalDateSelectionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel arrivalDateSelectionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		arrivalDatePane.add(arrivalDateSelectionPane);
 
 		// Create arrival date radio button.
-		arrivalDateRB = new WebRadioButton();
+		arrivalDateRB = new JRadioButton();
 		dateTypeRBGroup.add(arrivalDateRB);
 		arrivalDateRB.setSelected(true);
 		arrivalDateRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				WebRadioButton rb = (WebRadioButton) evt.getSource();
+				JRadioButton rb = (JRadioButton) evt.getSource();
 				setEnableArrivalDatePane(rb.isSelected());
 				setEnableTimeUntilArrivalPane(!rb.isSelected());
 			}
@@ -194,7 +193,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateRB);
 
 		// Create arrival date title label.
-		arrivalDateTitleLabel = new WebLabel("Arrival Date : ");
+		arrivalDateTitleLabel = new JLabel("Arrival Date : ");
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 		
 		// Get default resupply Martian time.
@@ -208,12 +207,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
-		WebPanel comboBoxPane = new WebPanel(new GridLayout(1, 6, 1, 1));
+		JPanel comboBoxPane = new JPanel(new GridLayout(1, 6, 1, 1));
 		comboBoxPane.setSize(150, 20);
 		arrivalDateSelectionPane.add(comboBoxPane);
 		
 		// Create orbit label.
-		orbitLabel = new WebLabel("Orbit :", SwingConstants.CENTER);
+		orbitLabel = new JLabel("Orbit :", SwingConstants.CENTER);
 		comboBoxPane.add(orbitLabel);
 
 		// Create orbit combo box.
@@ -239,7 +238,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		comboBoxPane.add(orbitCB);
 
 		// Create month label.
-		monthLabel = new WebLabel("Month :", SwingConstants.CENTER);
+		monthLabel = new JLabel("Month :", SwingConstants.CENTER);
 		comboBoxPane.add(monthLabel);
 
 		// Create month combo box.
@@ -258,7 +257,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		comboBoxPane.add(monthCB);
 
 		// Create sol label.
-		solLabel = new WebLabel("Sol :", SwingConstants.CENTER);
+		solLabel = new JLabel("Sol :", SwingConstants.CENTER);
 		comboBoxPane.add(solLabel);
 
 		// Create sol combo box.
@@ -267,16 +266,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		comboBoxPane.add(solCB);
 
 		// Create sol until arrival pane.
-		WebPanel solsUntilArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel solsUntilArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		arrivalDatePane.add(solsUntilArrivalPane);
 
 		// Create sol until arrival radio button.
-		solsUntilArrivalRB = new WebRadioButton();
+		solsUntilArrivalRB = new JRadioButton();
 		solsUntilArrivalRB.setSelected(false);
 		dateTypeRBGroup.add(solsUntilArrivalRB);
 		solsUntilArrivalRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				WebRadioButton rb = (WebRadioButton) evt.getSource();
+				JRadioButton rb = (JRadioButton) evt.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
 				// Remove error string
@@ -289,7 +288,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solsUntilArrivalPane.add(solsUntilArrivalRB);
 
 		// create the sols until arrival label.
-		solsUntilArrivalLabel = new WebLabel("Sols Until Arrival : ");
+		solsUntilArrivalLabel = new JLabel("Sols Until Arrival : ");
 		solsUntilArrivalLabel.setEnabled(false);
 		solsUntilArrivalPane.add(solsUntilArrivalLabel);
 
@@ -311,38 +310,38 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solsUntilArrivalPane.add(solsUntilCB);
 
 		// Create sol information label.
-		solInfoLabel = new WebLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
+		solInfoLabel = new JLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
 		solInfoLabel.setEnabled(false);
 		solsUntilArrivalPane.add(solInfoLabel);
 
 		// Create sol information label.
-		WebLabel limitLabel = new WebLabel("  Note : there is a minimum 10-msol delay for a resupply mission to be executed.");
+		JLabel limitLabel = new JLabel("  Note : there is a minimum 10-msol delay for a resupply mission to be executed.");
 		limitLabel.setEnabled(true);
 		limitLabel.setForeground(new Color(139, 69, 19));
 		arrivalDatePane.add(limitLabel);
 
 		// Create error pane.
-		WebPanel errorPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		arrivalDatePane.add(errorPane);
 
 		// Create error label
-		errorLabel = new WebLabel(new String());
+		errorLabel = new JLabel(new String());
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
 
 		////////////////////////////////////////////
 		
-		WebPanel immigrantsBotsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel immigrantsBotsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		topEditPane.add(immigrantsBotsPane, BorderLayout.SOUTH);
 		
 		////////////////////////////////////////////
 		
 		// Create immigrants panel.
-		WebPanel immigrantsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		immigrantsBotsPane.add(immigrantsPane);
 
 		// Create immigrants label.
-		WebLabel immigrantsLabel = new WebLabel("Number of Immigrants : ");
+		JLabel immigrantsLabel = new JLabel("Number of Immigrants : ");
 		immigrantsPane.add(immigrantsLabel);
 
 		// Create immigrants text field.
@@ -361,11 +360,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		immigrantsPane.add(immigrantsCB);
 
 		// Create bots panel.
-		WebPanel botsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		JPanel botsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		immigrantsBotsPane.add(botsPane);
 		
 		// Create bots label.
-		WebLabel botsLabel = new WebLabel("Number of Bots : ");
+		JLabel botsLabel = new JLabel("Number of Bots : ");
 		botsPane.add(botsLabel);
 
 		// Create bots text field.
@@ -386,7 +385,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		////////////////////////////////////////////
 		
 		// Create bottom edit pane.
-		WebPanel bottomEditPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
 		bottomEditPane.setBorder(new TitledBorder("Supplies"));
 		add(bottomEditPane, BorderLayout.CENTER);
 
@@ -416,16 +415,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		supplyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 
 		// Create supply scroll pane.
-		WebScrollPane supplyScrollPane = new WebScrollPane(supplyTable);
+		JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
 		supplyScrollPane.setPreferredSize(new Dimension(450, 200));
 		bottomEditPane.add(supplyScrollPane, BorderLayout.CENTER);
 
 		// Create supply button pane.
-		WebPanel supplyButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+		JPanel supplyButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
 		bottomEditPane.add(supplyButtonPane, BorderLayout.SOUTH);
 
 		// Create add supply button.
-		WebButton addSupplyButton = new WebButton("Add");
+		JButton addSupplyButton = new JButton("Add");
 		addSupplyButton.addActionListener(e ->
 				// Add new supply row.
 				addNewSupplyRow()
@@ -433,7 +432,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		supplyButtonPane.add(addSupplyButton);
 
 		// Create remove supply button.
-		removeSupplyButton = new WebButton("Remove");
+		removeSupplyButton = new JButton("Remove");
 		removeSupplyButton.addActionListener(e ->
 				// Remove selected supply rows.
 				removeSelectedSupplyRows()

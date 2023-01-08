@@ -13,7 +13,8 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
-
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -30,15 +31,13 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A panel showing a list of all incoming transport items.
  */
 @SuppressWarnings("serial")
 public class IncomingListPanel
-extends WebPanel
+extends JPanel
 implements ListSelectionListener {
 
 	// Data members
@@ -50,7 +49,7 @@ implements ListSelectionListener {
 	 */
 	public IncomingListPanel() {
 
-		// Use WebPanel constructor
+		// Use JPanel constructor
 		super();
 
 		setLayout(new BorderLayout());
@@ -61,8 +60,8 @@ implements ListSelectionListener {
 		listModel = new IncomingListModel();
 		incomingList = new JList<>(listModel);
 		incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		WebScrollPane scrollPane = new WebScrollPane(incomingList);
-		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollPane = new JScrollPane(incomingList);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
 	}
 
