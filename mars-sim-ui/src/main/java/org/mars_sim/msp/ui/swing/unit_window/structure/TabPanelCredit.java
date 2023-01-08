@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -36,8 +37,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelCredit
@@ -74,7 +73,7 @@ extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for the outer table panel.
-		WebScrollPane creditScrollPanel = new WebScrollPane();
+		JScrollPane creditScrollPanel = new JScrollPane();
 		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
 		content.add(creditScrollPanel);
 

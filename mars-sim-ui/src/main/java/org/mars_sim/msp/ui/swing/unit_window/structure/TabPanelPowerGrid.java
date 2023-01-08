@@ -17,7 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -46,9 +48,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.checkbox.WebCheckBox;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * This is a tab panel for a settlement's power grid information.
@@ -92,9 +91,9 @@ public class TabPanelPowerGrid extends TabPanel {
 	private JTextField energyStoredTF;
 	private JTextField solarCellEfficiencyTF;
 
-	private WebScrollPane powerScrollPane;
+	private JScrollPane powerScrollPane;
 
-	private WebCheckBox checkbox;
+	private JCheckBox checkbox;
 
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
@@ -136,7 +135,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		content.add(topContentPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout power info panel.
-		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());
+		JPanel powerInfoPanel = new JPanel(new SpringLayout());
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated tf.
@@ -177,11 +176,11 @@ public class TabPanelPowerGrid extends TabPanel {
 									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
 		// Create override check box panel.
-		WebPanel checkboxPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel checkboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
 
 		// Create override check box.
-		checkbox = new WebCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
+		checkbox = new JCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelPowerGrid.checkbox.tooltip")); //$NON-NLS-1$
 		checkbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -192,11 +191,11 @@ public class TabPanelPowerGrid extends TabPanel {
 		checkboxPane.add(checkbox);
 
 		// Create scroll panel for the outer table panel.
-		powerScrollPane = new WebScrollPane();
+		powerScrollPane = new JScrollPane();
 		// powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		powerScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		powerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(powerScrollPane, BorderLayout.CENTER);
 
 		// Prepare power table model.

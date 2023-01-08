@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
@@ -25,10 +26,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.text.WebTextArea;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The TabPanelSponsorship is a tab panel for showing the settlement's 
@@ -78,9 +75,7 @@ public class TabPanelSponsorship extends TabPanel {
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
-		TooltipManager.setTooltip (sponsorTF, 
-				ra.getDescription(),
-				TooltipWay.down);
+		sponsorTF.setToolTipText (ra.getDescription());
 		infoPanel.add(sponsorTF);
 		
 		// Prepare obj name label
@@ -122,7 +117,7 @@ public class TabPanelSponsorship extends TabPanel {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(panel, "Mission Agendas");
 		
-		WebTextArea ta = new WebTextArea();
+		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
 		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		ta.setColumns (30);

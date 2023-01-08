@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
@@ -16,10 +17,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextArea;
-import com.alee.managers.style.StyleId;
 
 
 /**
@@ -36,7 +33,7 @@ public class NotesTabPanel extends TabPanel{
 	private String notesCache = "";
 		
 	/** The text area for holding the notes. */
-	private WebTextArea textArea;
+	private JTextArea textArea;
 		
 	/**
 	 * Constructor.
@@ -53,18 +50,18 @@ public class NotesTabPanel extends TabPanel{
 	protected void buildUI(JPanel content) {
 
 		// Create notes panel
-		WebPanel notesPanel = new WebPanel(new BorderLayout(5, 5));
+		JPanel notesPanel = new JPanel(new BorderLayout(5, 5));
 		notesPanel.setBorder(new MarsPanelBorder());
 		notesPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		content.add(notesPanel);
 		
 		notesCache = getUnit().getNotes();
 		
-		textArea = new WebTextArea(StyleId.textareaDecorated);
+		textArea = new JTextArea();
 		notesPanel.add(textArea);
 		
 		if (notesCache == null || notesCache.equals(""))
-			textArea.setInputPrompt(ENTER_HERE);
+			textArea.append(ENTER_HERE);
 		else {
 			textArea.append(notesCache);
 		}
@@ -78,7 +75,6 @@ public class NotesTabPanel extends TabPanel{
 		String notes = textArea.getText();
 		Unit unit = getUnit();
 		if (notes == null || notes.equals("")) {
-			textArea.setInputPrompt(ENTER_HERE);
 			notesCache = "";
 			unit.setNotes(notes);
 		}

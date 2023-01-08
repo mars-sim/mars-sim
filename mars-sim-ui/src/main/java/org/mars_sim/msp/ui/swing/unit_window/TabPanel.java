@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -31,9 +32,6 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
@@ -157,7 +155,7 @@ public abstract class TabPanel extends JScrollPane {
 		if (!isUIDone) {
 			// Create label in top panel
 			String topLabel = (description != null ? description : getTabTitle());
-			WebLabel titleLabel = new WebLabel(topLabel, SwingConstants.CENTER);
+			JLabel titleLabel = new JLabel(topLabel, SwingConstants.CENTER);
 			titleLabel.setFont(TITLE_FONT);
 			
 			JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -258,9 +256,9 @@ public abstract class TabPanel extends JScrollPane {
 	 * @return The JTextField that can be updated.
 	 */
 	private JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
-		parent.add(new WebLabel(label + " ", SwingConstants.RIGHT));
+		parent.add(new JLabel(label + " ", SwingConstants.RIGHT));
 						
-		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField typeTF = new JTextField();
 		typeTF.setText(content);
 		typeTF.setEditable(false);
