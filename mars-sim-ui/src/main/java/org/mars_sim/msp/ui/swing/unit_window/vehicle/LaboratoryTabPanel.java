@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @date 2022-07-10
+ * @date 2023-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -81,10 +81,10 @@ public class LaboratoryTabPanel extends TabPanel {
 		
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = addTextField(springPanel, "Number of Researchers:", researchersCache, null);
+		researchersLabel = addTextField(springPanel, "Number of Researchers:", researchersCache, 4, null);
 
 		// Prepare researcher capacityLabel
-		addTextField(springPanel, "Researcher Capacity:", lab.getLaboratorySize(), null);
+		addTextField(springPanel, "Researcher Capacity:", lab.getLaboratorySize(), 4, null);
 
 
         // Lay out the spring panel.

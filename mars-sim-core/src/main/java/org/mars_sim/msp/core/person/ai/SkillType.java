@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 

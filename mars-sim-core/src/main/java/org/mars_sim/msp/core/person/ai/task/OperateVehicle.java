@@ -56,6 +56,10 @@ public abstract class OperateVehicle extends Task {
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
     
+	/** The ratio of time per experience points. */
+	private static final double EXP = .2D;
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .2D;
 	/** The speed at which the obstacle / winching phase commence. */
 	protected static final double LOW_SPEED = .05;
     /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
@@ -112,16 +116,13 @@ public abstract class OperateVehicle extends Task {
 	 * @param destination the location of destination of the trip.
 	 * @param startTripTime the time/date the trip is starting.
 	 * @param startTripDistance the distance (km) to the destination at the start of the trip.
-	 * @param stressModifier the modifier for stress on the person performing the task.
-	 * @param hasDuration does the task have a time duration?
 	 * @param duration the time duration (millisols) of the task (or 0 if none).
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			double duration) {
+			MarsClock startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, person, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
+		super(name, person, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -179,16 +180,13 @@ public abstract class OperateVehicle extends Task {
 	 * @param destination
 	 * @param startTripTime
 	 * @param startTripDistance
-	 * @param stressModifier
-	 * @param hasDuration
 	 * @param duration
 	 */
 	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			boolean hasDuration, double duration) {
+			MarsClock startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, robot, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
+		super(name, robot, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -299,7 +297,7 @@ public abstract class OperateVehicle extends Task {
 	}
 	
 	/**
-	 * Clears this task in the task manager
+	 * Clears this task in the task manager.
 	 * 
 	 * @param vo
 	 */
@@ -619,7 +617,7 @@ public abstract class OperateVehicle extends Task {
         double power = fTot * v_ms; // [in W]
         
         double energyUsed = power * secs; // [in J]
-        
+        // Convert the energy usage from J to kWh
         energyUsed = energyUsed / JOULES_PER_KWH ; // [in kWh]
               
         // Derive the mass of fuel needed

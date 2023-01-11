@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelLog.java
- * @date 2022-07-09
+ * @date 2023-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -98,10 +98,10 @@ public class TabPanelLog extends TabPanel {
         northPanel.add(springPanel);
 
 		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
-								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), null);
+								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 5, null);
 
 		maintTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.maintDist"),
-				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), null);
+				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 5, null);
 
 	    // Lay out the spring panel.
 	    SpringUtilities.makeCompactGrid(springPanel,
