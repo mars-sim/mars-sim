@@ -169,7 +169,7 @@ public abstract class Vehicle extends Unit
 	private double conversionFuel2DriveEnergy;
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
-	/** The total number of hours the vehicle is capable of operating. (hr). */
+	/** The total number of hours the vehicle is capable of operating [hr]. */
 	private double totalHours;
 	/** The cumulative fuel usage of the vehicle [kg] */
 	private double fuelCumUsed;
@@ -389,8 +389,8 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = spec.getCargoCapacity(getFuelType());
 		// Gets the energy capacity [kWh] based on a full tank of methane
 		energyCapacity = fuelCapacity / KG_PER_KWH;
-		// Gets the conversion factor for a specific vehicle
-		conversionFuel2DriveEnergy = KG_PER_KWH * drivetrainEfficiency;
+		// Gets the conversion factor for a specific vehicle  [Wh/kg]
+		conversionFuel2DriveEnergy =  WH_PER_KG * drivetrainEfficiency;
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
 		// Assume the peak power is 4x the average power.
@@ -1164,7 +1164,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the fuel to energy conversion factor.
+	 * Gets the fuel to energy conversion factor [Wh/kg].
 	 * 
 	 * @return
 	 */

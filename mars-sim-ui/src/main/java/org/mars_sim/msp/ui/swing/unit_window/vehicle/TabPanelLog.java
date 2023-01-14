@@ -98,10 +98,10 @@ public class TabPanelLog extends TabPanel {
         northPanel.add(springPanel);
 
 		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
-								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 5, null);
+								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 8, null);
 
 		maintTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.maintDist"),
-				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 5, null);
+				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 8, null);
 
 	    // Lay out the spring panel.
 	    SpringUtilities.makeCompactGrid(springPanel,
