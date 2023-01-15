@@ -107,4 +107,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 		return result;
 	}
 
+	public String toString() {
+		return getName();
+	}
 }

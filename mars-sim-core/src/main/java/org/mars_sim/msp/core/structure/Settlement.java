@@ -3012,10 +3012,8 @@ public class Settlement extends Structure implements Temporal,
 		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
 	}
 
-	public void setTradeMissionFromAllSettlements(boolean allowed) {
-		for (Settlement s: unitManager.getSettlements()) {
-			allowTradeMissionSettlements.put(s.getIdentifier(), allowed);
-		}
+	public boolean isAllowedTradeMission(Settlement settlement) {
+		return allowTradeMissionSettlements.getOrDefault(settlement.getIdentifier(), Boolean.TRUE);
 	}
 
 	/**
