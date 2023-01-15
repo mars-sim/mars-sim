@@ -349,19 +349,21 @@ public class ReviewMissionPlan extends Task {
 		if (m instanceof SiteMission) {
 			siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
 			
-			// Why do we adjust these score ?
+			// Adjust the score for mission types
 			if (mt == MissionType.COLLECT_ICE) {
-				siteValue /= 40D;
+				siteValue /= 80D;
 			}
 			else if (mt == MissionType.COLLECT_REGOLITH) {
-				siteValue /= 30D;
+				siteValue /= 60D;
 			}
 			else if (mt == MissionType.MINING) {
-				siteValue /= 20D;
+				siteValue /= 40D;
 			}
 			else if (mt == MissionType.EXPLORATION) {
-				siteValue /= 20D;
+				siteValue /= 40D;
 			}
+			else
+				siteValue /= 20D;
 		}
 
 		// 7. proposed route distance (note that a negative score represents a penalty)
@@ -369,14 +371,15 @@ public class ReviewMissionPlan extends Task {
 		if (m instanceof VehicleMission) {
 			int range = m.getAssociatedSettlement().getMissionRadius(mt);
 			if (range > 0) {
-				int proposed = (int)(((VehicleMission) m).getDistanceProposed());
+				double proposed = ((VehicleMission) m).getDistanceProposed();
 				
 				// Scoring rule:
-				// At range = 0, the score is 10
-				// The half the range, the score is -40
-
+				// At range = 0, the score is 0
+				// At half the range, the score is -100
+				// At full range, the score is -200
+				
 				// Calculate the dist score
-				dist = (int)(- 100.0 / range * proposed + 10);
+				dist = (int)(- 200.0 / range * proposed);
 			}
 		}
 		
@@ -420,7 +423,8 @@ public class ReviewMissionPlan extends Task {
 	}
 
 	/**
-	 * Assess the relationship of the reviewer with the Mission Leader
+	 * Assesses the relationship of the reviewer with the Mission Leader.
+	 * 
 	 * @param leader
 	 * @param reviewerSettlement
 	 */
@@ -441,7 +445,7 @@ public class ReviewMissionPlan extends Task {
 	}	
 
 	/**
-	 * Assess the reviewer based on their Role
+	 * Assesses the reviewer based on their Role.
 	 */
 	private int assessReviewer() {
 		RoleType role = person.getRole().getType();
@@ -486,20 +490,22 @@ public class ReviewMissionPlan extends Task {
 		double siteValue = 0;
 		if (m instanceof SiteMission) {
 			siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
-			
-			// Why do we adjust these score ?
+
+			// Adjust the score for mission types
 			if (mt == MissionType.COLLECT_ICE) {
-				siteValue /= 10D;
+				siteValue /= 80D;
 			}
 			else if (mt == MissionType.COLLECT_REGOLITH) {
-				siteValue /= 7.5;
+				siteValue /= 60D;
 			}
 			else if (mt == MissionType.MINING) {
-				siteValue /= 5D;
+				siteValue /= 40D;
 			}
 			else if (mt == MissionType.EXPLORATION) {
-				siteValue /= 5D;
+				siteValue /= 40D;
 			}
+			else
+				siteValue /= 20D;
 		}
 
 		// 9. reviewer role weight

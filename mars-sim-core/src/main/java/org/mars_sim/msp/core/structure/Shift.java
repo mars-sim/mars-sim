@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.events.ScheduledEventHandler;
  */
 public class Shift implements ScheduledEventHandler {
 
+	private static final long serialVersionUID = 1L;
+	
     private int start;
     private int end;
     private String name;

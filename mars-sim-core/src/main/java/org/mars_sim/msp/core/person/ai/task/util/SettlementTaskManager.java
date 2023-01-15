@@ -21,13 +21,18 @@ import org.mars_sim.msp.core.structure.Settlement;
  * assigned to Workers from a shared pool.
  */
 public class SettlementTaskManager implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
     /**
      * Acts as a Proxy to a SettlementTask. The proxy ensures that the root Task which is shared
      * is removed from the parent SettlemetTaskmanager when it is created if there is no more demand.
      * This avoids it being re-used.
      */
     class SettlementTaskProxy extends AbstractTaskJob  {
-        
+
+		private static final long serialVersionUID = 1L;
+		
         private SettlementTask source;
         private SettlementTaskManager manager;
 

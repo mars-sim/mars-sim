@@ -113,9 +113,9 @@ public abstract class Vehicle extends Unit
 	private static final double FE_FACTOR = 3.0;
 	
 	// Format for unit
-//	private static final String KWH = " kWh   ";
-//	private static final String KG = " kg   ";
-//	private static final String KM_KG = " km/kg   ";
+	private static final String KWH = " kWh   ";
+	private static final String KG = " kg   ";
+	private static final String KM_KG = " km/kg   ";
 	
 	// Name format for numbers units
 	private static final String VEHICLE_TAG_NAME = "%s %03d";
@@ -389,7 +389,7 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = spec.getCargoCapacity(getFuelType());
 		// Gets the energy capacity [kWh] based on a full tank of methane
 		energyCapacity = fuelCapacity / KG_PER_KWH;
-		// Gets the conversion factor for a specific vehicle  [Wh/kg]
+		// Gets the conversion factor for a specific vehicle [Wh/kg]
 		conversionFuel2DriveEnergy =  WH_PER_KG * drivetrainEfficiency;
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
@@ -507,29 +507,30 @@ public abstract class Vehicle extends Unit
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
-//		logger.log(this, Level.INFO, 0, 
-//				vehicleType.getName() + "   "
-//				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
-//	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
-//    		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
-//    	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
-//    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + KWH 
-//    	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
-//
-//    	logger.log(this, Level.INFO, 0, 	     	    	
-//    		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
-//    		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
-//    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
-//    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedFuelEconomy * 100.0)/100.0 + KM_KG
-//    	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
-//	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
-//    		 	
-//    	logger.log(this, Level.INFO, 0, 	 	
-//				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG 			
-//    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + KG
-//    	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + KG
-//       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG
-//    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
+		logger.log(this, Level.INFO, 0, 
+				vehicleType.getName() + "   "
+				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
+				+ "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   " 
+	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
+    		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
+    	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
+    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + KWH 
+    	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
+
+    	logger.log(this, Level.INFO, 0, 	     	    	
+    		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
+    		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
+    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedFuelEconomy * 100.0)/100.0 + KM_KG
+    	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
+	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
+    		 	
+    	logger.log(this, Level.INFO, 0, 	 	
+				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG 			
+    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + KG
+    	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + KG
+       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG
+    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
 	}
 	
 	/**

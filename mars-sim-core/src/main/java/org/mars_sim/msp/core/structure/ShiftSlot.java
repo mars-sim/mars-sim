@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.person.Person;
  */
 public class ShiftSlot implements ScheduledEventHandler {
 
+	private static final long serialVersionUID = 1L;
+	
     /**
      * The work status of this Slot.
      */
