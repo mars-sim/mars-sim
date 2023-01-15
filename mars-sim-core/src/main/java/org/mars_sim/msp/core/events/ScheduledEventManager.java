@@ -19,11 +19,16 @@ import org.mars_sim.msp.core.time.Temporal;
  * This class manages a list off future scheduled events.
  */
 public class ScheduledEventManager implements Serializable, Temporal {
-    
+
+	private static final long serialVersionUID = 1L;
+	
     /**
      * Represents an event that is scheduled for future execution.
      */
     public class ScheduledEvent implements Comparable<ScheduledEvent>, Serializable {
+
+		private static final long serialVersionUID = 1L;
+		
         private MarsClock when;
         private ScheduledEventHandler handler;
 

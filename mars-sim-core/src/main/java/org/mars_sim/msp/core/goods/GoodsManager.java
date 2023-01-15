@@ -36,6 +36,8 @@ public class GoodsManager implements Serializable {
 
 	private class FutureHandler implements ScheduledEventHandler {
 
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getEventDescription() {
 			return "Refresh Buy/Sell list";
@@ -713,7 +715,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 
@@ -741,8 +743,9 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Find the best trading deal for the parent Settlement using a certain Vehicle 
-	 * for a Commerce mission
+	 * Finds the best trading deal for the parent Settlement using a certain Vehicle 
+	 * for a Commerce mission.
+	 * 
 	 * @param commerce Type of Commerce
 	 * @param delivery Vehicle doing the Delivery
 	 */
@@ -766,7 +769,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Custom read to re-init deals variable
+	 * Custom read to re-init deals variable.
 	 */
 	private void readObject(java.io.ObjectInputStream in)
     	throws IOException, ClassNotFoundException {

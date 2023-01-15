@@ -17,17 +17,17 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * Represents the behave that a Mission exhbits
+ * Represents the behave that a Mission exhibits.
  */
 public interface Mission extends Serializable {
 
 	/**
-	 * Abort the mission by the user. Will stop currnet phase.
+	 * Aborts the mission by the user. Will stop current phase.
 	 */
 	void abortMission();
 
 	/**
-	 * Abort just thec urrent phase, the next phase will be started.
+	 * Aborts just the current phase, the next phase will be started.
 	 */
 	void abortPhase();
 
@@ -46,7 +46,8 @@ public interface Mission extends Serializable {
 	String getName();
 
 	/**
-	 * Set the Mission name.
+	 * Sets the Mission name.
+	 * 
 	 * @param name New Name.
 	 */
     void setName(String name);
@@ -174,7 +175,7 @@ public interface Mission extends Serializable {
 	 * Performs the mission.
 	 *
 	 * @param member the member performing the mission.
-	 * @return Can teh work participate
+	 * @return Can the member participate ?
 	 */
 	boolean performMission(Worker member);
 

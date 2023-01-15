@@ -191,7 +191,7 @@ public class PlanMission extends Task {
 	}
 
 	/**
-	 * Release office space
+	 * Releases office space.
 	 */
 	@Override
 	protected void clearDown() {

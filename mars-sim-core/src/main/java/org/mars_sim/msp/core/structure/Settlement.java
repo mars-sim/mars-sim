@@ -168,7 +168,7 @@ public class Settlement extends Structure implements Temporal,
 	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 	/** Initial mission passing score. */
-	private static final double INITIAL_MISSION_PASSING_SCORE = 100D;
+	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
 	/** The Maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;
 

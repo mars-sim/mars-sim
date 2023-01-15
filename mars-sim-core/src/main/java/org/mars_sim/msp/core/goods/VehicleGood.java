@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -37,7 +36,7 @@ class VehicleGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static SimLogger logger = SimLogger.getLogger(VehicleGood.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(VehicleGood.class.getName());
 
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
@@ -62,7 +61,7 @@ class VehicleGood extends Good {
     private VehicleType vehicleType;
 
 	// Suitability of this vehicle type for different Missions
-	private transient Map<MissionType,Double> missionCapacities = new EnumMap<>(MissionType.class);
+	private transient Map<MissionType, Double> missionCapacities = new EnumMap<>(MissionType.class);
 
     public VehicleGood(VehicleSpec vs) {
         super(vs.getName(), VehicleType.convertName2ID(vs.getName()));
@@ -184,7 +183,7 @@ class VehicleGood extends Good {
 	}
 
    	/**
-	 * Computes vehicle parts cost
+	 * Computes vehicle parts cost.
 	 * 
 	 * @param good
 	 * @return
@@ -234,7 +233,7 @@ class VehicleGood extends Good {
 	}
 
 	/**
-	 * Determines the vehicle projected demand
+	 * Determines the vehicle projected demand.
 	 *
 	 * @param vehicleGood
 	 * @return the vehicle demand
@@ -292,9 +291,10 @@ class VehicleGood extends Good {
 	}
 
 	/**
-	 * Determines the trade vehicle value
+	 * Determines the trade vehicle value.
 	 *
-	 * @param vehicleGood
+	 * @param owner GoodsManager
+	 * @param settlement
 	 * @return the trade vehicle value
 	 */
 	private double determineTradeVehicleValue(GoodsManager owner, Settlement settlement) {
@@ -306,6 +306,7 @@ class VehicleGood extends Good {
 	/**
 	 * Determine the value of a drone.
 	 *
+	 * @param settlement
 	 * @param buy true if vehicles can be bought.
 	 * @return value (VP)
 	 */
@@ -330,8 +331,9 @@ class VehicleGood extends Good {
 	}
 
 	/**
-	 * Determine the value of a light utility vehicle.
+	 * Determines the value of a light utility vehicle.
 	 *
+	 * @param settlement
 	 * @param buy true if vehicles can be bought.
 	 * @return value (VP)
 	 */
@@ -361,9 +363,10 @@ class VehicleGood extends Good {
 	/**
 	 * Determines the mission vehicle demand based on vehicle type and mission type.
 	 * 
+	 * @param owner GoodsManager
+	 * @param settlement
 	 * @param missionType
-	 * @param vehicleType
-	 * @param buy
+	 * @param buy true if vehicles can be bought.
 	 * @return
 	 */
 	private double determineMissionVehicleDemand(GoodsManager owner, Settlement settlement, MissionType missionType, boolean buy) {
@@ -391,6 +394,8 @@ class VehicleGood extends Good {
 	/**
 	 * Determines the mission vehicle demand based on mission type and job numbers.
 	 * 
+	 * @param owner GoodsManager
+	 * @param settlement
 	 * @param missionType
 	 * @return
 	 */
@@ -450,7 +455,10 @@ class VehicleGood extends Good {
 	}
 
 	/**
-	 * Calculate the capticy for this vehicle type to perform a Mission and updte the cache
+	 * Calculates the capacity for this vehicle type to perform a Mission and update the cache.
+	 * 
+	 * @param missionType
+	 * @return
 	 */
 	private synchronized double calculateMissionVehicleCapacity(MissionType missionType) {
 		if (missionCapacities.containsKey(missionType)) {
@@ -599,7 +607,8 @@ class VehicleGood extends Good {
 
 	/**
 	 * Gets the range of the vehicle type.
-	 * TODO SUrely this logic should be elsewhere
+	 * TODO Surely this logic should be elsewhere
+	 * 
 	 * @param v {@link VehicleSpec}.
 	 * @return range (km)
 	 */
@@ -612,12 +621,11 @@ class VehicleGood extends Good {
 
         int crewSize = v.getCrewSize();
         if (crewSize > 0) {
-            // Hvae to allow for people consumption 
             double baseSpeed = v.getBaseSpeed();
             double distancePerSol = baseSpeed / SPEED_TO_DISTANCE;
-
-
+            
             // Check food capacity as range limit.
+//            System.out.println("personConfig is " + personConfig);
             double foodConsumptionRate = personConfig.getFoodConsumptionRate();
             double foodCapacity = v.getCargoCapacity(ResourceUtil.foodID);
             double foodSols = foodCapacity / (foodConsumptionRate * crewSize);

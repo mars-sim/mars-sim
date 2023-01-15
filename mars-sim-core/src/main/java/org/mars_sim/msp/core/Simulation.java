@@ -331,9 +331,10 @@ public class Simulation implements ClockListener, Serializable {
 		// Build planetary objects
 		MarsSurface marsSurface = new MarsSurface();
 		unitManager.addUnit(marsSurface);
-
+	
         RoleUtil.initialize();
-
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		
 		medicalManager = new MedicalManager();
 
 		// Set instances for logging

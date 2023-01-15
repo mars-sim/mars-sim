@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 public interface SiteMission {
 
 	/**
-	 * What is the total site score ofr this mission from the prespective
-	 * if a reviewer's Settlement
+	 * Gets the total site score for this mission.
+	 * 
 	 * @param reviewerSettlement
 	 * @return
 	 */
