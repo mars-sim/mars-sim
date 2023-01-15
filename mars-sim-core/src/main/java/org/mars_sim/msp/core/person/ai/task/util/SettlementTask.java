@@ -12,6 +12,8 @@ package org.mars_sim.msp.core.person.ai.task.util;
  */
 public abstract class SettlementTask extends AbstractTaskJob {
 
+	private static final long serialVersionUID = 1L;
+	
     private SettlementMetaTask metaTask;
     private int demand;
 

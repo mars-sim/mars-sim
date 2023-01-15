@@ -56,6 +56,10 @@ public abstract class OperateVehicle extends Task {
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
     
+	/** The ratio of time per experience points. */
+	private static final double EXP = .2D;
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .2D;
 	/** The speed at which the obstacle / winching phase commence. */
 	protected static final double LOW_SPEED = .05;
     /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
@@ -64,8 +68,8 @@ public abstract class OperateVehicle extends Task {
 	public static final int WATER_ID = ResourceUtil.waterID;
     /** Mars surface gravity is 3.72 m/s2. */
     private static final double GRAVITY = 3.72;
-	/** Conversion factor : 1 kWh = 3.6 M Joules */
-    private static final double JOULES_PER_KWH = 3_600_000.0;
+	/** Conversion factor : 1 Wh = 3.6 kilo Joules */
+    private static final double JOULES_PER_WH = 3_600.0;
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	private static final double KPH_CONV = 3.6;
 	/** Half the PI. */
@@ -77,13 +81,13 @@ public abstract class OperateVehicle extends Task {
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
 
-//	private static final String KG = " kg   ";
-//	private static final String N = " N   ";
-//	private static final String KM_KG = " km/kg   ";
-//	private static final String WH_KM = " Wh/km   ";
-//	private static final String KM = " km   ";
-//	private static final String KW = " kW   ";
-//	private static final String KPH = " kph   ";
+	private static final String KG = " kg   ";
+	private static final String N = " N   ";
+	private static final String KM_KG = " km/kg   ";
+	private static final String WH_KM = " Wh/km   ";
+	private static final String KM = " km   ";
+	private static final String KW = " kW   ";
+	private static final String KPH = " kph   ";
 			
 	// Data members
 	/** The fuel type of this vehicle. */
@@ -112,16 +116,13 @@ public abstract class OperateVehicle extends Task {
 	 * @param destination the location of destination of the trip.
 	 * @param startTripTime the time/date the trip is starting.
 	 * @param startTripDistance the distance (km) to the destination at the start of the trip.
-	 * @param stressModifier the modifier for stress on the person performing the task.
-	 * @param hasDuration does the task have a time duration?
 	 * @param duration the time duration (millisols) of the task (or 0 if none).
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			double duration) {
+			MarsClock startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, person, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
+		super(name, person, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -179,16 +180,13 @@ public abstract class OperateVehicle extends Task {
 	 * @param destination
 	 * @param startTripTime
 	 * @param startTripDistance
-	 * @param stressModifier
-	 * @param hasDuration
 	 * @param duration
 	 */
 	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			boolean hasDuration, double duration) {
+			MarsClock startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
-		super(name, robot, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
+		super(name, robot, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -299,7 +297,7 @@ public abstract class OperateVehicle extends Task {
 	}
 	
 	/**
-	 * Clears this task in the task manager
+	 * Clears this task in the task manager.
 	 * 
 	 * @param vo
 	 */
@@ -571,6 +569,7 @@ public abstract class OperateVehicle extends Task {
     	double u_kph = u_ms * KPH_CONV; // [in kph]
     	double hr = hrsTime; // [in hrs]
     	double secs = 3600 * hr; // [in s]
+    	// v_kph may be negative
     	double v_kph = finalSpeed; // [in km/hr]
     	double v_ms = v_kph / KPH_CONV; // [in m/s]
     	// Note: if a_ms is negative, it gives off free momentum to move forward.
@@ -578,7 +577,7 @@ public abstract class OperateVehicle extends Task {
     	
         double mass = vehicle.getMass(); // [in kg]
         
-//        double initFE = vehicle.getInitialFuelEconomy(); // [in km/kg]
+        double initFE = vehicle.getInitialFuelEconomy(); // [in km/kg]
         // Calculate force against Mars surface gravity
         double fGravity = 0; 
         
@@ -620,10 +619,11 @@ public abstract class OperateVehicle extends Task {
         
         double energyUsed = power * secs; // [in J]
         
-        energyUsed = energyUsed / JOULES_PER_KWH ; // [in kWh]
+        // Convert the energy usage from J to Wh
+        energyUsed = energyUsed / JOULES_PER_WH ; // [in Wh]
               
-        // Derive the mass of fuel needed
-        double fuelUsed = energyUsed * vehicle.getFuelConv();
+        // Derive the mass of fuel needed kg = Wh / Wh/kg
+        double fuelUsed = energyUsed / vehicle.getFuelConv();
 
         // Case 3 : fuel needed is less than available (just used up the last drop of fuel). Update fuelUsed.
 		if (fuelUsed > remainingFuel) {
@@ -647,15 +647,17 @@ public abstract class OperateVehicle extends Task {
 			a_ms = (v_ms - u_ms) / secs; // [in m/s^2]
 			
 	        energyUsed = power * secs; // [in J]
-	        
+	        // Convert the energy usage from J to Wh
+	        energyUsed = energyUsed / JOULES_PER_WH ; // [in Wh]
 			// Cache the new value of hr
 			hrsTimeCache = hr;
 			// Cache the new value of d_km
 			distanceCache = d_km;
      	}      
 		else if (fuelUsed < 0) {
-			// TODO: will consider how to add an onboard battery to 
+			// TODO: will consider how to add an on-board battery to 
 			// absorb the power via regenerative braking
+			
 			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed from " 
 					+  Math.round(u_kph * 1000.0)/1000.0 + " kph "
 					+ " to " + Math.round(v_kph * 1000.0)/1000.0
@@ -693,52 +695,56 @@ public abstract class OperateVehicle extends Task {
         vehicle.setIFuelEconomy(iFE);
               
         // Derive the instantaneous fuel consumption [Wh/km]
-        double iFC = 1000 * energyUsed / d_km;
+        double iFC = energyUsed / d_km;
         
         // Set the instantaneous fuel consumption [Wh/km]
         vehicle.setIFuelConsumption(iFC);
         
         /*
-		 * May comment off the block of codes below 
+		 * May comment off the block of codes below. 
+		 * DO NOT delete any of them. 
+		 * Still need them for testing.
 		 */
         
-//        double bFC = vehicle.getBaseFuelConsumption();      
-//        double bFE = vehicle.getBaseFuelEconomy();   
-//        double estFE = vehicle.getEstimatedFuelEconomy();
-//        	
-//        // Calculate the average power for this time period [in kW]
-//        double aveP = energyUsed / hr;
-//        
-//        logger.log(vehicle, Level.INFO, 10_000, 
-//        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
-//        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
-//        		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-//        		 	+ "d_km: " 				+ Math.round(d_km * 1_000.0)/1_000.0 + KM
-//        	        + "hr: "				+ Math.round(hr * 10_000.0)/10_000.0 + " hrs   "
-//        	        + "u_kph: "				+ Math.round(u_kph * 10_000.0)/10_000.0 + KPH
-//                	+ "v_kph: " 			+ Math.round(v_kph * 10_000.0)/10_000.0 + KPH
-//        	        + "a_ms: "				+ Math.round(a_ms * 10_000.0)/10_000.0 + " m/s2   "
-//        	        + "fAccel: " 			+ Math.round(fAccel * 10_000.0)/10_000.0 + N
-//        	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg   "
-//        			+ "fInitialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
-//        			+ "fGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
-//        			+ "fAeroDrag: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
-//    	    		+ "fRolling: " 		+ Math.round(fRolling * 10_000.0)/10_000.0 + N
-//    	    		+ "fGradingRes: "		+ Math.round(fGradingResistance * 10_000.0)/10_000.0 + N
-//    	    		+ "fTot: " 			+ Math.round(fTot * 10_000.0)/10_000.0 + N
-//    	    		+ "Power: " 			+ Math.round(power)/1_000.0 + KW
-//    				+ "Energy Used: " 		+ Math.round(energyUsed * 100_000.0)/100_000.0 + " kWh   "
-//            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
-//    	    		+ "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
-//                   	+ "estFE: " 			+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
-//                   	+ "initFE: " 			+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
-//    	    		+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-//       	    		+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
-//    	    		+ "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
-//    	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
-// 	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
-//    	    		+ "ave Power: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
-//    				);
+        double bFC = vehicle.getBaseFuelConsumption();      
+        
+        // Fuel Economy 
+        double bFE = vehicle.getBaseFuelEconomy();   
+        double estFE = vehicle.getEstimatedFuelEconomy();
+        	
+        // Calculate the average power for this time period [in kW]
+        double aveP = energyUsed / 1000 / hr;
+        
+        logger.log(vehicle, Level.INFO, 10_000, 
+        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+        		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
+        		 	+ "d_km: " 				+ Math.round(d_km * 1_000.0)/1_000.0 + KM
+        	        + "hr: "				+ Math.round(hr * 10_000.0)/10_000.0 + " hrs   "
+        	        + "u_kph: "				+ Math.round(u_kph * 10_000.0)/10_000.0 + KPH
+                	+ "v_kph: " 			+ Math.round(v_kph * 10_000.0)/10_000.0 + KPH
+        	        + "a_ms: "				+ Math.round(a_ms * 10_000.0)/10_000.0 + " m/s2   "
+        	        + "fAccel: " 			+ Math.round(fAccel * 10_000.0)/10_000.0 + N
+        	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg   "
+        			+ "fInitialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
+        			+ "fGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
+        			+ "fAeroDrag: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
+    	    		+ "fRolling: " 		+ Math.round(fRolling * 10_000.0)/10_000.0 + N
+    	    		+ "fGradingRes: "		+ Math.round(fGradingResistance * 10_000.0)/10_000.0 + N
+    	    		+ "fTot: " 			+ Math.round(fTot * 10_000.0)/10_000.0 + N
+    	    		+ "Power: " 			+ Math.round(power)/1_000.0 + KW
+    				+ "Energy Used: " 		+ Math.round(energyUsed * 100_000.0)/100_000.0 + " Wh   "
+            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
+    	    		+ "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+                   	+ "estFE: " 			+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
+                   	+ "initFE: " 			+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
+    	    		+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
+       	    		+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
+    	    		+ "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
+    	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
+ 	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+    	    		+ "ave Power: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
+    				);
         
         return fuelUsed;
     }
@@ -753,11 +759,11 @@ public abstract class OperateVehicle extends Task {
     }
 	
 	/**
-	 * Determines the vehicle's initial parked location while traveling to settlement.
+	 * Determines the vehicle's initial parked location.
 	 */
 	private void determineInitialSettlementParkedLocation() {
 	   
-        // Park 200 meters from the new settlement in teh irection of travel
+        // Park 200 meters from the new settlement in the direction of travel
         LocalPosition parkingPlace = LocalPosition.DEFAULT_POSITION.getPosition(200D, vehicle.getDirection().getDirection() + Math.PI);
         double degDir = vehicle.getDirection().getDirection() * 180D / Math.PI;
 	    

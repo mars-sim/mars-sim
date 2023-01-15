@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.1 (build ____) - __ Jan 2023
+## v3.5.0 (build ____) - __ Jan 2023
 
 ### ISSUES ADDRESSED :
 
@@ -28,6 +28,7 @@ Copyright (C) 2023 Scott Davis
  <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
  <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
  <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
+ <LI>  Vehicle : Correct fuel consumption calculation. </LI>
  
 ------------------------------------------|--------------------- 
  

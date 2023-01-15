@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -83,7 +84,11 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// Update the map from the clock once a second
 		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 
+		// Initializes map instance as surf map
 		mapType = SurfMarsMap.TYPE;
+		surfMap = new SurfMarsMap(this);
+		map = surfMap;
+		
 		oldMapType = mapType;
 		
 		mapError = false;
@@ -311,15 +316,25 @@ public class MapPanel extends WebPanel implements ClockListener {
 		public void run() {
 			try {
 				mapError = false;
+
+				if (centerCoords == null) {
+					logger.severe("centerCoords is null.");
+					Settlement settlement = desktop.getSettlementMapPanel().getSettlement();
+					if (settlement != null) {
+						centerCoords = settlement.getCoordinates();
+						showMap(centerCoords);
+					}
+				}
+				
 				map.drawMap(centerCoords);
+				wait = false;
+				repaint();
+				
 			} catch (Exception e) {
 				mapError = true;
 				mapErrorMessage = e.getMessage();
 				logger.severe("Can't draw surface map: " + e);
 			}
-			wait = false;
-
-			repaint();
 		}
 	}
 
@@ -359,7 +374,7 @@ public class MapPanel extends WebPanel implements ClockListener {
                 g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
                 if (centerCoords != null) {
-                	if (map.isImageDone()) {
+                	if (map != null && map.isImageDone()) {
                 		mapImage = map.getMapImage();
                 		g.drawImage(mapImage, 0, 0, this);
                 	}

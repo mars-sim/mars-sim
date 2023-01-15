@@ -655,30 +655,35 @@ public abstract class Good implements Serializable, Comparable<Good> {
     }
 
 	/**
-	 * Get the price for this Good at a Settlment with a specific Value Point
+	 * Gets the price for this Good at a settlement with a specific Value Point.
+	 * 
 	 * @param settlement Get the price at
 	 * @param value Value Point for the good
 	 */
     abstract double getPrice(Settlement settlement, double value);
 
 	/**
-	 * Get the default initial demand value for this Good.
+	 * Gets the default initial demand value for this Good.
 	 */
     abstract double getDefaultDemandValue();
 
 	/**
-	 * Get the default initial supply value for this Good.
+	 * Gets the default initial supply value for this Good.
 	 */
     abstract double getDefaultSupplyValue();
 
 	/**
-	 * Refresh the Supply and Demand values associated with this Good for a specific Settlement.
+	 * Refreshes the Supply and Demand values associated with this Good for a specific Settlement.
+	 * 
 	 * @param owner Owner of the Supply/Demand values.
 	 */
 	abstract void refreshSupplyDemandValue(GoodsManager owner);
 
 	/**
-	 * Initialise the constant configs
+	 * Initialises the configs.
+	 * 
+	 * @param sc
+	 * @param m
 	 */
 	static void initializeInstances(SimulationConfig sc, MissionManager m) {
 		missionManager = m;

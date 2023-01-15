@@ -21,6 +21,9 @@ public class ShiftManager implements Serializable {
      * Handles rotating the shifts
      */
     private class RotationHandler implements ScheduledEventHandler {
+
+		private static final long serialVersionUID = 1L;
+		
         @Override
         public String getEventDescription() {
            return "Shift Rotation";

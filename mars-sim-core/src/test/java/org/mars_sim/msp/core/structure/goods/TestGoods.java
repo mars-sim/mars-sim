@@ -3,8 +3,10 @@ package org.mars_sim.msp.core.structure.goods;
 import java.util.List;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodType;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -15,7 +17,6 @@ import junit.framework.TestCase;
 
 public class TestGoods extends TestCase {
 
-    private List<Good> goodsList;
     ItemResource hammer;
     
     public TestGoods() {
@@ -23,11 +24,15 @@ public class TestGoods extends TestCase {
 	}
 
     protected void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
-        ResourceUtil.getInstance();        
+        SimulationConfig config = SimulationConfig.instance();
+        config.loadConfig();
+        ResourceUtil.getInstance();   
+        
+        // Don't need a full GoodsManager initialisation
+        GoodsManager.initializeInstances(config, null, null);
+
         GoodType type = GoodType.TOOL;
         hammer = ItemResourceUtil.createItemResource("hammer", 1100, "a hand tool", type, 1.4D, 1);
-        goodsList = GoodsUtil.getGoodsList();
     }
 
     public void testCreateItem() {
@@ -37,16 +42,20 @@ public class TestGoods extends TestCase {
     }
 
     public void testGoodsListNotNull() {
+        List<Good> goodsList = GoodsUtil.getGoodsList();
+
         assertNotNull(goodsList);
 	}
 
 	public void testGoodsListNotZero() {
+        List<Good> goodsList = GoodsUtil.getGoodsList();
+
 		assertTrue(goodsList.size() > 0);
 	}
 
 	public void testGoodsListContainsWater() throws Exception {
 		Good waterGood = GoodsUtil.getGood(ResourceUtil.waterID);
-		assertNotNull(waterGood);
+		assertNotNull("Found water good", waterGood);
 	}
 
 	public void testGoodsListContainsHammer() {
@@ -55,22 +64,21 @@ public class TestGoods extends TestCase {
         assertNull(hammerGood);
 	}
 
-//	public void testGoodsListContainsBag() {
-//		Good bagGoogood_issued = GoodsUtil.getEquipmentGood(Bag.class);
-//		assertTrue(GoodsUtil.containsGood(bagGood));
-//	}
-//
-//	public void testGoodsListContainsExplorerRover() {
-//		// "Explorer Rover" is a valid vehicle type
-//		Good explorerRoverGood = GoodsUtil.getVehicleGood("Explorer Rover");
-//		assertTrue(GoodsUtil.containsGood(explorerRoverGood));
-//	}
+	public void testGoodsListContainsBag() {
+		Good bagGood = GoodsUtil.getEquipmentGood(EquipmentType.BAG);
+		assertNotNull("Foud Bag Good", bagGood);
+	}
 
-//	public void testGoodsListDoesntContainFalseRover() {
-//		// "False Rover" is not a valid vehicle type
-//		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
-////        if (falseRoverGood == null)
-////        	System.out.println("falseRoverGood is null in TestGoods");
-//		assertTrue(!GoodsUtil.containsGood(falseRoverGood));
-//	}
+	public void testGoodsListContainsExplorerRover() {
+		// "Explorer Rover" is a valid vehicle type
+        String typeName = "Explorer Rover";
+		Good explorerRoverGood = GoodsUtil.getVehicleGood(typeName);
+		assertNotNull("Found good vehicleType " +  typeName, explorerRoverGood);
+	}
+
+	public void testGoodsListDoesntContainFalseRover() {
+		// "False Rover" is not a valid vehicle type
+		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
+		assertNull("NonExistent Vehicle Good not found", falseRoverGood);
+	}
 }

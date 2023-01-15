@@ -14,6 +14,9 @@ import org.mars_sim.msp.core.robot.RobotType;
  * Represents are predefined Robot for a settlement template
  */
 public class RobotTemplate implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
     private String name;
     private RobotType type;
     private String model;

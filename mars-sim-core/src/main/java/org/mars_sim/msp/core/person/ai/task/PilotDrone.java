@@ -71,7 +71,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
-		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
+		super(NAME, person, flyer, destination, startTripTime, startTripDistance, 
 				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 		
 		// Set initial parameters
@@ -85,8 +85,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
-		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				1000D);
+		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, 1000D);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -109,8 +108,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
-				100D + RandomUtil.getRandomDouble(-20D, 20D));
+		super(NAME, person, flyer, destination, startTripTime, startTripDistance, 100D + RandomUtil.getRandomDouble(-20D, 20D));
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -128,8 +126,7 @@ public class PilotDrone extends OperateVehicle {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				250D);
+		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, 250D);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$

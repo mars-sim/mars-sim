@@ -159,8 +159,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 				 buildingAirlock.isTransitioning() + "", 8, null);
 		
 		// Create airlockModeLabel
+		airlockModeCache = buildingAirlock.getAirlockMode();
 		airlockModeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.mode"),
-				 buildingAirlock.getAirlockMode().getName() + "", 8, null);
+				airlockModeCache.getName() + "", 8, null);
 
 		// Create OperatorLabel
 		operatorLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.operator"),

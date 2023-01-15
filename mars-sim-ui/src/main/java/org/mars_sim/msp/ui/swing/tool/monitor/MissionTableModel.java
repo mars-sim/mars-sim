@@ -238,7 +238,7 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the type of the column requested.
+	 * Returns the type of the column requested.
 	 *
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
@@ -252,7 +252,7 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the name of the column requested.
+	 * Returns the name of the column requested.
 	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
@@ -266,7 +266,7 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the object at the specified row indexes.
+	 * Returns the object at the specified row indexes.
 	 *
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
@@ -383,7 +383,7 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Return the value of a Cell
+	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.

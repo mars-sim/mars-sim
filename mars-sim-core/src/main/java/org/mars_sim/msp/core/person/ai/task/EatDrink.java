@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The EatDrink class is a task for eating a meal. The duration of the task is 40

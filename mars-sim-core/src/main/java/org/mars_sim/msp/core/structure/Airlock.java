@@ -63,7 +63,7 @@ public abstract class Airlock implements Serializable {
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
 	
-	private AirlockMode airlockMode = AirlockMode.NOT_IN_USE;
+	private AirlockMode airlockMode = AirlockMode.EGRESS;
 	
 	/**
 	 * Available Airlock mode

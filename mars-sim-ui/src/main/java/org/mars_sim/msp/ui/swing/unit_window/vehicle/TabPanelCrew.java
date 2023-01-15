@@ -66,7 +66,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	private static final String SAILOR_ICON = Msg.getString("icon.sailor"); //$NON-NLS-1$
 
-	
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
 
@@ -110,12 +109,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 		// Create crew num header label
 		crewNumCache = crewable.getCrewNum();
-		crewNumTF = addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewNum"), crewNumCache,
+		crewNumTF = addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewNum"), crewNumCache, 3,
 								 Msg.getString("TabPanelCrew.crew.tooltip"));
 
 		// Create crew cap header label
 		crewCapacityCache = crewable.getCrewCapacity();
-		addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewCapacity"), crewCapacityCache,
+		addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewCapacity"), crewCapacityCache, 3,
 					 Msg.getString("TabPanelCrew.crewCapacity.tooltip"));
 
 		// Prepare SpringLayout.

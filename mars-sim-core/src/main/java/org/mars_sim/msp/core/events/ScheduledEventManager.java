@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.events;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,14 +16,19 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
- * This class manaages a list off future scheduled events.
+ * This class manages a list off future scheduled events.
  */
 public class ScheduledEventManager implements Serializable, Temporal {
-    
+
+	private static final long serialVersionUID = 1L;
+	
     /**
-     * Represents anevent that is scheduled for future exeuction.
+     * Represents an event that is scheduled for future execution.
      */
     public class ScheduledEvent implements Comparable<ScheduledEvent>, Serializable {
+
+		private static final long serialVersionUID = 1L;
+		
         private MarsClock when;
         private ScheduledEventHandler handler;
 
