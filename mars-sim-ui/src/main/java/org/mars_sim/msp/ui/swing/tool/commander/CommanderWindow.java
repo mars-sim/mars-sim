@@ -80,7 +80,6 @@ public class CommanderWindow extends ToolWindow {
 
 	/** Tool name. */
 	private static final int LIST_WIDTH = 300;
-	private static final int COMBOBOX_WIDTH = 200;
 
 	public static final String NAME = "Commander Dashboard";
 
@@ -203,7 +202,6 @@ public class CommanderWindow extends ToolWindow {
 	/**
      * Builds the settlement name combo box.
      */
-	@SuppressWarnings("unchecked")
 	private void buildSettlementComboBox() {
 
 		SettlementComboBoxModel settlementCBModel = new SettlementComboBoxModel();
@@ -599,7 +597,7 @@ public class CommanderWindow extends ToolWindow {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					boolean selected = e.getStateChange() == ItemEvent.SELECTED;
-					Settlement s = tradingPartners.get(((JCheckBox) e.getSource()).getName());
+					Settlement s = tradingPartners.get(((JCheckBox) e.getSource()).getText());
 					settlement.setAllowTradeMissionFromASettlement(s, selected);
 				}
 			});

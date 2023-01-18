@@ -12,7 +12,11 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -23,11 +27,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.tabbedpane.WebTabbedPane;
 
 /**
  * Window for the mission tool.
@@ -42,7 +41,7 @@ public class MissionWindow extends ToolWindow {
 	public static final int HEIGHT = 640;
 
 	// Private members
-	private WebTabbedPane tabPane;
+	private JTabbedPane tabPane;
 	private MainDetailPanel mainPanel;
 
 	private JList<Settlement> settlementList;
@@ -71,21 +70,21 @@ public class MissionWindow extends ToolWindow {
 		super(NAME, desktop);
 
 		// Create content panel.
-		WebPanel mPane = new WebPanel(new BorderLayout());
+		JPanel mPane = new JPanel(new BorderLayout());
 		mPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mPane);
 
 		// Create the left panel.
-		WebPanel leftPane = new WebPanel(new BorderLayout());
+		JPanel leftPane = new JPanel(new BorderLayout());
 		mPane.add(leftPane, BorderLayout.WEST);
 
 		// Create the settlement list panel.
-		WebPanel settlementListPane = new WebPanel(new BorderLayout());
+		JPanel settlementListPane = new JPanel(new BorderLayout());
 		settlementListPane.setPreferredSize(new Dimension(LEFT_PANEL_WIDTH, 220));
 		leftPane.add(settlementListPane, BorderLayout.NORTH);
 
 		// Create the mission list panel.
-		WebPanel missionListPane = new WebPanel(new BorderLayout());
+		JPanel missionListPane = new JPanel(new BorderLayout());
 		missionListPane.setPreferredSize(new Dimension(LEFT_PANEL_WIDTH, 400));
 		leftPane.add(missionListPane, BorderLayout.CENTER);
 
@@ -93,7 +92,7 @@ public class MissionWindow extends ToolWindow {
 		settlementListModel = new SettlementListModel();
 		settlementList = new JList<>(settlementListModel);
 		settlementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		settlementListPane.add(new WebScrollPane(settlementList), BorderLayout.CENTER);
+		settlementListPane.add(new JScrollPane(settlementList), BorderLayout.CENTER);
 		settlementList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
@@ -110,7 +109,7 @@ public class MissionWindow extends ToolWindow {
 		missionListModel = new MissionListModel(this);
 		missionList = new JList<>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//SINGLE_INTERVAL_SELECTION);
-		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
+		missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
 		missionList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
@@ -124,7 +123,7 @@ public class MissionWindow extends ToolWindow {
 		});
 
 		// Create the info tab panel.
-		tabPane = new WebTabbedPane();
+		tabPane = new JTabbedPane();
 		mPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
@@ -138,11 +137,11 @@ public class MissionWindow extends ToolWindow {
 		tabPane.add("Navigation", navpointPane);
 
 		// Create the button panel.
-		WebPanel buttonPane = new WebPanel(new FlowLayout());
+		JPanel buttonPane = new JPanel(new FlowLayout());
 		mPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the create mission button.
-		WebButton createButton = new WebButton("Create New Mission");
+		JButton createButton = new JButton("Create New Mission");
 		createButton.addActionListener(e -> 
 				// Create new mission.
 				createNewMission()
@@ -150,7 +149,7 @@ public class MissionWindow extends ToolWindow {
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
-		final WebButton editButton = new WebButton("Modify Mission");
+		final JButton editButton = new JButton("Modify Mission");
 		editButton.setEnabled(false);
 
 		editButton.addActionListener(e -> {
@@ -161,7 +160,7 @@ public class MissionWindow extends ToolWindow {
 		buttonPane.add(editButton);
 
 		// Create the abort mission button.
-		final WebButton abortButton = new WebButton("Abort Mission");
+		final JButton abortButton = new JButton("Abort Mission");
 		abortButton.setEnabled(false);
 
 		abortButton.addActionListener(e -> {

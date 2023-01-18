@@ -100,8 +100,11 @@ public class ImageLoader {
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
 			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : dir + fullImageName;
-//			logger.config("Filename : " + fileName + "   imagename : " + imagename + "    ext : "+ ext + "    dir : " + dir);
-			found = new ImageIcon(ImageLoader.class.getResource(fileName));
+			URL imageSource = ImageLoader.class.getResource(fileName);
+			if (imageSource == null) {
+				return null;
+			}
+			found = new ImageIcon(imageSource);
 			iconCache.put(fullImageName, found);
 		}
 

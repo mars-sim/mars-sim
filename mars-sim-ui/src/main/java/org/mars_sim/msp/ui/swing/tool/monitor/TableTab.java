@@ -34,7 +34,6 @@ import javax.swing.table.TableColumnModel;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
@@ -221,24 +220,11 @@ abstract class TableTab extends MonitorTab {
 		if (singleSelection)
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// Added RowNumberTable
-		JTable rowTable = new RowNumberTable(table);
-
-		TableStyle.setTableStyle(rowTable);
 		// Add a scrolled window and center it with the table
 		JScrollPane scroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		// scroller.setBorder(new MarsPanelBorder());
-
-		scroller.setRowHeaderView(rowTable);
-		scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
-		// setAutoCreateRowSorter() and MultisortTableHeaderCellRenderer would cause no tab to be created
-//		table.setAutoCreateRowSorter(true);
-		// Apply sorting for multiple columns
-//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		
+
 		TableStyle.setTableStyle(table);
 
 		add(scroller, BorderLayout.CENTER);

@@ -13,6 +13,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
@@ -25,10 +30,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.progressbar.WebProgressBar;
 
 /**
  * A panel for displaying biology study field mission information.
@@ -42,9 +43,9 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 	private MainDesktopPane desktop;
 	private ScientificStudy study;
 	private BiologyFieldStudy biologyMission;
-	private WebLabel studyNameLabel;
-	private WebLabel researcherNameLabel;
-	private WebProgressBar studyResearchBar;
+	private JLabel studyNameLabel;
+	private JLabel researcherNameLabel;
+	private JProgressBar studyResearchBar;
 
 	/**
 	 * Constructor.
@@ -62,15 +63,15 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 		setLayout(new BorderLayout());
 
 		// Create content panel.
-		WebPanel contentPanel = new WebPanel(new GridLayout(3, 1));
+		JPanel contentPanel = new JPanel(new GridLayout(3, 1));
 		add(contentPanel, BorderLayout.NORTH);
 
 		// Create study panel.
-		WebPanel studyPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel studyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(studyPanel);
 
 		// Create science tool button.
-		WebButton scienceToolButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		JButton scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton
 				.setToolTipText(Msg.getString("BiologyStudyFieldMissionCustomInfoPanel.tooltip.openInScienceTool")); //$NON-NLS-1$
@@ -82,38 +83,38 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 		studyPanel.add(scienceToolButton);
 
 		// Create study title label.
-		WebLabel studyTitleLabel = new WebLabel(
+		JLabel studyTitleLabel = new JLabel(
 				Msg.getString("BiologyStudyFieldMissionCustomInfoPanel.biologyFieldStudy")); //$NON-NLS-1$
 		studyPanel.add(studyTitleLabel);
 
 		// Create study name label.
-		studyNameLabel = new WebLabel(""); //$NON-NLS-1$
+		studyNameLabel = new JLabel(""); //$NON-NLS-1$
 		studyPanel.add(studyNameLabel);
 
 		// Create researcher panel.
-		WebPanel researcherPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel researcherPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(researcherPanel);
 
 		// Create researcher title label.
-		WebLabel researcherTitleLabel = new WebLabel(
+		JLabel researcherTitleLabel = new JLabel(
 				Msg.getString("BiologyStudyFieldMissionCustomInfoPanel.leadResearcher")); //$NON-NLS-1$
 		researcherPanel.add(researcherTitleLabel);
 
 		// Create researcher name label.
-		researcherNameLabel = new WebLabel(""); //$NON-NLS-1$
+		researcherNameLabel = new JLabel(""); //$NON-NLS-1$
 		researcherPanel.add(researcherNameLabel);
 
 		// Create study research panel.
-		WebPanel studyResearchPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel studyResearchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(studyResearchPanel);
 
 		// Create study research title label.
-		WebLabel studyResearchTitleLabel = new WebLabel(
+		JLabel studyResearchTitleLabel = new JLabel(
 				Msg.getString("BiologyStudyFieldMissionCustomInfoPanel.researchCompletion")); //$NON-NLS-1$
 		studyResearchPanel.add(studyResearchTitleLabel);
 
 		// Create study research progress bar.
-		studyResearchBar = new WebProgressBar(0, 100);
+		studyResearchBar = new JProgressBar(0, 100);
 		studyResearchBar.setStringPainted(true);
 		studyResearchPanel.add(studyResearchBar);
 	}
