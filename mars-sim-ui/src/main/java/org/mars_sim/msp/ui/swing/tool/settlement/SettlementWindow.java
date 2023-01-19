@@ -13,20 +13,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 
+import javax.swing.JLabel;
 import javax.swing.JLayer;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
-
-import com.alee.extended.label.WebStyledLabel;
-import com.alee.extended.statusbar.WebStatusBar;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.style.StyleId;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -42,27 +39,24 @@ public class SettlementWindow extends ToolWindow {
 
 	public static String css_file = MainDesktopPane.BLUE_CSS;
 
-	public static final String SOL = " Sol : ";
-	public static final String POPULATION = "  Population : ";
-	public static final String CAP = "  Capacity : ";
-	public static final String WHITESPACES_2 = "  ";
-	public static final String COMMA = ", ";
-	public static final String CLOSE_PARENT = ")  ";
-	public static final String WITHIN_BLDG = "  Building : (";
-	public static final String SETTLEMENT_MAP = "  Map : (";
-	public static final String PIXEL_MAP = "  Window : (";
+	private static final String POPULATION = "  Population : ";
+	private static final String WHITESPACES_2 = "  ";
+	private static final String CLOSE_PARENT = ")  ";
+	private static final String WITHIN_BLDG = "  Building : (";
+	private static final String SETTLEMENT_MAP = "  Map : (";
+	private static final String PIXEL_MAP = "  Window : (";
 
-	public static final int HORIZONTAL = 800;// 630;
-	public static final int VERTICAL = 800;// 590;
+	private static final int HORIZONTAL = 800;// 630;
+	private static final int VERTICAL = 800;// 590;
 
-	private WebStyledLabel buildingXYLabel;
-	private WebStyledLabel mapXYLabel;
-	private WebStyledLabel pixelXYLabel;
-	private WebStyledLabel popLabel;
-	private WebPanel subPanel;
+	private JLabel buildingXYLabel;
+	private JLabel mapXYLabel;
+	private JLabel pixelXYLabel;
+	private JLabel popLabel;
+	private JPanel subPanel;
 
 	/** The status bar. */
-	private WebStatusBar statusBar;
+	private JStatusBar statusBar;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
@@ -82,54 +76,56 @@ public class SettlementWindow extends ToolWindow {
 
 		setBackground(Color.BLACK);
 
-		WebPanel mainPanel = new WebPanel(new BorderLayout());
+		JPanel mainPanel = new JPanel(new BorderLayout());
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new WebStatusBar();
+        statusBar = new JStatusBar(1, 1, 20);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
-        popLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+        popLabel = new JLabel();
         popLabel.setFont(sansSerif13Bold);
         popLabel.setForeground(Color.DARK_GRAY);
-	    buildingXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    buildingXYLabel = new JLabel();
 	    buildingXYLabel.setFont(sansSerif12Plain);
 	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
-	    mapXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    mapXYLabel = new JLabel();
 	    mapXYLabel.setFont(sansSerif12Plain);
 	    mapXYLabel.setForeground(Color.ORANGE.darker());
-	    pixelXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    pixelXYLabel = new JLabel();
 	    pixelXYLabel.setFont(sansSerif12Plain);
 	    pixelXYLabel.setForeground(Color.GRAY);
 
-	    WebPanel emptyPanel = new WebPanel();
-	    emptyPanel.setPreferredSize(new Dimension(145, 20));
-	    emptyPanel.add(new WebLabel(""));
+	    // JPanel emptyPanel = new JPanel();
+	    // emptyPanel.setPreferredSize(new Dimension(145, 20));
+	    // emptyPanel.add(new JLabel(""));
 
-	    WebPanel w0 = new WebPanel();
-	    w0.setPreferredSize(new Dimension(125, 20));
-	    w0.add(pixelXYLabel);
+	    // JPanel w0 = new JPanel();
+	    // w0.setPreferredSize(new Dimension(125, 20));
+	    // w0.add(pixelXYLabel);
 
-	    WebPanel w1 = new WebPanel();
-	    w1.setPreferredSize(new Dimension(115, 20));
-	    w1.add(popLabel);
+	    // JPanel w1 = new JPanel();
+	    // w1.setPreferredSize(new Dimension(115, 20));
+	    // w1.add(popLabel);
 
-	    WebPanel w2 = new WebPanel();
-	    w2.setPreferredSize(new Dimension(145, 20));
-	    w2.add(buildingXYLabel);
+	    // JPanel w2 = new JPanel();
+	    // w2.setPreferredSize(new Dimension(145, 20));
+	    // w2.add(buildingXYLabel);
 
-	    WebPanel w3 = new WebPanel();
-	    w3.setPreferredSize(new Dimension(135, 20));
-	    w3.add(mapXYLabel);
+	    // JPanel w3 = new JPanel();
+	    // w3.setPreferredSize(new Dimension(135, 20));
+	    // w3.add(mapXYLabel);
 
-        statusBar.add(w0);
-        statusBar.add(emptyPanel);
-        statusBar.addToMiddle(w1);
-        statusBar.addToEnd(w2);
-        statusBar.addToEnd(w3);
+	    JPanel rightPanel = new JPanel();
+		rightPanel.add(buildingXYLabel);
+	    rightPanel.add(mapXYLabel);
+
+        statusBar.addLeftComponent(pixelXYLabel, true);
+        statusBar.addCenterComponent(popLabel, true);
+        statusBar.addRightComponent(rightPanel, true);
 
         // Create subPanel for housing the settlement map
-		subPanel = new WebPanel(new BorderLayout());
+		subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
 		subPanel.setBackground(Color.BLACK);
 
@@ -137,8 +133,8 @@ public class SettlementWindow extends ToolWindow {
 		mapPanel.createUI();
 
 		// Added SpotlightLayerUI
-		LayerUI<WebPanel> layerUI = new SpotlightLayerUI(mapPanel);
-		JLayer<WebPanel> jlayer = new JLayer<WebPanel>(mapPanel, layerUI);
+		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
+		JLayer<JPanel> jlayer = new JLayer<JPanel>(mapPanel, layerUI);
 		subPanel.add(jlayer, BorderLayout.CENTER);
 
 		setSize(new Dimension(HORIZONTAL, VERTICAL));

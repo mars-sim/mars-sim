@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -27,8 +28,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
@@ -77,7 +76,7 @@ extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Create attribute scroll panel
-		WebScrollPane attributeScrollPanel = new WebScrollPane();
+		JScrollPane attributeScrollPanel = new JScrollPane();
 		content.add(attributeScrollPanel);
 
 		// Create attribute table model

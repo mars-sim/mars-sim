@@ -19,6 +19,9 @@ import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -36,9 +39,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A wizard panel for selecting the mission flyer.
@@ -52,7 +52,7 @@ class FlyerPanel extends WizardPanel {
 	// Data members.
 	private VehicleTableModel vehicleTableModel;
 	private JTable vehicleTable;
-	private WebLabel errorMessageLabel;
+	private JLabel errorMessageLabel;
 
 	/**
 	 * Constructor.
@@ -70,19 +70,19 @@ class FlyerPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select vehicle label.
-		WebLabel selectVehicleLabel = new WebLabel("Select a drone for this mission :", WebLabel.CENTER);
+		JLabel selectVehicleLabel = new JLabel("Select a drone for this mission :", JLabel.CENTER);
 		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
 		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectVehicleLabel);
 
 		// Create the vehicle panel.
-		WebPanel vehiclePane = new WebPanel(new BorderLayout(0, 0));
+		JPanel vehiclePane = new JPanel(new BorderLayout(0, 0));
 		vehiclePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		vehiclePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(vehiclePane);
 
 		// Create scroll panel for vehicle list.
-		WebScrollPane vehicleScrollPane = new WebScrollPane();
+		JScrollPane vehicleScrollPane = new JScrollPane();
 		vehiclePane.add(vehicleScrollPane, BorderLayout.CENTER);
 
 		// Create the vehicle table model.
@@ -140,7 +140,7 @@ class FlyerPanel extends WizardPanel {
 		vehicleScrollPane.setViewportView(vehicleTable);
 
 		// Create the error message label.
-		errorMessageLabel = new WebLabel(" ", WebLabel.CENTER);
+		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

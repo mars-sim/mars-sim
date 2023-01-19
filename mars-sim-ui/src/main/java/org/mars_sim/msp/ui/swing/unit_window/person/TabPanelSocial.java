@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -30,8 +31,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A tab panel displaying a person's social relationships.
@@ -71,7 +70,7 @@ implements ListSelectionListener {
 	protected void buildUI(JPanel content) {
 
 		// Create relationship scroll panel
-		WebScrollPane relationshipScrollPanel = new WebScrollPane();
+		JScrollPane relationshipScrollPanel = new JScrollPane();
 //		relationshipScrollPanel.setBorder(new MarsPanelBorder());
 		content.add(relationshipScrollPanel, BorderLayout.CENTER);
 

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
@@ -31,11 +32,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
-
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
@@ -45,7 +41,7 @@ public class TabPanelMaintenance extends TabPanel {
 	/** The Settlement instance. */
 	private Settlement settlement;
 
-	private WebPanel maintenanceListPanel;
+	private JPanel maintenanceListPanel;
 
 	private List<Building> buildingsList;
 
@@ -68,12 +64,12 @@ public class TabPanelMaintenance extends TabPanel {
 	protected void buildUI(JPanel content) {
 		
 		// Create maintenance panel.
-		WebPanel maintenancePanel = new WebPanel(new BorderLayout());
+		JPanel maintenancePanel = new JPanel(new BorderLayout());
 		content.add(maintenancePanel, BorderLayout.CENTER);
 
 		// Prepare maintenance list panel.
-		maintenanceListPanel = new WebPanel(new GridLayout(0, 1, 0, 0));
-		maintenanceListPanel.setPadding(5);
+		maintenanceListPanel = new JPanel(new GridLayout(0, 1, 0, 0));
+		//maintenanceListPanel.setPadding(5);
 		maintenancePanel.add(maintenanceListPanel);
 	
 		populateMaintenanceList();
@@ -90,7 +86,7 @@ public class TabPanelMaintenance extends TabPanel {
 		buildingsList = settlement.getBuildingManager().getSortedBuildings();
 		Iterator<Building> i = buildingsList.iterator();
 		while (i.hasNext()) {
-			WebPanel panel = new BuildingMaintenancePanel(i.next());
+			JPanel panel = new BuildingMaintenancePanel(i.next());
 			maintenanceListPanel.add(panel);
 		}
 	}
@@ -116,7 +112,7 @@ public class TabPanelMaintenance extends TabPanel {
 	/**
 	 * Inner class for the building maintenance panel.
 	 */
-	private class BuildingMaintenancePanel extends WebPanel {
+	private class BuildingMaintenancePanel extends JPanel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -126,9 +122,9 @@ public class TabPanelMaintenance extends TabPanel {
 		private double wearConditionCache;
 		
 		private BoundedRangeModel progressBarModel;
-		private WebLabel lastLabel;
-		private WebLabel partsLabel;
-		private WebLabel wearConditionLabel;
+		private JLabel lastLabel;
+		private JLabel partsLabel;
+		private JLabel wearConditionLabel;
 		
 		private MalfunctionManager manager;
 
@@ -138,7 +134,7 @@ public class TabPanelMaintenance extends TabPanel {
 		 * @param building the building to display.
 		 */
 		public BuildingMaintenancePanel(Building building) {
-			// User WebPanel constructor.
+			// User JPanel constructor.
 			super();
 
 			manager = building.getMalfunctionManager();
@@ -146,29 +142,28 @@ public class TabPanelMaintenance extends TabPanel {
 			setLayout(new GridLayout(4, 1, 0, 0));
 //			setBorder(new MarsPanelBorder());
 
-			WebLabel buildingLabel = new WebLabel(building.getNickName(), SwingConstants.LEFT);
+			JLabel buildingLabel = new JLabel(building.getNickName(), SwingConstants.LEFT);
 			buildingLabel.setFont(FONT_14);
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
 			wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
-			wearConditionLabel = new WebLabel(
+			wearConditionLabel = new JLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 					SwingConstants.RIGHT);
-			TooltipManager.setTooltip(wearConditionLabel, 
-					Msg.getString("BuildingPanelMaintenance.wear.toolTip"),
-					TooltipWay.down);
+			wearConditionLabel.setToolTipText(
+					Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 
-			WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
+			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
 			lastCompletedCache = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
-			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
-			mainPanel.add(lastLabel, BorderLayout.WEST);;
-			TooltipManager.setTooltip(lastLabel, getToolTipString(), TooltipWay.down);
+			lastLabel = new JLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
+			mainPanel.add(lastLabel, BorderLayout.WEST);
+			lastLabel.setToolTipText(getToolTipString());
 
 			// Prepare progress bar panel.
-			WebPanel progressBarPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			add(progressBarPanel);
 			
 			mainPanel.add(wearConditionLabel, BorderLayout.CENTER);
@@ -188,11 +183,11 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-			partsLabel = new WebLabel(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), SwingConstants.CENTER);
+			partsLabel = new JLabel(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), SwingConstants.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
-			TooltipManager.setTooltip(partsLabel, MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), TooltipWay.down);
+			partsLabel.setToolTipText(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false));
 		}
 
 		/**

@@ -17,16 +17,16 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;
+import javax.swing.JPanel;
+
 
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 @SuppressWarnings("serial")
-public class SpotlightLayerUI extends LayerUI<WebPanel> {
+public class SpotlightLayerUI extends LayerUI<JPanel> {
 
 	//private static final long serialVersionUID = 1L;
 

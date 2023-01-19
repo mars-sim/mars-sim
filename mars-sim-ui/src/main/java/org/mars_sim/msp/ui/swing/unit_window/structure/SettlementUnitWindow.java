@@ -14,6 +14,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
@@ -28,11 +30,6 @@ import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The SettlementUnitWindow is the window for displaying a settlement.
@@ -51,12 +48,12 @@ public class SettlementUnitWindow extends UnitWindow {
 	private static final String TWO_SPACES = "  ";
 	private static final String SIX_SPACES = "      ";
 	
-	private WebLabel popLabel;
-	private WebLabel vehLabel;
-	private WebLabel sponsorLabel;
-	private WebLabel templateLabel;
+	private JLabel popLabel;
+	private JLabel vehLabel;
+	private JLabel sponsorLabel;
+	private JLabel templateLabel;
 
-	private WebPanel statusPanel;
+	private JPanel statusPanel;
 	
 	private Settlement settlement;
 	
@@ -74,7 +71,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		this.settlement = settlement;
 
 		// Create status panel
-		statusPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
@@ -95,13 +92,12 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
 
-		WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
-		WebPanel namePane = new WebPanel(new BorderLayout(50, 0));
+		JPanel namePane = new JPanel(new BorderLayout(50, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
-	
-		TooltipManager.setTooltip(nameLabel, "Name of Settlement", TooltipWay.down);
+		nameLabel.setToolTipText("Name of Settlement");
 		setImage(BASE, nameLabel);
 		
 		Font font = null;
@@ -114,42 +110,42 @@ public class SettlementUnitWindow extends UnitWindow {
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);
-		nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);
-		nameLabel.setHorizontalTextPosition(WebLabel.CENTER);
+		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
+		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
 
 		statusPanel.add(namePane);
 
-		WebLabel popIconLabel = new WebLabel();
-		TooltipManager.setTooltip(popIconLabel, "# of population : (indoor / total)", TooltipWay.down);
+		JLabel popIconLabel = new JLabel();
+		popIconLabel.setToolTipText("# of population : (indoor / total)");
 		setImage(POP, popIconLabel);
 		
-		WebLabel sponsorIconLabel = new WebLabel();
-		TooltipManager.setTooltip(sponsorIconLabel, "Name of sponsor", TooltipWay.down);
+		JLabel sponsorIconLabel = new JLabel();
+		sponsorIconLabel.setToolTipText("Name of sponsor");
 		setImage(SPONSOR, sponsorIconLabel);
 
-		WebLabel vehIconLabel = new WebLabel();
-		TooltipManager.setTooltip(vehIconLabel, "# of vehicles : (in settlement / total)", TooltipWay.down);
+		JLabel vehIconLabel = new JLabel();
+		vehIconLabel.setToolTipText("# of vehicles : (in settlement / total)");
 		setImage(VEHICLE, vehIconLabel);
 		
-		WebLabel templateIconLabel = new WebLabel();
-		TooltipManager.setTooltip(templateIconLabel, "Settlement template being used", TooltipWay.down);
+		JLabel templateIconLabel = new JLabel();
+		templateIconLabel.setToolTipText("Settlement template being used");
 		setImage(TEMPLATE, templateIconLabel);
 
-		WebPanel popPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel vehPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel sponsorPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel templatePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel popPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel vehPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel sponsorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel templatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-		popLabel = new WebLabel();
+		popLabel = new JLabel();
 		popLabel.setFont(font);
 
-		vehLabel = new WebLabel();
+		vehLabel = new JLabel();
 		vehLabel.setFont(font);
 
-		sponsorLabel = new WebLabel();
+		sponsorLabel = new JLabel();
 		sponsorLabel.setFont(font);
 
-		templateLabel = new WebLabel();
+		templateLabel = new JLabel();
 		templateLabel.setFont(font);
 
 		popPanel.add(popIconLabel);
@@ -168,7 +164,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		templatePanel.add(templateLabel);
 		templatePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		WebPanel rowPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
+		JPanel rowPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		rowPanel.add(popPanel);
 		rowPanel.add(vehPanel);
 		rowPanel.add(sponsorPanel);

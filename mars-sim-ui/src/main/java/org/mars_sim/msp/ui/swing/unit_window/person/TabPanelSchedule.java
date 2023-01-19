@@ -21,10 +21,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -46,14 +49,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.checkbox.WebCheckBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
-
 /**
  * The TabPanelSchedule is a tab panel showing the daily schedule a person.
  */
@@ -74,9 +69,9 @@ public class TabPanelSchedule extends TabPanel {
 
 	private JTable table;
 
-	private WebCheckBox realTimeBox;
-	private WebTextField shiftTF;
-	private WebLabel shiftLabel;
+	private JCheckBox realTimeBox;
+	private JTextField shiftTF;
+	private JLabel shiftLabel;
 
 	private JComboBoxMW<Object> solBox;
 	private DefaultComboBoxModel<Object> comboBoxModel;
@@ -137,29 +132,29 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		// Create the button panel.
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 		Unit unit = getUnit();
 		if (unit instanceof Person) {
 
-			shiftLabel = new WebLabel(Msg.getString("TabPanelSchedule.shift.label"), WebLabel.CENTER); //$NON-NLS-1$
+			shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
 
-			TooltipManager.setTooltip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down); //$NON-NLS-1$
+			shiftLabel.setToolTipText(Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
 			buttonPane.add(shiftLabel);
 
-			shiftTF = new WebTextField();
+			shiftTF = new JTextField();
 			String shiftDesc = getShiftDescription(taskSchedule);
 			shiftTF.setText(shiftDesc);
 			
 			shiftTF.setEditable(false);
 			shiftTF.setColumns(15);
 
-			shiftTF.setHorizontalAlignment(WebTextField.CENTER);
+			shiftTF.setHorizontalAlignment(JTextField.CENTER);
 			buttonPane.add(shiftTF);
 
 		}
 
-		WebPanel topPanel = new WebPanel(new BorderLayout());
+		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
 		topPanel.add(buttonPane, BorderLayout.NORTH);
 
@@ -193,7 +188,7 @@ public class TabPanelSchedule extends TabPanel {
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 
-		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));	
+		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
 		solPanel.add(solBox);
 
 		topPanel.add(solPanel, BorderLayout.CENTER);
@@ -214,12 +209,11 @@ public class TabPanelSchedule extends TabPanel {
 		});
 
 		// Create realTimeUpdateCheckBox.
-		realTimeBox = new WebCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
+		realTimeBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
 		realTimeBox.setSelected(true);
 		realTimeBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		realTimeBox.setFont(new Font("Serif", Font.PLAIN, 12));
-		TooltipManager.setTooltip(realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"),
-				TooltipWay.down);
+		realTimeBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"));
 		realTimeBox.addActionListener(s -> {
 			if (realTimeBox.isSelected()) {
 				isRealTimeUpdate = true;
@@ -230,7 +224,10 @@ public class TabPanelSchedule extends TabPanel {
 		});
 		
 		topPanel.add(realTimeBox, BorderLayout.WEST);
-		topPanel.add(new WebPanel(new JLabel("                    ")), BorderLayout.EAST);
+
+		JPanel eastPanel = new JPanel();
+		eastPanel.add(new JLabel("                    "));
+		topPanel.add(eastPanel, BorderLayout.EAST);
 		
 		// Create schedule table model
 		if (unit instanceof Person)
@@ -239,7 +236,7 @@ public class TabPanelSchedule extends TabPanel {
 			scheduleTableModel = new ScheduleTableModel((Robot) unit);
 
 		// Create attribute scroll panel
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 		content.add(scrollPanel);
 
 		// Create schedule table

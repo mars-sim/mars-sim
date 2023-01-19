@@ -27,8 +27,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 @SuppressWarnings("serial")
 public class TabPanelMalfunction extends TabPanel {
 
@@ -42,7 +40,7 @@ public class TabPanelMalfunction extends TabPanel {
 	/** A collection of malfunctions. */
 	private Collection<Malfunction> malfunctions;
 	/** Malfunction list panel. */
-	private WebPanel malfunctionListPanel;
+	private JPanel malfunctionListPanel;
 
 	/**
 	 * Constructor.
@@ -64,18 +62,17 @@ public class TabPanelMalfunction extends TabPanel {
 	protected void buildUI(JPanel content) {
 		
 		// Create malfunctions panel.
-		WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
-//		mainPanel.setPreferredSize(new Dimension(170, 120));
+		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(mainPanel, BorderLayout.NORTH);
 		// Create titled border panel
 		addBorder(content, "Active Building Malfunctions");
 
 		// Prepare malfunctions outer list panel.
-		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
 
 		// Prepare malfunctions list panel.
-		malfunctionListPanel = new WebPanel();
-		malfunctionListPanel.setPadding(2);
+		malfunctionListPanel = new JPanel();
+		//malfunctionListPanel.setPadding(2);
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 
@@ -93,7 +90,7 @@ public class TabPanelMalfunction extends TabPanel {
 					malfunctions.add(malfunction);
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction, building);
 					panel.setBorder(new MarsPanelBorder());
-					panel.setPadding(5);
+					//panel.setPadding(5);
 					malfunctionListPanel.add(panel);
 					malfunctionPanels.add(panel);
 				}
@@ -117,7 +114,7 @@ public class TabPanelMalfunction extends TabPanel {
 				if (!malfunctions.contains(malfunction)) {
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction, building);
 					panel.setBorder(new MarsPanelBorder());
-					panel.setPadding(5);
+					//panel.setPadding(5);
 					malfunctionListPanel.add(panel);
 					malfunctionPanels.add(panel);
 				}

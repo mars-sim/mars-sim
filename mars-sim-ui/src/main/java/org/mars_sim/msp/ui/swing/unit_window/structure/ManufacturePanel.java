@@ -16,7 +16,7 @@ import java.util.Iterator;
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -27,13 +27,11 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * A panel showing information about a manufacturing process.
  */
 @SuppressWarnings("serial")
-public class ManufacturePanel extends WebPanel {
+public class ManufacturePanel extends JPanel {
 
 	// Data members
 	private ManufactureProcess process;
@@ -47,7 +45,7 @@ public class ManufacturePanel extends WebPanel {
 	 * @param processStringWidth the max string width to display for the process name.
 	 */
 	public ManufacturePanel(ManufactureProcess process, boolean showBuilding, int processStringWidth) {
-		// Call WebPanel constructor
+		// Call JPanel constructor
 		super();
 
 		// Initialize data members.
@@ -61,7 +59,7 @@ public class ManufacturePanel extends WebPanel {
         setBorder(new MarsPanelBorder());
 
         // Prepare name panel.
-        WebPanel namePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
+        JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
         add(namePane);
 
         // Prepare cancel button.
@@ -97,7 +95,7 @@ public class ManufacturePanel extends WebPanel {
         }
 
         // Prepare work panel.
-        WebPanel workPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel workPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(workPane);
 
         // Prepare work label.
@@ -111,7 +109,7 @@ public class ManufacturePanel extends WebPanel {
         workPane.add(workBar);
 
         // Prepare time panel.
-        WebPanel timePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel timePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(timePane);
 
         // Prepare time label.

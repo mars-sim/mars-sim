@@ -12,6 +12,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
@@ -19,9 +21,6 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * A dialog for modifying transport items.
@@ -35,7 +34,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel editingPanel;
 	private ResupplyWindow resupplyWindow;
 
-	private WebButton commitButton;
+	private JButton commitButton;
 	
 	/**
 	 * Constructor.
@@ -56,7 +55,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		this.setSize(560, 500);
 
 		 // Create main panel
-        WebPanel mainPane = new WebPanel(new BorderLayout());
+        JPanel mainPane = new JPanel(new BorderLayout());
         setContentPane(mainPane);
 
         initEditingPanel();
@@ -64,12 +63,12 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		mainPane.add(editingPanel, BorderLayout.CENTER);
 
 		// Create the button pane.
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create commit button.
-		commitButton = new WebButton("Commit Changes");
+		commitButton = new JButton("Commit Changes");
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Modify transport item and close dialog.
@@ -80,7 +79,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 		// Create cancel button.
 		// Change button text from "Cancel"  to "Discard Changes"
-		WebButton cancelButton = new WebButton("Discard Changes");
+		JButton cancelButton = new JButton("Discard Changes");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close dialog.

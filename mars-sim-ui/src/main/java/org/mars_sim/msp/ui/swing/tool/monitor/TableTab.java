@@ -34,10 +34,7 @@ import javax.swing.table.TableColumnModel;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
-
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -123,11 +120,11 @@ abstract class TableTab extends MonitorTab {
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
 				 */
-				@Override
-                public String getToolTipText(MouseEvent e) {
-                	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
-                    return getCellText(e);
-                };
+				// @Override
+                // public String getToolTipText(MouseEvent e) {
+                // 	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
+                //     return getCellText(e);
+                // };
 
 			};
 
@@ -208,10 +205,10 @@ abstract class TableTab extends MonitorTab {
 				 * Displays the cell contents as a tooltip. Useful when cell contents in wider
 				 * than the cell
 				 */
-				@Override
-				public String getToolTipText(MouseEvent e) {
-					return getCellText(e);
-				};
+				// @Override
+				// public String getToolTipText(MouseEvent e) {
+				// 	return getCellText(e);
+				// };
 			};
 		}
 
@@ -223,24 +220,11 @@ abstract class TableTab extends MonitorTab {
 		if (singleSelection)
 			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// Added RowNumberTable
-		JTable rowTable = new RowNumberTable(table);
-
-		TableStyle.setTableStyle(rowTable);
 		// Add a scrolled window and center it with the table
 		JScrollPane scroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		// scroller.setBorder(new MarsPanelBorder());
-
-		scroller.setRowHeaderView(rowTable);
-		scroller.setCorner(WebScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
-		// setAutoCreateRowSorter() and MultisortTableHeaderCellRenderer would cause no tab to be created
-//		table.setAutoCreateRowSorter(true);
-		// Apply sorting for multiple columns
-//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		
+
 		TableStyle.setTableStyle(table);
 
 		add(scroller, BorderLayout.CENTER);
@@ -358,25 +342,25 @@ abstract class TableTab extends MonitorTab {
 	 * @param e MouseEvent triggering tool tip.
 	 * @return Tooltip text.
 	 */
-	private String getCellText(MouseEvent e) {
-		Point p = e.getPoint();
-		int column = table.columnAtPoint(p);
-		int row = table.rowAtPoint(p);
-		String result = null;
-		if ((column >= 0) && (row >= 0)) {
-			Object cell = table.getValueAt(row, column);
-			if (cell != null) {
-				if (cell instanceof Integer) {
-					return ((Integer) cell).intValue()  + "" ;
-				}
-				else if (cell instanceof Double) {
-					return Math.round(((Double) cell).doubleValue() * 10_000.0)/10_000.0 + "" ;
-				}
-				result = cell.toString();
-			}
-		}
-		return result;
-	}
+	// private String getCellText(MouseEvent e) {
+	// 	Point p = e.getPoint();
+	// 	int column = table.columnAtPoint(p);
+	// 	int row = table.rowAtPoint(p);
+	// 	String result = null;
+	// 	if ((column >= 0) && (row >= 0)) {
+	// 		Object cell = table.getValueAt(row, column);
+	// 		if (cell != null) {
+	// 			if (cell instanceof Integer) {
+	// 				return ((Integer) cell).intValue()  + "" ;
+	// 			}
+	// 			else if (cell instanceof Double) {
+	// 				return Math.round(((Double) cell).doubleValue() * 10_000.0)/10_000.0 + "" ;
+	// 			}
+	// 			result = cell.toString();
+	// 		}
+	// 	}
+	// 	return result;
+	// }
 
 	/**
 	 * Removes this tab.

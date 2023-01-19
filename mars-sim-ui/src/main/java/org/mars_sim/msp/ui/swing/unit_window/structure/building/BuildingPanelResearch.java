@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
@@ -19,9 +20,6 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextArea;
 
 
 /**
@@ -69,7 +67,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
+		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
@@ -85,7 +83,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		ScienceType[] specialties = lab.getTechSpecialties();
 		int size = specialties.length;
 
-		WebTextArea specialtyTA = new WebTextArea();
+		JTextArea specialtyTA = new JTextArea();
 		specialtyTA.setEditable(false);
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(15);
@@ -98,7 +96,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 				specialtyTA.append("\n");
 		}
 
-		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.add(specialtyTA);
 		addBorder(listPanel, Msg.getString("BuildingPanelResearch.namesOfSpecialties"));
 		center.add(listPanel, BorderLayout.CENTER);

@@ -22,10 +22,6 @@ import javax.swing.event.InternalFrameListener;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-//import javafx.embed.swing.SwingNode;
-//import javafx.scene.layout.Pane;
-//import javafx.stage.Stage;
-
 /**
  * The window for tracking storms.
  */

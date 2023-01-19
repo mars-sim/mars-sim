@@ -25,10 +25,12 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -49,9 +51,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A building panel displaying the manufacture building function.
@@ -69,9 +68,9 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** The manufacture building. */
 	private Manufacture workshop;
 	/** Panel for displaying process panels. */
-	private WebPanel processListPane;
+	private JPanel processListPane;
 	/** The scroll panel for the process list. */
-	private WebScrollPane scrollPanel;
+	private JScrollPane scrollPanel;
 	/** List of manufacture processes in building. */
 	private List<ManufactureProcess> processCache;
 	/** List of salvage processes in building. */
@@ -83,7 +82,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** List of available salvage processes. */
 	private List<SalvageProcessInfo> salvageSelectionCache;
 	/** Process selection button. */
-	private WebButton newProcessButton;
+	private JButton newProcessButton;
 
 	/**
 	 * Constructor.
@@ -111,7 +110,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		WebPanel labelPane = new WebPanel();
+		JPanel labelPane = new JPanel();
 		labelPane.setLayout(new GridLayout(3, 2, 0, 0));
 		center.add(labelPane, BorderLayout.NORTH);
 
@@ -126,17 +125,17 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 					 workshop.getNumPrintersInUse(), 5, null);
 			
 		// Create scroll pane for manufacturing processes
-		scrollPanel = new WebScrollPane();
+		scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
 		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create process list main panel
-		WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(processListMainPane);
 
 		// Create process list panel
-		processListPane = new WebPanel(new FlowLayout(10, 10 ,10));
+		processListPane = new JPanel(new FlowLayout(10, 10 ,10));
 		processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
@@ -155,7 +154,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			processListPane.add(new SalvagePanel(j.next(), false, processStringWidth));
 
 		// Create interaction panel.
-		WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 10, 10));
+		JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 10, 10));
 		center.add(interactionPanel, BorderLayout.SOUTH);
 		
 		// Create new manufacture process selection.
@@ -179,8 +178,8 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			processComboBox.setSelectedIndex(0);
 		
 		// Create new process button.
-		WebPanel btnPanel = new WebPanel(new FlowLayout());
-		newProcessButton = new WebButton("Create New Process");
+		JPanel btnPanel = new JPanel(new FlowLayout());
+		newProcessButton = new JButton("Create New Process");
 		btnPanel.add(newProcessButton);
 		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
 		newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");

@@ -28,9 +28,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.panel.WebPanel;
-
-
 /**
  * The TabPanelEVA class represents the EVA airlock function of a vehicle.
  */
@@ -108,10 +105,10 @@ public class TabPanelEVA extends TabPanel {
     	}
 
         // Create top panel
-        WebPanel topPanel = new WebPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new BorderLayout());
         content.add(topPanel, BorderLayout.CENTER);
 
-		WebPanel labelGrid = new WebPanel(new SpringLayout());
+		JPanel labelGrid = new JPanel(new SpringLayout());
 		topPanel.add(labelGrid, BorderLayout.NORTH);
 		
 		// Create innerDoorLabel
@@ -177,7 +174,7 @@ public class TabPanelEVA extends TabPanel {
                 XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 				
 		// Create occupant panel
-		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("TabPanelEVA.titledB.occupants"));
 		content.add(occupantPanel, BorderLayout.SOUTH);
 		

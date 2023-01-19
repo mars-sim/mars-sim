@@ -24,8 +24,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
@@ -66,7 +64,7 @@ public class TabPanelBots extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Create crew count panel
-		WebPanel crewCountPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		JPanel crewCountPanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		content.add(crewCountPanel, BorderLayout.NORTH);
 
 		// Create crew num label
@@ -78,7 +76,7 @@ public class TabPanelBots extends TabPanel {
 		crewCapLabel = addTextField(crewCountPanel, Msg.getString("TabPanelBots.crewCapacity"), crewCapacityCache, null); //$NON-NLS-1$
 
 		// Create crew display panel
-		WebPanel crewDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel crewDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		content.add(crewDisplayPanel, BorderLayout.CENTER);
 
 		// Create crew list

@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -27,8 +28,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelGoods extends TabPanel {
@@ -58,7 +57,7 @@ public class TabPanelGoods extends TabPanel {
 	protected void buildUI(JPanel content) {
 		
  		// Create scroll panel for the outer table panel.
-		WebScrollPane goodsScrollPane = new WebScrollPane();
+		JScrollPane goodsScrollPane = new JScrollPane();
 		goodsScrollPane.setPreferredSize(new Dimension(250, 300));
 		// increase vertical mousewheel scrolling speed for this one
 		goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);

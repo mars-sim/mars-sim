@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -25,10 +27,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
-
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.tabbedpane.WebTabbedPane;
 
 
 /**
@@ -94,10 +92,10 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		tabPanels = new ArrayList<>();
 
 		// Create main panel
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 		setContentPane(mainPane);
 
-		tabPane = new WebTabbedPane(WebTabbedPane.LEFT, WebTabbedPane.SCROLL_TAB_LAYOUT);
+		tabPane = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
 
 		// Add a listener for the tab changes
@@ -114,7 +112,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		});
 
 
-		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		centerPanel.add(tabPane);
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
@@ -133,7 +131,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @param imageLocation
 	 * @param label
 	 */
-	public void setImage(String imageLocation, WebLabel label) {
+	public void setImage(String imageLocation, JLabel label) {
 		ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
 		label.setIcon(imageIcon);
 	}

@@ -23,7 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -48,15 +52,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.tabbedpane.WebTabbedPane;
-import com.alee.managers.style.StyleId;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -98,24 +93,24 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
 
 	// Data members
-	private WebTabbedPane tabsSection;
+	private JTabbedPane tabsSection;
 	// Note: may use JideTabbedPane instead
-	private WebLabel rowCount;
+	private JLabel rowCount;
 	/** The Tab showing historical events. */
 	private EventTab eventsTab;
 
-	private WebButton buttonPie;
-	private WebButton buttonBar;
-	private WebButton buttonRemoveTab;
-	private WebButton buttonMap;
-	private WebButton buttonDetails;
-	private WebButton buttonMissions;
-	private WebButton buttonFilter;
-	private WebButton buttonProps;
+	private JButton buttonPie;
+	private JButton buttonBar;
+	private JButton buttonRemoveTab;
+	private JButton buttonMap;
+	private JButton buttonDetails;
+	private JButton buttonMissions;
+	private JButton buttonFilter;
+	private JButton buttonProps;
 
 	/** Settlement Combo box */
-	private WebComboBox settlementComboBox;
-	private WebPanel statusPanel;
+	private JComboBox<Settlement> settlementComboBox;
+	private JPanel statusPanel;
 
 	private Settlement selectedSettlement;
 
@@ -137,12 +132,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		unitManager = desktop.getSimulation().getUnitManager();
 		
 		// Get content pane
-		WebPanel mainPane = new WebPanel(new BorderLayout(5, 5));
+		JPanel mainPane = new JPanel(new BorderLayout(5, 5));
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 		// Create top pane
-		WebPanel topPane = new WebPanel(new GridLayout(1, 5));
-		topPane.setPreferredHeight(30);
+		JPanel topPane = new JPanel(new GridLayout(1, 5));
+		//topPane.setPreferredHeight(30);
 		mainPane.add(topPane, BorderLayout.NORTH);
 
 		// Set up settlements
@@ -152,7 +147,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
         buildSettlementNameComboBox(initialSettlements);
 
 		// Create settlement pane
-		WebPanel settlementPane = new WebPanel(new BorderLayout(5, 5));
+		JPanel settlementPane = new JPanel(new BorderLayout(5, 5));
         settlementPane.setSize(getNameLength() * 14, 30);
 		settlementPane.add(settlementComboBox, BorderLayout.CENTER);
 		topPane.add(new JPanel());
@@ -162,7 +157,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		topPane.add(new JPanel());
 
 		// Create tabbed pane for the table
-		tabsSection = new WebTabbedPane(StyleId.tabbedpane, SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		// May choose WRAP_TAB_LAYOUT
 		tabsSection.setForeground(Color.DARK_GRAY);
 		
@@ -183,7 +178,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 //		May call table.repaint()
 
 		// Create a status panel
-		statusPanel = new WebPanel();
+		statusPanel = new JPanel();
 		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
 		mainPane.add(statusPanel, BorderLayout.SOUTH);
 	
@@ -245,54 +240,51 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void addBottomBar() {
 		// Prepare row count label
-		rowCount = new WebLabel("  ");
+		rowCount = new JLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));
 		rowCount.setHorizontalAlignment(SwingConstants.LEFT);
 		rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
 		statusPanel.add(rowCount);
 
 		// Create graph button
-		buttonPie = new WebButton(ImageLoader.getNewIcon(PIE_ICON));
-		TooltipManager.setTooltip(buttonPie, Msg.getString("MonitorWindow.tooltip.singleColumnPieChart"), //$NON-NLS-1$
-				TooltipWay.up);
+		buttonPie = new JButton(ImageLoader.getNewIcon(PIE_ICON));
+		buttonPie.setToolTipText(Msg.getString("MonitorWindow.tooltip.singleColumnPieChart")); //$NON-NLS-1$
 		buttonPie.addActionListener(this);
 		statusPanel.add(buttonPie);
 
-		buttonBar = new WebButton(ImageLoader.getNewIcon(BAR_ICON));
-		TooltipManager.setTooltip(buttonBar, Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart"), //$NON-NLS-1$
-				TooltipWay.up);
+		buttonBar = new JButton(ImageLoader.getNewIcon(BAR_ICON));
+		buttonBar.setToolTipText(Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart")); //$NON-NLS-1$
 		buttonBar.addActionListener(this);
 		statusPanel.add(buttonBar);
 
-		buttonRemoveTab = new WebButton(ImageLoader.getNewIcon(TRASH_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonRemoveTab, Msg.getString("MonitorWindow.tooltip.tabRemove"), //$NON-NLS-1$
-				TooltipWay.up);
+		buttonRemoveTab = new JButton(ImageLoader.getNewIcon(TRASH_ICON)); // $NON-NLS-1$
+		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		buttonRemoveTab.addActionListener(this);
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
-		buttonMap = new WebButton(ImageLoader.getNewIcon(LOCATE_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonMap, Msg.getString("MonitorWindow.tooltip.centerMap"), TooltipWay.up); //$NON-NLS-1$
+		buttonMap = new JButton(ImageLoader.getNewIcon(LOCATE_ICON)); // $NON-NLS-1$
+		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		statusPanel.add(buttonMap);
 
-		buttonDetails = new WebButton(ImageLoader.getNewIcon(FIND_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonDetails, Msg.getString("MonitorWindow.tooltip.showDetails"), TooltipWay.up); //$NON-NLS-1$
+		buttonDetails = new JButton(ImageLoader.getNewIcon(FIND_ICON)); // $NON-NLS-1$
+		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
 		statusPanel.add(buttonDetails);
 
-		buttonMissions = new WebButton(ImageLoader.getNewIcon(MISSION_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonMissions, Msg.getString("MonitorWindow.tooltip.mission"), TooltipWay.up); //$NON-NLS-1$
+		buttonMissions = new JButton(ImageLoader.getNewIcon(MISSION_ICON)); // $NON-NLS-1$
+		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		buttonMissions.addActionListener(this);
 		statusPanel.add(buttonMissions);
 
-		buttonProps = new WebButton(ImageLoader.getNewIcon(COLUMN_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonProps, Msg.getString("MonitorWindow.tooltip.preferences"), TooltipWay.up); //$NON-NLS-1$
+		buttonProps = new JButton(ImageLoader.getNewIcon(COLUMN_ICON)); // $NON-NLS-1$
+		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
 		statusPanel.add(buttonProps);
 
-		buttonFilter = new WebButton(ImageLoader.getNewIcon(FILTER_ICON));
-		TooltipManager.setTooltip(buttonFilter, Msg.getString("MonitorWindow.tooltip.categoryFilter"), TooltipWay.up); //$NON-NLS-1$
+		buttonFilter = new JButton(ImageLoader.getNewIcon(FILTER_ICON));
+		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		buttonFilter.addActionListener(this);
 		statusPanel.add(buttonFilter);
 
@@ -346,8 +338,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	@SuppressWarnings("unchecked")
 	private void buildSettlementNameComboBox(List<Settlement> startingSettlements) {
 
-		settlementComboBox = new WebComboBox(StyleId.comboboxHover, startingSettlements);
-		settlementComboBox.setWidePopup(true);
+		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
+		model.addAll(startingSettlements);
+		model.setSelectedItem(startingSettlements.get(0));
+		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setSize(getNameLength() * 12, 30);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
@@ -369,7 +363,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Listen for new Settlements
 		umListener = event -> {
 			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				settlementComboBox.addItem(event.getUnit());
+				settlementComboBox.addItem((Settlement) event.getUnit());
 			}
 		};
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);

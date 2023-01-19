@@ -19,8 +19,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * The PowerStorageBuildingPanel class is a building function panel representing 
  * the power storage of a settlement building.
@@ -65,7 +63,7 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		WebPanel springPanel = new WebPanel(new SpringLayout());
+		JPanel springPanel = new JPanel(new SpringLayout());
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Create capacity label.

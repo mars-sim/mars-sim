@@ -23,9 +23,13 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.table.AbstractTableModel;
@@ -48,12 +52,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 
 /**
@@ -114,7 +112,7 @@ implements MouseListener {
 	private ListModel listModel;
 	/** Table model for crop info. */
 	private CropTableModel cropTableModel;
-	private WebScrollPane listScrollPanel;
+	private JScrollPane listScrollPanel;
 
 	/** The farming building. */
 	private Farming farm;
@@ -157,7 +155,7 @@ implements MouseListener {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel springPanel = new WebPanel(new SpringLayout());
+		JPanel springPanel = new JPanel(new SpringLayout());
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
@@ -207,11 +205,11 @@ implements MouseListener {
 		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
-		WebPanel southPanel = new WebPanel(new BorderLayout());
+		JPanel southPanel = new JPanel(new BorderLayout());
 		center.add(southPanel, BorderLayout.SOUTH);
 		
 		// Create scroll panel for crop table
-		WebScrollPane tableScrollPanel = new WebScrollPane();
+		JScrollPane tableScrollPanel = new JScrollPane();
 		// Set the height and width of the table
 		tableScrollPanel.setPreferredSize(new Dimension(200, 290)); // 290 is the best fit for 10 crops
 
@@ -221,7 +219,7 @@ implements MouseListener {
 		cropTableModel = new CropTableModel(farm);
 
 		// Prepare crop table
-		WebTable cropTable = new WebTable(cropTableModel) {
+		JTable cropTable = new JTable(cropTableModel) {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer,int row, int col) {
 			                Component comp = super.prepareRenderer(renderer, row, col);
@@ -271,14 +269,14 @@ implements MouseListener {
 		
 		tableScrollPanel.setViewportView(cropTable);
 
-		WebPanel queuePanel = new WebPanel(new BorderLayout());
+		JPanel queuePanel = new JPanel(new BorderLayout());
 	    southPanel.add(queuePanel, BorderLayout.CENTER);
 
-	    WebPanel selectPanel = new WebPanel(new FlowLayout());
+	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
-		WebPanel buttonPanel = new WebPanel(new BorderLayout());
-		WebButton addButton = new WebButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		JPanel buttonPanel = new JPanel(new BorderLayout());
+		JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		addButton.addActionListener(s -> {
@@ -290,7 +288,7 @@ implements MouseListener {
 		buttonPanel.add(addButton, BorderLayout.NORTH);
 		selectPanel.add(buttonPanel);
 
-		WebButton delButton = new WebButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 
@@ -332,9 +330,9 @@ implements MouseListener {
 		comboBox.setMaximumRowCount(10);
 	    selectPanel.add(comboBox);
 
-		WebPanel queueListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		WebPanel queueButtonLabelPanel = new WebPanel(new BorderLayout());
-	    WebLabel queueListLabel = new WebLabel("     Crop Queue     ");
+		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
+	    JLabel queueListLabel = new JLabel("     Crop Queue     ");
 		queueListLabel.setUI(new VerticalLabelUI(false));
 	    queueListLabel.setFont( new Font("Dialog", Font.PLAIN, 14) );
 		queueListLabel.setBorder(new MarsPanelBorder());
@@ -343,7 +341,7 @@ implements MouseListener {
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for population list.
-		listScrollPanel = new WebScrollPane();
+		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
 		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 

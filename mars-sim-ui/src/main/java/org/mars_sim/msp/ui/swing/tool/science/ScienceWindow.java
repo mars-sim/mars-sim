@@ -11,6 +11,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -18,8 +20,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
-
-import com.alee.laf.panel.WebPanel;
 
 /**
  * Window for the science tool.
@@ -52,12 +52,12 @@ extends ToolWindow {
 		selectedStudy = null;
 
 		// Create content panel.
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create lists panel.
-		WebPanel listsPane = new WebPanel(new GridLayout(2, 1, 0, 0));
+		JPanel listsPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		mainPane.add(listsPane, BorderLayout.WEST);
 
 		ScientificStudyManager mgr = Simulation.instance().getScientificStudyManager();

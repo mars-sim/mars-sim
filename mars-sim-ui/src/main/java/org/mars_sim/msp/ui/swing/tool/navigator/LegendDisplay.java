@@ -10,11 +10,10 @@ package org.mars_sim.msp.ui.swing.tool.navigator;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-
-import com.alee.laf.label.WebLabel;
 
 /** 
  * The LegendDisplay class is a UI class that represents a map legend
@@ -22,8 +21,7 @@ import com.alee.laf.label.WebLabel;
  * legend, or a color chart indicating elevation for the
  * topographical map.
  */
-public class LegendDisplay
-extends WebLabel {
+public class LegendDisplay extends JLabel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -25,8 +26,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The BuildingPanelMalfunctionable class is a building function panel
@@ -45,7 +44,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	/** A collection of malfunctions in building. */
 	private Collection<Malfunction> malfunctions;
 	/** Malfunction list panel. */
-	private WebPanel malfunctionListPanel;
+	private JPanel malfunctionListPanel;
 
 	/**
 	 * Constructor.
@@ -74,7 +73,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create scroll panel for malfunction list
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 120));
 		center.add(scrollPanel, BorderLayout.NORTH);
 		// Create titled border panel
@@ -86,12 +85,12 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));
 
 		// Create malfunction list main panel.
-		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(malfunctionListMainPanel);
 
 		// Create malfunction list panel
-		malfunctionListPanel = new WebPanel();
-		malfunctionListPanel.setPadding(5);
+		malfunctionListPanel = new JPanel();
+		//malfunctionListPanel.setPadding(5);
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 

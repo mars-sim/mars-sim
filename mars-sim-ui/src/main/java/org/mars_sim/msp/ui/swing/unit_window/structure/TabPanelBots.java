@@ -24,8 +24,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * This is a tab panel for robots.
  */
@@ -68,7 +66,7 @@ public class TabPanelBots extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		WebPanel countPanel = new WebPanel(new SpringLayout());
+		JPanel countPanel = new JPanel(new SpringLayout());
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create robot num label

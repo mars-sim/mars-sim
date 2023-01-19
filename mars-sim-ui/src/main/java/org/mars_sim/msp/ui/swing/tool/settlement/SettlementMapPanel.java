@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
@@ -39,13 +41,11 @@ import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * A panel for displaying the settlement map.
  */
 @SuppressWarnings("serial")
-public class SettlementMapPanel extends WebPanel implements ClockListener {
+public class SettlementMapPanel extends JPanel implements ClockListener {
 
 	// Static members.
 	private static final double WIDTH = 6D;

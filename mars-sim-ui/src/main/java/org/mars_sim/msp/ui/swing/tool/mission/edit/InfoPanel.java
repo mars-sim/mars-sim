@@ -22,9 +22,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -45,11 +49,6 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextField;
 
 /**
  * The mission info panel for the edit mission dialog.
@@ -69,12 +68,12 @@ public class InfoPanel extends JPanel {
 	protected JInternalFrame frame;
 	protected MainDesktopPane desktop;	
 	
-	protected WebTextField descriptionField;
+	protected JTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
 	protected DefaultListModel<Worker> memberListModel;
 	protected JList<Worker> memberList;
-	protected WebButton addMembersButton;
-	protected WebButton removeMembersButton;
+	protected JButton addMembersButton;
+	protected JButton removeMembersButton;
 	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
@@ -97,25 +96,25 @@ public class InfoPanel extends JPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the description panel.
-		WebPanel descriptionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(descriptionPane);
 		
 		// Create the description label.
-		WebLabel descriptionLabel = new WebLabel("Name: ");
+		JLabel descriptionLabel = new JLabel("Name: ");
 		descriptionPane.add(descriptionLabel);
 		
 		// Create the description text field.
-		descriptionField = new WebTextField(mission.getName(), 20);
+		descriptionField = new JTextField(mission.getName(), 20);
 		descriptionPane.add(descriptionField);
 		
 		// Create the action panel.
-		WebPanel actionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel actionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		actionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(actionPane);
 		
 		// Create the action label.
-		WebLabel actionLabel = new WebLabel("Action: ");
+		JLabel actionLabel = new JLabel("Action: ");
 		actionPane.add(actionLabel);
 		
 		// Create the action drop down box.
@@ -124,22 +123,22 @@ public class InfoPanel extends JPanel {
 		actionPane.add(actionDropDown);
 		
 		// Create the members panel.
-		WebPanel membersPane = new WebPanel(new BorderLayout());
+		JPanel membersPane = new JPanel(new BorderLayout());
 		membersPane.setBorder(MainDesktopPane.newEmptyBorder());
 		membersPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(membersPane);
 		
 		// Create the members label.
-		WebLabel membersLabel = new WebLabel("Members: ");
-		membersLabel.setVerticalAlignment(WebLabel.TOP);
+		JLabel membersLabel = new JLabel("Members: ");
+		membersLabel.setVerticalAlignment(JLabel.TOP);
 		membersPane.add(membersLabel, BorderLayout.WEST);
 		
 		// Create the member list panel.
-		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
 		membersPane.add(memberListPane, BorderLayout.CENTER);
 		
         // Create scroll panel for member list.
-        WebScrollPane memberScrollPane = new WebScrollPane();
+        JScrollPane memberScrollPane = new JScrollPane();
         memberScrollPane.setPreferredSize(new Dimension(100, 100));
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
@@ -162,11 +161,11 @@ public class InfoPanel extends JPanel {
         memberScrollPane.setViewportView(memberList);
         
         // Create the member button panel.
-        WebPanel memberButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel memberButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
         memberListPane.add(memberButtonPane, BorderLayout.SOUTH);
         
         // Create the add members button.
-        addMembersButton = new WebButton("Add Members");
+        addMembersButton = new JButton("Add Members");
         addMembersButton.setEnabled(canAddMembers());
         addMembersButton.addActionListener(
         		new ActionListener() {
@@ -178,7 +177,7 @@ public class InfoPanel extends JPanel {
         memberButtonPane.add(addMembersButton);
         
         // Create the remove members button.
-        removeMembersButton = new WebButton("Remove Members");
+        removeMembersButton = new JButton("Remove Members");
         removeMembersButton.setEnabled(false);
         removeMembersButton.addActionListener(
         		new ActionListener() {

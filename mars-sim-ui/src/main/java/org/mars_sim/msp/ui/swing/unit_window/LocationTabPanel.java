@@ -16,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -37,10 +39,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.panel.WebPanel;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;
 import eu.hansolo.steelseries.gauges.DisplaySingle;
@@ -74,11 +72,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private Unit containerCache;
 	private Unit topContainerCache;
 
-	private WebComboBox combox;
+	private JComboBox combox;
 
 	private Coordinates locationCache;
 
-	private WebButton locatorButton;
+	private JButton locatorButton;
 	private SettlementMapPanel mapPanel;
 
 	private DisplaySingle lcdLong;
@@ -120,7 +118,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
 
 		// Create location panel
-		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));
+		JPanel locationPanel = new JPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
 		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		content.add(locationPanel);
@@ -140,7 +138,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		else
 			dir_E_W = Msg.getString("direction.degreeSign") + "W";
 
-		WebPanel northPanel = new WebPanel(new FlowLayout());
+		JPanel northPanel = new JPanel(new FlowLayout());
 		locationPanel.add(northPanel, BorderLayout.NORTH);
 
 		lcdLat = new DisplaySingle();
@@ -184,7 +182,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 //        locationPanel.add(lcdElev, BorderLayout.NORTH);
 
 		// Create center map button
-		locatorButton = new WebButton(ImageLoader.getIcon(FIND_ORANGE));
+		locatorButton = new JButton(ImageLoader.getIcon(FIND_ORANGE));
 
 		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 		locatorButton.addActionListener(this);
@@ -192,7 +190,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		locatorButton.setToolTipText("Locate the unit on Mars Navigator");
 		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));// new Cursor(Cursor.HAND_CURSOR));
 
-		WebPanel locatorPane = new WebPanel(new FlowLayout());
+		JPanel locatorPane = new JPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
 
 		northPanel.add(locatorPane);

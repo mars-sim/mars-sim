@@ -15,14 +15,13 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A class that presents a selectable visual list of Units. Double clicking
@@ -31,7 +30,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * @param <T> The unit Subclass to display.
  */
 @SuppressWarnings("serial")
-public abstract class UnitListPanel<T extends Unit> extends WebPanel {
+public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	private DefaultListModel<T> model;
 	private List<T> cachedData;
 	private MainDesktopPane desktop;
@@ -67,7 +66,7 @@ public abstract class UnitListPanel<T extends Unit> extends WebPanel {
 		});
 		
 		// Create scroll panel
-		WebScrollPane scrollPanel = new WebScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 
 		if (dim != null) {
 			scrollPanel.setPreferredSize(dim);

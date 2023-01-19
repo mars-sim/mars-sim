@@ -23,6 +23,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,8 +40,6 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-
-import com.alee.laf.window.WebDialog;
 
 /**
  * UI Editor that allows ReportingAuthorities to be edited
@@ -124,7 +123,7 @@ public class AuthorityEditor  {
 
 	private ReportingAuthorityFactory raFactory;
 	
-	private WebDialog<?> f;
+	private JDialog f;
 
 	private TextList settlementNames;
 	private TextList countries;
@@ -151,9 +150,8 @@ public class AuthorityEditor  {
 					  ReportingAuthorityFactory raFactory) {
 		this.raFactory = raFactory;
 		
-		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE, true);
+		f = new JDialog(simulationConfigEditor.getFrame(), TITLE, true);
 		f.setIconImage(MainWindow.getIconImage());
-		//f.setResizable(false);
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -265,7 +263,7 @@ public class AuthorityEditor  {
 		f.setVisible(true);
 	}
 	
-	public WebDialog getJFrame() {
+	public JDialog getJFrame() {
 		return f;
 	}
 

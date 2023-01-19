@@ -19,6 +19,9 @@ import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -37,10 +40,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-
 /**
  * A wizard panel for selecting the mission's starting settlement.
  */
@@ -53,7 +52,7 @@ class StartingSettlementPanel extends WizardPanel {
 	// Data members.
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
-	private WebLabel errorMessageLabel;
+	private JLabel errorMessageLabel;
 
 	/**
 	 * Constructor.
@@ -70,19 +69,19 @@ class StartingSettlementPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select settlement label.
-		WebLabel selectSettlementLabel = new WebLabel("Select a starting settlement.", WebLabel.CENTER);
+		JLabel selectSettlementLabel = new JLabel("Select a starting settlement.", JLabel.CENTER);
 		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
 		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectSettlementLabel);
 
 		// Create the settlement panel.
-		WebPanel settlementPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel settlementPane = new JPanel(new BorderLayout(0, 0));
 		settlementPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		settlementPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(settlementPane);
 
 		// Create scroll panel for settlement list.
-		WebScrollPane settlementScrollPane = new WebScrollPane();
+		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementPane.add(settlementScrollPane, BorderLayout.CENTER);
 
 		// Create the settlement table model.
@@ -133,7 +132,7 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create the error message label.
-		errorMessageLabel = new WebLabel(" ", WebLabel.CENTER);
+		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

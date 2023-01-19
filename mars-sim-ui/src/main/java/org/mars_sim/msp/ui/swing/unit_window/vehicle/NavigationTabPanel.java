@@ -16,8 +16,10 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -39,12 +41,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.style.StyleId;
-
 /**
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
  */
@@ -55,8 +51,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     
 	private static final String WHEEL_ICON = Msg.getString("icon.wheel"); //$NON-NLS-1$
 
-    private WebButton centerMapButton;
-    private WebButton destinationButton;
+    private JButton centerMapButton;
+    private JButton destinationButton;
     
     private JTextField statusLabel;
     private JTextField beaconLabel;
@@ -68,7 +64,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private JTextField etaLabel;
     private JTextField pilotLabel;
     
-    private WebLabel destinationTextLabel;
+    private JLabel destinationTextLabel;
     
     private JPanel destinationLabelPanel;
     
@@ -121,12 +117,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     protected void buildUI(JPanel content) {
 		
         // Prepare graphic display panel
-        WebPanel graphicDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel graphicDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         graphicDisplayPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
         content.add(graphicDisplayPanel, BorderLayout.NORTH);
 
         // Prepare direction display panel
-        WebPanel directionDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 1, 1));
+        JPanel directionDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 1));
         directionDisplayPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         graphicDisplayPanel.add(directionDisplayPanel);
 
@@ -136,7 +132,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         directionDisplayPanel.add(directionDisplay);
 
         // If vehicle is a vehicle, prepare terrain display.
-        WebPanel terrainDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 1, 1));
+        JPanel terrainDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 1));
         terrainDisplayPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         graphicDisplayPanel.add(terrainDisplayPanel);
         terrainDisplay = new TerrainDisplayPanel(vehicle);
@@ -144,15 +140,15 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         terrainDisplayPanel.add(terrainDisplay);
    
 		// Prepare the main panel for housing the driving  spring layout.
-		WebPanel mainPanel = new WebPanel(new BorderLayout());
+		JPanel mainPanel = new JPanel(new BorderLayout());
 		content.add(mainPanel, BorderLayout.CENTER);	
 		
 		// Prepare the destination panel for housing the center map button, the destination header label, and the coordinates
-		WebPanel destinationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel destinationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		mainPanel.add(destinationPanel, BorderLayout.NORTH);
 
         // Prepare destination left panel
-        WebPanel leftPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         destinationPanel.add(leftPanel);
         
         // Prepare destination label panel
@@ -161,23 +157,23 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationPanel.add(destinationLabelPanel, BorderLayout.NORTH);
 
         // Prepare center map button
-		final ImageIcon centerIcon = new LazyIcon("center").getIcon();
-		centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon); 
+		final Icon centerIcon = getIcon("center");
+		centerMapButton = new JButton(centerIcon); 
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate the vehicle in Navigator Tool");
         leftPanel.add(centerMapButton);
         
         // Prepare destination label
-        WebLabel destinationLabel = new WebLabel("Destination :", WebLabel.RIGHT);
+        JLabel destinationLabel = new JLabel("Destination :", JLabel.RIGHT);
         leftPanel.add(destinationLabel);
         
         // Prepare destination button
-        destinationButton = new WebButton();
+        destinationButton = new JButton();
         destinationButton.addActionListener(this);
 
         // Prepare destination text label
-        destinationTextLabel = new WebLabel("", WebLabel.LEFT);
+        destinationTextLabel = new JLabel("", JLabel.LEFT);
         
         boolean hasDestination = false;
 
@@ -212,11 +208,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
 		// Prepare the top panel for housing the driving  spring layout.
-		WebPanel locPanel = new WebPanel(new BorderLayout());
+		JPanel locPanel = new JPanel(new BorderLayout());
 		mainPanel.add(locPanel, BorderLayout.CENTER);
 		
 		// Prepare the top panel using spring layout.
-		WebPanel destinationSpringPanel = new WebPanel(new SpringLayout());
+		JPanel destinationSpringPanel = new JPanel(new SpringLayout());
 		destinationSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
         

@@ -19,15 +19,13 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.table.WebTable;
-import com.alee.laf.table.WebTableHeader;
 
 /*
  *  Adopted from Rob Camick's post on https://tips4java.wordpress.com/2008/11/18/row-number-table/
@@ -37,7 +35,7 @@ import com.alee.laf.table.WebTableHeader;
  *  contains the main table.
  */
 public class RowNumberTable extends JTable
-	implements ChangeListener, PropertyChangeListener, TableModelListener
+	implements ChangeListener, PropertyChangeListener
 {
 
 	private static final long serialVersionUID = 1L;
@@ -181,12 +179,13 @@ public class RowNumberTable extends JTable
 			setHorizontalAlignment(JLabel.CENTER);
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(
-			WebTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 		{
 			if (table != null)
 			{
-				WebTableHeader header = (WebTableHeader) table.getTableHeader();
+				JTableHeader header = table.getTableHeader();
 
 				if (header != null)
 				{

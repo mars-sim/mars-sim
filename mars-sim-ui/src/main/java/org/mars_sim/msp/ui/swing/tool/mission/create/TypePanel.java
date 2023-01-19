@@ -21,6 +21,9 @@ import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,9 +39,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextField;
 
 /**
  * A wizard panel for selecting mission type.
@@ -51,9 +51,9 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	
 	// Private members.
 	private JComboBoxMW<String> typeSelect;
-	private WebLabel descriptionInfoLabel;
-	private WebLabel descriptionLabel;
-	private WebTextField descriptionTF;
+	private JLabel descriptionInfoLabel;
+	private JLabel descriptionLabel;
+	private JTextField descriptionTF;
 	
 	private String descriptionText;
 	
@@ -82,18 +82,18 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the type info label.
-		WebLabel typeInfoLabel = new WebLabel("Select Mission Type");
+		JLabel typeInfoLabel = new JLabel("Select Mission Type");
 		typeInfoLabel.setFont(typeInfoLabel.getFont().deriveFont(Font.BOLD));
 		typeInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(typeInfoLabel);
 		
 		// Create the type panel.
-		WebPanel typePane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel typePane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		typePane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(typePane);
 		
 		// Create the type label.
-		WebLabel typeLabel= new WebLabel("Type: ");
+		JLabel typeLabel= new JLabel("Type: ");
 		typePane.add(typeLabel);
 		
 		// Create the mission types.
@@ -123,24 +123,24 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the description info label.
-		descriptionInfoLabel = new WebLabel("Edit Mission Description (Optional)");
+		descriptionInfoLabel = new JLabel("Edit Mission Description (Optional)");
 		descriptionInfoLabel.setFont(descriptionInfoLabel.getFont().deriveFont(Font.BOLD));
 		descriptionInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionInfoLabel.setEnabled(false);
 		add(descriptionInfoLabel);
 		
 		// Create the description panel.
-		WebPanel descriptionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(descriptionPane);
 		
 		// Create the description label.
-		descriptionLabel = new WebLabel("Description: ");
+		descriptionLabel = new JLabel("Description: ");
 		descriptionLabel.setEnabled(false);
 		descriptionPane.add(descriptionLabel);
 		
 		// Create the description text field.
-		descriptionTF = new WebTextField(20);
+		descriptionTF = new JTextField(20);
 		descriptionTF.setEnabled(false);
 		descriptionPane.add(descriptionTF);
 		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionTF.getPreferredSize().height));

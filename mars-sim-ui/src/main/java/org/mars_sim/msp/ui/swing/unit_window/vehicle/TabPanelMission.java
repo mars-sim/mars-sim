@@ -20,8 +20,12 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -38,12 +42,6 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.text.WebTextArea;
-
 /**
  * Tab panel displaying vehicle mission info.
  */
@@ -55,12 +53,12 @@ extends TabPanel {
 
 	private static final String FLAG_MISSION = Msg.getString("icon.mission"); //$NON-NLS-1$
 	
-	private WebTextArea missionTextArea;
-	private WebTextArea missionPhaseTextArea;
+	private JTextArea missionTextArea;
+	private JTextArea missionPhaseTextArea;
 	private DefaultListModel<Worker> memberListModel;
 	private JList<Worker> memberList;
-	private WebButton missionButton;
-	private WebButton monitorButton;
+	private JButton missionButton;
+	private JButton monitorButton;
 
 	// Cache
 	private String missionCache = null;
@@ -96,59 +94,59 @@ extends TabPanel {
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 
 		// Prepare mission top panel
-		WebPanel missionTopPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		addBorder(missionTopPanel, "missionTopPanel");
 		missionTopPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
-		WebPanel missionPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel missionPanel = new JPanel(new BorderLayout(0, 0));
 		missionPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		missionTopPanel.add(missionPanel);
 
 		// Prepare mission text area
 		if (mission != null) missionCache = mission.getName();
-		missionTextArea = new WebTextArea(2, 20);
+		missionTextArea = new JTextArea(2, 20);
 		if (missionCache != null) missionTextArea.setText(missionCache);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
-		missionPanel.add(new WebScrollPane(missionTextArea), BorderLayout.NORTH);
+		missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.NORTH);
 
 		// Prepare mission phase panel
-		WebPanel missionPhasePanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
 		missionPhasePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		missionTopPanel.add(missionPhasePanel);
 
 		// Prepare mission phase label
-		WebLabel missionPhaseLabel = new WebLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
 		missionPhaseLabel.setFont(TITLE_FONT);
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 		missionTopPanel.add(missionPhasePanel);
 		
 		// Prepare mission phase text area
 		if (mission != null) missionPhaseCache = mission.getPhaseDescription();
-		missionPhaseTextArea = new WebTextArea(2, 20);
+		missionPhaseTextArea = new JTextArea(2, 20);
 		if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
 		missionPhaseTextArea.setLineWrap(true);
 		missionPhaseTextArea.setEditable(false);
-		missionPhasePanel.add(new WebScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
+		missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
 
 		// Prepare mission bottom panel
-		WebPanel missionBottomPanel = new WebPanel(new BorderLayout(0, 0));
+		JPanel missionBottomPanel = new JPanel(new BorderLayout(0, 0));
 		missionBottomPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
 		// Prepare member label
-		WebLabel memberLabel = new WebLabel(Msg.getString("TabPanelMission.members"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel memberLabel = new JLabel(Msg.getString("TabPanelMission.members"), SwingConstants.CENTER); //$NON-NLS-1$
 		memberLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		missionBottomPanel.add(memberLabel, BorderLayout.NORTH);
 
 		// Prepare member list panel
-		WebPanel memberListPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel memberListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		missionBottomPanel.add(memberListPanel, BorderLayout.CENTER);
 
 		// Create scroll panel for member list.
-		WebScrollPane memberScrollPanel = new WebScrollPane();
+		JScrollPane memberScrollPanel = new JScrollPane();
 		memberScrollPanel.setPreferredSize(new Dimension(225, 100));
 		memberListPanel.add(memberScrollPanel);
 
@@ -171,14 +169,14 @@ extends TabPanel {
 		});
 		memberScrollPanel.setViewportView(memberList);
 
-		WebPanel buttonPanel = new WebPanel(new GridLayout(2, 1, 5, 5));
+		JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 //		buttonPanel.setBorder(new MarsPanelBorder());
 		memberListPanel.add(buttonPanel);
 
 		Unit unit = getUnit();
 		
 		// Create mission tool button
-		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
+		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(2, 2, 2, 2));
 		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(e -> {
@@ -192,7 +190,7 @@ extends TabPanel {
 		buttonPanel.add(missionButton);
 
 		// Create member monitor button
-		monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(2, 2, 2, 2));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(e -> {

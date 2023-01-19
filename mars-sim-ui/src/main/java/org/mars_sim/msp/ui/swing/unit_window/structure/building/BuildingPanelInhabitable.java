@@ -22,8 +22,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * The InhabitableBuildingPanel class is a building function panel representing 
  * the inhabitants of a settlement building.
@@ -64,7 +62,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(2, 2, 5, 1));
+		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));

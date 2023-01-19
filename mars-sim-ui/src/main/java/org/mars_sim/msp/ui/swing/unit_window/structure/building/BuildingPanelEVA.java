@@ -25,8 +25,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 
 /**
  * The BuildingPanelEVA class presents the EVA activities
@@ -104,10 +102,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	protected void buildUI(JPanel content) {
 
 		// Create label panel
-		WebPanel topPanel = new WebPanel(new BorderLayout());
+		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
 
-		WebPanel labelGrid = new WebPanel(new SpringLayout());
+		JPanel labelGrid = new JPanel(new SpringLayout());
 		topPanel.add(labelGrid, BorderLayout.NORTH);
 		
 		// Create innerDoorLabel
@@ -175,7 +173,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
                 XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
 		// Create occupant panel
-		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel occupantPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
 		content.add(occupantPanel, BorderLayout.CENTER);
 
@@ -190,7 +188,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		occupantPanel.add(occupants);
 
 		// Create reservation panel
-		WebPanel reservationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel reservationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
 		content.add(reservationPanel, BorderLayout.SOUTH);
 

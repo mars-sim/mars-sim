@@ -13,6 +13,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
@@ -28,10 +30,6 @@ import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The PersonWindow is the window for displaying a person.
@@ -54,12 +52,12 @@ public class PersonWindow extends UnitWindow {
 	private String oldJobString = "";
 	private String oldTownString = "";
 	
-	private WebLabel townLabel;
-	private WebLabel jobLabel;
-	private WebLabel roleLabel;
-	private WebLabel shiftLabel;
+	private JLabel townLabel;
+	private JLabel jobLabel;
+	private JLabel roleLabel;
+	private JLabel shiftLabel;
 
-	private WebPanel statusPanel;
+	private JPanel statusPanel;
 	
 	private Person person;
 
@@ -75,7 +73,7 @@ public class PersonWindow extends UnitWindow {
 		this.person = person;
 	
 		// Create status panel
-		statusPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
@@ -96,10 +94,10 @@ public class PersonWindow extends UnitWindow {
 
 		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
 
-		WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
-		WebPanel namePane = new WebPanel(new BorderLayout(50, 0));
+		JPanel namePane = new JPanel(new BorderLayout(50, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
 	
 		Font font = null;
@@ -112,42 +110,42 @@ public class PersonWindow extends UnitWindow {
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);
-		nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);
-		nameLabel.setHorizontalTextPosition(WebLabel.CENTER);
+		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
+		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
 
 		statusPanel.add(namePane);
 
-		WebLabel townIconLabel = new WebLabel();
-		TooltipManager.setTooltip(townIconLabel, "Hometown", TooltipWay.down);
+		JLabel townIconLabel = new JLabel();
+		townIconLabel.setToolTipText("Hometown");
 		setImage(TOWN, townIconLabel);
 
-		WebLabel jobIconLabel = new WebLabel();
-		TooltipManager.setTooltip(jobIconLabel, "Job", TooltipWay.down);
+		JLabel jobIconLabel = new JLabel();
+		jobIconLabel.setToolTipText("Job");
 		setImage(JOB, jobIconLabel);
 
-		WebLabel roleIconLabel = new WebLabel();
-		TooltipManager.setTooltip(roleIconLabel, "Role", TooltipWay.down);
+		JLabel roleIconLabel = new JLabel();
+		roleIconLabel.setToolTipText("Role");
 		setImage(ROLE, roleIconLabel);
 
-		WebLabel shiftIconLabel = new WebLabel();
-		TooltipManager.setTooltip(shiftIconLabel, "Work Shift", TooltipWay.down);
+		JLabel shiftIconLabel = new JLabel();
+		shiftIconLabel.setToolTipText("Work Shift");
 		setImage(SHIFT, shiftIconLabel);
 
-		WebPanel townPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel jobPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel rolePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		WebPanel shiftPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-		townLabel = new WebLabel();
+		townLabel = new JLabel();
 		townLabel.setFont(font);
 
-		jobLabel = new WebLabel();
+		jobLabel = new JLabel();
 		jobLabel.setFont(font);
 
-		roleLabel = new WebLabel();
+		roleLabel = new JLabel();
 		roleLabel.setFont(font);
 
-		shiftLabel = new WebLabel();
+		shiftLabel = new JLabel();
 		shiftLabel.setFont(font);
 
 		townPanel.add(townIconLabel);
@@ -166,7 +164,7 @@ public class PersonWindow extends UnitWindow {
 		shiftPanel.add(shiftLabel);
 		shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		WebPanel rowPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
+		JPanel rowPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		rowPanel.add(townPanel);
 		rowPanel.add(rolePanel);
 		rowPanel.add(shiftPanel);
@@ -277,7 +275,7 @@ public class PersonWindow extends UnitWindow {
 		ShiftSlot newShiftType = person.getShiftSlot();
 		String shiftDesc = TabPanelSchedule.getShiftDescription(newShiftType);
 		shiftLabel.setText(TWO_SPACES + newShiftType.getShift().getName());
-		TooltipManager.setTooltip(shiftLabel, shiftDesc, TooltipWay.down);
+		shiftLabel.setToolTipText(shiftDesc);
 	}
 	
 	@Override

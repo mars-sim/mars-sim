@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -56,8 +57,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
@@ -99,11 +98,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	protected void buildUI(JPanel content) {
 
         // Create inventory content panel
-        WebPanel inventoryContentPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
+        JPanel inventoryContentPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         content.add(inventoryContentPanel, BorderLayout.CENTER);
 
         // Create resources panel
-        WebScrollPane resourcesPanel = new WebScrollPane();
+        JScrollPane resourcesPanel = new JScrollPane();
         resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(resourcesPanel);
 
@@ -147,7 +146,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 //     	searchable.setCaseSensitive(false);
 
         // Create item panel
-        WebScrollPane itemPanel = new WebScrollPane();
+        JScrollPane itemPanel = new JScrollPane();
         itemPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(itemPanel);
 
@@ -181,7 +180,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		TableStyle.setTableStyle(itemTable);
 
         // Create equipment panel
-        WebScrollPane equipmentPanel = new WebScrollPane();
+        JScrollPane equipmentPanel = new JScrollPane();
         equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(equipmentPanel);
 

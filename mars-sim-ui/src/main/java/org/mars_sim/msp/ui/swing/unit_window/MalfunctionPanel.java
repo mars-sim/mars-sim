@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
@@ -23,17 +25,12 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The MalfunctionPanel class displays info about a malfunction.
  */
 @SuppressWarnings("serial")
-public class MalfunctionPanel
-extends WebPanel {
+public class MalfunctionPanel extends JPanel {
 
 	private static final String REPAIR_WORK_REQUIRED = "Repair Work Required :";
 	private static final String NONE = "None.";
@@ -56,11 +53,11 @@ extends WebPanel {
 	public String workCache = "";
 	
 	/** The work label. */
-	private WebLabel workLabel;
+	private JLabel workLabel;
 	/** The repair parts label. */
-	private WebLabel partsLabel;
+	private JLabel partsLabel;
 	/** The malfunction label. */
-	private WebLabel malfunctionLabel;
+	private JLabel malfunctionLabel;
 	
 	/** The repair bar model. */
 	private BoundedRangeModel repairBarModel;
@@ -81,14 +78,12 @@ extends WebPanel {
 
 		// Initialize data members.
 		this.malfunction = malfunction;
-
-		setPadding(5);
 		
 		// Prepare the building label.
 		if (building != null) {
 			// Set layout and border.
 			setLayout(new GridLayout(5, 1, 0, 0));
-			WebLabel buildingLabel = new WebLabel(building.getName(), SwingConstants.LEFT);
+			JLabel buildingLabel = new JLabel(building.getName(), SwingConstants.LEFT);
 			buildingLabel.setFont(FONT_BOLD_14);
 			add(buildingLabel);
 		}
@@ -101,17 +96,17 @@ extends WebPanel {
 		setBackground(new Color(0,0,0,128));
 
 		// Prepare the malfunction label.
-		malfunctionLabel = new WebLabel(malfunction.getName(), SwingConstants.CENTER);
+		malfunctionLabel = new JLabel(malfunction.getName(), SwingConstants.CENTER);
 		malfunctionLabel.setForeground(Color.red);
 		add(malfunctionLabel);
 		
 		// Prepare name label.
-		workLabel = new WebLabel("", SwingConstants.CENTER);
+		workLabel = new JLabel("", SwingConstants.CENTER);
 		workLabel.setForeground(Color.blue);
 		add(workLabel);
 
 		// Prepare repair pane.
-		WebPanel repairPane = new WebPanel(new BorderLayout(2, 2));
+		JPanel repairPane = new JPanel(new BorderLayout(2, 2));
 		add(repairPane, BorderLayout.CENTER);
 
 		// Prepare repair progress bar.
@@ -124,12 +119,12 @@ extends WebPanel {
 		repairBarModel.setValue((int)malfunction.getPercentageFixed());
 
 		// Prepare repair parts label.
-		partsLabel = new WebLabel(getPartsString(), SwingConstants.CENTER);
+		partsLabel = new JLabel(getPartsString(), SwingConstants.CENTER);
 		partsLabel.setPreferredSize(new Dimension(-1, -1));
 		add(partsLabel);
 
 		// Add tooltip.
-		TooltipManager.setTooltip(this, MalfunctionPanel.getToolTipString(malfunction), TooltipWay.down);
+		setToolTipText(MalfunctionPanel.getToolTipString(malfunction));
 	
 		updateMalfunctionPanel();
 	}

@@ -14,7 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -23,8 +25,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * The edit mission dialog for the mission tool.
@@ -65,11 +65,11 @@ public class EditMissionDialog extends ModalInternalFrame {
         add(infoPane, BorderLayout.CENTER);
         
         // Create the button panel.
-        WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         add(buttonPane, BorderLayout.SOUTH);
         
         // Create the modify button.
-        WebButton modifyButton = new WebButton("Execute");
+        JButton modifyButton = new JButton("Execute");
         modifyButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
@@ -81,7 +81,7 @@ public class EditMissionDialog extends ModalInternalFrame {
         buttonPane.add(modifyButton);
         
         // Create the cancel button.
-        WebButton cancelButton = new WebButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {

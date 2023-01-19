@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -21,11 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * A panel for the astronomical observation building function.
@@ -72,7 +68,7 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 		
 		// Prepare label panelAstronomicalObservation
-		WebPanel labelPanel = new WebPanel(new SpringLayout());
+		JPanel labelPanel = new JPanel(new SpringLayout());
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Observer number label
@@ -93,12 +89,12 @@ extends BuildingFunctionPanel {
 		                                3, 1);       //xPad, yPad
 		
       	// Create the button panel.
-		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		// Create the orbit viewer button.
-		WebButton starMap = new WebButton();
+		JButton starMap = new JButton();
 		starMap.setIcon(getDesktop().getMainWindow().getTelescopeIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
-		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
+		starMap.setToolTipText("Open the Orbit Viewer");
 
 		starMap.addActionListener(
 			new ActionListener() {

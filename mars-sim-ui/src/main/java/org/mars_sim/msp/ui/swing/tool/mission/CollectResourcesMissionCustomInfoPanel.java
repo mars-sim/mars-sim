@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.UnitEvent;
@@ -29,9 +30,6 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-
 /**
  * A panel for displaying collect resources mission information.
  */
@@ -45,7 +43,7 @@ implements UnitListener {
 	private CollectResourcesMission mission;
 
 	private Rover missionRover;
-	private WebLabel[] amountLabels = null;
+	private JLabel[] amountLabels = null;
 	private List<AmountResource> resourcesCollected = new ArrayList<>();
 
 	/**
@@ -59,22 +57,22 @@ implements UnitListener {
 		setLayout(new BorderLayout());
 
 		// Create content panel.
-		WebPanel collectionPanel = new WebPanel(new SpringLayout());
+		JPanel collectionPanel = new JPanel(new SpringLayout());
 		collectionPanel.setBorder(BorderFactory.createTitledBorder("Resource Collected - Aboard Vehicle"));
 		add(collectionPanel, BorderLayout.CENTER);
 				
-		amountLabels = new WebLabel[resourceIds.length];
+		amountLabels = new JLabel[resourceIds.length];
 		
 		for (int i=0; i<resourceIds.length; i++) {
 			AmountResource ar = ResourceUtil.findAmountResource(resourceIds[i]);
 			resourcesCollected.add(ar);
 			
-			WebLabel label = new WebLabel(String.format("%12s :   ", Conversion.capitalize(ar.getName())),
+			JLabel label = new JLabel(String.format("%12s :   ", Conversion.capitalize(ar.getName())),
 					                                    JLabel.LEFT); //$NON-NLS-1$
 			label.setAlignmentX(Component.LEFT_ALIGNMENT);
 			collectionPanel.add(label);
 
-			WebLabel l = new WebLabel(String.format(KG_FORMAT, 0D), JLabel.LEFT);
+			JLabel l = new JLabel(String.format(KG_FORMAT, 0D), JLabel.LEFT);
 			amountLabels[i] = l;
 			collectionPanel.add(l);
 		}

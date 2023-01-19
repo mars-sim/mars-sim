@@ -28,10 +28,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
-import com.alee.extended.label.WebStyledLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.style.StyleId;
-
 /**
  * A panel showing details of a selected scientific study.
  */
@@ -55,7 +51,7 @@ extends JPanel {
 	private JLabel nameHeader;
 	private JLabel topicHeader;
 	
-	private WebPanel topicPanel;
+	private JPanel topicPanel;
 	
 	private ResearcherPanel primaryResearcherPane;
 	private List<ResearcherPanel> collabResearcherPanes = new ArrayList<>();
@@ -125,10 +121,9 @@ extends JPanel {
 		topSpringPane.add(phaseHeader);
 		topSpringPane.add(phaseLabel);
 		
-		WebStyledLabel noneLabel = new WebStyledLabel("{None:i;c(blue);background(grey)}"); // StyleId.styledlabelTag, 
-		noneLabel.setStyleId(StyleId.styledlabelShadow); // styledlabelTag
+		JLabel noneLabel = new JLabel(); // StyleId.styledlabelTag, 
 
-		topicPanel = new WebPanel(new BorderLayout());
+		topicPanel = new JPanel(new BorderLayout());
 		topicPanel.add(topicHeader, BorderLayout.WEST);
 		topicPanel.add(noneLabel);
 		
@@ -185,16 +180,9 @@ extends JPanel {
 			topicPanel.add(topicHeader, BorderLayout.WEST);			
 			
 			List<String> topics = study.getTopic();
-//			List<WebStyledLabel> topicLabels = new ArrayList<>();
 			if (topics != null && !topics.isEmpty()) {
 				for (String t: topics) {
-	//				label.addStyleRange ( new StyleRange (Font.BOLD ) );
-					WebStyledLabel label = new WebStyledLabel();//"{None:i;c(blue);background(grey)}");//"{None:b;c(blue)}");
-					label.setStyleId(StyleId.styledlabelShadow);
-					label.setText(t);
-//					label.resetStyleId();
-//					label.setBackground(Color.DARK_GRAY);
-//					label.setForeground(Color.WHITE);				
+					JLabel label = new JLabel(t);
 					topicPanel.add(label);
 				}			
 			}
@@ -248,10 +236,6 @@ extends JPanel {
 	 * Clear all labels.
 	 */
 	private void clearLabels() {
-//		scienceHeader.setText(Msg.getString("StudyDetailPanel.science")); //$NON-NLS-1$
-//		levelHeader.setText(Msg.getString("StudyDetailPanel.level")); //$NON-NLS-1$
-//		phaseHeader.setText(Msg.getString("StudyDetailPanel.phase")); //$NON-NLS-1$
-//		topicHeader.setText(Msg.getString("StudyDetailPanel.topic")); //$NON-NLS-1$
 		topicPanel.removeAll();
 	}
 

@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -58,16 +61,14 @@ import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
+
 
 /**
  * Tab panel for displaying a mission's navpoints.
  */
 @SuppressWarnings("serial")
 public class NavpointPanel
-extends WebPanel
+extends JPanel
 implements ListSelectionListener, MissionListener {
 
 	private static final int WIDTH = MapDataUtil.GLOBE_BOX_WIDTH / 2;
@@ -102,17 +103,17 @@ implements ListSelectionListener, MissionListener {
 		setLayout(new BorderLayout());
 		
 		// Create the main panel.
-		WebPanel mainPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel mainPane = new JPanel(new BorderLayout(0, 0));
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
-		WebPanel mapDisplayPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
 		mapDisplayPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		WebPanel left = new WebPanel();
+		JPanel left = new JPanel();
         left.setPreferredSize(new Dimension(PADDING, HEIGHT));
-        WebPanel right = new WebPanel();
+        JPanel right = new JPanel();
         right.setPreferredSize(new Dimension(PADDING, HEIGHT));
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
 		mainPane.add(left, BorderLayout.WEST);
@@ -144,7 +145,7 @@ implements ListSelectionListener, MissionListener {
         mapDisplayPane.add(mapPanel, BorderLayout.CENTER);
         
 		// Create the north button.
-        WebButton northButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
+        JButton northButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
 		northButton.addActionListener(e -> {
 			// Recenter the map to the north by a 1/8 map.
 			Coordinates centerCoords = mapPanel.getCenterLocation();
@@ -158,7 +159,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(northButton, BorderLayout.NORTH);
 		
 		// Create the west button.
-		WebButton westButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.west"))); //$NON-NLS-1$
+		JButton westButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.west"))); //$NON-NLS-1$
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(e -> {
 			// Recenter the map to the west by 1/8 map.
@@ -173,7 +174,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(westButton, BorderLayout.WEST);
 		
 		// Create the east button.
-		WebButton eastButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.east"))); //$NON-NLS-1$
+		JButton eastButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.east"))); //$NON-NLS-1$
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(e -> {
 			// Recenter the map to the east by 1/8 map.
@@ -188,7 +189,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(eastButton, BorderLayout.EAST);
 		
 		// Create the south button.
-		WebButton southButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.south"))); //$NON-NLS-1$
+		JButton southButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.south"))); //$NON-NLS-1$
 		southButton.addActionListener(e -> {
 			// Recenter the map to the south by 1/8 map.
 			Coordinates centerCoords = mapPanel.getCenterLocation();
@@ -202,13 +203,13 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
 		
 		// Create the navpoint table panel.
-		WebPanel navpointTablePane = new WebPanel(new BorderLayout(0, 0));
+		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
 		navpointTablePane.setPreferredSize(new Dimension(-1, TABLE_HEIGHT));
 		add(navpointTablePane, BorderLayout.SOUTH);
 		
 		// Create the navpoint scroll panel.
-		WebScrollPane navpointScrollPane = new WebScrollPane();
+		JScrollPane navpointScrollPane = new JScrollPane();
         navpointTablePane.add(navpointScrollPane, BorderLayout.CENTER);
         
         // Create the navpoint table model.
