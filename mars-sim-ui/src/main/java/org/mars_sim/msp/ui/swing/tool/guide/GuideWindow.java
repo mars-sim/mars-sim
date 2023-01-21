@@ -9,15 +9,11 @@ package org.mars_sim.msp.ui.swing.tool.guide;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -118,7 +114,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		link.setToolTipText("Open mars-sim wiki in GitHub");
 		linkPanel.add(link);
 		link.addActionListener(e -> {
-						openBrowser(WIKI_URL); }
+							desktop.getMainWindow().openBrowser(WIKI_URL);
+							}
 						);
 
 
@@ -157,15 +154,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		setURLString(Msg.getString("doc.whatsnew")); //$NON-NLS-1$
 	}
 
-	private void openBrowser(String address) {
-		try {
-			Desktop.getDesktop ().browse( new URI(address));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
     /**
      * Initializes status bar and its content.
      */

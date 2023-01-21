@@ -17,13 +17,15 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -37,21 +39,12 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import com.alee.extended.label.WebStyledLabel;
-import com.alee.extended.link.UrlLinkAction;
-import com.alee.extended.link.WebLink;
+
 import com.alee.extended.window.PopOverDirection;
 import com.alee.extended.window.WebPopOver;
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.toolbar.WebToolBar;
-import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
-import com.alee.utils.CoreSwingUtils;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
@@ -76,7 +69,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 
 	private MarsCalendarDisplay calendarDisplay; 
 	
-	private WebStyledLabel monthLabel;
+	private JLabel monthLabel;
 	
 	/** Sans serif font. */
 	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
@@ -131,153 +124,56 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 
 		addSeparator(new Dimension(20, 20));
 
-		// Add Mars navigator button
-		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, Msg.getString("icon.mars")); //$NON-NLS-1$
-		navButton.addActionListener(this);
-		add(navButton);
-		toolButtons.addElement(navButton);
+		// Add Tools buttons
+		addToolButton(NavigatorWindow.NAME, "icon.mars"); //$NON-NLS-
+		addToolButton(SearchWindow.NAME, "icon.find"); //$NON-NLS-1$
+		addToolButton(TimeWindow.NAME, "icon.time"); //$NON-NLS-1$
+		addToolButton(MonitorWindow.TITLE, "icon.monitor"); //$NON-NLS-1$
+		addToolButton(MissionWindow.NAME, "icon.mission"); //$NON-NLS-1$
+		addToolButton(SettlementWindow.NAME, "icon.map"); //$NON-NLS-1$
+		addToolButton(ScienceWindow.NAME, "icon.science"); //$NON-NLS-1$
+		addToolButton(ResupplyWindow.NAME, "icon.resupply"); //$NON-NLS-1$
+		addToolButton(CommanderWindow.NAME, "icon.dashboard"); //$NON-NLS-1$
 
-		// Add search tool button
-		ToolButton searchButton = new ToolButton(SearchWindow.NAME, Msg.getString("icon.find")); //$NON-NLS-1$
-		searchButton.addActionListener(this);
-		add(searchButton);
-		toolButtons.addElement(searchButton);
-
-		// Add time tool button
-		ToolButton timeButton = new ToolButton(TimeWindow.NAME, Msg.getString("icon.time")); //$NON-NLS-1$
-		timeButton.addActionListener(this);
-		add(timeButton);
-		toolButtons.addElement(timeButton);
-
-		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton(MonitorWindow.TITLE, Msg.getString("icon.monitor")); //$NON-NLS-1$
-		monitorButton.addActionListener(this);
-		add(monitorButton);
-		toolButtons.addElement(monitorButton);
-
-		// Add mission tool button
-		ToolButton missionButton = new ToolButton(MissionWindow.NAME, Msg.getString("icon.mission")); //$NON-NLS-1$
-		missionButton.addActionListener(this);
-		add(missionButton);
-		toolButtons.addElement(missionButton);
-
-		// Add settlement tool button
-		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, Msg.getString("icon.map")); //$NON-NLS-1$
-		settlementButton.addActionListener(this);
-		add(settlementButton);
-		toolButtons.addElement(settlementButton);
-
-		// Add science tool button
-		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, Msg.getString("icon.science")); //$NON-NLS-1$
-		scienceButton.addActionListener(this);
-		add(scienceButton);
-		toolButtons.addElement(scienceButton);
-
-		// Add resupply tool button
-		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, Msg.getString("icon.resupply")); //$NON-NLS-1$
-		resupplyButton.addActionListener(this);
-		add(resupplyButton);
-		toolButtons.addElement(resupplyButton);
-
-		// Add the command dashboard button
-//		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			// Add commander dashboard button
-			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("icon.dashboard")); //$NON-NLS-1$
-			dashboardButton.addActionListener(this);
-			add(dashboardButton);
-			toolButtons.addElement(dashboardButton);
-//		}
-
-		
 		addToEnd(parentMainWindow.getEarthDate());
 
 		addToEnd(parentMainWindow.getSolLabel());
 
 		addToEnd(parentMainWindow.getMarsTime());
 		
-		MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		MarsClock marsClock = parentMainWindow.getSimulation().getMasterClock().getMarsClock();
 		
-		JPanel outerPane = setupPane(marsClock);
 	
-		WebButton calendarButton = setUpCalenders(outerPane, marsClock);
+		JButton calendarButton = setUpCalenders(marsClock);
 	
 		addToEnd(calendarButton);
 
-		WebButton starMap = createStarMapButton();
+		JButton starMap = createStarMapButton();
 
 		addToEnd(starMap);
 		
 		addSeparatorToEnd();
-
-//		addSeparatorToMiddle();
 
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
 		guideButton.addActionListener(this);
 		addToEnd(guideButton);
 		toolButtons.addElement(guideButton);
-
-//		addSeparator();
-
-//		JPanel emptyPanel = new JPanel();
-//		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
-//		add(emptyPanel);
-
-//		add(Box.createGlue());
-//
-//		addSeparator();
-
-//		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
-////		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-//		slowDownButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				int ratio = (int)masterClock.getTimeRatio();
-//				if (ratio >= 2)
-//					masterClock.setTimeRatio(ratio/2.0);
-//			};
-//		});
-//		add(slowDownButton);
-//
-//		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
-////		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-//		pauseButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				if (!masterClock.isPaused())
-//					masterClock.setPaused(true, false);
-//			};
-//		});
-//		add(pauseButton);
-//
-//
-//		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
-////		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-//		resumeButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				if (masterClock.isPaused())
-//					masterClock.setPaused(false, false);
-//			};
-//		});
-//		add(resumeButton);
-//
-//		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
-////		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-//		speedUpButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				int ratio = (int)masterClock.getTimeRatio();
-//				if (ratio <= 4096)
-//					masterClock.setTimeRatio(ratio*2.0);
-//			};
-//		});
-//		add(speedUpButton);
-
-//		addToEnd(new MagnifierToggleTool(parentMainWindow.getFrame()) );
 	}
 
-	
-	public WebButton setUpCalenders(JPanel outerPane, MarsClock marsClock) {
-		Icon calendarIcon = new LazyIcon("calendar_mars").getIcon();
+	private void addToolButton(String name, String iconKey) {
+		ToolButton toolButton = new ToolButton(name, Msg.getString(iconKey));
+		toolButton.addActionListener(this);
+		add(toolButton);
+		toolButtons.addElement(toolButton);
+	}
 
-		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
+	private JButton setUpCalenders(MarsClock marsClock) {
+		JPanel outerPane = setupCalendarPanel(marsClock);
+
+		Icon calendarIcon = MainWindow.getIcon("calendar_mars");
+
+		JButton calendarButton = new JButton(calendarIcon);
 
 		calendarButton.addActionListener(e -> {
 		    	calendarDisplay.update();
@@ -285,51 +181,58 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
 		    	monthLabel.setText(mn);
 		
-		    	final Window parent = CoreSwingUtils.getNonNullWindowAncestor(calendarButton);
+				Window parent = parentMainWindow.getFrame();
 		        final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
 		        popOver.setIconImages(WebLookAndFeel.getImages());
 		        popOver.setCloseOnFocusLoss(true);
 		        popOver.setPadding(5);
 		        popOver.add(outerPane);
 		        popOver.show(calendarButton, PopOverDirection.down);
+				// final JDialog calPopOver = new JDialog(parent);
+		        // calPopOver.setIconImages(WebLookAndFeel.getImages());
+		        // //calPopOver.setCloseOnFocusLoss(true);
+		        // //calPopOver.setPadding(5);
+		        // calPopOver.add(outerPane);
+		        // calPopOver.setVisible(true);
 		});
 
 		return calendarButton;
 	}
 	
-	public WebPanel setupPane(MarsClock marsClock) {
-		WebPanel innerPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+	private JPanel setupCalendarPanel(MarsClock marsClock) {
+		JPanel innerPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 
 		calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
 		innerPane.add(calendarDisplay);
 
-		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));
+		final JPanel midPane = new JPanel(new BorderLayout(0, 0));
 
 		midPane.add(innerPane, BorderLayout.CENTER);
 		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
 
-		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));
+		final JPanel outerPane = new JPanel(new BorderLayout(10, 10));
 		outerPane.add(midPane, BorderLayout.CENTER);
 
 		// Create martian month label
     	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
-    	monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, SwingConstants.CENTER);
-		WebPanel monthPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+    	monthLabel = new JLabel(mn, SwingConstants.CENTER);
+		JPanel monthPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		monthPane.add(monthLabel);
 		midPane.add(monthPane, BorderLayout.NORTH);
 
-		WebLink link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
-//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
-//		link.setAlignmentY(1f);
+		JButton link = new JButton(WIKI_TEXT);
 		link.setAlignmentX(.5f);
-		link.setText(WIKI_TEXT);
-//		link.setIcon(new SvgIcon("github.svg")); // github19
-		TooltipManager.setTooltip(link, "Open the Timekeeping wiki in mars-sim GitHub site", TooltipWay.down);
-		WebPanel linkPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.RIGHT, 2, 2));
+		link.setToolTipText("Open the Timekeeping wiki in mars-sim GitHub site");
+		link.addActionListener(e -> {
+							parentMainWindow.openBrowser(WIKI_URL);
+							}
+						);
+
+		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
 		linkPane.add(link);
 		outerPane.add(linkPane, BorderLayout.SOUTH);
 
-    	WebStyledLabel headerLabel = new WebStyledLabel(StyleId.styledlabelShadow, "Mars Calendar", WebLabel.CENTER);
+    	JLabel headerLabel = new JLabel("Mars Calendar", JLabel.CENTER);
     	headerLabel.setFont(SANS_SERIF_FONT);
 
     	outerPane.add(headerLabel, BorderLayout.NORTH);
@@ -337,11 +240,11 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
     	return outerPane;
 	}
 	
-	public WebButton createStarMapButton() {
-		WebButton starMap = new WebButton();
+	private JButton createStarMapButton() {
+		JButton starMap = new JButton();
 		String TELESCOPE_ICON = Msg.getString("icon.telescope"); //$NON-NLS-1$
 		starMap.setIcon(ImageLoader.getNewIcon(TELESCOPE_ICON));//parentMainWindow.getTelescopeIcon());
-		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
+		starMap.setToolTipText("Open the Orbit Viewer");
 
 		starMap.addActionListener(e -> parentMainWindow.openOrbitViewer());
 		

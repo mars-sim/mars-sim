@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -25,6 +26,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,7 +40,6 @@ import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -72,21 +75,17 @@ import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
-import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.extended.overlay.FillOverlay;
 import com.alee.extended.overlay.WebOverlay;
-import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.icon.set.IconSet;
-import com.alee.managers.icon.set.RuntimeIconSet;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
@@ -1309,6 +1308,13 @@ extends JComponent implements ClockListener {
 		desktop.componentResized(e);
 	}
 	
+	/** 
+	 * Get the active simualation.
+	 */
+	public Simulation getSimulation() {
+		return sim;
+	}
+
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
@@ -1355,6 +1361,19 @@ extends JComponent implements ClockListener {
 		interactiveTerm = i;
 	}
 
+	/**
+	 * Open the default browser
+	 */
+	public void openBrowser(String address) {
+		try {
+			Desktop.getDesktop ().browse( new URI(address));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Prepares the panel for deletion.
 	 */
