@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -72,21 +71,17 @@ import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
-import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.extended.overlay.FillOverlay;
 import com.alee.extended.overlay.WebOverlay;
-import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.icon.set.IconSet;
-import com.alee.managers.icon.set.RuntimeIconSet;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
@@ -883,7 +878,7 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setForeground(new Color(150,96,0));
 		marsTimeTF.setPadding(0, 10, 0, 10);
 		marsTimeTF.setMargin(0, 0, 0, 0);
-		TooltipManager.setTooltip(marsTimeTF, "Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'", TooltipWay.up);
+		marsTimeTF.setToolTipText("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'");
 	}
 
 	public WebTextField getMarsTime() {
@@ -1241,7 +1236,7 @@ extends JComponent implements ClockListener {
 	/**
 	 * Increment the label of both the earth and mars clocks
 	 */
-	public void incrementClocks() {
+	private void incrementClocks() {
 		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
@@ -1309,6 +1304,13 @@ extends JComponent implements ClockListener {
 		desktop.componentResized(e);
 	}
 	
+	/** 
+	 * Get the active simualation.
+	 */
+	public Simulation getSimulation() {
+		return sim;
+	}
+
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
