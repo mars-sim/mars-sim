@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -35,14 +34,12 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.PopUpUnitMenu;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
+import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
-
-import com.alee.extended.window.PopOverDirection;
-import com.alee.extended.window.WebPopOver;
-import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
 
@@ -180,20 +177,9 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		
 		    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
 		    	monthLabel.setText(mn);
-		
-				Window parent = parentMainWindow.getFrame();
-		        final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
-		        popOver.setIconImages(WebLookAndFeel.getImages());
-		        popOver.setCloseOnFocusLoss(true);
-		        popOver.setPadding(5);
-		        popOver.add(outerPane);
-		        popOver.show(calendarButton, PopOverDirection.down);
-				// final JDialog calPopOver = new JDialog(parent);
-		        // calPopOver.setIconImages(WebLookAndFeel.getImages());
-		        // //calPopOver.setCloseOnFocusLoss(true);
-		        // //calPopOver.setPadding(5);
-		        // calPopOver.add(outerPane);
-		        // calPopOver.setVisible(true);
+
+				JDialog popOver = SwingHelper.createPoupWindow(outerPane, -1, -1, -110, 10);
+				popOver.setVisible(true);
 		});
 
 		return calendarButton;
@@ -224,7 +210,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		link.setAlignmentX(.5f);
 		link.setToolTipText("Open the Timekeeping wiki in mars-sim GitHub site");
 		link.addActionListener(e -> {
-							parentMainWindow.openBrowser(WIKI_URL);
+							SwingHelper.openBrowser(WIKI_URL);
 							}
 						);
 

@@ -13,12 +13,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +42,7 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ConstructionSitesPanel;
+import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
 
 public class PopUpUnitMenu extends JPopupMenu {
@@ -112,17 +109,9 @@ public class PopUpUnitMenu extends JPopupMenu {
         descriptionItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-            	final JDialog d = new JDialog();//.dialogDecorated);
 
 	           	setOpaque(false);
 		        setBackground(new Color(0,0,0,128));
-//
-		        d.setForeground(Color.WHITE); // orange font
-                d.setFont(new Font("Arial", Font.BOLD, 14));
-
-		        d.setUndecorated(true);
-            	d.setOpacity(0.75f);
-		        d.setBackground(new Color(0,0,0,128));
 
                 String description;
                 String type;
@@ -146,9 +135,6 @@ public class PopUpUnitMenu extends JPopupMenu {
                 	type = site.getStageInfo().getType();
                 	name = site.getName();
                 }
-                
-				d.setSize(WIDTH_1, HEIGHT_1);
-		        d.setResizable(false);
 
 				UnitInfoPanel b = new UnitInfoPanel(desktop);
 
@@ -156,23 +142,17 @@ public class PopUpUnitMenu extends JPopupMenu {
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
 
-			    d.add(b);
+				final JDialog d = SwingHelper.createPoupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
 
-            	// Make it to appear at the mouse cursor
-                Point location = MouseInfo.getPointerInfo().getLocation();
-                d.setLocation(location);
+				d.setForeground(Color.WHITE); // orange font
+                d.setFont(new Font("Arial", Font.BOLD, 14));
 
+            	d.setOpacity(0.75f);
+		        d.setBackground(new Color(0,0,0,128));
                 d.setVisible(true);
-				d.addWindowFocusListener(new WindowFocusListener() {
-				    public void windowLostFocus(WindowEvent e) {
-				    	d.dispose();
-				    }
-				    public void windowGainedFocus(WindowEvent e) {
-				    }
-				});
 
                 // Make panel drag-able
-			    ComponentMover mover = new ComponentMover(d, desktop);//d.getContentPane());
+			    ComponentMover mover = new ComponentMover(d, desktop);
 			    mover.registerComponent(b);
 
              }
@@ -181,7 +161,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		return descriptionItem;
     }
 
-
+	
     /**
      * Builds item two
      *

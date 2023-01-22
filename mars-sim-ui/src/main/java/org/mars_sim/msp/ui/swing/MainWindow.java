@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -26,9 +25,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -882,7 +878,7 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setForeground(new Color(150,96,0));
 		marsTimeTF.setPadding(0, 10, 0, 10);
 		marsTimeTF.setMargin(0, 0, 0, 0);
-		TooltipManager.setTooltip(marsTimeTF, "Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'", TooltipWay.up);
+		marsTimeTF.setToolTipText("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'");
 	}
 
 	public WebTextField getMarsTime() {
@@ -1240,7 +1236,7 @@ extends JComponent implements ClockListener {
 	/**
 	 * Increment the label of both the earth and mars clocks
 	 */
-	public void incrementClocks() {
+	private void incrementClocks() {
 		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
@@ -1361,19 +1357,6 @@ extends JComponent implements ClockListener {
 		interactiveTerm = i;
 	}
 
-	/**
-	 * Open the default browser
-	 */
-	public void openBrowser(String address) {
-		try {
-			Desktop.getDesktop ().browse( new URI(address));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Prepares the panel for deletion.
 	 */

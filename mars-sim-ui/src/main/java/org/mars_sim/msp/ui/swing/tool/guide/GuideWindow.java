@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
 /**
  * The GuideWindow is a tool window that displays built-in html pages such as User Guide, Quick Tutorial, Keyboard Shortcuts, etc.
@@ -114,7 +115,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		link.setToolTipText("Open mars-sim wiki in GitHub");
 		linkPanel.add(link);
 		link.addActionListener(e -> {
-							desktop.getMainWindow().openBrowser(WIKI_URL);
+							SwingHelper.openBrowser(WIKI_URL);
 							}
 						);
 
