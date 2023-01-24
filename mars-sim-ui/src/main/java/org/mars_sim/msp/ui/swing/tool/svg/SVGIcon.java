@@ -22,10 +22,9 @@ package org.mars_sim.msp.ui.swing.tool.svg;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.geom.Dimension2D;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.awt.Image;
 
 import javax.swing.Icon;
 

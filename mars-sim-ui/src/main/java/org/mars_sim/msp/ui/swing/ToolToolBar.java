@@ -34,7 +34,6 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.PopUpUnitMenu;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
@@ -137,11 +136,8 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		addToEnd(parentMainWindow.getSolLabel());
 
 		addToEnd(parentMainWindow.getMarsTime());
-		
-		MarsClock marsClock = parentMainWindow.getSimulation().getMasterClock().getMarsClock();
-		
-	
-		JButton calendarButton = setUpCalenders(marsClock);
+
+		JButton calendarButton = setUpCalenders(parentMainWindow.getSimulation().getMasterClock().getMarsClock());
 	
 		addToEnd(calendarButton);
 
@@ -209,16 +205,13 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		JButton link = new JButton(WIKI_TEXT);
 		link.setAlignmentX(.5f);
 		link.setToolTipText("Open the Timekeeping wiki in mars-sim GitHub site");
-		link.addActionListener(e -> {
-							SwingHelper.openBrowser(WIKI_URL);
-							}
-						);
+		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
 		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
 		linkPane.add(link);
 		outerPane.add(linkPane, BorderLayout.SOUTH);
 
-    	JLabel headerLabel = new JLabel("Mars Calendar", JLabel.CENTER);
+    	JLabel headerLabel = new JLabel("Mars Calendar", SwingConstants.CENTER);
     	headerLabel.setFont(SANS_SERIF_FONT);
 
     	outerPane.add(headerLabel, BorderLayout.NORTH);
@@ -229,7 +222,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 	private JButton createStarMapButton() {
 		JButton starMap = new JButton();
 		String TELESCOPE_ICON = Msg.getString("icon.telescope"); //$NON-NLS-1$
-		starMap.setIcon(ImageLoader.getNewIcon(TELESCOPE_ICON));//parentMainWindow.getTelescopeIcon());
+		starMap.setIcon(ImageLoader.getNewIcon(TELESCOPE_ICON));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
 		starMap.addActionListener(e -> parentMainWindow.openOrbitViewer());
@@ -237,7 +230,9 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		return starMap;
 	}
 	
-	/** ActionListener method overridden */
+	/** 
+	 * ActionListener method overridden 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		// show tool window on desktop

@@ -99,10 +99,10 @@ public abstract class Vehicle extends Unit
 	 * Light hydrocarbon fuels, such as methane can be internally reformed within the anode of the fuel cells.
 	 */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
-	
+	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methane. */
 	public static final double KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
-	
-	public static final double WH_PER_KG = 1000.0 * SOFC_CONVERSION_EFFICIENCY * METHANE_SPECIFIC_ENERGY;
+	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methane. */	
+	public static final double WH_PER_KG = 1000.0 / KG_PER_KWH; // 1000.0 * SOFC_CONVERSION_EFFICIENCY * METHANE_SPECIFIC_ENERGY;
 
 	//	/** Lifetime Wear in millisols **/
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)

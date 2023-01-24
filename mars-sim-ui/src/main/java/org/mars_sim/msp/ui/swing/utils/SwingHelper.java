@@ -12,23 +12,24 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+
 /**
- * This is a static helper class of Swong methods
+ * This is a static helper class of Swing methods
  */
 public final class SwingHelper {
 
+	private SwingHelper() {
+	}
+	
     /**
      * This creates a popup window that display a content panel. It is shown below the current mouse position
      * but can be offset in the X & Y directions.
-     * Szie will default to the preferredsize of the content unless overridden.
+     * Size will default to the preferred size of the content unless overridden.
      * @param content Content to display
      * @param width Fixed width; can be -1
      * @param height Fixed height; can be -1
@@ -59,6 +60,7 @@ public final class SwingHelper {
 				d.dispose();
 			}
 			public void windowGainedFocus(WindowEvent e) {
+				// placeholder
 			}
 		});
 
@@ -67,15 +69,13 @@ public final class SwingHelper {
 
     
 	/**
-	 * Open the default browser on a URL
+	 * Opens the default browser on a URL.
 	 */
 	public static void openBrowser(String address) {
 		try {
-			Desktop.getDesktop ().browse( new URI(address));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			Desktop.getDesktop().browse(new URI(address));
+		} catch (Exception e) {
+			// placeholder
 		}
 	}
 }

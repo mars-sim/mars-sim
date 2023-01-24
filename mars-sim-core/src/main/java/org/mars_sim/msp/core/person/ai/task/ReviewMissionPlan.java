@@ -406,7 +406,7 @@ public class ReviewMissionPlan extends Task {
 
 		StringBuilder msg = new StringBuilder();
 		msg.append("Grading ").append(m.getName());
-		msg.append(" plan -");
+		msg.append(" Plan -");
 		msg.append(" Rating: ").append(rating); 
 		msg.append(", Rels: ").append(relation); 
 		msg.append(", Quals: ").append(qual); 
@@ -417,7 +417,7 @@ public class ReviewMissionPlan extends Task {
 		msg.append(", Lead: ").append(leadership); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append(", Luck: ").append(luck); 
-		msg.append(" = Subtotal: ").append(score);
+		msg.append("; Subtotal: ").append(score);
 		
 		logger.log(worker, Level.INFO, 0,  msg.toString());
 	}
@@ -518,11 +518,11 @@ public class ReviewMissionPlan extends Task {
 
 		StringBuilder msg = new StringBuilder();
 		msg.append("Grading ").append(m.getName());
-		msg.append(" plan -");
+		msg.append(" Plan -");
 		msg.append(" Rels: ").append(relation); 
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
 		msg.append(", Review: ").append(reviewerRole); 
-		msg.append(" = Subtotal: ").append(score);
+		msg.append("; Subtotal: ").append(score);
 		
 		logger.log(worker, Level.INFO, 0,  msg.toString());
 	}

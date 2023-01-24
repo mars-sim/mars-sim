@@ -13,8 +13,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,10 +57,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	private static Map<Integer, JInternalFrame> panels = new ConcurrentHashMap<>();
 
-    //private Unit unit;
-    //private Settlement settlement;
-	//private MainDesktopPane desktop;
-
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
     	MainDesktopPane desktop = swindow.getDesktop();
 
@@ -106,9 +100,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		JMenuItem descriptionItem = new JMenuItem(Msg.getString("PopUpUnitMenu.description"));
 
         descriptionItem.setForeground(new Color(139,69,19));
-        descriptionItem.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
+        descriptionItem.addActionListener(e -> {
 
 	           	setOpaque(false);
 		        setBackground(new Color(0,0,0,128));
@@ -156,7 +148,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 			    mover.registerComponent(b);
 
              }
-        });
+        );
 
 		return descriptionItem;
     }
@@ -172,8 +164,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		JMenuItem detailsItem = new JMenuItem(Msg.getString("PopUpUnitMenu.details"));
 
         detailsItem.setForeground(new Color(139,69,19));
-        detailsItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        detailsItem.addActionListener(e -> {
 	            if (unit.getUnitType() == UnitType.VEHICLE
 	            		|| unit.getUnitType() == UnitType.PERSON
 		            	|| unit.getUnitType() == UnitType.BUILDING	
@@ -185,7 +176,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
 	            	buildConstructionWindow(desktop, unit);
 	            }
-	         }
 	    });
 
 		return detailsItem;
@@ -258,12 +248,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu.relocation"));
 
         relocateItem.setForeground(new Color(139,69,19));
-        relocateItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-	            Vehicle vehicle = (Vehicle) unit;
-	            vehicle.relocateVehicle();
+        relocateItem.addActionListener(e -> {
+	            ((Vehicle) unit).relocateVehicle();
 	    		repaint();
-            }
         });
 
 		return relocateItem;
@@ -278,12 +265,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu.relocation"));
 
         relocateItem.setForeground(new Color(139,69,19));
-        relocateItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-	            ConstructionSite site = (ConstructionSite) unit;
-	            site.relocate();
+        relocateItem.addActionListener(e -> {
+	            ((ConstructionSite) unit).relocate();
 	    		repaint();
-            }
         });
 
 		return relocateItem;
