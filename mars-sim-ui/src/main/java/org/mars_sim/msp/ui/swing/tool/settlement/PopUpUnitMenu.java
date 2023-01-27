@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Image;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -273,14 +272,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 		return relocateItem;
 	}
 	
-
-	/**
-	 * Sets the icon image for the main window.
-	 */
-	public Image getIconImage() {
-		return MainWindow.getIconImage();
-	}
-
 	public void destroy() {
 		panels.clear();
 		panels = null;

@@ -30,7 +30,12 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
@@ -67,16 +72,7 @@ import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-
-import com.alee.extended.label.WebStyledLabel;
-import com.alee.extended.window.PopOverDirection;
-import com.alee.extended.window.WebPopOver;
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.menu.WebCheckBoxMenuItem;
-import com.alee.laf.menu.WebPopupMenu;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.style.StyleId;
+import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -86,25 +82,38 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class NavigatorWindow extends ToolWindow implements ActionListener {
 
+	/**
+	 *
+	 */
+	private static final String MINERALS_ACTION = "showMinerals";
+	private static final String EXPLORED_SITES_ACTION = "showExploredSites";
+	private static final String NAV_POINTS_ACTION = "showNavPoints";
+	private static final String LANDMARKS_ACTION = "showLandmarks";
+	private static final String VEHICLE_TRAILS_ACTION = "showVehicleTrails";
+	private static final String LABELS_ACTION = "showLabels";
+	private static final String GEO_ACTION = "geo";
+	private static final String TOPO_ACTION = "topo";
+	private static final String SURFACE_ACTION = "surf";
+	private static final String DAYLIGHT_TRACKING_ACTION = "daylightTracking";
+	private static final String GO_THERE_ACTION = "goThere";
+
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
 	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.GLOBE_BOX_HEIGHT; 
-	public static final int HORIZONTAL_FULL_WDITH = HORIZONTAL_SURFACE_MAP * 2;
-	public static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;
+	private static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;
 
-	public static final int HEIGHT_BUTTON_PANE = 26;
-	public static final int HEIGHT_STATUS_BAR = 20;
+	private static final int HEIGHT_STATUS_BAR = 20;
 
-	public static final int CB_WIDTH = 120;
+	private static final int CB_WIDTH = 120;
 
-	public static final double RAD_PER_DEGREE = Math.PI / 180D;
+	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
-	public static final String WHITESPACE = " ";
-	public static final String COMMA = ", ";
-	public static final String THETA = "\u03B8: "; //"Theta: ";
-	public static final String PHI = "\u03C6: "; //"Phi: ";
-	public static final String CLOSE_P = ")";
+	private static final String WHITESPACE = " ";
+	private static final String COMMA = ", ";
+	private static final String THETA = "\u03B8: "; //"Theta: ";
+	private static final String PHI = "\u03C6: "; //"Phi: ";
+	private static final String CLOSE_P = ")";
 
 	private static final String RGB = "RGB (";
 	private static final String HSB = "HSB (";
@@ -113,67 +122,31 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private static final String KM = " km";
 	
 	// Data member
-	/** The status bar. */
-	private JStatusBar statusBar;
 	/** The latitude combox  */
 	private JComboBoxMW<?> latCB;
 	/** The longitude combox. */
 	private JComboBoxMW<?> longCB;
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapLayerPanel;
-	/** The map pane for holding the map panel . */
-	private WebPanel mapPaneInner;
 	/** Globe navigation. */
 	private GlobeDisplay globeNav;
-	/** Compass navigation buttons. */
-	// private NavButtonDisplay navButtons;
-//	/** Topographical and distance legend. */
-//	private LegendDisplay ruler;
-//	/** Latitude entry. */
-//	private WebTextField latText;
-//	/** Longitude entry. */
-//	private WebTextField longText;
+
 	/** Latitude direction choice. */
 	private JComboBoxMW<?> latDir;
 	/** Longitude direction choice. */
 	private JComboBoxMW<?> longDir;
-	/** Location entry submit button. */
-	private WebButton goThere;
-	/** Options for map display. */
-	private WebButton optionsButton;
 	/** Map options menu. */
-	private WebPopupMenu optionsMenu;
+	private JPopupMenu optionsMenu;
 	/** Minerals button. */
-	private WebButton mineralsButton;
+	private JButton mineralsButton;
 	/** The info label on the status bar. */
-	private WebStyledLabel heightLabel;
-	private WebStyledLabel coordLabel;
-	private WebStyledLabel phiLabel;
-	private WebStyledLabel thetaLabel;
-	private WebStyledLabel rgbLabel;
-	private WebStyledLabel hsbLabel;
+	private JLabel heightLabel;
+	private JLabel coordLabel;
+	private JLabel phiLabel;
+	private JLabel thetaLabel;
+	private JLabel rgbLabel;
+	private JLabel hsbLabel;
 	
-	/** Surface map menu item. */
-	private WebCheckBoxMenuItem surfItem;
-	/** Topographical map menu item. */
-	private WebCheckBoxMenuItem topoItem;
-	/** Geological map menu item. */
-	private WebCheckBoxMenuItem geoItem;
-	/** Show unit labels menu item. */
-	private WebCheckBoxMenuItem unitLabelItem;
-	/** Day/night tracking menu item. */
-	private WebCheckBoxMenuItem dayNightItem;
-	/** Show vehicle trails menu item. */
-	private WebCheckBoxMenuItem trailItem;
-	/** Show landmarks menu item. */
-	private WebCheckBoxMenuItem landmarkItem;
-	/** Show navpoints menu item. */
-	private WebCheckBoxMenuItem navpointItem;
-	/** Show explored sites menu item. */
-	private WebCheckBoxMenuItem exploredSiteItem;
-	/** Show minerals menu item. */
-	private WebCheckBoxMenuItem mineralItem;
-
 	private MapLayer unitIconLayer;
 	private MapLayer unitLabelLayer;
 	private MapLayer shadingLayer;
@@ -185,6 +158,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	private List<Landmark> landmarks;
 	private UnitManager unitManager;
+	private JCheckBoxMenuItem mineralLayeritem;
 
 	/**
 	 * Constructor.
@@ -213,7 +187,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
-		WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
@@ -231,10 +205,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		JPanel rightPane = new JPanel(new BorderLayout(0, 0));
 		wholePane.add(rightPane);
 	
-		WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		rightPane.add(detailPane, BorderLayout.CENTER);
 	
-		mapPaneInner = new WebPanel(new BorderLayout(0, 0));
+		JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
 		detailPane.add(mapPaneInner);
 	
 		mapPaneInner.setBackground(Color.black);
@@ -280,7 +254,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 
 		// Prepare position coordination entry panel on the left pane
-		WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));
+		JPanel coordPane = new JPanel(new GridLayout(1, 6, 0, 0));
 		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		coordPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 //		controlPane.add(coordPane);
@@ -294,7 +268,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		// Prepare latitude entry components
-		WebLabel latLabel = new WebLabel(" Lat : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
+		JLabel latLabel = new JLabel(" Lat : ", JLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
 		// latLabel.setAlignmentY(.5F);
 		coordPane.add(latLabel);
 
@@ -326,7 +300,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		coordPane.add(latDir);
 
 		// Prepare longitude entry components
-		WebLabel longLabel = new WebLabel("Lon : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
+		JLabel longLabel = new JLabel("Lon : ", JLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 		// longLabel.setAlignmentY(.5F);
 		coordPane.add(longLabel);
 
@@ -347,7 +321,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		WebPanel optionsPane = new WebPanel(new GridLayout(1, 3));
+		JPanel optionsPane = new JPanel(new GridLayout(1, 3));
 //		controlPane.add(optionsPane);
 		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
@@ -358,20 +332,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
 		// Prepare location entry submit button
-		goThere = new WebButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
+		JButton goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
 		goThere.setToolTipText("Go to the location with your specified coordinates");
+		goThere.setActionCommand(GO_THERE_ACTION);
 		goThere.addActionListener(this);
 
 		optionsPane.add(goThere);
 
 		// Prepare options button.
-		optionsButton = new WebButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
+		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
 		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				SwingUtilities.invokeLater(() -> {
-//					if (optionsMenu == null)
-//						createOptionsMenu();
 					optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
 				});
 			}
@@ -380,13 +353,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsPane.add(optionsButton);
 
 		// Prepare minerals button.0
-		mineralsButton = new WebButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				SwingUtilities.invokeLater(() -> {
-					WebPopupMenu mineralsMenu = createMineralsMenu();
+					JPopupMenu mineralsMenu = createMineralsMenu();
 					mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
 				});
 			}
@@ -394,54 +367,53 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsPane.add(mineralsButton);
 
 		// Create the status bar
-		statusBar = new JStatusBar(3, 3, 18);
-//		statusBar.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, 20));
+		JStatusBar statusBar = new JStatusBar(3, 3, 18);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		Font font = new Font("Times New Roman", Font.PLAIN, 11);
 		Font font1 = new Font(Font.DIALOG, Font.PLAIN, 10);
 		Font font2 = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
 		
-		coordLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		coordLabel = new JLabel();
 		coordLabel.setFont(font);
 		coordLabel.setForeground(Color.GREEN.darker().darker());
-		phiLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		phiLabel = new JLabel();
 		phiLabel.setFont(font);
 		phiLabel.setForeground(Color.BLUE.darker());
-		thetaLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		thetaLabel = new JLabel();
 		thetaLabel.setFont(font);
 		thetaLabel.setForeground(Color.BLUE.darker());
-		heightLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		heightLabel = new JLabel();
 		heightLabel.setFont(font);
 		heightLabel.setForeground(Color.ORANGE.darker());
-		rgbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		rgbLabel = new JLabel();
 		rgbLabel.setFont(font1);
 		rgbLabel.setForeground(Color.red.darker().darker());
-		hsbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		hsbLabel = new JLabel();
 		hsbLabel.setFont(font2);
 		hsbLabel.setForeground(Color.MAGENTA.darker());
 
-	    WebPanel p = new WebPanel();
+	    JPanel p = new JPanel();
 	    p.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
 	    p.add(phiLabel);
 	
-	    WebPanel t = new WebPanel();
+	    JPanel t = new JPanel();
 	    t.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
 	    t.add(thetaLabel);
 	     
-	    WebPanel c = new WebPanel();
+	    JPanel c = new JPanel();
 	    c.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
 	    c.add(coordLabel);
 	    
-	    WebPanel e = new WebPanel();
+	    JPanel e = new JPanel();
 	    e.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
 	    e.add(heightLabel);
 	    
-	    WebPanel r = new WebPanel();
+	    JPanel r = new JPanel();
 	    r.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 	    r.add(rgbLabel);
 	    
-	    WebPanel hs = new WebPanel();
+	    JPanel hs = new JPanel();
 	    hs.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    hs.add(hsbLabel);
 	    
@@ -451,7 +423,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		statusBar.addCenterComponent(e, false);
 
-//		statusBar.addRightComponent(e, false);
 		statusBar.addRightComponent(r, false);
 		statusBar.addRightComponent(hs, false);
 		
@@ -481,7 +452,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 * @param rgb
 	 * @param hsb
 	 */
-	public void updateStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
+	private void updateStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
 		heightLabel.setText(ELEVATION + height);
 		coordLabel.setText(WHITESPACE + coord);
 		phiLabel.setText(PHI + phi);
@@ -510,7 +481,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 * @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
-		// navButtons.updateCoords(newCoords);
 		mapLayerPanel.showMap(newCoords);
 		globeNav.showGlobe(newCoords);
 	}
@@ -524,127 +494,112 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		globeNav.showGlobe(newCoords);
 	}
 
-	public GlobeDisplay getGlobeDisplay() {
-		return globeNav;
-	}
-
-//	public void showSurfaceMap() {
-//		// show surface map
-//		mapPanel.setMapType(SurfMarsMap.TYPE);
-//		globeNav.showSurf();
-//		// ruler.showMap();
-//	}
-//
-//	public void showGeologyMap() {
-//		// show geology map
-//		mapPanel.setMapType(GeologyMarsMap.TYPE);
-//		globeNav.showGeo();
-//	}
-
 	/** ActionListener method overridden */
 	public void actionPerformed(ActionEvent event) {
 
 		Object source = event.getSource();
 
-		if (source == goThere) {
-			// Read longitude and latitude from user input, translate to radians,
-			// and recenter globe and surface map on that location.
-			try {
+		switch (event.getActionCommand()) {
+			case GO_THERE_ACTION: {
+				// Read longitude and latitude from user input, translate to radians,
+				// and recenter globe and surface map on that location.
+				try {
 
-				double latitude = 0;
-				double longitude = 0;
+					double latitude = 0;
+					double longitude = 0;
 
-				latitude = (int) latCB.getSelectedItem();
-				longitude = (int) longCB.getSelectedItem();
-				
-//				if (mainScene != null) {
-//					latitude = (int) latCB.getSelectedItem();
-//					longitude = (int) longCB.getSelectedItem();
-//
-//				} else {
-//					latText.setCaretPosition(latText.getText().length());
-//					longText.setCaretPosition(longText.getText().length());
-//
-//					latitude = Double.valueOf(latText.getText());// ((Float) new Float(latText.getText())).doubleValue();
-//					longitude = Double.valueOf(longText.getText());// ((Float) new Float(longText.getText())).doubleValue();
-//				}
+					latitude = (int) latCB.getSelectedItem();
+					longitude = (int) longCB.getSelectedItem();
+					
+					String latDirStr = (String) latDir.getSelectedItem();
+					String longDirStr = (String) longDir.getSelectedItem();
 
-				String latDirStr = (String) latDir.getSelectedItem();
-				String longDirStr = (String) longDir.getSelectedItem();
-
-				if ((latitude >= 0D) && (latitude <= 90D) && (longitude >= 0D) && (longitude <= 360)) {
-					String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
-					if (latDirStr.equals(northString)) {
-						latitude = 90D - latitude; // $NON-NLS-1$
-					} else {
-						latitude += 90D;
-					}
-
-					String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
-					if (longitude > 0D) {
-						if (longDirStr.equals(westString)) {
-							longitude = 360D - longitude; // $NON-NLS-1$
+					if ((latitude >= 0D) && (latitude <= 90D) && (longitude >= 0D) && (longitude <= 360)) {
+						String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
+						if (latDirStr.equals(northString)) {
+							latitude = 90D - latitude; // $NON-NLS-1$
+						} else {
+							latitude += 90D;
 						}
-					}
 
-					double phi = RAD_PER_DEGREE * latitude;
-					double theta = RAD_PER_DEGREE * longitude;
-					updateCoords(new Coordinates(phi, theta));
+						String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
+						if (longitude > 0D) {
+							if (longDirStr.equals(westString)) {
+								longitude = 360D - longitude; // $NON-NLS-1$
+							}
+						}
+
+						double phi = RAD_PER_DEGREE * latitude;
+						double theta = RAD_PER_DEGREE * longitude;
+						updateCoords(new Coordinates(phi, theta));
+					}
+				} catch (NumberFormatException e) {
 				}
-			} catch (NumberFormatException e) {
-			}
-		} else if (source == topoItem) {
-			if (topoItem.isSelected()) {
-				// show topo map
-				mapLayerPanel.setMapType(TopoMarsMap.TYPE);
-				globeNav.showTopo();
-				// turn off day night layer
-				setMapLayer(false, 0, shadingLayer);
-//				globeNav.setDayNightTracking(false);
-				// turn off mineral layer
-				setMapLayer(false, 1, mineralLayer);
-				mineralItem.setSelected(false);
-				mineralsButton.setEnabled(false);
-			}
-		}
-		else if (source == surfItem) {
-			if (surfItem.isSelected()) {
-				// show surface map
-				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
-				globeNav.showSurf();
-			}
-		}		
-		else if (source == geoItem) {
-			if (geoItem.isSelected()) {
-				// show geology map
-				mapLayerPanel.setMapType(GeologyMarsMap.TYPE);
-				globeNav.showGeo();
-				// turn off day night layer
-				setMapLayer(false, 0, shadingLayer);
-				// turn off mineral layer
-				setMapLayer(false, 1, mineralLayer);
-				mineralItem.setSelected(false);
-				mineralsButton.setEnabled(false);
-			}
-		} else if (source == dayNightItem) {
-			setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
-//			globeNav.setDayNightTracking(dayNightItem.isSelected());
-		} else if (source == unitLabelItem)
-			setMapLayer(unitLabelItem.isSelected(), 3, unitLabelLayer);
-		else if (source == trailItem)
-			setMapLayer(trailItem.isSelected(), 5, trailLayer);
-		else if (source == landmarkItem)
-			setMapLayer(landmarkItem.isSelected(), 6, landmarkLayer);
-		else if (source == navpointItem)
-			setMapLayer(navpointItem.isSelected(), 4, navpointLayer);
-		else if (source == exploredSiteItem)
-			setMapLayer(exploredSiteItem.isSelected(), 7, exploredSiteLayer);
-		else if (source == mineralItem) {
-			setMapLayer(mineralItem.isSelected(), 1, mineralLayer);
-			mineralsButton.setEnabled(mineralItem.isSelected());
-			if (mineralItem.isSelected()) {
-				surfItem.doClick();
-			}
+			} break;
+			
+			case TOPO_ACTION: {
+				if (((JCheckBoxMenuItem) source).isSelected()) {
+					// show topo map
+					mapLayerPanel.setMapType(TopoMarsMap.TYPE);
+					globeNav.showTopo();
+					// turn off day night layer
+					setMapLayer(false, 0, shadingLayer);
+	//				globeNav.setDayNightTracking(false);
+					// turn off mineral layer
+					setMapLayer(false, 1, mineralLayer);
+					mineralLayeritem.setSelected(false);
+					mineralsButton.setEnabled(false);
+				}
+			} break;
+
+			case SURFACE_ACTION: {
+				if (((JCheckBoxMenuItem) source).isSelected()) {
+					// show surface map
+					mapLayerPanel.setMapType(SurfMarsMap.TYPE);
+					globeNav.showSurf();
+				}
+			} break;
+
+			case GEO_ACTION: {
+				if (((JCheckBoxMenuItem) source).isSelected()) {
+					// show geology map
+					mapLayerPanel.setMapType(GeologyMarsMap.TYPE);
+					globeNav.showGeo();
+					// turn off day night layer
+					setMapLayer(false, 0, shadingLayer);
+					// turn off mineral layer
+					setMapLayer(false, 1, mineralLayer);
+					mineralLayeritem.setSelected(false);
+					mineralsButton.setEnabled(false);
+				}
+			} break;
+			
+			case DAYLIGHT_TRACKING_ACTION: 
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 0, shadingLayer);
+				break;
+			case LABELS_ACTION:
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 3, unitLabelLayer);
+				break;
+			case VEHICLE_TRAILS_ACTION:
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 5, trailLayer);
+				break;
+			case LANDMARKS_ACTION:
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 6, landmarkLayer);
+				break;
+			case NAV_POINTS_ACTION:
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 4, navpointLayer);
+				break;
+			case EXPLORED_SITES_ACTION:
+				setMapLayer(((JCheckBoxMenuItem) source).isSelected(), 7, exploredSiteLayer);
+				break;
+			case MINERALS_ACTION: {
+				boolean mineralSelected = ((JCheckBoxMenuItem) source).isSelected();
+				setMapLayer(mineralSelected, 1, mineralLayer);
+				mineralsButton.setEnabled(mineralSelected);
+				// if (mineralSelected) {
+				// 	surfItem.doClick();
+				// }
+			} break;
 		}
 	}
 
@@ -668,92 +623,50 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 */
 	private void createOptionsMenu() {
 		// Create options menu.
-		optionsMenu = new WebPopupMenu();
+		optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 
 		// Create day/night tracking menu item.
-		dayNightItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(shadingLayer));
-		dayNightItem.addActionListener(this);
-		optionsMenu.add(dayNightItem);
-		// Unchecked dayNightItem at the start of sim
-		// globeNav.setDayNightTracking(false);
-		dayNightItem.setSelected(false);
+		optionsMenu.add(createSelectable(DAYLIGHT_TRACKING_ACTION, false));
 
 		// Create topographical map menu item.
-		surfItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.surf"), //$NON-NLS-1$
-				SurfMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
-		surfItem.addActionListener(this);
-		optionsMenu.add(surfItem);
-		
-		// Create topographical map menu item.
-		topoItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.topo"), //$NON-NLS-1$
-				TopoMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
-		topoItem.addActionListener(this);
-		optionsMenu.add(topoItem);
-
-		// Create topographical map menu item.
-		geoItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.geo"), //$NON-NLS-1$
-				GeologyMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
-		geoItem.addActionListener(this);
-		optionsMenu.add(geoItem);
-		
+		JCheckBoxMenuItem surfItem = createSelectable(SURFACE_ACTION, SurfMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
+		JCheckBoxMenuItem topoItem = createSelectable(TOPO_ACTION, TopoMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
+		JCheckBoxMenuItem geoItem = createSelectable(GEO_ACTION, GeologyMarsMap.TYPE.equals(mapLayerPanel.getMapType()));
 	    ButtonGroup group = new ButtonGroup();
 		group.add(surfItem);
 		group.add(topoItem);
 		group.add(geoItem);
+		optionsMenu.add(surfItem);
+		optionsMenu.add(topoItem);
+		optionsMenu.add(geoItem);
 
-//		JMenuItem mapItem = new JMenuItem(Msg.getString("NavigatorWindow.menu.selectMap"));//, KeyEvent.VK_M);
-//		mapItem.add(geoItem);
-//		mapItem.add(surfItem);
-//		mapItem.add(geoItem);
-//		optionsMenu.add(mapItem);
-		
-		// Create unit label menu item.
-		unitLabelItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showLabels"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(unitLabelLayer));
-		unitLabelItem.addActionListener(this);
-		optionsMenu.add(unitLabelItem);
-
-		// Create vehicle trails menu item.
-		trailItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(trailLayer));
-		trailItem.addActionListener(this);
-		optionsMenu.add(trailItem);
-
-		// Create landmarks menu item.
-		landmarkItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showLandmarks"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(landmarkLayer));
-		landmarkItem.addActionListener(this);
-		optionsMenu.add(landmarkItem);
-
-		// Create navpoints menu item.
-		navpointItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showNavPoints"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(navpointLayer));
-		navpointItem.addActionListener(this);
-		optionsMenu.add(navpointItem);
-
-		// Create explored site menu item.
-		exploredSiteItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showExploredSites"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(exploredSiteLayer));
-		exploredSiteItem.addActionListener(this);
-		optionsMenu.add(exploredSiteItem);
-
-		// Create minerals menu item.
-		mineralItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showMinerals"), //$NON-NLS-1$
-				mapLayerPanel.hasMapLayer(mineralLayer));
-		mineralItem.addActionListener(this);
-		optionsMenu.add(mineralItem);
+		optionsMenu.add(createSelectable(LABELS_ACTION, mapLayerPanel.hasMapLayer(unitLabelLayer)));
+		optionsMenu.add(createSelectable(VEHICLE_TRAILS_ACTION, mapLayerPanel.hasMapLayer(trailLayer)));
+		optionsMenu.add(createSelectable(LANDMARKS_ACTION, mapLayerPanel.hasMapLayer(landmarkLayer)));
+		optionsMenu.add(createSelectable(NAV_POINTS_ACTION, mapLayerPanel.hasMapLayer(navpointLayer)));
+		optionsMenu.add(createSelectable(EXPLORED_SITES_ACTION, mapLayerPanel.hasMapLayer(exploredSiteLayer)));
+		mineralLayeritem = createSelectable(MINERALS_ACTION, mapLayerPanel.hasMapLayer(mineralLayer));
+		optionsMenu.add(mineralLayeritem);
 
 		optionsMenu.pack();
 	}
 
+	private JCheckBoxMenuItem createSelectable(String action, boolean selected) {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map." + action), //$NON-NLS-1$
+														selected);
+		item.setActionCommand(action);
+		item.addActionListener(this);
+		return item;
+	}
+
+
 	/**
 	 * Creates the minerals menu.
 	 */
-	private WebPopupMenu createMineralsMenu() {
+	private JPopupMenu createMineralsMenu() {
 		// Create the mineral options menu.
-		WebPopupMenu mineralsMenu = new WebPopupMenu();
+		JPopupMenu mineralsMenu = new JPopupMenu();
 
 		// Create each mineral check box item.
 		MineralMapLayer mineralMapLayer = (MineralMapLayer) mineralLayer;
@@ -763,12 +676,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
-			WebCheckBoxMenuItem mineralItem = new WebCheckBoxMenuItem(mineralName, isMineralDisplayed);
+			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
 			mineralItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					SwingUtilities.invokeLater(() -> {
-						WebCheckBoxMenuItem checkboxItem = (WebCheckBoxMenuItem) event.getSource();
+						JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
 						((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(),
 								checkboxItem.isSelected());
 					});
@@ -793,15 +706,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		Arrays.fill(imageArray, color.getRGB());
 		Image image = displayComponent.createImage(new MemoryImageSource(10, 10, imageArray, 0, 10));
 		return new ImageIcon(image);
-	}
-
-	/**
-	 * Opens a unit window on the desktop.
-	 *
-	 * @param unit the unit the window is for.
-	 */
-	public void openUnitWindow(Unit unit) {
-		desktop.openUnitWindow(unit, false);
 	}
 
 	private class MouseListener extends MouseAdapter {
@@ -857,7 +761,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-						openUnitWindow(unit);
+						desktop.openUnitWindow(unit, false);
 					} else
 						mapLayerPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
@@ -899,7 +803,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				.append(" / " + Math.round(h1*1000.0)/1000.0)
 				.append(KM);
 			
-			if (topoItem.isSelected()) {
+			if (TopoMarsMap.TYPE.equals(mapLayerPanel.getMapType())) {
 				int[] rgb = TerrainElevation.getRGB(pos);
 				float[] hsb = TerrainElevation.getHSB(rgb);
 				
@@ -976,45 +880,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 * @param landmark
 	 * @param event
 	 */
-	public void startPopOver(Landmark landmark, int x, int y, MouseEvent event) {
-//		final WebPopup<?> popup = new WebPopup(desktop.getMainWindow().getMainPane());
-//        popup.setPadding(5);
-//        popup.setResizable(false);
-//        popup.setDraggable(true);
-//
-//        final WebPanel container = new WebPanel(StyleId.panelTransparent, new BorderLayout(5, 5));
-//
-//        final WebLabel label = new WebLabel(landmark.getLandmarkLandingLocation(), WebLabel.CENTER);
-//        container.add(label, BorderLayout.NORTH);
-//
-////        final String text = LM.get ( getExampleLanguagePrefix () + "text" );
-////        final WebTextField field = new WebTextField ( text, 20 );
-////        field.setHorizontalAlignment ( WebTextField.CENTER );
-////        container.add ( field, BorderLayout.CENTER );
-//
-//        popup.add(container);
-//
-////        popup.pack();
-//        popup.showPopup(event.getComponent(), x + 5, y + 5);
-        
-         final WebPopOver popOver = new WebPopOver(desktop.getMainWindow().getMainPane());
-//         popOver.setIconImages ();
-         popOver.setCloseOnFocusLoss(true);
-         popOver.setPadding(2);
-         popOver.setTitle(landmark.getLandmarkName());
+	private void startPopOver(Landmark landmark, int x, int y, MouseEvent event) {
+
          
-         final WebPanel c = new WebPanel(StyleId.panelTransparent, new BorderLayout(5, 5));
+         final JPanel c = new JPanel(new BorderLayout(5, 5));
+         final JLabel n = new JLabel(landmark.getLandmarkName(), JLabel.CENTER);
+         c.add(n, BorderLayout.NORTH);
+         final JLabel l = new JLabel(landmark.getLandmarkLandingLocation(), JLabel.CENTER);
+         c.add(l, BorderLayout.CENTER);
 
-         final WebLabel l = new WebLabel(landmark.getLandmarkLandingLocation(), WebLabel.CENTER);
-         c.add(l, BorderLayout.NORTH);
-
-//         final String text = LM.get ( getExampleLanguagePrefix () + "text" );
-//         final WebTextField field = new WebTextField ( text, 20 );
-//         field.setHorizontalAlignment ( WebTextField.CENTER );
-//         container.add ( field, BorderLayout.CENTER );
-
-         popOver.add(c);
-         popOver.show(event.getComponent(), x + 5, y + 5, PopOverDirection.down);
+		JDialog popOver = SwingHelper.createPoupWindow(c, 0, 0, 5, 5);
+		popOver.setVisible(true);
 	}
 
 	@Override
@@ -1028,26 +904,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		longCB = null;
 		mapLayerPanel = null;
 		globeNav = null;
-//		ruler = null;
-//		latText = null;
-//		longText = null;
+
 		latDir = null;
 		longDir = null;
-		goThere = null;
-		optionsButton = null;
 		optionsMenu = null;
 		mineralsButton = null;
-		topoItem = null;
-		surfItem = null;
-		geoItem = null;
-		unitLabelItem = null;
-		dayNightItem = null;
-		trailItem = null;
-		landmarkItem = null;
-		navpointItem = null;
-		exploredSiteItem = null;
-		mineralItem = null;
-		mapPaneInner = null;
 		
 		unitIconLayer = null;
 		unitLabelLayer = null;

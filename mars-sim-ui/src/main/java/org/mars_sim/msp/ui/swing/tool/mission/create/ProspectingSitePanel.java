@@ -14,8 +14,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
-import com.alee.laf.label.WebLabel;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,6 +22,7 @@ import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 
 /**
  * A wizard panel for the ice or regolith prospecting site.
@@ -46,7 +45,7 @@ class ProspectingSitePanel extends WizardPanel {
 	private NavpointEditLayer navLayer;
 	private boolean navSelected;
 	private IntPoint navOffset;
-	private WebLabel locationLabel;
+	private JLabel locationLabel;
 	private int pixelRange;
 	
 	/**
@@ -72,7 +71,7 @@ class ProspectingSitePanel extends WizardPanel {
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.COLLECT_ICE == type) resource = "Ice";
 		else if (MissionType.COLLECT_REGOLITH == type) resource = "Regolith";
-		WebLabel titleLabel = new WebLabel("Choose Your " + resource + " Collection Site : ");
+		JLabel titleLabel = new JLabel("Choose Your " + resource + " Collection Site : ");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
@@ -95,7 +94,7 @@ class ProspectingSitePanel extends WizardPanel {
 		add(mapPane);
 		
 		// Create the location label.
-		locationLabel = new WebLabel("Location: ", WebLabel.CENTER);
+		locationLabel = new JLabel("Location: ", JLabel.CENTER);
 		locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
 		locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(locationLabel);
@@ -104,7 +103,7 @@ class ProspectingSitePanel extends WizardPanel {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the instruction label.
-		WebLabel instructionLabel = new WebLabel("Drag navpoint flag to desired " + resource + 
+		JLabel instructionLabel = new JLabel("Drag navpoint flag to desired " + resource + 
 				" collection site.");
 		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
 		instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

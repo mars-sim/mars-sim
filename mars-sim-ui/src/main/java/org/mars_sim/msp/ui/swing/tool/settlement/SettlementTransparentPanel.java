@@ -39,6 +39,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -81,23 +82,12 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
-import com.alee.extended.WebComponent;
-import com.alee.extended.svg.SvgIcon;
-import com.alee.extended.svg.SvgStroke;
-import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.managers.icon.IconManager;
-import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.style.StyleId;
-
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
 
 
 @SuppressWarnings({ "serial", "rawtypes" })
-public class SettlementTransparentPanel extends WebComponent implements ClockListener {
+public class SettlementTransparentPanel extends JComponent implements ClockListener {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
@@ -108,20 +98,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
-
-	public static final String SANDSTORM_SVG = MainWindow.SANDSTORM_SVG;
-	public static final String DUST_DEVIL_SVG = MainWindow.DUST_DEVIL_SVG;
-	public static final String SAND_SVG = MainWindow.SAND_SVG;
-	public static final String HAZY_SVG = MainWindow.HAZY_SVG;
-
-	public static final String COLD_WIND_SVG = MainWindow.COLD_WIND_SVG;
-	public static final String FROST_WIND_SVG = MainWindow.FROST_WIND_SVG;
-
-	public static final String SUN_SVG = MainWindow.SUN_SVG;
-	public static final String DESERT_SUN_SVG = MainWindow.DESERT_SUN_SVG;
-	public static final String CLOUDY_SVG = MainWindow.CLOUDY_SVG;
-	public static final String SNOWFLAKE_SVG = MainWindow.SNOWFLAKE_SVG;
-	public static final String ICE_SVG = MainWindow.ICE_SVG;
 
 	private static final String TEMPERATURE 	= "   Temperature: ";
 	private static final String WINDSPEED 		= "   Windspeed: ";
@@ -149,7 +125,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private double windSpeedCache;
 	private double zenithAngleCache;
 
-	private String[] iconCache = new String[]{"", "", "", ""};
 	private String tString;
 	private String wsString;
 	private String zaString;
@@ -164,53 +139,36 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
 
-	private ImageIcon sand = new LazyIcon("sand").getIcon();
-	private ImageIcon sandstorm = new LazyIcon("sandstorm").getIcon();
-	private ImageIcon dustDevil = new LazyIcon("dustDevil").getIcon();
-
-	private ImageIcon coldWind = new LazyIcon("cold_wind").getIcon();
-	private ImageIcon frostWind = new LazyIcon("frost_wind").getIcon();
-
-	private ImageIcon snowflake = new LazyIcon("snowflake").getIcon();
-	private ImageIcon ice = new LazyIcon("ice").getIcon();
-	private ImageIcon hazy = new LazyIcon("hazy").getIcon();
-	private ImageIcon cloudy = new LazyIcon("cloudy").getIcon();
-	
-	private ImageIcon sun = new LazyIcon("sun").getIcon();
-	private ImageIcon desertSun = new LazyIcon("desert_sun").getIcon();
-	
-	private ImageIcon emptyIcon = new ImageIcon();
+	private static final ImageIcon emptyIcon = new ImageIcon();
     
 	/** label for projected sunrise time. */
-	private WebLabel projectSunriseLabel;
+	private JLabel projectSunriseLabel;
 	/** label for projected sunset time. */
-	private WebLabel projectSunsetLabel;
+	private JLabel projectSunsetLabel;
 	/** label for projected daylight. */
-	private WebLabel projectDaylightLabel;
+	private JLabel projectDaylightLabel;
 	/** label for sunrise time. */
-	private WebLabel sunriseLabel;
+	private JLabel sunriseLabel;
 	/** label for sunset time. */
-	private WebLabel sunsetLabel;
+	private JLabel sunsetLabel;
 	/** label for zenith time. */
-	private WebLabel zenithLabel;
+	private JLabel zenithLabel;
 	/** label for highest solar irradiance. */
-	private WebLabel maxSunLabel;
+	private JLabel maxSunLabel;
 	/** label for the daylight period. */
-	private WebLabel daylightLabel;
+	private JLabel daylightLabel;
 	/** label for the daylight period. */
-	private WebLabel currentSunLabel;
+	private JLabel currentSunLabel;
 
-	private WebButton renameBtn;
-	private WebButton infoButton;
-	private WebButton weatherButton00;
-	private WebButton weatherButton01;
-	private WebButton weatherButton10;
-
-	private WebButton[] weatherButtons = new WebButton[3];
+	private JButton renameBtn;
+	private JButton infoButton;
+	private JLabel temperatureIcon;
+	private JLabel windIcon;
+	private JLabel opticalIcon;
 
 	private JPopupMenu labelsMenu;
 	/** Settlement Combo box */
-	private WebComboBox settlementListBox;
+	private JComboBox<Settlement> settlementListBox;
 	/** Settlement Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
 
@@ -228,14 +186,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
 	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-
-	private Simulation sim;
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
         this.desktop = desktop;
 
-        sim = desktop.getSimulation();
+        Simulation sim = desktop.getSimulation();
         this.unitManager = sim.getUnitManager();
         
 		MasterClock masterClock = sim.getMasterClock();
@@ -254,6 +210,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		setDoubleBuffered(true);
     }
 
+	@Override
     public void paintComponent (Graphics g) {
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.0f)); // draw transparent background
 		super.paintComponent(g);
@@ -284,7 +241,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         buildBanner();
         buildWeatherPanel();
 
-	    WebPanel topPane = new WebPanel(new BorderLayout(20, 20));
+	    JPanel topPane = new JPanel(new BorderLayout(20, 20));
 	    topPane.setBackground(new Color(0,0,0,128));
 	    topPane.setOpaque(false);
 
@@ -296,26 +253,26 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	    mapPanel.add(topPane, BorderLayout.NORTH);
 
-	    WebPanel weatherPane = new WebPanel(new GridLayout(1, 3, 5, 5));
+	    JPanel weatherPane = new JPanel(new GridLayout(1, 3, 5, 5));
 	    weatherPane.setBackground(new Color(0,0,0,128));
 	    weatherPane.setOpaque(false);
 
-	    weatherPane.add(weatherButton00);
-	    weatherPane.add(weatherButton01);
-	    weatherPane.add(weatherButton10);
+	    weatherPane.add(temperatureIcon);
+	    weatherPane.add(windIcon);
+	    weatherPane.add(opticalIcon);
 
-	    WebPanel sunPane = createSunPane();
+	    JPanel sunPane = createSunPane();
 
-	    WebPanel panel = new WebPanel(new BorderLayout(5, 5));
+	    JPanel panel = new JPanel(new BorderLayout(5, 5));
 	    panel.setBackground(new Color(0,0,0,128));
 	    panel.setOpaque(false);
 	    panel.add(sunPane, BorderLayout.NORTH);
 
-	    WebPanel centerPanel = new WebPanel(new BorderLayout(2, 2));
+	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
 
-	    WebPanel westPanel = new WebPanel(new BorderLayout(5, 5));
+	    JPanel westPanel = new JPanel(new BorderLayout(5, 5));
 	    westPanel.setBackground(new Color(0,0,0,128));
 	    westPanel.setOpaque(false);
 	    westPanel.add(panel, BorderLayout.CENTER);
@@ -364,13 +321,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
      * 
      * @return
      */
-    private WebPanel createSunPane() {
-	    WebPanel sunPane = new WebPanel(new BorderLayout(3, 3));
+    private JPanel createSunPane() {
+	    JPanel sunPane = new JPanel(new BorderLayout(3, 3));
 	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
 	    sunPane.setOpaque(false);
 
-	    WebPanel roundPane = new WebPanel(new GridLayout(9, 1, 0, 0)) {
+	    JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0)) {
 	        @Override
 	        protected void paintComponent(Graphics g) {
 	           super.paintComponent(g);
@@ -390,27 +347,27 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(260, 185);
+	    roundPane.setPreferredSize(new Dimension(260, 185));
 	    sunPane.add(roundPane, BorderLayout.EAST);
   		
 	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
 
-	    projectSunriseLabel = new WebLabel(StyleId.labelShadow, PROJECTED_SUNRISE 
+	    projectSunriseLabel = new JLabel(PROJECTED_SUNRISE 
 	    		+ Math.round(time[0] *10.0)/10.0 + MSOL);
 	    
-	    projectSunsetLabel = new WebLabel(StyleId.labelShadow, PROJECTED_SUNSET 
+	    projectSunsetLabel = new JLabel(PROJECTED_SUNSET 
 	    		+ Math.round(time[1] *10.0)/10.0 + MSOL);
 	    
-	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
-		sunsetLabel = new WebLabel(StyleId.labelShadow, SUNSET + PENDING);
-		zenithLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
-		maxSunLabel = new WebLabel(StyleId.labelShadow, MAX_LIGHT + PENDING);
-		daylightLabel = new WebLabel(StyleId.labelShadow, DAYLIGHT + PENDING);
+	    sunriseLabel = new JLabel(SUNRISE + PENDING);
+		sunsetLabel = new JLabel(SUNSET + PENDING);
+		zenithLabel = new JLabel(ZENITH + PENDING);
+		maxSunLabel = new JLabel(MAX_LIGHT + PENDING);
+		daylightLabel = new JLabel(DAYLIGHT + PENDING);
 		
-		projectDaylightLabel  = new WebLabel(StyleId.labelShadow, PROJECTED_DAYLIGHT 
+		projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT 
 	    		+ Math.round(time[2] *10.0)/10.0 + MSOL);
 		
-		currentSunLabel = new WebLabel(StyleId.labelShadow, CURRENT_LIGHT + PENDING);
+		currentSunLabel = new JLabel(CURRENT_LIGHT + PENDING);
 
 		projectSunriseLabel.setFont(sunFont);
 		sunriseLabel.setFont(sunFont);
@@ -439,15 +396,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		maxSunLabel.setForeground(white);
 		currentSunLabel.setForeground(white);
 
-		projectSunriseLabel.setToolTip("The projected time of sunrise");
-		sunriseLabel.setToolTip("The time of sunrise");
-		projectSunsetLabel.setToolTip("The projected time of sunset");
-		sunsetLabel.setToolTip("The time of sunset");
-		projectDaylightLabel.setToolTip("The projected duration of time in a sol having sunlight");
-		daylightLabel.setToolTip("The duration of time in a sol having sunlight");
-		zenithLabel.setToolTip("The time at which the solar irradiance is at max");
-		maxSunLabel.setToolTip("The max solar irradiance of yester-sol as recorded");
-		currentSunLabel.setToolTip("The current solar irradiance as recorded");
+		projectSunriseLabel.setToolTipText("The projected time of sunrise");
+		sunriseLabel.setToolTipText("The time of sunrise");
+		projectSunsetLabel.setToolTipText("The projected time of sunset");
+		sunsetLabel.setToolTipText("The time of sunset");
+		projectDaylightLabel.setToolTipText("The projected duration of time in a sol having sunlight");
+		daylightLabel.setToolTipText("The duration of time in a sol having sunlight");
+		zenithLabel.setToolTipText("The time at which the solar irradiance is at max");
+		maxSunLabel.setToolTipText("The max solar irradiance of yester-sol as recorded");
+		currentSunLabel.setToolTipText("The current solar irradiance as recorded");
 
 		roundPane.add(projectSunriseLabel);
 		roundPane.add(sunriseLabel);
@@ -481,13 +438,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     /**
      * Builds the settlement name combo box.
      */
-	@SuppressWarnings("unchecked")
-	public void buildSettlementNameComboBox() {
+	private void buildSettlementNameComboBox() {
 
 		settlementCBModel = new SettlementComboBoxModel();
-		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
-		settlementListBox.setWidePopup(true);
-		settlementListBox.setPreferredSize(getNameLength() * 12, 30);
+		settlementListBox = new JComboBox<>(settlementCBModel);
+		settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
@@ -536,7 +491,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 *
 	 * @param s
 	 */
-	public void changeSettlement(Settlement s) {
+	private void changeSettlement(Settlement s) {
 		// Set the selected settlement in SettlementMapPanel
 		mapPanel.setSettlement(s);
 		// Set the population label in the status bar
@@ -548,7 +503,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Builds the text banner bar.
 	 */
-	public void buildBanner() {
+	private void buildBanner() {
 		bannerBar = new DisplaySingle();
 		bannerBar.setLcdColor(LcdColor.REDDARKRED_LCD);
 		bannerBar.setDigitalFont(true);
@@ -566,7 +521,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * @param s
 	 * @return
 	 */
-	public boolean updateWeather(Settlement s) {
+	private boolean updateWeather(Settlement s) {
 		boolean result = false;
 
 		Coordinates c = s.getCoordinates();
@@ -607,7 +562,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * 
 	 * @param s
 	 */
-	public void displayBanner(Settlement s) {
+	private void displayBanner(Settlement s) {
        	if (updateWeather(s)) {
        		String resources = resourceCache.get(s);
        		if (resources == null)
@@ -617,97 +572,57 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
        	}
 	}
 
-    public double getTemperature(Coordinates c) {
+    private double getTemperature(Coordinates c) {
 		return weather.getTemperature(c);
     }
 
-    public String getTemperatureString(double value) {
+    private String getTemperatureString(double value) {
     	// Note: Use of Msg.getString("temperature.sign.degreeCelsius") for the degree sign 
     	// does not work on the digital banner.
     	// May use of " °C", " �C", or " deg C" 
     	return fmt.format(value) + " deg C";
     }
 
-    public double getWindSpeed(Coordinates c) {
+    private double getWindSpeed(Coordinates c) {
 		return weather.getWindSpeed(c);
     }
 
-    public String getWindSpeedString(double value) {
+    private String getWindSpeedString(double value) {
     	return fmt2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
     }
 
-    public String getAirPressureString(double value) {
-    	return fmt2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-    }
-
-    public double getAirPressure(Coordinates c) {
-    	return Math.round(weather.getAirPressure(c) *100.0) / 100.0;
-    }
-
-    public int getWindDirection(Coordinates c) {
-  		return weather.getWindDirection(c);
-    }
-
-    public String getWindDirectionString(double value) {
-       	return fmt.format(value) + " deg";
-    }
-
-    public double getOpticalDepth(Coordinates c) {
+    private double getOpticalDepth(Coordinates c) {
  		return surfaceFeatures.getOpticalDepth(c);
     }
 
-    public String getOpticalDepthString(double value) {
+    private String getOpticalDepthString(double value) {
      	return fmt2.format(value);
     }
 
-    public double getZenithAngle(Coordinates c) {
+    private double getZenithAngle(Coordinates c) {
  		return orbitInfo.getSolarZenithAngle(c);
-     }
+    }
 
-    public String getZenithAngleString(double value) {
+	private String getZenithAngleString(double value) {
      	return fmt2.format(value * RADIANS_TO_DEGREES) + " deg";
     }
 
-    public double getSolarDeclination() {
- 		return orbitInfo.getSolarDeclinationAngleDegree();
-     }
-
-    public String getSolarDeclinationString(double value) {
-     	return fmt2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-    }
-
-    public double getAirDensity(Coordinates c) {
-		return weather.getAirDensity(c);
-    }
-
-    public String getAirDensityString(double value) {
-     	return fmt2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-    }
-
-    public double getSolarIrradiance(Coordinates c) {
+    private double getSolarIrradiance(Coordinates c) {
   		return surfaceFeatures.getSolarIrradiance(c);
-      }
-
-    public String getSolarIrradianceString(double value) {
-      	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
-    }
+	}
 
     /**
      * Builds the weather panel
      */
-	public void buildWeatherPanel() {
+	private void buildWeatherPanel() {
         int size = MainWindow.WEATHER_ICON_SIZE;
 
-    	weatherButton00 = new WebButton(StyleId.buttonUndecorated);
-    	weatherButton00.setPreferredSize(new Dimension(size, size));
-    	weatherButton01 = new WebButton(StyleId.buttonUndecorated);
-    	weatherButton01.setPreferredSize(new Dimension(size, size));
-    	weatherButton10 = new WebButton(StyleId.buttonUndecorated);
-    	weatherButton10.setPreferredSize(new Dimension(size, size));
-
-	    weatherButtons[0] = weatherButton00;
-	    weatherButtons[1] = weatherButton01;
-	    weatherButtons[2] = weatherButton10;
+    	temperatureIcon = new JLabel();
+    	temperatureIcon.setPreferredSize(new Dimension(size, size));
+    	windIcon = new JLabel();
+    	windIcon.setPreferredSize(new Dimension(size, size));
+    	opticalIcon = new JLabel();
+    	opticalIcon.setPreferredSize(new Dimension(size, size));
 
         updateIcon();
 	}
@@ -715,137 +630,51 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Update the weather icon
 	 */
-	public void updateIcon() {
-       	String[] s = determineIcon();
-
-       	for (int i=0; i<3; i++) {
-       		String sIcon = s[i];
-	    	if (!iconCache[i].equals(sIcon)) {
-	    		iconCache[i] = sIcon;
-
-	    		Icon icon = null;
-
-	        	if (sIcon.equals(SANDSTORM_SVG)) {
-	        		icon = sandstorm;
-	        	}
-	        	else if (sIcon.equals(DUST_DEVIL_SVG)) {
-	        		icon = dustDevil;
-	        	}
-	        	else if (sIcon.equals(SAND_SVG)) {
-	        		icon = sand;
-	        	}
-	        	else if (sIcon.equals(HAZY_SVG)) {
-	        		icon = hazy;
-	        	}
-	        	else if (sIcon.equals(COLD_WIND_SVG)) {
-	        		icon = coldWind;
-	        	}
-	        	
-	        	if (sIcon.equals(FROST_WIND_SVG)) {
-	        		icon = frostWind;
-	        	}
-	        	else if (sIcon.equals(SUN_SVG)) {
-	        		icon = sun;
-	        	}
-	        	else if (sIcon.equals(DESERT_SUN_SVG)) {
-	        		icon = desertSun;
-	        	}
-	        	else if (sIcon.equals(CLOUDY_SVG)) {
-	        		icon = cloudy;
-	        	}
-            	else if (sIcon.equals(SNOWFLAKE_SVG)) {
-	        		icon = snowflake;
-	        	}
-	        	else if (sIcon.equals(ICE_SVG)) {
-	        		icon = ice;
-	        	}
-	        	else if (sIcon.equals("")) {
-	        		icon = emptyIcon;
-	        	}
-
-	    		weatherButtons[i].setIcon(icon);
-	    	}
-       	}
-	}
-
-    /**
-     * Determines which the weather icon to be shown
-     *
-     * @return
-     */
-    public String[] determineIcon() {
-
-       	String icon00 = "";
-       	String icon01 = "";
-       	String icon10 = "";
-//       	String icon11 = "";
-
-    	if (temperatureCache < -40) {
-    		icon00 = ICE_SVG;
-    	}
-
-    	else if (temperatureCache < 0) {
-			icon00 = SNOWFLAKE_SVG;
-    	}
-
-    	else if (temperatureCache < 10) {
-			icon00 = CLOUDY_SVG;
-    	}
-
-    	else if (temperatureCache < 22)
-    		icon00 = DESERT_SUN_SVG;
-
-    	else
-    		icon00 = SUN_SVG;
-
+	private void updateIcon() {
+		Icon updatedIcon;
+		if (temperatureCache < -40) {
+			updatedIcon = MainWindow.getIcon("ice");
+		}
+		else if (temperatureCache < 0) {
+			updatedIcon = MainWindow.getIcon("snowflake");
+		}
+		else if (temperatureCache < 10) {
+			updatedIcon = MainWindow.getIcon("cloudy");
+		}
+		else if (temperatureCache < 22)
+			updatedIcon = MainWindow.getIcon("desert_sun");
+		else
+			updatedIcon = MainWindow.getIcon("sun");
+		temperatureIcon.setIcon(updatedIcon);
+		
 		///////////////////////////////////////////////
-
-		if (windSpeedCache > 30D) {
-
-			if (opticalDepthCache > 0.75)
-				icon01 = SANDSTORM_SVG;
-			else if (temperatureCache < 0)
-				icon01 = FROST_WIND_SVG;
-			else
-				icon01 = COLD_WIND_SVG;
+		if ((windSpeedCache > 30D) && (opticalDepthCache > 0.75)) {
+			updatedIcon = MainWindow.getIcon("sandstorm");
 		}
-
-		else if (windSpeedCache > 20D) {
-
-			if (opticalDepthCache > 0.75)
-				icon01 = DUST_DEVIL_SVG;
-			else if (temperatureCache < 0)
-				icon01 = FROST_WIND_SVG;
-			else
-				icon01 = COLD_WIND_SVG;
+		else if ((windSpeedCache > 20D) && (opticalDepthCache > 0.75)) {
+			updatedIcon = MainWindow.getIcon("dustDevil");
 		}
-
 		else if (windSpeedCache > 10D) {
-
-		   	if (temperatureCache < 0)
-				icon01 = FROST_WIND_SVG;
+			if (temperatureCache < 0)
+				updatedIcon = MainWindow.getIcon("frost_wind");
 			else
-				icon01 = COLD_WIND_SVG;
-		}
-
+				updatedIcon = MainWindow.getIcon("cold_wind");
+			}
 		else
-			icon01 = "";
+			updatedIcon = emptyIcon;
+		windIcon.setIcon(updatedIcon);
 
 		///////////////////////////////////////////////
-
 		if (opticalDepthCache > .5)
-			icon10 = SAND_SVG;
-
-    	else if (opticalDepthCache > 0.3) {
-    		icon10 = HAZY_SVG;
-    	}
-
+			updatedIcon = MainWindow.getIcon("sand");
+		else if (opticalDepthCache > 0.3) {
+			updatedIcon = MainWindow.getIcon("hazy");
+		}
 		else
-			icon10 = "";
-
-    	return new String[] {icon00, icon01, icon10};//, icon11};
-    }
-
+			updatedIcon = emptyIcon;
+		opticalIcon.setIcon(updatedIcon);
+	}
+ 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -880,7 +709,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		    }
 	}
 
-    public void buildZoomSlider() {
+    private void buildZoomSlider() {
 
         UIDefaults sliderDefaults = new UIDefaults();
 
@@ -950,11 +779,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
     }
 
-    public void buildInfoP() {
+    private void buildInfoP() {
 
-    	SvgIcon icon = IconManager.getIcon ("info");
-    	icon.apply(new SvgStroke(Color.ORANGE));
-    	infoButton = new WebButton(StyleId.buttonUndecorated, icon);
+    	// SvgIcon icon = (SvgIcon) MainWindow.getIcon ("info");
+    	// icon.apply(new SvgStroke(Color.ORANGE));
+		Icon icon =  MainWindow.getIcon ("info");
+    	infoButton = new JButton(icon);
 
 		infoButton.setPreferredSize(new Dimension(32, 32));
 		infoButton.setOpaque(false);
@@ -973,10 +803,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //		infoP.add(infoButton);
     }
 
-    public void buildrenameBtn() {
+    private void buildrenameBtn() {
 
-    	ImageIcon icon = new LazyIcon("edit").getIcon();
-    	renameBtn = new WebButton(StyleId.buttonUndecorated, icon);
+    	Icon icon = MainWindow.getIcon("edit");
+    	renameBtn = new JButton(icon);
     	renameBtn.setPreferredSize(new Dimension(32, 32));
 		renameBtn.setOpaque(false);
 		renameBtn.setBackground(new Color(0,0,0,128));
@@ -990,7 +820,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		});
     }
 
-    public void buildButtonPane() {
+    private void buildButtonPane() {
 
         buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         buttonPane.setPreferredSize(new Dimension(150, 36));
@@ -998,8 +828,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         buttonPane.setOpaque(false);
 
 		// Create rotate clockwise button.
-        final ImageIcon cwIcon = new LazyIcon("right").getIcon();
-        WebButton cwButton = new WebButton(StyleId.buttonUndecorated, cwIcon);
+        final Icon cwIcon = MainWindow.getIcon("right");
+        JButton cwButton = new JButton(cwIcon);
         cwButton.setPreferredSize(new Dimension(32, 32));
         cwButton.setOpaque(false);
 		cwButton.setBorderPainted(false);
@@ -1014,8 +844,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		});
 
 		// Create center button.
-        final ImageIcon centerIcon = new LazyIcon("center").getIcon();
-		WebButton recenterButton = new WebButton(StyleId.buttonUndecorated, centerIcon);
+        final Icon centerIcon = MainWindow.getIcon("center");
+		JButton recenterButton = new JButton(centerIcon);
 		recenterButton.setPreferredSize(new Dimension(32, 32));
 		recenterButton.setOpaque(false);
 		recenterButton.setBorderPainted(false);
@@ -1031,8 +861,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		});
 
 		// Create rotate counter-clockwise button.
-        final ImageIcon ccwIcon = new LazyIcon("left").getIcon();
-        WebButton ccwButton = new WebButton(StyleId.buttonUndecorated, ccwIcon);
+        final Icon ccwIcon = MainWindow.getIcon("left");
+        JButton ccwButton = new JButton(ccwIcon);
         ccwButton.setPreferredSize(new Dimension(32, 32));
 		ccwButton.setOpaque(false);
 		ccwButton.setBorderPainted(false);
@@ -1049,29 +879,17 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		buttonPane.add(ccwButton);
 		buttonPane.add(recenterButton);
 		buttonPane.add(cwButton);
-
-		// Need to clean up these icons
-//				img.clockwise          = /icons/map/Clockwise.png
-//				img.counterClockwise   = /icons/map/CounterClockwise.png
-//				img.centerMap          = /icons/map/CenterMap.png
-//				img.cw					= /icons/map/CW.png
-//				img.ccw					= /icons/map/CCW.png
-//				img.recenter			= /icons/map/recenter.png
-//				img.cw_yellow			= /icons/map/CW_yellow.png
-//				img.ccw_yellow			= /icons/map/CCW_yellow.png
-//				img.recenter_yellow		= /icons/map/recenter_yellow.png
-
 		buttonPane.add(emptyLabel);
     }
 
-    public void buildLabelPane() {
+    private void buildLabelPane() {
         labelPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         labelPane.setPreferredSize(new Dimension(150, 36));
         labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
 
-	    final ImageIcon labelsIcon = new LazyIcon("stack").getIcon();
-	    WebButton labelsButton = new WebButton(StyleId.buttonUndecorated,
+	    final Icon labelsIcon = MainWindow.getIcon("stack");
+	    JButton labelsButton = new JButton(
 	    		Msg.getString("SettlementTransparentPanel.button.labels"), labelsIcon);  //$NON-NLS-1$
 
 		labelsButton.setFont(new Font("Dialog", Font.BOLD, 13));
@@ -1108,7 +926,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * Create the labels popup menu.
 	 * @return popup menu.
 	 */
-	public JPopupMenu createLabelsMenu() {
+	private JPopupMenu createLabelsMenu() {
 		JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
 		popMenu.setOpaque(false);
 		popMenu.setBackground(new Color(0,0,0,128));
@@ -1194,7 +1012,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 
-	public class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
+	private class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
 
 		public JCustomCheckBoxMenuItem(String s, boolean b) {
 			super(s, b);
@@ -1205,7 +1023,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Open dialog box to take in the new settlement name
 	 */
-	public void openRenameDialog() {
+	private void openRenameDialog() {
 
 		String oldName = mapPanel.getSettlement().getName();
 
@@ -1226,39 +1044,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * <p>Checks if a String is whitespace, empty ("") or null.</p>
-	 *
-	 * <pre>
-	 * StringUtils.isBlank(null)      = true
-	 * StringUtils.isBlank("")        = true
-	 * StringUtils.isBlank(" ")       = true
-	 * StringUtils.isBlank("bob")     = false
-	 * StringUtils.isBlank("  bob  ") = false
-	 * </pre>
-	 *
-	 * @param str  the String to check, may be null
-	 * @return <code>true</code> if the String is null, empty or whitespace
-	 * @since 2.0
-	 * @author commons.apache.org
-	 */
-	public static boolean isBlank(String str) {
-	    int strLen;
-	    if (str == null || (strLen = str.length()) == 0) {
-	        return true;
-	    }
-	    for (int i = 0; i < strLen; i++) {
-	        if ((Character.isWhitespace(str.charAt(i)) == false)) {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
-
-	/**
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
 	 */
-	public String askNameDialog() {
+	private String askNameDialog() {
 		return JOptionPane
 			.showInputDialog(desktop,
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"), //$NON-NLS-1$
@@ -1269,7 +1058,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Inner class combo box model for settlements.
 	 */
-	public class SettlementComboBoxModel extends DefaultComboBoxModel<Object>
+	private class SettlementComboBoxModel extends DefaultComboBoxModel<Settlement>
 		implements UnitManagerListener, UnitListener {
 
 		/**
@@ -1367,14 +1156,14 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 
-	public WebComboBox getSettlementListBox() {
+	public JComboBox getSettlementListBox() {
 		return settlementListBox;
 	}
 
 	/**
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
-	public void displaySunData(Coordinates location) {
+	private void displaySunData(Coordinates location) {
 	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
 	    
 		projectSunriseLabel.setText (PROJECTED_SUNRISE + Math.round(time[0] *10.0)/10.0 + MSOL);
@@ -1401,7 +1190,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * 
 	 * @param pulse
 	 */
-	public void prepBannerResourceString(ClockPulse pulse) {
+	private void prepBannerResourceString(ClockPulse pulse) {
 
 		int sol = pulse.getMarsTime().getMissionSol();
 		if (sol > 1) {
@@ -1411,13 +1200,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			}
 		}
 	}
-
-	@Override
-	public StyleId getDefaultStyleId() {
-		// Auto-generated method stub
-		return null;
-	}
-
 
 	@Override
 	public String getUIClassID() {
@@ -1433,10 +1215,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-//		if (!isVisible())
-//			return;
-//		if (!isShowing()) 
-//			return;
+
 			
 		if (pulse.isNewSol()) {
 			// Redo the resource string once a sol
@@ -1448,7 +1227,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		
 		// This can be removed once uiPulse is collapsed into timePulse
 		MarsClock marsClock = pulse.getMarsTime();
-		if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
+		if (marsClock.isStable() && bannerBar != null) {
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// When loading from a saved sim, s may be initially null
 			if (s == null) 
