@@ -25,10 +25,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -41,7 +37,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,8 +57,6 @@ import org.mars_sim.msp.core.SimulationListener;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
@@ -72,20 +65,15 @@ import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
 import com.alee.extended.button.WebSwitch;
-import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.extended.overlay.FillOverlay;
 import com.alee.extended.overlay.WebOverlay;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.text.WebTextField;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.NoOpKeyListener;
 import com.alee.utils.swing.NoOpMouseListener;
 
@@ -133,18 +121,12 @@ extends JComponent implements ClockListener {
 	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
-	private static final String SOL = "   Sol ";
-	private static final String WHITESPACES = "   ";
-
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
-	/** The timer for update the status bar labels. */
-	private static final int TIME_DELAY = 2_000;
+
 
 	/** The main window frame. */
 	private static JFrame frame;
-	/** The lander hab icon. */
-	private static Icon landerIcon;
 	/** The Telescope icon. */
 	private static Icon telescopeIcon;
 
@@ -166,8 +148,6 @@ extends JComponent implements ClockListener {
 
 	private boolean useDefault = false;
 
-	private int solCache = 0;
-
 	private String lookAndFeelTheme;
 
 	/** The unit tool bar. */
@@ -179,12 +159,9 @@ extends JComponent implements ClockListener {
 
 	private MainWindowMenu mainWindowMenu;
 
-	private Timer delayTimer;
 	private Timer delayTimer1;
 
 	private OrbitViewer orbitViewer;
-
-	private javax.swing.Timer earthTimer;
 
 	private JStatusBar statusBar;
 
@@ -198,17 +175,11 @@ extends JComponent implements ClockListener {
 	private WebOverlay overlay;
 
 	private WebStyledLabel blockingOverlay;
-	private WebStyledLabel solLabel;
-
-	private WebTextField marsTimeTF;
-	private WebDateField earthDateField;
 
 	private WebMemoryBar memoryBar;
 
 	private JPanel bottomPane;
 	private JPanel mainPane;
-
-	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
 
 	/** Arial font. */
 	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
@@ -220,9 +191,6 @@ extends JComponent implements ClockListener {
 
 	private Simulation sim;
 	private MasterClock masterClock;
-	private EarthClock earthClock;
-	private MarsClock marsClock;
-
 
 	/**
 	 * Constructor 1.
@@ -280,13 +248,8 @@ extends JComponent implements ClockListener {
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim);
 
-		// Set up timers for use on the status bar
-		setupDelayTimer();
-
 		// Set up other elements
 		masterClock = sim.getMasterClock();
-		earthClock = masterClock.getEarthClock();
-		marsClock = masterClock.getMarsClock();
 		init();
 
 		// Show frame
@@ -643,18 +606,6 @@ extends JComponent implements ClockListener {
 		// Add overlay
 		mainPane.add(overlay, BorderLayout.CENTER);
 
-		// Add this class to the master clock's listener
-		masterClock.addClockListener(this, 1000L);
-
-		// Create Earth date text field
-		createEarthDate();
-
-		// Create sol label
-		createSolLabel();
-
-		// Create Mars date text field
-		createMarsDate();
-
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 
@@ -716,6 +667,9 @@ extends JComponent implements ClockListener {
 		statusBar.addRightCorner();
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
+
+		// Add this class to the master clock's listener
+		masterClock.addClockListener(this, 1000L);
 	}
 
 	/**
@@ -740,7 +694,7 @@ extends JComponent implements ClockListener {
 	public void createOverlayCheckBox() {
 		overlayCheckBox = new JCheckBox("{Pause Overlay On/Off:b}", false);
 		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
-		TooltipManager.setTooltip(overlayCheckBox, "Turn on/off pause overlay in desktop", TooltipWay.up);
+		overlayCheckBox.setToolTipText("Turn on/off pause overlay in desktop");
 
 		overlayCheckBox.addItemListener(new ItemListener() {
 		    @Override
@@ -765,7 +719,7 @@ extends JComponent implements ClockListener {
 		pauseSwitch.setSwitchComponents(
 				ImageLoader.getIcon(Msg.getString("img.speed.play")),
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
-		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.up);
+		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
 
 		pauseSwitch.addActionListener(e -> 
                 masterClock.setPaused(!pauseSwitch.isSelected(), false)
@@ -799,7 +753,7 @@ extends JComponent implements ClockListener {
 	public void createSpeedButtons() {
 		increaseSpeed = new WebButton();
 		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
-		TooltipManager.setTooltip(increaseSpeed, "Increase the sim speed (aka time ratio)", TooltipWay.up);
+		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -811,7 +765,7 @@ extends JComponent implements ClockListener {
 
 		decreaseSpeed = new WebButton();
 		decreaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.decrease"))); //$NON-NLS-1$
-		TooltipManager.setTooltip(decreaseSpeed, "Decrease the sim speed (aka time ratio)", TooltipWay.up);
+		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 
 		decreaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -821,20 +775,6 @@ extends JComponent implements ClockListener {
 			};
 		});
 
-	}
-
-	private void createSolLabel() {
-		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		solLabel.setFont(FONT_SANS_SERIF_1);
-		solLabel.setForeground(Color.DARK_GRAY);
-		solLabel.setText(SOL + "1" + WHITESPACES);
-		solLabel.setHorizontalAlignment(JLabel.CENTER);
-		solLabel.setVerticalAlignment(JLabel.CENTER);
-		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
-	}
-
-	public WebStyledLabel getSolLabel() {
-		return solLabel;
 	}
 
 	public void createMemoryBar() {
@@ -849,60 +789,6 @@ extends JComponent implements ClockListener {
 		return memoryBar;
 	}
 
-	public void createEarthDate() {
-		earthDateField = new WebDateField(StyleId.datefield);
-		TooltipManager.setTooltip(earthDateField, "Greenwich Mean Time (GMT) for Earth", TooltipWay.up);
-		earthDateField.setAllowUserInput(false);
-		earthDateField.setFont(ARIAL_FONT);
-		earthDateField.setForeground(new Color(0, 69, 165));
-		earthDateField.setPadding(0, 5, 0, 5);
-		earthDateField.setMargin(0, 0, 0, 0);
-		// Note: May use "yyyy-MMM-dd EEE HH:mm a '['z']'"
-		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd EEE HH:mm a  ", LanguageManager.getLocale());
-		d.setTimeZone(TimeZone.getTimeZone("GMT"));
-		earthDateField.setDateFormat(d);
-
-		if (earthClock.getInstant() != null) {
-			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
-		}
-	}
-
-	public WebDateField getEarthDate() {
-		return earthDateField;
-	}
-
-	public void createMarsDate() {
-		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus);
-		marsTimeTF.setEditable(false);
-		marsTimeTF.setFont(ARIAL_FONT);
-		marsTimeTF.setForeground(new Color(150,96,0));
-		marsTimeTF.setPadding(0, 10, 0, 10);
-		marsTimeTF.setMargin(0, 0, 0, 0);
-		marsTimeTF.setToolTipText("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'");
-	}
-
-	public WebTextField getMarsTime() {
-		return marsTimeTF;
-	}
-
-	/**
-	 * Set up the timer for status bar
-	 */
-	public void setupDelayTimer() {
-		if (delayTimer == null) {
-			delayTimer = new Timer();
-			delayTimer.schedule(new DelayTimer(), 300);
-		}
-	}
-
-	/**
-	 * Defines the delay timer class
-	 */
-	class DelayTimer extends TimerTask {
-		public void run() {
-			runStatusTimer();
-		}
-	}
 
 	/**
 	 * Set up the timer for caching settlement windows
@@ -926,31 +812,6 @@ extends JComponent implements ClockListener {
 		return bottomPane;
 	}
 
-	/**
-	 * Start the earth timer
-	 */
-	public void runStatusTimer() {
-		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				// Increment both the earth and mars clocks
-				incrementClocks();
-
-				if (solLabel != null) {
-					// Track mission sol
-					int sol = marsClock.getMissionSol();
-					if (solCache != sol) {
-						solCache = sol;
-						solLabel.setText(SOL + sol + WHITESPACES);
-					}
-				}
-				// Check if the music track should be played
-				desktop.getSoundPlayer().playRandomMusicTrack();
-			}
-		});
-
-		earthTimer.start();
-	}
 
 	/**
 	 * Get the window's frame.
@@ -1233,18 +1094,6 @@ extends JComponent implements ClockListener {
 		return ((SVGIcon) getIcon("lander")).getImage();
 	}
 
-	/**
-	 * Increment the label of both the earth and mars clocks
-	 */
-	private void incrementClocks() {
-		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
-			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
-		}
-
-		if (marsTimeTF != null && marsClock != null) {
-			marsTimeTF.setText(marsClock.getDisplayTruncatedTimeStamp());
-		}
-	}
 
 	/**
 	 * Starts the splash window frame
@@ -1315,7 +1164,7 @@ extends JComponent implements ClockListener {
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
 			// Increments the Earth and Mars clock labels.
-			incrementClocks();
+			toolToolbar.incrementClocks(pulse.getMasterClock(), pulse.isNewSol());
 		}
 	}
 
@@ -1367,10 +1216,7 @@ extends JComponent implements ClockListener {
 		desktop.destroy();
 		desktop = null;
 		mainWindowMenu = null;
-		delayTimer = null;
-		earthTimer = null;
 		statusBar = null;
-		solLabel = null;
 		bottomPane = null;
 		mainPane = null;
 	}
