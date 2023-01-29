@@ -38,10 +38,8 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -55,7 +53,7 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 @SuppressWarnings("serial")
 public class ResupplyDetailPanel
 extends JPanel
-implements ClockListener, HistoricalEventListener {
+implements HistoricalEventListener {
 
 	// Data members
 	private int solsToArrival = -1;
@@ -74,9 +72,6 @@ implements ClockListener, HistoricalEventListener {
 
 	private Resupply resupply;
 
-	private static MarsClock currentTime;
-	private static MasterClock masterClock;
-
 	
 	/**
 	 * Constructor.
@@ -88,8 +83,8 @@ implements ClockListener, HistoricalEventListener {
 
 		this.desktop = desktop;
 		
-		masterClock = Simulation.instance().getMasterClock();
-		currentTime = masterClock.getMarsClock();
+		Simulation sim = desktop.getSimulation();
+		MarsClock currentTime = sim.getMasterClock().getMarsClock();
 	
 		// Initialize data members.
 		resupply = null;
@@ -183,9 +178,6 @@ implements ClockListener, HistoricalEventListener {
 		innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
 		outerSupplyPane.add(new JScrollPane(innerSupplyPane), BorderLayout.CENTER);
 
-		// Set as clock listener. Only need sparse updates
-		Simulation sim = desktop.getSimulation();
-		sim.getMasterClock().addClockListener(this, 2000L);
 
 		// Set as historical event listener.
 		sim.getEventManager().addListener(this);
@@ -235,7 +227,7 @@ implements ClockListener, HistoricalEventListener {
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
 		
-		updateTimeToArrival();
+		updateTimeToArrival(desktop.getMainWindow().getSimulation().getMasterClock().getMarsClock());
 		updateSupplyPanel();
 
 		validate();
@@ -626,8 +618,9 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Updates the time to arrival label.
+	 * @param currentTime 
 	 */
-	private void updateTimeToArrival() {
+	private void updateTimeToArrival(MarsClock currentTime) {
 		String timeArrival = "---";
 		solsToArrival = -1;
 		double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
@@ -661,40 +654,29 @@ implements ClockListener, HistoricalEventListener {
 		// Do nothing.
 	}
 
-	public void updateArrival() {
+	private void updateArrival(MarsClock currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
 			double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
-//				SwingUtilities.invokeLater(() -> {
-					// Update time to arrival label.
-					if (resupply != null) {
-						updateTimeToArrival();
-					}
-//				});
+				if (resupply != null) {
+					updateTimeToArrival(currentTime);
+				}
 			}
 		}
 	}
 
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-//		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-			updateArrival();
-//		}	
+	void update(ClockPulse pulse) {
+		updateArrival(pulse.getMarsTime());
 	}
 	
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Nothing
-	}
-	
+
 	/**
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
 		Simulation sim = desktop.getSimulation();
-		sim.getMasterClock().removeClockListener(this);
 		sim.getEventManager().removeListener(this);
 		
 		resupply = null;
@@ -706,8 +688,6 @@ implements ClockListener, HistoricalEventListener {
 		timeArrivalValueLabel = null;
 		immigrantsValueLabel = null;
 		innerSupplyPane = null;
-		currentTime = null;
-		masterClock = null;
 		desktop = null;
 	}
 }

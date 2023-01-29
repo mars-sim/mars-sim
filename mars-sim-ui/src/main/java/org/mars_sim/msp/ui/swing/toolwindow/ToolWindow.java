@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.toolwindow;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -114,8 +115,9 @@ public abstract class ToolWindow extends JInternalFrame {
 	
 	/**
 	 * Update window. This is overridden by subclasses
+	 * @param pulse Clock step advancement
 	 */
-	public void update() {
+	public void update(ClockPulse pulse) {
 		// Nothing to do in the base class
 	}
 

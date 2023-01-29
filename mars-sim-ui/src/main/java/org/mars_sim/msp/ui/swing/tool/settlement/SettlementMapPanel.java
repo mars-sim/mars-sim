@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -45,7 +44,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * A panel for displaying the settlement map.
  */
 @SuppressWarnings("serial")
-public class SettlementMapPanel extends JPanel implements ClockListener {
+public class SettlementMapPanel extends JPanel {
 
 	// Static members.
 	private static final double WIDTH = 6D;
@@ -125,7 +124,7 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
 		selectedRobot = new HashMap<>();
 	}
 
-	public void createUI() {
+	void createUI() {
 
 		initLayers(desktop);
 
@@ -134,8 +133,6 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
 		setBackground(new Color(0,0,0,128));
 
 		setForeground(Color.ORANGE);
-
-		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 
 		detectMouseMovement();
 		setFocusable(true);
@@ -1078,26 +1075,16 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
 	public SettlementTransparentPanel getSettlementTransparentPanel() {
 		return settlementTransparentPanel;
 	}
-
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-		if (isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-			repaint();
-		}
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// placeholder
+	
+    void update(ClockPulse pulse) {
+		settlementTransparentPanel.update(pulse);
+		repaint();
 	}
 
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
 	public void destroy() {
-		// Remove clock listener.
-		desktop.getSimulation().getMasterClock().removeClockListener(this);
-
 		settlementTransparentPanel.destroy();
 		
 		menu = null;
@@ -1117,4 +1104,5 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
 		building = null;
 		settlementTransparentPanel = null;
 	}
+
 }

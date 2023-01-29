@@ -251,9 +251,10 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				break;
 
 			case MARSCAL:
-				calendarDisplay.update();
+				MarsClock mc = masterClock.getMarsClock();
+				calendarDisplay.update(mc);
 		
-				String mn = "Month of " + masterClock.getMarsClock().getMonthName();
+				String mn = "Month of " + mc.getMonthName();
 				monthLabel.setText(mn);
 
 				JDialog popOver = SwingHelper.createPoupWindow(calendarPane, -1, -1, -110, 10);

@@ -23,6 +23,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
@@ -314,6 +315,15 @@ public class MissionWindow extends ToolWindow {
 		return settlementList;
 	}
 	
+	/**
+	 * Time has advanced
+	 * @param pulse The clock change
+	 */
+	@Override
+	public void update(ClockPulse pulse) {
+		navpointPane.update(pulse);
+	}
+
 	/**
 	 * Prepares tool window for deletion.
 	 */

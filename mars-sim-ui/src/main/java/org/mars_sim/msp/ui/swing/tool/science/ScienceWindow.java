@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
@@ -118,9 +119,10 @@ extends ToolWindow {
 
 	/**
 	 * Update the window.
+	 * @param pulse Unused clock pulse; window is time independent
 	 */
 	@Override
-	public void update() {
+	public void update(ClockPulse pulse) {
 		// Update all of the panels.
 		ongoingStudyListPane.update();
 		finishedStudyListPane.update();

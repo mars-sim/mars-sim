@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
@@ -138,6 +139,15 @@ implements ListSelectionListener {
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
+	}
+
+	/**
+	 * Time has changed
+	 * @param pulse Clock change
+	 */
+	@Override
+	public void update(ClockPulse pulse) {
+		detailPane.update(pulse);
 	}
 
 	/**

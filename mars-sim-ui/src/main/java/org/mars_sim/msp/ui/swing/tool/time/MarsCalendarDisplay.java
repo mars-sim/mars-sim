@@ -27,9 +27,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class MarsCalendarDisplay extends JComponent {
 
-	// Data members
-	/** The Martian clock instance. */
-	private MarsClock marsTime;
 	
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
@@ -78,8 +75,6 @@ public class MarsCalendarDisplay extends JComponent {
 	 */
 	public MarsCalendarDisplay(MarsClock marsTime, MainDesktopPane desktop) {
 
-		// Initialize data members
-		this.marsTime = marsTime;
 	
 		// Set component size
 		setPreferredSize(new Dimension(140, 100));
@@ -100,17 +95,18 @@ public class MarsCalendarDisplay extends JComponent {
 
 	/**
 	 * Updates the calendar display.
+	 * @param mc Current Mars time
 	 */
-	public void update() {
+	public void update(MarsClock mc) {
 
 		// check for the passing of each day
-		int newSol = marsTime.getMissionSol();
+		int newSol = mc.getMissionSol();
 		if (solCache != newSol) {
 		
-			if (solOfMonthCache != marsTime.getSolOfMonth()) {
-				solOfMonthCache = marsTime.getSolOfMonth();
+			if (solOfMonthCache != mc.getSolOfMonth()) {
+				solOfMonthCache = mc.getSolOfMonth();
 				
-				solsInMonth = MarsClockFormat.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
+				solsInMonth = MarsClockFormat.getSolsInMonth(mc.getMonth(), mc.getOrbit());
 				
 				SwingUtilities.invokeLater(() -> repaint());
 			}

@@ -1030,10 +1030,10 @@ extends JComponent implements ClockListener {
 			initializeWeblaf();
 		}
 
-		if (changed && (desktop != null)) {
-			desktop.updateToolWindowLF();
-			desktop.updateUnitWindowLF();
-		}
+		// if (changed && (desktop != null)) {
+		// 	desktop.updateToolWindowLF();
+		// 	desktop.updateUnitWindowLF();
+		// }
 	}
 
 	/**
@@ -1165,6 +1165,9 @@ extends JComponent implements ClockListener {
 		if (pulse.getElapsed() > 0 && !isIconified) {
 			// Increments the Earth and Mars clock labels.
 			toolToolbar.incrementClocks(pulse.getMasterClock(), pulse.isNewSol());
+
+			// Cascade the pulse
+			desktop.clockPulse(pulse);
 		}
 	}
 

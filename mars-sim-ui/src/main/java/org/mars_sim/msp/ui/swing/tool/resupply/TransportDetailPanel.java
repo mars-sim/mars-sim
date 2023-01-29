@@ -17,6 +17,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
@@ -79,10 +80,21 @@ implements ListSelectionListener {
 	}
 
 	/**
+	 * Clock has changed triggering a refresh
+	 * @param pulse Clock change
+	 */
+	void update(ClockPulse pulse) {
+		resupplyPanel.update(pulse);
+		arrivingSettlementPanel.update(pulse);
+	}
+
+	/**
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
 		resupplyPanel.destroy();
 		arrivingSettlementPanel.destroy();
 	}
+
+
 }

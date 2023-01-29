@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -237,6 +238,14 @@ implements ListSelectionListener, MissionListener {
         navpointScrollPane.setViewportView(navpointTable);
 	}
 	
+	/**
+	 * Time has advanced
+	 * @param pulse The clock change
+	 */
+	public void update(ClockPulse pulse) {
+		mapPanel.update(pulse);
+	}
+
 	/**
 	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
 	 * necessary.

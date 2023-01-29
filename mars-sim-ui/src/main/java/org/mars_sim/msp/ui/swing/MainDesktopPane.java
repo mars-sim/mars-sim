@@ -178,9 +178,6 @@ public class MainDesktopPane extends JDesktopPane
 		// Setup announcement window
 		prepareAnnouncementWindow();
 		
-		// Add clock listener with a minimum duration of 1s
-		sim.getMasterClock().addClockListener(this, 1000L);
-		
 		// Set background paper size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
@@ -755,36 +752,21 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	}
 
-
-	private void updateUnitWindows() {
-		// Update all unit windows.
-		if (!unitWindows.isEmpty()) {
-			for (UnitWindow u : unitWindows) {
-				if (u.isVisible() || u.isShowing())
-					u.update();
-			}
-		}
-	}
-
-	private void updateToolWindows() {
-		// Update all unit windows.
-		if (!toolWindows.isEmpty()) {
-			for (ToolWindow w : toolWindows) {
-				if (w.isVisible() || w.isShowing())
-					w.update();
-			}
-		}
-	}
-
 	/**
 	 * Update the desktop and all of its windows.
 	 */
-	private void updateWindows() {
+	private void updateWindows(ClockPulse pulse) {
 		// Update all unit windows.
-		updateUnitWindows();
+		for (UnitWindow u : unitWindows) {
+			if (u.isVisible() || u.isShowing())
+				u.update();
+		}
+
 		// Update all tool windows.
-		updateToolWindows();
-//		runToolWindowExecutor();
+		for (ToolWindow w : toolWindows) {
+			if (w.isVisible() || w.isShowing())
+				w.update(pulse);
+		}
 	}
 
 
@@ -929,23 +911,6 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Updates the look & feel for all tool windows.
-	 */
-	public void updateToolWindowLF() {
-
-		for (ToolWindow toolWindow : toolWindows) {
-			toolWindow.update();
-		}
-	}
-
-	public void updateUnitWindowLF() {
-
-		for (UnitWindow window : unitWindows) {
-			window.update();
-		}
-	}
-
-	/**
 	 * Closes the look & feel for all tool windows.
 	 */
 	public void closeAllToolWindow() {
@@ -1072,7 +1037,8 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (!mainWindow.isIconified()) {
-			updateWindows();
+			// Why not pass the pulse??
+			updateWindows(pulse);
 		}
 	}
 
@@ -1084,7 +1050,6 @@ public class MainDesktopPane extends JDesktopPane
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
-		sim.getMasterClock().removeClockListener(this);
 		
 		logger = null;
 		mode = null;

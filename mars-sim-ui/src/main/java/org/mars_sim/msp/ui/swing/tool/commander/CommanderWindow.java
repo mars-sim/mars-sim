@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -749,8 +750,12 @@ public class CommanderWindow extends ToolWindow {
         return tabPane.getSelectedIndex() == 1;
 	}
 
+	/**
+	 * Update the window as time has changed
+	 * @param pulse The Clock advance
+	 */
 	@Override
-	public void update() {
+	public void update(ClockPulse pulse) {
 
 		// Update list
 		listUpdate();

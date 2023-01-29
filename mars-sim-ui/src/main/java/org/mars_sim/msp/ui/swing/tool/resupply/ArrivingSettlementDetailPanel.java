@@ -13,24 +13,20 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 
 /**
@@ -39,7 +35,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 @SuppressWarnings("serial")
 public class ArrivingSettlementDetailPanel
 extends JPanel
-implements ClockListener, HistoricalEventListener {
+implements HistoricalEventListener {
 
 	// Data members
 	private JLabel nameValueLabel;
@@ -54,7 +50,7 @@ implements ClockListener, HistoricalEventListener {
 	
 	private MainDesktopPane desktop;
 	
-	private MarsClock currentTime;
+	//private MarsClock currentTime;
 	
 	private int solsToArrival = -1;
 	
@@ -68,7 +64,7 @@ implements ClockListener, HistoricalEventListener {
 		this.desktop = desktop;
 	
 		MasterClock masterClock = desktop.getSimulation().getMasterClock();
-		currentTime = masterClock.getMarsClock();
+		//currentTime = masterClock.getMarsClock();
 		
 		setLayout(new BorderLayout(0, 10));
 		setBorder(new MarsPanelBorder());
@@ -176,11 +172,8 @@ implements ClockListener, HistoricalEventListener {
 						30, 10, // initX, initY
 						7, 3); // xPad, yPad
 
-		// Set as clock listener for a rate of 1 pulse per 2 seconds
-		masterClock.addClockListener(this, 2000L);
-
 		// Set as historical event listener.
-		Simulation.instance().getEventManager().addListener(this);
+		desktop.getMainWindow().getSimulation().getEventManager().addListener(this);
 	}
 
 	/**
@@ -220,7 +213,8 @@ implements ClockListener, HistoricalEventListener {
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateTimeStamp());
 
-		updateTimeToArrival();
+		MarsClock marsTime = desktop.getMainWindow().getSimulation().getMasterClock().getMarsClock();
+		updateTimeToArrival(marsTime);
 
 		templateValueLabel.setText(arrivingSettlement.getTemplate());
 		locationValueLabel.setText(arrivingSettlement.getLandingLocation().getFormattedString());
@@ -231,8 +225,9 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Update the time to arrival label.
+	 * @param currentTime
 	 */
-	private void updateTimeToArrival() {
+	private void updateTimeToArrival(MarsClock currentTime) {
 		String timeArrival = Msg.getString("ArrivingSettlementDetailPanel.noTime"); //$NON-NLS-1$
 		solsToArrival = -1;
 		double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
@@ -252,15 +247,7 @@ implements ClockListener, HistoricalEventListener {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory() && 
 				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
 			if ((arrivingSettlement != null) && he.getSource().equals(arrivingSettlement)) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						// Update arriving settlement info.
-						if (arrivingSettlement != null) {
-							updateArrivingSettlementInfo();
-						}
-					}
-				});
+				updateArrivingSettlementInfo();
 			}
 		}
 	}
@@ -270,44 +257,32 @@ implements ClockListener, HistoricalEventListener {
 		// Do nothing.
 	}
 
-	public void updateArrival() {
+	private void updateArrival(MarsClock currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
 			double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						// Update time to arrival label.
-						if (arrivingSettlement != null) {
-							updateTimeToArrival();
-						}
-					}
-				});
+				// Update time to arrival label.
+					updateTimeToArrival(currentTime);
 			}
 		}
 	}
 
-	
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-		if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
-			updateArrival();
-		}				
+	/**
+	 * Time has moved forward
+	 * @param pulse Amount of clock movement
+	 */	
+	void update(ClockPulse pulse) {
+		updateArrival(pulse.getMarsTime());			
 	}
 	
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// placeholder
-	}
-	
+
 	/**
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
 		desktop.getSimulation().getEventManager().removeListener(this);
-		desktop.getSimulation().getMasterClock().removeClockListener(this);
 		
 		nameValueLabel = null;
 		stateValueLabel = null;
@@ -318,8 +293,6 @@ implements ClockListener, HistoricalEventListener {
 		populationValueLabel = null;
 		arrivingSettlement = null;		
 		desktop = null;
-
-		currentTime = null;
 	}
 
 }

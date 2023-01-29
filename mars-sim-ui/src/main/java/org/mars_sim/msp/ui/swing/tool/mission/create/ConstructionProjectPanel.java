@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -467,7 +468,7 @@ class ConstructionProjectPanel extends WizardPanel {
             		if (cMWizard.getMissionBean().getMixedMembers().isEmpty()) {
             			// Add checking if members of an on-going site were departed
             			loadSite(selectedSite, selectedSiteIndex);
-            			cMWizard.getMissionWindow().update();
+            			cMWizard.getMissionWindow().update((ClockPulse) null);
             		}
             	else {            	
 	                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");             

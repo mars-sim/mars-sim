@@ -30,14 +30,13 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
-public class MapPanel extends JPanel implements ClockListener {
+public class MapPanel extends JPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -80,9 +79,6 @@ public class MapPanel extends JPanel implements ClockListener {
 		this.desktop = desktop;
 
 		executor = Executors.newSingleThreadExecutor();
-
-		// Update the map from the clock once a second
-		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 
 		// Initializes map instance as surf map
 		mapType = SurfMarsMap.TYPE;
@@ -415,14 +411,8 @@ public class MapPanel extends JPanel implements ClockListener {
 		g.drawString(message, x, y);
 	}
 
-	@Override
-	public void clockPulse(ClockPulse pulse) {
+	public void update(ClockPulse pulse) {
 		updateDisplay();
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// placeholder
 	}
 
 	/**
@@ -430,8 +420,11 @@ public class MapPanel extends JPanel implements ClockListener {
 	 */
 	public void destroy() {
 		// Remove clock listener.
-		desktop.getSimulation().getMasterClock().removeClockListener(this);
 		mapLayers = null;
+		if (executor != null) {
+			// Stop anything running
+			executor.shutdownNow();
+		}
 		executor = null;
 		surfMap = null;
 		topoMap = null;

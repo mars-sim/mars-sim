@@ -75,10 +75,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -87,7 +85,7 @@ import eu.hansolo.steelseries.tools.LcdColor;
 
 
 @SuppressWarnings({ "serial", "rawtypes" })
-public class SettlementTransparentPanel extends JComponent implements ClockListener {
+public class SettlementTransparentPanel extends JComponent {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
@@ -193,9 +191,6 @@ public class SettlementTransparentPanel extends JComponent implements ClockListe
 
         Simulation sim = desktop.getSimulation();
         this.unitManager = sim.getUnitManager();
-        
-		MasterClock masterClock = sim.getMasterClock();
-		masterClock.addClockListener(this, 1000L);
 		
         this.weather = sim.getWeather();
         this.surfaceFeatures = sim.getSurfaceFeatures();
@@ -1206,17 +1201,8 @@ public class SettlementTransparentPanel extends JComponent implements ClockListe
 		// Auto-generated method stub
 		return null;
 	}
-
-
-	@Override
-	public void updateUI() {
-		// Auto-generated method stub
-	}
-
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-
-			
+	
+	public void update(ClockPulse pulse) {	
 		if (pulse.isNewSol()) {
 			// Redo the resource string once a sol
 			prepBannerResourceString(pulse);
@@ -1286,23 +1272,14 @@ public class SettlementTransparentPanel extends JComponent implements ClockListe
 	   	resourceCache.put(s, YESTERSOL_RESOURCE + text);
 	}
 
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-        bannerBar.setLcdTextScrolling(!isPaused);
-	}
-
 	/**
 	 * Prepare class for deletion.
 	 */
-	public void destroy() {
-		desktop.getSimulation().getMasterClock().removeClockListener(this);
-		
+	public void destroy() {		
 		mapPanel = null;
 		settlementCBModel.destroy();
 		desktop = null;
 		settlementListBox = null;
 		settlementCBModel = null;
 	}
-
 }

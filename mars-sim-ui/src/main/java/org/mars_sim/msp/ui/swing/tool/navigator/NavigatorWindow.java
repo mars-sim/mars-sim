@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.environment.TerrainElevation;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -862,9 +863,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 				if (clickRange < unitClickRange) {
 					onTarget = true;
-					// Open a popover showing additional info on the landmark
-//					startPopOver(landmark, (int)x, (int)y, event);
-//					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 				}
 			}
 
@@ -875,22 +873,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	}
 
 	/**
-	 * Pops out a small panel for showing additional info
-	 * 
-	 * @param landmark
-	 * @param event
+	 * Time has changed
+	 * @param pulse The Change to the clock
 	 */
-	private void startPopOver(Landmark landmark, int x, int y, MouseEvent event) {
-
-         
-         final JPanel c = new JPanel(new BorderLayout(5, 5));
-         final JLabel n = new JLabel(landmark.getLandmarkName(), JLabel.CENTER);
-         c.add(n, BorderLayout.NORTH);
-         final JLabel l = new JLabel(landmark.getLandmarkLandingLocation(), JLabel.CENTER);
-         c.add(l, BorderLayout.CENTER);
-
-		JDialog popOver = SwingHelper.createPoupWindow(c, 0, 0, 5, 5);
-		popOver.setVisible(true);
+	@Override
+	public void update(ClockPulse pulse) {
+		if (mapLayerPanel != null) {
+			mapLayerPanel.update(pulse);
+		}
 	}
 
 	@Override

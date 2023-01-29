@@ -20,6 +20,7 @@ import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
@@ -96,26 +97,6 @@ public class SettlementWindow extends ToolWindow {
 	    pixelXYLabel.setFont(sansSerif12Plain);
 	    pixelXYLabel.setForeground(Color.GRAY);
 
-	    // JPanel emptyPanel = new JPanel();
-	    // emptyPanel.setPreferredSize(new Dimension(145, 20));
-	    // emptyPanel.add(new JLabel(""));
-
-	    // JPanel w0 = new JPanel();
-	    // w0.setPreferredSize(new Dimension(125, 20));
-	    // w0.add(pixelXYLabel);
-
-	    // JPanel w1 = new JPanel();
-	    // w1.setPreferredSize(new Dimension(115, 20));
-	    // w1.add(popLabel);
-
-	    // JPanel w2 = new JPanel();
-	    // w2.setPreferredSize(new Dimension(145, 20));
-	    // w2.add(buildingXYLabel);
-
-	    // JPanel w3 = new JPanel();
-	    // w3.setPreferredSize(new Dimension(135, 20));
-	    // w3.add(mapXYLabel);
-
 	    JPanel rightPanel = new JPanel();
 		rightPanel.add(buildingXYLabel);
 	    rightPanel.add(mapXYLabel);
@@ -156,12 +137,12 @@ public class SettlementWindow extends ToolWindow {
 		return mapPanel;
 	}
 
-	public String format0(double x, double y) {
+	private String format0(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
 	}
 
-	public String format1(double x, double y) {
+	private String format1(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return (int)x + ", " + (int)y;
 	}
@@ -173,7 +154,7 @@ public class SettlementWindow extends ToolWindow {
 	 * @param y
 	 * @param blank
 	 */
-	public void setBuildingXYCoord(double x, double y, boolean blank) {
+	void setBuildingXYCoord(double x, double y, boolean blank) {
 		if (blank) {
 			buildingXYLabel.setText("");
 		}
@@ -190,7 +171,7 @@ public class SettlementWindow extends ToolWindow {
 	 * @param point
 	 * @param blank
 	 */
-	public void setPixelXYCoord(double x, double y, boolean blank) {
+	void setPixelXYCoord(double x, double y, boolean blank) {
 		if (blank) {
 			pixelXYLabel.setText("");
 		}
@@ -207,7 +188,7 @@ public class SettlementWindow extends ToolWindow {
 	 * @param point
 	 * @param blank
 	 */
-	public void setMapXYCoord(Point.Double point, boolean blank) {
+	void setMapXYCoord(Point.Double point, boolean blank) {
 		if (blank) {
 			mapXYLabel.setText("");
 		}
@@ -226,6 +207,16 @@ public class SettlementWindow extends ToolWindow {
 	public void setPop(int pop) {
         popLabel.setText(POPULATION + pop + WHITESPACES_2);
 	}
+
+	/**
+	 * Update this tool based on a change of time
+	 * @param pulse Clock pulse
+	 */
+	@Override
+	public void update(ClockPulse pulse) {
+		mapPanel.update(pulse);
+	}
+
 
 	@Override
 	public void destroy() {
