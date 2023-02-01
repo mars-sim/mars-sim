@@ -77,12 +77,6 @@ public class MainDesktopPane extends JDesktopPane
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
-
-	public static final String THEME_PATH = "/fxui/css/theme/";
-	public static final String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
-	public static final String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
-	public static final String ORANGE_CSS = ORANGE_CSS_THEME;
-	public static final String BLUE_CSS = BLUE_CSS_THEME;
 	
 	/** The sound player. */
 	private static AudioPlayer soundPlayer;
@@ -919,20 +913,6 @@ public class MainDesktopPane extends JDesktopPane
 			remove(toolWindow);
 		}
 		disposeAnnouncementWindow();
-	}
-
-	/**
-	 * Caches the creation of settlements for speeding up loading time
-	 */
-	public void cacheSettlementUnitWindow() {
-		UnitManager unitManager = sim.getUnitManager();
-		if (mode == GameMode.COMMAND)
-			openUnitWindow(unitManager.getCommanderSettlement(), true, false);
-		else {
-			for (Settlement s : unitManager.getSettlements()) {
-				openUnitWindow((Settlement) s, true, false);
-			}
-		}
 	}
 
 	/**

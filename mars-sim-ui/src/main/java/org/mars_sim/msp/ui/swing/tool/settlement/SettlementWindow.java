@@ -38,8 +38,6 @@ public class SettlementWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static String css_file = MainDesktopPane.BLUE_CSS;
-
 	private static final String POPULATION = "  Population : ";
 	private static final String WHITESPACES_2 = "  ";
 	private static final String CLOSE_PARENT = ")  ";

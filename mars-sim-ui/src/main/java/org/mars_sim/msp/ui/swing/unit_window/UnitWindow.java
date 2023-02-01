@@ -116,13 +116,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		centerPanel.add(tabPane);
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
-
-		// Add focusListener to play sounds and alert users of critical conditions.
-		// Disabled in SVN while in development
-		// this.addInternalFrameListener(new
-		// UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
-
-		desktop.getMainWindow().initializeTheme();//initializeWeblaf();
 	}
 
 	/**
@@ -131,7 +124,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @param imageLocation
 	 * @param label
 	 */
-	public void setImage(String imageLocation, JLabel label) {
+	protected static void setImage(String imageLocation, JLabel label) {
 		ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
 		label.setIcon(imageIcon);
 	}

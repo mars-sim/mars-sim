@@ -93,7 +93,7 @@ extends BuildingFunctionPanel {
 		
 		// Create the orbit viewer button.
 		JButton starMap = new JButton();
-		starMap.setIcon(getDesktop().getMainWindow().getTelescopeIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
+		starMap.setIcon(ImageLoader.getNewIcon(Msg.getString("icon.telescope")));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
 		starMap.addActionListener(

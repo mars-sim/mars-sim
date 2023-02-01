@@ -7,10 +7,8 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -19,14 +17,10 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,11 +31,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.WindowConstants;
@@ -62,17 +57,13 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
+import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
-import com.alee.extended.button.WebSwitch;
-import com.alee.extended.label.WebStyledLabel;
-import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.extended.overlay.FillOverlay;
 import com.alee.extended.overlay.WebOverlay;
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.button.WebButton;
 import com.alee.managers.UIManagers;
-import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
 import com.alee.utils.swing.NoOpKeyListener;
 import com.alee.utils.swing.NoOpMouseListener;
@@ -124,11 +115,11 @@ extends JComponent implements ClockListener {
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
 
+	private static final Icon PAUSE_ICON = ImageLoader.getIcon(Msg.getString("img.speed.pause"));
+	private static final Icon PLAY_ICON = ImageLoader.getIcon(Msg.getString("img.speed.play"));
 
 	/** The main window frame. */
 	private static JFrame frame;
-	/** The Telescope icon. */
-	private static Icon telescopeIcon;
 
 	private static SplashWindow splashWindow;
 
@@ -138,7 +129,7 @@ extends JComponent implements ClockListener {
 	
 	/** The four types of theme types. */
 	public enum ThemeType {
-		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
+		SYSTEM, NIMBUS, NIMROD, METAL
 	}
 	/** The default ThemeType enum. */
 	public ThemeType defaultThemeType = ThemeType.NIMBUS;
@@ -157,32 +148,15 @@ extends JComponent implements ClockListener {
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 
-	private MainWindowMenu mainWindowMenu;
-
-	private Timer delayTimer1;
-
 	private OrbitViewer orbitViewer;
 
-	private JStatusBar statusBar;
-
 	/** WebSwitch for the control of play or pause the simulation*/
-	private WebSwitch pauseSwitch;
-	private WebButton increaseSpeed;
-	private WebButton decreaseSpeed;
-
-	private JCheckBox overlayCheckBox;
+	private JToggleButton pauseSwitch;
+	private JCheckBox blockingSwitch;
 
 	private WebOverlay overlay;
 
-	private WebStyledLabel blockingOverlay;
-
-	private WebMemoryBar memoryBar;
-
-	private JPanel bottomPane;
-	private JPanel mainPane;
-
-	/** Arial font. */
-	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
+	private JLabel blockingImage;
 
 	private JLayer<JPanel> jlayer;
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
@@ -191,6 +165,9 @@ extends JComponent implements ClockListener {
 
 	private Simulation sim;
 	private MasterClock masterClock;
+
+	private JMemoryMeter memoryBar;
+
 
 	/**
 	 * Constructor 1.
@@ -447,7 +424,7 @@ extends JComponent implements ClockListener {
 		layerUI.stop();
 	}
 
-	public static void initIconManager() {
+	private static void initIconManager() {
 		// Set up an icon set for use throughout mars-sim
 		iconManager = new MSPIconManager();
 
@@ -585,7 +562,7 @@ extends JComponent implements ClockListener {
 		frame.setIconImage(getIconImage());
 
 		// Set up the main pane
-		mainPane = new JPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 		frame.add(mainPane);
 
 		// Set up the jlayer pane
@@ -613,7 +590,7 @@ extends JComponent implements ClockListener {
 		overlayPane.add(toolToolbar, BorderLayout.NORTH);
 
 		// Add bottomPane for holding unitToolbar and statusBar
-		bottomPane = new JPanel(new BorderLayout());
+		JPanel bottomPane = new JPanel(new BorderLayout());
 
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
@@ -635,33 +612,25 @@ extends JComponent implements ClockListener {
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
 		// Prepare menu
-		mainWindowMenu = new MainWindowMenu(this, desktop);
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
 		frame.setJMenuBar(mainWindowMenu);
 
 		// Close the unit bar when starting up
 		unitToolbar.setVisible(false);
 
 		// Create the status bar
-		statusBar = new JStatusBar(1, 1, 28);
+		JStatusBar statusBar = new JStatusBar(1, 1, 28);
 
 		// Create speed buttons
-		createSpeedButtons();
-		// Add the decrease speed button
-		statusBar.addLeftComponent(decreaseSpeed, false);
-
-		// Create pause switch
-		createPauseSwitch();
-		statusBar.addLeftComponent(pauseSwitch, false);
-
-		// Add the increase speed button
-		statusBar.addLeftComponent(increaseSpeed, false);
+		createSpeedButtons(statusBar);
 
 		// Create overlay button
-		createOverlayCheckBox();
-		statusBar.addLeftComponent(overlayCheckBox, false);
+		blockingSwitch = createOverlayCheckBox();
+		statusBar.addLeftComponent(blockingSwitch, false);
 
 		// Create memory bar
-		createMemoryBar();
+		//JComponent memoryBar = createMemoryBar();
+		memoryBar = new JMemoryMeter();
 		statusBar.addRightComponent(memoryBar, true);
 
 		statusBar.addRightCorner();
@@ -677,53 +646,56 @@ extends JComponent implements ClockListener {
 	 *
 	 * @param overlayPane
 	 */
-	public void createOverlay(JPanel overlayPane) {
+	private void createOverlay(JPanel overlayPane) {
 		// Add overlayPane to overlay
 		overlay = new WebOverlay(StyleId.overlay, overlayPane);
 
-		Icon pauseIcon = new LazyIcon("pause_orange").getIcon();
+		Icon pauseIcon = getIcon("pause_orange");
 
-        blockingOverlay = new WebStyledLabel(
+        blockingImage = new JLabel(
         		pauseIcon,
                 SwingConstants.CENTER
         );
-        NoOpMouseListener.install(blockingOverlay);
-        NoOpKeyListener.install(blockingOverlay);
+
+        NoOpMouseListener.install(blockingImage);
+        NoOpKeyListener.install(blockingImage);
 	}
 
-	public void createOverlayCheckBox() {
-		overlayCheckBox = new JCheckBox("{Pause Overlay On/Off:b}", false);
-		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
-		overlayCheckBox.setToolTipText("Turn on/off pause overlay in desktop");
+	private JCheckBox createOverlayCheckBox() {
+		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
+		checkBox.setToolTipText("Turn on/off pause overlay in desktop");
 
-		overlayCheckBox.addItemListener(new ItemListener() {
-		    @Override
-		    public void itemStateChanged(ItemEvent e) {
-		        if(e.getStateChange() == ItemEvent.SELECTED) {
-		        	// Checkbox has been selected
-		        	overlay.addOverlay(new FillOverlay(blockingOverlay));
-		        } else {
-		        	// Checkbox has been unselected
-	                if (blockingOverlay.isShowing()) {
-	                    overlay.removeOverlay(blockingOverlay);
-	                }
-		        };
-		    }
-		});
-		// Disable the overlay check box at start of the sim
-		overlayCheckBox.setEnabled(false);
+		checkBox.addItemListener(e -> displayOverlay());
+
+		return checkBox;
 	}
 
-	public void createPauseSwitch() {
-		pauseSwitch = new WebSwitch(true);
-		pauseSwitch.setSwitchComponents(
-				ImageLoader.getIcon(Msg.getString("img.speed.play")),
-				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
+	private void displayOverlay() {
+		boolean isPaused = pauseSwitch.isSelected();
+		boolean isBlocking = blockingSwitch.isSelected();
+
+		if (isPaused && isBlocking) {
+			// Checkbox has been selected
+			overlay.addOverlay(new FillOverlay(blockingImage));
+		} else {
+			// Checkbox has been unselected
+			if (blockingImage.isShowing()) {
+				overlay.removeOverlay(blockingImage);
+			}
+		};
+	}
+
+	private void createPauseSwitch() {
+		pauseSwitch = new JToggleButton(PAUSE_ICON);
 		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
-
+		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? 
+															PLAY_ICON : PAUSE_ICON)
+								);
+		pauseSwitch.setSelected(false);
+					
 		pauseSwitch.addActionListener(e -> 
-                masterClock.setPaused(!pauseSwitch.isSelected(), false)
-		);
+			masterClock.setPaused(pauseSwitch.isSelected(), false)
+			);	
 	}
 
 	/**
@@ -742,28 +714,10 @@ extends JComponent implements ClockListener {
 		this.orbitViewer = orbitViewer;
 	}
 	
-	public Icon getTelescopeIcon() {
-		if (telescopeIcon == null) {
-			telescopeIcon = new LazyIcon("telescope").getIcon();
-			telescopeIcon = ImageLoader.getNewIcon(Msg.getString("icon.telescope"));
-		}
-		return telescopeIcon;
-	}
 
-	public void createSpeedButtons() {
-		increaseSpeed = new WebButton();
-		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
-		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
-
-		increaseSpeed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused()) {
-					masterClock.increaseSpeed();
-				}
-			};
-		});
-
-		decreaseSpeed = new WebButton();
+	private void createSpeedButtons(JStatusBar statusBar) {
+		// Add the decrease speed button
+		JButton decreaseSpeed = new JButton();
 		decreaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.decrease"))); //$NON-NLS-1$
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 
@@ -775,43 +729,26 @@ extends JComponent implements ClockListener {
 			};
 		});
 
+		statusBar.addLeftComponent(decreaseSpeed, false);
+
+		// Create pause switch
+		createPauseSwitch();
+		statusBar.addLeftComponent(pauseSwitch, false);
+
+		JButton increaseSpeed = new JButton();
+		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
+		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
+
+		increaseSpeed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!masterClock.isPaused()) {
+					masterClock.increaseSpeed();
+				}
+			};
+		});
+		// Add the increase speed button
+		statusBar.addLeftComponent(increaseSpeed, false);
 	}
-
-	public void createMemoryBar() {
-		memoryBar = new WebMemoryBar();
-		memoryBar.setPreferredWidth(180);
-		memoryBar.setRefreshRate(3000);
-		memoryBar.setFont(ARIAL_FONT);
-		memoryBar.setForeground(Color.DARK_GRAY);
-	}
-
-	public WebMemoryBar getMemoryBar() {
-		return memoryBar;
-	}
-
-
-	/**
-	 * Set up the timer for caching settlement windows
-	 */
-	public void setupSettlementWindowTimer() {
-		delayTimer1 = new Timer();
-		delayTimer1.schedule(new CacheLoadingSettlementTimerTask(), 2000);
-	}
-
-	/**
-	 * Defines the delay timer class
-	 */
-	class CacheLoadingSettlementTimerTask extends TimerTask {
-		public void run() {
-			// Cache each settlement unit window
-			SwingUtilities.invokeLater(() -> desktop.cacheSettlementUnitWindow());
-		}
-	}
-
-	public JPanel getBottomPane() {
-		return bottomPane;
-	}
-
 
 	/**
 	 * Get the window's frame.
@@ -829,15 +766,6 @@ extends JComponent implements ClockListener {
 	 */
 	public MainDesktopPane getDesktop() {
 		return desktop;
-	}
-
-	/**
-	 * Gets the Main Window Menu.
-	 *
-	 * @return mainWindowMenu
-	 */
-	public MainWindowMenu getMainWindowMenu() {
-		return mainWindowMenu;
 	}
 
 	/**
@@ -870,22 +798,6 @@ extends JComponent implements ClockListener {
 		});
 
 		logger.log(Level.CONFIG, "Save requested"); 
-	}
-
-	/**
-	 * Pauses the simulation and opens an announcement window.
-	 */
-	public void pauseSimulation() {
-		desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.pausingSim") + "  "); //$NON-NLS-1$
-		masterClock.setPaused(true, false);
-	}
-
-	/**
-	 * Closes the announcement window and unpauses the simulation.
-	 */
-	public void unpauseSimulation() {
-		masterClock.setPaused(false, false);
-		desktop.disposeAnnouncementWindow();
 	}
 
 	/**
@@ -950,15 +862,12 @@ extends JComponent implements ClockListener {
 	/**
 	 * Initialize weblaf them
 	 */
-	public void initializeWeblaf() {
+	private void initializeWeblaf() {
 
 		try {
 			// use the weblaf skin
 			WebLookAndFeel.install();
 			UIManagers.initialize();
-			// Start the weblaf icon manager
-			if (iconManager == null)
-				initIconManager();
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 		}
@@ -970,7 +879,7 @@ extends JComponent implements ClockListener {
 	 *
 	 * @param choice
 	 */
-	public void setLookAndFeel(ThemeType choice1) {
+	private void setLookAndFeel(ThemeType choice1) {
 		boolean changed = false;
 
 		if (choice1 == ThemeType.METAL) {
@@ -1029,11 +938,6 @@ extends JComponent implements ClockListener {
 
 			initializeWeblaf();
 		}
-
-		// if (changed && (desktop != null)) {
-		// 	desktop.updateToolWindowLF();
-		// 	desktop.updateUnitWindowLF();
-		// }
 	}
 
 	/**
@@ -1054,20 +958,6 @@ extends JComponent implements ClockListener {
 		return toolToolbar;
 	}
 
-	public String getLookAndFeelTheme() {
-		return lookAndFeelTheme;
-	}
-
-	/**
-	 * Gets the main pane instance
-	 *
-	 * @return
-	 */
-	public JPanel getMainPane() {
-		return mainPane;
-	}
-
-	
 	/**
 	 * Gets the icon instance
 	 *
@@ -1107,9 +997,6 @@ extends JComponent implements ClockListener {
 		splashWindow.setIconImage();
         splashWindow.display();
         splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
-        //SwingUtilities.windowForComponent(splashWindow);
-        
-//        splashWindow.getJFrame().setAlwaysOnTop(true);
 	}
 
 	/**
@@ -1166,6 +1053,8 @@ extends JComponent implements ClockListener {
 			// Increments the Earth and Mars clock labels.
 			toolToolbar.incrementClocks(pulse.getMasterClock(), pulse.isNewSol());
 
+			memoryBar.refresh();
+
 			// Cascade the pulse
 			desktop.clockPulse(pulse);
 		}
@@ -1181,28 +1070,11 @@ extends JComponent implements ClockListener {
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
-		// Update pause/resume webswitch buttons, based on masterclock's pause state.
-		if (isPaused) { // if it needs to pause
-			// if the web switch is at the play position
-			if (pauseSwitch.isSelected()) {
-				// then switch it to the pause position and animate the change
-				pauseSwitch.setSelected(false, true);
-			}
-			// Enable the overlay check box
-			overlayCheckBox.setEnabled(true);
-			overlayCheckBox.setSelected(true);
+		// Make sure the Pause button is synch'ed with the MasterClock state.
+		if (isPaused != pauseSwitch.isSelected()) {
+			pauseSwitch.setSelected(isPaused);
 		}
-
-		else { // if it needs to resume playing
-			// if the web switch is at the pause position
-			if (!pauseSwitch.isSelected()) {
-				// then switch it to the play position and animate the change
-				pauseSwitch.setSelected(true, true);
-			}
-			// Disable the overlay check box
-			overlayCheckBox.setSelected(false);
-			overlayCheckBox.setEnabled(false);
-		}
+		displayOverlay();
 	}
 
 	public static void setInteractiveTerm(InteractiveTerm i) {
@@ -1218,9 +1090,5 @@ extends JComponent implements ClockListener {
 		toolToolbar = null;
 		desktop.destroy();
 		desktop = null;
-		mainWindowMenu = null;
-		statusBar = null;
-		bottomPane = null;
-		mainPane = null;
 	}
 }
