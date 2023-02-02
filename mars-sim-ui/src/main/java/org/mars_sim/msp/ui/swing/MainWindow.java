@@ -32,15 +32,11 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.GameManager;
@@ -55,18 +51,11 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
-import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
-import com.alee.extended.overlay.FillOverlay;
-import com.alee.extended.overlay.WebOverlay;
-import com.alee.laf.WebLookAndFeel;
-import com.alee.managers.UIManagers;
-import com.alee.managers.style.StyleId;
-import com.alee.utils.swing.NoOpKeyListener;
-import com.alee.utils.swing.NoOpMouseListener;
+import com.formdev.flatlaf.FlatLightLaf;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -126,20 +115,12 @@ extends JComponent implements ClockListener {
 	private static InteractiveTerm interactiveTerm;
 
 	private static MSPIconManager iconManager;
-	
-	/** The four types of theme types. */
-	public enum ThemeType {
-		SYSTEM, NIMBUS, NIMROD, METAL
-	}
-	/** The default ThemeType enum. */
-	public ThemeType defaultThemeType = ThemeType.NIMBUS;
+
 
 	// Data members
 	private boolean isIconified = false;
 
 	private boolean useDefault = false;
-
-	private String lookAndFeelTheme;
 
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
@@ -154,12 +135,7 @@ extends JComponent implements ClockListener {
 	private JToggleButton pauseSwitch;
 	private JCheckBox blockingSwitch;
 
-	private WebOverlay overlay;
-
 	private JLabel blockingImage;
-
-	private JLayer<JPanel> jlayer;
-	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private Dimension selectedSize;
 
@@ -183,12 +159,10 @@ extends JComponent implements ClockListener {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
 
-		// Start the wait layer
-		layerUI.start();
 
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
-		initializeTheme();
+		initializeLAF();
 
 		// Set up the frame
 		frame = new JFrame();
@@ -231,9 +205,6 @@ extends JComponent implements ClockListener {
 
 		// Show frame
 		frame.setVisible(true);
-
-		// Stop the wait indicator layer
-		layerUI.stop();
 
 		// Dispose the Splash Window
 		disposeSplash();
@@ -306,7 +277,6 @@ extends JComponent implements ClockListener {
 	
 	private void setUpCalculatedScreen(int screenWidth, int screenHeight) {
 		selectedSize = calculatedScreenSize(screenWidth, screenHeight);
-//		selectedSize = new Dimension(screenWidth, screenHeight);
 		
 		// Set frame size
 		frame.setSize(selectedSize);
@@ -416,12 +386,8 @@ extends JComponent implements ClockListener {
 	 * Get the selected screen size for the main window.
 	 * @return
 	 */
-	public Dimension getSelectedSize() {
+	Dimension getSelectedSize() {
 		return selectedSize;
-	}
-
-	public void stopLayerUI() {
-		layerUI.stop();
 	}
 
 	private static void initIconManager() {
@@ -565,29 +531,19 @@ extends JComponent implements ClockListener {
 		JPanel mainPane = new JPanel(new BorderLayout());
 		frame.add(mainPane);
 
-		// Set up the jlayer pane
-		JPanel jlayerPane = new JPanel(new BorderLayout());
-		jlayerPane.add(desktop);
-		// Set up the glassy wait layer for pausing
-		jlayer = new JLayer<>(jlayerPane, layerUI);
-
 		// Set up the overlay pane
-		JPanel overlayPane = new JPanel(new BorderLayout());
+		JPanel contentPane = new JPanel(new BorderLayout());
 
-		// Create a pause overlay
-		createOverlay(overlayPane);
-
-		// Add desktop to the overlay pane
-		overlayPane.add(jlayer, BorderLayout.CENTER);
-
-		// Add overlay
-		mainPane.add(overlay, BorderLayout.CENTER);
+		// Add desktop to the content pane
+		// contextpane should be blocked when paused
+		contentPane.add(desktop, BorderLayout.CENTER);
+		mainPane.add(contentPane, BorderLayout.CENTER);
 
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 
 		// Add toolToolbar to mainPane
-		overlayPane.add(toolToolbar, BorderLayout.NORTH);
+		contentPane.add(toolToolbar, BorderLayout.NORTH);
 
 		// Add bottomPane for holding unitToolbar and statusBar
 		JPanel bottomPane = new JPanel(new BorderLayout());
@@ -629,7 +585,6 @@ extends JComponent implements ClockListener {
 		statusBar.addLeftComponent(blockingSwitch, false);
 
 		// Create memory bar
-		//JComponent memoryBar = createMemoryBar();
 		memoryBar = new JMemoryMeter();
 		statusBar.addRightComponent(memoryBar, true);
 
@@ -637,29 +592,17 @@ extends JComponent implements ClockListener {
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
+		// Blocking image tht should be displayed in the overlap
+		// Icon pauseIcon = getIcon("pause_orange");
+        // blockingImage = new JLabel(
+        // 		pauseIcon,
+        //         SwingConstants.CENTER
+        // );
+
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
 	}
 
-	/**
-	 * Sets up the pause overlay
-	 *
-	 * @param overlayPane
-	 */
-	private void createOverlay(JPanel overlayPane) {
-		// Add overlayPane to overlay
-		overlay = new WebOverlay(StyleId.overlay, overlayPane);
-
-		Icon pauseIcon = getIcon("pause_orange");
-
-        blockingImage = new JLabel(
-        		pauseIcon,
-                SwingConstants.CENTER
-        );
-
-        NoOpMouseListener.install(blockingImage);
-        NoOpKeyListener.install(blockingImage);
-	}
 
 	private JCheckBox createOverlayCheckBox() {
 		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
@@ -674,15 +617,16 @@ extends JComponent implements ClockListener {
 		boolean isPaused = pauseSwitch.isSelected();
 		boolean isBlocking = blockingSwitch.isSelected();
 
-		if (isPaused && isBlocking) {
-			// Checkbox has been selected
-			overlay.addOverlay(new FillOverlay(blockingImage));
-		} else {
-			// Checkbox has been unselected
-			if (blockingImage.isShowing()) {
-				overlay.removeOverlay(blockingImage);
-			}
-		};
+		// Need to display the blocking image on the content pane
+		// if (isPaused && isBlocking) {
+		// 	// Checkbox has been selected
+		// 	layeredContent.add(blockingImage, 2);
+		// } else {
+		// 	// Checkbox has been unselected
+		// 	if (blockingImage.isShowing()) {
+		// 		layeredContent.remove(blockingImage);
+		// 	}
+		// };
 	}
 
 	private void createPauseSwitch() {
@@ -853,90 +797,16 @@ extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * Sets the theme skin after calling stage.show() at the start of the sim
-	 */
-	public void initializeTheme() {
-		setLookAndFeel(defaultThemeType);
-	}
-
-	/**
-	 * Initialize weblaf them
-	 */
-	private void initializeWeblaf() {
-
-		try {
-			// use the weblaf skin
-			WebLookAndFeel.install();
-			UIManagers.initialize();
-		} catch (Exception e) {
-			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-		}
-
-	}
-
-	/**
-	 * Sets the look and feel of the UI
+	 * Sets the look and feel of the UI. This is fixed but need to be made variable
+	 * and moved to the UIConfig class.
 	 *
 	 * @param choice
 	 */
-	private void setLookAndFeel(ThemeType choice1) {
-		boolean changed = false;
-
-		if (choice1 == ThemeType.METAL) {
-
-			try {
-				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-				changed = true;
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-
-			initializeTheme();
-
-		}
-
-		else if (choice1 == ThemeType.SYSTEM) {
-			try {
-
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-				changed = true;
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-
-			initializeWeblaf();
-		}
-
-		else if (choice1 == ThemeType.NIMBUS) {
-
-			try {
-				boolean foundNimbus = false;
-				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-					if (info.getName().equals("Nimbus")) {
-						// Set Nimbus look & feel if found in JVM.
-
-						// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
-						UIManager.setLookAndFeel(info.getClassName());
-						foundNimbus = true;
-						// themeSkin = "nimbus";
-						changed = true;
-						 break;
-					}
-				}
-
-				// Metal Look & Feel fallback if Nimbus not present.
-				if (!foundNimbus) {
-					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
-					UIManager.setLookAndFeel(new MetalLookAndFeel());
-
-					changed = true;
-				}
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-
-			initializeWeblaf();
+	private void initializeLAF() {
+		try {
+			UIManager.setLookAndFeel( new FlatLightLaf() );
+		} catch( Exception ex ) {
+			System.err.println( "Failed to initialize LaF" );
 		}
 	}
 

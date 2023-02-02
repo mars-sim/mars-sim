@@ -82,20 +82,10 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>0.0.17.4</version>
 		</dependency>
 
-        <dependency>
-            <groupId>com.weblookandfeel</groupId>
-            <artifactId>weblaf-ui</artifactId>
-            <version>1.2.13</version>
-        </dependency>
 		<dependency>
-		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-core</artifactId>
-            <version>1.2.13</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-plugin</artifactId>
-            <version>1.2.13</version>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.0</version>
 		</dependency>
 
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 

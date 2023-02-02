@@ -57,7 +57,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$
 
-	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
@@ -70,9 +69,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private MarsCalendarDisplay calendarDisplay; 
 	
 	private JLabel monthLabel;
-	
-	/** Sans serif font. */
-	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
 
 	private JLabel earthDate;
 	private JLabel missionSol;
@@ -167,8 +163,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	
 	private JLabel createTextLabel(String tooltip) {
 		JLabel label = new JLabel();
-		//label.s(120);
-		label.setFont(ARIAL_FONT);
 		Border margin = new EmptyBorder(2,5,2,5);
 		label.setBorder(new CompoundBorder(BorderFactory.createLoweredBevelBorder(), margin));
 		label.setToolTipText(tooltip);
@@ -206,8 +200,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		outerPane.add(linkPane, BorderLayout.SOUTH);
 
     	JLabel headerLabel = new JLabel("Mars Calendar", SwingConstants.CENTER);
-    	headerLabel.setFont(SANS_SERIF_FONT);
-
     	outerPane.add(headerLabel, BorderLayout.NORTH);
     	
     	return outerPane;

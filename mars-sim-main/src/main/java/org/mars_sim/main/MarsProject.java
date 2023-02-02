@@ -407,7 +407,7 @@ public class MarsProject {
 				TimeUnit.MILLISECONDS.sleep(250);
 				if (!sim.isUpdating()) {
 					logger.config("Starting the Main Window...");
-					new MainWindow(cleanUI, sim).stopLayerUI();
+					new MainWindow(cleanUI, sim);
 					break;
 				}
 	        } catch (InterruptedException e) {
