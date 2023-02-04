@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,7 +24,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -43,6 +40,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -192,10 +190,7 @@ public class TabPanelCooking extends TabPanel {
 
 		// Add TitledBorder
 		JPanel d = new JPanel(new GridLayout(3, 1, 0, 0));
-		TitledBorder dessertBorder = BorderFactory.createTitledBorder(null, "Desserts",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
-		d.setBorder(dessertBorder);
+		d.setBorder(StyleManager.createSubHeadingBorder("Desserts"));
 
 		// Prepare # of available Desserts label
 		availableDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache), //$NON-NLS-1$
@@ -211,10 +206,7 @@ public class TabPanelCooking extends TabPanel {
 		splitPanel.add(d);
 
 		JPanel m = new JPanel(new GridLayout(3, 1, 0, 0));
-		TitledBorder mealBorder = BorderFactory.createTitledBorder(null, "Meals",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
-		m.setBorder(mealBorder);
+		m.setBorder(StyleManager.createSubHeadingBorder("Meals"));
 
 		// Prepare # of available meals label
 		availableMealsLabel = new JLabel(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache), //$NON-NLS-1$

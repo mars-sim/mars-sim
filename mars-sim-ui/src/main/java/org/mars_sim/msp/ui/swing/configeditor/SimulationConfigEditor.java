@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -154,9 +153,6 @@ public class SimulationConfigEditor {
 	// Data members.
 	private boolean hasError, isCrewEditorOpen = true;
 
-	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
-	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
-
 	private InitialSettlementModel settlementTableModel;
 	private JTable settlementTable;
 
@@ -241,7 +237,6 @@ public class SimulationConfigEditor {
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(DIALOG_16);
 			topPanel.add(gameModeLabel);
 
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
@@ -249,21 +244,18 @@ public class SimulationConfigEditor {
 
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
 					commanderName), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(DIALOG_14);
 			ccPanel.add(commanderLabel);
 
 			ccPanel.add(new JLabel());
 
 			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
-			sponsorLabel.setFont(DIALOG_14);
 			ccPanel.add(sponsorLabel);
 
 		}
 
 		else {
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(DIALOG_16);
 			topPanel.add(gameModeLabel);
 		}
 
@@ -374,8 +366,6 @@ public class SimulationConfigEditor {
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
 			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
-			noteLabel.setFont(new Font("Serif", Font.ITALIC, 14));
-			noteLabel.setForeground(java.awt.Color.BLUE);
 			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
 		}
 

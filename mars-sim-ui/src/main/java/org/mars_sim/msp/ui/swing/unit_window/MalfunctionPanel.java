@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 
 /**
@@ -44,7 +44,6 @@ public class MalfunctionPanel extends JPanel {
 	private static final String MILLISOLS = " millisols";
 	private static final String HTML_END = "</html>";
 	
-	private static final Font FONT_BOLD_14 = new Font("Serif", Font.BOLD, 14);
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
 	
 	// Data members
@@ -84,7 +83,7 @@ public class MalfunctionPanel extends JPanel {
 			// Set layout and border.
 			setLayout(new GridLayout(5, 1, 0, 0));
 			JLabel buildingLabel = new JLabel(building.getName(), SwingConstants.LEFT);
-			buildingLabel.setFont(FONT_BOLD_14);
+			StyleManager.applySubHeading(buildingLabel);
 			add(buildingLabel);
 		}
 		else {

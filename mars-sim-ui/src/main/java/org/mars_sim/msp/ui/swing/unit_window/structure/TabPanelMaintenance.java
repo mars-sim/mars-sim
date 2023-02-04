@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -44,8 +44,6 @@ public class TabPanelMaintenance extends TabPanel {
 	private JPanel maintenanceListPanel;
 
 	private List<Building> buildingsList;
-
-	private static final Font FONT_14 = new Font("Serif", Font.BOLD, 14);
 	
 	/**
 	 * Constructor.
@@ -140,10 +138,9 @@ public class TabPanelMaintenance extends TabPanel {
 			manager = building.getMalfunctionManager();
 
 			setLayout(new GridLayout(4, 1, 0, 0));
-//			setBorder(new MarsPanelBorder());
 
 			JLabel buildingLabel = new JLabel(building.getNickName(), SwingConstants.LEFT);
-			buildingLabel.setFont(FONT_14);
+			StyleManager.applySubHeading(buildingLabel);
 			add(buildingLabel);
 
 			// Add wear condition cache and label.

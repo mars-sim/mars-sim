@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +64,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
@@ -100,9 +100,6 @@ public class CommanderWindow extends ToolWindow {
 	private static final String ACCEPT = "Accept Trading initiated by other settlements";
 	private static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	private static final String SEE_RIGHT = ".    -->";
-
-	private final Font SERIF = new Font("Serif", Font.PLAIN, 10);
-	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
 
 	private JTabbedPane tabPane;
 	
@@ -208,7 +205,6 @@ public class CommanderWindow extends ToolWindow {
 		SettlementComboBoxModel settlementCBModel = new SettlementComboBoxModel();
 
 		settlementListBox = new JComboBox<>(settlementCBModel);
-		settlementListBox.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
@@ -360,7 +356,6 @@ public class CommanderWindow extends ToolWindow {
 		// Create the add button
 	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 25));
-		addButton.setFont(SERIF);
 		addButton.addActionListener(e -> {
 				Person selected = (Person) personComboBox.getSelectedItem();
 				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
@@ -376,7 +371,6 @@ public class CommanderWindow extends ToolWindow {
 		// Create the delete button
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 25));
-		delButton.setFont(SERIF);
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
@@ -398,9 +392,9 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private void createTaskQueueList(JPanel panel) {
 
-	    JLabel label = new JLabel("  Task Queue  ");
+	    JLabel label = new JLabel("Task Queue");
 		label.setUI(new VerticalLabelUI(false));
-	    label.setFont(DIALOG);
+		StyleManager.applySubHeading(label);
 		label.setBorder(new MarsPanelBorder());
 
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
@@ -441,7 +435,7 @@ public class CommanderWindow extends ToolWindow {
 
 		JLabel logLabel = new JLabel("          Log Book          ");
 		logLabel.setUI(new VerticalLabelUI(false));
-		logLabel.setFont(DIALOG);
+		StyleManager.applySubHeading(logLabel);
 		logLabel.setBorder(new MarsPanelBorder());
 
 	    JPanel logPanel = new JPanel(new BorderLayout());

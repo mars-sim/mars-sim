@@ -8,14 +8,11 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -25,6 +22,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -98,20 +96,14 @@ public class LaboratoryTabPanel extends TabPanel {
 		// Prepare specialty text area
 		JTextArea specialtyTA = new JTextArea();
 		specialtyTA.setEditable(false);
-		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(10);
-//		specialtyTA.setSize(100, 60);
 		specialtyTA.setBorder(new MarsPanelBorder());
 		
 		
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setSize(150, 80);
 		listPanel.add(specialtyTA);
-		
-		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Specialties",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
-		listPanel.setBorder(titledBorder);
+		listPanel.setBorder(StyleManager.createSubHeadingBorder("Specialties"));
 		
 		// Prepare specialties label	
 		laboratoryPanel.add(listPanel, BorderLayout.SOUTH);

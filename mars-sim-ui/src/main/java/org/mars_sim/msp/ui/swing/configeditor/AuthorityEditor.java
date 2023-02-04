@@ -200,7 +200,6 @@ public class AuthorityEditor  {
 		ta = new JTextArea();
 		ta.setAlignmentX(Component.LEFT_ALIGNMENT);
 		ta.setEditable(false);
-		//ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
 		ta.setColumns(20);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);

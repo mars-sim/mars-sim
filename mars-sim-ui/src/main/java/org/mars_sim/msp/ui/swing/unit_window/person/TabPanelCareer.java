@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -104,8 +103,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/** The Person instance. */
 	private Person person;
 	private Settlement settlement;
-
-	private final Font courierNew12 = new Font("Courier New", Font.ITALIC, 12);
 
 	private static MarsClock marsClock;
 
@@ -213,14 +210,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		jobChangeLabel = new JLabel("");
 		jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		jobChangeLabel.setFont(courierNew12);
 		jobChangeLabel.setForeground(Color.blue);
 		firstPanel.add(jobChangeLabel, BorderLayout.CENTER);
 		jobChangeLabel.setToolTipText(Msg.getString("TabPanelCareer.roleType.tooltip"));//$NON-NLS-1$
 
 		roleChangeLabel = new JLabel("");
 		roleChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		roleChangeLabel.setFont(courierNew12);
 		roleChangeLabel.setForeground(Color.blue);
 		firstPanel.add(roleChangeLabel, BorderLayout.SOUTH);
 		roleChangeLabel.setToolTipText(Msg.getString("TabPanelCareer.roleType.tooltip"));//$NON-NLS-1$
@@ -291,9 +286,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				5, 10); // xPad, yPad
 
 		ratingLabel = new JLabel("");
-		// ratingLabel.setSize(300, 30);
 		ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		ratingLabel.setFont(courierNew12);
 		ratingLabel.setForeground(Color.blue);
 		ratingPanel.add(ratingLabel, BorderLayout.SOUTH);
 

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -34,9 +35,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 @SuppressWarnings("serial")
 public class StudyDetailPanel
 extends JPanel {
-	
-	// Font used in tab panel title
-	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
 
 	// Data members
 	private JLabel scienceFieldLabel;
@@ -74,7 +72,7 @@ extends JPanel {
 		setPreferredSize(new Dimension(425, -1));
 
 		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(TITLE_FONT);
+		StyleManager.applySubHeading(titleLabel);
 		add(titleLabel, BorderLayout.NORTH);
 
 		mainPane = Box.createVerticalBox();

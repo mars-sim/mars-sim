@@ -61,10 +61,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         setLayout(new BorderLayout());
 
-        TitledBorder dessertBorder = BorderFactory.createTitledBorder(null, "Construction Sites",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
-        setBorder(dessertBorder);
+        setBorder(StyleManager.createSubHeadingBorder("Construction Sites"));
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();

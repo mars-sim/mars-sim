@@ -435,10 +435,6 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new JComboBox<>(settlementCBModel);
 		settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
-		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
-		settlementListBox.setOpaque(false);
-		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
-		settlementListBox.setForeground(Color.BLACK);
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
 		settlementListBox.addItemListener(new ItemListener() {

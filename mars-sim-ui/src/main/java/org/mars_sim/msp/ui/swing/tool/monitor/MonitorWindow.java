@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -158,8 +157,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		// Create tabbed pane for the table
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-		// May choose WRAP_TAB_LAYOUT
-		tabsSection.setForeground(Color.DARK_GRAY);
 		
 		// Add all the tabs
 		addAllTabs(initialSettlements);
@@ -344,10 +341,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setSize(getNameLength() * 12, 30);
 		settlementComboBox.setOpaque(false);
-		settlementComboBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-		settlementComboBox.setForeground(Color.ORANGE.darker());
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementComboBox.setRenderer(new PromptComboBoxRenderer());
+		//settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(event -> {
@@ -735,10 +730,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		public PromptComboBoxRenderer(){
 		    setHorizontalAlignment(CENTER);
-		}
-
-		public PromptComboBoxRenderer(String prompt){
-				this.prompt = prompt;
 		}
 
 		@Override

@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
@@ -119,7 +118,6 @@ public class TabPanelSponsorship extends TabPanel {
 		
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
-		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		ta.setColumns (30);
 		ta.setLineWrap (true);
 		ta.setBorder(new MarsPanelBorder());

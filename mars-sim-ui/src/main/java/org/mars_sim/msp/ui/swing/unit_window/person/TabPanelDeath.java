@@ -89,7 +89,6 @@ implements ActionListener {
         causeTF.setText(death.getIllness().getName());
         causeTF.setEditable(false);
         causeTF.setColumns(20);
-        //causeTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper1.add(causeTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper1);
 
@@ -102,7 +101,6 @@ implements ActionListener {
         timeTF.setText(death.getTimeOfDeath());
         timeTF.setEditable(false);
         timeTF.setColumns(20);
-        //timeTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper2.add(timeTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper2);
 
@@ -115,7 +113,6 @@ implements ActionListener {
         malTF.setText(death.getMalfunction());
         malTF.setEditable(false);
         malTF.setColumns(20);
-        //malTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(malTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper3);
 
@@ -169,7 +166,6 @@ implements ActionListener {
 	        TF4.setText(death.getPlaceOfDeath());
 	        TF4.setEditable(false);
 	        TF4.setColumns(20);
-	        //malTF.setFont(new Font("Serif", Font.PLAIN, 12));
 	        wrapper4.add(TF4);//, BorderLayout.CENTER);
 	        locationLabelPanel.add(wrapper4);
 		}

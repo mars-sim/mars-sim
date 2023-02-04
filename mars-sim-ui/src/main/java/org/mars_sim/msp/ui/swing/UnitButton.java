@@ -40,7 +40,6 @@ public class UnitButton extends JButton {
 		this.unit = unit;
 
 		// Prepare default unit button values
-		setFont(new Font("SansSerif", Font.PLAIN, 9));
 		setVerticalTextPosition(SwingConstants.BOTTOM);
 		setHorizontalTextPosition(SwingConstants.CENTER);
 		setAlignmentX(.5F);

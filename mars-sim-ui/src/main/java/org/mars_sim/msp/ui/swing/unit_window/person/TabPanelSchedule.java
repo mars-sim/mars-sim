@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -212,7 +211,6 @@ public class TabPanelSchedule extends TabPanel {
 		realTimeBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
 		realTimeBox.setSelected(true);
 		realTimeBox.setHorizontalTextPosition(SwingConstants.RIGHT);
-		realTimeBox.setFont(new Font("Serif", Font.PLAIN, 12));
 		realTimeBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"));
 		realTimeBox.addActionListener(s -> {
 			if (realTimeBox.isSelected()) {

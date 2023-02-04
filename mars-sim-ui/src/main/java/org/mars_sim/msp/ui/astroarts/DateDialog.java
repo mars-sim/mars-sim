@@ -63,12 +63,6 @@ public class DateDialog extends ModalInternalFrame {
 		//setLayout(new BorderLayout());//0, 0));
 		setLayout(new GridLayout(2, 4, 4, 4));
 		
-		//JPanel panel = new JPanel(new FlowLayout());//GridLayout(2, 3, 0, 0));
-		//setContentPane(panel);
-		//setBorder(new EmptyBorder(2, 3, 2, 3));
-        //add(panel, BorderLayout.CENTER);
-		//setFont(new Font("Dialog", Font.PLAIN, 14));
-		
 		super.setFrameIcon(MainWindow.getLanderIcon());
 
 		// Controls

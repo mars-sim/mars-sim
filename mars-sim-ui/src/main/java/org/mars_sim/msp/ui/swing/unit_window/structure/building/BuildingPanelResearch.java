@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -85,7 +84,6 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 
 		JTextArea specialtyTA = new JTextArea();
 		specialtyTA.setEditable(false);
-		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(15);
 
 		// For each specialty, add specialty name panel.

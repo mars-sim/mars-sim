@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -153,7 +152,6 @@ public class TabPanelAirComposition extends TabPanel {
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
 		JPanel gasTitle = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JLabel gasLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), SwingConstants.CENTER);
-		gasLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		gasTitle.add(gasLabel);
 		gasesPanel.add(gasTitle);
 

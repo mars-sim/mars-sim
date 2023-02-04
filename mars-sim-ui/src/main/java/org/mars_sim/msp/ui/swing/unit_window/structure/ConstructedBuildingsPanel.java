@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -45,7 +45,7 @@ extends JPanel {
 		add(titlePanel, BorderLayout.NORTH);
 
 		JLabel titleLabel = new JLabel("Constructed Buildings");
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		StyleManager.applySubHeading(titleLabel);
 		titlePanel.add(titleLabel);
 
 		// Create scroll panel for the outer table panel.

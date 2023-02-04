@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -39,6 +38,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -79,7 +79,7 @@ implements ActionListener {
 
 		// Create the select members label.
 		JLabel selectMembersLabel = new JLabel("Select Bots for the Mission", JLabel.CENTER);
-		selectMembersLabel.setFont(selectMembersLabel.getFont().deriveFont(Font.BOLD));
+		StyleManager.applySubHeading(selectMembersLabel);
 		selectMembersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectMembersLabel);
 

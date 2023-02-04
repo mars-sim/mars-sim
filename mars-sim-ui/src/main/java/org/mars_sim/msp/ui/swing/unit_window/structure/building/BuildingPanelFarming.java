@@ -335,7 +335,7 @@ implements MouseListener {
 		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
 	    JLabel queueListLabel = new JLabel("     Crop Queue     ");
 		queueListLabel.setUI(new VerticalLabelUI(false));
-	    queueListLabel.setFont( new Font("Dialog", Font.PLAIN, 14) );
+	    StyleManager.applySubHeading(queueListLabel);
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);

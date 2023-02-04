@@ -513,27 +513,10 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		orbitCanvas.setRotateVert(180 - yvalue);
 		orbitCanvas.setRotateHorz(270 - xvalue);
 
-//		// Vertical Scrollbar
-//		scrollVert = new JScrollBar(JScrollBar.VERTICAL,
-//								   initialScrollVert, 12, 0, 180+12);
-//		//Scrollbar s = new Scrollbar(JScrollBar.VERTICAL,
-//		//		   initialScrollVert, 12, 0, 180+12);
-//		gbcMainPanel.weightx = 0.0;
-//		gbcMainPanel.weighty = 0.0;
-//		gbcMainPanel.gridwidth = GridBagConstraints.REMAINDER;
-//		gblMainPanel.setConstraints(scrollVert, gbcMainPanel);
-////		mainPanel.add(scrollVert);
-//		orbitCanvas.setRotateVert(180 - scrollVert.getValue());
-//
-//		// Horizontal Scrollbar
-//		scrollHorz = new JScrollBar(JScrollBar.HORIZONTAL,
-//								   initialScrollHorz, 15, 0, 360+15);
-//		gbcMainPanel.weightx = 1.0;
-//		gbcMainPanel.weighty = 0.0;
-//		gbcMainPanel.gridwidth = 1;
-//		gblMainPanel.setConstraints(scrollHorz, gbcMainPanel);
-////		mainPanel.add(scrollHorz);
-//		orbitCanvas.setRotateHorz(270 - scrollHorz.getValue());
+		Font stdFont = new Font("Dialog", Font.PLAIN, fontSize);
+		Font smlFont = new Font("Dialog", Font.PLAIN, fontSize-2);
+		Font btnFont = new Font("Dialog", Font.BOLD, fontSize-2);
+
 
 		// Right-Bottom Corner Rectangle
 		JPanel cornerPanel = new JPanel();
@@ -551,12 +534,11 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		GridBagConstraints gbcCtrlPanel = new GridBagConstraints();
 		gbcCtrlPanel.fill = GridBagConstraints.BOTH;
 		ctrlPanel.setLayout(gblCtrlPanel);
-		//ctrlPanel.setBackground(Color.white);
 		ctrlPanel.setBorder(new MarsPanelBorder());
 
 		// Set Date Button
 		buttonDate = new JButton(" Select Date ");
-		buttonDate.setFont(new Font("Dialog", Font.PLAIN, fontSize-2));
+		buttonDate.setFont(smlFont);
 		buttonDate.addActionListener(this);
 		gbcCtrlPanel.gridx = 0;
 		gbcCtrlPanel.gridy = 0;
@@ -570,7 +552,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Reverse-Play Button
 		buttonRevPlay = new JButton("<<");
-		buttonRevPlay.setFont(new Font("Dialog", Font.BOLD, fontSize-2));
+		buttonRevPlay.setFont(btnFont);
 		buttonRevPlay.addActionListener(this);
 		gbcCtrlPanel.gridx = 1;
 		gbcCtrlPanel.gridy = 0;
@@ -584,7 +566,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Reverse-Step Button
 		buttonRevStep = new JButton("|<");
-		buttonRevStep.setFont(new Font("Dialog", Font.BOLD, fontSize-2));
+		buttonRevStep.setFont(btnFont);
 		buttonRevStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 2;
 		gbcCtrlPanel.gridy = 0;
@@ -598,7 +580,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Stop Button
 		buttonStop = new JButton("||");
-		buttonStop.setFont(new Font("Dialog", Font.BOLD, fontSize-2));
+		buttonStop.setFont(btnFont);
 		buttonStop.addActionListener(this);
 		gbcCtrlPanel.gridx = 3;
 		gbcCtrlPanel.gridy = 0;
@@ -612,7 +594,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Step Button
 		buttonForStep = new JButton(">|");
-		buttonForStep.setFont(new Font("Dialog", Font.BOLD, fontSize-2));
+		buttonForStep.setFont(btnFont);
 		buttonForStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 4;
 		gbcCtrlPanel.gridy = 0;
@@ -626,7 +608,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Play Button
 		buttonForPlay = new JButton(">>");
-		buttonForPlay.setFont(new Font("Dialog", Font.BOLD, fontSize-2));
+		buttonForPlay.setFont(btnFont);
 		buttonForPlay.addActionListener(this);
 		gbcCtrlPanel.gridx = 5;
 		gbcCtrlPanel.gridy = 0;
@@ -641,7 +623,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
         // Step Label
         JLabel stepLabel = new JLabel("Select Step : ");
         stepLabel.setHorizontalAlignment(JLabel.RIGHT);
-        stepLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        stepLabel.setFont(stdFont);
         gbcCtrlPanel.gridx = 0;
         gbcCtrlPanel.gridy = 1;
         gbcCtrlPanel.weightx = 0.0;
@@ -654,7 +636,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 		// Step choice box
 		choiceTimeStep = new JComboBox<String>(timeStepLabel);
-		choiceTimeStep.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+		choiceTimeStep.setFont(stdFont);
 		gbcCtrlPanel.gridx = 1;
 		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
@@ -675,7 +657,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
        // Center Object JLabel
         JLabel centerLabel = new JLabel("Select Center : ");
         centerLabel.setHorizontalAlignment(JLabel.RIGHT);
-        centerLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        centerLabel.setFont(stdFont);
         gbcCtrlPanel.gridx = 0;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
@@ -688,7 +670,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
        // Center Object choice box
         choiceCenterObject = new JComboBox<String>(centerObjectLabel);
-        choiceCenterObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        choiceCenterObject.setFont(stdFont);
         gbcCtrlPanel.gridx = 1;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
@@ -709,7 +691,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
        // Display Orbits JLabel
         JLabel orbitLabel = new JLabel("Select Orbits : ");
         orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
-        orbitLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        orbitLabel.setFont(stdFont);
         gbcCtrlPanel.gridx = 0;
         gbcCtrlPanel.gridy = 3;
         gbcCtrlPanel.weightx = 0.0;
@@ -722,7 +704,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
       // Display Orbit choice box
         choiceOrbitObject = new JComboBox<String>(orbitDisplayLabel);
-        choiceOrbitObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        choiceOrbitObject.setFont(stdFont);
         choiceOrbitObject.addActionListener(this);
         gbcCtrlPanel.gridx = 1;
         gbcCtrlPanel.gridy = 3;
@@ -746,7 +728,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		// Date Label Checkbox
 		checkDateLabel = new JCheckBox("Date Label");
 		checkDateLabel.setSelected(true);
-		checkDateLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+		checkDateLabel.setFont(stdFont);
 		checkDateLabel.addActionListener(this);
 		gbcCtrlPanel.gridx = 6;
 		gbcCtrlPanel.gridy = 0;
@@ -762,7 +744,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		// Planet Name Checkbox
 		checkPlanetName = new JCheckBox("Planet Labels");
 		checkPlanetName.setSelected(true);
-		checkPlanetName.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+		checkPlanetName.setFont(stdFont);
 		checkPlanetName.addActionListener(this);
 		gbcCtrlPanel.gridx = 7;
 		gbcCtrlPanel.gridy = 0;
@@ -778,7 +760,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		// Distance JLabel Checkbox
 		checkDistanceLabel = new JCheckBox("Distance");
 		checkDistanceLabel.setSelected(true);
-		checkDistanceLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+		checkDistanceLabel.setFont(stdFont);
 		checkDistanceLabel.addActionListener(this);
 		gbcCtrlPanel.gridx = 6;
 		gbcCtrlPanel.gridy = 1;
@@ -794,7 +776,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		// Object Name Checkbox
 		checkObjectName = new JCheckBox("Object Label");
 		checkObjectName.setSelected(true);
-		checkObjectName.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+		checkObjectName.setFont(stdFont);
 		checkObjectName.addActionListener(this);
 		gbcCtrlPanel.gridx = 7;
 		gbcCtrlPanel.gridy = 1;
@@ -806,20 +788,6 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		gblCtrlPanel.setConstraints(checkObjectName, gbcCtrlPanel);
 		ctrlPanel.add(checkObjectName);
 		orbitCanvas.switchObjectName(checkObjectName.isSelected());
-
-//		// Zoom JLabel
-//		JLabel zoomLabel = new JLabel("Zoom:");
-//		zoomLabel.setHorizontalAlignment(JLabel.LEFT);
-//		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-//		gbcCtrlPanel.gridx = 6;
-//		gbcCtrlPanel.gridy = 2;
-//		gbcCtrlPanel.weightx = 0.0;
-//		gbcCtrlPanel.weighty = 1.0;
-//		gbcCtrlPanel.gridwidth = 2;
-//		gbcCtrlPanel.gridheight = 1;
-//		gbcCtrlPanel.insets = new Insets(10, 12, 0, 0);
-//		gblCtrlPanel.setConstraints(zoomLabel, gbcCtrlPanel);
-//		//ctrlPanel.add(zoomLabel);
 
 		// Zoom Scrollbar
 		scrollZoom = new JScrollBar(JScrollBar.HORIZONTAL,
