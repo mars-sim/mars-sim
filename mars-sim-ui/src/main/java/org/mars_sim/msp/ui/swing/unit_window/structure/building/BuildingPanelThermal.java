@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -76,7 +77,7 @@ extends BuildingFunctionPanel {
 		
 		productionCache = furnace.getGeneratedHeat();		
 		producedTF = addTextField(infoPanel, Msg.getString("BuildingPanelThermal.heatProduced"),
-								  DECIMAL_PLACES1.format(productionCache) + " kW", "The heat production of this building");
+								  StyleManager.DECIMAL_PLACES1.format(productionCache) + " kW", "The heat production of this building");
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
@@ -98,7 +99,7 @@ extends BuildingFunctionPanel {
 		double newProductionCache = furnace.getGeneratedHeat();
 		if (productionCache != newProductionCache) {
 			productionCache = newProductionCache;
-			producedTF.setText(DECIMAL_PLACES1.format(productionCache) + " kW");
+			producedTF.setText(StyleManager.DECIMAL_PLACES1.format(productionCache) + " kW");
 		}
 	}
 }

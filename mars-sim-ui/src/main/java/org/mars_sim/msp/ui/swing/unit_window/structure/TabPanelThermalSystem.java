@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -142,7 +143,7 @@ extends TabPanel {
 		heatInfoPanel.add(heatGenLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		heatGenTF = new JTextField(DECIMAL_PLACES1.format(heatGenCache) + kW);
+		heatGenTF = new JTextField(StyleManager.DECIMAL_PLACES1.format(heatGenCache) + kW);
 		heatGenTF.setEditable(false);
 		heatGenTF.setPreferredSize(new Dimension(120, 24));
 		wrapper1.add(heatGenTF);
@@ -155,7 +156,7 @@ extends TabPanel {
 		heatInfoPanel.add(powerGenLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGenTF = new JTextField(DECIMAL_PLACES1.format(powerGenCache) + kW);
+		powerGenTF = new JTextField(StyleManager.DECIMAL_PLACES1.format(powerGenCache) + kW);
 		powerGenTF.setEditable(false);
 		powerGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerGenTF);
@@ -167,7 +168,7 @@ extends TabPanel {
 		heatInfoPanel.add(effElectricHeat);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		electricEffTF = new JTextField(DECIMAL_PLACES1.format(eff_electric_Heating*100D) + PERCENT);
+		electricEffTF = new JTextField(StyleManager.DECIMAL_PLACES1.format(eff_electric_Heating*100D) + PERCENT);
 		electricEffTF.setEditable(false);
 		electricEffTF.setPreferredSize(new Dimension(120, 24));
 		wrapper3.add(electricEffTF);
@@ -179,7 +180,7 @@ extends TabPanel {
 		heatInfoPanel.add(effSolarHeat);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarEffTF = new JTextField(DECIMAL_PLACES2.format(eff_solar_heat*100D) + PERCENT);
+		solarEffTF = new JTextField(StyleManager.DECIMAL_PLACES2.format(eff_solar_heat*100D) + PERCENT);
 		solarEffTF.setEditable(false);
 		solarEffTF.setPreferredSize(new Dimension(120, 24));
 		wrapper4.add(solarEffTF);
@@ -192,7 +193,7 @@ extends TabPanel {
 		heatInfoPanel.add(degradRateLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		cellDegradTF = new JTextField(DECIMAL_PLACES2.format(degradRate*100D) + PERCENT_PER_SOL);
+		cellDegradTF = new JTextField(StyleManager.DECIMAL_PLACES2.format(degradRate*100D) + PERCENT_PER_SOL);
 		cellDegradTF.setEditable(false);
 		cellDegradTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(cellDegradTF);
@@ -364,7 +365,7 @@ extends TabPanel {
 		if (heatGenCache != heat) {
 			heatGenCache = heat;
 			heatGenTF.setText(
-					DECIMAL_PLACES2.format(heatGenCache) + kW
+					StyleManager.DECIMAL_PLACES2.format(heatGenCache) + kW
 				);
 		}
 
@@ -372,7 +373,7 @@ extends TabPanel {
 		if (powerGenCache != power) {
 			powerGenCache = power;
 			powerGenTF.setText(
-					DECIMAL_PLACES2.format(power) + kW
+					StyleManager.DECIMAL_PLACES2.format(power) + kW
 				);
 		}
 
@@ -380,7 +381,7 @@ extends TabPanel {
 		if (eheatCache != eheat) {
 			eheatCache = eheat;
 			electricEffTF.setText(
-					DECIMAL_PLACES2.format(eheat) + PERCENT
+					StyleManager.DECIMAL_PLACES2.format(eheat) + PERCENT
 				);
 		}
 
@@ -388,7 +389,7 @@ extends TabPanel {
 		if (epowerCache != epower) {
 			epowerCache = epower;
 			solarEffTF.setText(
-					DECIMAL_PLACES2.format(epower) + PERCENT
+					StyleManager.DECIMAL_PLACES2.format(epower) + PERCENT
 				);
 		}
 

@@ -12,7 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * A panel for displaying construction custom mission information.
@@ -256,10 +256,9 @@ implements ConstructionListener {
             result.append("Status: building ").append(info.getName()).append(Msg.BR);
             result.append("Stage Type: ").append(info.getType()).append(Msg.BR);
             result.append("Work Type: Construction").append(Msg.BR);
-            DecimalFormat formatter = new DecimalFormat("0.0");
-            String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
+            String requiredWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getRequiredWorkTime() / 1000D);
             result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(Msg.BR);
-            String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
+            String completedWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getCompletedWorkTime() / 1000D);
             result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(Msg.BR);
             result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 

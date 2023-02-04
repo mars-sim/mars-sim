@@ -122,8 +122,6 @@ public class TabPanelGoods extends TabPanel {
 		GoodsManager manager;
 		List<?> goods;
 
-		//private DecimalFormat twoDecimal = new DecimalFormat("#,###,##0.00");
-
 		private GoodsTableModel(GoodsManager manager) {
 			this.manager = manager;
 			goods = GoodsUtil.getGoodsList();
@@ -162,8 +160,6 @@ public class TabPanelGoods extends TabPanel {
 				if (column == 0) return good.getName();
 				else if (column == 1) {
 					try {
-						// Note: twoDecimal format is in conflict with Table column number sorting
-						//return twoDecimal.format(manager.getGoodValuePerItem(good));
 						return manager.getGoodValuePoint(good.getID());
 					}
 					catch (Exception e) {

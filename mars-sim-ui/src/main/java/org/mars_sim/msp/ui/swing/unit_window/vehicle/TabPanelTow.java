@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -32,8 +31,6 @@ public class TabPanelTow extends TabPanel {
 
 	private static final String TOW_ICON = Msg.getString("icon.tow"); //$NON-NLS-1$
 	
-	private static final Font f = new Font("Monospaced", Font.BOLD, 12);
-
 	// Data members
 	private JPanel towingLabelPanel;
 	private JLabel towingTextLabel;
@@ -73,7 +70,6 @@ public class TabPanelTow extends TabPanel {
 			
 			// Create towing label.
 			JLabel towLabel = new JLabel("  " + Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
-			towLabel.setFont(f);
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
@@ -86,7 +82,6 @@ public class TabPanelTow extends TabPanel {
 
 			// Create the towing text label.
 			towingTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
-			towingTextLabel.setFont(f);
 			
 			// Add the towing button or towing text label depending on the situation.
 			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
@@ -103,7 +98,6 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed label.
 		JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
-		towedLabel.setFont(f);
 		towedLabelPanel.add(towedLabel);
 
 		// Create the towed button.
@@ -116,7 +110,6 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed text label.
 		towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
-		towedTextLabel.setFont(f);
 		
 		// Add the towed button or towed text label depending on the situation.
 		if (vehicle.getTowingVehicle() != null) {

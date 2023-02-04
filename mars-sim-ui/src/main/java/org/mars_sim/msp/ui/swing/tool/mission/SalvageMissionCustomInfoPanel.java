@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 
 /**
@@ -194,10 +195,9 @@ implements ConstructionListener {
 			result.append("Stage Type: ").append(info.getType()).append("<br>");
 			if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
 			else result.append("Work Type: Construction<br>");
-			DecimalFormat formatter = new DecimalFormat("0.0");
-			String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
+			String requiredWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getRequiredWorkTime() / 1000D);
 			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
-			String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
+			String completedWorkTime = StyleManager.DECIMAL_PLACES1.format(stage.getCompletedWorkTime() / 1000D);
 			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
 			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
 

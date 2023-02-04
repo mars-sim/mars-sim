@@ -28,7 +28,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -36,6 +35,7 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
@@ -61,6 +61,8 @@ public class TabPanelScienceStudy extends TabPanel {
 	private StudyTableModel studyTableModel;
 	private AchievementTableModel achievementTableModel;
 
+	private ScientificStudyManager scienceManager;
+
 	/**
 	 * Constructor.
 	 * 
@@ -77,6 +79,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		);
 
 		this.person = person;
+		this.scienceManager = desktop.getSimulation().getScientificStudyManager();
 	}
 
 	@Override
@@ -91,7 +94,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the studies label.
 		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), JLabel.CENTER); //$NON-NLS-1$
-		studiesLabel.setFont(ITALIC_FONT);
+		StyleManager.applySubHeading(studiesLabel);
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
@@ -100,7 +103,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
 		// Create the study table.
-		studyTableModel = new StudyTableModel(person);
+		studyTableModel = new StudyTableModel(person, scienceManager);
 		studyTable = new ZebraJTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setRowSelectionAllowed(true);
@@ -146,13 +149,12 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the achievement label.
 		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
-		achievementLabel.setFont(TITLE_FONT);
+		StyleManager.applySubHeading(achievementLabel);
 		achievementLabelPane.add(achievementLabel);
 
-		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
 		totalAchievementLabel = new JLabel(
 				Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString), JLabel.CENTER); //$NON-NLS-1$
-		totalAchievementLabel.setFont(ITALIC_FONT);
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.
@@ -161,7 +163,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 
 		// Create the achievement table.
-		achievementTableModel = new AchievementTableModel(person);
+		achievementTableModel = new AchievementTableModel(person, scienceManager);
 		achievementTable = new ZebraJTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setRowSelectionAllowed(true);
@@ -208,7 +210,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Update total achievement label.
 		Person person = (Person) getUnit();
-		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
 		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
 	}
 
@@ -245,19 +247,21 @@ public class TabPanelScienceStudy extends TabPanel {
 		private Person person;
 		private List<ScientificStudy> studies;
 
+		private ScientificStudyManager manager;
+
 		/**
 		 * Constructor.
 		 * 
 		 * @param person the person.
 		 */
-		private StudyTableModel(Person person) {
+		private StudyTableModel(Person person, ScientificStudyManager manager)  {
 			// Use AbstractTableModel constructor.
 			super();
 
 			this.person = person;
+			this.manager = manager;
 
 			// Get all studies the person is or has been involved in.
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 			studies = manager.getAllStudies(person);
 		}
 
@@ -345,7 +349,6 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * Updates the table model.
 		 */
 		private void update() {
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 			List<ScientificStudy> newStudies = manager.getAllStudies(person);
 			if (!newStudies.equals(studies))
 				studies = newStudies;
@@ -390,13 +393,14 @@ public class TabPanelScienceStudy extends TabPanel {
 		// Data members.
 		private Person person;
 		private List<ScienceType> sciences;
-		private static ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+		private ScientificStudyManager manager;
 
-		private AchievementTableModel(Person person) {
+		private AchievementTableModel(Person person, ScientificStudyManager manager) {
 			// Use AbstractTableModel constructor.
 			super();
 
 			this.person = person;
+			this.manager = manager;
 			sciences = ScienceType.valuesList();
 		}
 

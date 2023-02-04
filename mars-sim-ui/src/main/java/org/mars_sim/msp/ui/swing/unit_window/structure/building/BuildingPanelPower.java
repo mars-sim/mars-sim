@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -89,7 +90,7 @@ extends BuildingFunctionPanel {
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
 			producedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerProduced"),
-									  DECIMAL_PLACES1.format(powerCache) + kW, null);
+									  StyleManager.DECIMAL_PLACES1.format(powerCache) + kW, null);
 		}
 
 		// Prepare power used label.
@@ -99,7 +100,7 @@ extends BuildingFunctionPanel {
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
 		usedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerUsed"),
-													DECIMAL_PLACES1.format(usedCache) + kW, null);
+													StyleManager.DECIMAL_PLACES1.format(usedCache) + kW, null);
 		
 		//Lay out the spring panel.
 		if (isProducer) {
@@ -135,7 +136,7 @@ extends BuildingFunctionPanel {
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
-				producedTF.setText(DECIMAL_PLACES1.format(powerCache) + kW); //$NON-NLS-1$
+				producedTF.setText(StyleManager.DECIMAL_PLACES1.format(powerCache) + kW); //$NON-NLS-1$
 			}
 		}
 
@@ -148,7 +149,7 @@ extends BuildingFunctionPanel {
 		
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedTF.setText(DECIMAL_PLACES1.format(usedCache) + kW); //$NON-NLS-1$
+			usedTF.setText(StyleManager.DECIMAL_PLACES1.format(usedCache) + kW); //$NON-NLS-1$
 		}
 	}
 	

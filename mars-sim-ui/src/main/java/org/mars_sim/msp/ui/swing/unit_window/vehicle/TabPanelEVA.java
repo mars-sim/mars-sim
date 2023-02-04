@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
@@ -154,7 +155,7 @@ public class TabPanelEVA extends TabPanel {
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.cycleTime"),
-									  DECIMAL_PLACES1.format(vehicleAirlock.getRemainingCycleTime()), 4, null);
+									  StyleManager.DECIMAL_PLACES1.format(vehicleAirlock.getRemainingCycleTime()), 4, null);
 		
 		// Create transitionLabel
 		transitionLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.transition"),
@@ -258,7 +259,7 @@ public class TabPanelEVA extends TabPanel {
 		double time = vehicleAirlock.getRemainingCycleTime();
 		if (cycleTimeCache != time) {
 			cycleTimeCache = time;
-			cycleTimeLabel.setText(DECIMAL_PLACES1.format(cycleTimeCache));
+			cycleTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(cycleTimeCache));
 		}
 
 		String innerDoorState = "";

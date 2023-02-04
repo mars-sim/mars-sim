@@ -12,7 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +44,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -439,8 +439,6 @@ public class TabPanelSchedule extends TabPanel {
 	 */
 	private class ScheduleTableModel extends AbstractTableModel {
 
-		DecimalFormat fmt = new DecimalFormat("000.00");
-
 		/**
 		 * hidden constructor.
 		 * 
@@ -496,7 +494,7 @@ public class TabPanelSchedule extends TabPanel {
 		public Object getValueAt(int row, int column) {
 			OneActivity activity = activities.get(row);
 			if (column == 0)
-				return fmt.format(activity.getStartTime());
+				return StyleManager.DECIMAL_PLACES2.format(activity.getStartTime());
 			else if (column == 1)
 				return activity.getDescription();
 			else if (column == 2)

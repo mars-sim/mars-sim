@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -318,7 +319,7 @@ extends TabPanel {
     }
 
     public String getAirPressureString(double value) {
-    	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
+    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
     }
 
     public double getAirPressure() {
@@ -326,7 +327,7 @@ extends TabPanel {
     }
 
     public String getWindSpeedString(double value) {
-    	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
     }
 
     public double getWindSpeed() {
@@ -346,7 +347,7 @@ extends TabPanel {
      }
 
     public String getOpticalDepthString(double value) {
-     	return DECIMAL_PLACES2.format(value);
+     	return StyleManager.DECIMAL_PLACES2.format(value);
     }
 
     public double getZenithAngle() {
@@ -354,7 +355,7 @@ extends TabPanel {
      }
 
     public String getZenithAngleString(double value) {
-     	return DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return StyleManager.DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
     }
 
     public double getSolarDeclination() {
@@ -362,7 +363,7 @@ extends TabPanel {
      }
 
     public String getSolarDeclinationString(double value) {
-     	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+     	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
     }
 
     public double getAirDensity() {
@@ -370,7 +371,7 @@ extends TabPanel {
     }
 
     public String getAirDensityString(double value) {
-     	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+     	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
     }
 
     public double getSolarIrradiance() {
@@ -378,7 +379,7 @@ extends TabPanel {
       }
 
      public String getSolarIrradianceString(double value) {
-      	return DECIMAL_PLACES2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+      	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
      }
 
 	private String getLatitudeString() {

@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.fav.Preference;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -153,7 +154,7 @@ extends TabPanel {
 		
 		// Create preference title label
 		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.CENTER); //$NON-NLS-1$
-		preferenceLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(preferenceLabel);
 		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
 		
 		// Create scroll panel

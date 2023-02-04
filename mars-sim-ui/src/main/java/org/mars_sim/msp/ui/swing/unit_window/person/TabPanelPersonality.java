@@ -7,17 +7,13 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -37,9 +33,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelPersonality extends TabPanel {
 
 	private static final String PUZZLE_ICON = Msg.getString("icon.puzzle"); //$NON-NLS-1$
-
-	private static final Font RESULT_FONT = new Font("Monospaced", Font.PLAIN, 18);
-	private static final Font MONOSPACED_PLAIN_12 = new Font("Monospaced", Font.PLAIN, 12);
 
 	/** The Person instance. */
 	private Person person;
@@ -108,8 +101,6 @@ public class TabPanelPersonality extends TabPanel {
 					  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
 		ta.setToolTipText(tip);
 		ta.setEditable(false);
-		ta.setSelectedTextColor(Color.ORANGE.darker());
-		ta.setFont(MONOSPACED_PLAIN_12);
 		ta.setColumns(15);
 		ta.setBorder(new MarsPanelBorder());
 		
@@ -119,22 +110,15 @@ public class TabPanelPersonality extends TabPanel {
 		JPanel listPanel = new JPanel(new BorderLayout(1, 1));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		//listPanel.setPreferredSize(110, 90);
-		//listPanel.setMaximumSize(110, 110);
 		listPanel.add(mbtiPanel, BorderLayout.NORTH);
 		
 		String type = p.getTypeString();
 		String descriptor = p.getDescriptor();
 		JLabel descriptorLabel = new JLabel(type + " : " + descriptor, JLabel.CENTER);
 		descriptorLabel.setToolTipText(Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));//$NON-NLS-1$
-		descriptorLabel.setFont(RESULT_FONT);
 		listPanel.add(descriptorLabel, BorderLayout.CENTER);
 		
-		TitledBorder titledBorder = BorderFactory.createTitledBorder(
-				null, " Myers & Briggs Type Indicator",
-				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-				SUBTITLE_FONT_1, Color.darkGray);
-		listPanel.setBorder(titledBorder);
+		addBorder(listPanel, "Myers & Briggs Type Indicator");
 		
 		
 		if (ie < 0) {
@@ -211,8 +195,6 @@ public class TabPanelPersonality extends TabPanel {
 		ta.setAlignmentX(Component.CENTER_ALIGNMENT);
 		ta.setAlignmentY(Component.CENTER_ALIGNMENT);
 		ta.setEditable(false);
-		ta.setFont(MONOSPACED_PLAIN_12);
-		ta.setSelectedTextColor(Color.ORANGE.darker());
 		ta.setColumns(15);
 		ta.setBorder(new MarsPanelBorder());
 		
@@ -228,10 +210,7 @@ public class TabPanelPersonality extends TabPanel {
 		//listPanel.setPreferredSize(110, 160);
 		listPanel.add(ta);
 
-		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " Big Five Personality Traits",
-				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-				SUBTITLE_FONT_1, Color.darkGray);
-		listPanel.setBorder(titledBorder);
+		addBorder(listPanel, "Big Five Personality Traits");
 		
 		for (int i = 0; i < 5; i++) {
 			String s = types[i];

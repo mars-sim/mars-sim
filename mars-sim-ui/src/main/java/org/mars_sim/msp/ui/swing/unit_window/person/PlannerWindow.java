@@ -16,7 +16,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
@@ -306,8 +305,6 @@ implements InternalFrameListener, ActionListener {
 
 		private TaskManager taskSchedule;
 		private List<OneActivity> activities;
-
-		DecimalFormat fmt = new DecimalFormat("0000");
 
 		/**
 		 * hidden constructor.

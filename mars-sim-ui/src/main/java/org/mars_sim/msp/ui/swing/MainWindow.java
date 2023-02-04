@@ -35,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.mars.sim.console.InteractiveTerm;
@@ -54,8 +53,6 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
 import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
-
-import com.formdev.flatlaf.FlatLightLaf;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -159,10 +156,8 @@ extends JComponent implements ClockListener {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
 
-
-		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
-		initializeLAF();
+		StyleManager.setLAF(null); // Use the default style for now; will be configurable from UIConfig
 
 		// Set up the frame
 		frame = new JFrame();
@@ -796,19 +791,6 @@ extends JComponent implements ClockListener {
 		sim.endSimulation();
 	}
 
-	/**
-	 * Sets the look and feel of the UI. This is fixed but need to be made variable
-	 * and moved to the UIConfig class.
-	 *
-	 * @param choice
-	 */
-	private void initializeLAF() {
-		try {
-			UIManager.setLookAndFeel( new FlatLightLaf() );
-		} catch( Exception ex ) {
-			System.err.println( "Failed to initialize LaF" );
-		}
-	}
 
 	/**
 	 * Gets the unit toolbar.

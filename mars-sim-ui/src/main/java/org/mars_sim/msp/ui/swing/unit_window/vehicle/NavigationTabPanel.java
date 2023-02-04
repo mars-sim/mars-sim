@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -239,7 +240,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting estimated total remaining distance.");
         	}
-        	distanceText = DECIMAL_PLACES1.format(remainingDistanceCache) + " km";
+        	distanceText = StyleManager.DECIMAL_PLACES1.format(remainingDistanceCache) + " km";
         }
         else {
         	remainingDistanceCache = 0D;
@@ -268,11 +269,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = addTextField(destinationSpringPanel, "Speed : ", DECIMAL_PLACES2.format(speedCache) + " km/h", null);
+        speedLabel = addTextField(destinationSpringPanel, "Speed : ", StyleManager.DECIMAL_PLACES2.format(speedCache) + " km/h", null);
         
         // Prepare elevation label for vehicle       	     
         elevationCache = vehicle.getElevation();
-        elevationLabel = addTextField(destinationSpringPanel, "Elevation : ", DECIMAL_PLACES1.format(elevationCache) +
+        elevationLabel = addTextField(destinationSpringPanel, "Elevation : ", StyleManager.DECIMAL_PLACES1.format(elevationCache) +
             " km", null);
     
         // Prepare driver button and add it if vehicle has driver.
@@ -310,14 +311,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update speed label
         if (speedCache != vehicle.getSpeed()) {
             speedCache = vehicle.getSpeed();
-            speedLabel.setText(DECIMAL_PLACES2.format(speedCache) + " km/h");
+            speedLabel.setText(StyleManager.DECIMAL_PLACES2.format(speedCache) + " km/h");
         }
 
         // Update elevation label.
         double currentElevation = vehicle.getElevation();
         if (elevationCache != currentElevation) {
             elevationCache = currentElevation;
-            elevationLabel.setText(DECIMAL_PLACES1.format(elevationCache) + " km");
+            elevationLabel.setText(StyleManager.DECIMAL_PLACES1.format(elevationCache) + " km");
         }
 
 
@@ -393,7 +394,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             VehicleMission vehicleMission = (VehicleMission) mission;
             if (remainingDistanceCache != vehicleMission.getTotalDistanceRemaining()) {
                 remainingDistanceCache = vehicleMission.getTotalDistanceRemaining();
-                remainingDistanceLabel.setText(DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
+                remainingDistanceLabel.setText(StyleManager.DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
             }
 
             MarsClock newETA = vehicleMission.getLegETA();

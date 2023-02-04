@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -69,7 +70,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 				
 		weedMass = tank.getWeedMass();	
 		weedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.weedMass"),
-								 DECIMAL_PLACES1.format(weedMass), null);
+								 StyleManager.DECIMAL_PLACES1.format(weedMass), null);
 		
 		SpringUtilities.makeCompactGrid(labelPanel,
                 3, 2, //rows, cols
@@ -91,7 +92,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 		double newWeedMass = tank.getWeedMass();
 		if (weedMass != newWeedMass) {
 			weedMass = newWeedMass;
-			weedLabel.setText(DECIMAL_PLACES1.format(weedMass));
+			weedLabel.setText(StyleManager.DECIMAL_PLACES1.format(weedMass));
 		}
 	}
 }

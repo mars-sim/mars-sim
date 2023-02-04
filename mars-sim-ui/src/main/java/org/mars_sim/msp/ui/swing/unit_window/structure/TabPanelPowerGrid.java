@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -141,38 +142,38 @@ public class TabPanelPowerGrid extends TabPanel {
 		// Prepare power generated tf.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
 		powerGeneratedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerGenerated"),
-										DECIMAL_PLACES1.format(powerGeneratedCache) + kW,
+										StyleManager.DECIMAL_PLACES1.format(powerGeneratedCache) + kW,
 										Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip"));
 
 		// Prepare power used tf.
 		powerUsedCache = powerGrid.getRequiredPower();
 		powerUsedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerUsed"),
-								   DECIMAL_PLACES1.format(powerUsedCache) + kW,
+								   StyleManager.DECIMAL_PLACES1.format(powerUsedCache) + kW,
 								   Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip"));
 
 		// Prepare power storage capacity tf.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
 		energyStorageCapacityTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
-											   DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh,
+											   StyleManager.DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh,
 											   Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip"));
 
 		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
 		energyStoredTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalEnergyStored"),
-									  DECIMAL_PLACES1.format(energyStoredCache) + kWh,
+									  StyleManager.DECIMAL_PLACES1.format(energyStoredCache) + kWh,
 									  Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip"));
 
 		// Create solar cell eff tf
 		solarCellEfficiencyCache = getAverageEfficiency();
 		solarCellEfficiencyTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
-											 DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
+											 StyleManager.DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
 											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 
 		// Create degradation rate tf.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
 		addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
-									DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
+									StyleManager.DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
 									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
 		// Create override check box panel.
@@ -331,7 +332,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		double gen = powerGrid.getGeneratedPower();
 		if (powerGeneratedCache != gen) {
 			powerGeneratedCache = gen;
-			powerGeneratedTF.setText(DECIMAL_PLACES1.format(powerGeneratedCache) + kW);
+			powerGeneratedTF.setText(StyleManager.DECIMAL_PLACES1.format(powerGeneratedCache) + kW);
 		}
 
 		// Update power used TF.
@@ -339,28 +340,28 @@ public class TabPanelPowerGrid extends TabPanel {
 		if (powerUsedCache != req) {
 			double average = .5 * (powerUsedCache + req);
 			powerUsedCache = req;
-			powerUsedTF.setText(DECIMAL_PLACES1.format(average) + kW);
+			powerUsedTF.setText(StyleManager.DECIMAL_PLACES1.format(average) + kW);
 		}
 
 		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredEnergyCapacity();
 		if (energyStorageCapacityCache != cap) {
 			energyStorageCapacityCache = cap;
-			energyStorageCapacityTF.setText(DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh);
+			energyStorageCapacityTF.setText(StyleManager.DECIMAL_PLACES1.format(energyStorageCapacityCache) + kWh);
 		}
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		if (energyStoredCache != store) {
 			energyStoredCache = store;
-			energyStoredTF.setText(DECIMAL_PLACES1.format(energyStoredCache) + kWh);
+			energyStoredTF.setText(StyleManager.DECIMAL_PLACES1.format(energyStoredCache) + kWh);
 		}
 
 		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(DECIMAL_PLACES2.format(eff * 100D) + PERCENT);
+			solarCellEfficiencyTF.setText(StyleManager.DECIMAL_PLACES2.format(eff * 100D) + PERCENT);
 		}
 		// Update power table.
 		powerTableModel.update();

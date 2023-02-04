@@ -12,7 +12,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -54,6 +53,7 @@ import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -65,11 +65,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
 
 	private static final String INVENTORY_ICON = Msg.getString("icon.inventory"); //$NON-NLS-1$
-
-	private static final String WHITESPACE = "  ";
-
-	private final DecimalFormat formatter0 = new DecimalFormat("#,###,###,###");
-	private final DecimalFormat formatter2 = new DecimalFormat("#,###,###,###.##");
 
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
@@ -380,11 +375,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-            	return formatter2.format(resources.get(keys.get(row)));
+            	return StyleManager.DECIMAL_PLACES2.format(resources.get(keys.get(row)));
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
-            	return (number == null) ? 0 + "": formatter0.format(number);
+            	return (number == null) ? "" : StyleManager.DECIMAL_PLACES0.format(number);
             }
             return 0 + "";
         }
@@ -520,16 +515,16 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-				return formatter0.format(quantity.get(keys.get(row)));
+				return StyleManager.DECIMAL_PLACES0.format(quantity.get(keys.get(row)));
             }
             else if (column == 2) {
-            	return formatter2.format(mass.get(keys.get(row)));
+            	return StyleManager.DECIMAL_PLACES2.format(mass.get(keys.get(row)));
             }
             else if (column == 3) {
-            	return formatter2.format(reliabilities.get(keys.get(row)));
+            	return StyleManager.DECIMAL_PLACES2.format(reliabilities.get(keys.get(row)));
             }
             else if (column == 4) {
-            	return formatter2.format(mtbf.get(keys.get(row)));
+            	return StyleManager.DECIMAL_PLACES2.format(mtbf.get(keys.get(row)));
             }
             return 0 + "";
         }

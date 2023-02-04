@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -86,11 +87,11 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare weight textfield
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
-				  							  DECIMAL_KG.format(person.getBaseMass()), 6, null);
+				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), 6, null);
 		
 		// Prepare height name label
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
-					 DECIMAL_PLACES1.format(person.getHeight()) + " m", 6, null);
+					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " m", 6, null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
@@ -113,7 +114,7 @@ public class TabPanelGeneral extends TabPanel {
 		
 		// Prepare loading cap label
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
-				DECIMAL_KG.format(person.getCarryingCapacity()), 6, null); 
+				StyleManager.DECIMAL_KG.format(person.getCarryingCapacity()), 6, null); 
 		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,

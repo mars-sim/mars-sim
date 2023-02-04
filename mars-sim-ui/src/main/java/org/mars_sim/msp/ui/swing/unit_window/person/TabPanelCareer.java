@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -320,9 +321,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Prepare job title label
 		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
-		// historyLabel.setBounds(0, 0, width, height);
-		historyLabel.setFont(SUBTITLE_FONT);
-		//historyLabel.setPadding(7, 0, 1, 0);
+		StyleManager.applySubHeading(historyLabel);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
@@ -330,7 +329,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Create attribute scroll panel
 		JScrollPane scrollPanel = new JScrollPane();
-//		scrollPanel.setBorder(new MarsPanelBorder());
 		jobHistoryPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table

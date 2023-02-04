@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -69,12 +70,12 @@ extends BuildingFunctionPanel {
 		// Create capacity label.
 		capacityCache = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;;
 		capTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.cap"),
-							 DECIMAL_PLACES1.format(capacityCache) + kWh, null);
+							 StyleManager.DECIMAL_PLACES1.format(capacityCache) + kWh, null);
 		
 		// Create stored label.
 		storedCache = storage.getkWattHourStored();
 		storedTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.stored"),
-									DECIMAL_PLACES1.format(storedCache) + kWh, null);
+									StyleManager.DECIMAL_PLACES1.format(storedCache) + kWh, null);
 		
 		SpringUtilities.makeCompactGrid(springPanel,
                 2, 2, 			//rows, cols
@@ -89,14 +90,14 @@ extends BuildingFunctionPanel {
 		double newCapacity = storage.getCurrentMaxCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
-			capTF.setText(DECIMAL_PLACES1.format(capacityCache) + kWh);
+			capTF.setText(StyleManager.DECIMAL_PLACES1.format(capacityCache) + kWh);
 		}
 
 		// Update stored label if necessary.
 		double newStored = storage.getkWattHourStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
-			storedTF.setText(DECIMAL_PLACES1.format(storedCache) + kWh);
+			storedTF.setText(StyleManager.DECIMAL_PLACES1.format(storedCache) + kWh);
 		}    
 	}
 	

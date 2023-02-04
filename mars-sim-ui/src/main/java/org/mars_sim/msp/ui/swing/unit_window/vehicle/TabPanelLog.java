@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -97,10 +98,10 @@ public class TabPanelLog extends TabPanel {
         northPanel.add(springPanel);
 
 		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
-								  DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 8, null);
+								  StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 8, null);
 
 		maintTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.maintDist"),
-				  DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 8, null);
+				  StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 8, null);
 
 	    // Lay out the spring panel.
 	    SpringUtilities.makeCompactGrid(springPanel,
@@ -203,10 +204,10 @@ public class TabPanelLog extends TabPanel {
 		}
 		
 		// Update the odometer reading
-		odometerTF.setText(DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
+		odometerTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
 				
 		// Update distance last maintenance 
-		maintTF.setText(DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
+		maintTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
 				
 		int currentDay = getMarsClock().getMissionSol();
 

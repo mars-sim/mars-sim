@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
@@ -152,7 +153,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
+									  StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
 		// Create transitionLabel
 		transitionLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.transition"),
@@ -243,7 +244,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		double time = buildingAirlock.getRemainingCycleTime();
 		if (cycleTimeCache != time) {
 			cycleTimeCache = time;
-			cycleTimeLabel.setText(DECIMAL_PLACES1.format(cycleTimeCache));
+			cycleTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(cycleTimeCache));
 		}
 
 		String innerDoorState = "";

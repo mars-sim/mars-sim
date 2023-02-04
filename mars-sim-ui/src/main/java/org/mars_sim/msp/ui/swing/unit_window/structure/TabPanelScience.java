@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
@@ -91,7 +92,6 @@ extends TabPanel {
 
 		// Create the studies label.
 		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), JLabel.CENTER); //$NON-NLS-1$
-		studiesLabel.setFont(ITALIC_FONT);
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
@@ -162,22 +162,19 @@ extends TabPanel {
 
 		// Create the achievement label.
 		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
-		achievementLabel.setFont(TITLE_FONT);
 		achievementLabelPane.add(achievementLabel);
 
-		String totalAchievementString = DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
 		totalAchievementLabel = new JLabel(
 			Msg.getString(
 				"TabPanelScience.totalAchievementCredit", //$NON-NLS-1$
 				totalAchievementString
 			), JLabel.CENTER
 		);
-		totalAchievementLabel.setFont(ITALIC_FONT);	
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.
 		JScrollPane achievementScrollPane = new JScrollPane();
-//		achievementScrollPane.setBorder(new MarsPanelBorder());
 		achievementScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 
@@ -224,7 +221,7 @@ extends TabPanel {
 
 		// Update total achievement label.
 		Settlement settlement = (Settlement) getUnit();
-		String totalAchievementString = DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
 		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
 	}
 

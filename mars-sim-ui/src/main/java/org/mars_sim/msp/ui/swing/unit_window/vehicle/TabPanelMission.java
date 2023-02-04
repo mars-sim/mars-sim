@@ -95,7 +95,6 @@ extends TabPanel {
 
 		// Prepare mission top panel
 		JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		addBorder(missionTopPanel, "missionTopPanel");
 		missionTopPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
@@ -119,7 +118,6 @@ extends TabPanel {
 
 		// Prepare mission phase label
 		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
-		missionPhaseLabel.setFont(TITLE_FONT);
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 		missionTopPanel.add(missionPhasePanel);
 		

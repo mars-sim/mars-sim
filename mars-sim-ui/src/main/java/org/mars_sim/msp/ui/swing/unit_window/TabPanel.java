@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -23,7 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -31,24 +28,12 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
-	// Font used in tab panel title
-	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
-	protected static final Font ITALIC_FONT = new Font(Font.DIALOG, Font.ITALIC, 12);
-	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 14);
-	protected static final Font SUBTITLE_FONT_1 = new Font(Font.DIALOG, Font.BOLD, 14);
-
-	
-	// Default Decimal formatter
-	protected static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");
-	protected static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("0.00");
-	protected static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
-	protected static final DecimalFormat DECIMAL_KG = new DecimalFormat("0.0 kg");
-	
 	// Default values for any top level Spring panel holding values
 	protected static final int INITY_DEFAULT = 5;
 	protected static final int INITX_DEFAULT = 75;
@@ -156,7 +141,7 @@ public abstract class TabPanel extends JScrollPane {
 			// Create label in top panel
 			String topLabel = (description != null ? description : getTabTitle());
 			JLabel titleLabel = new JLabel(topLabel, SwingConstants.CENTER);
-			titleLabel.setFont(TITLE_FONT);
+			StyleManager.applyHeading(titleLabel);
 			
 			JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			labelPanel.add(titleLabel);
@@ -278,8 +263,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION,
-										 SUBTITLE_FONT, null));
+		panel.setBorder(StyleManager.createSubHeadingBorder(title));
 	}
 	
 	/**

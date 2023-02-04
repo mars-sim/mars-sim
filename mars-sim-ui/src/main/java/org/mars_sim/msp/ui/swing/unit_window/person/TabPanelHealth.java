@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,6 +39,7 @@ import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -301,7 +301,7 @@ extends TabPanel {
 
 		// Prepare radiation label
 		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
-		radiationLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(radiationLabel);
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.radiation.tooltip")); //$NON-NLS-1$
 			 
@@ -354,7 +354,7 @@ extends TabPanel {
 
 		// Prepare sleep time label
 		JLabel sleepLabel = new JLabel(Msg.getString("TabPanelHealth.sleepExercise"), SwingConstants.CENTER); //$NON-NLS-1$
-		sleepLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(sleepLabel);
 		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
 
 		// Prepare sleep time scroll panel
@@ -393,7 +393,7 @@ extends TabPanel {
 
 		// Prepare exercise time label
 		JLabel foodLabel = new JLabel(Msg.getString("TabPanelHealth.food"), SwingConstants.CENTER); //$NON-NLS-1$
-		foodLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(foodLabel);
 		foodPanel.add(foodLabel, BorderLayout.NORTH);
 
 		// Prepare exercise time scroll panel
@@ -438,7 +438,7 @@ extends TabPanel {
 		// Prepare health problem label
 		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
 		//healthProblemLabel.setPadding(7, 0, 0, 0);
-		healthProblemLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(healthProblemLabel);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
@@ -465,8 +465,7 @@ extends TabPanel {
 
 		// Prepare medication label.
 		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
-		//medicationLabel.setPadding(7, 0, 0, 0);
-		medicationLabel.setFont(SUBTITLE_FONT);
+		StyleManager.applySubHeading(medicationLabel);
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
@@ -806,9 +805,7 @@ extends TabPanel {
 		private static final String SLEEP_TIME = "Sleep";
 		private static final String EXERCISE_TIME = "Exercise";
 		
-		private static final String MISSION_SOL = "Sol"; 
-		
-		private DecimalFormat fmt = new DecimalFormat("0.0");
+		private static final String MISSION_SOL = "Sol";
 
 		private Map<Integer, Double> sleepTime;
 		private Map<Integer, Double> exerciseTime;
@@ -860,15 +857,15 @@ extends TabPanel {
 				}
 				else if (column == 1) {
 					if (sleepTime.containsKey(rowSol))
-						result = fmt.format(sleepTime.get(rowSol));
+						result = StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES1.format(0);
 				}
 				else if (column == 2) {
 					if (exerciseTime.containsKey(rowSol))
-						result = fmt.format(exerciseTime.get(rowSol));
+						result = StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES1.format(0);
 				}
 			}
 			return result;
@@ -909,8 +906,6 @@ extends TabPanel {
 		private static final String WATER_AMOUNT = "Water";
 		
 		private static final String MISSION_SOL = "Sol"; 
-		
-		private DecimalFormat fmt = new DecimalFormat("0.000");
 
 		private Map<Integer, Map<Integer, Double>> map;
 
@@ -968,27 +963,27 @@ extends TabPanel {
 				}
 				else if (column == 1) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(returnAmount(rowSol, 0));
+						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 0));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES3.format(0);
 				}
 				else if (column == 2) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(returnAmount(rowSol, 1));
+						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 1));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES3.format(0);
 				}
 				else if (column == 3) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(returnAmount(rowSol, 2));
+						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 2));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES3.format(0);
 				}
 				else if (column == 4) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(returnAmount(rowSol, 3));
+						result = StyleManager.DECIMAL_PLACES3.format(returnAmount(rowSol, 3));
 					else
-						result = fmt.format(0);
+						result = StyleManager.DECIMAL_PLACES3.format(0);
 				}
 			}
 			return result;

@@ -49,6 +49,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
@@ -707,7 +708,7 @@ implements MouseListener {
 				return String.valueOf(growth) + "%";
 			}
 			else if (column == 4) return category;
-			else if (column == 5) return DECIMAL_PLACES1.format(crop.getCurrentWorkRequired());
+			else if (column == 5) return StyleManager.DECIMAL_PLACES1.format(crop.getCurrentWorkRequired());
 	
 			return null;
 		}
