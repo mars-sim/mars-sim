@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * This class model how mission data is organized and displayed
@@ -85,7 +85,6 @@ public class MissionTableModel extends AbstractTableModel
 
 	private Settlement commanderSettlement;
 
-	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 	private boolean monitorMissions = false;
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
@@ -490,7 +489,7 @@ public class MissionTableModel extends AbstractTableModel
 				case TRAVELLED_DISTANCE: {
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						result = decFormatter.format(vehicleMission.getTotalDistanceTravelled());
+						result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getTotalDistanceTravelled());
 					} else
 						result = 0;
 				}
@@ -500,7 +499,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(vehicleMission.getTotalDistanceRemaining());
+							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getTotalDistanceRemaining());
 						} catch (Exception e) {
 							result = 0;
 						}
@@ -514,7 +513,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(vehicleMission.getDistanceCurrentLegRemaining());
+							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getDistanceCurrentLegRemaining());
 						} catch (Exception e) {
 							result = 0;
 						}
@@ -528,7 +527,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(vehicleMission.getDistanceProposed());
+							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getDistanceProposed());
 						} catch (Exception e) {
 							result = 0;
 						}

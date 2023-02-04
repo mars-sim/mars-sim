@@ -77,7 +77,7 @@ extends BuildingFunctionPanel {
 		
 		productionCache = furnace.getGeneratedHeat();		
 		producedTF = addTextField(infoPanel, Msg.getString("BuildingPanelThermal.heatProduced"),
-								  StyleManager.DECIMAL_PLACES1.format(productionCache) + " kW", "The heat production of this building");
+								  StyleManager.DECIMAL_KW.format(productionCache), "The heat production of this building");
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(infoPanel, 2, 2, // rows, cols
@@ -99,7 +99,7 @@ extends BuildingFunctionPanel {
 		double newProductionCache = furnace.getGeneratedHeat();
 		if (productionCache != newProductionCache) {
 			productionCache = newProductionCache;
-			producedTF.setText(StyleManager.DECIMAL_PLACES1.format(productionCache) + " kW");
+			producedTF.setText(StyleManager.DECIMAL_KW.format(productionCache));
 		}
 	}
 }

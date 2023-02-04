@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -210,8 +210,7 @@ class ResearcherPanel extends JPanel {
 					achievement = study.getPrimaryResearcherEarnedScientificAchievement();
 				else
 					achievement = study.getCollaborativeResearcherEarnedScientificAchievement(researcher);
-				DecimalFormat formatter = new DecimalFormat(Msg.getString("ResearcherPanel.decimalFormat")); //$NON-NLS-1$
-				String achievementString = formatter.format(achievement);
+				String achievementString = StyleManager.DECIMAL_PLACES1.format(achievement);
 				result = Msg.getString("ResearcherPanel.scientificAchievement", achievementString); //$NON-NLS-1$
 			}
 		}

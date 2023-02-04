@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -33,6 +32,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
@@ -115,8 +115,6 @@ public class TimeWindow extends ToolWindow {
 	/** label for time compression. */
 	private JLabel timeCompressionLabel;
 
-	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
-	private final DecimalFormat formatter4 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
 	private OrbitInfo orbitInfo;
 	
@@ -313,7 +311,7 @@ public class TimeWindow extends ToolWindow {
 		TPSHeaderLabel.setFont(sansSerifFont);
 		TPSHeaderLabel.setForeground(Color.MAGENTA.darker());
 		
-		String TicksPerSec = formatter2.format(masterClock.getCurrentPulsesPerSecond());
+		String TicksPerSec = StyleManager.DECIMAL_PLACES2.format(masterClock.getCurrentPulsesPerSecond());
 		ticksPerSecLabel = new JLabel(TicksPerSec, JLabel.LEFT);
 		ticksPerSecLabel.setFont(sansSerifFont);
 		ticksPerSecLabel.setForeground(Color.red.darker());
@@ -334,7 +332,7 @@ public class TimeWindow extends ToolWindow {
 		// Create pulse time label
 		marsPulseHeader = new JLabel(MARS_PULSE_TIME, JLabel.RIGHT);
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new JLabel(formatter4.format(pulseTime) + MILLISOLS, JLabel.LEFT);
+		marsPulseLabel = new JLabel(StyleManager.DECIMAL_PLACES3.format(pulseTime) + MILLISOLS, JLabel.LEFT);
 
 		// Create the target time ratio label
 		JLabel prefTRHeader = new JLabel(Msg.getString("TimeWindow.prefTRHeader"), JLabel.RIGHT); //$NON-NLS-1$
@@ -438,7 +436,7 @@ public class TimeWindow extends ToolWindow {
 
 		// Update average TPS label
 		double ave = mc.getAveragePulsesPerSecond();
-		aveTPSLabel.setText(formatter2.format(ave));
+		aveTPSLabel.setText(StyleManager.DECIMAL_PLACES2.format(ave));
 
 		// Update execution time label
 		long execTime = mc.getExecutionTime();
@@ -450,7 +448,7 @@ public class TimeWindow extends ToolWindow {
 
 		// Update pulse width label
 		double pulseTime = mc.getMarsPulseTime();
-		marsPulseLabel.setText(formatter4.format(pulseTime) + MILLISOLS);
+		marsPulseLabel.setText(StyleManager.DECIMAL_PLACES3.format(pulseTime) + MILLISOLS);
 
 		// Update Preferred TR label
 		int prefTR = mc.getDesiredTR();
@@ -539,7 +537,7 @@ public class TimeWindow extends ToolWindow {
 
 		ts = mc.getEarthClock().getTimeStampF4() + GMT;
 		earthTimeLabel.setText(ts);
-		ticksPerSecLabel.setText(formatter2.format(mc.getCurrentPulsesPerSecond()));
+		ticksPerSecLabel.setText(StyleManager.DECIMAL_PLACES2.format(mc.getCurrentPulsesPerSecond()));
 
 		uptimeLabel.setText(mc.getUpTimer().getUptime());
 	}

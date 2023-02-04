@@ -24,7 +24,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,6 +78,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -179,9 +179,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private SurfaceFeatures surfaceFeatures;
 	private OrbitInfo orbitInfo;
 	private UnitManager unitManager;
-
-	private static DecimalFormat fmt = new DecimalFormat("##0");
-	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
 	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 	
@@ -575,7 +572,7 @@ public class SettlementTransparentPanel extends JComponent {
     	// Note: Use of Msg.getString("temperature.sign.degreeCelsius") for the degree sign 
     	// does not work on the digital banner.
     	// May use of " °C", " �C", or " deg C" 
-    	return fmt.format(value) + " deg C";
+    	return StyleManager.DECIMAL_PLACES0.format(value) + " deg C";
     }
 
     private double getWindSpeed(Coordinates c) {
@@ -583,7 +580,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getWindSpeedString(double value) {
-    	return fmt2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
     }
 
     private double getOpticalDepth(Coordinates c) {
@@ -591,7 +588,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getOpticalDepthString(double value) {
-     	return fmt2.format(value);
+     	return StyleManager.DECIMAL_PLACES2.format(value);
     }
 
     private double getZenithAngle(Coordinates c) {
@@ -599,7 +596,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
 	private String getZenithAngleString(double value) {
-     	return fmt2.format(value * RADIANS_TO_DEGREES) + " deg";
+     	return StyleManager.DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " deg";
     }
 
     private double getSolarIrradiance(Coordinates c) {

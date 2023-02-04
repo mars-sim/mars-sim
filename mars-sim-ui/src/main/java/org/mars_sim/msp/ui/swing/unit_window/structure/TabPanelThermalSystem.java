@@ -61,7 +61,6 @@ extends TabPanel {
 	
 	private static final String HEAT_ICON = Msg.getString("icon.heat"); //$NON-NLS-1$
 
-	private static final String kW = " kW";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
 	
@@ -143,7 +142,7 @@ extends TabPanel {
 		heatInfoPanel.add(heatGenLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		heatGenTF = new JTextField(StyleManager.DECIMAL_PLACES1.format(heatGenCache) + kW);
+		heatGenTF = new JTextField(StyleManager.DECIMAL_KW.format(heatGenCache));
 		heatGenTF.setEditable(false);
 		heatGenTF.setPreferredSize(new Dimension(120, 24));
 		wrapper1.add(heatGenTF);
@@ -156,7 +155,7 @@ extends TabPanel {
 		heatInfoPanel.add(powerGenLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGenTF = new JTextField(StyleManager.DECIMAL_PLACES1.format(powerGenCache) + kW);
+		powerGenTF = new JTextField(StyleManager.DECIMAL_KW.format(powerGenCache));
 		powerGenTF.setEditable(false);
 		powerGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerGenTF);
@@ -365,7 +364,7 @@ extends TabPanel {
 		if (heatGenCache != heat) {
 			heatGenCache = heat;
 			heatGenTF.setText(
-					StyleManager.DECIMAL_PLACES2.format(heatGenCache) + kW
+					StyleManager.DECIMAL_KW.format(heatGenCache)
 				);
 		}
 
@@ -373,7 +372,7 @@ extends TabPanel {
 		if (powerGenCache != power) {
 			powerGenCache = power;
 			powerGenTF.setText(
-					StyleManager.DECIMAL_PLACES2.format(power) + kW
+					StyleManager.DECIMAL_KW.format(power)
 				);
 		}
 

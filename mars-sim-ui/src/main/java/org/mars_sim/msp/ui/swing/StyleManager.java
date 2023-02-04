@@ -40,16 +40,18 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
+    public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
+    public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
+
 
     private static final String DARK = "dark";
     private static final String LIGHT = "light";
     private static final String METAL = "metal";
     private static final String SYSTEM = "system";
 
-
     private static Font subHeading;
 
-    	/**
+    /**
 	 * Sets the look and feel of the UI. This is fixed but need to be made variable
 	 * and moved to the UIConfig class.
 	 *

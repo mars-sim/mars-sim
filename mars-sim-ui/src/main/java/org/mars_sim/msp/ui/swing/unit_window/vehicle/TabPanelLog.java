@@ -13,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -293,7 +292,6 @@ public class TabPanelLog extends TabPanel {
 	 */
 	private class ScheduleTableModel extends AbstractTableModel {
 
-		DecimalFormat fmt = new DecimalFormat("000");
 		private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
 		
 		/**
@@ -343,7 +341,7 @@ public class TabPanelLog extends TabPanel {
 					&& !oneDayStatuses.isEmpty()) {
 				MSolDataItem<Set<StatusType>> item = oneDayStatuses.get(row);
 				if (column == 0) {
-					return fmt.format(item.getMsol());
+					return StyleManager.DECIMAL_PLACES0.format(item.getMsol());
 				} 
 				else if (column == 1) {
 					return printStatusTypes(item.getData());

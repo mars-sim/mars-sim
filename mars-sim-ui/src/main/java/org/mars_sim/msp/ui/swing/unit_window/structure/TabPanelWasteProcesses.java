@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -173,7 +173,6 @@ public class TabPanelWasteProcesses extends TabPanel {
 		private JButton toggleButton;
 		private ImageIcon dotGreen;
 		private ImageIcon dotRed;
-		private DecimalFormat decFormatter = new DecimalFormat(Msg.getString("TabPanelWasteProcesses.decimalFormat")); //$NON-NLS-1$
 
 		/**
 		 * Constructor.
@@ -216,7 +215,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
 			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
-			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
+			result.append("Power Req:&emsp;").append(StyleManager.DECIMAL_KW.format(process.getPowerRequired())).append("<br>");
 			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
 			Iterator<Integer> i = process.getInputResources().iterator();
 			String ambientStr = "";
@@ -225,7 +224,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				Integer resource = i.next();
 				double rate = process.getMaxInputRate(resource) * 1000D;
-				String rateString = decFormatter.format(rate);
+				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
 				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(ambientStr).append(" @ ")
@@ -239,7 +238,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
-				String rateString = decFormatter.format(rate);
+				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
 				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;

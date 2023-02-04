@@ -29,8 +29,6 @@ public class BuildingPanelPowerStorage
 extends BuildingFunctionPanel {
 
 	private static final String ENERGY_ICON = Msg.getString("icon.energy"); //$NON-NLS-1$
-
-	private static final String kWh = " kWh";
 	
 	private JTextField storedTF;
 	private JTextField capTF;
@@ -68,14 +66,14 @@ extends BuildingFunctionPanel {
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Create capacity label.
-		capacityCache = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;;
+		capacityCache = storage.getCurrentMaxCapacity();
 		capTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.cap"),
-							 StyleManager.DECIMAL_PLACES1.format(capacityCache) + kWh, null);
+							 StyleManager.DECIMAL_KWH.format(capacityCache), null);
 		
 		// Create stored label.
 		storedCache = storage.getkWattHourStored();
 		storedTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.stored"),
-									StyleManager.DECIMAL_PLACES1.format(storedCache) + kWh, null);
+									StyleManager.DECIMAL_KWH.format(storedCache), null);
 		
 		SpringUtilities.makeCompactGrid(springPanel,
                 2, 2, 			//rows, cols
@@ -90,14 +88,14 @@ extends BuildingFunctionPanel {
 		double newCapacity = storage.getCurrentMaxCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
-			capTF.setText(StyleManager.DECIMAL_PLACES1.format(capacityCache) + kWh);
+			capTF.setText(StyleManager.DECIMAL_KWH.format(capacityCache));
 		}
 
 		// Update stored label if necessary.
 		double newStored = storage.getkWattHourStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
-			storedTF.setText(StyleManager.DECIMAL_PLACES1.format(storedCache) + kWh);
+			storedTF.setText(StyleManager.DECIMAL_KWH.format(storedCache));
 		}    
 	}
 	

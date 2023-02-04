@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * The BuildingPanelComputation class is a building function panel representing
@@ -57,7 +58,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		// Power Demand
 		double powerDemand = Math.round(10.0*building.getComputation().getFullPowerRequired())/10.0;
 		textField0 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.powerDemand"),
-				     powerDemand + " kW", Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
+				     StyleManager.DECIMAL_KW.format(powerDemand), Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
 
 		// Usage
 		double usage = Math.round(100.0*building.getComputation().getUsagePercent())/100.0;
@@ -76,10 +77,10 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	@Override
 	public void update() {
 
-		double power = Math.round(10.0*building.getComputation().getFullPowerRequired())/10.0;
+		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getFullPowerRequired());
 
-		if (!textField0.getText().equalsIgnoreCase(power + " kW"))
-			textField0.setText(power + " kW");
+		if (!textField0.getText().equalsIgnoreCase(power))
+			textField0.setText(power);
 		
 		double util = Math.round(100.0*building.getComputation().getUsagePercent())/100.0;
 		if (!textField1.getText().equalsIgnoreCase(util + " %"))

@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * The BuildingPanelResourceProcessing class is a building function panel representing
@@ -52,7 +52,6 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	private static final String PROCESS = "&emsp;&nbsp;Process:&emsp;";
 	private static final String BUILDING_HEADER = "&emsp;&nbsp;Building:&emsp;";
 	private static final String POWER_REQ = "Power Req:&emsp;";
-	private static final String KW = " kW";
 	private static final String NOTE = "&emsp;<i>Note:  * denotes an ambient resource</i>";
 	
 	// Data members
@@ -135,7 +134,6 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 		private JButton toggleButton;
 		private ImageIcon dotGreen;
 		private ImageIcon dotRed;
-		private DecimalFormat decFormatter = new DecimalFormat(Msg.getString("TabPanelResourceProcesses.decimalFormat")); //$NON-NLS-1$
 
 		/**
 		 * Constructor.
@@ -191,8 +189,8 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 			// Future: Use another tool tip manager to align text to improve tooltip readability			
 			result.append(PROCESS).append(process.getProcessName()).append(BR);
 			result.append(BUILDING_HEADER).append(building.getNickName()).append(BR);
-			result.append(POWER_REQ).append(decFormatter.format(process.getPowerRequired()))
-			.append(KW).append(BR);
+			result.append(POWER_REQ).append(StyleManager.DECIMAL_KW.format(process.getPowerRequired()))
+			.append(BR);
 			result.append(INPUTS);
 			Iterator<Integer> i = process.getInputResources().iterator();
 			String ambientStr = "";
@@ -201,7 +199,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 				if (ii!=0)	result.append(SPACES);
 				Integer resource = i.next();
 				double rate = process.getMaxInputRate(resource) * 1000D;
-				String rateString = decFormatter.format(rate);
+				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
 				if (process.isAmbientInputResource(resource)) 
 					ambientStr = "*";
 				result.append(ResourceUtil.findAmountResource(resource).getName())
@@ -216,7 +214,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 				if (jj!=0) result.append(SPACES);
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
-				String rateString = decFormatter.format(rate);
+				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
 				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(" @ ").append(rateString).append(KG_SOL).append(BR);
 				jj++;

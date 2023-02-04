@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -90,14 +89,11 @@ extends TabPanel {
 
 	private Coordinates locationCache;
 
-	private Simulation sim = Simulation.instance();
-	private Weather weather = sim.getWeather();
-	private SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
-	private OrbitInfo orbitInfo = sim.getOrbitInfo();
-	private MasterClock masterClock = getSimulation().getMasterClock();
-	
-	private static DecimalFormat fmt = new DecimalFormat("##0");
-	
+	private Weather weather;
+	private SurfaceFeatures surfaceFeatures;
+	private OrbitInfo orbitInfo;
+	private MasterClock masterClock;
+		
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -111,6 +107,12 @@ extends TabPanel {
     		Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
     		unit, desktop
     	);
+
+		Simulation sim = desktop.getSimulation();
+		weather = sim.getWeather();
+		surfaceFeatures = sim.getSurfaceFeatures();
+		orbitInfo = sim.getOrbitInfo();
+		masterClock = sim.getMasterClock();
 	}
 	
 	@Override
@@ -311,7 +313,7 @@ extends TabPanel {
     public String getTemperatureString(double value) {
     	// Use Msg.getString for the degree sign
     	// Change from " °C" to " �C" for English Locale
-    	return fmt.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
+    	return StyleManager.DECIMAL_PLACES0.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     }
 
     public double getTemperature() {
@@ -339,7 +341,7 @@ extends TabPanel {
     }
 
     public String getWindDirectionString(double value) {
-     	return fmt.format(value) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+     	return StyleManager.DECIMAL_PLACES0.format(value) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
     }
 
     public double getOpticalDepth() {

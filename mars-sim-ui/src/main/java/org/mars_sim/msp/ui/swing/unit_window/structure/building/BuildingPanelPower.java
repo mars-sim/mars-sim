@@ -31,9 +31,7 @@ public class BuildingPanelPower
 extends BuildingFunctionPanel {
 
 	private static final String FUSE_ICON = Msg.getString("icon.fuse"); //$NON-NLS-1$
-	
-	private static final String kW = " kW";
-	
+		
 	/** Is the building a power producer? */
 	private boolean isProducer;
 	
@@ -90,7 +88,7 @@ extends BuildingFunctionPanel {
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
 			producedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerProduced"),
-									  StyleManager.DECIMAL_PLACES1.format(powerCache) + kW, null);
+									  StyleManager.DECIMAL_KG.format(powerCache), null);
 		}
 
 		// Prepare power used label.
@@ -100,7 +98,7 @@ extends BuildingFunctionPanel {
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
 		usedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerUsed"),
-													StyleManager.DECIMAL_PLACES1.format(usedCache) + kW, null);
+													StyleManager.DECIMAL_KW.format(usedCache), null);
 		
 		//Lay out the spring panel.
 		if (isProducer) {
@@ -136,7 +134,7 @@ extends BuildingFunctionPanel {
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
-				producedTF.setText(StyleManager.DECIMAL_PLACES1.format(powerCache) + kW); //$NON-NLS-1$
+				producedTF.setText(StyleManager.DECIMAL_KW.format(powerCache)); //$NON-NLS-1$
 			}
 		}
 
@@ -149,7 +147,7 @@ extends BuildingFunctionPanel {
 		
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedTF.setText(StyleManager.DECIMAL_PLACES1.format(usedCache) + kW); //$NON-NLS-1$
+			usedTF.setText(StyleManager.DECIMAL_KW.format(usedCache)); //$NON-NLS-1$
 		}
 	}
 	

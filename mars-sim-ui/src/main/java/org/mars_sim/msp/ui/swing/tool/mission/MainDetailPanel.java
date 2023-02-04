@@ -16,7 +16,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,6 +93,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -129,7 +130,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private JButton centerMapButton;
 	private JButton vehicleButton;
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("MainDetailPanel.decimalFormat")); //$NON-NLS-1$
 	private CardLayout customPanelLayout;
 
 	private JPanel missionCustomPane;
@@ -688,6 +688,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		
 		centerMapButton.setEnabled(true);
 		
+		NumberFormat formatter = StyleManager.DECIMAL_PLACES0;
+
 		// Update mission vehicle info in UI.
 		if (MissionType.isVehicleMission(mission.getMissionType())) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
@@ -912,7 +914,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		traveledLabel = null;
 		centerMapButton = null;
 		vehicleButton = null;
-		formatter = null;
 		customPanelLayout = null;
 		missionCustomPane = null;
 		missionCache = null;
@@ -980,7 +981,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",
+										StyleManager.DECIMAL_PLACES1.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				} else {
@@ -1029,7 +1031,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (type == UnitEventType.STATUS_EVENT) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
-				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",
+									StyleManager.DECIMAL_PLACES1.format(vehicle.getSpeed()))); //$NON-NLS-1$
 		}
 	}
 
