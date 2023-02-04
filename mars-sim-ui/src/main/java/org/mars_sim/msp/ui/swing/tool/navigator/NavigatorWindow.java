@@ -27,12 +27,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -73,7 +73,6 @@ import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -105,8 +104,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;
 
 	private static final int HEIGHT_STATUS_BAR = 20;
-
-	private static final int CB_WIDTH = 120;
 
 	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
@@ -178,14 +175,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		// Prepare whole pane
-		JPanel wholePane = new JPanel(new GridLayout(1, 2));
+		// Prepare whole 
+		JPanel wholePane = new JPanel(new BorderLayout(0, 0));
+		wholePane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel leftPane = new JPanel(new BorderLayout(0, 0));
-		leftPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
-		wholePane.add(leftPane);
-		
+		JPanel mapPane = new JPanel(new GridLayout(1, 2));
+		wholePane.add(mapPane, BorderLayout.CENTER);
+
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -194,20 +192,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		globePane.setOpaque(true);
 		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 		globePane.add(globeNav);
-
+		globePane.add(globeNav);
+		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
-		leftPane.add(globePane, BorderLayout.CENTER);
-
-		
-		///////////////////////////////////////////////////////////////////////////
-
-		
-		JPanel rightPane = new JPanel(new BorderLayout(0, 0));
-		wholePane.add(rightPane);
+		mapPane.add(globePane);
 	
 		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		rightPane.add(detailPane, BorderLayout.CENTER);
+		mapPane.add(detailPane);
 	
 		JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
 		detailPane.add(mapPaneInner);
@@ -249,28 +241,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// turn on day night layer
 		setMapLayer(false, 0, shadingLayer);
-//		globeNav.setDayNightTracking(false);
 		
 		///////////////////////////////////////////////////////////////////////////
-		
+		JPanel controlPane = new JPanel();
+		wholePane.add(controlPane, BorderLayout.SOUTH);
 
 		// Prepare position coordination entry panel on the left pane
-		JPanel coordPane = new JPanel(new GridLayout(1, 6, 0, 0));
-		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		coordPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-//		controlPane.add(coordPane);
-		leftPane.add(coordPane, BorderLayout.SOUTH);
-		
-		// coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
-//		coordPane.setMaximumHeight(HEIGHT_BUTTON_PANE);
-//		coordPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
-//		coordPane.setMaximumSize(new Dimension(300, HEIGHT_BUTTON_PANE));
-		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JPanel coordPane = new JPanel();
 		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel(" Lat : ", JLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
-		// latLabel.setAlignmentY(.5F);
+		JLabel latLabel = new JLabel(" Lat :", JLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
 		coordPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
@@ -289,7 +270,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
 		latCB.setSelectedItem(0);
-		latCB.setSize(new Dimension(CB_WIDTH, -1));
+		//latCB.setSize(new Dimension(CB_WIDTH, -1));
 		coordPane.add(latCB);
 
 		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -297,18 +278,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		latDir = new JComboBoxMW<Object>(latStrings);
 		latDir.setEditable(false);
-		latDir.setSize(new Dimension(20, -1));
+		//latDir.setSize(new Dimension(20, -1));
 		coordPane.add(latDir);
 
 		// Prepare longitude entry components
-		JLabel longLabel = new JLabel("Lon : ", JLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
+		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 		// longLabel.setAlignmentY(.5F);
 		coordPane.add(longLabel);
 
 		// Switch to using ComboBoxMW for longtitude
 		longCB = new JComboBoxMW<Integer>(lon_degrees);
 		longCB.setSelectedItem(0);
-		longCB.setSize(new Dimension(CB_WIDTH, -1));
+		//longCB.setSize(new Dimension(CB_WIDTH, -1));
 		coordPane.add(longCB);
 
 		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -316,21 +297,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		longDir = new JComboBoxMW<Object>(longStrings);
 		longDir.setEditable(false);
-		longDir.setSize(new Dimension(20, -1));
+		//longDir.setSize(new Dimension(20, -1));
 		coordPane.add(longDir);
 
+		controlPane.add(coordPane);
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		JPanel optionsPane = new JPanel(new GridLayout(1, 3));
-//		controlPane.add(optionsPane);
-		rightPane.add(optionsPane, BorderLayout.SOUTH);
-		
-//		optionsPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
-//		optionsPane.setMaximumSize(new Dimension(300, HEIGHT_BUTTON_PANE));
-		optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		//JPanel optionsPane = new JPanel(new GridLayout(1, 3));
+		JPanel optionsPane = new JPanel();
+
+		controlPane.add(optionsPane);
 		optionsPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-//		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
 		// Prepare location entry submit button
 		JButton goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
@@ -368,7 +346,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsPane.add(mineralsButton);
 
 		// Create the status bar
-		JStatusBar statusBar = new JStatusBar(3, 3, 18);
+		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		Font font = new Font("Times New Roman", Font.PLAIN, 11);
@@ -377,58 +355,36 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
-		coordLabel.setForeground(Color.GREEN.darker().darker());
+		coordLabel.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
+
 		phiLabel = new JLabel();
 		phiLabel.setFont(font);
-		phiLabel.setForeground(Color.BLUE.darker());
+		phiLabel.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
+
 		thetaLabel = new JLabel();
 		thetaLabel.setFont(font);
-		thetaLabel.setForeground(Color.BLUE.darker());
+		thetaLabel.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
+
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setForeground(Color.ORANGE.darker());
+		heightLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
+
 		rgbLabel = new JLabel();
 		rgbLabel.setFont(font1);
-		rgbLabel.setForeground(Color.red.darker().darker());
+		rgbLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
+
 		hsbLabel = new JLabel();
 		hsbLabel.setFont(font2);
-		hsbLabel.setForeground(Color.MAGENTA.darker());
+	    hsbLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
+	    
+		statusBar.addLeftComponent(coordLabel, false);
+		statusBar.addLeftComponent(phiLabel, false);
+		statusBar.addLeftComponent(thetaLabel, false);
+		
+		statusBar.addCenterComponent(heightLabel, false);
 
-	    JPanel p = new JPanel();
-	    p.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
-	    p.add(phiLabel);
-	
-	    JPanel t = new JPanel();
-	    t.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
-	    t.add(thetaLabel);
-	     
-	    JPanel c = new JPanel();
-	    c.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
-	    c.add(coordLabel);
-	    
-	    JPanel e = new JPanel();
-	    e.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
-	    e.add(heightLabel);
-	    
-	    JPanel r = new JPanel();
-	    r.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
-	    r.add(rgbLabel);
-	    
-	    JPanel hs = new JPanel();
-	    hs.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
-	    hs.add(hsbLabel);
-	    
-		statusBar.addLeftComponent(c, false);
-		statusBar.addLeftComponent(p, false);
-		statusBar.addLeftComponent(t, false);
-		
-		statusBar.addCenterComponent(e, false);
-
-		statusBar.addRightComponent(r, false);
-		statusBar.addRightComponent(hs, false);
-		
-//		statusBar.addRightCorner();
-		
+		statusBar.addRightComponent(rgbLabel, false);
+		statusBar.addRightComponent(hsbLabel, false);
 		
 		// Create the option menu
 		if (optionsMenu == null)
@@ -454,7 +410,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 * @param hsb
 	 */
 	private void updateStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
-		heightLabel.setText(ELEVATION + height);
+		heightLabel.setText(height);
 		coordLabel.setText(WHITESPACE + coord);
 		phiLabel.setText(PHI + phi);
 		thetaLabel.setText(THETA + theta);

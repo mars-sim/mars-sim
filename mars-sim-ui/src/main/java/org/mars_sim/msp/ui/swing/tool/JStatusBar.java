@@ -14,6 +14,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,11 +22,13 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class JStatusBar extends TexturedPanel {
 		   
-	private static final Color almond = new Color(239,222,205,128);
+        private static final Color almond = new Color(239,222,205,128);
 
-	private int barHeight = 30;
-	private int leftPadding;
-	private int rightPadding;
+        private static final int MARGIN = 1;
+
+        private int barHeight = 30;
+        private int leftPadding;
+        private int rightPadding;
 	
     protected JPanel leftPanel;
     protected JPanel rightPanel;
@@ -50,7 +53,7 @@ public class JStatusBar extends TexturedPanel {
 		setBackground(almond);
 		
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(getWidth(), barHeight));
+        setPreferredSize(new Dimension(getWidth(), barHeight + (2 * (MARGIN + 2))));
     
         leftPanel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 3, 0));
@@ -68,6 +71,7 @@ public class JStatusBar extends TexturedPanel {
     public void addLeftComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, leftPadding));
+        addBorder(panel);
         if (separator) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
@@ -77,6 +81,8 @@ public class JStatusBar extends TexturedPanel {
     public void addCenterComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, leftPadding));
+        addBorder(panel);
+
         if (separator) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
@@ -87,12 +93,19 @@ public class JStatusBar extends TexturedPanel {
     public void addRightComponent(JComponent component, boolean separator) {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, rightPadding));
+        addBorder(panel);
+
         if (separator) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
         rightPanel.add(panel);
     }
     
+    private void addBorder(JPanel panel) {
+        panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                                                        BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN)));
+    }
+
     public void addRightCorner() {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.TRAILING, 0, 0));
