@@ -16,7 +16,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
@@ -35,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mars.sim.console.InteractiveTerm;
@@ -107,17 +107,16 @@ extends JComponent implements ClockListener {
 	/** The main window frame. */
 	private static JFrame frame;
 
+	private UIConfig configs;
+
 	private static SplashWindow splashWindow;
 
 	private static InteractiveTerm interactiveTerm;
 
 	private static MSPIconManager iconManager;
 
-
 	// Data members
 	private boolean isIconified = false;
-
-	private boolean useDefault = false;
 
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
@@ -156,13 +155,19 @@ extends JComponent implements ClockListener {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
 
-		// Set up the look and feel library to be used
-		StyleManager.setLAF(null); // Use the default style for now; will be configurable from UIConfig
+		
+		// Load a UI Config instance according to the user's choice
+		boolean loadConfig = true;
+		if (cleanUI) {
+			loadConfig = askScreenConfig();
+		}
+		configs = new UIConfig();
+		if (loadConfig) {
+			configs.parseFile();
+		}
 
-		// Set up the frame
-		frame = new JFrame();
-		frame.setResizable(true);
-		frame.setMinimumSize(new Dimension(640, 640));
+		// Set up the look and feel library to be used
+		StyleManager.setLAF(configs.getLAF()); 
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
@@ -184,12 +189,23 @@ extends JComponent implements ClockListener {
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
-		if (cleanUI) {
-			askScreenConfig(screenWidth, screenHeight);
+
+		// Set up the frame
+		frame = new JFrame();
+		frame.setResizable(true);
+		frame.setMinimumSize(new Dimension(640, 640));
+
+		// Set the UI configuration
+		boolean useDefault = configs.useUIDefault();
+		logger.config("useDefault is: " + useDefault);
+	
+		if (useDefault) {
+			logger.config("Will calculate screen size for default display instead.");
+			setUpCalculatedScreen(screenWidth, screenHeight, useDefault);
 		}
 		else {
-			chooseScreenSize(screenWidth, screenHeight);
-		}	
+			setUpSavedScreen();
+		}
 
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim);
@@ -210,11 +226,8 @@ extends JComponent implements ClockListener {
 
 	/**
 	 * Asks if the player wants to use last saved screen configuration.
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
 	 */
-	private void askScreenConfig(int screenWidth, int screenHeight) {
+	private boolean askScreenConfig() {
 
 		logger.config("Do you want to use the last saved screen configuration ?");
 		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
@@ -223,35 +236,11 @@ extends JComponent implements ClockListener {
 				"Do you want to use the last saved screen configuration", 
 				"Screen Configuration", 
 				JOptionPane.YES_NO_OPTION);
-        if (reply == JOptionPane.YES_OPTION) {
-        	
-			logger.config("You choose Yes to loading last saved screen configuration.");	
-			
-    		// Load previous UI configuration.
-			UIConfig.INSTANCE.parseFile();
-			
-			// Set the UI configuration
-			useDefault = UIConfig.INSTANCE.useUIDefault();
-			logger.config("useDefault is: " + useDefault);
-		
-			if (useDefault) {
-				logger.config("Will calculate screen size for default display instead.");
-				setUpCalculatedScreen(screenWidth, screenHeight);
-			}
-			else {
-				setUpSavedScreen();
-			}
-        }
-        
-        // No. use the new default setting
-        else {
-			logger.config("Will calculate screen size for default display instead.");
-			setUpCalculatedScreen(screenWidth, screenHeight);
-        }
+        return (reply == JOptionPane.YES_OPTION);
 	}
 	
 	private void setUpSavedScreen() {
-		selectedSize = UIConfig.INSTANCE.getMainWindowDimension();
+		selectedSize = configs.getMainWindowDimension();
 		
 		// Set frame size
 		frame.setSize(selectedSize);
@@ -262,16 +251,16 @@ extends JComponent implements ClockListener {
 			+ ".");
 		
 		// Display screen at a certain location
-		frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+		frame.setLocation(configs.getMainWindowLocation());
 		logger.config("The last saved frame starts at (" 
-				+ UIConfig.INSTANCE.getMainWindowLocation().x
+				+ configs.getMainWindowLocation().x
 				+ ", "
-				+ UIConfig.INSTANCE.getMainWindowLocation().y
+				+ configs.getMainWindowLocation().y
 				+ ").");
 	}
 	
-	private void setUpCalculatedScreen(int screenWidth, int screenHeight) {
-		selectedSize = calculatedScreenSize(screenWidth, screenHeight);
+	private void setUpCalculatedScreen(int screenWidth, int screenHeight, boolean useDefaults) {
+		selectedSize = calculatedScreenSize(screenWidth, screenHeight, useDefaults);
 		
 		// Set frame size
 		frame.setSize(selectedSize);
@@ -295,37 +284,16 @@ extends JComponent implements ClockListener {
 				+ ").");
 	}
 	
-	/**
-	 * Chooses screen size.
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 */
-	private void chooseScreenSize(int screenWidth, int screenHeight) {
-		// Load previous UI configuration.
-		UIConfig.INSTANCE.parseFile();
-		
-		// Set the UI configuration
-		useDefault = UIConfig.INSTANCE.useUIDefault();
-		logger.config("useDefault is: " + useDefault);
-	
-		if (useDefault) {
-			logger.config("Will calculate screen size for default display instead.");
-			setUpCalculatedScreen(screenWidth, screenHeight);
-		}
-		else {
-			setUpSavedScreen();
-		}
-	}
 	
 	/**
 	 * Calculates the screen size.
 	 * 
 	 * @param screenWidth
 	 * @param screenHeight
+	 * @param useDefault 
 	 * @return
 	 */
-	private Dimension calculatedScreenSize(int screenWidth, int screenHeight) {
+	private Dimension calculatedScreenSize(int screenWidth, int screenHeight, boolean useDefault) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
 		logger.config("useDefault is: " + useDefault);
 		
@@ -337,7 +305,7 @@ extends JComponent implements ClockListener {
 		}
 		else {
 			// Use any stored size
-			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+			frameSize = configs.getMainWindowDimension();
 			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
 		}
 		
@@ -559,8 +527,8 @@ extends JComponent implements ClockListener {
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 
 		// set the visibility of tool and unit bars from preferences
-		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
-		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
+		unitToolbar.setVisible(configs.showUnitBar());
+		toolToolbar.setVisible(configs.showToolBar());
 
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
@@ -635,6 +603,16 @@ extends JComponent implements ClockListener {
 		pauseSwitch.addActionListener(e -> 
 			masterClock.setPaused(pauseSwitch.isSelected(), false)
 			);	
+	}
+
+	/**
+	 * Update the LAF style to a new value.
+	 */
+	public void updateLAF(String newStyle) {
+		// Set up the look and feel library to be used
+		if (StyleManager.setLAF(configs.getLAF())) {
+			SwingUtilities.updateComponentTreeUI(frame);
+		}
 	}
 
 	/**
@@ -731,8 +709,7 @@ extends JComponent implements ClockListener {
 		sim.requestSave(fileLocn, action -> {
 			if (SimulationListener.SAVE_COMPLETED.equals(action)) {
 				// Save the current main window ui config
-				UIConfig.INSTANCE.saveFile(this);
-//				logger.log(Level.CONFIG, "Done calling saveSimulation().");
+				configs.saveFile(this);
 			}
 		});
 
@@ -770,7 +747,7 @@ extends JComponent implements ClockListener {
 
 	        	endSimulation();
 	    		// Save the UI configuration.
-	    		UIConfig.INSTANCE.saveFile(this);
+	    		configs.saveFile(this);
 	    		masterClock.exitProgram();
 	    		frame.dispose();
 	    		destroy();
@@ -854,7 +831,7 @@ extends JComponent implements ClockListener {
 	/**
 	 * Disposes the splash window frame
 	 */
-	public static void disposeSplash() {
+	private static void disposeSplash() {
 		if (splashWindow != null) {
 			splashWindow.remove();
 		}
@@ -880,18 +857,14 @@ extends JComponent implements ClockListener {
 	public boolean isIconified() {
 		return isIconified;
 	}
-
-	/**
-	 * Create background tile when MainDesktopPane is first displayed. Center
-	 * logoLabel on MainWindow and set backgroundLabel to the size of
-	 * MainDesktopPane.
-	 *
-	 * @param e the component event
-	 */
-	public void componentResized(ComponentEvent e) {
-		desktop.componentResized(e);
-	}
 	
+	/**
+	 * Get the UIConfig for this UI.
+	 */
+	public UIConfig getConfig() {
+		return configs;
+	}
+
 	/** 
 	 * Get the active simualation.
 	 */
@@ -943,4 +916,5 @@ extends JComponent implements ClockListener {
 		desktop.destroy();
 		desktop = null;
 	}
+
 }

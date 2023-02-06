@@ -69,16 +69,17 @@ public class AudioPlayer {
 			loadSoundEffects();
 		}
 		
-		if (!UIConfig.INSTANCE.useUIDefault()) {
+		UIConfig config = desktop.getMainWindow().getConfig();
+		if (!config.useUIDefault()) {
 			
-			if (UIConfig.INSTANCE.isMute()) {
+			if (config.isMute()) {
 				muteSoundEffect();
 				muteMusic();
 				currentMusicVol = 0;
 				currentSoundVol = 0;
 			}
 			else {
-				double v = UIConfig.INSTANCE.getVolume();
+				double v = config.getVolume();
 				currentMusicVol = v;
 				currentSoundVol = v;
 			}
@@ -259,8 +260,8 @@ public class AudioPlayer {
 		}
 		
 		if (!isVolumeDisabled && hasMasterGain
-				&& currentMusic.getVol() < 1
-				&& currentMusic != null) {
+				&& currentMusic != null
+				&& currentMusic.getVol() < 1) {
 
 			double v = currentMusic.getVol() + .05;
 			if (v > 1)
@@ -280,8 +281,8 @@ public class AudioPlayer {
 		}
 		
 		if (!isVolumeDisabled && hasMasterGain
-				&& currentMusic.getVol() > 0
-				&& currentMusic != null) {
+				&& currentMusic != null
+				&& currentMusic.getVol() > 0) {
 
 			double v = currentMusic.getVol() - .05;
 			if (v < 0)
@@ -297,8 +298,8 @@ public class AudioPlayer {
 	 */
 	public void soundVolumeUp() {
 		if (!isVolumeDisabled && hasMasterGain 
-				&& currentSoundClip.getVol() < 1
-				&& currentSoundClip != null) {
+				&& currentSoundClip != null
+				&& currentSoundClip.getVol() < 1) {
 			double v = currentSoundClip.getVol() + .05;
 			if (v > 1)
 				v = 1;
@@ -313,8 +314,8 @@ public class AudioPlayer {
 	 */
 	public void soundVolumeDown() {
 		if (!isVolumeDisabled && hasMasterGain 
-				&& currentSoundClip.getVol() > 0
-				&& currentSoundClip != null) {
+				&& currentSoundClip != null
+				&& currentSoundClip.getVol() > 0) {
 			double v = currentSoundClip.getVol() - .05;
 			if (v < 0)
 				v = 0;
@@ -548,7 +549,7 @@ public class AudioPlayer {
 	 * Is the volume of the audio player disable ?
 	 * @return
 	 */
-	public boolean isVolumeDisabled() {
+	public static boolean isAudioDisabled() {
 		return isVolumeDisabled;
 	}
 
@@ -557,7 +558,7 @@ public class AudioPlayer {
 		currentSoundVol = 0;
 	}
 	
-	public static void disableVolume() {
+	public static void disableAudio() {
 		isVolumeDisabled = true;
 		hasMasterGain = false;
 		

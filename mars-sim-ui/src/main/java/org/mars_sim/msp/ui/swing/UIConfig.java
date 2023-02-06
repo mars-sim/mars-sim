@@ -14,8 +14,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,11 +40,22 @@ import com.google.common.base.Charsets;
  */
 public class UIConfig {
 
+	private static class WindowSpec {
+		Point position;
+		Dimension size;
+		String name;
+		int order;
+
+		public WindowSpec( String name, Point position, Dimension size, int order) {
+			this.position = position;
+			this.size = size;
+			this.name = name;
+			this.order = order;
+		}
+	}
+
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UIConfig.class.getName());
-
-	/** Singleton instance. */
-	public static final UIConfig INSTANCE = new UIConfig();
 
 	/** Internal window types. */
 	public static final String TOOL = "tool";
@@ -69,15 +81,26 @@ public class UIConfig {
 	private static final String NAME = "name";
 	private static final String DISPLAY = "display";
 	private static final String Z_ORDER = "z-order";
+	private static final String LAF = "look-and-feel";
 
-	private Element root;
+	private Map<String,WindowSpec> windows = new HashMap<>();
 
-	private MainDesktopPane desktop;
+	private Point mainWindowPosn = new Point(0,0);
+	private Dimension mainWindowSize = new Dimension(1024, 720);
+	private String lookAndFeel = StyleManager.DEFAULT_LAF;
+
+	private boolean useDefault;
+	private boolean showToolBar = true;
+	private boolean showUnitBar;
+
+	private boolean mute;
+	private double volume;
+
 
 	/**
 	 * Private singleton constructor.
 	 */
-	private UIConfig() {
+	public UIConfig() {
 	}
 
 	/**
@@ -96,12 +119,60 @@ public class UIConfig {
 		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
 		    	Document configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
-		    	root = configDoc.getRootElement();
+		    	Element root = configDoc.getRootElement();
+
+				// Main proprerties
+				Element mainWindow = root.getChild(MAIN_WINDOW);
+				mainWindowSize = parseSize(mainWindow);
+				mainWindowPosn = parsePosition(mainWindow);
+
+
+				// Global props
+				useDefault = parseBoolean(root, USE_DEFAULT);
+				showToolBar = parseBoolean(root, SHOW_TOOL_BAR);
+				showUnitBar = parseBoolean(root, SHOW_UNIT_BAR);
+				lookAndFeel = root.getAttributeValue(LAF);
+
+				// Audo controls
+				Element volumeItem = root.getChild(VOLUME);
+				if (volumeItem != null) {
+					mute = parseBoolean(volumeItem, MUTE);
+					volume = Double.parseDouble(volumeItem.getAttributeValue(SOUND));
+				}
+
+				// Parse Internal Window
+				Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+				List<Element> internalWindowNodes = internalWindows.getChildren();
+				for (Element internalWindow : internalWindowNodes) {
+					String name = internalWindow.getAttributeValue(NAME);
+					Point position = parsePosition(internalWindow);
+					Dimension size = parseSize(internalWindow);
+					int zOrder = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
+
+					windows.put(name, new WindowSpec(name, position, size, zOrder));
+				}
 		    }
 		    catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot parse " + FILE_NAME + " : " + e.getMessage());
 		    }
 		}
+	}
+
+	private static Dimension parseSize(Element window) {
+		int width = Integer.parseInt(window.getAttributeValue(WIDTH));
+		int height = Integer.parseInt(window.getAttributeValue(HEIGHT));
+
+		return new Dimension(width, height);
+	}
+
+	private static Point parsePosition(Element window) {
+		int locationX = Integer.parseInt(window.getAttributeValue(LOCATION_X));
+		int locationY = Integer.parseInt(window.getAttributeValue(LOCATION_Y));
+		return new Point(locationX, locationY);
+	}
+
+	private static boolean parseBoolean(Element item, String attrName) {
+		return Boolean.parseBoolean(item.getAttributeValue(attrName));
 	}
 
 	/**
@@ -110,7 +181,7 @@ public class UIConfig {
 	 * @param mainWindow the main window.
 	 */
 	public void saveFile(MainWindow mainWindow) {
-		desktop = mainWindow.getDesktop();
+		MainDesktopPane desktop = mainWindow.getDesktop();
 
 		File configFile = new File(SimulationFiles.getSaveDir(), FILE_NAME);
 
@@ -141,6 +212,7 @@ public class UIConfig {
 		outputDoc.setRootElement(uiElement);
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
+		uiElement.setAttribute(LAF, StyleManager.getLAF());
 		uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
 		uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
@@ -155,14 +227,13 @@ public class UIConfig {
 		mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
 		mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
 
-		Element volumeElement = new Element(VOLUME);
-		uiElement.addContent(volumeElement);
-
 		AudioPlayer player = desktop.getSoundPlayer();
-		volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
-		volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
-		volumeElement.setAttribute(MUTE, Boolean.toString(AudioPlayer.isMusicMute()));
-		volumeElement.setAttribute(MUTE, Boolean.toString(AudioPlayer.isEffectMute()));
+		if (player != null) {
+			Element volumeElement = new Element(VOLUME);
+			uiElement.addContent(volumeElement);
+			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(AudioPlayer.isEffectMute()));
+		}
 
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
@@ -221,14 +292,7 @@ public class UIConfig {
 	 * @return true if default.
 	 */
 	public boolean useUIDefault() {
-		try {
-			if (root == null) {
-				return true;
-			}
-			return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
-		} catch (Exception e) {
-			return true;
-		}
+		return useDefault;
 	}
 
 	/**
@@ -237,14 +301,7 @@ public class UIConfig {
 	 * @return true if default.
 	 */
 	public boolean showToolBar() {
-		try {
-			if (root == null) {
-				return true;
-			}
-			return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
-		} catch (Exception e) {
-			return true;
-		}
+		return showToolBar;
 	}
 
 	/**
@@ -253,14 +310,7 @@ public class UIConfig {
 	 * @return true if default.
 	 */
 	public boolean showUnitBar() {
-		try {
-			if (root == null) {
-				return true;
-			}
-			return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
-		} catch (Exception e) {
-			return true;
-		}
+		return showUnitBar;
 	}
 
 	/**
@@ -269,18 +319,7 @@ public class UIConfig {
 	 * @return location.
 	 */
 	public Point getMainWindowLocation() {
-		if (root == null) {
-			return new Point(0, 0);
-		}
-
-		try {
-			Element mainWindow = root.getChild(MAIN_WINDOW);
-			int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
-			int y = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_Y));
-			return new Point(x, y);
-		} catch (Exception e) {
-			return new Point(0, 0);
-		}
+		return mainWindowPosn;
 	}
 
 	/**
@@ -289,14 +328,7 @@ public class UIConfig {
 	 * @return size.
 	 */
 	public Dimension getMainWindowDimension() {
-		try {
-			Element mainWindow = root.getChild(MAIN_WINDOW);
-			int width = Integer.parseInt(mainWindow.getAttributeValue(WIDTH));
-			int height = Integer.parseInt(mainWindow.getAttributeValue(HEIGHT));
-			return new Dimension(width, height);
-		} catch (Exception e) {
-			return new Dimension(1024, 720);
-		}
+		return mainWindowSize;
 	}
 
 	/**
@@ -305,12 +337,7 @@ public class UIConfig {
 	 * @return volume (0 (silent) to 1 (loud)).
 	 */
 	public double getVolume() {
-		try {
-			Element volume = root.getChild(VOLUME);
-			return Double.parseDouble(volume.getAttributeValue(SOUND));
-		} catch (Exception e) {
-			return .5;
-		}
+		return volume;
 	}
 
 	/**
@@ -319,36 +346,7 @@ public class UIConfig {
 	 * @return true if mute.
 	 */
 	public boolean isMute() {
-		try {
-			Element volume = root.getChild(VOLUME);
-			return Boolean.parseBoolean(volume.getAttributeValue(MUTE));
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	/**
-	 * Checks if an internal window is displayed.
-	 *
-	 * @param windowName the window name.
-	 * @return true if displayed.
-	 */
-	public boolean isInternalWindowDisplayed(String windowName) {
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			boolean result = false;
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName)) {
-					result = Boolean.parseBoolean(internalWindow.getAttributeValue(DISPLAY));
-					break;
-				}
-			}
-			return result;
-		} catch (Exception e) {
-			return false;
-		}
+		return mute;
 	}
 
 	/**
@@ -358,22 +356,15 @@ public class UIConfig {
 	 * @return location.
 	 */
 	public Point getInternalWindowLocation(String windowName) {
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			Point result = new Point(0, 0);
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName)) {
-					int locationX = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_X));
-					int locationY = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_Y));
-					result.setLocation(locationX, locationY);
-				}
-			}
-			return result;
-		} catch (Exception e) {
-			return new Point(0, 0);
+		WindowSpec spec = windows.get(windowName);
+		Point result;
+		if (spec != null) {
+			result = spec.position;
 		}
+		else {
+			result = new Point(0, 0);
+		}
+		return result;
 	}
 
 	/**
@@ -383,19 +374,15 @@ public class UIConfig {
 	 * @return z order (lower number represents higher up)
 	 */
 	public int getInternalWindowZOrder(String windowName) {
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			int result = -1;
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName))
-					result = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
-			}
-			return result;
-		} catch (Exception e) {
-			return -1;
+		WindowSpec spec = windows.get(windowName);
+		int result;
+		if (spec != null) {
+			result = spec.order;
 		}
+		else {
+			result = -1;
+		}
+		return result;
 	}
 
 	/**
@@ -405,44 +392,15 @@ public class UIConfig {
 	 * @return size.
 	 */
 	public Dimension getInternalWindowDimension(String windowName) {
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			Dimension result = new Dimension(0, 0);
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName)) {
-					int width = Integer.parseInt(internalWindow.getAttributeValue(WIDTH));
-					int height = Integer.parseInt(internalWindow.getAttributeValue(HEIGHT));
-					result = new Dimension(width, height);
-				}
-			}
-			return result;
-		} catch (Exception e) {
-			return new Dimension(0, 0);
+		WindowSpec spec = windows.get(windowName);
+		Dimension result;
+		if (spec != null) {
+			result = spec.size;
 		}
-	}
-
-	/**
-	 * Gets the internal window type.
-	 *
-	 * @param windowName the window name.
-	 * @return "unit" or "tool".
-	 */
-	public String getInternalWindowType(String windowName) {
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			String result = "";
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName))
-					result = internalWindow.getAttributeValue(TYPE);
-			}
-			return result;
-		} catch (Exception e) {
-			return "";
+		else {
+			result = new Dimension(0, 0);;
 		}
+		return result;
 	}
 
 	/**
@@ -452,40 +410,13 @@ public class UIConfig {
 	 * @return true if configured.
 	 */
 	public boolean isInternalWindowConfigured(String windowName) {
-		try {
-			if (root == null) {
-				return false;
-			}
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			boolean result = false;
-			for (Element internalWindow : internalWindowNodes) {
-				String name = internalWindow.getAttributeValue(NAME);
-				if (name.equals(windowName))
-					result = true;
-			}
-			return result;
-		} catch (Exception e) {
-			return false;
-		}
+		return (windows.get(windowName) != null);
 	}
 
 	/**
-	 * Gets all of the internal window names.
-	 *
-	 * @return list of window names.
+	 * Can configued LAF.
 	 */
-	public List<String> getInternalWindowNames() {
-		List<String> result = new ArrayList<String>();
-		try {
-			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Element> internalWindowNodes = internalWindows.getChildren();
-			for (Element internalWindow : internalWindowNodes) {
-				result.add(internalWindow.getAttributeValue(NAME));
-			}
-			return result;
-		} catch (Exception e) {
-			return result;
-		}
+	public String getLAF() {
+		return lookAndFeel;
 	}
 }

@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -43,13 +44,23 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
 
+    private static final String DARK = "Flat Dark";
+    private static final String LIGHT = "Flat Light";
+    private static final String SYSTEM = "Default System";
+    public static final String DEFAULT_LAF = LIGHT;
 
-    private static final String DARK = "dark";
-    private static final String LIGHT = "light";
-    private static final String METAL = "metal";
-    private static final String SYSTEM = "system";
+    private static final String [] STYLES = {LIGHT, DARK, SYSTEM};
 
     private static Font subHeading;
+
+    private static String selectedLAF = SYSTEM;
+
+    /**
+     * Get available LAF
+     */
+    public static String[] getAvailableLAF() {
+        return STYLES;
+    }
 
     /**
 	 * Sets the look and feel of the UI. This is fixed but need to be made variable
@@ -77,7 +88,7 @@ public class StyleManager {
                     subHeading = UIManager.getFont( SUB_HEADING_STYLE + ".font"); 
                     break;
 
-                case METAL:
+                case SYSTEM:
                     break;
                 
                 default:
@@ -92,8 +103,18 @@ public class StyleManager {
 
 		}
 
+        if (result) {
+            selectedLAF = style;
+        }
         return result;
 	}
+
+    /**
+     * Which LAF has been selected.
+     */
+    public static String getLAF() {
+        return selectedLAF;
+    }
 
     /**
      * Apply styling to make this a SubHeading; normally applied to a JLabel
@@ -131,4 +152,15 @@ public class StyleManager {
                                                 subHeading, (Color)null);
     }
 
+    /**
+     * Set the style of atabel to match look and feel
+     * 
+     * @param table
+     */
+    public static void setTableStyle(JTable table) {
+        // Need to style heading with color accent
+        
+        table.setShowGrid(true);
+        table.setShowVerticalLines(true);
+    }
 }

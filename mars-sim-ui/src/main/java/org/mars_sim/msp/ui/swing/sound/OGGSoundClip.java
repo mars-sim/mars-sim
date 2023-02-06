@@ -346,7 +346,7 @@ public class OGGSoundClip {
 	}
 
 	public void disableSound() {
-		AudioPlayer.disableVolume();
+		AudioPlayer.disableAudio();
 	}
 
 	/**

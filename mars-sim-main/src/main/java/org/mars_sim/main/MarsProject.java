@@ -246,7 +246,7 @@ public class MarsProject {
 
 			if (line.hasOption(NOAUDIO)) {
 				// Disable all audio not just the volume
-				AudioPlayer.disableVolume();
+				AudioPlayer.disableAudio();
 			}
 			if (line.hasOption(DISPLAY_HELP)) {
 				usage("See available options below", options);

@@ -123,10 +123,10 @@ public class MainDesktopPane extends JDesktopPane
 		this.sim = sim;
 
 		// Initialize data members
-		soundPlayer = new AudioPlayer(this);
-		// Play music
-		if (!soundPlayer.isVolumeDisabled())
+		if (!AudioPlayer.isAudioDisabled()) {
+			soundPlayer = new AudioPlayer(this);
 			soundPlayer.playRandomMusicTrack();
+		}
 		// Prepare unit windows.
 		unitWindows = new ArrayList<>();
 
@@ -493,10 +493,8 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		
 		if (window.isClosed() && !window.wasOpened()) {
-			UIConfig config = UIConfig.INSTANCE;
-//					if (config.useUIDefault()) {
-//						window.setLocation(getCenterLocation(window));
-//					} else {
+			UIConfig config = mainWindow.getConfig();
+
 			if (config.isInternalWindowConfigured(toolName)) {
 				window.setLocation(config.getInternalWindowLocation(toolName));
 				if (window.isResizable()) {
@@ -510,7 +508,6 @@ public class MainDesktopPane extends JDesktopPane
 				else
 					window.setLocation(getCenterLocation(window));
 			}
-//					}
 			window.setWasOpened(true);
 		}
 
@@ -555,7 +552,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		
 		if (window.isClosed() && !window.wasOpened()) {
-			UIConfig config = UIConfig.INSTANCE;
+			UIConfig config = mainWindow.getConfig();
 			Point location = null;
 			if (config.isInternalWindowConfigured(toolName)) {
 				location = config.getInternalWindowLocation(toolName);
@@ -666,7 +663,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			if (initialWindow) {
 				// Put window in configured position on desktop.
-				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
+				tempWindow.setLocation(mainWindow.getConfig().getInternalWindowLocation(unit.getName()));
 			} else {
 				// Put window in random position on desktop.
 				tempWindow.setLocation(getRandomLocation(tempWindow));
@@ -692,7 +689,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Play sound
 			String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-			if (soundFilePath != null && soundFilePath.length() != 0) {
+			if (soundFilePath != null && soundFilePath.length() != 0 && soundPlayer != null) {
 				soundPlayer.playSound(soundFilePath);
 			}
 		}
