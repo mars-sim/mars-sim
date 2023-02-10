@@ -301,13 +301,6 @@ public abstract class TabPanel extends JScrollPane {
 	}
 
 	/**
-	 * Get an alreayd loaded cache Icon by id
-	 */
-	protected Icon getIcon(String id) {
-		return desktop.getMainWindow().getIcon(id);
-	}
-
-	/**
 	 * Gets the main desktop.
 	 * 
 	 * @return desktop.

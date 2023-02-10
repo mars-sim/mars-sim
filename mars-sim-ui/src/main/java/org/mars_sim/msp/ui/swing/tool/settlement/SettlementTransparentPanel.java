@@ -24,6 +24,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,6 +80,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -93,6 +95,9 @@ public class SettlementTransparentPanel extends JComponent {
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
+	
+	/** The size of the weather icons */
+	private static final int WEATHER_ICON_SIZE = 64;
 
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
@@ -138,6 +143,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
 
 	private static final ImageIcon emptyIcon = new ImageIcon();
+	private static MSPIconManager displayIcons = null;
     
 	/** label for projected sunrise time. */
 	private JLabel projectSunriseLabel;
@@ -180,7 +186,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private OrbitInfo orbitInfo;
 	private UnitManager unitManager;
 
-	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	private final static Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
@@ -200,7 +206,23 @@ public class SettlementTransparentPanel extends JComponent {
 			mode = GameMode.SANDBOX;
 
 		setDoubleBuffered(true);
+
+		if (displayIcons == null) {
+			buildIcons();
+		}
     }
+
+	private static void buildIcons() {
+		displayIcons = new MSPIconManager();
+
+		String [] iconsNames = {"cloudy", "snowflake", "desert_sun", "sun", "frost_wind", 
+								"cold_wind", "dust_devil", "sandstorm", "hazy", "sand"};
+		for(String name : iconsNames) {
+			String resourceName = Msg.getString("img.svg." + name);
+			displayIcons.addSVGIcon(name, resourceName, WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
+		}
+
+	}
 
 	@Override
     public void paintComponent (Graphics g) {
@@ -621,32 +643,32 @@ public class SettlementTransparentPanel extends JComponent {
 	private void updateIcon() {
 		Icon updatedIcon;
 		if (temperatureCache < -40) {
-			updatedIcon = MainWindow.getIcon("ice");
+			updatedIcon = displayIcons.getIcon("ice");
 		}
 		else if (temperatureCache < 0) {
-			updatedIcon = MainWindow.getIcon("snowflake");
+			updatedIcon = displayIcons.getIcon("snowflake");
 		}
 		else if (temperatureCache < 10) {
-			updatedIcon = MainWindow.getIcon("cloudy");
+			updatedIcon = displayIcons.getIcon("cloudy");
 		}
 		else if (temperatureCache < 22)
-			updatedIcon = MainWindow.getIcon("desert_sun");
+			updatedIcon = displayIcons.getIcon("desert_sun");
 		else
-			updatedIcon = MainWindow.getIcon("sun");
+			updatedIcon = displayIcons.getIcon("sun");
 		temperatureIcon.setIcon(updatedIcon);
 		
 		///////////////////////////////////////////////
 		if ((windSpeedCache > 30D) && (opticalDepthCache > 0.75)) {
-			updatedIcon = MainWindow.getIcon("sandstorm");
+			updatedIcon = displayIcons.getIcon("sandstorm");
 		}
 		else if ((windSpeedCache > 20D) && (opticalDepthCache > 0.75)) {
-			updatedIcon = MainWindow.getIcon("dustDevil");
+			updatedIcon = displayIcons.getIcon("dustDevil");
 		}
 		else if (windSpeedCache > 10D) {
 			if (temperatureCache < 0)
-				updatedIcon = MainWindow.getIcon("frost_wind");
+				updatedIcon = displayIcons.getIcon("frost_wind");
 			else
-				updatedIcon = MainWindow.getIcon("cold_wind");
+				updatedIcon = displayIcons.getIcon("cold_wind");
 			}
 		else
 			updatedIcon = emptyIcon;
@@ -654,9 +676,9 @@ public class SettlementTransparentPanel extends JComponent {
 
 		///////////////////////////////////////////////
 		if (opticalDepthCache > .5)
-			updatedIcon = MainWindow.getIcon("sand");
+			updatedIcon = displayIcons.getIcon("sand");
 		else if (opticalDepthCache > 0.3) {
-			updatedIcon = MainWindow.getIcon("hazy");
+			updatedIcon = displayIcons.getIcon("hazy");
 		}
 		else
 			updatedIcon = emptyIcon;
@@ -769,9 +791,9 @@ public class SettlementTransparentPanel extends JComponent {
 
     private void buildInfoP() {
 
-    	// SvgIcon icon = (SvgIcon) MainWindow.getIcon ("info");
+    	// SvgIcon icon = (SvgIcon) displayIcons.getIcon ("info");
     	// icon.apply(new SvgStroke(Color.ORANGE));
-		Icon icon =  MainWindow.getIcon ("info");
+		Icon icon =  displayIcons.getIcon ("info");
     	infoButton = new JButton(icon);
 
 		infoButton.setPreferredSize(new Dimension(32, 32));
@@ -793,7 +815,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     private void buildrenameBtn() {
 
-    	Icon icon = MainWindow.getIcon("edit");
+    	Icon icon = displayIcons.getIcon("edit");
     	renameBtn = new JButton(icon);
     	renameBtn.setPreferredSize(new Dimension(32, 32));
 		renameBtn.setOpaque(false);
@@ -816,7 +838,7 @@ public class SettlementTransparentPanel extends JComponent {
         buttonPane.setOpaque(false);
 
 		// Create rotate clockwise button.
-        final Icon cwIcon = MainWindow.getIcon("right");
+        final Icon cwIcon = displayIcons.getIcon("right");
         JButton cwButton = new JButton(cwIcon);
         cwButton.setPreferredSize(new Dimension(32, 32));
         cwButton.setOpaque(false);
@@ -832,7 +854,7 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		// Create center button.
-        final Icon centerIcon = MainWindow.getIcon("center");
+        final Icon centerIcon = displayIcons.getIcon("center");
 		JButton recenterButton = new JButton(centerIcon);
 		recenterButton.setPreferredSize(new Dimension(32, 32));
 		recenterButton.setOpaque(false);
@@ -849,7 +871,7 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		// Create rotate counter-clockwise button.
-        final Icon ccwIcon = MainWindow.getIcon("left");
+        final Icon ccwIcon = displayIcons.getIcon("left");
         JButton ccwButton = new JButton(ccwIcon);
         ccwButton.setPreferredSize(new Dimension(32, 32));
 		ccwButton.setOpaque(false);
@@ -876,7 +898,7 @@ public class SettlementTransparentPanel extends JComponent {
         labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
 
-	    final Icon labelsIcon = MainWindow.getIcon("stack");
+	    final Icon labelsIcon = displayIcons.getIcon("stack");
 	    JButton labelsButton = new JButton(
 	    		Msg.getString("SettlementTransparentPanel.button.labels"), labelsIcon);  //$NON-NLS-1$
 

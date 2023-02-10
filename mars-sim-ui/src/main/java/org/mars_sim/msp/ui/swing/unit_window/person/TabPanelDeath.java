@@ -135,8 +135,7 @@ implements ActionListener {
 		innerPanel.add(locationLabelPanel);
 
 		// Prepare center map button
-		//final Icon centerIcon = new LazyIcon("center").getIcon();
-		final Icon centerIcon = getIcon("center");
+		final Icon centerIcon = ImageLoader.getIcon(Msg.getString("icon.mars"));
 		JButton centerMapButton = new JButton(centerIcon);
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);

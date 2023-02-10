@@ -50,9 +50,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
-import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
-import org.mars_sim.msp.ui.swing.utils.MSPIconManager;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -66,36 +64,8 @@ extends JComponent implements ClockListener {
 	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
 
 	/** Icon image filename for frame */
-	public static final String LANDER_PNG = "landerhab16.png";//"/images/LanderHab.png";
-	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
+	public static final String LANDER_PNG = "landerhab16.png";
 
-	public static final String INFO_RED_SVG = "/svg/icons/info_red.svg";
-	public static final String PAUSE_ORANGE_SVG = "/svg/icons/pause_orange.svg";
-	public static final String MARS_CALENDAR_SVG = "/svg/icons/calendar_mars.svg";
-
-	public static final String INFO_SVG = "/svg/icons/info.svg";
-	public static final String EDIT_SVG = "/svg/icons/edit.svg";
-	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
-	public static final String RIGHT_SVG = "/svg/icons/right_rotate.svg";
-	public static final String CENTER_SVG = "/svg/icons/center.svg";
-	public static final String STACK_SVG = "/svg/icons/stack.svg";
-
-	public static final String SAND_SVG = Msg.getString("img.svg.sand");//$NON-NLS-1$
-	public static final String HAZY_SVG = Msg.getString("img.svg.hazy");//$NON-NLS-1$
-
-	public static final String SANDSTORM_SVG = Msg.getString("img.svg.sandstorm"); //$NON-NLS-1$
-	public static final String DUST_DEVIL_SVG = Msg.getString("img.svg.dust_devil");//$NON-NLS-1$
-
-	public static final String COLD_WIND_SVG = Msg.getString("img.svg.cold_wind");//$NON-NLS-1$
-	public static final String FROST_WIND_SVG = Msg.getString("img.svg.frost_wind");//$NON-NLS-1$
-
-	public static final String SUN_SVG = Msg.getString("img.svg.sun"); //$NON-NLS-1$
-	public static final String DESERT_SUN_SVG = Msg.getString("img.svg.desert_sun");//$NON-NLS-1$
-	public static final String CLOUDY_SVG = Msg.getString("img.svg.cloudy");//$NON-NLS-1$
-	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
-	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
-	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
-	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	/** The size of the weather icons */
@@ -112,8 +82,6 @@ extends JComponent implements ClockListener {
 	private static SplashWindow splashWindow;
 
 	private static InteractiveTerm interactiveTerm;
-
-	private static MSPIconManager iconManager;
 
 	// Data members
 	private boolean isIconified = false;
@@ -351,111 +319,6 @@ extends JComponent implements ClockListener {
 	 */
 	Dimension getSelectedSize() {
 		return selectedSize;
-	}
-
-	private static void initIconManager() {
-		// Set up an icon set for use throughout mars-sim
-		iconManager = new MSPIconManager();
-
-		int size = 24;
-
-		iconManager.addSVGIcon("info_red", INFO_RED_SVG, 12, 12);
-		iconManager.addSVGIcon("pause_orange", PAUSE_ORANGE_SVG, 300, 300);
-
-		iconManager.addSVGIcon(
-		        "calendar_mars",
-		        MARS_CALENDAR_SVG,16, 16);
-
-		iconManager.addSVGIcon(
-		        "lander",
-		        LANDER_SVG,16, 16);
-
-		iconManager.addSVGIcon(
-		        "info",
-		        INFO_SVG,size, size);
-
-		iconManager.addSVGIcon(
-		        "edit",
-		        EDIT_SVG,size, size);
-
-		iconManager.addSVGIcon(
-		        "left",
-		        LEFT_SVG,size, size);
-
-		iconManager.addSVGIcon(
-		        "right",
-		        RIGHT_SVG,size, size);
-
-		iconManager.addSVGIcon(
-		        "center",
-		        CENTER_SVG,size, size);
-
-		iconManager.addSVGIcon(
-		        "stack",
-		        STACK_SVG,size, size);
-
-		/////////////////////////////////////////////////////////
-
-		iconManager.addSVGIcon(
-		        "sandstorm",
-		        SANDSTORM_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "dustDevil",
-		        DUST_DEVIL_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		////////////////////
-
-		iconManager.addSVGIcon(
-		        "frost_wind",
-		        FROST_WIND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "cold_wind",
-		        COLD_WIND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		////////////////////
-
-		iconManager.addSVGIcon(
-		        "sun",
-		        SUN_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "desert_sun",
-		        DESERT_SUN_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "cloudy",
-		        CLOUDY_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "snowflake",
-		        SNOWFLAKE_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "ice",
-		        ICE_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		////////////////////
-
-		iconManager.addSVGIcon(
-		        "sand",
-		        SAND_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		iconManager.addSVGIcon(
-		        "hazy",
-		        HAZY_SVG,WEATHER_ICON_SIZE, WEATHER_ICON_SIZE);
-
-		////////////////////
-
-		iconManager.addSVGIcon(
-		      "mars",
-		      MARS_SVG, 18, 18);
-
-		iconManager.addSVGIcon(
-			      "telescope",
-			      TELESCOPE_SVG,14, 14);
-
 	}
 
 	/**
@@ -787,17 +650,6 @@ extends JComponent implements ClockListener {
 		return toolToolbar;
 	}
 
-	/**
-	 * Gets the icon instance
-	 *
-	 * @return
-	 */
-	public static Icon getIcon(String id) {
-		if (iconManager == null) {
-			initIconManager();
-		}
-		return iconManager.getIcon(id);
-	}
 
 	/**
 	 * Gets the lander hab icon instance
@@ -805,12 +657,11 @@ extends JComponent implements ClockListener {
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
-		return getIcon("lander");
+		return ImageLoader.getIcon(ImageLoader.ICON_DIR + LANDER_PNG);
 	}
 
 	public static Image getIconImage() {
-		// Not great
-		return ((SVGIcon) getIcon("lander")).getImage();
+		return ImageLoader.getImage(LANDER_PNG);
 	}
 
 

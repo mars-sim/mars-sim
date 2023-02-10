@@ -158,7 +158,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationPanel.add(destinationLabelPanel, BorderLayout.NORTH);
 
         // Prepare center map button
-		final Icon centerIcon = getIcon("center");
+		final Icon centerIcon = ImageLoader.getIcon(Msg.getString("icon.mars"));
 		centerMapButton = new JButton(centerIcon); 
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
