@@ -19,8 +19,6 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 @SuppressWarnings("serial")
 public class ConstructedBuildingsPanel
@@ -58,7 +56,7 @@ extends JPanel {
 		constructedTableModel = new ConstructedBuildingTableModel(manager);
 
 		// Prepare constructed table.
-		constructedTable = new ZebraJTable(constructedTableModel);
+		constructedTable = new JTable(constructedTableModel);
 		scrollPanel.setViewportView(constructedTable);
 		constructedTable.setRowSelectionAllowed(true);
 		constructedTable.getColumnModel().getColumn(0).setPreferredWidth(105);
@@ -67,16 +65,12 @@ extends JPanel {
 		constructedTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		constructedTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		constructedTable.setAutoCreateRowSorter(true);
-	
-		TableStyle.setTableStyle(constructedTable);
-
 	}
 
 	/**
 	 * Update the information on this panel.
 	 */
 	public void update() {
-		TableStyle.setTableStyle(constructedTable);
 		constructedTableModel.update();
 	}
 

@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskManager.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 
 
@@ -153,11 +152,6 @@ implements InternalFrameListener, ActionListener {
 	    //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 	    //}
 		topPanel.add(scrollPanel, BorderLayout.CENTER);
-
-		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(table);
-
-		update();
 	}
 
 	public void addItem(JPanel p, JComponent c, int x, int y, int w, int h, int align) {
@@ -230,15 +224,6 @@ implements InternalFrameListener, ActionListener {
 	public void internalFrameDeactivated(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
 
-	}
-
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	public void update() {
-		TableStyle.setTableStyle(table);
-		// Update if necessary.
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {

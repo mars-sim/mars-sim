@@ -11,8 +11,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,8 +45,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
@@ -201,9 +199,9 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerTableModel = new PowerTableModel(settlement);
 
 		// Prepare power table.
-		powerTable = new ZebraJTable(powerTableModel);
+		powerTable = new JTable(powerTableModel);
 		// Call up the building window when clicking on a row on the table
-		powerTable.addMouseListener(new MouseListener() {
+		powerTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2 && !e.isConsumed()) {
@@ -213,39 +211,23 @@ public class TabPanelPowerGrid extends TabPanel {
 		            	desktop.openUnitWindow((Unit)powerTable.getValueAt(r, 1), false));
 				}
 			}
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// nothing
-			}
 		});
 
 		powerTable.setRowSelectionAllowed(true);
-		
-		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		powerTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
-		powerTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+		TableColumnModel powerColumns = powerTable.getColumnModel();
+		powerColumns.getColumn(0).setPreferredWidth(10);
+		powerColumns.getColumn(1).setPreferredWidth(100);
+		powerColumns.getColumn(2).setPreferredWidth(50);
+		powerColumns.getColumn(3).setPreferredWidth(50);
+		powerColumns.getColumn(4).setPreferredWidth(50);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		// powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		powerTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		powerTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		powerTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		powerTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		// powerColumns.getColumn(0).setCellRenderer(renderer);
+		powerColumns.getColumn(1).setCellRenderer(renderer);
+		powerColumns.getColumn(2).setCellRenderer(renderer);
+		powerColumns.getColumn(3).setCellRenderer(renderer);
+		powerColumns.getColumn(4).setCellRenderer(renderer);
 		
 		// Set up tooltips for the column headers
 		ToolTipHeader tooltipHeader = new ToolTipHeader(powerTable.getColumnModel());
@@ -256,7 +238,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		// powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 		powerTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
 
@@ -324,7 +305,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		if (!uiDone)
 			initializeUI();
 		
-		TableStyle.setTableStyle(powerTable);
 
 		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();

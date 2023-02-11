@@ -25,8 +25,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 @SuppressWarnings("serial")
@@ -67,7 +65,7 @@ public class TabPanelGoods extends TabPanel {
 		goodsTableModel = new GoodsTableModel(((Settlement) getUnit()).getGoodsManager());
 
 		// Prepare goods table.
-		goodsTable = new ZebraJTable(goodsTableModel);
+		goodsTable = new JTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setRowSelectionAllowed(true);
 		
@@ -80,25 +78,14 @@ public class TabPanelGoods extends TabPanel {
 		// Added the two methods below to make all heatTable columns
 		// Resizable automatically when its Panel resizes
 		goodsTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//goodsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-//		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// Added sorting
 		goodsTable.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(goodsTable);
-
-     	// Added goodsSearchable
-//     	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);
-//        searchable.setPopupTimeout(5000);
-//     	searchable.setCaseSensitive(false);
-//        searchable.setMainIndex(0); // -1 = search for all columns
-
 	}
 
 	/**
@@ -106,7 +93,6 @@ public class TabPanelGoods extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		TableStyle.setTableStyle(goodsTable);
 		goodsTableModel.update();
 	}
 

@@ -29,6 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -40,8 +41,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
 /**
@@ -159,35 +158,33 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		tableModel = new PartTableModel();
 
 		// Create the parts table
-		table = new ZebraJTable(tableModel);
+		table = new JTable(tableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(220, 125));
 		table.setRowSelectionAllowed(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		partsPane.setViewportView(table);
 
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+		TableColumnModel columnModel = table.getColumnModel();
 
-		table.getColumnModel().getColumn(0).setPreferredWidth(110);
-		table.getColumnModel().getColumn(1).setPreferredWidth(90);
-		table.getColumnModel().getColumn(2).setPreferredWidth(30);
-		table.getColumnModel().getColumn(3).setPreferredWidth(40);
+		columnModel.getColumn(0).setPreferredWidth(110);
+		columnModel.getColumn(1).setPreferredWidth(90);
+		columnModel.getColumn(2).setPreferredWidth(30);
+		columnModel.getColumn(3).setPreferredWidth(40);
 
 		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
 		renderer1.setHorizontalAlignment(SwingConstants.CENTER);
-		table.getColumnModel().getColumn(2).setCellRenderer(renderer1);
-		table.getColumnModel().getColumn(3).setCellRenderer(renderer1);
+		columnModel.getColumn(2).setCellRenderer(renderer1);
+		columnModel.getColumn(3).setCellRenderer(renderer1);
 		
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
 		renderer2.setHorizontalAlignment(SwingConstants.LEFT);
-		table.getColumnModel().getColumn(0).setCellRenderer(renderer2);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer2);
+		columnModel.getColumn(0).setCellRenderer(renderer2);
+		columnModel.getColumn(1).setCellRenderer(renderer2);
 
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
-
-		// Added setTableStyle()
-		TableStyle.setTableStyle(table);
 	}
 
 	/**

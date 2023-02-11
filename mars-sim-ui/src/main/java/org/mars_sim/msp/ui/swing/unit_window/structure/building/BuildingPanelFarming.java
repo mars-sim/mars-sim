@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -51,7 +52,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 
 
@@ -253,18 +253,16 @@ implements MouseListener {
         }; // end of WebTable
 
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-
-		cropTable.getColumnModel().getColumn(0).setPreferredWidth(5);
-		cropTable.getColumnModel().getColumn(1).setPreferredWidth(40);
-		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
-		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
-		cropTable.getColumnModel().getColumn(5).setPreferredWidth(30);
+		TableColumnModel cropColumns = cropTable.getColumnModel();
+		cropColumns.getColumn(0).setPreferredWidth(5);
+		cropColumns.getColumn(1).setPreferredWidth(40);
+		cropColumns.getColumn(2).setPreferredWidth(40);
+		cropColumns.getColumn(3).setPreferredWidth(20);
+		cropColumns.getColumn(4).setPreferredWidth(30);
+		cropColumns.getColumn(5).setPreferredWidth(30);
 		// Note: Use of setAutoCreateRowSorter causes array error 
 		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
-		
-		TableStyle.setTableStyle(cropTable);
-		
+				
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		cropTable.setRowSelectionAllowed(true);
 		

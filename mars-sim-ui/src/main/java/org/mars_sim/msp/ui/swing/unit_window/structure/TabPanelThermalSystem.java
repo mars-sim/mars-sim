@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -45,8 +46,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -224,7 +223,7 @@ extends TabPanel {
 		heatTableModel = new HeatTableModel(settlement);
 		
 		// Prepare thermal control table.
-		heatTable = new ZebraJTable(heatTableModel);
+		heatTable = new JTable(heatTableModel);
 		// Call up the building window when clicking on a row on the table
 		heatTable.addMouseListener(new MouseListener() {
 			@Override
@@ -255,19 +254,19 @@ extends TabPanel {
 		});
 		
 		heatTable.setRowSelectionAllowed(true);
-
-		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		heatTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
-		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
+		TableColumnModel heatColumns = heatTable.getColumnModel();
+		heatColumns.getColumn(0).setPreferredWidth(10);
+		heatColumns.getColumn(1).setPreferredWidth(150);
+		heatColumns.getColumn(2).setPreferredWidth(30);
+		heatColumns.getColumn(3).setPreferredWidth(40);
+		heatColumns.getColumn(4).setPreferredWidth(40);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		heatTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		heatTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		heatTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		heatTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		heatColumns.getColumn(1).setCellRenderer(renderer);
+		heatColumns.getColumn(2).setCellRenderer(renderer);
+		heatColumns.getColumn(3).setCellRenderer(renderer);
+		heatColumns.getColumn(4).setCellRenderer(renderer);
 		
 		// Resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -275,8 +274,6 @@ extends TabPanel {
 
 		// Added sorting
 		heatTable.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(heatTable);
 
 		heatScrollPane.setViewportView(heatTable);
 
@@ -356,7 +353,6 @@ extends TabPanel {
 	@Override
 	public void update() {
 
-		TableStyle.setTableStyle(heatTable);
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
 		// Check if the old heatGenCapacityCache is different from the latest .

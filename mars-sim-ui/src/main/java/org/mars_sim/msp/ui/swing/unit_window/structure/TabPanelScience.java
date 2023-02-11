@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -35,8 +36,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -101,24 +100,24 @@ extends TabPanel {
 
 		// Create the study table.
 		studyTableModel = new StudyTableModel(settlement);
-		studyTable = new ZebraJTable(studyTableModel);
+		studyTable = new JTable(studyTableModel);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		studyTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		studyTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		studyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		studyTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		studyTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		TableColumnModel studyColumns = studyTable.getColumnModel();
+		studyColumns.getColumn(0).setCellRenderer(renderer);
+		studyColumns.getColumn(1).setCellRenderer(renderer);
+		studyColumns.getColumn(2).setCellRenderer(renderer);
+		studyColumns.getColumn(3).setCellRenderer(renderer);
+		studyColumns.getColumn(4).setCellRenderer(renderer);
 		
-		studyTable.getColumnModel().getColumn(0).setPreferredWidth(5);
-		studyTable.getColumnModel().getColumn(1).setPreferredWidth(40);
-		studyTable.getColumnModel().getColumn(2).setPreferredWidth(5);
-		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
-		studyTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+		studyColumns.getColumn(0).setPreferredWidth(5);
+		studyColumns.getColumn(1).setPreferredWidth(40);
+		studyColumns.getColumn(2).setPreferredWidth(5);
+		studyColumns.getColumn(3).setPreferredWidth(80);
+		studyColumns.getColumn(4).setPreferredWidth(80);
 		
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-//		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -132,8 +131,6 @@ extends TabPanel {
 
 		// Added sorting
 		studyTable.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -180,7 +177,7 @@ extends TabPanel {
 
 		// Create the achievement table.
 		achievementTableModel = new AchievementTableModel(settlement);
-		achievementTable = new ZebraJTable(achievementTableModel);
+		achievementTable = new JTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
@@ -194,8 +191,6 @@ extends TabPanel {
 		renderer1.setHorizontalAlignment(SwingConstants.CENTER);
 		achievementTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
 		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer1);
-
-		TableStyle.setTableStyle(achievementTable);
 	}
 
 	@Override

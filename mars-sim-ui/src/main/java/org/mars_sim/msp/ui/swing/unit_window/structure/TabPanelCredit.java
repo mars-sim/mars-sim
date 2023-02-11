@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -34,8 +35,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 @SuppressWarnings("serial")
@@ -81,15 +80,15 @@ extends TabPanel {
 		creditTableModel = new CreditTableModel(settlement);
 
 		// Prepare credit table.
-		creditTable = new ZebraJTable(creditTableModel);
+		creditTable = new JTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setRowSelectionAllowed(true);
 
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
-
-		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+		TableColumnModel columnModel = creditTable.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(100);
+		columnModel.getColumn(1).setPreferredWidth(120);
+		columnModel.getColumn(2).setPreferredWidth(50);
 
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -100,23 +99,12 @@ extends TabPanel {
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		creditTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		creditTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		columnModel.getColumn(0).setCellRenderer(renderer);
+		columnModel.getColumn(2).setCellRenderer(renderer);
 
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		creditTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-
-		TableStyle.setTableStyle(creditTable);
-
-	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		TableStyle.setTableStyle(creditTable);
+		columnModel.getColumn(1).setCellRenderer(centerRenderer);
 	}
 
 	/**

@@ -24,13 +24,11 @@ import java.util.stream.Collectors;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -53,16 +51,13 @@ import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 
 /**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 @SuppressWarnings("serial")
-public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
+public class InventoryTabPanel extends TabPanel {
 
 	private static final String INVENTORY_ICON = Msg.getString("icon.inventory"); //$NON-NLS-1$
 
@@ -101,15 +96,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(resourcesPanel);
 
+		NumberCellRenderer digit2Renderer = new NumberCellRenderer(2);
+
         // Create resources table model
         resourceTableModel = new ResourceTableModel(getUnit());
 
         // Create resources table
-        resourceTable = new ZebraJTable(resourceTableModel);
+        resourceTable = new JTable(resourceTableModel);
+
         resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        resourceTable.getColumnModel().getColumn(0).setPreferredWidth(140);
-        resourceTable.getColumnModel().getColumn(1).setPreferredWidth(30);
-        resourceTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+		TableColumnModel resourceColumns = resourceTable.getColumnModel();
+        resourceColumns.getColumn(0).setPreferredWidth(140);
+        resourceColumns.getColumn(1).setPreferredWidth(30);
+        resourceColumns.getColumn(2).setPreferredWidth(30);
 
         resourceTable.setRowSelectionAllowed(true);
         resourcesPanel.setViewportView(resourceTable);
@@ -117,28 +116,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		// Added sorting
         resourceTable.setAutoCreateRowSorter(true);
 
-		// Override default cell renderer for formatting double values.
-//        resourcesTable.setDefaultRenderer(Number.class, new NumberCellRenderer(2, true));
-
-		// Align the preference score to the left of the cell
-//		DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-//		leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-//		resourcesTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
 
 		// Align the preference score to the right of the cell
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		resourceTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-		resourceTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-		resourceTable.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-
-		// Added setTableStyle()
-		TableStyle.setTableStyle(resourceTable);
-
-     	// Added resourcesSearchable
-//     	TableSearchable searchable = SearchableUtils.installSearchable(resourcesTable);
-//        searchable.setPopupTimeout(5000);
-//     	searchable.setCaseSensitive(false);
+		resourceColumns.getColumn(0).setCellRenderer(rightRenderer);
+		resourceColumns.getColumn(1).setCellRenderer(digit2Renderer);
+		resourceColumns.getColumn(2).setCellRenderer(digit2Renderer);
 
         // Create item panel
         JScrollPane itemPanel = new JScrollPane();
@@ -149,13 +133,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         itemTableModel = new ItemTableModel(getUnit());
 
         // Create item table
-        itemTable = new ZebraJTable(itemTableModel);
+        itemTable = new JTable(itemTableModel);
         itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        itemTable.getColumnModel().getColumn(0).setPreferredWidth(110);
-        itemTable.getColumnModel().getColumn(1).setPreferredWidth(30);
-        itemTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-        itemTable.getColumnModel().getColumn(3).setPreferredWidth(30);
-        itemTable.getColumnModel().getColumn(4).setPreferredWidth(30);
+		TableColumnModel itemColumns = itemTable.getColumnModel();
+        itemColumns.getColumn(0).setPreferredWidth(110);
+        itemColumns.getColumn(1).setPreferredWidth(30);
+        itemColumns.getColumn(2).setPreferredWidth(30);
+        itemColumns.getColumn(3).setPreferredWidth(30);
+        itemColumns.getColumn(4).setPreferredWidth(30);
 
         itemTable.setRowSelectionAllowed(true);
         itemPanel.setViewportView(itemTable);
@@ -164,15 +149,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         itemTable.setAutoCreateRowSorter(true);
 
 		// Align the preference score to the right of the cell
-//		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-//		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		itemTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-//		itemTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-//		itemTable.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-//		itemTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-
-		// Added setTableStyle()
-		TableStyle.setTableStyle(itemTable);
+		itemColumns.getColumn(0).setCellRenderer(rightRenderer);
+		itemColumns.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+		itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
+		itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
+		itemColumns.getColumn(4).setCellRenderer(digit2Renderer);
 
         // Create equipment panel
         JScrollPane equipmentPanel = new JScrollPane();
@@ -184,27 +165,26 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	        equipmentTableModel = new EquipmentTableModel(getUnit());
 	
 	        // Create equipment table
-	        equipmentTable = new ZebraJTable(equipmentTableModel);
+	        equipmentTable = new JTable(equipmentTableModel);
 	        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 	        equipmentTable.setRowSelectionAllowed(true);
-	        equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	        equipmentTable.getSelectionModel().addListSelectionListener(this);
 	        equipmentPanel.setViewportView(equipmentTable);
 	
 	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 	
-	        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(60);
-	        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(80);
-	        equipmentTable.getColumnModel().getColumn(2).setPreferredWidth(30);
-	        equipmentTable.getColumnModel().getColumn(3).setPreferredWidth(70);
+			TableColumnModel equipmentColumns = equipmentTable.getColumnModel();
+	        equipmentColumns.getColumn(0).setPreferredWidth(60);
+	        equipmentColumns.getColumn(1).setPreferredWidth(80);
+	        equipmentColumns.getColumn(2).setPreferredWidth(30);
+	        equipmentColumns.getColumn(3).setPreferredWidth(70);
 	
 			// Align the preference score to the center of the cell
 			DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
 			renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
-			equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
-			equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
-			equipmentTable.getColumnModel().getColumn(2).setCellRenderer(renderer2);
-			equipmentTable.getColumnModel().getColumn(3).setCellRenderer(renderer2);
+			equipmentColumns.getColumn(0).setCellRenderer(renderer2);
+			equipmentColumns.getColumn(1).setCellRenderer(digit2Renderer);
+			equipmentColumns.getColumn(2).setCellRenderer(renderer2);
+			equipmentColumns.getColumn(3).setCellRenderer(renderer2);
 	
 			// Added sorting
 	        equipmentTable.setAutoCreateRowSorter(true);
@@ -227,10 +207,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 						}
 					}
 			    }
-			});
-	
-			// Added setTableStyle()
-			TableStyle.setTableStyle(equipmentTable);
+			});	
         }
     }
 
@@ -245,35 +222,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourceTableModel.update();
         itemTableModel.update();
         equipmentTableModel.update();
-		TableStyle.setTableStyle(resourceTable);
-		TableStyle.setTableStyle(itemTable);
-		TableStyle.setTableStyle(equipmentTable);
         resourceTable.repaint();
         itemTable.repaint();
         equipmentTable.repaint();
-    }
-
-    /**
-     * Called whenever the value of the selection changes.
-     *
-     * @param ev the event that characterizes the change.
-     */
-    public void valueChanged(ListSelectionEvent ev) {
-//        int row = equipmentTable.getSelectedRow();
-//        if (row > 0) {
-////	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
-////	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
-////	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
-//        	String name = ((Equipment)equipmentTable.getValueAt(row, 1)).getName();
-////    		System.out.println("name : " + name + "   row : " + row);
-//		    for (Equipment e : equipmentList) {
-////	    		System.out.println("nickname : " + e.getNickName());
-//		    	if (e.getNickName().equalsIgnoreCase(name)) {
-////		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
-//	    		    desktop.openUnitWindow(e, false);
-//		    	}
-//		    }
-//        }
     }
 
 	/**
@@ -284,8 +235,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Map<Resource, Number> resources = new HashMap<>();
-		private Map<Resource, Number> capacity = new HashMap<>();
+		private Map<Resource, Double> resources = new HashMap<>();
+		private Map<Resource, Double> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
 		private Unit unit;
@@ -295,7 +246,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         	loadResources(keys, resources, capacity);
         }
 
-        private void loadResources(List<Resource> kys, Map<Resource, Number> res, Map<Resource, Number> cap) {
+        private void loadResources(List<Resource> kys, Map<Resource, Double> res, Map<Resource, Double> cap) {
            	// Has equipment resources
         	if (unit instanceof EVASuit) {
         		EVASuit e = (EVASuit) unit;
@@ -354,10 +305,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public Class<?> getColumnClass(int columnIndex) {
-            Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex >= 0) dataType = String.class;
-            else if (columnIndex >= 1) dataType = Number.class;
-            else if (columnIndex >= 2) dataType = Number.class;
+            Class<?> dataType = null;
+            if (columnIndex == 0) dataType = String.class;
+            else if (columnIndex == 1) dataType = Double.class;
+            else if (columnIndex == 2) dataType = Double.class;
             return dataType;
         }
 
@@ -375,19 +326,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-            	return StyleManager.DECIMAL_PLACES2.format(resources.get(keys.get(row)));
+            	return resources.get(keys.get(row));
             }
             else if (column == 2) {
-            	Number number = capacity.get(keys.get(row));
-            	return (number == null) ? "" : StyleManager.DECIMAL_PLACES0.format(number);
+            	return capacity.get(keys.get(row));
             }
             return 0 + "";
         }
 
         public void update() {
     		List<Resource> newResourceKeys = new ArrayList<>();
-			Map<Resource, Number> newResources = new HashMap<>();
-    		Map<Resource, Number> newCapacity = new HashMap<>();
+			Map<Resource, Double> newResources = new HashMap<>();
+    		Map<Resource, Double> newCapacity = new HashMap<>();
 
     		loadResources(newResourceKeys, newResources, newCapacity);
 
@@ -492,11 +442,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex >= 0) dataType = String.class;
-            else if (columnIndex >= 1) dataType = Integer.class;
-            else if (columnIndex >= 2) dataType = Double.class;
-            else if (columnIndex >= 3) dataType = Double.class;
-            else if (columnIndex >= 4) dataType = Double.class;
+            if (columnIndex == 0) dataType = String.class;
+            else if (columnIndex == 1) dataType = Integer.class;
+            else if (columnIndex == 2) dataType = Double.class;
+            else if (columnIndex == 3) dataType = Double.class;
+            else if (columnIndex == 4) dataType = Double.class;
             return dataType;
         }
 
@@ -515,16 +465,16 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-				return StyleManager.DECIMAL_PLACES0.format(quantity.get(keys.get(row)));
+				return quantity.get(keys.get(row));
             }
             else if (column == 2) {
-            	return StyleManager.DECIMAL_PLACES2.format(mass.get(keys.get(row)));
+            	return mass.get(keys.get(row));
             }
             else if (column == 3) {
-            	return StyleManager.DECIMAL_PLACES2.format(reliabilities.get(keys.get(row)));
+            	return reliabilities.get(keys.get(row));
             }
             else if (column == 4) {
-            	return StyleManager.DECIMAL_PLACES2.format(mtbf.get(keys.get(row)));
+            	return mtbf.get(keys.get(row));
             }
             return 0 + "";
         }
@@ -663,7 +613,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				else if (column == 1) {
 					String name = equipmentList.get(row).getName();
 					if (name != null && mass.get(name) != null)
-						return Math.round(mass.get(name)*100.0)/100.0;
+						return mass.get(name);
 				}
 				else if (column == 2) return owner.get(equipmentList.get(row).getName());
 				else if (column == 3) return content.get(equipmentList.get(row).getName());
