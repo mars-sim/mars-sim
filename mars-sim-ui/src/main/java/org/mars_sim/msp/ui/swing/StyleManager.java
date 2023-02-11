@@ -58,6 +58,8 @@ public class StyleManager {
 
     private static final String [] STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
 
+    private static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 12);
+
     private static Font subHeading;
 
     private static String selectedLAF = SYSTEM;
@@ -114,10 +116,15 @@ public class StyleManager {
 
             if (newLAF != null) {
                 // Flat LAF supports accent colour
-                if ((accentColor != null) && (newLAF instanceof FlatLaf)) {
+                boolean isFlatLAF = (newLAF instanceof FlatLaf);
+                if ((accentColor != null) && isFlatLAF) {
                     applyAccentColor(accentColor);
                 }
 
+                // Hardcode the default font
+                UIManager.put( "defaultFont", DEFAULT_FONT);
+
+                // Apply LAF
                 UIManager.setLookAndFeel( newLAF );
                 selectedLAF = style;
 
@@ -193,6 +200,9 @@ public class StyleManager {
             );
     }
 
+    /**
+     * Lookup a color by name. Only supports the static entries in the Color class.
+     */
     private static Color getColorByName(String name) {
         try {
             return (Color)Color.class.getField(name.toUpperCase()).get(null);

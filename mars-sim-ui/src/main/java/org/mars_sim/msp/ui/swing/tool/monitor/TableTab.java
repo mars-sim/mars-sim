@@ -101,28 +101,21 @@ abstract class TableTab extends MonitorTab {
 		for (int col = 0; col < table.getColumnCount(); col++) {
 			TableColumn tableColumn = columnModel.getColumn(col);
 		    int preferredWidth = tableColumn.getMinWidth() + 15;
-			int w = 50;
 		    TableCellRenderer rend = table.getTableHeader().getDefaultRenderer();
 			TableCellRenderer rendCol = tableColumn.getHeaderRenderer();
 		    if (rendCol == null) rendCol = rend;
 		    Component header = rendCol.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
-		    int maxWidth = header.getPreferredSize().width + 15;
-		    w = Math.max(w, maxWidth);
+		    int headerWidth = header.getPreferredSize().width + 15;
+		    preferredWidth = Math.max(preferredWidth, headerWidth);
 
-			for (int row = 0; row < table.getRowCount(); row++) {
+			// Sample the first 20 rows
+			for (int row = 0; row < Math.min(20, table.getRowCount()); row++) {
 				TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
 				Component c = table.prepareRenderer(tableCellRenderer, row, col);
-				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
-				preferredWidth = Math.max(width, preferredWidth);
-
-		        if (preferredWidth <= maxWidth){
-			        // Exceeded the maximum width, no need to check other rows
-		            preferredWidth = maxWidth;
-		            break;
-		        }
+				int cellWidth = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
+				preferredWidth = Math.max(cellWidth, preferredWidth);
 			}
 
-			preferredWidth = Math.max(w, preferredWidth);
 			tableColumn.setPreferredWidth(preferredWidth);
 		}
 	}
