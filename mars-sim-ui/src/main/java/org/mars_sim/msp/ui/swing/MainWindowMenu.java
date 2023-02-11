@@ -17,6 +17,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.KeyStroke;
@@ -392,6 +393,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case LAF: {
 				String text = selectedItem.getText();
 				StyleManager.setLAF(text);
+
+				JOptionPane.showMessageDialog(mainWindow.getFrame(), "Restart for Look & Feel to be fully applied.");				
 			} break;
 			default:
 				// Unknown command

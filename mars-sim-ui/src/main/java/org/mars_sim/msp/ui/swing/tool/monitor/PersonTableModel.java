@@ -375,11 +375,11 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 			case ROLE: {
 				if (person.getPhysicalCondition().isDead())
-					result = "N/A";
+					result = "";
 				else {
 					Role role = person.getRole();
 					if (role != null) {
-						result = role.getType();
+						result = role.getType().getName();
 					} else {
 						result = null;
 					}

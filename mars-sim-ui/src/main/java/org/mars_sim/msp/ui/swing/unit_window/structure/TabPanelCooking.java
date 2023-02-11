@@ -26,6 +26,7 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -42,8 +43,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -93,9 +92,6 @@ public class TabPanelCooking extends TabPanel {
 	private double mealsReplenishmentCache = 0;
 	private JLabel dessertsReplenishmentLabel;
 	private double dessertsReplenishmentCache = 0;
-
-	private JTextField mealTimeLabel;
-	private String mealTimeCache;
 	
 	/** The number of cooks label. */
 	private JTextField numCooksLabel;
@@ -231,7 +227,7 @@ public class TabPanelCooking extends TabPanel {
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		table = new ZebraJTable(cookingTableModel) {
+		table = new JTable(cookingTableModel) {
 
 			public String getToolTipText(java.awt.event.MouseEvent e) {
 				String personName = null;
@@ -255,15 +251,14 @@ public class TabPanelCooking extends TabPanel {
 
 		};
 
-		table = new ZebraJTable(table);
-
 		scrollPane.setViewportView(table);
 		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		table.getColumnModel().getColumn(0).setPreferredWidth(140);
-		table.getColumnModel().getColumn(1).setPreferredWidth(47);
-		table.getColumnModel().getColumn(2).setPreferredWidth(45);
-		table.getColumnModel().getColumn(3).setPreferredWidth(45);
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(140);
+		columnModel.getColumn(1).setPreferredWidth(47);
+		columnModel.getColumn(2).setPreferredWidth(45);
+		columnModel.getColumn(3).setPreferredWidth(45);
 		// Add the two methods below to make all heatTable columns
 		// resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -272,13 +267,11 @@ public class TabPanelCooking extends TabPanel {
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		columnModel.getColumn(1).setCellRenderer(renderer);
+		columnModel.getColumn(2).setCellRenderer(renderer);
+		columnModel.getColumn(3).setCellRenderer(renderer);
 
 		table.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(table);
 
 		repaint();
 	}
@@ -288,9 +281,6 @@ public class TabPanelCooking extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		// Update cooking table.
-		TableStyle.setTableStyle(table);
-
 		cookingTableModel.update();
 		updateMeals();
 		updateDesserts();

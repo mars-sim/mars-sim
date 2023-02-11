@@ -12,7 +12,8 @@ import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JTable;
+import javax.swing.LookAndFeel;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -36,6 +37,7 @@ public class StyleManager {
     public static final String HEADING_STYLE = "h2";
     public static final String SUB_HEADING_STYLE = "h3";
 
+    // Shared formatters
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
@@ -46,10 +48,15 @@ public class StyleManager {
 
     private static final String DARK = "Flat Dark";
     private static final String LIGHT = "Flat Light";
+    private static final String LIGHT_BLUE = LIGHT + " - Blue";
+    private static final String LIGHT_RED = LIGHT + " - Red";
+    private static final String LIGHT_ORANGE = LIGHT + " - Orange";
+    private static final String LIGHT_GREEN = LIGHT + " - Green";
     private static final String SYSTEM = "Default System";
-    public static final String DEFAULT_LAF = LIGHT;
 
-    private static final String [] STYLES = {LIGHT, DARK, SYSTEM};
+    public static final String DEFAULT_LAF = LIGHT_RED;
+
+    private static final String [] STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
 
     private static Font subHeading;
 
@@ -73,40 +80,78 @@ public class StyleManager {
             style = LIGHT;
         }
 
-		boolean result = true;
+        // Check for accent
+        String lafName = style;
+        Color accentColor = null;
+        int split = style.indexOf('-');
+        if (split > 0) {
+            String accentText = style.substring(split+1).trim();
+            accentColor = getColorByName(accentText);
+            lafName = style.substring(0, split).trim();
+        }
+
+        LookAndFeel newLAF = null;
         try {
-            switch(style) {
+            switch(lafName) {
                 case LIGHT: 
-                    // Set Accent color as Red
-                    //applyAccentColor(Color.RED);
-                    UIManager.setLookAndFeel( new FlatLightLaf() );
-                    subHeading = UIManager.getFont( SUB_HEADING_STYLE + ".font"); 
+                    newLAF = new FlatLightLaf();
                     break;
 
                 case DARK:
-                    UIManager.setLookAndFeel( new FlatDarkLaf() );
-                    subHeading = UIManager.getFont( SUB_HEADING_STYLE + ".font"); 
+                    newLAF = new FlatDarkLaf(); 
                     break;
 
                 case SYSTEM:
+                    // Feels a bit messy
+                    String systemClassName = UIManager.getSystemLookAndFeelClassName();
+                    Class<LookAndFeel> lafClass = (Class<LookAndFeel>) Class.forName(systemClassName);
+                    newLAF = lafClass.getDeclaredConstructor().newInstance();
                     break;
                 
                 default:
                     System.err.println( "Don't know LAF style " + style);
-                    result = false;
             }
 
+            if (newLAF != null) {
+                // Flat LAF supports accent colour
+                if ((accentColor != null) && (newLAF instanceof FlatLaf)) {
+                    applyAccentColor(accentColor);
+                }
 
-		} catch( Exception ex ) {
-			System.err.println( "Failed to initialize LaF" );
-            result = false;
+                UIManager.setLookAndFeel( newLAF );
+                selectedLAF = style;
 
-		}
+                subHeading = UIManager.getFont( SUB_HEADING_STYLE + ".font"); 
 
-        if (result) {
-            selectedLAF = style;
+                // Add color strippng on the table
+                UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+                if (defaults.get("Table.alternateRowColor") == null) {
+                    Color tabBackground = (Color) defaults.get("Table.background");
+                    Color selBackground = (Color) defaults.get("Table.selectionBackground");
+
+                    defaults.put("Table.alternateRowColor", getTableAlternativeColor(selBackground, tabBackground));
+
+                    // Header is scalled from the inactive Select colour
+                    Color inactiveBackground = (Color) defaults.get("Table.selectionInactiveBackground");
+                    if (inactiveBackground != null) {
+                        defaults.put("TableHeader.background", getScalledColor(inactiveBackground, 0.8));
+                        
+                        // Make sure sort icon is noticable
+                        defaults.put("Table.sortIconColor", defaults.get("TableHeader.foreground"));
+                    }
+                }
+
+                // Always use a grid on Tables
+                defaults.put("Table.showHorizontalLines", true);
+                defaults.put("Table.showVerticalLines", true);
+            }
         }
-        return result;
+        catch (Exception e) {
+            // Many things can go wrong so catch all
+            e.printStackTrace();
+            newLAF = null;
+        } 
+        return (newLAF != null);
 	}
 
     /**
@@ -114,6 +159,47 @@ public class StyleManager {
      */
     public static String getLAF() {
         return selectedLAF;
+    }
+
+    /**
+     * Create a new color by scaling the soruce by a percentge factor.
+     * @param source
+     * @param factor
+     * @return
+     */
+    private static Color getScalledColor(Color source, double factor) {
+        return new Color(Math.max((int)(source.getRed()  * factor), 0),
+                        Math.max((int)(source.getGreen()* factor), 0),
+                        Math.max((int)(source.getBlue() * factor), 0),
+                        source.getAlpha());
+    }
+
+    /**
+     * Copied approach from ZTable
+     * @param selBackground
+     * @param tabBackground
+     * @return
+     */
+    private static Color getTableAlternativeColor(Color selBackground, Color tabBackground) {
+        final float[] bgHSB = Color.RGBtoHSB(
+            tabBackground.getRed( ), tabBackground.getGreen( ),
+            tabBackground.getBlue( ), null );
+        final float[] selHSB  = Color.RGBtoHSB(
+            selBackground.getRed( ), selBackground.getGreen( ), selBackground.getBlue( ), null );
+        return Color.getHSBColor(
+            (selHSB[1]==0.0||selHSB[2]==0.0) ? bgHSB[0] : selHSB[0],
+            0.1f * selHSB[1] + 0.9f * bgHSB[1],
+            bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.0005f : -0.0005f) 
+            );
+    }
+
+    private static Color getColorByName(String name) {
+        try {
+            return (Color)Color.class.getField(name.toUpperCase()).get(null);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -134,7 +220,7 @@ public class StyleManager {
      * Set the accent colour
      * @param newColour
      */
-    public static void applyAccentColor(Color newColour) {
+    private static void applyAccentColor(Color newColour) {
         // Set Accent color. Code taken from the description of the setSyetmColorGetter method
         FlatLaf.setSystemColorGetter( name -> {
             return name.equals( "accent" ) ? newColour : null;
@@ -150,17 +236,5 @@ public class StyleManager {
     public static Border createSubHeadingBorder(String title) {
         return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
                                                 subHeading, (Color)null);
-    }
-
-    /**
-     * Set the style of atabel to match look and feel
-     * 
-     * @param table
-     */
-    public static void setTableStyle(JTable table) {
-        // Need to style heading with color accent
-        
-        table.setShowGrid(true);
-        table.setShowVerticalLines(true);
     }
 }

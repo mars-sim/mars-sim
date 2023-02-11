@@ -27,6 +27,7 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -40,8 +41,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -282,31 +281,29 @@ public class TabPanelAirComposition extends TabPanel {
 		content.add(scrollPane,BorderLayout.CENTER);
 
 		tableModel = new TableModel(settlement);
-		table = new ZebraJTable(tableModel);
-	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
+		table = new JTable(tableModel);
 
 		table.setRowSelectionAllowed(true);
-		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(20);
-		table.getColumnModel().getColumn(2).setPreferredWidth(20);
-		table.getColumnModel().getColumn(3).setPreferredWidth(20);
-		table.getColumnModel().getColumn(4).setPreferredWidth(20);
-		table.getColumnModel().getColumn(5).setPreferredWidth(20);
-		table.getColumnModel().getColumn(6).setPreferredWidth(20);
+		TableColumnModel tableColumnModel = table.getColumnModel();
+		tableColumnModel.getColumn(0).setPreferredWidth(100);
+		tableColumnModel.getColumn(1).setPreferredWidth(20);
+		tableColumnModel.getColumn(2).setPreferredWidth(20);
+		tableColumnModel.getColumn(3).setPreferredWidth(20);
+		tableColumnModel.getColumn(4).setPreferredWidth(20);
+		tableColumnModel.getColumn(5).setPreferredWidth(20);
+		tableColumnModel.getColumn(6).setPreferredWidth(20);
 
 		// Override default cell renderer for formatting double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
         
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		tableColumnModel.getColumn(0).setCellRenderer(renderer);
 		
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
 
@@ -478,7 +475,6 @@ public class TabPanelAirComposition extends TabPanel {
 		}
 
 		tableModel.update();
-		TableStyle.setTableStyle(table);
 
 	}
 

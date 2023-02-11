@@ -41,8 +41,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -60,7 +58,6 @@ extends TabPanel {
 	private static final String S4 = "%4d";
 	private static final String S6 = "%6d";
 
-	private static int theme;
 	private int fatigueCache;
 	private int thirstCache;
 	private int hungerCache;
@@ -313,7 +310,7 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(condition);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel) {
+		radiationTable = new JTable(radiationTableModel) {
 
             //Implement table cell tool tips.           
             public String getToolTipText(MouseEvent e) {
@@ -346,7 +343,6 @@ extends TabPanel {
 		
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(radiationTable);
 
 		// Prepare sleep time panel
 		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
@@ -365,7 +361,7 @@ extends TabPanel {
 		sleepExerciseTableModel = new SleepExerciseTableModel(circadianClock);
 		
 		// Create sleep time table
-		sleepExerciseTable = new ZebraJTable(sleepExerciseTableModel);
+		sleepExerciseTable = new JTable(sleepExerciseTableModel);
 		TableColumnModel sModel = sleepExerciseTable.getColumnModel();
 		sleepExerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		sModel.getColumn(0).setPreferredWidth(10);
@@ -383,7 +379,6 @@ extends TabPanel {
 		
 		// Add sorting
 		sleepExerciseTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(sleepExerciseTable);
 	
 		/////////////////////////////////////////////////////////
 		
@@ -404,7 +399,7 @@ extends TabPanel {
 		foodTableModel = new FoodTableModel(condition);
 		
 		// Create exercise time table
-		foodTable = new ZebraJTable(foodTableModel);
+		foodTable = new JTable(foodTableModel);
 		foodTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		TableColumnModel fModel = foodTable.getColumnModel();
 		fModel.getColumn(0).setPreferredWidth(10);
@@ -426,7 +421,6 @@ extends TabPanel {
 		
 		// Add sorting
 		foodTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(foodTable);
 		
 		/////////////////////////////////////////////////////////		
 		
@@ -449,14 +443,13 @@ extends TabPanel {
 		healthProblemTableModel = new HealthProblemTableModel(condition);
 
 		// Create health problem table
-		healthProblemTable = new ZebraJTable(healthProblemTableModel);
+		healthProblemTable = new JTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
 
 		// Add sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(healthProblemTable);
 		
 		
 		// Prepare medication panel.
@@ -476,15 +469,13 @@ extends TabPanel {
 		medicationTableModel = new MedicationTableModel(condition);
 
 		// Prepare medication table.
-		medicationTable = new ZebraJTable(medicationTableModel);
+		medicationTable = new JTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
 
 		// Add sorting
 		medicationTable.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(medicationTable);
 		
 		// Update at least one before displaying it
 		update();
@@ -496,16 +487,7 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		int t = 0;//MainScene.getTheme();		
-		if (theme != t) {
-			theme = t;
-			TableStyle.setTableStyle(radiationTable);
-			TableStyle.setTableStyle(medicationTable);
-			TableStyle.setTableStyle(healthProblemTable);
-			TableStyle.setTableStyle(sleepExerciseTable);
-			TableStyle.setTableStyle(foodTable);
-		}
-		
+
 		// Update fatigue if necessary.
 		int newF = (int)condition.getFatigue();
 		if (fatigueCache != newF) {
