@@ -37,6 +37,7 @@ public class SettlementWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "settlement_map";
 
 	private static final String POPULATION = "  Population : ";
 	private static final String WHITESPACES_2 = "  ";

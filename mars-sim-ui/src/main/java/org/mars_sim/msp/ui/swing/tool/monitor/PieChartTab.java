@@ -59,6 +59,8 @@ class PieChartTab extends MonitorTab {
     /** The category name for unknown. */
     private final static String NONECAT = "None";
 
+	public static final String ICON = "pie";
+
     /**
      * Basic Pie Data set with a method to recalculate.
      */
@@ -267,7 +269,7 @@ class PieChartTab extends MonitorTab {
      * @param column Index of the column to collate.
      */
     public PieChartTab(MonitorModel model, int column) {
-        super(model, false, false, ImageLoader.getNewIcon(MonitorWindow.PIE_ICON));
+        super(model, false, false, ImageLoader.getNewIcon(ICON));
 
         String title = model.getName() + " - " + model.getColumnName(column);
         setName(title);

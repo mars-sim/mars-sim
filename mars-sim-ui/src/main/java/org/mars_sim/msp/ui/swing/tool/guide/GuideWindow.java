@@ -40,6 +40,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "help";
 	public static final String HOME_ICON = Msg.getString("img.home"); //$NON-NLS-1$
 	
 	public static final String WIKI_URL = Msg.getString("GuideWindow.githubwiki.url"); //$NON-NLS-1$

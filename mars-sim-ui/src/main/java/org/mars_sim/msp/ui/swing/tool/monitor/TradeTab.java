@@ -18,6 +18,7 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  */
 @SuppressWarnings("serial")
 public class TradeTab extends TableTab {
+	private static final String TRADE_ICON = "trade";
 
 	/**
 	 * constructor.
@@ -27,7 +28,7 @@ public class TradeTab extends TableTab {
 	 */
 	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
+		super(window, new TradeTableModel(selectedSettlement), true, false, TRADE_ICON);
 
 		TableColumnModel m = table.getColumnModel();
 		for(int i = TradeTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {

@@ -8,14 +8,20 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.apache.batik.transcoder.TranscoderException;
 import org.mars.sim.console.MarsTerminal;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGIcon;
 
 /**
  * This is a static class that acts as a helper to load Images for use in the
@@ -27,6 +33,9 @@ public class ImageLoader {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ImageLoader.class.getName());
+
+	private static Map<String, Icon> iconByName = new HashMap<>();
+	private static Properties iconPaths;
 
 	private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
 	private static HashMap<String, Image> imageCache = new HashMap<>();
@@ -41,12 +50,46 @@ public class ImageLoader {
 	public static final String ICON_DIR = "/icons/";
 	public static final String VEHICLE_ICON_DIR = "/icons/vehicle/";
 	public static final String PNG = "png";
+	public static final String SVG = "svg";
 	public static final String SLASH = "/";
 	
+	static {
+		iconPaths = new Properties();
+		try (InputStream input = ImageLoader.class.getResourceAsStream("/icons.properties")) {
+			iconPaths.load(input);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	/**
 	 * Static singleton
 	 */
 	private ImageLoader() {
+	}
+
+	public static Icon getIconByName(String iconName) {
+		Icon found = iconByName.get(iconName);
+		if (found == null) {
+			// Is there a path already defined 
+			String imagePath = iconPaths.getProperty(iconName);
+			if (imagePath == null) {
+				// No path, assume this is PNG
+				imagePath = ICON_DIR + iconName + "_24.png";
+			}
+			
+			if (imagePath.endsWith(SVG)) {
+				found = loadSVGIcon(imagePath);
+			}
+			else {
+				found = loadImageIcon(imagePath);
+			}
+			iconByName.put(iconName, found);
+		}
+
+		return found;
 	}
 
 	/**
@@ -100,18 +143,43 @@ public class ImageLoader {
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
 			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : dir + fullImageName;
-			URL imageSource = ImageLoader.class.getResource(fileName);
-			if (imageSource == null) {
-				return null;
-			}
-			found = new ImageIcon(imageSource);
+			found = loadImageIcon(fileName);
 			iconCache.put(fullImageName, found);
 		}
 
 		return found;
 	}
 
+	private static ImageIcon loadImageIcon(String fileName) {
+		URL imageSource = ImageLoader.class.getResource(fileName);
+		if (imageSource == null) {
+			return null;
+		}
+		return new ImageIcon(imageSource);
+	}
+
 	/**
+	 * Load an SVG icon from a spec.
+	 * @param spec The spec defines the icon size & filepath
+	 * @return
+	 */
+	private static Icon loadSVGIcon(String spec) {
+        SVGIcon newIcon = null;
+        try {
+			// SVG Spec is defined as "<size>,<filepath .svg>"
+			String []items = spec.split(",");
+			String filename = items[1];
+			int size = Integer.parseInt(items[0]);
+            URL resource = ImageLoader.class.getClassLoader().getResource(filename);
+
+            newIcon = new SVGIcon(resource.toString(), size, size);
+        } catch (TranscoderException e) {
+            e.printStackTrace();
+        }
+
+		return newIcon;
+	}
+ 	/**
 	 * Gets an image with the specified name. The name should include the suffix
 	 * identifying the format of the image.
 	 *

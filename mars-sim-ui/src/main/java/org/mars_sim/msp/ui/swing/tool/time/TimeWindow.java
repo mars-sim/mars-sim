@@ -50,6 +50,8 @@ public class TimeWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "time";
+	
 	/** the execution time label string */
 	public static final String EXEC = "Execution : ";
 	/** the sleep time label string */

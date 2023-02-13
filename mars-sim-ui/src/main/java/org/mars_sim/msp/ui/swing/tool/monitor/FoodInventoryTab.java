@@ -18,7 +18,8 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  */
 @SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab {
-	
+	private static final String FOOD_ICON = "food";
+
 	/**
 	 * constructor.
 	 *
@@ -27,7 +28,7 @@ public class FoodInventoryTab extends TableTab {
 	 */
 	public FoodInventoryTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, MonitorWindow.FOOD_ICON);
+		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, FOOD_ICON);
 	
 		TableColumnModel m = table.getColumnModel();
 		for (int i= FoodInventoryTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {

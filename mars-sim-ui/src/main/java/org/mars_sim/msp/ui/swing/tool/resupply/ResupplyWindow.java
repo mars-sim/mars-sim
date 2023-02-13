@@ -42,6 +42,7 @@ implements ListSelectionListener {
 
 	/** Tool name. */
 	public static final String NAME = "Resupply Tool";
+	public static final String ICON = "resupply";
 
 	// Data members
 	//private boolean isRunning = false;

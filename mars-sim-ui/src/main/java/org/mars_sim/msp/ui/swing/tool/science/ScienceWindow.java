@@ -33,6 +33,7 @@ extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("ScienceWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "science";
 
 	// Data members
 	private AbstractStudyListPanel ongoingStudyListPane;

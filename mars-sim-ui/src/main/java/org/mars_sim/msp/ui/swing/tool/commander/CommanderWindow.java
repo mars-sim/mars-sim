@@ -83,6 +83,7 @@ public class CommanderWindow extends ToolWindow {
 	private static final int LIST_WIDTH = 300;
 
 	public static final String NAME = "Commander Dashboard";
+	public static final String ICON = "dashboard";
 
 	private static final String LEADERSHIP_TAB = "Leadership";
 

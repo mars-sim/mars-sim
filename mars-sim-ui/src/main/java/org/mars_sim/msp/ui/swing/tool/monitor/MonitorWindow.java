@@ -67,29 +67,23 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static final int HEIGHT = 640;
 
 	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "monitor";
 
 	// Added an custom icon for each tab
-	public static final String COLONY_ICON = Msg.getString("icon.colony"); //$NON-NLS-1$
-	public static final String MARS_ICON = Msg.getString("icon.mars"); //$NON-NLS-1$
-	public static final String BOT_ICON = Msg.getString("icon.robot"); //$NON-NLS-1$
-	public static final String MISSION_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
-	public static final String VEHICLE_ICON = Msg.getString("icon.vehicle"); //$NON-NLS-1$
-	public static final String CROP_ICON = Msg.getString("icon.crop"); //$NON-NLS-1$
-	public static final String EVENT_ICON = Msg.getString("icon.event"); //$NON-NLS-1$
-	public static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
-	public static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
-	public static final String ANALYTICS_ICON = Msg.getString("icon.analytics"); //$NON-NLS-1$
-	public static final String TRADE_ICON = Msg.getString("icon.trade"); //$NON-NLS-1$
-	public static final String BUILDING_ICON = Msg.getString("icon.building"); //$NON-NLS-1$
+	private static final String COLONY_ICON = "settlement";
+	private static final String MARS_ICON = "mars";
+	private static final String BOT_ICON = "robot";
+	public static final String MISSION_ICON = "mission";
+	private static final String VEHICLE_ICON = "vehicle";
+	private static final String CROP_ICON = "crop";
+	private static final String PEOPLE_ICON = "people";
+	private static final String BUILDING_ICON = "building"; 
 
-	public static final String TRASH_ICON = Msg.getString("icon.trash"); //$NON-NLS-1$
-	public static final String LOCATE_ICON = Msg.getString("icon.locate"); //$NON-NLS-1$
-	public static final String FIND_ICON = Msg.getString("icon.find"); //$NON-NLS-1$
-	public static final String COLUMN_ICON = Msg.getString("icon.column"); //$NON-NLS-1$
-	public static final String FILTER_ICON = Msg.getString("icon.filter"); //$NON-NLS-1$
-
-	public static final String BAR_ICON = Msg.getString("icon.bar"); //$NON-NLS-1$
-	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
+	private static final String TRASH_ICON = "trash";
+	private static final String LOCATE_ICON = "locate";
+	private static final String FIND_ICON = "find";
+	private static final String COLUMN_ICON = "column";
+	private static final String FILTER_ICON = "filter";
 
 	// Data members
 	private JTabbedPane tabsSection;
@@ -244,43 +238,43 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(rowCount);
 
 		// Create graph button
-		buttonPie = new JButton(ImageLoader.getNewIcon(PIE_ICON));
+		buttonPie = new JButton(ImageLoader.getIconByName(PieChartTab.ICON));
 		buttonPie.setToolTipText(Msg.getString("MonitorWindow.tooltip.singleColumnPieChart")); //$NON-NLS-1$
 		buttonPie.addActionListener(this);
 		statusPanel.add(buttonPie);
 
-		buttonBar = new JButton(ImageLoader.getNewIcon(BAR_ICON));
+		buttonBar = new JButton(ImageLoader.getIconByName(BarChartTab.ICON));
 		buttonBar.setToolTipText(Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart")); //$NON-NLS-1$
 		buttonBar.addActionListener(this);
 		statusPanel.add(buttonBar);
 
-		buttonRemoveTab = new JButton(ImageLoader.getNewIcon(TRASH_ICON)); // $NON-NLS-1$
+		buttonRemoveTab = new JButton(ImageLoader.getIconByName(TRASH_ICON)); // $NON-NLS-1$
 		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		buttonRemoveTab.addActionListener(this);
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
-		buttonMap = new JButton(ImageLoader.getNewIcon(LOCATE_ICON)); // $NON-NLS-1$
+		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		statusPanel.add(buttonMap);
 
-		buttonDetails = new JButton(ImageLoader.getNewIcon(FIND_ICON)); // $NON-NLS-1$
+		buttonDetails = new JButton(ImageLoader.getIconByName(FIND_ICON)); // $NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
 		statusPanel.add(buttonDetails);
 
-		buttonMissions = new JButton(ImageLoader.getNewIcon(MISSION_ICON)); // $NON-NLS-1$
+		buttonMissions = new JButton(ImageLoader.getIconByName(MISSION_ICON)); // $NON-NLS-1$
 		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		buttonMissions.addActionListener(this);
 		statusPanel.add(buttonMissions);
 
-		buttonProps = new JButton(ImageLoader.getNewIcon(COLUMN_ICON)); // $NON-NLS-1$
+		buttonProps = new JButton(ImageLoader.getIconByName(COLUMN_ICON)); // $NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
 		statusPanel.add(buttonProps);
 
-		buttonFilter = new JButton(ImageLoader.getNewIcon(FILTER_ICON));
+		buttonFilter = new JButton(ImageLoader.getIconByName(FILTER_ICON));
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		buttonFilter.addActionListener(this);
 		statusPanel.add(buttonFilter);

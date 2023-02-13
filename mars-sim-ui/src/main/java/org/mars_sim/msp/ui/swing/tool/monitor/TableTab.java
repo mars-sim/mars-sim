@@ -49,10 +49,11 @@ abstract class TableTab extends MonitorTab {
 	 * @param model           The model of Units to display.
 	 * @param mandatory       Is this table view mandatory.
 	 * @param singleSelection Does this table only allow single selection?
+	 * @param iconname        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
 	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
-			String icon) {
-		super(model, mandatory, true, ImageLoader.getNewIcon(icon));
+			String iconname) {
+		super(model, mandatory, true, ImageLoader.getIconByName(iconname));
 
 		// Simple WebTable
 		this.table = new JTable(model);

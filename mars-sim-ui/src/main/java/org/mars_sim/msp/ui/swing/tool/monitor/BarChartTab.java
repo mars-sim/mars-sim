@@ -52,6 +52,8 @@ extends MonitorTab {
 	/** Large non-scroll chart. */
 	private final static int SCROLLTHRESHOLD = 800; // 400
 
+	public static final String ICON = "bar";
+
 	/**
 	 * Minimum time (milliseconds) between chart updates
 	 * based on table update events.
@@ -289,7 +291,7 @@ extends MonitorTab {
 	 * @param columns Indexes of columns to display.
 	 */
 	public BarChartTab(MonitorModel model, int []columns) {
-		super(model, false, false, ImageLoader.getNewIcon(MonitorWindow.BAR_ICON));
+		super(model, false, false, ImageLoader.getNewIcon(ICON));
 
 		String title = model.getName();
 		setName(title);

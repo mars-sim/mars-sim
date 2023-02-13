@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.table.TableColumnModel;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -17,7 +16,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 @SuppressWarnings("serial")
 public class BacklogTab extends TableTab {
-	private static final String TASK_ICON = Msg.getString("icon.task"); //$NON-NLS-1$
+	private static final String TASK_ICON = "task";
 
 	/**
 	 * constructor.

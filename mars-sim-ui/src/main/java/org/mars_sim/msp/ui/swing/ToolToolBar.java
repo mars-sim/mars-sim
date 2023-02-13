@@ -107,22 +107,22 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "icon.save"); //$NON-NLS-1$ //$NON-NLS-2$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "icon.saveAs"); //$NON-NLS-
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "icon.exit"); //$NON-NLS-
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "save"); //$NON-NLS-1$ //$NON-NLS-2$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "saveAs"); //$NON-NLS-
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "exit"); //$NON-NLS-
 
 		addSeparator(new Dimension(20, 20));
 
 		// Add Tools buttons
-		addToolButton(NavigatorWindow.NAME, null, "icon.mars"); //$NON-NLS-
-		addToolButton(SearchWindow.NAME, null, "icon.find"); //$NON-NLS-1$
-		addToolButton(TimeWindow.NAME, null, "icon.time"); //$NON-NLS-1$
-		addToolButton(MonitorWindow.TITLE, null, "icon.monitor"); //$NON-NLS-1$
-		addToolButton(MissionWindow.NAME, null, "icon.mission"); //$NON-NLS-1$
-		addToolButton(SettlementWindow.NAME, null, "icon.map"); //$NON-NLS-1$
-		addToolButton(ScienceWindow.NAME, null, "icon.science"); //$NON-NLS-1$
-		addToolButton(ResupplyWindow.NAME, null, "icon.resupply"); //$NON-NLS-1$
-		addToolButton(CommanderWindow.NAME, null, "icon.dashboard"); //$NON-NLS-1$
+		addToolButton(NavigatorWindow.NAME, null, NavigatorWindow.ICON); //$NON-NLS-
+		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON); //$NON-NLS-1$
+		addToolButton(TimeWindow.NAME, null, TimeWindow.ICON); //$NON-NLS-1$
+		addToolButton(MonitorWindow.TITLE, null, MonitorWindow.ICON); //$NON-NLS-1$
+		addToolButton(MissionWindow.NAME, null, MissionWindow.ICON); //$NON-NLS-1$
+		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON); //$NON-NLS-1$
+		addToolButton(ScienceWindow.NAME, null, ScienceWindow.ICON); //$NON-NLS-1$
+		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON); //$NON-NLS-1$
+		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON); //$NON-NLS-1$
 
 		// Everythong after this is on teh roght hand side
 		add(Box.createHorizontalGlue()); 
@@ -138,17 +138,17 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addSeparator();
 
 		calendarPane = setupCalendarPanel(masterClock.getMarsClock());	
-		addToolButton(MARSCAL, "Open the Mars Calendar", "icon.schedule");
+		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
 
-		addToolButton(STARMAP, "Open the Orbit Viewer", "icon.telescope");
+		addToolButton(STARMAP, "Open the Orbit Viewer", "telescope");
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
-		addToolButton(GuideWindow.NAME, "View the Help tool", "img.guide"); //$NON-NLS-1$
+		addToolButton(GuideWindow.NAME, "View the Help tool", GuideWindow.ICON); //$NON-NLS-1$
 	}
 
 	private void addToolButton(String toolName, String tooltip, String iconKey) {
-		JButton toolButton = new JButton(ImageLoader.getIcon(Msg.getString(iconKey)));
+		JButton toolButton = new JButton(ImageLoader.getIconByName(iconKey));
 		toolButton.setActionCommand(toolName);
 		toolButton.setMaximumSize(new Dimension(30, 30));
 		if (tooltip == null) {

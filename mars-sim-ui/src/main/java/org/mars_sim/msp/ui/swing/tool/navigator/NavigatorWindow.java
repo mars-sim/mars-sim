@@ -99,6 +99,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
+	public static final String ICON = "mars";
 
 	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.GLOBE_BOX_HEIGHT; 
 	private static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;

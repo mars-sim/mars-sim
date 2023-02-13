@@ -14,6 +14,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  */
 @SuppressWarnings("serial")
 public class EventTab extends TableTab {
+	private static final String EVENT_ICON = "event";
 
 	/**
 	 * constructor.
@@ -25,7 +26,7 @@ public class EventTab extends TableTab {
 	public EventTab(final MonitorWindow window, MainDesktopPane desktop) {
 		// Use TableTab constructor
 		super(window, new EventTableModel(desktop), true, false,
-				MonitorWindow.EVENT_ICON);
+				EVENT_ICON);
 
 	}
 
