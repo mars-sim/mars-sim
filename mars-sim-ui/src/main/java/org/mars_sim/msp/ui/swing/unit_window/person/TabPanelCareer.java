@@ -51,8 +51,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -65,7 +63,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCareer.class.getName());
 
-	private static final String CAREER_ICON = Msg.getString("icon.career"); //$NON-NLS-1$
+	private static final String CAREER_ICON = "career";
 	
 	private static final int RATING_DAYS = 7;
 
@@ -116,7 +114,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Use the TabPanel constructor
 		super(
 			null,	
-			ImageLoader.getNewIcon(CAREER_ICON),
+			ImageLoader.getIconByName(CAREER_ICON),
 			Msg.getString("TabPanelCareer.title"), //$NON-NLS-1$
 			unit, desktop
 		);
@@ -325,7 +323,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		jobHistoryPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
-		table = new ZebraJTable(jobHistoryTableModel);
+		table = new JTable(jobHistoryTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(25);
 		table.getColumnModel().getColumn(1).setPreferredWidth(50);
@@ -348,7 +346,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
 		
-		TableStyle.setTableStyle(table);
 		update();
 		jobHistoryTableModel.update();
 	}
@@ -546,8 +543,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 */
 	@Override
 	public void update() {
-		TableStyle.setTableStyle(table);
-
 		boolean dead = false;
 
 		dead = person.getPhysicalCondition().isDead();

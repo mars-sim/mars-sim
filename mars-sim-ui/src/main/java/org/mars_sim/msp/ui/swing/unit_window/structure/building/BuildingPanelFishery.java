@@ -26,7 +26,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 @SuppressWarnings("serial")
 public class BuildingPanelFishery extends BuildingFunctionPanel {
 
-	private static final String FISH_ICON = Msg.getString("icon.fish"); //$NON-NLS-1$
+	private static final String FISH_ICON = "fish";
 
 	// Caches
 	private int numFish;
@@ -45,7 +45,7 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	public BuildingPanelFishery(Fishery tank, MainDesktopPane desktop) {
 		super(
 			Msg.getString("BuildingPanelFishery.title"), 
-			ImageLoader.getNewIcon(FISH_ICON), 
+			ImageLoader.getIconByName(FISH_ICON), 
 			tank.getBuilding(), 
 			desktop
 		);

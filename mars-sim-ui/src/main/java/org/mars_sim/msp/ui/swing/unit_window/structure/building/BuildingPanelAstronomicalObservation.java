@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelAstronomicalObservation
 extends BuildingFunctionPanel {
 	
-	private static final String TELESCOPE_ICON = Msg.getString("icon.telescope"); //$NON-NLS-1$
+	private static final String TELESCOPE_ICON = "astro";
 
 	// Data members
 	private int currentObserversAmount;
@@ -52,7 +52,7 @@ extends BuildingFunctionPanel {
 		// User BuildingFunctionPanel constructor.
 		super(
 			Msg.getString("BuildingPanelAstronomicalObservation.title"), 
-			ImageLoader.getNewIcon(TELESCOPE_ICON), 
+			ImageLoader.getIconByName(TELESCOPE_ICON), 
 			observatory.getBuilding(), 
 			desktop
 		);

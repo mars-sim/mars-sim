@@ -50,7 +50,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     private static final Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
     
-	private static final String WHEEL_ICON = Msg.getString("icon.wheel"); //$NON-NLS-1$
+	private static final String NAV_ICON = "navigation";
 
     private JButton centerMapButton;
     private JButton destinationButton;
@@ -104,7 +104,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         super(
         	Msg.getString("NavigationTabPanel.title"), 
         	Msg.getString("NavigationTabPanel.title"), 
-        	ImageLoader.getNewIcon(WHEEL_ICON),
+        	ImageLoader.getIconByName(NAV_ICON),
         	Msg.getString("NavigationTabPanel.title"), 
         	unit, desktop
         );

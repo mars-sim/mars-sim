@@ -41,7 +41,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingPanelResourceProcessing.class.getName());
 
-	private static final String CHEMICAL_ICON = Msg.getString("icon.chemical"); //$NON-NLS-1$
+	private static final String CHEMICAL_ICON = "chemical";
 	private static final String KG_SOL = " kg/sol";
 	private static final String BR = "<br>";
 	private static final String HTML = "<html>";
@@ -69,7 +69,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResourceProcessing.title"),
-			ImageLoader.getNewIcon(CHEMICAL_ICON),
+			ImageLoader.getIconByName(CHEMICAL_ICON),
 			processor.getBuilding(), 
 			desktop
 		);

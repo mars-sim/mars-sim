@@ -35,8 +35,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -46,7 +44,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelFavorite
 extends TabPanel {
 
-	private static final String HEART_ICON = Msg.getString("icon.heart"); //$NON-NLS-1$
+	private static final String FAV_ICON = "favourite"; //$NON-NLS-1$
 	
 	/** The Preference Table. */	
 	private JTable table;
@@ -64,7 +62,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(HEART_ICON),	
+			ImageLoader.getIconByName(FAV_ICON),	
 			Msg.getString("TabPanelFavorite.title"), //$NON-NLS-1$
 			unit, desktop
 		);
@@ -165,7 +163,7 @@ extends TabPanel {
 		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
-		table = new ZebraJTable(tableModel);
+		table = new JTable(tableModel);
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -182,8 +180,6 @@ extends TabPanel {
 
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
 	}

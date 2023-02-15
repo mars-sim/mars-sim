@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelConstruction
 extends TabPanel {
 
-	private static final String HELMET_ICON = Msg.getString("icon.helmet"); //$NON-NLS-1$
+	private static final String CONST_ICON = "construction";
 	
 	// Data members
 	/** The Settlement instance. */
@@ -46,7 +46,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(HELMET_ICON),
+			ImageLoader.getIconByName(CONST_ICON),
 			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			unit, desktop
 		);

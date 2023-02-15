@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -125,7 +125,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @param label
 	 */
 	protected static void setImage(String imageLocation, JLabel label) {
-		ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
+		Icon imageIcon = ImageLoader.getIconByName(imageLocation);
 		label.setIcon(imageIcon);
 	}
 

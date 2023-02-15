@@ -58,7 +58,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelOrganization extends TabPanel {
 
-	private static final String CHART_ICON = Msg.getString("icon.chart"); //$NON-NLS-1$
+	private static final String ORG_ICON = "organisation";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -127,7 +127,7 @@ public class TabPanelOrganization extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null, 
-			ImageLoader.getNewIcon(CHART_ICON),
+			ImageLoader.getIconByName(ORG_ICON),
 			Msg.getString("TabPanelStructure.title"), //$NON-NLS-1$
 			unit, desktop);
 

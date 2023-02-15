@@ -50,7 +50,7 @@ import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
-	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
 
 	/** Cached value for the wear condition. */
@@ -91,7 +91,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelMaintenance.title"), 
-			ImageLoader.getNewIcon(SPANNER_ICON), 
+			ImageLoader.getIconByName(SPANNER_ICON), 
 			malfunctionable, 
 			desktop
 		);

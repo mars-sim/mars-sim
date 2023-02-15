@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelGeneral extends BuildingFunctionPanel {
 
-	private static final String ID_ICON = Msg.getString("icon.id"); //$NON-NLS-1$
+	private static final String ID_ICON = "info";
 	
 	/**
 	 * Constructor.
@@ -38,7 +38,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 	public BuildingPanelGeneral(Building building, MainDesktopPane desktop) {
 		super(
 			Msg.getString("BuildingPanelGeneral.title"),
-			ImageLoader.getNewIcon(ID_ICON), 
+			ImageLoader.getIconByName(ID_ICON), 
 			building, desktop
 		);
 	}

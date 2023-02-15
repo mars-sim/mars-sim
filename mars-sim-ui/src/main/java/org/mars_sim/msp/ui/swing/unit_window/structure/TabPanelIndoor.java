@@ -31,7 +31,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class TabPanelIndoor extends TabPanel {
 
-	private static final String POP_ICON = Msg.getString("icon.pop"); //$NON-NLS-1$
+	private static final String POP_ICON = "pop";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -53,7 +53,7 @@ public class TabPanelIndoor extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(POP_ICON),
+			ImageLoader.getIconByName(POP_ICON),
 			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			unit, desktop
 		);

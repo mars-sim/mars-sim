@@ -29,7 +29,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelSponsor
 extends TabPanel {
 
-	private static final String EARTH_ICON = Msg.getString("icon.earth"); //$NON-NLS-1$
+	private static final String SPONSOR_ICON = "sponsor"; //$NON-NLS-1$
 
 	/** The Person instance. */
 	private Person person = null;
@@ -43,7 +43,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(EARTH_ICON),
+			ImageLoader.getIconByName(SPONSOR_ICON),
 			Msg.getString("TabPanelSponsor.title"), //$NON-NLS-1$
 			unit, desktop
 		);

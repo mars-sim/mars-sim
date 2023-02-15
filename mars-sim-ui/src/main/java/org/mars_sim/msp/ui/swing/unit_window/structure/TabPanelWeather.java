@@ -39,7 +39,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelWeather
 extends TabPanel {
 
-	private static final String WEATHER_ICON = Msg.getString("icon.weather"); //$NON-NLS-1$
+	private static final String WEATHER_ICON = "weather";
 	
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
@@ -102,7 +102,7 @@ extends TabPanel {
         // Use the TabPanel constructor
         super(
     		null,
-    		ImageLoader.getNewIcon(WEATHER_ICON),
+    		ImageLoader.getIconByName(WEATHER_ICON),
     		Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
     		unit, desktop
     	);

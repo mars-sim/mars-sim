@@ -140,7 +140,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		calendarPane = setupCalendarPanel(masterClock.getMarsClock());	
 		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
 
-		addToolButton(STARMAP, "Open the Orbit Viewer", "telescope");
+		addToolButton(STARMAP, "Open the Orbit Viewer", "astro");
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button

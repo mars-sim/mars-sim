@@ -35,7 +35,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
-	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed : ";
 
 	/** The Settlement instance. */
@@ -53,7 +53,7 @@ public class TabPanelMaintenance extends TabPanel {
 	 */
 	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(null, ImageLoader.getNewIcon(SPANNER_ICON), "Maintenance", unit, desktop);
+		super(null, ImageLoader.getIconByName(SPANNER_ICON), "Maintenance", unit, desktop);
 
 		settlement = (Settlement) unit;
 	}

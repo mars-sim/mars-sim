@@ -27,7 +27,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
-	private static final String ID_ICON = Msg.getString("icon.id"); //$NON-NLS-1$
+	private static final String ID_ICON = "info"; //$NON-NLS-1$
 	
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 	
@@ -48,7 +48,7 @@ public class TabPanelGeneral extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(ID_ICON),		
+			ImageLoader.getIconByName(ID_ICON),		
 			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
 			unit, desktop
 		);

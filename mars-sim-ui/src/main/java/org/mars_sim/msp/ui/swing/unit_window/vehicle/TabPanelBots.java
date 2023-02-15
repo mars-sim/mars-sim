@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class TabPanelBots extends TabPanel {
 
-	private static final String ROBOT_ICON = Msg.getString("icon.robot"); //$NON-NLS-1$
+	private static final String ROBOT_ICON = "robot";
 
 	private JTextField crewNumLabel;
 	private JTextField crewCapLabel;
@@ -51,7 +51,7 @@ public class TabPanelBots extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(ROBOT_ICON),
+			ImageLoader.getIconByName(ROBOT_ICON),
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			vehicle, desktop
 		);

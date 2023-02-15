@@ -37,10 +37,10 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 @SuppressWarnings("serial")
 public class PersonWindow extends UnitWindow {
 
-	private static final String TOWN = Msg.getString("icon.colony");
-	private static final String JOB = Msg.getString("icon.career");
-	private static final String ROLE = Msg.getString("icon.role");
-	private static final String SHIFT = Msg.getString("icon.shift");
+	private static final String TOWN = "settlement";
+	private static final String JOB = "career";
+	private static final String ROLE = "role";
+	private static final String SHIFT = "shift";
 	
 	private static final String TWO_SPACES = "  ";
 	private static final String SIX_SPACES = "      ";

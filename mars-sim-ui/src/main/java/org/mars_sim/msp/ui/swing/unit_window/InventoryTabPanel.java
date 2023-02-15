@@ -59,7 +59,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 @SuppressWarnings("serial")
 public class InventoryTabPanel extends TabPanel {
 
-	private static final String INVENTORY_ICON = Msg.getString("icon.inventory"); //$NON-NLS-1$
+	private static final String INVENTORY_ICON = "inventory";
 
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
@@ -79,7 +79,7 @@ public class InventoryTabPanel extends TabPanel {
      */
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super(null, ImageLoader.getNewIcon(INVENTORY_ICON), "Inventory", unit, desktop);
+        super(null, ImageLoader.getIconByName(INVENTORY_ICON), "Inventory", unit, desktop);
         
         this.unit = unit;
 	}

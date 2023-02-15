@@ -32,7 +32,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelPersonality extends TabPanel {
 
-	private static final String PUZZLE_ICON = Msg.getString("icon.puzzle"); //$NON-NLS-1$
+	private static final String PER_ICON = "personality"; //$NON-NLS-1$
 
 	/** The Person instance. */
 	private Person person;
@@ -48,7 +48,7 @@ public class TabPanelPersonality extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(PUZZLE_ICON),		
+			ImageLoader.getIconByName(PER_ICON),		
 			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
 			unit, desktop
 		);

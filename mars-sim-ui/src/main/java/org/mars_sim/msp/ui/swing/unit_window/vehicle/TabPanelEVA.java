@@ -35,7 +35,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class TabPanelEVA extends TabPanel {
 
-	private static final String SUIT_ICON = Msg.getString("icon.suit"); //$NON-NLS-1$
+	private static final String EVA_ICON = "eva"; 
 	
 	private static final String UNLOCKED = "Unlocked";
 	private static final String LOCKED = "Locked";
@@ -84,7 +84,7 @@ public class TabPanelEVA extends TabPanel {
         // Use the TabPanel constructor
         super(
             Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(SUIT_ICON),        	
+			ImageLoader.getIconByName(EVA_ICON),        	
         	Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
         	vehicle, 
         	desktop

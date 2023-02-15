@@ -31,7 +31,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class TabPanelCitizen extends TabPanel{
 
-	private static final String CITIZEN_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
+	private static final String CITIZEN_ICON = "people";
 	
 	private int populationCitizensCache;
 	private int populationCapacityCache;
@@ -55,7 +55,7 @@ public class TabPanelCitizen extends TabPanel{
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(CITIZEN_ICON),
+			ImageLoader.getIconByName(CITIZEN_ICON),
 			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
 			unit, desktop
 		);

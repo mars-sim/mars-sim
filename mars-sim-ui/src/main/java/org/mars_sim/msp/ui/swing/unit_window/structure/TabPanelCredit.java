@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelCredit
 extends TabPanel {
 	
-	private static final String CREDIT_ICON = Msg.getString("icon.credit"); //$NON-NLS-1$
+	private static final String CREDIT_ICON = "credit";
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -59,7 +59,7 @@ extends TabPanel {
 		// Use TabPanel constructor.
 		super(
 			null,
-			ImageLoader.getNewIcon(CREDIT_ICON),
+			ImageLoader.getIconByName(CREDIT_ICON),
 			Msg.getString("TabPanelCredit.title"), //$NON-NLS-1$
 			unit, desktop
 		);

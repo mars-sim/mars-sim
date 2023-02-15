@@ -28,8 +28,6 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -40,7 +38,7 @@ public class TabPanelSocial
 extends TabPanel
 implements ListSelectionListener {
 
-	private static final String SOCIAL_ICON = Msg.getString("icon.social"); //$NON-NLS-1$
+	private static final String SOCIAL_ICON = "social";
 	
 	/** The Person instance. */
 	private Person person = null;
@@ -59,7 +57,7 @@ implements ListSelectionListener {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(SOCIAL_ICON),
+			ImageLoader.getIconByName(SOCIAL_ICON),
 			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
 			person, desktop
 		);
@@ -78,7 +76,7 @@ implements ListSelectionListener {
 		relationshipTableModel = new RelationshipTableModel(person);
 
 		// Create relationship table
-		relationshipTable = new ZebraJTable(relationshipTableModel);
+		relationshipTable = new JTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(120);
@@ -118,8 +116,6 @@ implements ListSelectionListener {
 		
 		// Added sorting
 		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
-
-		TableStyle.setTableStyle(relationshipTable);
 	}
 
 	/**

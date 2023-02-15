@@ -35,7 +35,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
 	
-	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	private static final String MAINT_ICON = "maintenance";
 
     private int wearConditionCache; // The cached value for the wear condition.
     private int lastCompletedTime; // The time since last completed maintenance.
@@ -61,7 +61,7 @@ public class MaintenanceTabPanel extends TabPanel {
         super(
         	Msg.getString("MaintenanceTabPanel.title"),
         	Msg.getString("MaintenanceTabPanel.title"), 
-        	ImageLoader.getNewIcon(SPANNER_ICON), 
+        	ImageLoader.getIconByName(MAINT_ICON), 
         	Msg.getString("MaintenanceTabPanel.title"),
         	unit, desktop
         );

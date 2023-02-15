@@ -25,7 +25,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 @SuppressWarnings("serial")
 public class NotesTabPanel extends TabPanel{
 
-	private static final String NOTE_ICON = Msg.getString("icon.note"); //$NON-NLS-1$
+	private static final String NOTE_ICON = "note";
 	
 	private static final String ENTER_HERE = "Enter Here";
 
@@ -42,7 +42,7 @@ public class NotesTabPanel extends TabPanel{
 	 * @param desktop the main desktop.
 	 */
 	public NotesTabPanel(Unit unit, MainDesktopPane desktop) {
-		super(null, ImageLoader.getNewIcon(NOTE_ICON),
+		super(null, ImageLoader.getIconByName(NOTE_ICON),
 				Msg.getString("NotesTabPanel.title"), unit, desktop);
 	}
 

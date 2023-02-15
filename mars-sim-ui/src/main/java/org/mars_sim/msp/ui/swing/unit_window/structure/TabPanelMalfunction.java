@@ -16,7 +16,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelMalfunction extends TabPanel {
 
-	private static final String WARN_ICON = Msg.getString("icon.warn"); //$NON-NLS-1$
+	private static final String WARN_ICON = "warn";
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -51,7 +50,7 @@ public class TabPanelMalfunction extends TabPanel {
 	public TabPanelMalfunction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super("Malfunction", 
-			ImageLoader.getNewIcon(WARN_ICON), 
+			ImageLoader.getIconByName(WARN_ICON), 
 			"Malfunction", 
 			unit, desktop);
 

@@ -41,7 +41,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingPanelWasteProcessing.class.getName());
 
-	private static final String RECYCLE_ICON = Msg.getString("icon.recycle"); //$NON-NLS-1$
+	private static final String RECYCLE_ICON = "recycle";
 	private static final String KG_SOL = " kg/sol";
 	private static final String BR = "<br>";
 	private static final String HTML = "<html>";
@@ -69,7 +69,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelWasteProcessing.title"),
-			ImageLoader.getNewIcon(RECYCLE_ICON),
+			ImageLoader.getIconByName(RECYCLE_ICON),
 			processor.getBuilding(), 
 			desktop
 		);

@@ -31,7 +31,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 
-	private static final String SUV_ICON = Msg.getString("icon.suv"); //$NON-NLS-1$
+	private static final String SUV_ICON = "vehicle";
 	
 	private VehicleMaintenance garage;
 	
@@ -51,7 +51,7 @@ public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelVehicleMaintenance.title"),
-			ImageLoader.getNewIcon(SUV_ICON),
+			ImageLoader.getIconByName(SUV_ICON),
 			garage.getBuilding(), 
 			desktop
 		);

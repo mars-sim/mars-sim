@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelPowerStorage
 extends BuildingFunctionPanel {
 
-	private static final String ENERGY_ICON = Msg.getString("icon.energy"); //$NON-NLS-1$
+	private static final String ENERGY_ICON = "energy";
 	
 	private JTextField storedTF;
 	private JTextField capTF;
@@ -48,7 +48,7 @@ extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelPowerStorage.title"), 
-			ImageLoader.getNewIcon(ENERGY_ICON), 
+			ImageLoader.getIconByName(ENERGY_ICON), 
 			storage.getBuilding(), 
 			desktop
 		);

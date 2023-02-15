@@ -63,7 +63,7 @@ import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 public class BuildingPanelFarming extends BuildingFunctionPanel
 implements MouseListener {
 
-	private static final String PLANT_ICON = Msg.getString("icon.plant"); //$NON-NLS-1$
+	private static final String PLANT_ICON = "plant";
 	private static final String G_M2_DAY = " g/m2/day";
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
@@ -138,7 +138,7 @@ implements MouseListener {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelFarming.title"), 
-			ImageLoader.getNewIcon(PLANT_ICON), 
+			ImageLoader.getIconByName(PLANT_ICON), 
 			farm.getBuilding(), 
 			desktop
 		);

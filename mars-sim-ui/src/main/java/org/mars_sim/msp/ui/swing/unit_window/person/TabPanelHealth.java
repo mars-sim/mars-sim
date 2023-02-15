@@ -50,7 +50,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelHealth
 extends TabPanel {
 
-	private static final String HEALTH_ICON = Msg.getString("icon.health"); //$NON-NLS-1$
+	private static final String HEALTH_ICON = "health"; //$NON-NLS-1$
 	
 	private static final String THIRTY_DAY = "30-Day";
 	private static final String ANNUAL = "Annual";
@@ -120,7 +120,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(HEALTH_ICON),
+			ImageLoader.getIconByName(HEALTH_ICON),
 			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
 			unit, desktop
 		);

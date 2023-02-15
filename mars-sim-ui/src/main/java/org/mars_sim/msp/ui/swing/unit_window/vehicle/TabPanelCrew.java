@@ -50,8 +50,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -64,7 +62,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCrew.class.getName());
 
-	private static final String SAILOR_ICON = Msg.getString("icon.sailor"); //$NON-NLS-1$
+	private static final String CREW_ICON = "people"; //$NON-NLS-1$
 
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
@@ -89,7 +87,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(SAILOR_ICON),
+			ImageLoader.getIconByName(CREW_ICON),
 			Msg.getString("TabPanelCrew.tooltip"), //$NON-NLS-1$
 			vehicle, desktop
 		);
@@ -145,8 +143,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			memberTableModel.setMission(mission);
 
 		// Create member table.
-		memberTable = new ZebraJTable(memberTableModel);
-		TableStyle.setTableStyle(memberTable);
+		memberTable = new JTable(memberTableModel);
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(110);
 		memberTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		memberTable.setRowSelectionAllowed(true);

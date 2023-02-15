@@ -59,7 +59,7 @@ public class TabPanelCooking extends TabPanel {
 	/** default logger. */
 	// private static final Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
-	private static final String COOKING_ICON = Msg.getString("icon.cooking"); //$NON-NLS-1$
+	private static final String COOKING_ICON = "cooking";
 	
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
@@ -116,7 +116,7 @@ public class TabPanelCooking extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(COOKING_ICON),
+			ImageLoader.getIconByName(COOKING_ICON),
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
 			unit, desktop);
 

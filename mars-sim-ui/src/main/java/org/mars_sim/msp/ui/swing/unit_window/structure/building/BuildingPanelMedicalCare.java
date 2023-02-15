@@ -33,7 +33,7 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 public class BuildingPanelMedicalCare
 extends BuildingFunctionPanel {
 
-	private static final String MEDICAL_ICON = Msg.getString("icon.medical"); //$NON-NLS-1$
+	private static final String MEDICAL_ICON = "medical";
 
 	// Data members
 	/** The medical care. */
@@ -57,7 +57,7 @@ extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelMedicalCare.title"), 
-			ImageLoader.getNewIcon(MEDICAL_ICON),
+			ImageLoader.getIconByName(MEDICAL_ICON),
 			medical.getBuilding(), 
 			desktop
 		);

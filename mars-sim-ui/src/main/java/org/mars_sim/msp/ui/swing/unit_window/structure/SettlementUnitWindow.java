@@ -37,12 +37,12 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 @SuppressWarnings("serial")
 public class SettlementUnitWindow extends UnitWindow {
 	
-	private static final String BASE = Msg.getString("icon.colony");
+	private static final String BASE = "settlement";
 	
-	private static final String POP = Msg.getString("icon.pop");
-	private static final String VEHICLE = Msg.getString("icon.vehicle");
-	private static final String SPONSOR = Msg.getString("icon.sponsor");
-	private static final String TEMPLATE = Msg.getString("icon.template");
+	private static final String POP = "pop";
+	private static final String VEHICLE = "vehicle";
+	private static final String SPONSOR = "sponsor";
+	private static final String TEMPLATE = "template";
 
 	private static final String ONE_SPACE = " ";
 	private static final String TWO_SPACES = "  ";

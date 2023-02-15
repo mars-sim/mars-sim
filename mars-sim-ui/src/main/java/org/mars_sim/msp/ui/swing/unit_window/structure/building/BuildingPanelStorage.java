@@ -29,7 +29,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelStorage extends BuildingFunctionPanel {
 
-	private static final String STORE_ICON = Msg.getString("icon.stock"); //$NON-NLS-1$
+	private static final String STORE_ICON = "stock";
 
 	private Storage storage;
 
@@ -44,7 +44,7 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelStorage.tabTitle"), 
-			ImageLoader.getNewIcon(STORE_ICON),
+			ImageLoader.getIconByName(STORE_ICON),
 			storage.getBuilding(), 
 			desktop
 		);

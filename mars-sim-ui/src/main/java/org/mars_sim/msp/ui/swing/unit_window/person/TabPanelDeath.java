@@ -46,7 +46,7 @@ public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
-	private static final String RIP_ICON = Msg.getString("icon.rip"); //$NON-NLS-1$
+	private static final String RIP_ICON = "rip";
 
 	/** The Person instance. */
 	private Person person = null;
@@ -62,7 +62,7 @@ implements ActionListener {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(RIP_ICON),
+			ImageLoader.getIconByName(RIP_ICON),
 			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
 			unit, desktop
 		);

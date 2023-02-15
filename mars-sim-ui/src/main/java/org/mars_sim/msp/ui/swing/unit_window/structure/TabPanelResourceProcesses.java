@@ -50,7 +50,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
-	private static final String CHEMICAL_ICON = Msg.getString("icon.chemical"); //$NON-NLS-1$
+	private static final String CHEMICAL_ICON = "chemical";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -76,7 +76,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(CHEMICAL_ICON),
+			ImageLoader.getIconByName(CHEMICAL_ICON),
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			unit, desktop
 		);

@@ -26,7 +26,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelLiving extends BuildingFunctionPanel {
 
-	private static final String BED_ICON = Msg.getString("icon.bed"); //$NON-NLS-1$
+	private static final String BED_ICON = "bed";
 
 	private int bedCapCache;
 	private int bedAssignedCache;
@@ -51,7 +51,7 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelLiving.title"), 
-			ImageLoader.getNewIcon(BED_ICON),
+			ImageLoader.getIconByName(BED_ICON),
 			living.getBuilding(), 
 			desktop
 		);

@@ -34,7 +34,7 @@ import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
-	private static final String WARN_ICON = Msg.getString("icon.warn"); //$NON-NLS-1$
+	private static final String WARN_ICON = "warn";
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
@@ -57,7 +57,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelMalfunctionable.title"), 
-			ImageLoader.getNewIcon(WARN_ICON), 
+			ImageLoader.getIconByName(WARN_ICON), 
 			(Building) malfunctionable, 
 			desktop
 		);

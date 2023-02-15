@@ -63,7 +63,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelFoodProduction.class.getName());
 
 	private static final int WORD_WIDTH = 50;
-	private static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
+	private static final String FOOD_ICON = "food";
 	
 	// Data members
 	/** The Settlement instance. */
@@ -97,7 +97,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(FOOD_ICON),
+			ImageLoader.getIconByName(FOOD_ICON),
 			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
 			unit, desktop
 		);

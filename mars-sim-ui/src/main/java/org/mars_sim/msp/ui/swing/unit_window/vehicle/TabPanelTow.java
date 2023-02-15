@@ -29,7 +29,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelTow extends TabPanel {
 
-	private static final String TOW_ICON = Msg.getString("icon.tow"); //$NON-NLS-1$
+	private static final String TOW_ICON = "tow";
 	
 	// Data members
 	private JPanel towingLabelPanel;
@@ -47,7 +47,7 @@ public class TabPanelTow extends TabPanel {
 		// Use TabPanel constructor.
 		super(
 			null,
-			ImageLoader.getNewIcon(TOW_ICON),
+			ImageLoader.getIconByName(TOW_ICON),
 			Msg.getString("TabPanelTow.title"), //$NON-NLS-1$
 			unit,
 			desktop

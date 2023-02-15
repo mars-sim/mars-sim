@@ -42,24 +42,20 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
 
-	private static final String NOTE_ICON = Msg.getString("icon.log"); //$NON-NLS-1$
+	private static final String LOG_ICON = "log"; //$NON-NLS-1$
 
 	private static final String SOL = "   Sol ";
 	
 	// Data members
 	private Integer selectedSol;
 	private Integer todayInteger;
-	
-	private int theme;
-	
+		
 	private JTable table;
 	private JComboBoxMW<Integer> solBox;
 	
@@ -75,7 +71,7 @@ public class TabPanelLog extends TabPanel {
 		// Use TabPanel constructor.
 		super(
 			Msg.getString("TabPanelLog.title"),
-			ImageLoader.getNewIcon(NOTE_ICON),
+			ImageLoader.getIconByName(LOG_ICON),
 			Msg.getString("TabPanelLog.title"), //$NON-NLS-1$
 			vehicle,
 			desktop
@@ -140,8 +136,7 @@ public class TabPanelLog extends TabPanel {
 		content.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
-		table = new ZebraJTable(scheduleTableModel);
-		TableStyle.setTableStyle(table);
+		table = new JTable(scheduleTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
 		table.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -195,13 +190,6 @@ public class TabPanelLog extends TabPanel {
 	@Override
 	public void update() {
 
-		int t = -1;
-
-		if (theme != t) {
-			theme = t;
-			TableStyle.setTableStyle(table);
-		}
-		
 		// Update the odometer reading
 		odometerTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
 				
@@ -257,32 +245,6 @@ public class TabPanelLog extends TabPanel {
 
 			setText(SOL + value);// + WHITESPACES);
 
-			// 184,134,11 mud yellow
-			// 255,229,204 white-ish (super pale) yellow
-			// (37, 85, 118) navy blue
-			// 131,172,234 pale sky blue
-
-			if (isSelected) {
-				if (theme == 7) {
-					c.setBackground(new Color(184, 134, 11, 255)); // 184,134,11 mud yellow
-					c.setForeground(Color.white);// new Color(255,229,204)); // 255,229,204 white-ish (super pale)
-														// yellow
-				} else {// if (theme == 0 || theme == 6) {
-					c.setBackground(new Color(37, 85, 118, 255)); // (37, 85, 118) navy blue
-					c.setForeground(Color.white);// new Color(131,172,234)); // 131,172,234 pale sky blue
-				}
-
-			} else {
-				// unselected, and not the DnD drop location
-				if (theme == 7) {
-					c.setForeground(new Color(184, 134, 11)); // 184,134,11 mud yellow
-					c.setBackground(new Color(255, 229, 204, 40)); // 255,229,204 white-ish (super pale) yellow
-				} else {// if (theme == 0 || theme == 6) {
-					c.setForeground(new Color(37, 85, 118));// (37, 85, 118) navy blue
-					c.setBackground(new Color(131, 172, 234, 40)); // 131,172,234 pale sky blue
-				}
-			}
-			// result.setOpaque(false);
 			return c;
 		}
 	}

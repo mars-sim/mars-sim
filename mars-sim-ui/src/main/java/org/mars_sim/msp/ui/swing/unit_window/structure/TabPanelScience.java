@@ -46,7 +46,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelScience
 extends TabPanel {
 
-	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+	private static final String SCIENCE_ICON = "science";
 
 	// Data members
 	/** The Settlement instance. */
@@ -70,7 +70,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(SCIENCE_ICON),
+			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
 			settlement, desktop
 		);

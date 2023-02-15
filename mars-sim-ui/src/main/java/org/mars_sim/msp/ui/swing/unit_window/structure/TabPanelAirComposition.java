@@ -49,7 +49,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelAirComposition extends TabPanel {
 
-	private static final String AIR_ICON = Msg.getString("icon.air"); //$NON-NLS-1$
+	private static final String AIR_ICON = "air";
 	
 	private static final String LABEL_PERCENT = "TabPanelAirComposition.label.percent";
 	
@@ -102,7 +102,7 @@ public class TabPanelAirComposition extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(AIR_ICON),
+			ImageLoader.getIconByName(AIR_ICON),
 			Msg.getString("TabPanelAirComposition.title"), //$NON-NLS-1$
 			unit, desktop
 		);

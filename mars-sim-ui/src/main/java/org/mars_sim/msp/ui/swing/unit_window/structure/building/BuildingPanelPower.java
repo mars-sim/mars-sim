@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelPower
 extends BuildingFunctionPanel {
 
-	private static final String FUSE_ICON = Msg.getString("icon.fuse"); //$NON-NLS-1$
+	private static final String POWER_ICON = "power";
 		
 	/** Is the building a power producer? */
 	private boolean isProducer;
@@ -60,7 +60,7 @@ extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelPower.title"), 
-			ImageLoader.getNewIcon(FUSE_ICON),
+			ImageLoader.getIconByName(POWER_ICON),
 			building, 
 			desktop
 		);

@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class TabPanelVehicles extends TabPanel {
 	
-	private static final String SUV_ICON = Msg.getString("icon.suv"); //$NON-NLS-1$
+	private static final String SUV_ICON ="vehicle";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -45,7 +45,7 @@ public class TabPanelVehicles extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(SUV_ICON),
+			ImageLoader.getIconByName(SUV_ICON),
 			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			unit, desktop
 		);

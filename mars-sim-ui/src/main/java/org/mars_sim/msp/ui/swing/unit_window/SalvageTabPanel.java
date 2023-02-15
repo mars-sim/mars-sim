@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 @SuppressWarnings("serial")
 public class SalvageTabPanel extends TabPanel {
 
-	private static final String WARN_ICON = Msg.getString("icon.warn"); //$NON-NLS-1$
+	private static final String WARN_ICON = "warn";
 	
     private String finishTimeString;
     private JLabel finishTimeLabel;
@@ -54,7 +54,7 @@ public class SalvageTabPanel extends TabPanel {
      */
     public SalvageTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super(null, ImageLoader.getNewIcon(WARN_ICON), "Salvage Info", unit, desktop);
+        super(null, ImageLoader.getIconByName(WARN_ICON), "Salvage Info", unit, desktop);
 	}
 
     @Override

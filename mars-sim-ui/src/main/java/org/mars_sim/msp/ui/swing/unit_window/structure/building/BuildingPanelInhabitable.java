@@ -29,7 +29,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 
-	private static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
+	private static final String PEOPLE_ICON = "people";
 
 	/** The inhabitable building. */
 	private LifeSupport inhabitable;
@@ -47,7 +47,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelInhabitable.title"), 
-			ImageLoader.getNewIcon(PEOPLE_ICON),
+			ImageLoader.getIconByName(PEOPLE_ICON),
 			inhabitable.getBuilding(), 
 			desktop
 		);

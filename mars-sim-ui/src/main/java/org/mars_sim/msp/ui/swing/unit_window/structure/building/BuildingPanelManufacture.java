@@ -61,7 +61,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 
-	private static final String MANU_ICON = Msg.getString("icon.manu"); //$NON-NLS-1$
+	private static final String MANU_ICON = "manufacture";
 	
 	private static int processStringWidth = 120;
 
@@ -94,7 +94,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor.
 		super(
 			Msg.getString("BuildingPanelManufacture.title"),
-			ImageLoader.getNewIcon(MANU_ICON), 
+			ImageLoader.getIconByName(MANU_ICON), 
 			workshop.getBuilding(), 
 			desktop
 		);

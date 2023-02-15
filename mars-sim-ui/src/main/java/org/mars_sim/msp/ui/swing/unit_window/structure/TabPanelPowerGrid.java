@@ -54,7 +54,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelPowerGrid extends TabPanel {
 
-	private static final String FUSE_ICON = Msg.getString("icon.fuse"); //$NON-NLS-1$
+	private static final String POWER_ICON = "power";
 	
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
@@ -114,7 +114,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(FUSE_ICON),
+			ImageLoader.getIconByName(POWER_ICON),
 			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
 			unit, desktop
 		);

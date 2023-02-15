@@ -63,7 +63,7 @@ public class TabPanelManufacture extends TabPanel {
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
 	
 	private static final int WORD_WIDTH = 50;
-	private static final String MANU_ICON = Msg.getString("icon.manu"); //$NON-NLS-1$
+	private static final String MANU_ICON ="manufacture";
 	
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -101,7 +101,7 @@ public class TabPanelManufacture extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(MANU_ICON),
+			ImageLoader.getIconByName(MANU_ICON),
 			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
 			unit, desktop
 		);

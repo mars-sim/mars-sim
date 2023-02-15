@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
-	private static final String HEAT_ICON = Msg.getString("icon.heat"); //$NON-NLS-1$
+	private static final String HEAT_ICON = "heat";
 
 	/** The heat status textfield. */
 	private JTextField statusTF;
@@ -51,7 +51,7 @@ extends BuildingFunctionPanel {
 	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
 		super(
 			Msg.getString("BuildingPanelThermal.title"),
-			ImageLoader.getNewIcon(HEAT_ICON), 
+			ImageLoader.getIconByName(HEAT_ICON), 
 			furnace.getBuilding(), 
 			desktop
 		);

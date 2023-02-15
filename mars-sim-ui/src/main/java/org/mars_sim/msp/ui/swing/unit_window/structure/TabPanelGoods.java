@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelGoods extends TabPanel {
 
-	private static final String CART_ICON = Msg.getString("icon.cart"); //$NON-NLS-1$
+	private static final String GOOD_ICON = "trade";
 	
 	// Data members
 	private JTable goodsTable;
@@ -45,7 +45,7 @@ public class TabPanelGoods extends TabPanel {
 		// Use TabPanel constructor.
 		super(
 			null,
-			ImageLoader.getNewIcon(CART_ICON),
+			ImageLoader.getIconByName(GOOD_ICON),
 			Msg.getString("TabPanelGoods.title"), //$NON-NLS-1$
 			unit, desktop
 		);

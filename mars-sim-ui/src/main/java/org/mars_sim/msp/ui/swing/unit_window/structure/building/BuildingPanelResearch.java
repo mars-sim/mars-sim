@@ -28,7 +28,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class BuildingPanelResearch extends BuildingFunctionPanel {
 
-	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+	private static final String SCIENCE_ICON = "science";
 
 	// Data members
 	/** The research building. */
@@ -50,7 +50,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResearch.title"), 
-			ImageLoader.getNewIcon(SCIENCE_ICON), 
+			ImageLoader.getIconByName(SCIENCE_ICON), 
 			lab.getBuilding(), 
 			desktop
 		);

@@ -58,7 +58,7 @@ extends TabPanel {
 	// default logger.
 	//private static final Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	
-	private static final String HEAT_ICON = Msg.getString("icon.heat"); //$NON-NLS-1$
+	private static final String HEAT_ICON = "heat";
 
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
@@ -111,7 +111,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(HEAT_ICON),
+			ImageLoader.getIconByName(HEAT_ICON),
 			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
 			unit, desktop
 		);

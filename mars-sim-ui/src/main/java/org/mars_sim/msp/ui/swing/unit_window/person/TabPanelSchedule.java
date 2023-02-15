@@ -44,8 +44,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -54,14 +52,13 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelSchedule extends TabPanel {
 
-	private static final String SCH_ICON = Msg.getString("icon.schedule"); //$NON-NLS-1$
+	private static final String SCH_ICON = "schedule";
 
 	private static final String SOL = "  Sol ";
 
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
-	private int theme;
 	
 	private Integer selectedSol;
 	private Integer todayInteger;
@@ -100,7 +97,7 @@ public class TabPanelSchedule extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null,
-			ImageLoader.getNewIcon(SCH_ICON),
+			ImageLoader.getIconByName(SCH_ICON),
 			Msg.getString("TabPanelSchedule.title"), //$NON-NLS-1$
 			unit, desktop
 		);
@@ -238,8 +235,7 @@ public class TabPanelSchedule extends TabPanel {
 		content.add(scrollPanel);
 
 		// Create schedule table
-		table = new ZebraJTable(scheduleTableModel);
-		TableStyle.setTableStyle(table);
+		table = new JTable(scheduleTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(7);
 		table.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -302,13 +298,6 @@ public class TabPanelSchedule extends TabPanel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
-
-		int t = -1;
-
-		if (theme != t) {
-			theme = t;
-			TableStyle.setTableStyle(table);
-		}
 
 		if (person != null) {
 			String shiftDesc = getShiftDescription(person.getShiftSlot());		
@@ -402,31 +391,6 @@ public class TabPanelSchedule extends TabPanel {
 
 			setText(SOL + value);// + SPACES);
 
-			// 184,134,11 mud yellow
-			// 255,229,204 white-ish (super pale) yellow
-			// (37, 85, 118) navy blue
-			// 131,172,234 pale sky blue
-
-			if (isSelected) {
-				if (theme == 7) {
-					c.setBackground(new Color(184, 134, 11, 255)); // 184,134,11 mud yellow
-					c.setForeground(Color.white);// new Color(255,229,204)); // 255,229,204 white-ish (super pale)
-														// yellow
-				} else {// if (theme == 0 || theme == 6) {
-					c.setBackground(new Color(37, 85, 118, 255)); // (37, 85, 118) navy blue
-					c.setForeground(Color.white);// new Color(131,172,234)); // 131,172,234 pale sky blue
-				}
-
-			} else {
-				// unselected, and not the DnD drop location
-				if (theme == 7) {
-					c.setForeground(new Color(184, 134, 11)); // 184,134,11 mud yellow
-					c.setBackground(new Color(255, 229, 204, 40)); // 255,229,204 white-ish (super pale) yellow
-				} else {// if (theme == 0 || theme == 6) {
-					c.setForeground(new Color(37, 85, 118));// (37, 85, 118) navy blue
-					c.setBackground(new Color(131, 172, 234, 40)); // 131,172,234 pale sky blue
-				}
-			}
 			// result.setOpaque(false);
 			return c;
 		}

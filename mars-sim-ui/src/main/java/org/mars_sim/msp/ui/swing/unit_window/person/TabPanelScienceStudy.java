@@ -36,8 +36,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -48,7 +46,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelScienceStudy extends TabPanel {
 
-	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+	private static final String SCIENCE_ICON = "science";
 	
 	/** The Person instance. */
 	private Person person = null;
@@ -73,7 +71,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			null, 
-			ImageLoader.getNewIcon(SCIENCE_ICON),
+			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			person, desktop
 		);
@@ -104,7 +102,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the study table.
 		studyTableModel = new StudyTableModel(person, scienceManager);
-		studyTable = new ZebraJTable(studyTableModel);
+		studyTable = new JTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -119,8 +117,6 @@ public class TabPanelScienceStudy extends TabPanel {
 		studyScrollPane.setViewportView(studyTable);
 
 		studyTable.setAutoCreateRowSorter(true);
-
-		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -164,7 +160,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the achievement table.
 		achievementTableModel = new AchievementTableModel(person, scienceManager);
-		achievementTable = new ZebraJTable(achievementTableModel);
+		achievementTable = new JTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
@@ -181,14 +177,10 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		achievementTable.setAutoCreateRowSorter(true);
 
-		TableStyle.setTableStyle(achievementTable);
 	}
 
 	@Override
 	public void update() {
-		TableStyle.setTableStyle(studyTable);
-		TableStyle.setTableStyle(achievementTable);
-
 		// Get selected study in table if any.
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = null;

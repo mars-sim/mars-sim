@@ -34,7 +34,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelEVA extends BuildingFunctionPanel {
 	
-	private static final String SUIT_ICON = Msg.getString("icon.suit"); //$NON-NLS-1$
+	private static final String SUIT_ICON = "eva";
 
 	private static final String UNLOCKED = "Unlocked";
 	private static final String LOCKED = "Locked";
@@ -84,7 +84,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelEVA.title"), 
-			ImageLoader.getNewIcon(SUIT_ICON), 
+			ImageLoader.getIconByName(SUIT_ICON), 
 			eva.getBuilding(), 
 			desktop
 		);

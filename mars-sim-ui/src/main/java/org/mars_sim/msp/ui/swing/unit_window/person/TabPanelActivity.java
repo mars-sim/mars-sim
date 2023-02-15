@@ -47,7 +47,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelActivity.class.getName());
 
-	private static final String TASK_ICON = Msg.getString("icon.task"); //$NON-NLS-1$
+	private static final String TASK_ICON = "task";
 	
 	private static final int COL_WDITH = 16;
 
@@ -101,7 +101,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(TASK_ICON),	
+			ImageLoader.getIconByName(TASK_ICON),	
 			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
 			unit, desktop
 		);

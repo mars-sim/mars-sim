@@ -24,7 +24,7 @@ import java.awt.*;
 public class BuildingPanelCooking
 extends BuildingFunctionPanel {
 
-	private static final String COOKING_ICON = Msg.getString("icon.cooking"); //$NON-NLS-1$
+	private static final String COOKING_ICON = "cooking";
 	
 	// Domain members
 	private Cooking kitchen;
@@ -55,7 +55,7 @@ extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelCooking.title"),  //$NON-NLS-1$
-			ImageLoader.getNewIcon(COOKING_ICON),
+			ImageLoader.getIconByName(COOKING_ICON),
 			kitchen.getBuilding(), 
 			desktop
 		);

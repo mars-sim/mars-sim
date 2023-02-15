@@ -32,7 +32,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class LaboratoryTabPanel extends TabPanel {
 	
-	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+	private static final String SCIENCE_ICON = "science"; //$NON-NLS-1$
 
 	/** The Rover instance. */
 	private Rover rover;
@@ -55,7 +55,7 @@ public class LaboratoryTabPanel extends TabPanel {
 		super(
 			Msg.getString("LaboratoryTabPanel.title"),	
 			Msg.getString("LaboratoryTabPanel.title"),
-			ImageLoader.getNewIcon(SCIENCE_ICON),
+			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("LaboratoryTabPanel.title"),
 			unit, desktop
 		);

@@ -55,7 +55,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
 
-	private static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
+	private static final String FOOD_ICON = "food";
 	
 	private static int processStringWidth = 60;
 	
@@ -84,7 +84,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor.
 		super(
 			Msg.getString("BuildingPanelFoodProduction.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(FOOD_ICON),
+			ImageLoader.getIconByName(FOOD_ICON),
 			foodFactory.getBuilding(),
 			desktop
 		);

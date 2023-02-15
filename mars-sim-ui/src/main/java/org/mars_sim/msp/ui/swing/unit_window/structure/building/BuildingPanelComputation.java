@@ -25,7 +25,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 public class BuildingPanelComputation extends BuildingFunctionPanel {
 
-	private static final String SERVER_ICON = Msg.getString("icon.server"); //$NON-NLS-1$
+	private static final String COMPUTING_ICON = "computing";
 
 	private JTextField textField0;
 	private JTextField textField1;
@@ -40,7 +40,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelComputation.title"), 
-			ImageLoader.getNewIcon(SERVER_ICON), 
+			ImageLoader.getIconByName(COMPUTING_ICON), 
 			computation.getBuilding(), 
 			desktop
 		);
