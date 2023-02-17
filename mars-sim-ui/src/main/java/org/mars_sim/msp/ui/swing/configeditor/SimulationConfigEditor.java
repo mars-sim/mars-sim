@@ -72,8 +72,10 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.UIConfig;
 
 
 /**
@@ -196,6 +198,11 @@ public class SimulationConfigEditor {
 		crewConfig = new CrewConfig();
 		scenarioConfig = new ScenarioConfig();
 
+		// Preload the config to set up the preferred LAF
+		UIConfig configs = new UIConfig();
+		configs.parseFile();
+		StyleManager.setLAF(configs.getLAF());
+
 		hasError = false;
 
 		f = new JFrame();
@@ -237,6 +244,7 @@ public class SimulationConfigEditor {
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
+			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
@@ -256,6 +264,7 @@ public class SimulationConfigEditor {
 
 		else {
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 		}
 
@@ -283,7 +292,7 @@ public class SimulationConfigEditor {
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
 
 		// Create add settlement button.
-		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		JButton addButton = new JButton(ImageLoader.getIconByName("add")); //$NON-NLS-1$
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -293,7 +302,7 @@ public class SimulationConfigEditor {
 		configurationButtonInnerTopPanel.add(addButton);
 
 		// Create remove settlement button.
-		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		JButton removeButton = new JButton(ImageLoader.getIconByName("remove")); //$NON-NLS-1$
 		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -342,14 +351,16 @@ public class SimulationConfigEditor {
 		};
 
 		// Add an Export button
-		JButton exportButton = new JButton("Export"); //$NON-NLS-1$
+		JButton exportButton = new JButton(ImageLoader.getIconByName("export")); //$NON-NLS-1$
+		exportButton.setToolTipText("Export");
 		exportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				exportScenario();
 			}
 		});
 		configControl.getPane().add(exportButton);
-		JButton importButton = new JButton("Import"); //$NON-NLS-1$
+		JButton importButton = new JButton(ImageLoader.getIconByName("import")); //$NON-NLS-1$
+		importButton.setToolTipText("Import");
 		importButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				importScenario();
@@ -370,7 +381,7 @@ public class SimulationConfigEditor {
 		}
 
 		// Create the start button.
-		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
+		startButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.addActionListener(new ActionListener() {
 
@@ -397,7 +408,7 @@ public class SimulationConfigEditor {
 		bottomButtonPanel.add(startButton);
 
 		// Edit Authority button.
-		JButton authorityButton = new JButton("Authorities"); //$NON-NLS-1$
+		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
 		authorityButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -406,7 +417,7 @@ public class SimulationConfigEditor {
 		});
 
 		// Edit Crew button.
-		JButton crewButton = new JButton("Crew"); //$NON-NLS-1$
+		JButton crewButton = new JButton(ImageLoader.getIconByName("people")); //$NON-NLS-1$
 		crewButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		crewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -549,9 +560,6 @@ public class SimulationConfigEditor {
 		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LAT_COL).setPreferredWidth(35);
 		settlementTable.getColumnModel().getColumn(InitialSettlementModel.LON_COL).setPreferredWidth(35);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		settlementTable.setBackground(java.awt.Color.WHITE);
-
-		TableStyle.setTableStyle(settlementTable);
 
 		settlementScrollPane.setViewportView(settlementTable);
 
@@ -601,9 +609,6 @@ public class SimulationConfigEditor {
 		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.LAT_COL).setPreferredWidth(35);
 		arrivalTable.getColumnModel().getColumn(ArrivingSettlementModel.LON_COL).setPreferredWidth(35);
 		arrivalTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		arrivalTable.setBackground(java.awt.Color.WHITE);
-
-		TableStyle.setTableStyle(arrivalTable);
 
 		parentScrollPane.setViewportView(arrivalTable);
 

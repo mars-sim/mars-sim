@@ -392,9 +392,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				break;
 			case LAF: {
 				String text = selectedItem.getText();
-				StyleManager.setLAF(text);
+				mainWindow.updateLAF(text);
 
-				JOptionPane.showMessageDialog(mainWindow.getFrame(), "Restart for Look & Feel to be fully applied.");				
+				// Passive approach
+				//StyleManager.setLAF(text);
+				//JOptionPane.showMessageDialog(mainWindow.getFrame(), "Restart for Look & Feel to be fully applied.");				
 			} break;
 			default:
 				// Unknown command

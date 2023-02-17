@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
  * This is a UI Control panel that manages the UserConfigurable items of an existing
@@ -80,28 +81,28 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		buttonPane.add(descriptionTF);
 		
 		// Create save button.
-		saveButton = new JButton(Msg.getString("UserConfigurableControl.button.save"));
+		saveButton = new JButton(ImageLoader.getIconByName("save"));
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand(SAVE);
 		saveButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.save", itemType));
 		buttonPane.add(saveButton);		
 
 		// Create save as new button.
-		saveAsButton = new JButton(Msg.getString("UserConfigurableControl.button.saveas"));
+		saveAsButton = new JButton(ImageLoader.getIconByName("saveAs"));
 		saveAsButton.setActionCommand(SAVE_NEW);
 		saveAsButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.saveas", itemType));
 		saveAsButton.addActionListener(this);
 		buttonPane.add(saveAsButton);
 
 		// Create delete button.
-		delButton = new JButton(Msg.getString("UserConfigurableControl.button.delete"));
+		delButton = new JButton(ImageLoader.getIconByName("delete"));
 		delButton.setActionCommand(DELETE);
 		delButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.delete", itemType));
 		delButton.addActionListener(this);
 		buttonPane.add(delButton);
 		
 		// Create save new crew button.
-		JButton undoButton = new JButton(Msg.getString("UserConfigurableControl.button.undo"));
+		JButton undoButton = new JButton(ImageLoader.getIconByName("undo"));
 		undoButton.setActionCommand(UNDO);
 		undoButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.undo"));
 		undoButton.addActionListener(this);

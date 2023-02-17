@@ -473,7 +473,7 @@ extends JComponent implements ClockListener {
 	 */
 	public void updateLAF(String newStyle) {
 		// Set up the look and feel library to be used
-		if (StyleManager.setLAF(configs.getLAF())) {
+		if (StyleManager.setLAF(newStyle)) {
 			SwingUtilities.updateComponentTreeUI(frame);
 		}
 	}
