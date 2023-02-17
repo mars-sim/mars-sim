@@ -7,10 +7,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel to select a lead researcher the science mission.
@@ -44,7 +41,6 @@ extends WizardPanel {
     private JTable researcherTable;
     private JLabel errorMessageLabel;
     
-//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
     /**
      * Constructor
@@ -61,9 +57,7 @@ extends WizardPanel {
         setBorder(new MarsPanelBorder());
         
         // Create the select lead researcher label.
-        JLabel selectResearcherLabel = new JLabel("Select a lead researcher.", JLabel.CENTER);
-        selectResearcherLabel.setFont(selectResearcherLabel.getFont().deriveFont(Font.BOLD));
-        selectResearcherLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel selectResearcherLabel = createTitleLabel("Select a lead researcher.");
         add(selectResearcherLabel);
         
         // Create the researcher panel.
@@ -81,7 +75,6 @@ extends WizardPanel {
         
         // Create the researcher table.
         researcherTable = new JTable(researcherTableModel);
-		TableStyle.setTableStyle(researcherTable);
 		researcherTable.setAutoCreateRowSorter(true);  
         researcherTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(researcherTableModel));
         researcherTable.setRowSelectionAllowed(true);
@@ -108,10 +101,7 @@ extends WizardPanel {
         researcherScrollPane.setViewportView(researcherTable);
         
         // Create the error message label.
-        errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-        errorMessageLabel.setForeground(Color.RED);
-        errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorMessageLabel = createErrorLabel();
         add(errorMessageLabel);
         
         // Add a vertical glue.

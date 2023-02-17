@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * Class to creates a panel containing a sorted table of ScientificStudy
@@ -225,9 +224,7 @@ public abstract class AbstractStudyListPanel extends JPanel {
 		studyTable.getColumnModel().getColumn(5).setPreferredWidth(80);
 		
 		studyTable.setAutoCreateRowSorter(true);
-		
-		TableStyle.setTableStyle(studyTable);
-		
+				
 		listScrollPane.setViewportView(studyTable);
 	}
 	
@@ -241,7 +238,6 @@ public abstract class AbstractStudyListPanel extends JPanel {
 	 * Updates the panel.
 	 */
 	protected void update() {
-		TableStyle.setTableStyle(studyTable);
 		studyTableModel.update(getStudies());
 		// Make sure study is selected.
 		selectScientificStudy(scienceWindow.getScientificStudy(), false);

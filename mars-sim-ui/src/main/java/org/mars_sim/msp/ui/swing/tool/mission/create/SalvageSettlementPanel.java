@@ -8,10 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -61,10 +59,7 @@ extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select settlement label.
-		JLabel selectSettlementLabel = new JLabel("Select a settlement to salvage a building.", 
-				JLabel.CENTER);
-		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
-		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectSettlementLabel = createTitleLabel("Select a settlement to salvage a building.");
 		add(selectSettlementLabel);
 
 		// Create the settlement panel.
@@ -107,10 +102,7 @@ extends WizardPanel {
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add a vertical glue.

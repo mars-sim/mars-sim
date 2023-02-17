@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,9 +42,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+
 
 /**
  * A panel showing a selected resupply mission details.
@@ -84,7 +83,6 @@ implements HistoricalEventListener {
 		this.desktop = desktop;
 		
 		Simulation sim = desktop.getSimulation();
-		MarsClock currentTime = sim.getMasterClock().getMarsClock();
 	
 		// Initialize data members.
 		resupply = null;
@@ -98,7 +96,7 @@ implements HistoricalEventListener {
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel("Resupply Mission", SwingConstants.CENTER);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		StyleManager.applyHeading(titleLabel);
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
@@ -335,8 +333,7 @@ implements HistoricalEventListener {
 			}
 
 			// Create table
-			JTable buildingTable = new ZebraJTable(tableModel);
-			TableStyle.setTableStyle(buildingTable);
+			JTable buildingTable = new JTable(tableModel);
 			buildingTable.setAutoCreateRowSorter(true);
 			buildingTable.setCellSelectionEnabled(false);
 			buildingTable.getColumnModel().getColumn(1).setMaxWidth(100);
@@ -410,8 +407,7 @@ implements HistoricalEventListener {
 			}
 
 			// Create table
-			JTable vehicleTable = new ZebraJTable(tableModel);
-			TableStyle.setTableStyle(vehicleTable);
+			JTable vehicleTable = new JTable(tableModel);
 			vehicleTable.setAutoCreateRowSorter(true);
 			vehicleTable.setCellSelectionEnabled(false);
 			vehicleTable.getColumnModel().getColumn(1).setMaxWidth(100);
@@ -471,8 +467,7 @@ implements HistoricalEventListener {
 			}
 
 			// Create table
-			JTable equipmentTable = new ZebraJTable(tableModel);
-			TableStyle.setTableStyle(equipmentTable);
+			JTable equipmentTable = new JTable(tableModel);
 			equipmentTable.setAutoCreateRowSorter(true);
 			equipmentTable.setCellSelectionEnabled(false);
 			equipmentTable.getColumnModel().getColumn(1).setMaxWidth(100);
@@ -534,8 +529,7 @@ implements HistoricalEventListener {
 			}
 
 			// Create table
-			JTable resourcesTable = new ZebraJTable(tableModel);
-			TableStyle.setTableStyle(resourcesTable);
+			JTable resourcesTable = new JTable(tableModel);
 			resourcesTable.setAutoCreateRowSorter(true);
 			resourcesTable.setCellSelectionEnabled(false);
 			resourcesTable.getColumnModel().getColumn(1).setMaxWidth(120);
@@ -597,9 +591,7 @@ implements HistoricalEventListener {
 			}
 
 			// Create table
-			JTable partsTable = new ZebraJTable(tableModel);
-			TableStyle.setTableStyle(partsTable);
-			partsTable.setAutoCreateRowSorter(true);
+			JTable partsTable = new JTable(tableModel);
 			partsTable.setAutoCreateRowSorter(true);
 			partsTable.setCellSelectionEnabled(false);
 			partsTable.getColumnModel().getColumn(1).setMaxWidth(100);

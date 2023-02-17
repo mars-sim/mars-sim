@@ -71,9 +71,7 @@ class ProspectingSitePanel extends WizardPanel {
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.COLLECT_ICE == type) resource = "Ice";
 		else if (MissionType.COLLECT_REGOLITH == type) resource = "Regolith";
-		JLabel titleLabel = new JLabel("Choose Your " + resource + " Collection Site : ");
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel titleLabel = createTitleLabel("Choose Your " + resource + " Collection Site : ");
 		add(titleLabel);
 		
 		// Create a vertical strut to add some UI space.

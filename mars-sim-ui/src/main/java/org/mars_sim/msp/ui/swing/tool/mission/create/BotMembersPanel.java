@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -38,9 +37,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * A wizard panel for selecting bots.
@@ -78,9 +74,7 @@ implements ActionListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select members label.
-		JLabel selectMembersLabel = new JLabel("Select Bots for the Mission", JLabel.CENTER);
-		StyleManager.applySubHeading(selectMembersLabel);
-		selectMembersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectMembersLabel = createTitleLabel("Select Bots for the Mission");
 		add(selectMembersLabel);
 
 		// Create the available bots label.
@@ -166,9 +160,7 @@ implements ActionListener {
 		botsScrollPane.setViewportView(botsTable);
 
 		// Create the message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add vertical strut to make some UI space.
@@ -232,8 +224,7 @@ implements ActionListener {
 		botMembersTableModel = new BotMembersTableModel();
 
 		// Create the members table.
-		botMembersTable = new ZebraJTable(botMembersTableModel);
-		TableStyle.setTableStyle(botMembersTable);
+		botMembersTable = new JTable(botMembersTableModel);
 		// Added sorting
 		botMembersTable.setAutoCreateRowSorter(true);
 		botMembersTable.setRowSelectionAllowed(true);

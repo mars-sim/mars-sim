@@ -8,11 +8,9 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -39,8 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * A wizard panel for selecting settlers.
@@ -83,9 +79,7 @@ implements ActionListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select members label.
-		JLabel selectMembersLabel = new JLabel("Select members for the mission.", JLabel.CENTER);
-		selectMembersLabel.setFont(selectMembersLabel.getFont().deriveFont(Font.BOLD));
-		selectMembersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectMembersLabel = createTitleLabel("Select members for the mission.");
 		add(selectMembersLabel);
 
 		// Create the available people label.
@@ -107,8 +101,7 @@ implements ActionListener {
 		peopleTableModel = new PeopleTableModel();
 
 		// Create the people table.
-		peopleTable = new ZebraJTable(peopleTableModel);	
-		TableStyle.setTableStyle(peopleTable);
+		peopleTable = new JTable(peopleTableModel);	
 		// Added sorting
 		peopleTable.setAutoCreateRowSorter(true);
 		peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
@@ -174,9 +167,7 @@ implements ActionListener {
 		peopleScrollPane.setViewportView(peopleTable);
 
 		// Create the message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add vertical strut to make some UI space.
@@ -241,8 +232,7 @@ implements ActionListener {
 		membersTableModel = new MembersTableModel();
 
 		// Create the members table.
-		membersTable = new ZebraJTable(membersTableModel);
-		TableStyle.setTableStyle(membersTable);
+		membersTable = new JTable(membersTableModel);
 		membersTable.setAutoCreateRowSorter(true);
 		membersTable.setRowSelectionAllowed(true);
 		membersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

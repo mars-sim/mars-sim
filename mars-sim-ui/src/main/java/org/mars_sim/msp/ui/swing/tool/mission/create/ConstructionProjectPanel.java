@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -47,7 +46,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for selecting the mission's
@@ -63,7 +61,7 @@ class ConstructionProjectPanel extends WizardPanel {
     private final static String NAME = "Construction Project";
 
     // Data members
-    private JTextPane errorMessageTextPane;
+    private JLabel errorMessageTextPane;
     private DefaultListModel<String> siteListModel;
     private JList<String> siteList;
     private DefaultListModel<ConstructionStageInfo> projectListModel;
@@ -88,8 +86,7 @@ class ConstructionProjectPanel extends WizardPanel {
         setBorder(new MarsPanelBorder());
 
         // Create the select construction project label.
-        JLabel titleLabel = new JLabel("Select a construction project",
-                JLabel.CENTER);
+        JLabel titleLabel = createTitleLabel("Select a construction project");
         add(titleLabel, BorderLayout.NORTH);
 
         // Create the center panel.
@@ -210,7 +207,6 @@ class ConstructionProjectPanel extends WizardPanel {
  
         // Create the materials table.
         materialsTable = new JTable(materialsTableModel);
-		TableStyle.setTableStyle(materialsTable);
 		materialsTable.setAutoCreateRowSorter(true);
         materialsTable.setRowSelectionAllowed(false);
         materialsTable.setDefaultRenderer(Object.class,
@@ -229,12 +225,10 @@ class ConstructionProjectPanel extends WizardPanel {
                 MaterialsTableModel tableModel = (MaterialsTableModel) table
                         .getModel();
                 if (tableModel.isFailureCell(row, column))
-                    setBackground(Color.RED);
+                    result.setBackground(Color.RED);
                 else if (tableModel.isWarningCell(row, column)) {
-                    setBackground(Color.YELLOW);
+                    result.setBackground(Color.YELLOW);
                 }
-                else if (!isSelected)
-                    setBackground(Color.WHITE);
 
                 return result;
             }
@@ -242,11 +236,7 @@ class ConstructionProjectPanel extends WizardPanel {
         materialsTableScrollPane.setViewportView(materialsTable);
         
         // Create the error message text pane.
-        errorMessageTextPane = new JTextPane();
-        errorMessageTextPane.setForeground(Color.RED);
-        errorMessageTextPane.setFont(errorMessageTextPane.getFont().deriveFont(
-                Font.BOLD));
-        errorMessageTextPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorMessageTextPane = createErrorLabel();
         add(errorMessageTextPane, BorderLayout.SOUTH);
     }
     

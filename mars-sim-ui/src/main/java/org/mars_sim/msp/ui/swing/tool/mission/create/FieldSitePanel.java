@@ -58,9 +58,7 @@ public class FieldSitePanel extends WizardPanel {
         setBorder(new MarsPanelBorder());
         
         // Create the title label.
-        JLabel titleLabel = new JLabel("Choose field research site.");
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel titleLabel = createTitleLabel("Choose field research site.");
         add(titleLabel);
         
         // Create the map panel.

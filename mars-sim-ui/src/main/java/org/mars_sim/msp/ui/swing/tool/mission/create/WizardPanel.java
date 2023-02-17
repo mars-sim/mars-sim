@@ -7,12 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * An abstract panel for the create mission wizard.
@@ -21,10 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 abstract class WizardPanel extends JPanel {
 
 	// Static members
-	protected static Simulation sim = Simulation.instance();
-	protected static UnitManager unitManager = sim.getUnitManager();
-	protected static MissionManager missionManager = sim.getMissionManager();
-	protected static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
+	private Simulation sim;
 
 	// Data members.
 	protected CreateMissionWizard wizard;
@@ -40,6 +39,14 @@ abstract class WizardPanel extends JPanel {
 
 		// Initialize data members.
 		this.wizard = wizard;
+		this.sim = wizard.getDesktop().getSimulation();
+	}
+
+	/**
+	 * Get the parent simulation
+	 */
+	protected Simulation getSimulation() {
+		return sim;
 	}
 
 	/**
@@ -51,6 +58,26 @@ abstract class WizardPanel extends JPanel {
 		return wizard;
 	}
 
+	/**
+	 * Create a label to be used as the title of a Wizard panel
+	 */
+	protected static JLabel createTitleLabel(String text) {
+		JLabel label = new JLabel(text,	JLabel.CENTER);
+		StyleManager.applySubHeading(label);
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		return label;
+	}
+
+	/**
+	 * Create an empty label to be used as an error
+	 */
+	protected static JLabel createErrorLabel() {
+		JLabel errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+        errorMessageLabel.setForeground(Color.RED);
+        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		return errorMessageLabel;
+	}
 	/**
 	 * Gets the wizard panel name.
 	 * 

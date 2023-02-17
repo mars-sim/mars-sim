@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,7 +40,6 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
@@ -65,7 +63,6 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
-//	private final static double MAX_RANGE = 2500D;
 
 	// Data members.
 	private MapPanel mapPane;
@@ -103,9 +100,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Creates the title label.
-		JLabel titleLabel = new JLabel("Choose the exploration sites.");
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel titleLabel = createTitleLabel("Choose the exploration sites.");
 		add(titleLabel);
 
 		// Add a vertical strut
@@ -143,11 +138,9 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create the instruction labels.
 		JLabel instructionLabel1 = new JLabel(" Note 1: drag the navpoint flag to a desired site.", JLabel.LEFT);
-		instructionLabel1.setFont(instructionLabel1.getFont().deriveFont(Font.BOLD));
 		instructionLabelPane.add(instructionLabel1);
 
 		JLabel instructionLabel2 = new JLabel(" Note 2: click 'Add Site' button for a new site.", JLabel.LEFT);
-		instructionLabel2.setFont(instructionLabel2.getFont().deriveFont(Font.BOLD));
 		instructionLabelPane.add(instructionLabel2);
 
 		// Create the site panel.
@@ -200,7 +193,6 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create mineral legend label.
 		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
-		mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.ITALIC));
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.
@@ -212,7 +204,6 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create mineral legend table.
 		JTable mineralLegendTable = new JTable(mineralTableModel);
-		TableStyle.setTableStyle(mineralLegendTable);
 		
 		mineralLegendTable.setAutoCreateRowSorter(true);
 		mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 120));

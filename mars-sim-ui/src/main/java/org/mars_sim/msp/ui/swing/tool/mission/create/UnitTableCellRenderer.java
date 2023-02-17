@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -37,15 +38,18 @@ class UnitTableCellRenderer extends DefaultTableCellRenderer {
 	 * @param value the value in the cell.
 	 * @return the rendering component.
 	 */
+	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, 
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		
-		Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		
+		super.setBackground(null); // CLear teh background from previous error cell
+
+		JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
 		// If failure cell, mark background red.
-		if (model.isFailureCell(row, column)) setBackground(Color.RED);
-		else if (!isSelected) setBackground(Color.WHITE);
-		
-		return result;
+		int rowModel = table.convertRowIndexToModel(row);
+		if (model.isFailureCell(rowModel, column))
+			l.setBackground(Color.RED);
+
+		return this;
 	}
 }

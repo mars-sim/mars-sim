@@ -50,8 +50,6 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
@@ -217,8 +215,7 @@ implements ListSelectionListener, MissionListener {
         navpointTableModel = new NavpointTableModel();
         
         // Create the navpoint table.
-        navpointTable = new ZebraJTable(navpointTableModel);
-		TableStyle.setTableStyle(navpointTable);
+        navpointTable = new JTable(navpointTableModel);
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(e -> {

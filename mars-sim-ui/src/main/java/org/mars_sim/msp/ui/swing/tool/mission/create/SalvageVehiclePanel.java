@@ -7,8 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -21,16 +38,6 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A wizard panel for selecting the salvage vehicles for a mission.
@@ -48,7 +55,7 @@ public class SalvageVehiclePanel extends WizardPanel {
     private JLabel selectedLabel;
     private JLabel errorMessageLabel;
     
-	private static MissionManager missionManager;
+	private MissionManager missionManager;
 	
     /**
      * Constructor
@@ -58,7 +65,7 @@ public class SalvageVehiclePanel extends WizardPanel {
         // User WizardPanel constructor.
         super(wizard);
         
-    	missionManager = Simulation.instance().getMissionManager();
+    	missionManager = getSimulation().getMissionManager();
     	
         // Set the layout.
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -67,10 +74,7 @@ public class SalvageVehiclePanel extends WizardPanel {
         setBorder(new MarsPanelBorder());
         
         // Create the select vehicle label.
-        JLabel selectVehicleLabel = new JLabel("Select the light utility vehicles for the mission.", 
-                JLabel.CENTER);
-        selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
-        selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel selectVehicleLabel = createTitleLabel("Select the light utility vehicles for the mission.");
         add(selectVehicleLabel);
         
         requiredLabel = new JLabel("Required vehicles: ");
@@ -97,7 +101,6 @@ public class SalvageVehiclePanel extends WizardPanel {
         
         // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
-		TableStyle.setTableStyle(vehicleTable);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -134,10 +137,7 @@ public class SalvageVehiclePanel extends WizardPanel {
         vehicleScrollPane.setViewportView(vehicleTable);
         
         // Create the error message label.
-        errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-        errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-        errorMessageLabel.setForeground(Color.RED);
-        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorMessageLabel = createErrorLabel();
         add(errorMessageLabel);
         
         // Add a vertical glue.

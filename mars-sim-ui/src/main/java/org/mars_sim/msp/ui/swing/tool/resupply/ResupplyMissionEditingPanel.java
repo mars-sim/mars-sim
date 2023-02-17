@@ -74,7 +74,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
 
@@ -392,7 +391,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Create supply table.
 		supplyTableModel = new SupplyTableModel(resupply);
 		supplyTable = new JTable(supplyTableModel);
-		TableStyle.setTableStyle(supplyTable);
 		supplyTable.getColumnModel().getColumn(0).setMaxWidth(150);
 		supplyTable.getColumnModel().getColumn(0).setCellEditor(new CategoryCellEditor());
 		supplyTable.getColumnModel().getColumn(1).setMaxWidth(250);

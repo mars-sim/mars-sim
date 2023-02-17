@@ -8,10 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for selecting the mission's construction settlement.
@@ -63,10 +60,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         setBorder(new MarsPanelBorder());
         
         // Create the select settlement label.
-        JLabel selectSettlementLabel = new JLabel("Select a settlement to construct a building.", 
-                JLabel.CENTER);
-        selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
-        selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel selectSettlementLabel = createTitleLabel("Select a settlement to construct a building.");
         add(selectSettlementLabel);
         
         // Create the settlement panel.
@@ -84,7 +78,6 @@ class ConstructionSettlementPanel extends WizardPanel {
         
         // Create the settlement table.
         settlementTable = new JTable(settlementTableModel);
-		TableStyle.setTableStyle(settlementTable);
 		settlementTable.setAutoCreateRowSorter(true);        
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
@@ -126,10 +119,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         settlementScrollPane.setViewportView(settlementTable);
         
         // Create the error message label.
-        errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-        errorMessageLabel.setForeground(Color.RED);
-        errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorMessageLabel = createErrorLabel();
         add(errorMessageLabel);
         
         // Add a vertical glue.

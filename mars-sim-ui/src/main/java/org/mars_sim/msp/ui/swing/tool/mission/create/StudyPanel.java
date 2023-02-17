@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +32,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel to select a scientific study for the mission.
@@ -61,9 +59,7 @@ public class StudyPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select study label.
-		JLabel selectStudyLabel = new JLabel("Select a scientific study.", JLabel.CENTER);
-		selectStudyLabel.setFont(selectStudyLabel.getFont().deriveFont(Font.BOLD));
-		selectStudyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectStudyLabel = createTitleLabel("Select a scientific study.");
 		add(selectStudyLabel);
 
 		// Create the study panel.
@@ -89,21 +85,18 @@ public class StudyPanel extends WizardPanel {
 
 		// Create the study table.
 		studyTable = new JTable(studyTableModel);
-		TableStyle.setTableStyle(studyTable);
 		studyTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 			/** default serial id. */
 			private static final long serialVersionUID = 1L;
 
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					boolean hasFocus, int row, int column) {
-
+				super.setBackground(null);
 				Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 				// If failure cell, mark background red.
 				if (studyTableModel.isFailureCell(row, column))
-					setBackground(Color.RED);
-				else if (!isSelected)
-					setBackground(Color.WHITE);
+					result.setBackground(Color.RED);
 
 				return result;
 			}
@@ -130,10 +123,7 @@ public class StudyPanel extends WizardPanel {
 		studyScrollPane.setViewportView(studyTable);
 
 		// Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add a vertical glue.

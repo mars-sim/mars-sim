@@ -95,7 +95,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * The tab panel for showing mission details.
@@ -267,7 +266,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		vehicleLayout.add(vehiclePane);
 
 		// Create center map button
-		centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.mars"))); //$NON-NLS-1$
+		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(e -> {
 			if (missionCache != null)
@@ -385,7 +384,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		logTableModel = new LogTableModel();
 
 		// Create member table.
-		JTable logTable = new ZebraJTable(logTableModel);
+		JTable logTable = new JTable(logTableModel);
 		logTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		logTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 
@@ -419,7 +418,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTableModel = new MemberTableModel();
 	
 			// Create member table.
-			memberTable = new ZebraJTable(memberTableModel);
+			memberTable = new JTable(memberTableModel);
 			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 			memberTable.setRowSelectionAllowed(true);

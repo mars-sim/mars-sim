@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -52,9 +51,7 @@ class DestinationSettlementPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the select settlement label.
-		JLabel selectSettlementLabel = new JLabel("Select a destination settlement.", JLabel.CENTER);
-		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
-		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectSettlementLabel = createTitleLabel("Select a destination settlement.");
 		add(selectSettlementLabel);
 		
 		// Create the settlement panel.
@@ -72,7 +69,6 @@ class DestinationSettlementPanel extends WizardPanel {
         
         // Create the settlement table.
         settlementTable = new JTable(settlementTableModel);
-		TableStyle.setTableStyle(settlementTable);
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -116,10 +112,7 @@ class DestinationSettlementPanel extends WizardPanel {
         settlementScrollPane.setViewportView(settlementTable);
 		
         // Create error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 		
 		// Create a verticle glue for the remainder of the panel.

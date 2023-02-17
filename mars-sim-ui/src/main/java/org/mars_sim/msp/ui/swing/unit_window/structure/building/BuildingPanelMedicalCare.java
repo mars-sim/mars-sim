@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 
 /**
@@ -76,7 +74,6 @@ extends BuildingFunctionPanel {
 		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 		
 		// Create sick bed label
 		addTextField(labelPanel, Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
@@ -92,16 +89,13 @@ extends BuildingFunctionPanel {
 		scrollPanel.setPreferredSize(new Dimension(160, 80));
 		center.add(scrollPanel, BorderLayout.CENTER);
 	    scrollPanel.getViewport().setOpaque(false);
-	    scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
 	    scrollPanel.setOpaque(false);
-	    scrollPanel.setBackground(new Color(0, 0, 0, 0));
-        //scrollPanel.setBorder( BorderFactory.createLineBorder(Color.orange) );
 
 		// Prepare medical table model
 		medicalTableModel = new MedicalTableModel(medical);
 
 		// Prepare medical table
-		JTable medicalTable = new ZebraJTable(medicalTableModel);
+		JTable medicalTable = new JTable(medicalTableModel);
 		medicalTable.setCellSelectionEnabled(false);
 		scrollPanel.setViewportView(medicalTable);
 	}

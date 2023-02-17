@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -16,7 +15,6 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -50,7 +48,7 @@ extends WizardPanel {
 		// User WizardPanel constructor.
 		super(wizard);
 		
-		missionManager = Simulation.instance().getMissionManager();
+		missionManager = getSimulation().getMissionManager();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -59,10 +57,7 @@ extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the select vehicle label.
-		JLabel selectVehicleLabel = new JLabel("Select a light utility vehicle for the mission.", 
-				JLabel.CENTER);
-		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
-		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectVehicleLabel = createTitleLabel("Select a light utility vehicle for the mission.");
 		add(selectVehicleLabel);
 		
 		// Create the vehicle panel.
@@ -80,7 +75,6 @@ extends WizardPanel {
         
         // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
-		TableStyle.setTableStyle(vehicleTable);
 		vehicleTable.setAutoCreateRowSorter(true);		
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
@@ -112,10 +106,7 @@ extends WizardPanel {
         vehicleScrollPane.setViewportView(vehicleTable);
 		
         // Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 		
 		// Add a vertical glue.

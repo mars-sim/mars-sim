@@ -8,10 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +24,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -37,7 +34,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A wizard panel for selecting a mission rendezvous vehicle.
@@ -53,7 +49,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
-	private static MissionManager missionManager;
+	private MissionManager missionManager;
 
 	/**
 	 * Constructor.
@@ -63,7 +59,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
-		missionManager = Simulation.instance().getMissionManager();
+		missionManager = getSimulation().getMissionManager();
 		 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -72,9 +68,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the select vehicle label.
-		JLabel selectVehicleLabel = new JLabel("Select a rover to rescue/salvage.", JLabel.CENTER);
-		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
-		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectVehicleLabel = createTitleLabel("Select a rover to rescue/salvage.");
 		add(selectVehicleLabel);
 		
 		// Create the vehicle panel.
@@ -92,7 +86,6 @@ class RendezvousVehiclePanel extends WizardPanel {
         
         // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
-		TableStyle.setTableStyle(vehicleTable);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -120,10 +113,7 @@ class RendezvousVehiclePanel extends WizardPanel {
         vehicleScrollPane.setViewportView(vehicleTable);
 		
         // Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 		
 		// Add vertical glue.

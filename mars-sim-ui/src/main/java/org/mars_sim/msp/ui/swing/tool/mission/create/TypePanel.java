@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -32,7 +31,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -57,9 +55,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	
 	private String descriptionText;
 	
-	private static MissionManager missionManager;
+	private MissionManager missionManager;
 
-	//private CreateMissionWizard wizard;
 	
 	
 	/**
@@ -73,7 +70,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		
 		this.wizard = wizard;
 		
-		missionManager = Simulation.instance().getMissionManager();
+		missionManager = getSimulation().getMissionManager();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -82,9 +79,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the type info label.
-		JLabel typeInfoLabel = new JLabel("Select Mission Type");
-		typeInfoLabel.setFont(typeInfoLabel.getFont().deriveFont(Font.BOLD));
-		typeInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JLabel typeInfoLabel = createTitleLabel("Select Mission Type");
 		add(typeInfoLabel);
 		
 		// Create the type panel.
@@ -98,15 +93,12 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		
 		// Create the mission types.
 		MissionType[] missionTypes = MissionDataBean.getMissionTypes();
-//		sortStringBubble(missionTypes);
-//		MissionType[] displayMissionTypes = new MissionType[missionTypes.length];
 		List<String> types = new ArrayList<>();
 		int size = missionTypes.length;
 		for (int i=0; i<size; i++) {
 			types.add(missionTypes[i].getName());
 		}
-//		displayMissionTypes[0] = "";
-//        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
+
 		typeSelect = new JComboBoxMW<String>();
 		Iterator<String> k = types.iterator();
 		while (k.hasNext()) 
@@ -124,8 +116,6 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		
 		// Create the description info label.
 		descriptionInfoLabel = new JLabel("Edit Mission Description (Optional)");
-		descriptionInfoLabel.setFont(descriptionInfoLabel.getFont().deriveFont(Font.BOLD));
-		descriptionInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionInfoLabel.setEnabled(false);
 		add(descriptionInfoLabel);
 		
@@ -148,7 +138,6 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		// Listen for changes in the text
 		addChangeListener(descriptionTF, e -> {
 			  descriptionText = descriptionTF.getText();
-//			  System.out.println("descriptionText: " + descriptionText);
 		});
 		
 		// Add a vertical glue.

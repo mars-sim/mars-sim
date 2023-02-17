@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -36,11 +35,12 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
@@ -83,6 +83,8 @@ public class MiningSitePanel extends WizardPanel {
 	private ExploredLocation selectedSite;
 	private DefaultTableModel concentrationTableModel;
 
+	private SurfaceFeatures surfaceFeatures;
+
 	/**
 	 * Constructor
 	 * 
@@ -91,18 +93,16 @@ public class MiningSitePanel extends WizardPanel {
 	MiningSitePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
+		surfaceFeatures = getSimulation().getSurfaceFeatures();
 
 		// Set the layout.
-//		setLayout(new BorderLayout(20, 20));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// Set the border.
 		setBorder(new MarsPanelBorder());
 
 		// Create the title label.
-		JLabel titleLabel = new JLabel("Select an explored site (in yellow flag) to mine :", JLabel.CENTER);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel titleLabel = createTitleLabel("Select an explored site (in yellow flag) to mine :");
 		add(titleLabel, BorderLayout.NORTH);
 
 		// Add a vertical strut
@@ -148,7 +148,7 @@ public class MiningSitePanel extends WizardPanel {
 
 		// Create selected site label.
 		JLabel selectedSiteLabel = new JLabel(" At the Selected Mining Site", JLabel.CENTER);
-		selectedSiteLabel.setFont(selectedSiteLabel.getFont().deriveFont(Font.BOLD));
+		StyleManager.applySubHeading(selectedSiteLabel);
 		selectedSiteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		selectedSitePane.add(selectedSiteLabel);
 
@@ -195,9 +195,7 @@ public class MiningSitePanel extends WizardPanel {
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-		
-		TableStyle.setTableStyle(mineralConcentrationTable);
-		
+				
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
 		selectedSitePane.add(mineralConcentrationTable);
 
@@ -205,9 +203,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(Box.createVerticalGlue());
 
 		// Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
+		errorMessageLabel = createErrorLabel();
 		selectedSitePane.add(errorMessageLabel, BorderLayout.SOUTH);
 		
 		
@@ -224,7 +220,6 @@ public class MiningSitePanel extends WizardPanel {
 
 		// Create mineral legend label.
 		JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
-		mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.ITALIC));
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.
@@ -236,7 +231,6 @@ public class MiningSitePanel extends WizardPanel {
 
 		// Create mineral legend table.
 		JTable mineralLegendTable = new JTable(mineralTableModel);
-		TableStyle.setTableStyle(mineralLegendTable);
 		
 		mineralLegendTable.setAutoCreateRowSorter(true);
 		mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 120));

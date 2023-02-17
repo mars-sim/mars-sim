@@ -8,10 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
@@ -29,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -36,8 +35,6 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 
 /**
@@ -53,6 +50,7 @@ class FlyerPanel extends WizardPanel {
 	private VehicleTableModel vehicleTableModel;
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
+	private MissionManager missionManager;
 
 	/**
 	 * Constructor.
@@ -62,6 +60,7 @@ class FlyerPanel extends WizardPanel {
 	FlyerPanel(final CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
+		missionManager = getSimulation().getMissionManager();
 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -70,9 +69,7 @@ class FlyerPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select vehicle label.
-		JLabel selectVehicleLabel = new JLabel("Select a drone for this mission :", JLabel.CENTER);
-		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
-		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectVehicleLabel = createTitleLabel("Select a drone for this mission :");
 		add(selectVehicleLabel);
 
 		// Create the vehicle panel.
@@ -89,8 +86,7 @@ class FlyerPanel extends WizardPanel {
 		vehicleTableModel = new VehicleTableModel();
 
 		// Create the vehicle table.
-		vehicleTable = new ZebraJTable(vehicleTableModel);
-		TableStyle.setTableStyle(vehicleTable);
+		vehicleTable = new JTable(vehicleTableModel);
 		// Added sorting
 		vehicleTable.setAutoCreateRowSorter(true);
 		vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
@@ -140,10 +136,7 @@ class FlyerPanel extends WizardPanel {
 		vehicleScrollPane.setViewportView(vehicleTable);
 
 		// Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add a vertical glue.

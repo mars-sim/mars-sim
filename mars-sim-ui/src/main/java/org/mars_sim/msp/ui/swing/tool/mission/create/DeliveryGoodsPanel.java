@@ -7,10 +7,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -45,8 +43,7 @@ import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+
 
 @SuppressWarnings("serial")
 class DeliveryGoodsPanel extends WizardPanel {
@@ -83,8 +80,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		// Create title label.
 		String tradeString = "sold";
 		if (buyGoods) tradeString = "bought";
-		JLabel titleLabel = new JLabel("Choose good amounts to be " + tradeString + ".", JLabel.CENTER);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		JLabel titleLabel = createTitleLabel("Choose good amounts to be " + tradeString + ".");
 		add(titleLabel, BorderLayout.NORTH);
 
 		// Create available goods panel.
@@ -100,8 +96,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		JScrollPane goodsScrollPane = new JScrollPane();
 		availableGoodsPane.add(goodsScrollPane, BorderLayout.CENTER);
 		goodsTableModel = new GoodsTableModel();
-		goodsTable = new ZebraJTable(goodsTableModel);
-		TableStyle.setTableStyle(goodsTable);
+		goodsTable = new JTable(goodsTableModel);
 		goodsTable.setAutoCreateRowSorter(true);
 		goodsTable.setRowSelectionAllowed(true);
 		goodsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -216,8 +211,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		JScrollPane tradeScrollPane = new JScrollPane();
 		tradedGoodsPane.add(tradeScrollPane, BorderLayout.CENTER);
 		tradeTableModel = new TradeTableModel();
-		tradeTable = new ZebraJTable(tradeTableModel);
-		TableStyle.setTableStyle(tradeTable);
+		tradeTable = new JTable(tradeTableModel);
 		tradeTable.setAutoCreateRowSorter(true);
 		tradeTable.setRowSelectionAllowed(true);
 		tradeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -236,8 +230,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		tradeScrollPane.setViewportView(tradeTable);
 
 		// Create the message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel, BorderLayout.SOUTH);
 	}
 

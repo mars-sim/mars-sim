@@ -8,10 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
@@ -37,8 +35,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * A wizard panel for selecting the mission's starting settlement.
@@ -69,9 +65,7 @@ class StartingSettlementPanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select settlement label.
-		JLabel selectSettlementLabel = new JLabel("Select a starting settlement.", JLabel.CENTER);
-		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
-		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel selectSettlementLabel = createTitleLabel("Select a starting settlement.");
 		add(selectSettlementLabel);
 
 		// Create the settlement panel.
@@ -88,10 +82,8 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementTableModel = new SettlementTableModel();
 
 		// Create the settlement table.
-		settlementTable = new ZebraJTable(settlementTableModel);
-		TableStyle.setTableStyle(settlementTable);
+		settlementTable = new JTable(settlementTableModel);
 		// Added sorting
-//		settlementTable.setAutoCreateRowSorter(true);
 		settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -132,10 +124,7 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create the error message label.
-		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
-		errorMessageLabel.setForeground(Color.RED);
-		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
-		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorMessageLabel = createErrorLabel();
 		add(errorMessageLabel);
 
 		// Add a vertical glue.
