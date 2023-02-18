@@ -149,28 +149,24 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		
 		// Create the parts panel
 		JScrollPane partsPane = new JScrollPane();
-		JPanel tablePanel = new JPanel();
-		tablePanel.add(partsPane);
-		center.add(tablePanel, BorderLayout.CENTER);
-		addBorder(tablePanel, Msg.getString("BuildingPanelMaintenance.tableBorder"));
-		
+		partsPane.setPreferredSize(new Dimension(160, 80));
+		center.add(partsPane, BorderLayout.CENTER);
+		addBorder(partsPane, Msg.getString("BuildingPanelMaintenance.tableBorder"));
+
 		// Create the parts table model
 		tableModel = new PartTableModel();
 
 		// Create the parts table
 		table = new JTable(tableModel);
-		table.setPreferredScrollableViewportSize(new Dimension(220, 125));
 		table.setRowSelectionAllowed(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		partsPane.setViewportView(table);
 
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(80);
+		columnModel.getColumn(1).setPreferredWidth(60);
 
-		columnModel.getColumn(0).setPreferredWidth(110);
-		columnModel.getColumn(1).setPreferredWidth(90);
-		columnModel.getColumn(2).setPreferredWidth(30);
-		columnModel.getColumn(3).setPreferredWidth(40);
 
 		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
 		renderer1.setHorizontalAlignment(SwingConstants.CENTER);

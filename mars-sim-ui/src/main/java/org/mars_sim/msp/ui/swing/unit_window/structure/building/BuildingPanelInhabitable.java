@@ -77,7 +77,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 
 
 		// Create inhabitant list panel
-		inhabitantListPanel = new UnitListPanel<>(getDesktop(), new Dimension(150, 100)) {
+		inhabitantListPanel = new UnitListPanel<>(getDesktop(), new Dimension(200, 250)) {
 			@Override
 			protected Collection<Person> getData() {
 				return inhabitable.getOccupants();
