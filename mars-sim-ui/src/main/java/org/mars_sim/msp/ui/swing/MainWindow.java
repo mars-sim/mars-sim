@@ -71,8 +71,8 @@ extends JComponent implements ClockListener {
 	/** The size of the weather icons */
 	public static final int WEATHER_ICON_SIZE = 64;
 
-	private static final Icon PAUSE_ICON = ImageLoader.getIcon(Msg.getString("img.speed.pause"));
-	private static final Icon PLAY_ICON = ImageLoader.getIcon(Msg.getString("img.speed.play"));
+	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
+	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");          
 
 	/** The main window frame. */
 	private static JFrame frame;
@@ -498,7 +498,7 @@ extends JComponent implements ClockListener {
 	private void createSpeedButtons(JStatusBar statusBar) {
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton();
-		decreaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.decrease"))); //$NON-NLS-1$
+		decreaseSpeed.setIcon(ImageLoader.getIconByName("speed/decrease"));
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 
 		decreaseSpeed.addActionListener(new ActionListener() {
@@ -516,7 +516,7 @@ extends JComponent implements ClockListener {
 		statusBar.addLeftComponent(pauseSwitch, false);
 
 		JButton increaseSpeed = new JButton();
-		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
+		increaseSpeed.setIcon(ImageLoader.getIconByName("speed/increase"));
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(new ActionListener() {

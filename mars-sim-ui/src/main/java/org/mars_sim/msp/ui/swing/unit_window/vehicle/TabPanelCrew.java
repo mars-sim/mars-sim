@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -122,7 +123,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create crew monitor button
-		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		JButton monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); 
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelCrew.tooltip.monitor")); //$NON-NLS-1$

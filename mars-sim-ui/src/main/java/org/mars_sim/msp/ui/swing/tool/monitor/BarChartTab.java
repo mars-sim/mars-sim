@@ -34,10 +34,8 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.ui.TextAnchor;
-//import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
-//import org.jfree.ui.TextAnchor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -291,7 +289,7 @@ extends MonitorTab {
 	 * @param columns Indexes of columns to display.
 	 */
 	public BarChartTab(MonitorModel model, int []columns) {
-		super(model, false, false, ImageLoader.getNewIcon(ICON));
+		super(model, false, false, ImageLoader.getIconByName(ICON));
 
 		String title = model.getName();
 		setName(title);

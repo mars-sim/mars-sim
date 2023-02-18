@@ -19,10 +19,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -223,13 +222,10 @@ implements MouseListener {
 		JTable cropTable = new JTable(cropTableModel) {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer,int row, int col) {
+							super.setBackground(null);
 			                Component comp = super.prepareRenderer(renderer, row, col);
-			                //even index, selected or not selected
-			                if (row % 2 == 0 && !isCellSelected(row, col)) {
+			                if (isCellSelected(row, col)) {
 			                    comp.setBackground(new Color(242, 242, 242));
-			                }
-			                else {
-			                    comp.setBackground(Color.white);
 			                }
 			                return comp;
 			            }
@@ -342,7 +338,6 @@ implements MouseListener {
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
-		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create list model
 		listModel = new ListModel();
@@ -631,22 +626,22 @@ implements MouseListener {
 
 		private Farming farm;
 		private List<Crop> crops;
-		private ImageIcon redDot;
-		private ImageIcon redHalfDot;
-		private ImageIcon yellowDot;
-		private ImageIcon yellowHalfDot;
-		private ImageIcon greenDot;
-		private ImageIcon greenHalfDot;
+		private Icon redDot;
+		private Icon redHalfDot;
+		private Icon yellowDot;
+		private Icon yellowHalfDot;
+		private Icon greenDot;
+		private Icon greenHalfDot;
 
 		private CropTableModel(Farming farm) {
 			this.farm = farm;
 			crops = farm.getCrops();
-			redDot = ImageLoader.getIcon("RedDot");
-			redHalfDot = ImageLoader.getIcon("dot_red_half");
-			yellowDot = ImageLoader.getIcon("YellowDot");
-			yellowHalfDot = ImageLoader.getIcon("dot_yellow_half");
-			greenDot = ImageLoader.getIcon("GreenDot");
-			greenHalfDot = ImageLoader.getIcon("dot_green_half");
+			redDot = ImageLoader.getIconByName("dot/red");
+			redHalfDot = ImageLoader.getIconByName("dot/red_half");
+			yellowDot = ImageLoader.getIconByName("dot/yellow");
+			yellowHalfDot = ImageLoader.getIconByName("dot/yellow_half");
+			greenDot = ImageLoader.getIconByName("dot/green");
+			greenHalfDot = ImageLoader.getIconByName("dot/green_half");
 		}
 
 		public int getRowCount() {
@@ -661,7 +656,7 @@ implements MouseListener {
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = ImageIcon.class;
+			if (columnIndex == 0) dataType = Icon.class;
 			else if (columnIndex == 1) dataType = String.class;
 			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;

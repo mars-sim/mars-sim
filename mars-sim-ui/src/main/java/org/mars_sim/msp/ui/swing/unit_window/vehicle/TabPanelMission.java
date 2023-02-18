@@ -174,7 +174,7 @@ extends TabPanel {
 		Unit unit = getUnit();
 		
 		// Create mission tool button
-		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
+		missionButton = new JButton(ImageLoader.getIconByName(MissionWindow.ICON)); 
 		missionButton.setMargin(new Insets(2, 2, 2, 2));
 		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(e -> {

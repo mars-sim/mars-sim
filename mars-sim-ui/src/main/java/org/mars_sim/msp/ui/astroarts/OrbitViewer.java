@@ -97,6 +97,9 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	private static final int FRAME_HEIGHT = 600;
 	private static final String THREAD_NAME = "OrbitViewer";
 
+	public static final String NAME = "Orbit Viewer";
+	public static final String ICON = "astro";
+
 	/**
 	 * Components
 	 */

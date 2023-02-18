@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +18,7 @@ import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -80,7 +80,6 @@ extends BuildingFunctionPanel {
 					 function.getObservatoryCapacity(), 5, null);
 		
 		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(labelPanel,
@@ -93,7 +92,7 @@ extends BuildingFunctionPanel {
 		
 		// Create the orbit viewer button.
 		JButton starMap = new JButton();
-		starMap.setIcon(ImageLoader.getNewIcon(Msg.getString("icon.telescope")));
+		starMap.setIcon(ImageLoader.getIconByName(OrbitViewer.ICON));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
 		starMap.addActionListener(

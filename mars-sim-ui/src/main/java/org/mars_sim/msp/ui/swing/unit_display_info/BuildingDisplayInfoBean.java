@@ -14,7 +14,7 @@ public class BuildingDisplayInfoBean implements UnitDisplayInfo {
 	
 	public BuildingDisplayInfoBean() {
 		// Needs changing
-        buttonIcon = ImageLoader.getIcon("SettlementIcon");
+        buttonIcon = ImageLoader.getIconByName("settlement");
 	}
 
 	@Override

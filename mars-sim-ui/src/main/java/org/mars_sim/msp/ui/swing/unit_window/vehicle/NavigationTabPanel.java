@@ -40,6 +40,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -158,7 +159,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationPanel.add(destinationLabelPanel, BorderLayout.NORTH);
 
         // Prepare center map button
-		final Icon centerIcon = ImageLoader.getIcon(Msg.getString("icon.mars"));
+		final Icon centerIcon = ImageLoader.getIconByName(NavigatorWindow.ICON);
 		centerMapButton = new JButton(centerIcon); 
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);

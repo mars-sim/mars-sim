@@ -70,6 +70,12 @@ public class ImageLoader {
 	private ImageLoader() {
 	}
 
+	/**
+	 * Get icon by it's logical name. The logicla name is mapped to a file 
+	 * by the icon.properties or if not present the icon naming convention
+	 * is applied.
+	 * @param iconName Logical name of icon. 
+	 */
 	public static Icon getIconByName(String iconName) {
 		Icon found = iconByName.get(iconName);
 		if (found == null) {
@@ -103,27 +109,6 @@ public class ImageLoader {
 	 */
 	public static ImageIcon getIcon(String imagename) {
 		return getIcon(imagename, PNG, IMAGE_DIR);
-	}
-	
-	/**
-	 * Loads the image icon with the specified name and a "png" image extension. This
-	 * operation may either create a new Image Icon of returned a previously created
-	 * one.
-	 *
-	 * @param imagename
-	 *            Name of the image to load.
-	 * @return ImageIcon containing image of specified name.
-	 */
-	public static ImageIcon getIcon(String imagename, String dir) {
-		return getIcon(imagename, PNG, dir);
-	}
-
-	public static ImageIcon getNewIcon(String imagename) {
-		if (imagename == null || imagename.equals("")) {
-			return null;
-		}
-		
-		return getIcon(imagename, PNG, SLASH);
 	}
 
 	/**

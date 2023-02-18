@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -59,7 +60,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
-	private static final String STARMAP = "STARMAP";
 	private static final String MARSCAL = "MARS-CAL";
 
 	/** Main window that contains this toolbar. */
@@ -140,7 +140,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		calendarPane = setupCalendarPanel(masterClock.getMarsClock());	
 		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
 
-		addToolButton(STARMAP, "Open the Orbit Viewer", "astro");
+		addToolButton(OrbitViewer.NAME, "Open the Orbit Viewer", OrbitViewer.ICON);
 		addSeparator(new Dimension(20, 20));
 
 		// Add guide button
@@ -237,7 +237,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				parentMainWindow.exitSimulation();
 				break;
 			
-			case STARMAP:
+			case OrbitViewer.NAME:
 				parentMainWindow.openOrbitViewer();
 				break;
 

@@ -15,8 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -30,6 +29,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.utils.JProcessButton;
 
 /**
  * The BuildingPanelWasteProcessing class is a building function panel representing
@@ -130,9 +130,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		// Data members.
 		private ResourceProcess process;
 		private JLabel label;
-		private JButton toggleButton;
-		private ImageIcon dotGreen;
-		private ImageIcon dotRed;
+		private JProcessButton toggleButton;
 
 		/**
 		 * Constructor.
@@ -148,7 +146,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 
 			this.process = process2;
 
-			toggleButton = new JButton();
+			toggleButton = new JProcessButton();
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
 			toggleButton.addActionListener(e -> {
 					ResourceProcess p = getProcess();
@@ -166,12 +164,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 					building.getNickName(), process2.getProcessName())); 
 			add(label);
 
-			// Load green and red dots.
-			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
-			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
-
-			if (process2.isProcessRunning()) toggleButton.setIcon(dotGreen);
-			else toggleButton.setIcon(dotRed);
+			toggleButton.setRunning(process2.isProcessRunning());
 
 			setToolTipText(getToolTipString(building));
 		}
@@ -229,8 +222,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		 * Updates the label.
 		 */
 		void update() {
-			if (process.isProcessRunning()) toggleButton.setIcon(dotGreen);
-			else toggleButton.setIcon(dotRed);
+			toggleButton.setRunning(process.isProcessRunning());
 		}
 
 		private ResourceProcess getProcess() {

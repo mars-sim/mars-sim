@@ -30,7 +30,7 @@ implements UnitDisplayInfo {
 	 * Constructor.
 	 */
 	RobotDisplayInfoBean() {
-		buttonIcon = ImageLoader.getIcon("RobotIcon");
+		buttonIcon = ImageLoader.getIconByName("robot");
 	}
 
 	/**

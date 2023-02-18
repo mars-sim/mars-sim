@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -353,15 +353,15 @@ public class TabPanelPowerGrid extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private ImageIcon dotRed;
-		private ImageIcon dotYellow;
-		private ImageIcon dotGreen;
+		private Icon dotRed;
+		private Icon dotYellow;
+		private Icon dotGreen;
 
 		private PowerTableModel(Settlement settlement) {
 
-			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
-			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
-			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
+			dotRed = ImageLoader.getIconByName("dot/red"); 
+			dotYellow = ImageLoader.getIconByName("dot/yellow"); 
+			dotGreen = ImageLoader.getIconByName("dot/green"); 
 
 		}
 
@@ -376,7 +376,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
-				dataType = ImageIcon.class;
+				dataType = Icon.class;
 			else if (columnIndex == 1)
 				dataType = Object.class;
 			else if (columnIndex == 2)

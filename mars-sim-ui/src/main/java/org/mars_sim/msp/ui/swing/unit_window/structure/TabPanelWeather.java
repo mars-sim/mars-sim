@@ -41,17 +41,14 @@ extends TabPanel {
 
 	private static final String WEATHER_ICON = "weather";
 	
-	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
-	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
-	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
-//	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
-
-	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
-//	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
-	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
-	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
-	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
-	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+	private static final String DUSTY_SKY = "large/dusty";
+	private static final String SUNNY = "large/sunny";
+	private static final String HOT = "large/hot";
+	private static final String SNOW_BLOWING = "large/snow_blowing";
+	private static final String SNOW = "large/now";
+	private static final String WIND = "large/windy"; 
+	private static final String FRIGID = "large/frigid";
+	private static final String HAZE = "large/haze";
 
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
 	
@@ -431,14 +428,14 @@ extends TabPanel {
 	    			if (windSpeedCache > 6D)
 	    				icon = SNOW_BLOWING;
 	    			else
-	    				icon = SNOWFLAKE;
+	    				icon = SNOW;
 	    		}
 	    	}
 	    	else if (temperatureCache >= 26)
-	    		icon = BALMY;
+	    		icon = HOT;
 	    	else { //if (temperatureCache >= 0) {
 	    		if (windSpeedCache > 20D) {
-	    			icon = WIND_FLAG ;//SUN_STORM;
+	    			icon = WIND;
 	    		}
 	    		else if (opticalDepthCache > 1D) {
 			    	if (opticalDepthCache > 3D)
@@ -454,8 +451,7 @@ extends TabPanel {
 	    	
 	    	if (!icon.equals(iconCache)) {
 	    		iconCache = icon;
-//	    		setImage(icon);
-	    		weatherLabel.setIcon(ImageLoader.getNewIcon(icon));
+	    		weatherLabel.setIcon(ImageLoader.getIconByName(icon));
 	    	}
 
 	        double za = getZenithAngle();

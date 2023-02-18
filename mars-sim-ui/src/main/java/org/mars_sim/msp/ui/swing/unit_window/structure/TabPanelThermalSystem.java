@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -400,17 +400,17 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private ImageIcon dotRed;
-		private ImageIcon dotYellow;
-		private ImageIcon dotGreen_full, dotGreen_half, dotGreen_quarter, dotGreen_threeQuarter;
+		private Icon dotRed;
+		private Icon dotYellow;
+		private Icon dotGreen_full, dotGreen_half, dotGreen_quarter, dotGreen_threeQuarter;
 
 		private HeatTableModel(Settlement settlement) {
-			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
-			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
-			dotGreen_full = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
-			dotGreen_half = ImageLoader.getIcon(Msg.getString("img.dotGreen_half")); //$NON-NLS-1$
-			dotGreen_quarter = ImageLoader.getIcon(Msg.getString("img.dotGreen_quarter")); //$NON-NLS-1$
-			dotGreen_threeQuarter = ImageLoader.getIcon(Msg.getString("img.dotGreen_threeQuarter")); //$NON-NLS-1$
+			dotRed = ImageLoader.getIconByName("dot/red"); 
+			dotYellow = ImageLoader.getIconByName("dot/yellow"); 
+			dotGreen_full = ImageLoader.getIconByName("dot/green"); 
+			dotGreen_half = ImageLoader.getIconByName("dot/green_half"); 
+			dotGreen_quarter = ImageLoader.getIconByName("dot/green_quarter"); 
+			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_threeQuarter");
 	
 		}
 
@@ -421,14 +421,10 @@ extends TabPanel {
 		public int getColumnCount() {
 			return 5;
 		}
-
-//		public Building getBuilding(int row) { 
-//			return buildings.get(row);
-//		}
 		
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = ImageIcon.class;
+			if (columnIndex == 0) dataType = Icon.class;
 			else if (columnIndex == 1) dataType = Building.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = Double.class;

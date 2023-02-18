@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import javax.swing.Icon;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -22,7 +21,8 @@ import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 public class DroneDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
-	private Icon buttonIcon = ImageLoader.getIcon(Msg.getString("ico.drone"), ImageLoader.VEHICLE_ICON_DIR);
+	private Icon buttonIcon = ImageLoader.getIconByName("vehicle/drone");
+
 
 	/**
 	 * Constructor

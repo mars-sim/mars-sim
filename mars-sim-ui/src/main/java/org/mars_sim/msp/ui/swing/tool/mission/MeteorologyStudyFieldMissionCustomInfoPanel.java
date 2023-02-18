@@ -70,7 +70,7 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 		contentPanel.add(studyPanel);
 
 		// Create science tool button.
-		JButton scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		JButton scienceToolButton = new JButton(ImageLoader.getIconByName(ScienceWindow.ICON)); //$NON-NLS-1$
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton
 				.setToolTipText(Msg.getString("MeteorologyStudyFieldMissionCustomInfoPanel.tooltip.openInScienceTool")); //$NON-NLS-1$

@@ -11,7 +11,6 @@ import java.awt.Color;
 
 import javax.swing.Icon;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -24,7 +23,8 @@ import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
-	private Icon buttonIcon = ImageLoader.getIcon(Msg.getString("ico.luv"), ImageLoader.VEHICLE_ICON_DIR);
+	private Icon buttonIcon = ImageLoader.getIconByName("vehicle/luv");
+
 
 	/**
 	 * Constructor

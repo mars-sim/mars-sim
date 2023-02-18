@@ -20,7 +20,7 @@ import java.awt.*;
 class EquipmentDisplayInfoBean implements UnitDisplayInfo {
 
     // Data members
-    private Icon buttonIcon = ImageLoader.getIcon("EquipmentIcon");
+    private Icon buttonIcon = ImageLoader.getIconByName("equipment");
 
     /**
      * Constructor

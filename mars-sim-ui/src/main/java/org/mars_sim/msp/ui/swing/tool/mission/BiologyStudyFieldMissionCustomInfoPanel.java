@@ -71,7 +71,7 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 		contentPanel.add(studyPanel);
 
 		// Create science tool button.
-		JButton scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		JButton scienceToolButton = new JButton(ImageLoader.getIconByName(ScienceWindow.ICON)); 
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton
 				.setToolTipText(Msg.getString("BiologyStudyFieldMissionCustomInfoPanel.tooltip.openInScienceTool")); //$NON-NLS-1$
