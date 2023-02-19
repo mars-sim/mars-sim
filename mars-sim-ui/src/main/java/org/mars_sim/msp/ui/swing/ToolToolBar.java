@@ -107,9 +107,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "save"); //$NON-NLS-1$ //$NON-NLS-2$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "saveAs"); //$NON-NLS-
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "exit"); //$NON-NLS-
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$ //$NON-NLS-2$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-
 
 		addSeparator(new Dimension(20, 20));
 

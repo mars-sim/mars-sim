@@ -292,7 +292,7 @@ public class SimulationConfigEditor {
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
 
 		// Create add settlement button.
-		JButton addButton = new JButton(ImageLoader.getIconByName("add")); //$NON-NLS-1$
+		JButton addButton = new JButton(ImageLoader.getIconByName("action/add")); //$NON-NLS-1$
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -302,7 +302,7 @@ public class SimulationConfigEditor {
 		configurationButtonInnerTopPanel.add(addButton);
 
 		// Create remove settlement button.
-		JButton removeButton = new JButton(ImageLoader.getIconByName("remove")); //$NON-NLS-1$
+		JButton removeButton = new JButton(ImageLoader.getIconByName("action/remove")); //$NON-NLS-1$
 		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -351,7 +351,7 @@ public class SimulationConfigEditor {
 		};
 
 		// Add an Export button
-		JButton exportButton = new JButton(ImageLoader.getIconByName("export")); //$NON-NLS-1$
+		JButton exportButton = new JButton(ImageLoader.getIconByName("action/export")); //$NON-NLS-1$
 		exportButton.setToolTipText("Export");
 		exportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -359,7 +359,7 @@ public class SimulationConfigEditor {
 			}
 		});
 		configControl.getPane().add(exportButton);
-		JButton importButton = new JButton(ImageLoader.getIconByName("import")); //$NON-NLS-1$
+		JButton importButton = new JButton(ImageLoader.getIconByName("action/import")); //$NON-NLS-1$
 		importButton.setToolTipText("Import");
 		importButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {

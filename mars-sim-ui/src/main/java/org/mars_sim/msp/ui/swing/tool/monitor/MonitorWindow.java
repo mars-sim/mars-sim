@@ -79,11 +79,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static final String PEOPLE_ICON = "people";
 	private static final String BUILDING_ICON = "building"; 
 
-	private static final String TRASH_ICON = "trash";
-	private static final String LOCATE_ICON = "locate";
-	private static final String FIND_ICON = "find";
-	private static final String COLUMN_ICON = "column";
-	private static final String FILTER_ICON = "filter";
+	private static final String TRASH_ICON = "action/trash";
+	private static final String LOCATE_ICON = "action/locate";
+	private static final String DETAILS_ICON = "details";
+	private static final String COLUMN_ICON = "action/column";
+	private static final String FILTER_ICON = "action/filter";
 
 	// Data members
 	private JTabbedPane tabsSection;
@@ -259,7 +259,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		buttonMap.addActionListener(this);
 		statusPanel.add(buttonMap);
 
-		buttonDetails = new JButton(ImageLoader.getIconByName(FIND_ICON)); // $NON-NLS-1$
+		buttonDetails = new JButton(ImageLoader.getIconByName(DETAILS_ICON)); // $NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
 		statusPanel.add(buttonDetails);

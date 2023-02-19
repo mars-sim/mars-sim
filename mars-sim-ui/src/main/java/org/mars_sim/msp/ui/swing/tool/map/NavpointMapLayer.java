@@ -24,9 +24,9 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 public class NavpointMapLayer implements MapLayer {
 
 	// Static members
-	private static final String BLUE_ICON_NAME = "FlagBlue";
-	private static final String WHITE_ICON_NAME = "FlagWhite";
-	private static final String GREEN_ICON_NAME = "FlagGreen";
+	private static final String BLUE_ICON_NAME = "map/flag_blue";
+	private static final String WHITE_ICON_NAME = "map/flag_white";
+	private static final String GREEN_ICON_NAME = "map/flag_green";
 	
 	// Domain members
 	private static final int MAP_X_OFFSET = 5;
@@ -51,9 +51,9 @@ public class NavpointMapLayer implements MapLayer {
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
 
-		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
-		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
-		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
+		navpointIconColor = ImageLoader.getIconByName(BLUE_ICON_NAME);
+		navpointIconWhite = ImageLoader.getIconByName(WHITE_ICON_NAME);
+		navpointIconSelected = ImageLoader.getIconByName(GREEN_ICON_NAME);
 	}
 
 	/**

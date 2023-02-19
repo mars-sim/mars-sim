@@ -55,10 +55,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	private static final String MAP_ICON = "mars";
-
-	private static final String FIND_ORANGE = "locator48_orange";
-//	private static final String FIND_BLUE = "locator48_blue";
+	private static final String MAP_ICON = NavigatorWindow.ICON;
 
 	private static final String N = "N";
 	private static final String S = "S";
@@ -182,7 +179,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 //        locationPanel.add(lcdElev, BorderLayout.NORTH);
 
 		// Create center map button
-		locatorButton = new JButton(ImageLoader.getIcon(FIND_ORANGE));
+		locatorButton = new JButton(ImageLoader.getIconByName(NavigatorWindow.ICON));
 
 		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 		locatorButton.addActionListener(this);

@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 import javax.swing.Icon;
@@ -17,7 +18,7 @@ import javax.swing.Icon;
 class CargoRoverDisplayInfoBean extends RoverDisplayInfoBean {
 	
     // Data members
-    private Icon buttonIcon = ImageLoader.getIconByName("vehicle/cargo");
+    private Icon buttonIcon = ImageLoader.getIconByName("unit/rover_cargo");
 
     
     /**
@@ -29,9 +30,11 @@ class CargoRoverDisplayInfoBean extends RoverDisplayInfoBean {
     
     /** 
      * Gets icon for unit button.
+     * @param unit Unit is not needed
      * @return icon
      */
-    public Icon getButtonIcon() {
+    @Override
+    public Icon getButtonIcon(Unit unit) {
         return buttonIcon;
     }
 }

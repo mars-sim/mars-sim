@@ -28,8 +28,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 public class NavpointEditLayer implements MapLayer {
 
 	// Static members
-	private static final String BLUE_ICON_NAME = "FlagBlue";
-	private static final String GREEN_ICON_NAME = "FlagGreen";
+	private static final String BLUE_ICON_NAME = "map/flag_blue";
+	private static final String GREEN_ICON_NAME = "map/flag_green";
 	private static final Font FONT = new Font("SansSerif", Font.PLAIN, 9);
 	
 	// Domain members.
@@ -49,8 +49,8 @@ public class NavpointEditLayer implements MapLayer {
 	public NavpointEditLayer(Component displayComponent, boolean drawNavNumbers) {
 		this.displayComponent = displayComponent;
 		navpointPositions = new ArrayList<IntPoint>();
-		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
-		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
+		navpointIconColor = ImageLoader.getIconByName(BLUE_ICON_NAME);
+		navpointIconSelected = ImageLoader.getIconByName(GREEN_ICON_NAME);
 		selectedNavpoint = -1;
 		this.drawNavNumbers = drawNavNumbers;
 	}

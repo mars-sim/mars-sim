@@ -144,7 +144,7 @@ implements ListSelectionListener, MissionListener {
         mapDisplayPane.add(mapPanel, BorderLayout.CENTER);
         
 		// Create the north button.
-        JButton northButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
+        JButton northButton = new JButton(ImageLoader.getIconByName("map/navpoint_north")); //$NON-NLS-1$
 		northButton.addActionListener(e -> {
 			// Recenter the map to the north by a 1/8 map.
 			Coordinates centerCoords = mapPanel.getCenterLocation();
@@ -158,7 +158,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(northButton, BorderLayout.NORTH);
 		
 		// Create the west button.
-		JButton westButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.west"))); //$NON-NLS-1$
+		JButton westButton = new JButton(ImageLoader.getIconByName("map/navpoint_west"));
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(e -> {
 			// Recenter the map to the west by 1/8 map.
@@ -173,7 +173,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(westButton, BorderLayout.WEST);
 		
 		// Create the east button.
-		JButton eastButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.east"))); //$NON-NLS-1$
+		JButton eastButton = new JButton(ImageLoader.getIconByName("map/navpoint_east"));
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(e -> {
 			// Recenter the map to the east by 1/8 map.
@@ -188,7 +188,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(eastButton, BorderLayout.EAST);
 		
 		// Create the south button.
-		JButton southButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.south"))); //$NON-NLS-1$
+		JButton southButton = new JButton(ImageLoader.getIconByName("map/navpoint_south"));
 		southButton.addActionListener(e -> {
 			// Recenter the map to the south by 1/8 map.
 			Coordinates centerCoords = mapPanel.getCenterLocation();

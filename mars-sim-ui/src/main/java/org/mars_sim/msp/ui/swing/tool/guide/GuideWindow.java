@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,6 +27,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
@@ -40,8 +41,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
-	public static final String ICON = "help";
-	public static final String HOME_ICON = Msg.getString("img.home"); //$NON-NLS-1$
+	public static final String ICON = "action/help";
 	
 	public static final String WIKI_URL = Msg.getString("GuideWindow.githubwiki.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("GuideWindow.githubwiki.title"); //$NON-NLS-1$
@@ -58,7 +58,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** The guide window URL. */
 	private URL guideURL;
 	
-	private ImageIcon icon = new ImageIcon(GuideWindow.class.getResource(HOME_ICON));
+	private Icon icon = ImageLoader.getIconByName("home");
 	
 	private JButton homeButton = new JButton(icon);
 	private JButton backButton = new JButton("<");

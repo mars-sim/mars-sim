@@ -13,16 +13,15 @@ import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 public class ExploredSiteMapLayer implements MapLayer {
 
 	// Static members
-	private static final String EXPLORED_ICON_NAME = Msg.getString("img.smallFlagYellow"); //$NON-NLS-1$
-	private static final String MINED_ICON_NAME = Msg.getString("img.smallFlagGray"); //$NON-NLS-1$
-	private static final String SELECTED_ICON_NAME = Msg.getString("img.smallFlagBlue"); //$NON-NLS-1$
+	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 
+	private static final String MINED_ICON_NAME = "map/flag_smallgray"; 
+	private static final String SELECTED_ICON_NAME ="map/flag_smallblue"; 
 
 	// Domain members
 	private Component displayComponent;
@@ -44,9 +43,9 @@ public class ExploredSiteMapLayer implements MapLayer {
 
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
-		navpointIconExplored = ImageLoader.getIcon(EXPLORED_ICON_NAME);
-		navpointIconMined = ImageLoader.getIcon(MINED_ICON_NAME);
-		navpointIconSelected = ImageLoader.getIcon(SELECTED_ICON_NAME);
+		navpointIconExplored = ImageLoader.getIconByName(EXPLORED_ICON_NAME);
+		navpointIconMined = ImageLoader.getIconByName(MINED_ICON_NAME);
+		navpointIconSelected = ImageLoader.getIconByName(SELECTED_ICON_NAME);
 		displayMined = true;
 		displayReserved = true;
 		selectedSite = null;

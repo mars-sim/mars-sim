@@ -21,7 +21,7 @@ import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 public class DroneDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
-	private Icon buttonIcon = ImageLoader.getIconByName("vehicle/drone");
+	private Icon buttonIcon = ImageLoader.getIconByName("unit/drone");
 
 
 	/**

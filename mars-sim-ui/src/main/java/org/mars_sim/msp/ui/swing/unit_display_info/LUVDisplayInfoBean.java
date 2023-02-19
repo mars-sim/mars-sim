@@ -23,7 +23,7 @@ import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
-	private Icon buttonIcon = ImageLoader.getIconByName("vehicle/luv");
+	private Icon buttonIcon = ImageLoader.getIconByName("unit/luv");
 
 
 	/**
@@ -62,21 +62,18 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	@Override
 	public Icon getGeologyMapIcon(Unit unit) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
 	public Color getGeologyMapLabelColor() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
 	public Color getGeologyGlobeColor() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

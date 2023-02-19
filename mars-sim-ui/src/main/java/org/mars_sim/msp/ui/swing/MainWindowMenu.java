@@ -109,12 +109,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
-		fileMenu.add(createMenuItem("mainMenu.save", "save", SAVE, null,
+		fileMenu.add(createMenuItem("mainMenu.save", "action/save", SAVE, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false)));
-		fileMenu.add(createMenuItem("mainMenu.saveAs", "saveAs", SAVE_AS, null,
+		fileMenu.add(createMenuItem("mainMenu.saveAs", "action/saveAs", SAVE_AS, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false)));
 		fileMenu.add(new JSeparator());
-		fileMenu.add(createMenuItem("mainMenu.exit", "exit", EXIT, null,
+		fileMenu.add(createMenuItem("mainMenu.exit", "action/exit", EXIT, null,
 									KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false)));
 
 		// Create tools menu

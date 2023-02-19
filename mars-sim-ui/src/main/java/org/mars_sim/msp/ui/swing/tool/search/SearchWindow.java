@@ -61,7 +61,7 @@ extends ToolWindow {
 	
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$
-	public static final String ICON = "find";
+	public static final String ICON = "action/find";
 
 	/** Unit categories enum. */
 	enum UnitCategory {

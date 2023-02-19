@@ -36,9 +36,9 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      * Constructor
      */
     VehicleDisplayInfoBean() {
-        surfMapIcon = ImageLoader.getIcon("VehicleSymbol");
-        topoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
-        geoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
+        surfMapIcon = ImageLoader.getIconByName("map/vehicle");
+        topoMapIcon = ImageLoader.getIconByName("map/vehicle_black");
+        geoMapIcon = ImageLoader.getIconByName("map/vehicle_black");
         mapLabelFont = new Font("Helvetica", Font.PLAIN, 10);
     }
     

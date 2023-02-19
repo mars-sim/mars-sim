@@ -11,8 +11,9 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import java.awt.Color;
+import java.awt.Font;
 
 /**
  * Provides display information about a settlement.
@@ -23,8 +24,6 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     private static double SETTLEMENT_CLICK_RANGE = 90D;
 
     private static Color lightSlateGray = new Color(255, 255, 255);
-
-    private static Color lightOrange = new Color(234, 204, 173);
     
     // Data members
     private Icon surfMapIcon;
@@ -37,10 +36,10 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
      * Constructor
      */
     SettlementDisplayInfoBean() {
-        surfMapIcon = ImageLoader.getIcon("SettlementSymbol");
-        topoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
-        geoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
-        buttonIcon = ImageLoader.getIcon("SettlementIcon");
+        surfMapIcon = ImageLoader.getIconByName("map/settlement");
+        topoMapIcon = ImageLoader.getIconByName("map/settlement_black");
+        geoMapIcon = ImageLoader.getIconByName("map/settlement_black");
+        buttonIcon = ImageLoader.getIconByName("settlement");
         mapLabelFont = new Font("SansSerif", Font.BOLD, 12);
     }
 

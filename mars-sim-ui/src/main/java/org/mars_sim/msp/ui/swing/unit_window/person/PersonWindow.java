@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

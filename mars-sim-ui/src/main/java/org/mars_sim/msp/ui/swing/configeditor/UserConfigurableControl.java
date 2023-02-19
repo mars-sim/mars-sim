@@ -81,28 +81,28 @@ public abstract class UserConfigurableControl<T extends UserConfigurable> implem
 		buttonPane.add(descriptionTF);
 		
 		// Create save button.
-		saveButton = new JButton(ImageLoader.getIconByName("save"));
+		saveButton = new JButton(ImageLoader.getIconByName("action/save"));
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand(SAVE);
 		saveButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.save", itemType));
 		buttonPane.add(saveButton);		
 
 		// Create save as new button.
-		saveAsButton = new JButton(ImageLoader.getIconByName("saveAs"));
+		saveAsButton = new JButton(ImageLoader.getIconByName("action/saveAs"));
 		saveAsButton.setActionCommand(SAVE_NEW);
 		saveAsButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.saveas", itemType));
 		saveAsButton.addActionListener(this);
 		buttonPane.add(saveAsButton);
 
 		// Create delete button.
-		delButton = new JButton(ImageLoader.getIconByName("delete"));
+		delButton = new JButton(ImageLoader.getIconByName("action/delete"));
 		delButton.setActionCommand(DELETE);
 		delButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.delete", itemType));
 		delButton.addActionListener(this);
 		buttonPane.add(delButton);
 		
 		// Create save new crew button.
-		JButton undoButton = new JButton(ImageLoader.getIconByName("undo"));
+		JButton undoButton = new JButton(ImageLoader.getIconByName("action/undo"));
 		undoButton.setActionCommand(UNDO);
 		undoButton.setToolTipText(Msg.getString("UserConfigurableControl.tooltip.undo"));
 		undoButton.addActionListener(this);

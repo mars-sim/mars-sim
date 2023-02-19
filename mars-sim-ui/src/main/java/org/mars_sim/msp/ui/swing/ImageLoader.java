@@ -41,6 +41,8 @@ public class ImageLoader {
 	private static HashMap<String, Image> imageCache = new HashMap<>();
 	private static Toolkit usedToolkit = null;
 
+	private static Icon defaultIcon;
+
 	/**
 	 * Sub-directory/package for the images.
 	 */
@@ -62,6 +64,7 @@ public class ImageLoader {
 			e.printStackTrace();
 		}
 
+		defaultIcon = getIconByName("unknown");
 	}
 
 	/**
@@ -91,6 +94,11 @@ public class ImageLoader {
 			}
 			else {
 				found = loadImageIcon(imagePath);
+			}
+
+			// Display a default icon
+			if(found == null) {
+				found = defaultIcon;
 			}
 			iconByName.put(iconName, found);
 		}
