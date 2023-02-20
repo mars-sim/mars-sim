@@ -7,16 +7,14 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -26,19 +24,17 @@ import javax.swing.JPanel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import org.mars_sim.msp.ui.swing.utils.JProcessButton;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.ResourceProcessPanel;
 
 /**
  * A tab panel for displaying all of the resource processes in a settlement.
@@ -54,15 +50,12 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
-	private List<Building> buildings;
-	private JPanel processListPanel;
-	private JCheckBox overrideCheckbox;
 	private JComboBox<String> levelComboBox;
-	
-	private BuildingManager mgr;
+
 
 	private int level;
-	private int size;
+
+	private ResourceProcessPanel processPanel;
 
 	/**
 	 * Constructor.
@@ -85,10 +78,18 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	
 	@Override
 	protected void buildUI(JPanel content) {
-		mgr = settlement.getBuildingManager();
-		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
-		size = buildings.size();
+		BuildingManager mgr = settlement.getBuildingManager();
+		Map<Building,List<ResourceProcess>> processes = new HashMap<>();
+		for(Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+			ResourceProcessing processing = building.getResourceProcessing();
+			processes.put(building, processing.getProcesses());
+		}
 
+		// Prepare process list panel.n
+		processPanel = new ResourceProcessPanel(processes);
+		processPanel.setPreferredSize(new Dimension(160, 120));
+		content.add(processPanel, BorderLayout.CENTER);
+		
 		// Create override check box panel.
 		JPanel topPanel = new JPanel(new GridLayout(1, 2, 0, 0));
 		content.add(topPanel, BorderLayout.NORTH);
@@ -99,7 +100,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		topPanel.add(overrideCheckboxPane);
 	
 		// Create override check box.
-		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
+		JCheckBox overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.overrideResourceProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(e ->
 			setResourceProcessOverride(overrideCheckbox.isSelected())
@@ -123,13 +124,6 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		levelComboBox.addActionListener(this);
         
 		levelPanel.add(levelComboBox);
-		
-		// Prepare process list panel.
-		processListPanel = new JPanel(new GridLayout(0, 1, 5, 1));
-		processListPanel.setAlignmentY(TOP_ALIGNMENT);
-		processListPanel.setBorder(new MarsPanelBorder());
-		content.add(processListPanel, BorderLayout.CENTER);
-		populateProcessList(false);
 	}
 
 
@@ -144,63 +138,16 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 			int newLevel = Integer.parseInt((String)levelComboBox.getSelectedItem());
 			if (newLevel != level) {
 				level = newLevel;
-				populateProcessList(true);
+				processPanel.update();
 				logger.info("The Overall Effort Level of resource processing is now at " + newLevel + ".");
 			}
 		}
 	}	
-	
-	/**
-	 * Populates the process list panel with all building processes.
-	 */
-	private void populateProcessList(boolean updateLevel) {
-		// Clear the list.
-		processListPanel.removeAll();
-
-		// Add a label for each process in each processing building.
-		Iterator<Building> i = buildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Iterator<ResourceProcess> j = building.getResourceProcessing().getProcesses().iterator();
-			while (j.hasNext()) {
-				ResourceProcess process = j.next();
-				if (updateLevel)
-					process.setLevel(level);
-				processListPanel.add(new ResourceProcessPanel(process, building));
-			}
-		}
-	}
 
 	@Override
 	public void update() {
-		// Check if building list has changed.
-		List<Building> newBuildings = selectBuildings();
-		int newSize = buildings.size();
-		if (size != newSize) {
-			size = newSize;
-			buildings = selectBuildings();
-			Collections.sort(buildings);
-			populateProcessList(false);
-		}
-		else if (!buildings.equals(newBuildings)) {
-			buildings = newBuildings;
-			Collections.sort(buildings);
-			populateProcessList(false);
-		}
-		else {
-			// Update process list.
-			Component[] components = processListPanel.getComponents();
-			for (Component component : components) {
-				ResourceProcessPanel panel = (ResourceProcessPanel) component;
-				panel.update();
-			}
-		}
+		processPanel.update();
 	}
-
-	private List<Building> selectBuildings() {
-		return mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
-	}
-
 	/**
 	 * Sets the settlement resource process override flag.
 	 * 
@@ -208,131 +155,5 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	 */
 	private void setResourceProcessOverride(boolean override) {
 		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
-	}
-
-	/**
-	 * An internal class for a resource process panel.
-	 */
-	private static class ResourceProcessPanel
-	extends JPanel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members.
-		private ResourceProcess process;
-		private JLabel label;
-		private JProcessButton toggleButton;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param process the resource process.
-		 * @param building the building the process is in.
-		 */
-		ResourceProcessPanel(ResourceProcess process, Building building) {
-			// Use JPanel constructor.
-			super();
-
-			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-			this.process = process;
-
-			toggleButton = new JProcessButton();
-			toggleButton.setMargin(new Insets(0, 0, 0, 0));
-			toggleButton.addActionListener(e -> {
-					ResourceProcess p = getProcess();
-					boolean isRunning = p.isProcessRunning();
-					p.setProcessRunning(!isRunning);
-					update();
-					if (isRunning)
-						logger.log(building, Level.CONFIG, 0L, "Player stops the '" + p.getProcessName() + "'.");
-					else
-						logger.log(building, Level.CONFIG, 0L, "Player starts the '" + p.getProcessName() + "'.");
-			});
-			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
-			add(toggleButton);
-			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", //$NON-NLS-1$
-					building.getNickName(), process.getProcessName())); 
-			add(label);
-
-			
-			toggleButton.setRunning(process.isProcessRunning());
-
-			setToolTipText(getToolTipString(building));
-		}
-
-		/**
-		 * Assembles the text for a tool tip.
-		 * 
-		 * @param building
-		 * @return
-		 */
-		private String getToolTipString(Building building) {
-			// NOTE: internationalize the resource processes' dynamic tooltip.
-			StringBuilder result = new StringBuilder("<html>");
-			// Future: Use another tool tip manager to align text to improve tooltip readability			
-			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
-			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
-			result.append("Power Req:&emsp;").append(StyleManager.DECIMAL_KW.format(process.getPowerRequired())).append("<br>");
-			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
-			Iterator<Integer> i = process.getInputResources().iterator();
-			String ambientStr = "";
-			int ii = 0;
-			while (i.hasNext()) {
-				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
-				Integer resource = i.next();
-				double rate = process.getMaxInputRate(resource) * 1000D;
-				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
-				//result.append("&nbsp;&nbsp;&emsp;");
-				if (process.isAmbientInputResource(resource)) ambientStr = "*";
-				result.append(ResourceUtil.findAmountResource(resource).getName())
-					.append(ambientStr).append(" @ ")
-					.append(rateString).append(" kg/sol<br>");
-				ii++;
-			}
-			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
-			Iterator<Integer> j = process.getOutputResources().iterator();
-			int jj = 0;
-			while (j.hasNext()) {
-				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
-				Integer resource = j.next();
-				double rate = process.getMaxOutputRate(resource) * 1000D;
-				String rateString = StyleManager.DECIMAL_PLACES2.format(rate);
-				result.append(ResourceUtil.findAmountResource(resource).getName())
-					.append(" @ ").append(rateString).append(" kg/sol<br>");
-				jj++;
-			}
-			// Add a note to denote an ambient input resource
-			if (ambientStr.equals("*"))
-				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
-			result.append("</html>");
-			return result.toString();
-		}
-
-		/**
-		 * Updates the label.
-		 */
-		void update() {
-			toggleButton.setRunning(process.isProcessRunning());
-		}
-
-		private ResourceProcess getProcess() {
-			return process;
-		}
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		buildings = null;
-		processListPanel = null;
-		overrideCheckbox = null;
-		settlement = null;
-		mgr = null;
 	}
 }
