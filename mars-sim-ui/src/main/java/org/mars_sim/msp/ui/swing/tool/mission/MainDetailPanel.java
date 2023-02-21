@@ -95,6 +95,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 /**
  * The tab panel for showing mission details.
@@ -423,22 +425,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 			memberTable.setRowSelectionAllowed(true);
 			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			memberTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					if (e.getValueIsAdjusting()) {
-						// Open window for selected person.
-						int index = memberTable.getSelectedRow();
-						if (index > -1) {
-							Worker member = memberTableModel.getMemberAtIndex(index);
-							if (member.getUnitType() == UnitType.PERSON) {
-								getDesktop().openUnitWindow((Person) member, false);
-							} else {
-								getDesktop().openUnitWindow((Robot) member, false);
-							}
-						}
-					}
-				}
-			});
+			memberTable.addMouseListener(new UnitTableLauncher(desktop));
 			memberScrollPane.setViewportView(memberTable);
 		}
 		
@@ -1114,7 +1101,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	/**
 	 * Table model for mission members.
 	 */
-	private class MemberTableModel extends AbstractTableModel implements UnitListener {
+	private class MemberTableModel extends AbstractTableModel implements UnitListener, UnitModel {
 
 		// Private members.
 		private Mission mission;
@@ -1170,8 +1157,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 */
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
-				Object array[] = members.toArray();
-				Worker member = (Worker) array[row];
+				Worker member = members.get(row);
 				if (column == 0)
 					return member.getName();
 				else if (column == 1)
@@ -1228,7 +1214,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
-			int index = getIndex(members, member);
+			int index = members.indexOf(member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
@@ -1236,21 +1222,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					|| (type == UnitEventType.TASK_NAME_EVENT)) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
 			}
-		}
-
-		private int getIndex(Collection<?> col, Object obj) {
-			int result = -1;
-			Object array[] = col.toArray();
-			int size = array.length;
-
-			for (int i = 0; i < size; i++) {
-				if (array[i].equals(obj)) {
-					result = i;
-					break;
-				}
-			}
-
-			return result;
 		}
 
 		/**
@@ -1262,12 +1233,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				
 				clearMembers();
 				members = new ArrayList<>(mission.getMembers());
-				Collections.sort(members, new Comparator<>() {
-					@Override
-					public int compare(Worker o1, Worker o2) {
-						return o1.getName().compareToIgnoreCase(o2.getName());
-					}
-				});
 				Iterator<Worker> i = members.iterator();
 				while (i.hasNext()) {
 					Worker member = i.next();
@@ -1297,20 +1262,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		/**
-		 * Gets the mission member at a given index.
-		 *
-		 * @param index the index.
-		 * @return the mission member.
-		 */
-		Worker getMemberAtIndex(int index) {
-			if ((index >= 0) && (index < members.size())) {
-				return (Worker) members.toArray()[index];
-			} else {
-				return null;
-			}
-		}
-
-		/**
 		 * Inner class for updating member table.
 		 */
 		private class MemberTableUpdater implements Runnable {
@@ -1336,6 +1287,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					fireTableCellUpdated(row, column);
 				}
 			}
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return (Unit) members.get(row);
+
 		}
 	}
 }

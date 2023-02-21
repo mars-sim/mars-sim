@@ -11,8 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +24,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -47,6 +44,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
 
 /**
  * This is a tab panel for settlement's Thermal System .
@@ -225,33 +224,7 @@ extends TabPanel {
 		// Prepare thermal control table.
 		heatTable = new JTable(heatTableModel);
 		// Call up the building window when clicking on a row on the table
-		heatTable.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && !e.isConsumed()) {
-					// Get the mouse-selected row
-		            int r = heatTable.getSelectedRow();
-		            SwingUtilities.invokeLater(() -> 
-		            	desktop.openUnitWindow((Unit)heatTable.getValueAt(r, 1), false));
-				}
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// nothing
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// nothing
-			}
-		});
+		heatTable.addMouseListener(new UnitTableLauncher(desktop));
 		
 		heatTable.setRowSelectionAllowed(true);
 		TableColumnModel heatColumns = heatTable.getColumnModel();
@@ -395,7 +368,8 @@ extends TabPanel {
 	/**
 	 * Internal class used as model for the thermal control table.
 	 */
-	private class HeatTableModel extends AbstractTableModel {
+	private class HeatTableModel extends AbstractTableModel
+		implements UnitModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -509,6 +483,11 @@ extends TabPanel {
 			heatScrollPane.validate();
 
 			fireTableDataChanged();
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return buildings.get(row);
 		}
 	}
 	

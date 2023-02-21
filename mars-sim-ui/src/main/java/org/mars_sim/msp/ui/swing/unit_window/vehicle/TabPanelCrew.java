@@ -35,6 +35,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -53,6 +54,8 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
@@ -148,6 +151,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(110);
 		memberTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		memberTable.setRowSelectionAllowed(true);
+		memberTable.setAutoCreateRowSorter(true);
 		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -156,28 +160,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		memberScrollPane.setViewportView(memberTable);
 
 		// Call it a click to display details button when user double clicks the table
-		memberTable.addMouseListener(new MouseListener() {
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			public void mousePressed(MouseEvent e) {
-			}
-
-			public void mouseExited(MouseEvent e) {
-			}
-
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && !e.isConsumed()) {
-			        int index = memberTable.getSelectedRow();
-	    			Person selectedPerson = (Person) memberTableModel.getMemberAtIndex(index);
-	    			if (selectedPerson != null)
-	    				getDesktop().openUnitWindow(selectedPerson, false);
-		        }
-			}
-		});
+		memberTable.addMouseListener(new UnitTableLauncher(getDesktop()));
 
 		update();
 	}
@@ -233,7 +216,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/**
 	 * Table model for mission members.
 	 */
-	private class MemberTableModel extends AbstractTableModel implements UnitListener {
+	private class MemberTableModel extends AbstractTableModel implements UnitListener, UnitModel {
 
 		// Private members.
 		private Mission mission;
@@ -289,8 +272,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
-				Object array[] = members.toArray();
-				Worker member = (Worker) array[row];
+				Worker member = members.get(row);
 				if (column == 0)
 					return member.getName();
 				else if (column == 1)
@@ -322,7 +304,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			return false;
 		}
 
-
 		/**
 		 * Sets the mission for this table model.
 		 *
@@ -341,7 +322,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
-			int index = getIndex(members, member);
+			int index = members.indexOf(member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
@@ -351,34 +332,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			}
 		}
 
-		private int getIndex(Collection<?> col, Object obj) {
-			int result = -1;
-			Object array[] = col.toArray();
-			int size = array.length;
-
-			for (int i = 0; i < size; i++) {
-				if (array[i].equals(obj)) {
-					result = i;
-					break;
-				}
-			}
-
-			return result;
-		}
-
 		/**
 		 * Update mission members.
 		 */
 		void updateMembers() {
 			if (mission != null) {
-//				clearMembers();
 				List<Worker> newList = new ArrayList<>(mission.getMembers());
-				Collections.sort(newList, new Comparator<>() {
-					@Override
-					public int compare(Worker o1, Worker o2) {
-						return o1.getName().compareToIgnoreCase(o2.getName());
-					}
-				});
 
 				if (!members.equals(newList)) {
 					List<Integer> rows = new ArrayList<>();
@@ -427,19 +386,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			}
 		}
 
-		/**
-		 * Gets the mission member at a given index.
-		 *
-		 * @param index the index.
-		 * @return the mission member.
-		 */
-		Worker getMemberAtIndex(int index) {
-			if ((index >= 0) && (index < members.size())) {
-				return (Worker) members.toArray()[index];
-			} else {
-				return null;
-			}
-		}
 
 		/**
 		 * Inner class for updating member table.
@@ -475,6 +421,11 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 					fireTableCellUpdated(row, column);
 				}
 			}
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return (Unit) members.get(row);
 		}
 	}
 }

@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +23,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -46,6 +44,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 
 /**
@@ -201,17 +201,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		// Prepare power table.
 		powerTable = new JTable(powerTableModel);
 		// Call up the building window when clicking on a row on the table
-		powerTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && !e.isConsumed()) {
-					// Get the mouse-selected row
-		            int r = powerTable.getSelectedRow();
-		            SwingUtilities.invokeLater(() -> 
-		            	desktop.openUnitWindow((Unit)powerTable.getValueAt(r, 1), false));
-				}
-			}
-		});
+		powerTable.addMouseListener(new UnitTableLauncher(desktop));
 
 		powerTable.setRowSelectionAllowed(true);
 		TableColumnModel powerColumns = powerTable.getColumnModel();
@@ -348,7 +338,8 @@ public class TabPanelPowerGrid extends TabPanel {
 	/**
 	 * Internal class used as model for the power table.
 	 */
-	private class PowerTableModel extends AbstractTableModel {
+	private class PowerTableModel extends AbstractTableModel
+				implements UnitModel  {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -483,6 +474,11 @@ public class TabPanelPowerGrid extends TabPanel {
 			 * //Collections.sort(buildings); } }
 			 */
 			fireTableDataChanged();
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return buildings.get(row);
 		}
 	}
 

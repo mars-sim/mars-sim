@@ -71,7 +71,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 		}
 
 		// Prepare process list panel.n
-		processPanel = new ResourceProcessPanel(processes);
+		processPanel = new ResourceProcessPanel(processes, getDesktop());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 

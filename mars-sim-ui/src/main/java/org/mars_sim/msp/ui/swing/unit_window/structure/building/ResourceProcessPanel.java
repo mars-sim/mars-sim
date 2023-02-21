@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,17 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.JProcessButton;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
 
 /**
  * Creates a JPanel that will render a list of ResourceProcesses in a JTable.
@@ -56,7 +62,8 @@ public class ResourceProcessPanel extends JPanel {
      * - Single building mode
      * - Multipel builbing mode
      */
-	private static class ResourceProcessTableModel extends AbstractTableModel {
+	private static class ResourceProcessTableModel extends AbstractTableModel
+                implements UnitModel {
 		private static final int RUNNING_STATE = 0;
         private static final int PROCESS_NAME = 1;
         private static final int BUILDING_NAME = 2;
@@ -180,6 +187,11 @@ public class ResourceProcessPanel extends JPanel {
             else
                 return buildings.get(rowIndex);
         }
+
+        @Override
+        public Unit getAssociatedUnit(int row) {
+            return getBuilding(row);
+        }
 	}
 
     /**
@@ -257,13 +269,16 @@ public class ResourceProcessPanel extends JPanel {
      * Create a resource panel that encompasses multiple Buildings each with dedciated Resoruce Processes.
      * @param processes Map.
      */
-    public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes) {
+    public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes, MainDesktopPane desktop) {
         model = new ResourceProcessTableModel(processes);
 
-        buildUI();
+        JTable table = buildUI();
+
+        // In the multi-building mode add a mouse listner to open Details window
+        table.addMouseListener(new UnitTableLauncher(desktop));
     }
 
-    private void buildUI() {
+    private JTable buildUI() {
         // Create scroll panel for storage table
 		JScrollPane scrollPanel = new JScrollPane();
 	    scrollPanel.getViewport().setOpaque(false);
@@ -280,6 +295,10 @@ public class ResourceProcessPanel extends JPanel {
                 }
                 rowIndex = getRowSorter().convertRowIndexToModel(rowIndex);
                 int colIndex = columnAtPoint(p);
+
+                if (colIndex == 0) {
+                    return Msg.getString("ResourceProcessPanel.tooltip.toggling");
+                }
                 // Only display tooltip in last column
                 if ((colIndex-1) != model.getColumnCount()) {
                     return null;
@@ -300,6 +319,8 @@ public class ResourceProcessPanel extends JPanel {
 
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
+
+        return pTable;
     }
 
     /**

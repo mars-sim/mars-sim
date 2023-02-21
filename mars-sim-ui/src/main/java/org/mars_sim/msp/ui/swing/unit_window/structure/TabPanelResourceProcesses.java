@@ -86,7 +86,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		}
 
 		// Prepare process list panel.n
-		processPanel = new ResourceProcessPanel(processes);
+		processPanel = new ResourceProcessPanel(processes, getDesktop());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 		
@@ -114,7 +114,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		levelPanel.setAlignmentY(TOP_ALIGNMENT);
 		topPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel("Overall Effort Level :");
+		JLabel levelLabel = new JLabel("Overall Effort :");
 		levelPanel.add(levelLabel);
 			
 		// Prepare level combo box
