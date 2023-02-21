@@ -42,6 +42,8 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -282,6 +284,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 		tableModel = new TableModel(settlement);
 		table = new JTable(tableModel);
+		table.addMouseListener(new UnitTableLauncher(getDesktop()));
 
 		table.setRowSelectionAllowed(true);
 		TableColumnModel tableColumnModel = table.getColumnModel();
@@ -481,7 +484,8 @@ public class TabPanelAirComposition extends TabPanel {
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class TableModel extends AbstractTableModel {
+	private class TableModel extends AbstractTableModel 
+				implements UnitModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -598,6 +602,11 @@ public class TabPanelAirComposition extends TabPanel {
 			}
 
 			fireTableDataChanged();
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return buildings.get(row);
 		}
 	}
 	

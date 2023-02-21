@@ -7,9 +7,9 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.Dimension;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +36,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 @SuppressWarnings("serial")
 public class TabPanelCredit
@@ -83,6 +85,7 @@ extends TabPanel {
 		creditTable = new JTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setRowSelectionAllowed(true);
+		creditTable.addMouseListener(new UnitTableLauncher(getDesktop()));
 
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 		TableColumnModel columnModel = creditTable.getColumnModel();
@@ -111,13 +114,13 @@ extends TabPanel {
 	 * Internal class used as model for the credit table.
 	 */
 	private static class CreditTableModel extends AbstractTableModel implements CreditListener,
-	UnitManagerListener {
+						UnitManagerListener, UnitModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private Collection<Settlement> settlements;
+		private List<Settlement> settlements;
 		private Settlement thisSettlement;
 		private UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -129,10 +132,8 @@ extends TabPanel {
 			this.thisSettlement = thisSettlement;
 
 			// Get collection of all other settlements.
-			settlements = new ConcurrentLinkedQueue<Settlement>();
-			Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.getSettlements()).iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
+			settlements = new ArrayList<>();
+			for(Settlement settlement : unitManager.getSettlements()) {
 				if (settlement != thisSettlement) {
 					settlements.add(settlement);
 					settlement.getCreditManager().addListener(this);
@@ -172,7 +173,7 @@ extends TabPanel {
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
-				Settlement settlement = (Settlement) settlements.toArray()[row];
+				Settlement settlement = settlements.get(row);
 				if (column == 0) return settlement.getName();
 				else {
 					double credit = 0D;
@@ -245,6 +246,11 @@ extends TabPanel {
 
 		public void destroy() {
 			unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
+		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return settlements.get(row);
 		}
 	}
 
