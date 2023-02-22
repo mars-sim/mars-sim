@@ -771,7 +771,7 @@ public class SettlementTransparentPanel extends JComponent {
     private void buildInfoP() {
 
     	// SvgIcon icon = (SvgIcon) displayIcons.getIcon ("info");
-		Icon icon =  ImageLoader.getIconByName ("weather/info");
+		Icon icon =  ImageLoader.getIconByName ("settlement_map/info");
     	infoButton = new JButton(icon);
 
 		infoButton.setPreferredSize(new Dimension(32, 32));
@@ -793,7 +793,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     private void buildrenameBtn() {
 
-    	Icon icon = ImageLoader.getIconByName("weather/edit");
+    	Icon icon = ImageLoader.getIconByName("settlement_map/edit");
     	renameBtn = new JButton(icon);
     	renameBtn.setPreferredSize(new Dimension(32, 32));
 		renameBtn.setOpaque(false);
@@ -816,7 +816,7 @@ public class SettlementTransparentPanel extends JComponent {
         buttonPane.setOpaque(false);
 
 		// Create rotate clockwise button.
-        final Icon cwIcon = ImageLoader.getIconByName("weather/right");
+        final Icon cwIcon = ImageLoader.getIconByName("settlement_map/right");
         JButton cwButton = new JButton(cwIcon);
         cwButton.setPreferredSize(new Dimension(32, 32));
         cwButton.setOpaque(false);
@@ -832,7 +832,7 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		// Create center button.
-        final Icon centerIcon = ImageLoader.getIconByName("weather/center");
+        final Icon centerIcon = ImageLoader.getIconByName("settlement_map/center");
 		JButton recenterButton = new JButton(centerIcon);
 		recenterButton.setPreferredSize(new Dimension(32, 32));
 		recenterButton.setOpaque(false);
@@ -849,7 +849,7 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		// Create rotate counter-clockwise button.
-        final Icon ccwIcon = ImageLoader.getIconByName("weather/left");
+        final Icon ccwIcon = ImageLoader.getIconByName("settlement_map/left");
         JButton ccwButton = new JButton(ccwIcon);
         ccwButton.setPreferredSize(new Dimension(32, 32));
 		ccwButton.setOpaque(false);
@@ -876,10 +876,9 @@ public class SettlementTransparentPanel extends JComponent {
         labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
 
-	    final Icon labelsIcon = ImageLoader.getIconByName("weather/stack");
+	    final Icon labelsIcon = ImageLoader.getIconByName("settlement_map/stack");
 	    JButton labelsButton = new JButton(
 	    		Msg.getString("SettlementTransparentPanel.button.labels"), labelsIcon);  //$NON-NLS-1$
-
 		labelsButton.setFont(new Font("Dialog", Font.BOLD, 13));
 		labelsButton.setForeground(Color.ORANGE.darker().darker());
 		labelsButton.setPreferredSize(new Dimension(32, 32));
@@ -916,14 +915,11 @@ public class SettlementTransparentPanel extends JComponent {
 	 */
 	private JPopupMenu createLabelsMenu() {
 		JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
-		popMenu.setOpaque(false);
-		popMenu.setBackground(new Color(0,0,0,128));
 		popMenu.setBorderPainted(false);
 
 		// Create Day Night Layer menu item.
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isDaylightTrackingOn()); //$NON-NLS-1$
-		dayNightLabelMenuItem.setForeground(new Color(139,69,19));
 		dayNightLabelMenuItem.setContentAreaFilled(false);
 		dayNightLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -936,8 +932,6 @@ public class SettlementTransparentPanel extends JComponent {
 		// Create building label menu item.
 		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
-		// Add setting setForeground setContentAreaFilled setOpaque
-		buildingLabelMenuItem.setForeground(new Color(139,69,19));
 		buildingLabelMenuItem.setContentAreaFilled(false);
 		buildingLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -949,7 +943,6 @@ public class SettlementTransparentPanel extends JComponent {
 		// Create construction/salvage label menu item.
 		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
-		constructionLabelMenuItem.setForeground(new Color(139,69,19));
 		constructionLabelMenuItem.setContentAreaFilled(false);
 		constructionLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -961,7 +954,6 @@ public class SettlementTransparentPanel extends JComponent {
 		// Create vehicle label menu item.
 		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
-		vehicleLabelMenuItem.setForeground(new Color(139,69,19));
 		vehicleLabelMenuItem.setContentAreaFilled(false);
 		vehicleLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -973,7 +965,6 @@ public class SettlementTransparentPanel extends JComponent {
 		// Create person label menu item.
 		personLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
-		personLabelMenuItem.setForeground(new Color(139,69,19));
 		personLabelMenuItem.setContentAreaFilled(false);
 		personLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -985,7 +976,6 @@ public class SettlementTransparentPanel extends JComponent {
 		// Create person label menu item.
 		robotLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
-		robotLabelMenuItem.setForeground(new Color(139,69,19));
 		robotLabelMenuItem.setContentAreaFilled(false);
 		robotLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

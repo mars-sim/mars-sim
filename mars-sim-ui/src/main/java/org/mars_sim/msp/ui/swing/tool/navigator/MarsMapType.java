@@ -6,13 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
-import org.mars_sim.msp.core.Msg;
-
 public enum MarsMapType {
 
-	SURFACE_MID 	(Msg.getString("img.mars.surfaceMid")), //$NON-NLS-1$
-	TOPO_MID 		(Msg.getString("img.mars.topoMid")), //$NON-NLS-1$
-	GEO_MID 		(Msg.getString("img.mars.geoMid")); //$NON-NLS-1$
+	SURFACE_MID 	("map/mars_surfaceMid"),
+	TOPO_MID 		("map/mars_topoMid"),
+	GEO_MID 		("map/mars_geoMid"); 
 
 	private String path;
 

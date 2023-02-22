@@ -75,16 +75,7 @@ public class MarsMap {
 		// Load Surface Map Image, which is now part of the globe enum
 		String imageName = globeType.getPath();
 
-		MediaTracker mtrack = new MediaTracker(displayArea);
 		marsMap = ImageLoader.getImage(imageName);
-		mtrack.addImage(marsMap, 0);
-		try {
-			mtrack.waitForAll();
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
-			// Restore interrupted state
-		    Thread.currentThread().interrupt();
-		}
 
 		// Prepare Sphere
 		setupSphere();
@@ -225,7 +216,7 @@ public class MarsMap {
 		// Create image out of buffer array
 		globeImage = displayArea
 				.createImage(new MemoryImageSource(MAP_H, MAP_H, buffer_array, 0, MAP_H));
-		
+
 		// NOTE: Replace MediaTracker with faster method
 		// Use BufferedImage image = ImageIO.read() ? 
 		MediaTracker mt = new MediaTracker(displayArea);

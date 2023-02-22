@@ -13,10 +13,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import javax.swing.ImageIcon;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -33,9 +30,7 @@ implements SettlementMapLayer {
 	private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
 	private static final int MAX_BACKGROUND_DIMENSION = 1600;
 
-	private static final String MAP_TILE = "settlement_map_tile";
-	private static final String DIR = ImageLoader.IMAGE_DIR;
-	private static final String JPG = "jpg";
+	private static final String MAP_TILE = "settlement_map/";
 	
 	// Data members.
 	private Map<Settlement, String> settlementBackgroundMap;
@@ -49,7 +44,7 @@ implements SettlementMapLayer {
 	 */
 	public BackgroundTileMapLayer(SettlementMapPanel mapPanel) {
 		this.mapPanel = mapPanel;
-		settlementBackgroundMap = new HashMap<>(MAX_BACKGROUND_IMAGE_NUM);
+		settlementBackgroundMap = new HashMap<>();
 	}
 
 	@Override
@@ -76,19 +71,22 @@ implements SettlementMapLayer {
 
 		double diagonal = Math.hypot(mapWidth, mapHeight);
 
+		ImageObserver imageObserver = null;
+
 		if (backgroundTileImage == null) {
-		    ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
+		    Image backgroundTileIcon = getBackgroundImage(settlement);
 		    if (backgroundTileIcon == null) {
 		    	return;
 		    }
 		    
 		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-		    int imageWidth = (int) (backgroundTileIcon.getIconWidth() * imageScale);
-		    int imageHeight = (int) (backgroundTileIcon.getIconHeight() * imageScale);
+		    int imageWidth = (int) (backgroundTileIcon.getWidth(imageObserver) * imageScale);
+		    int imageHeight = (int) (backgroundTileIcon.getHeight(imageObserver) * imageScale);
 
-		    backgroundTileImage = resizeImage(
-		            backgroundTileIcon.getImage(), 
-		            backgroundTileIcon.getImageObserver(),
+			// No Image observer so assuming image has alreayd laoded from file
+			backgroundTileImage = resizeImage(
+		            backgroundTileIcon, 
+		            imageObserver,
 		            imageWidth, imageHeight
 		            );
 		}
@@ -221,30 +219,20 @@ implements SettlementMapLayer {
 	 * @param settlement the settlement to display.
 	 * @return the background tile image icon or null if none found.
 	 */
-	private ImageIcon getBackgroundImage(Settlement settlement) {
-		ImageIcon result = null;
+	private Image getBackgroundImage(Settlement settlement) {
+		Image result = null;
 
 		if (settlementBackgroundMap.containsKey(settlement)) {
 			String backgroundImageName = settlementBackgroundMap.get(settlement);
-			result = ImageLoader.getIcon(backgroundImageName, JPG, DIR);
-		}
-		else if (settlement != null) {
-			int count = 1;
-			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-			while (i.hasNext()) {
-				if (i.next().equals(settlement)) {
-					String backgroundImageName = MAP_TILE + count;
-					settlementBackgroundMap.put(settlement, backgroundImageName);
-					result = ImageLoader.getIcon(backgroundImageName, JPG, DIR);
-				}
-				count++;
-				if (count > MAX_BACKGROUND_IMAGE_NUM) {
-					count = 1;
-				}
-			}
+			result = ImageLoader.getImage(backgroundImageName);
 		}
 		else {
-            result = ImageLoader.getIcon(MAP_TILE + "1", JPG, DIR);
+			int count = settlementBackgroundMap.size() + 1;
+			count = count % MAX_BACKGROUND_IMAGE_NUM;
+
+			String backgroundImageName = MAP_TILE + count;
+			settlementBackgroundMap.put(settlement, backgroundImageName);
+			result = ImageLoader.getImage(backgroundImageName);
 		}
 
 		return result;

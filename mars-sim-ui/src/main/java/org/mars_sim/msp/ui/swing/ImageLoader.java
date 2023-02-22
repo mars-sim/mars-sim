@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -37,9 +37,7 @@ public class ImageLoader {
 	private static Map<String, Icon> iconByName = new HashMap<>();
 	private static Properties iconPaths;
 
-	private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
 	private static HashMap<String, Image> imageCache = new HashMap<>();
-	private static Toolkit usedToolkit = null;
 
 	private static Icon defaultIcon;
 
@@ -47,13 +45,10 @@ public class ImageLoader {
 	 * Sub-directory/package for the images.
 	 */
 	// Note: Switch to classloader compatible paths
-	public static final String IMAGE_DIR = "/images/";
-	public static final String MAPS_DIR = "/maps/";
-	public static final String ICON_DIR = "/icons/";
-	public static final String VEHICLE_ICON_DIR = "/icons/vehicle/";
-	public static final String PNG = "png";
-	public static final String SVG = "svg";
-	public static final String SLASH = "/";
+	private static final String IMAGE_DIR = "/images/";
+	private static final String MAPS_DIR = "/maps/";
+	private static final String ICON_DIR = "/icons/";
+	private static final String SVG = "svg";
 	
 	static {
 		iconPaths = new Properties();
@@ -106,43 +101,6 @@ public class ImageLoader {
 		return found;
 	}
 
-	/**
-	 * Loads the image icon with the specified name and a "png" image extension from
-	 * IMAGE_DIR. This operation may either create a new Image Icon of returned
-	 * a previously created one.
-	 *
-	 * @param imagename
-	 *            Name of the image to load.
-	 * @return ImageIcon containing image of specified name.
-	 */
-	public static ImageIcon getIcon(String imagename) {
-		return getIcon(imagename, PNG, IMAGE_DIR);
-	}
-
-	/**
-	 * Loads the image icon with the specified name. This operation may either create
-	 * a new Image Icon of returned a previously created one.
-	 *
-	 * @param imagename
-	 *            Name of the image to load.
-	 * @param ext
-	 *            the file extension (ex. "png", "jpg").
-	 * @param idr
-	 *            the directory of the file .
-	 * @return ImageIcon containing image of specified name.
-	 */
-	public static ImageIcon getIcon(String imagename, String ext, String dir) {
-		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
-		ImageIcon found = iconCache.get(fullImageName);
-		if (found == null) {
-			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : dir + fullImageName;
-			found = loadImageIcon(fileName);
-			iconCache.put(fullImageName, found);
-		}
-
-		return found;
-	}
-
 	private static ImageIcon loadImageIcon(String fileName) {
 		URL imageSource = ImageLoader.class.getResource(fileName);
 		if (imageSource == null) {
@@ -183,23 +141,33 @@ public class ImageLoader {
 	public static Image getImage(String imageName) {
 		Image newImage = imageCache.get(imageName);
 		if (newImage == null) {
-
-			if (usedToolkit == null) {
-				usedToolkit = Toolkit.getDefaultToolkit();
+			InputStream imageURL = null;
+			String imagePath = iconPaths.getProperty(imageName);
+			if (imagePath != null) {
+				imageURL = ImageLoader.class.getResourceAsStream(imagePath);
+			}
+			else {
+				// Search for image
+				imageURL = ImageLoader.class.getResourceAsStream(IMAGE_DIR + imageName);
+				if (imageURL == null) {
+					imageURL = ImageLoader.class.getResourceAsStream(ICON_DIR + imageName);
+					if (imageURL == null) {					
+						imageURL = ImageLoader.class.getResourceAsStream(MAPS_DIR + imageName);
+					}		
+				}
 			}
 
-			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imageName);
-			if (imageURL == null) {
-				imageURL = ImageLoader.class.getResource(ICON_DIR + imageName);
-				if (imageURL == null) {					
-					imageURL = ImageLoader.class.getResource(MAPS_DIR + imageName);
-					if (imageURL == null) {	
-						logger.severe("'" + imageName + "' cannot be found");
-					}
-				}		
-    		}
+			if (imageURL == null) {	
+				logger.severe("'" + imageName + "' cannot be found");
+			}
 
-			newImage = usedToolkit.createImage(imageURL);
+			// Read and load image
+			try {
+				newImage = ImageIO.read(imageURL);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			imageCache.put(imageName, newImage);
 		}
 		return newImage;

@@ -657,7 +657,7 @@ extends JComponent implements ClockListener {
 	 * @return
 	 */
 	public static Icon getLanderIcon() {
-		return ImageLoader.getIcon(ImageLoader.ICON_DIR + LANDER_PNG);
+		return ImageLoader.getIconByName("lander");
 	}
 
 	public static Image getIconImage() {

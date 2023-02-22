@@ -84,8 +84,6 @@ public class MainDesktopPane extends JDesktopPane
 	// Data members
 //	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
-	/** True if this MainDesktopPane hasn't been displayed yet. */
-	private boolean firstDisplay;
 	
 	/** The game mode of this simulation session. */
 	public GameMode mode;
@@ -98,7 +96,7 @@ public class MainDesktopPane extends JDesktopPane
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 	/** The image icon of the tiled background. */
-	private ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
+	private Image baseImageIcon = ImageLoader.getImage("background"); 
 
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
@@ -198,7 +196,6 @@ public class MainDesktopPane extends JDesktopPane
 	public void componentResized(ComponentEvent e) {
 
 		Dimension screenSize = getSize();
-//		logger.config("Resizing background to " + screenSize.width + " x " + screenSize.height);
 		
 		if (screenSize == null || screenSize.getWidth() == 0 || screenSize.getHeight() == 0) {
 			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -208,9 +205,13 @@ public class MainDesktopPane extends JDesktopPane
 		Image backgroundImage = createImage((int)screenSize.getWidth(), (int)screenSize.getHeight());
 		Graphics backgroundGraphics = backgroundImage.getGraphics();
 
-		for (int x = 0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {
-			for (int y = 0; y < backgroundImage.getHeight(this); y += baseImageIcon.getIconHeight()) {
-				backgroundGraphics.drawImage(baseImageIcon.getImage(), x, y, this);
+		int sourceWidth = baseImageIcon.getWidth(this);
+		int sourceHeight = baseImageIcon.getHeight(this);
+		int targetWidth = backgroundImage.getWidth(this);
+		int targetHeight = backgroundImage.getHeight(this);
+		for (int x = 0; x < targetWidth; x += sourceWidth) {
+			for (int y = 0; y < targetHeight; y += sourceHeight) {
+				backgroundGraphics.drawImage(baseImageIcon, x,y, this);
 			}
 		}
 

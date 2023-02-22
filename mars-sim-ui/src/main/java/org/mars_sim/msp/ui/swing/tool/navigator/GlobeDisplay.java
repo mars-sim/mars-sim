@@ -143,7 +143,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		rho = globeCircumference / TWO_PI;
 		halfMap = globeBoxWidth / 2;
 
-		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield")); //$NON-NLS-1$
+		starfield = ImageLoader.getImage("map/starfield");
 	
 		// Set component size
 		setPreferredSize(new Dimension(globeBoxWidth, globeBoxHeight));
@@ -368,61 +368,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			g2d.drawImage(dbImage, 0, 0, this);
 	}
 
-//	/**
-//	 * Draws the day/night shading on the globe.
-//	 * 
-//	 * @param g graphics context
-//	 */
-//	protected void drawShading(Graphics2D g) {
-//		int centerX = globeBoxWidth / 2;
-//		int centerY = globeBoxHeight / 2;
-//
-//		for (int x = 0; x < globeBoxWidth * 2; x++) {
-//			for (int y = 0; y < globeBoxHeight * 2; y++) {
-//				int xDiff = x - centerX;
-//				int yDiff = y - centerY;
-//				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
-//					Coordinates location = centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D);
-//
-//					double sunlight = 1D;
-//					try {
-//						sunlight = surfaceFeatures.getSurfaceSunlightRatio(location);
-//					} catch (NullPointerException e) {
-//						// Do nothing.
-//						// This may be caused if simulation hasn't been fully initialized yet.
-//					}
-//
-//					if (sunlight > 1D) {
-//						sunlight = 1D;
-//					}
-//					int sunlightInt = (int) (127 * sunlight);
-//					shadingArray[x + (y * globeBoxWidth)] = ((127 - sunlightInt) << 24) & 0xFF000000;
-//				} else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
-//					// Draw black opaque pixel at boundary of Mars.
-//					shadingArray[x + (y * globeBoxHeight)] = 0xFF000000;
-//				} else {
-//					// Draw transparent pixel so background stars will show through.
-//					shadingArray[x + (y * globeBoxHeight)] = 0x00000000;
-//				}
-//			}
-//		}
-//
-//		// Create shading image for map
-//		Image shadingMap = this.createImage(new MemoryImageSource(globeBoxWidth, globeBoxHeight, shadingArray, 0, globeBoxWidth));
-//		// NOTE: Replace MediaTracker with faster method
-//		// Use BufferedImage image = ImageIO.read() ? 
-//		MediaTracker mt = new MediaTracker(this);
-//		mt.addImage(shadingMap, 0);
-//		try {
-//			mt.waitForID(0);
-//		} catch (InterruptedException e) {
-//			logger.log(Level.SEVERE, Msg.getString("GlobeDisplay.log.shadingInterrupted", e.toString()) //$NON-NLS-1$
-//			);
-//		}
-//
-//		// Draw the shading image
-//		g.drawImage(shadingMap, 0, 0, this);
-//	}
 
 	/**
 	 * draw the dots on the globe that identify units

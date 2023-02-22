@@ -252,7 +252,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel(" Lat :", JLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
+		JLabel latLabel = new JLabel(" Lat :", JLabel.RIGHT);
 		coordPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
@@ -279,18 +279,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		latDir = new JComboBoxMW<Object>(latStrings);
 		latDir.setEditable(false);
-		//latDir.setSize(new Dimension(20, -1));
 		coordPane.add(latDir);
 
 		// Prepare longitude entry components
-		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
-		// longLabel.setAlignmentY(.5F);
+		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);
 		coordPane.add(longLabel);
 
 		// Switch to using ComboBoxMW for longtitude
 		longCB = new JComboBoxMW<Integer>(lon_degrees);
 		longCB.setSelectedItem(0);
-		//longCB.setSize(new Dimension(CB_WIDTH, -1));
 		coordPane.add(longCB);
 
 		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -298,14 +295,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		longDir = new JComboBoxMW<Object>(longStrings);
 		longDir.setEditable(false);
-		//longDir.setSize(new Dimension(20, -1));
 		coordPane.add(longDir);
 
 		controlPane.add(coordPane);
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		//JPanel optionsPane = new JPanel(new GridLayout(1, 3));
 		JPanel optionsPane = new JPanel();
 
 		controlPane.add(optionsPane);

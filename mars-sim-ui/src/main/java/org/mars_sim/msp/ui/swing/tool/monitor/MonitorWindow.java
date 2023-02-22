@@ -50,7 +50,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -295,7 +294,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		else {
 			logger.severe(model + " not found.");
 			try {
-				addTab(new UnitTab(this, model, false, UnitWindow.USER));
+				addTab(new UnitTab(this, model, false,"usertab"));
 			} catch (Exception e) {
 				logger.severe(model + " cannot be added.");
 			}

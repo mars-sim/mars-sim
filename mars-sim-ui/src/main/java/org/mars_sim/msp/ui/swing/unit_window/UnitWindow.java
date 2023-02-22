@@ -40,8 +40,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	public static final int STATUS_HEIGHT = 60;
 	
-	public static final String USER = Msg.getString("icon.user");
-
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
 	/** The center panel. */
