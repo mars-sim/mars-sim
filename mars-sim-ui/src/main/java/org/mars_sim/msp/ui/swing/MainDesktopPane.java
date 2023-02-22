@@ -101,7 +101,6 @@ public class MainDesktopPane extends JDesktopPane
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
 	private SettlementWindow settlementWindow;
-	private NavigatorWindow navWindow;
 	private TimeWindow timeWindow;
 	private CommanderWindow commanderWindow;
 
@@ -153,8 +152,6 @@ public class MainDesktopPane extends JDesktopPane
 		backgroundLabel.setLocation(0, 0);
 		// Push the background to the back
 		moveToBack(backgroundLabel);
-		// Initialize firstDisplay to true
-		firstDisplay = true;
 		// Prep listeners
 		prepareListeners();
 
@@ -322,7 +319,7 @@ public class MainDesktopPane extends JDesktopPane
 //		}
 
 		// Prepare navigator window
-		navWindow = new NavigatorWindow(this);
+		NavigatorWindow navWindow = new NavigatorWindow(this);
 		try {
 			navWindow.setClosed(true);
 		} catch (PropertyVetoException e) {
