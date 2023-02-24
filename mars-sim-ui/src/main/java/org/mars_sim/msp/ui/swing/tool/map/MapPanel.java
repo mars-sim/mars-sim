@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -315,11 +314,7 @@ public class MapPanel extends JPanel {
 
 				if (centerCoords == null) {
 					logger.severe("centerCoords is null.");
-					Settlement settlement = desktop.getSettlementMapPanel().getSettlement();
-					if (settlement != null) {
-						centerCoords = settlement.getCoordinates();
-						showMap(centerCoords);
-					}
+					centerCoords = new Coordinates("0.0", "0.0");
 				}
 				
 				map.drawMap(centerCoords);

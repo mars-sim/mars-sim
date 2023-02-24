@@ -65,7 +65,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
-	public static final String TITLE = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "monitor";
 
 	// Added an custom icon for each tab
@@ -119,7 +119,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	public MonitorWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
-		super(TITLE, desktop);
+		super(NAME, desktop);
 
 		unitManager = desktop.getSimulation().getUnitManager();
 		

@@ -117,7 +117,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(NavigatorWindow.NAME, null, NavigatorWindow.ICON); //$NON-NLS-
 		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON); //$NON-NLS-1$
 		addToolButton(TimeWindow.NAME, null, TimeWindow.ICON); //$NON-NLS-1$
-		addToolButton(MonitorWindow.TITLE, null, MonitorWindow.ICON); //$NON-NLS-1$
+		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON); //$NON-NLS-1$
 		addToolButton(MissionWindow.NAME, null, MissionWindow.ICON); //$NON-NLS-1$
 		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON); //$NON-NLS-1$
 		addToolButton(ScienceWindow.NAME, null, ScienceWindow.ICON); //$NON-NLS-1$

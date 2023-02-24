@@ -44,7 +44,6 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
@@ -95,9 +94,6 @@ extends ToolWindow {
 	private boolean lockSearchText;
 	/** Array of category names. */
 	private String[] unitCategoryNames;
-	
-	// Data members
-	private SettlementMapPanel mapPanel;
 	
 	/** Category selector. */
 	private JComboBoxMW<?> searchForSelect;
@@ -291,8 +287,10 @@ extends ToolWindow {
 				foundUnit = true;
 				if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit, false);
 				
-				if (marsNavCheck.isSelected())
-					desktop.centerMapGlobe(unit.getCoordinates());
+				if (marsNavCheck.isSelected()) {
+					NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
+					nw.updateCoords(unit.getCoordinates());
+				}
 				
 				if (settlementCheck.isSelected())
 					 openUnit(unit);
@@ -310,8 +308,6 @@ extends ToolWindow {
 	}
 
 	public void openUnit(Unit u) {
-
-		mapPanel = desktop.getSettlementWindow().getMapPanel();
 		
 		if (u.isInSettlement()) {
 			
@@ -324,8 +320,8 @@ extends ToolWindow {
 
 			if (vv.getSettlement() == null) {
 				// person is on a mission on the surface of Mars 
-				desktop.openToolWindow(NavigatorWindow.NAME);
-				desktop.centerMapGlobe(u.getCoordinates());
+				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
+				nw.updateCoords(vv.getCoordinates());
 			} 
 			
 			else {
@@ -359,36 +355,20 @@ extends ToolWindow {
 		}
 	}
 	
-	public void showPersonRobot(Unit u) {
+	private void showPersonRobot(Unit u) {
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
 
-		desktop.openToolWindow(SettlementWindow.NAME);
+		SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
 		
 		if (u instanceof Person) {
 			Person p = (Person) u;
-			
-			double xLoc = p.getPosition().getX();
-			double yLoc = p.getPosition().getY();
-			double scale = mapPanel.getScale();
-			mapPanel.reCenter();
-			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
-			
-			if (mapPanel.getSelectedPerson() != null)
-				mapPanel.displayPerson(p);
+			sw.displayPerson(p);
 		} 
 		
 		else { 
-			Robot r = (Robot) u;
-			
-			double xLoc = r.getPosition().getX();
-			double yLoc = r.getPosition().getY();
-			double scale = mapPanel.getScale();
-			mapPanel.reCenter();
-			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
-				
-			if (mapPanel.getSelectedRobot() != null)
-				mapPanel.selectRobot(r);
+			Robot r = (Robot)u;
+			sw.displayRobot(r);
 		}
 }
 	

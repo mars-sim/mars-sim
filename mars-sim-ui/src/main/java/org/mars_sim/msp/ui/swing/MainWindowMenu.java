@@ -130,7 +130,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
 		toolsMenu.add(createCheckMenuItem(TimeWindow.NAME, TimeWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
-		toolsMenu.add(createCheckMenuItem(MonitorWindow.TITLE, MonitorWindow.ICON, TOOL, null,
+		toolsMenu.add(createCheckMenuItem(MonitorWindow.NAME, MonitorWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	
 		toolsMenu.add(createCheckMenuItem(MissionWindow.NAME, MissionWindow.ICON, TOOL, null,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
@@ -404,8 +404,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		if (newGuideURL != null) {
-			desktop.openToolWindow(GuideWindow.NAME);
-			GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide = (GuideWindow) desktop.openToolWindow(GuideWindow.NAME);
 			ourGuide.setURLString(newGuideURL); //$NON-NLS-1$
 		}
 	}

@@ -19,8 +19,14 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
@@ -127,15 +133,6 @@ public class SettlementWindow extends ToolWindow {
 		setVisible(true);
 	}
 
-	/**
-	 * Gets the settlement map panel.
-	 *
-	 * @return the settlement map panel.
-	 */
-	public SettlementMapPanel getMapPanel() {
-		return mapPanel;
-	}
-
 	private String format0(double x, double y) {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
@@ -229,5 +226,92 @@ public class SettlementWindow extends ToolWindow {
 		desktop = null;
 
 	}
+
+	/**
+	 * Center the map panel on a position in a Settlement.
+	 * @param settlement To display
+	 * @parma position Location position within the set
+	 */
+	private void refocusMap(Settlement settlement, LocalPosition position) {
+		// Surely this should be simpler ?
+		mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
+
+		double xLoc = position.getX();
+		double yLoc = position.getY();
+		double scale = mapPanel.getScale();
+		mapPanel.reCenter();
+		mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+	}
+
+	/**
+	 * Dispay a Vehicle in the appropirate Settlement map. The map will be switched to 
+	 * the appropriate Settlement and focused on the Vehicle. The Vehicle labels will be enabled.
+	 * @param vv Vehicle to display
+	 */
+    public void displayVehicle(Vehicle vv) {
+		if (vv.isInSettlement()) {
+			refocusMap(vv.getSettlement(), vv.getPosition());
+			mapPanel.setShowVehicleLabels(true);
+		}
+    }
+
+	/**
+	 * Display a worker in the settlement map. This caters for the Worker
+	 * 1. In a Building
+	 * 2. In a Vehicle
+	 * 3. Outsid edoing a local EVA
+	 * @param w Worker to display
+	 */
+	private boolean displayWorker(Worker w) {
+		Settlement home = null;
+		LocalPosition p = null;
+		if (w.isInSettlement()) {
+			home = w.getSettlement();
+			p = w.getBuildingLocation().getPosition();
+		}
+		else if (w.isInVehicle()) {
+			Vehicle v = w.getVehicle();
+			home = v.getSettlement();
+			p = v.getPosition();
+		}
+		else if (w.isOutside()) {
+			home = w.getSettlement();
+			p = w.getPosition();
+		}
+		else {
+			return false;
+		}
+
+		refocusMap(home, p);
+		return true;
+	}
+
+	/**
+	 * Dispay a Robot in the appropirate Settlement map. The map will be switched to 
+	 * the appropriate Settlement and focused on the Robot. The Robot labels will be enabled.
+	 * @param t Robot to display
+	 */
+    public void displayRobot(Robot r) {
+		if (displayWorker(r)) {
+			mapPanel.setShowRobotLabels(true);
+
+			if (mapPanel.getSelectedRobot() != null && mapPanel.getSelectedRobot() != r)
+				mapPanel.selectRobot(r);
+		}
+    }
+
+	/**
+	 * Dispay a Person in the appropirate Settlement map. The map will be switched to 
+	 * the appropriate Settlement and focused on the Person. The Person labels will be enabled.
+	 * @param p Person to display
+	 */
+    public void displayPerson(Person p) {
+		if (displayWorker(p)) {
+			mapPanel.setShowPersonLabels(true);
+
+			if (mapPanel.getSelectedPerson() != null && mapPanel.getSelectedPerson() != p)
+				mapPanel.selectPerson(p);
+		}
+    }
 
 }

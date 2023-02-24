@@ -221,9 +221,8 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 	 */
 	private void displayStudyInScienceTool() {
 		if (study != null) {
-			ScienceWindow scienceToolWindow = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
+			ScienceWindow scienceToolWindow = (ScienceWindow) desktop.openToolWindow(ScienceWindow.NAME);
 			scienceToolWindow.setScientificStudy(study);
-			desktop.openToolWindow(ScienceWindow.NAME);
 		}
 	}
 }
