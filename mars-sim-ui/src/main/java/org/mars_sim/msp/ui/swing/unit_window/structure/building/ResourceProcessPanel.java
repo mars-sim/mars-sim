@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +35,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.JProcessButton;
-import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 /**
  * Creates a JPanel that will render a list of ResourceProcesses in a JTable.

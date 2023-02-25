@@ -702,9 +702,11 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		// Update all tool windows.
-		for (ToolWindow w : toolWindows) {
-			if (w.isVisible() || w.isShowing())
-				w.update(pulse);
+		synchronized(toolWindows) {
+			for (ToolWindow w : toolWindows) {
+				if (w.isVisible() || w.isShowing())
+					w.update(pulse);
+			}
 		}
 	}
 

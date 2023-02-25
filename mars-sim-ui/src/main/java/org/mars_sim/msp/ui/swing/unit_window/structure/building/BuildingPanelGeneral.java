@@ -7,19 +7,20 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGGraphicNodeIcon;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
@@ -53,14 +54,12 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Add SVG Image loading for the building
-		Dimension dim = new Dimension(110, 110);
-		Settlement settlement = building.getSettlement();
-		SettlementMapPanel mapPanel = new SettlementMapPanel(settlement, building);
-		mapPanel.setPreferredSize(dim);
-
+		GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
+		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 220, 110, true);
+		JLabel svgLabel = new JLabel(svgIcon);
 		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		svgPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		svgPanel.add(mapPanel);
+		svgPanel.add(svgLabel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.

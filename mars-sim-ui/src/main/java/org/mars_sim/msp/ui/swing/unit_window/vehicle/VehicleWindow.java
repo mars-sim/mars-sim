@@ -43,6 +43,7 @@ public class VehicleWindow extends UnitWindow {
 		this.vehicle = vehicle;
 
 		// Add tab panels
+		addTabPanel(new TabPanelGeneral(vehicle, desktop));
 		if (vehicle instanceof Crewable) {
 			Crewable crewableVehicle = (Crewable) vehicle;
 			if (crewableVehicle.getCrewCapacity() > 0)

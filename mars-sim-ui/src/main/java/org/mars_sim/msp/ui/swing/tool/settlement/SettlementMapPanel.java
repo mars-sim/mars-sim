@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -72,7 +71,7 @@ public class SettlementMapPanel extends JPanel {
 
 	private MainDesktopPane desktop;
 
-	private Building building;
+	//private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
@@ -167,32 +166,6 @@ public class SettlementMapPanel extends JPanel {
 
 		repaint();
 	}
-
-	/**
-	 * Constructor 2 A panel for initializing the display of a building svg image
-	 * by BuildingPanel
-	 */
-	public SettlementMapPanel(Settlement settlement, Building building) {
-		super();
-
-		// Initialize data members.
-		xPos = 0D;
-		yPos = 0D;
-		rotation = 0D;
-		scale = DEFAULT_SCALE;
-		this.settlement = settlement;
-		this.building = building;
-
-		mapLayers = new ArrayList<>(1);
-		mapLayers.add(new StructureMapLayer(this));
-
-		// Set preferred size.
-		setPreferredSize(new Dimension(100, 100));
-
-		// Set foreground and background colors.
-		setOpaque(true);
-	}
-
 
 	public void detectMouseMovement() {
 
@@ -1051,8 +1024,7 @@ public class SettlementMapPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		if (building != null
-				|| (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME))) {
+		if (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 			Graphics2D g2d = (Graphics2D) g;
 
 			g2d.setFont(sansSerif);
@@ -1067,7 +1039,7 @@ public class SettlementMapPanel extends JPanel {
 			Iterator<SettlementMapLayer> i = mapLayers.iterator();
 			while (i.hasNext()) {
 				// Add building parameter
-				i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+				i.next().displayLayer(g2d, settlement, null, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 			}
 		}
 	}
@@ -1090,7 +1062,6 @@ public class SettlementMapPanel extends JPanel {
 		menu = null;
 		settlement = null;
 		selectedPerson = null;
-		building = null;
 		settlementWindow = null;
 
 		// Destroy all map layers.
@@ -1101,7 +1072,6 @@ public class SettlementMapPanel extends JPanel {
 
 		mapLayers = null;
 		selectedRobot = null;
-		building = null;
 		settlementTransparentPanel = null;
 	}
 
