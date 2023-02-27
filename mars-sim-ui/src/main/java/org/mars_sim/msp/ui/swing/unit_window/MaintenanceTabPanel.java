@@ -11,258 +11,249 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.BoundedRangeModel;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.resource.MaintenanceScope;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * The MaintenanceTabPanel is a tab panel for unit maintenance information.
  */
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
+    private static final String SPANNER_ICON = "maintenance";
+	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
+
+
+	/** The malfunction manager instance. */
+	private MalfunctionManager manager;
 	
-	private static final String MAINT_ICON = "maintenance";
+	/** The wear condition label. */
+	private JLabel wearConditionLabel;
+	/** The last completed label. */
+	private JLabel lastCompletedLabel;
+	/** Label for parts. */
+	private JLabel partsLabel;
 
-    private int wearConditionCache; // The cached value for the wear condition.
-    private int lastCompletedTime; // The time since last completed maintenance.
-    
-    private JLabel wearConditionLabel; // The wear condition label.
-    private JLabel lastCompletedLabel; // The last completed label.
-    private JLabel partsLabel; // Label for showing maintenance parts list.
-    private JPanel malfunctionListPanel; // Malfunction list panel.
-   
-    private BoundedRangeModel progressBarModel; // The progress bar model.
-    
-    private Collection<MalfunctionPanel> malfunctionPanels; // List of malfunction panels.
-    private Collection<Malfunction> malfunctionCache; // List of malfunctions.
+	/** The progress bar model. */
+	private BoundedRangeModel progressBarModel;
+	/** The parts table model. */
+	private PartTableModel tableModel;
 
-    /**
-     * Constructor.
-     *
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
-     */
-    public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) {
-        // Use the TabPanel constructor
-        super(
-        	Msg.getString("MaintenanceTabPanel.title"),
-        	Msg.getString("MaintenanceTabPanel.title"), 
-        	ImageLoader.getIconByName(MAINT_ICON), 
-        	Msg.getString("MaintenanceTabPanel.title"),
-        	unit, desktop
-        );
-	}
-	
-    @Override
-    protected void buildUI(JPanel content) {
-        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
-        MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-
-        JPanel northPanel = new JPanel();
-        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
-
-        // Create maintenance panel
-        JPanel maintenancePanel = new JPanel(new GridLayout(6, 1, 0, 0));
-        northPanel.add(maintenancePanel);
-        content.add(northPanel, BorderLayout.NORTH);
-
-        // Create wear condition label.
-        wearConditionCache = (int) Math.round(manager.getWearCondition());
-        wearConditionLabel = new JLabel("Condition: " + wearConditionCache +
-                "%", JLabel.CENTER);
-        wearConditionLabel.setToolTipText("The health condition due to wear & tear : 100% = new; 0% = worn out");
-        maintenancePanel.add(wearConditionLabel);
-
-        // Create lastCompletedLabel.
-        lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-        lastCompletedLabel = new JLabel("Last Completed: " + lastCompletedTime +
-            " sols", JLabel.CENTER);
-        maintenancePanel.add(lastCompletedLabel);
-
-        // Create maintenance progress bar panel.
-        JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        maintenancePanel.add(progressPanel);
-
-        // Prepare maintenance parts label.
-        partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
-        partsLabel.setPreferredSize(new Dimension(-1, -1));
-        maintenancePanel.add(partsLabel);
-
-        // Prepare progress bar.
-        JProgressBar progressBar = new JProgressBar();
-        progressBarModel = progressBar.getModel();
-        progressBar.setStringPainted(true);
-        progressPanel.add(progressBar);
-
-        // Set initial value for progress bar.
-        double completed = manager.getMaintenanceWorkTimeCompleted();
-        double total = manager.getMaintenanceWorkTime();
-        int percentDone = (int) (100D * (completed / total));
-        progressBarModel.setValue(percentDone);
-
-        // Prepare malfunction panel
-        JPanel malfunctionPanel = new JPanel(new BorderLayout(0, 0));
-        content.add(malfunctionPanel, BorderLayout.CENTER);
-
-        // Create malfunctions label
-        JLabel malfunctionsLabel = new JLabel("Malfunctions", JLabel.CENTER);
-        malfunctionPanel.add(malfunctionsLabel, BorderLayout.NORTH);
-
-        // Create scroll panel for malfunction list
-        JScrollPane malfunctionScrollPanel = new JScrollPane();
-        malfunctionScrollPanel.setPreferredSize(new Dimension(170, 120));
-        malfunctionPanel.add(malfunctionScrollPanel, BorderLayout.CENTER);
-
-        // Create malfunction list main panel.
-        JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
-        malfunctionScrollPanel.setViewportView(malfunctionListMainPanel);
-
-        // Create malfunction list panel
-        malfunctionListPanel = new JPanel();
-        malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
-        malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
-
-        // Create malfunction panels
-        malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();
-        malfunctionPanels = new ArrayList<>();
-        Iterator<Malfunction> i = malfunctionCache.iterator();
-        while (i.hasNext()) {
-            MalfunctionPanel panel = new MalfunctionPanel(i.next(), null);
-            malfunctionListPanel.add(panel);
-            malfunctionPanels.add(panel);
-        }
-    }
-
-    /**
-     * Updates this panel.
-     */
-    @Override
-    public void update() {
-        Malfunctionable malfunctionable = (Malfunctionable) getUnit();
-        MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-
-        // Update the wear condition label.
-        int wearCondition = (int) Math.round(manager.getWearCondition());
-        if (wearCondition != wearConditionCache) {
-            wearConditionCache = wearCondition;
-            wearConditionLabel.setText("Wear Condition: " + wearCondition + "%");
-        }
-
-        // Update last completed label.
-        int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-        if (lastComplete != lastCompletedTime) {
-            lastCompletedTime = lastComplete;
-            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " Sols");
-        }
-
-		// Update tool tip.
-		lastCompletedLabel.setToolTipText(getToolTipString());
-
-        // Update progress bar.
-        double completed = manager.getMaintenanceWorkTimeCompleted();
-        double total = manager.getMaintenanceWorkTime();
-        int percentDone = (int) (100D * (completed / total));
-        progressBarModel.setValue(percentDone);
-
-        // Update parts label.
-        partsLabel.setText(getPartsString(false));
-        // Update tool tip.
-		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
-
-
-        // Get list of malfunctions.
-        Collection<Malfunction> malfunctions = manager.getMalfunctions();
-
-        // Update malfunction panels if necessary.
-        if (!malfunctionCache.equals(malfunctions)) {
-            // Add malfunction panels for new malfunctions.
-            Iterator<Malfunction> iter1 = malfunctions.iterator();
-            while (iter1.hasNext()) {
-                Malfunction malfunction = iter1.next();
-                if (!malfunctionCache.contains(malfunction)) {
-                    MalfunctionPanel panel = new MalfunctionPanel(malfunction, null);
-                    malfunctionPanels.add(panel);
-                    malfunctionListPanel.add(panel);
-                }
-            }
-
-            // Remove malfunction panels for repaired malfunctions.
-            Iterator<Malfunction> iter2 = malfunctionCache.iterator();
-            while (iter2.hasNext()) {
-                Malfunction malfunction = iter2.next();
-                if (!malfunctions.contains(malfunction)) {
-                    MalfunctionPanel panel = getMalfunctionPanel(malfunction);
-                    if (panel != null) {
-                        malfunctionPanels.remove(panel);
-                        malfunctionListPanel.remove(panel);
-                    }
-                }
-            }
-
-            // Update malfunction cache.
-            malfunctionCache = malfunctions;
-        }
-
-        // Have each malfunction panel update.
-        Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
-        while (i.hasNext()) i.next().updateMalfunctionPanel();
-    }
-
-    /**
-     * Gets the parts string.
-     * 
-     * @return string.
-     */
-    private String getPartsString(boolean useHtml) {
-    	Malfunctionable malfunctionable = (Malfunctionable) getUnit();
-
-        return MalfunctionPanel.getPartsString("Needed Parts: ",
-                                        malfunctionable.getMalfunctionManager().getMaintenanceParts(),
-                                        useHtml).toString();
-    }
+	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	/**
-	 * Creates multi-line tool tip text.
+	 * Constructor.
+	 * 
+	 * @param malfunctionable the malfunctionable building the panel is for.
+	 * @param desktop         The main desktop.
 	 */
-	private String getToolTipString() {
-		StringBuilder result = new StringBuilder("<html>");
-		result.append("The Last Complete Maintenance Was Done ")
-			.append(lastCompletedTime)
-			.append(" Sols Ago<br>")
-			.append("</html>");
-		return result.toString();
+	public MaintenanceTabPanel(Unit malfunctionable, MainDesktopPane desktop) {
+		super(
+			Msg.getString("MaintenanceTabPanel.title"), 
+			ImageLoader.getIconByName(SPANNER_ICON), 
+			Msg.getString("MaintenanceTabPanel.tooltip"),             
+			malfunctionable, 
+			desktop
+		);
+
+		// Initialize data members.
+        Malfunctionable mal = (Malfunctionable) malfunctionable;
+		manager = mal.getMalfunctionManager();
+
+        tableModel = new PartTableModel(manager);
+	}
+	
+	/**
+	 * Build the UI
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+	
+		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 2, 1));
+		center.add(labelPanel, BorderLayout.NORTH);
+		
+		// Create wear condition label.
+		wearConditionLabel = new JLabel(Msg.getString("MaintenanceTabPanel.wearCondition", ""),
+				JLabel.CENTER);
+		wearConditionLabel.setToolTipText(Msg.getString("MaintenanceTabPanel.wear.toolTip"));
+		labelPanel.add(wearConditionLabel);
+
+		// Create lastCompletedLabel.
+		lastCompletedLabel = new JLabel(Msg.getString("MaintenanceTabPanel.lastCompleted", ""),
+				JLabel.CENTER);
+		labelPanel.add(lastCompletedLabel);
+
+		// Create maintenance progress bar panel.
+		JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		labelPanel.add(progressPanel);
+		progressPanel.setOpaque(false);
+
+		// Prepare progress bar.
+		JProgressBar progressBar = new JProgressBar();
+		progressBarModel = progressBar.getModel();
+		progressBar.setStringPainted(true);
+		progressBar.setPreferredSize(new Dimension(300, 15));
+		progressPanel.add(progressBar);
+
+		// Prepare maintenance parts label.
+		partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
+		partsLabel.setPreferredSize(new Dimension(-1, -1));
+		labelPanel.add(partsLabel);
+		
+		// Create the parts panel
+		JScrollPane partsPane = new JScrollPane();
+		partsPane.setPreferredSize(new Dimension(160, 80));
+		center.add(partsPane, BorderLayout.CENTER);
+		addBorder(partsPane, Msg.getString("MaintenanceTabPanel.tableBorder"));
+
+		// Create the parts table
+		JTable table = new JTable(tableModel);
+		table.setRowSelectionAllowed(true);
+		partsPane.setViewportView(table);
+
+		TableColumnModel columnModel = table.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(140);
+        columnModel.getColumn(2).setPreferredWidth(100);
+		columnModel.getColumn(2).setPreferredWidth(60);
+		columnModel.getColumn(3).setPreferredWidth(60);		
+
+		// Added sorting
+		table.setAutoCreateRowSorter(true);
+
+        // Set=up values
+        update();
 	}
 
-    /**
-     * Gets an existing malfunction panel for a given malfunction.
-     *
-     * @param malfunction the given malfunction
-     * @return malfunction panel or null if none.
-     */
-    private MalfunctionPanel getMalfunctionPanel(Malfunction malfunction) {
-        MalfunctionPanel result = null;
+	/**
+	 * Update this panel
+	 */
+	@Override
+	public void update() {
 
-        Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
-        while (i.hasNext()) {
-            MalfunctionPanel panel = i.next();
-            if (panel.getMalfunction() == malfunction) 
-            	result = panel;
-        }
+		// Update the wear condition label.
+		wearConditionLabel.setText(Msg.getString("MaintenanceTabPanel.wearCondition",
+                                    StyleManager.DECIMAL_PLACES0.format(manager.getWearCondition())));
 
-        return result;
-    }
+		// Update last completed label.
+		lastCompletedLabel.setText(Msg.getString("MaintenanceTabPanel.lastCompleted",
+                                    StyleManager.DECIMAL_PLACES1.format(manager.getTimeSinceLastMaintenance()/1000D)));
+
+		// Update progress bar.
+		double completed = manager.getMaintenanceWorkTimeCompleted();
+		double total = manager.getMaintenanceWorkTime();
+		double percentDone = Math.round(100.0 * completed / total * 100.0)/100.0;
+		progressBarModel.setValue((int)percentDone);
+
+		// Update parts label.
+		partsLabel.setText(getPartsString(false));
+		// Update tool tip.
+		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
+	}
+
+	/**
+	 * Gets the parts string.
+	 * 
+	 * @return string.
+	 */
+	private String getPartsString(boolean useHtml) {
+		return MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, manager.getMaintenanceParts(), useHtml).toString();
+	}
+
+	/**
+	 * Internal class used as model for the equipment table.
+	 */
+	private static class PartTableModel extends AbstractTableModel {
+		
+		private List<Part> parts = new ArrayList<>();
+		private List<String> functions = new ArrayList<>();
+		private List<Integer> max = new ArrayList<>();
+		private List<Double> probability = new ArrayList<>();
+
+		/**
+		 * hidden constructor.
+		 */
+		private PartTableModel(MalfunctionManager mm) {
+            // Find parts for each scope
+            for (MaintenanceScope maintenance : partConfig.getMaintenance(mm.getScopes())) {
+
+                parts.add(maintenance.getPart());
+                functions.add(maintenance.getName());
+                max.add(maintenance.getMaxNumber());
+                probability.add(maintenance.getProbability());
+            }	
+		}
+
+		public int getRowCount() {
+			return parts.size();
+		}
+
+		public int getColumnCount() {
+			return 4;
+		}
+
+		public Class<?> getColumnClass(int columnIndex) {
+			switch (columnIndex) {
+            case 0:
+				return String.class;
+			case 1:
+				return String.class;
+			case 2:
+				return Integer.class;
+			case 3:
+				return Double.class;
+			default:
+                return String.class;
+            }
+		}
+
+		public String getColumnName(int columnIndex) {
+            switch(columnIndex) {
+			case 0:
+				return Msg.getString("MaintenanceTabPanel.header.part"); //$NON-NLS-1$
+			case 1:
+				return Msg.getString("MaintenanceTabPanel.header.function"); //$NON-NLS-1$
+			case 2:
+				return Msg.getString("MaintenanceTabPanel.header.max"); //$NON-NLS-1$
+			case 3:
+				return Msg.getString("MaintenanceTabPanel.header.probability"); //$NON-NLS-1$
+			default:
+				return "unknown";
+            }
+		}
+
+		public Object getValueAt(int row, int column) {
+			if (row >= 0 && row < parts.size()) {
+                switch(column) {
+				case 0:
+					return parts.get(row).getName();
+				case 1:
+					return functions.get(row);
+				case 2:
+					return max.get(row);
+				case 3:
+					return probability.get(row);
+                }
+			}
+			return "unknown";
+		}
+	}
 }

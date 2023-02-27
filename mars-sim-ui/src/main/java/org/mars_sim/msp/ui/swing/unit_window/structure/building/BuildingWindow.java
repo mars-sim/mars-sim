@@ -12,6 +12,7 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
@@ -35,7 +36,7 @@ public class BuildingWindow extends UnitWindow {
         super(desktop, building, building.getSettlement().getName() + " - " + building.getNickName(), false);
 
         // Add tab panels
-        addTabPanel(new BuildingPanelMaintenance(building, desktop));
+        addTabPanel(new MaintenanceTabPanel(building, desktop));
         addTabPanel(new BuildingPanelMalfunctionable(building, desktop));
 		addTabPanel(new BuildingPanelPower(building, desktop));
         

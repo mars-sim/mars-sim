@@ -40,12 +40,21 @@ public class UnitWindowFactory {
      */
     public static UnitWindow getUnitWindow(Unit unit, MainDesktopPane desktop) {
 
-        if (unit.getUnitType() == UnitType.PERSON) return new PersonWindow(desktop, (Person) unit);
-        else if (unit.getUnitType() == UnitType.ROBOT) return new RobotWindow(desktop, (Robot) unit);
-        else if (unit.getUnitType() == UnitType.VEHICLE) return new VehicleWindow(desktop, (Vehicle) unit);
-        else if (unit.getUnitType() == UnitType.SETTLEMENT) return new SettlementUnitWindow(desktop, unit);
-        else if (unit.getUnitType() == UnitType.BUILDING) return new BuildingWindow(desktop, (Building) unit);
-        else if (unit.getUnitType() == UnitType.EVA_SUIT) return new EquipmentWindow(desktop, (EVASuit) unit);
-        else return null;
+        switch (unit.getUnitType()) {
+        case PERSON:
+            return new PersonWindow(desktop, (Person) unit);
+        case ROBOT:
+            return new RobotWindow(desktop, (Robot) unit);
+        case VEHICLE:
+            return new VehicleWindow(desktop, (Vehicle) unit);
+        case SETTLEMENT:
+            return new SettlementUnitWindow(desktop, unit);
+        case BUILDING:
+            return new BuildingWindow(desktop, (Building) unit);
+        case EVA_SUIT:
+            return new EquipmentWindow(desktop, (EVASuit) unit);
+        default:
+            return null;
+        }
     }
 }

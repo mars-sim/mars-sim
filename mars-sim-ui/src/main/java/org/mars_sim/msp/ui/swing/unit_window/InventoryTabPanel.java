@@ -51,6 +51,8 @@ import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 
 /**
@@ -190,24 +192,7 @@ public class InventoryTabPanel extends TabPanel {
 	        equipmentTable.setAutoCreateRowSorter(true);
 	
 			// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
-	        equipmentTable.addMouseListener(new MouseAdapter() {
-			    public void mousePressed(MouseEvent event) {
-	
-			    	// If double-click, open person window.
-					if (event.getClickCount() >= 2) {
-						Point p = event.getPoint();
-						int row = equipmentTable.rowAtPoint(p);
-						
-						String name = (String)equipmentTable.getValueAt(row, 0);					
-						Equipment e = equipmentTableModel.getEquipment(name);
-	
-						if (e != null && e.getUnitType() != UnitType.EVA_SUIT 
-								&& e.getUnitType() != UnitType.CONTAINER) {
-							getDesktop().openUnitWindow(e, false);
-						}
-					}
-			    }
-			});	
+	        equipmentTable.addMouseListener(new UnitTableLauncher(getDesktop()));
         }
     }
 
@@ -509,7 +494,8 @@ public class InventoryTabPanel extends TabPanel {
 	/**
 	 * Internal class used as model for the equipment table.
 	 */
-	public class EquipmentTableModel extends AbstractTableModel {
+	public class EquipmentTableModel extends AbstractTableModel
+				implements UnitModel {
 
 		private List<Equipment> equipmentList = new ArrayList<>();
 
@@ -647,24 +633,12 @@ public class InventoryTabPanel extends TabPanel {
 	            }
 			}
 		}
+
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return equipmentList.get(row);
+		}
 	}
-
-	static class NameComparator implements Comparator<Equipment> {
-	     public int compare(Equipment e0, Equipment e1) {
-	    	 String[] names0 = e0.getName().split(" ");
-	    	 String[] names1 = e1.getName().split(" ");
-	    	 int size0 = names0.length;
-	    	 int size1 = names1.length;
-
-	    	 if (!names0[0].equals(names1[0]))
-	    		 return names0[0].compareTo(names1[0]);
-
-	    	 int num0 = Integer.parseInt(names0[size0-1]);
-	    	 int num1 = Integer.parseInt(names1[size1-1]);
-
-	    	 return num0 - num1;
-	     }
-	 }
 
 	/**
 	 * Prepare object for garbage collection.

@@ -7,43 +7,33 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.BoundedRangeModel;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.UnitModel;
+import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
 	private static final String SPANNER_ICON = "maintenance";
-	private static final String REPAIR_PARTS_NEEDED = "Parts Needed : ";
 
-	/** The Settlement instance. */
-	private Settlement settlement;
-
-	private JPanel maintenanceListPanel;
-
-	private List<Building> buildingsList;
+	private BuildingMaintModel tableModel;
 	
 	/**
 	 * Constructor.
@@ -55,38 +45,29 @@ public class TabPanelMaintenance extends TabPanel {
 		// Use the TabPanel constructor
 		super(null, ImageLoader.getIconByName(SPANNER_ICON), "Maintenance", unit, desktop);
 
-		settlement = (Settlement) unit;
+		tableModel = new BuildingMaintModel((Settlement) unit);
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 		
-		// Create maintenance panel.
-		JPanel maintenancePanel = new JPanel(new BorderLayout());
-		content.add(maintenancePanel, BorderLayout.CENTER);
+		JScrollPane maintPane = new JScrollPane();
+		maintPane.setPreferredSize(new Dimension(160, 80));
+		content.add(maintPane, BorderLayout.CENTER);
 
-		// Prepare maintenance list panel.
-		maintenanceListPanel = new JPanel(new GridLayout(0, 1, 0, 0));
-		//maintenanceListPanel.setPadding(5);
-		maintenancePanel.add(maintenanceListPanel);
-	
-		populateMaintenanceList();
-	}
+		// Create the parts table
+		JTable table = new JTable(tableModel);
+		table.setRowSelectionAllowed(true);
+		table.addMouseListener(new UnitTableLauncher(getDesktop()));
+		table.setAutoCreateRowSorter(true);
 
-	/**
-	 * Populates the maintenance list.
-	 */
-	private void populateMaintenanceList() {
-		// Clear the list.
-		maintenanceListPanel.removeAll();
-
-		// Populate the list.
-		buildingsList = settlement.getBuildingManager().getSortedBuildings();
-		Iterator<Building> i = buildingsList.iterator();
-		while (i.hasNext()) {
-			JPanel panel = new BuildingMaintenancePanel(i.next());
-			maintenanceListPanel.add(panel);
-		}
+		TableColumnModel tc = table.getColumnModel();
+		tc.getColumn(0).setPreferredWidth(120);
+		tc.getColumn(1).setPreferredWidth(60);
+		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
+		tc.getColumn(2).setPreferredWidth(60);
+		tc.getColumn(3).setPreferredWidth(60);
+		maintPane.setViewportView(table);
 	}
 
 	/**
@@ -94,144 +75,88 @@ public class TabPanelMaintenance extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		// Check if building list has changed.
-		if (!settlement.getBuildingManager().getSortedBuildings().equals(buildingsList)) {
-			// Populate maintenance list.
-			populateMaintenanceList();
-		} else {
-			// Update all building maintenance panels.
-			Component[] components = maintenanceListPanel.getComponents();
-			for (Component component : components)
-				((BuildingMaintenancePanel) component).update();
-		}
+		tableModel.update();
 	}
 
+	private static class BuildingMaintModel extends AbstractTableModel
+			implements UnitModel {
 
-	/**
-	 * Inner class for the building maintenance panel.
-	 */
-	private class BuildingMaintenancePanel extends JPanel {
+		List<Building> buildings;
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private double lastCompletedCache;
-		private double wearConditionCache;
-		
-		private BoundedRangeModel progressBarModel;
-		private JLabel lastLabel;
-		private JLabel partsLabel;
-		private JLabel wearConditionLabel;
-		
-		private MalfunctionManager manager;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param building the building to display.
-		 */
-		public BuildingMaintenancePanel(Building building) {
-			// User JPanel constructor.
-			super();
-
-			manager = building.getMalfunctionManager();
-
-			setLayout(new GridLayout(4, 1, 0, 0));
-
-			JLabel buildingLabel = new JLabel(building.getNickName(), SwingConstants.LEFT);
-			StyleManager.applySubHeading(buildingLabel);
-			add(buildingLabel);
-
-			// Add wear condition cache and label.
-			wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
-			wearConditionLabel = new JLabel(
-					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
-					SwingConstants.RIGHT);
-			wearConditionLabel.setToolTipText(
-					Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
-
-			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-			add(mainPanel);
-
-			lastCompletedCache = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
-			lastLabel = new JLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
-			mainPanel.add(lastLabel, BorderLayout.WEST);
-			lastLabel.setToolTipText(getToolTipString());
-
-			// Prepare progress bar panel.
-			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			add(progressBarPanel);
-			
-			mainPanel.add(wearConditionLabel, BorderLayout.CENTER);
-			
-			// Prepare progress bar.
-			JProgressBar progressBar = new JProgressBar();
-			progressBarModel = progressBar.getModel();
-			progressBar.setStringPainted(true);
-			progressBar.setPreferredSize(new Dimension(300, 15));
-			progressBarPanel.add(progressBar);
-
-			// Set initial value for progress bar.
-			double completed = manager.getMaintenanceWorkTimeCompleted();
-			double total = manager.getMaintenanceWorkTime();
-			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
-			progressBarModel.setValue((int)percentDone);
-
-			// Prepare parts label.
-			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-			partsLabel = new JLabel(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), SwingConstants.CENTER);
-			partsLabel.setPreferredSize(new Dimension(-1, -1));
-			add(partsLabel);
-
-			partsLabel.setToolTipText(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false));
+		public BuildingMaintModel(Settlement settlement) {
+			this.buildings = new ArrayList<>(settlement.getBuildingManager().getBuildings());
 		}
 
-		/**
-		 * Updates this panel.
-		 */
-		void update() {
-			// Update progress bar.
-			double completed = manager.getMaintenanceWorkTimeCompleted();
-			double total = manager.getMaintenanceWorkTime();
-			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
-			progressBarModel.setValue((int)percentDone);
+		public void update() {
+			fireTableRowsUpdated(0, buildings.size()-1);
+		}
 
-			// Add wear condition cache and label
-			double wearCondition = Math.round(manager.getWearCondition() * 100.0)/100.0;
-			if (wearCondition != wearConditionCache) {
-				wearConditionCache = wearCondition;
-				wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache));
+		@Override
+		public int getRowCount() {
+			return buildings.size();
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			switch (columnIndex) {
+            case 0:
+				return String.class;
+			case 1:
+				return Integer.class;
+			case 2:
+				return Double.class;
+			case 3:
+				return Integer.class;
+			default:
+                return null;
+            }
+		}
+
+		@Override
+		public String getColumnName(int columnIndex) {
+			switch(columnIndex) {
+				case 0: 
+					return "Building";
+				case 1:
+					return "Condition %";
+				case 2:
+					return "Last Maint.";
+				case 3:
+					return "Completed %";
+				default:
+					return "";
 			}
+		}
 
-			// Update last completed.
-			double lastCompleted = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
-			if (lastCompleted != lastCompletedCache) {
-				lastCompletedCache = lastCompleted;
-				lastLabel.setText("Last Completed : " + lastCompletedCache + " sols ago");
+		@Override
+		public int getColumnCount() {
+			return 4;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			Building building = buildings.get(rowIndex);
+			MalfunctionManager manager = building.getMalfunctionManager();
+			switch(columnIndex) {
+			case 0: 
+				return building.getName();
+			case 1:
+				return (int)manager.getWearCondition();
+			case 2:
+				return manager.getTimeSinceLastMaintenance()/1000D;
+			case 3: {
+				double completed = manager.getMaintenanceWorkTimeCompleted();
+				double total = manager.getMaintenanceWorkTime();
+				return (int)(100.0 * completed / total);
+				}
+			default:
+				return "";
 			}
-
-			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-
-			// Update parts label.
-			partsLabel.setText(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false));
 		}
 
-		private String getToolTipString() {
-			StringBuilder result = new StringBuilder("<html>");
-			result.append("The last completed maintenance was done ")
-				.append(lastCompletedCache).append(" sols ago.");
-			result.append("</html>");
-			return result.toString();
+		@Override
+		public Unit getAssociatedUnit(int row) {
+			return buildings.get(row);
 		}
-	}
-
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		settlement = null;
-		buildingsList = null;
-		maintenanceListPanel = null;
 	}
 }
