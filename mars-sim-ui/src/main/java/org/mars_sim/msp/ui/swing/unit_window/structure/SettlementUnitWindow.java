@@ -29,6 +29,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SponsorTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
@@ -220,7 +221,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelScience(settlement, desktop));
 
-		addTabPanel(new TabPanelSponsorship(settlement, desktop));
+		addTabPanel(new SponsorTabPanel(settlement, settlement.getSponsor(), desktop));
 		
 		addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 

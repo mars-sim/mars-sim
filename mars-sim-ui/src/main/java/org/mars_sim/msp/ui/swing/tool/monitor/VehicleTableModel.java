@@ -49,27 +49,26 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = 1;
-	private static final int HOME = 2;
-	private static final int LOCATION = 3;
-	private static final int DESTINATION = 4;
-	private static final int DESTDIST = 5;
-	private static final int MISSION = 6;
-	private static final int CREW = 7;
-	private static final int DRIVER = 8;
-	private static final int STATUS = 9;
-	private static final int BEACON = 10;
-	private static final int RESERVED = 11;
-	private static final int SPEED = 12;
-	private static final int MALFUNCTION = 13;
-	private static final int OXYGEN = 14;
-	private static final int METHANE = 15;
-	private static final int WATER = 16;
-	private static final int FOOD = 17;
-	private static final int DESSERT = 18;
-	private static final int ROCK_SAMPLES = 19;
-	private static final int ICE = 20;
+	private static final int LOCATION = 2;
+	private static final int DESTINATION = 3;
+	private static final int DESTDIST = 4;
+	private static final int MISSION = 5;
+	private static final int CREW = 6;
+	private static final int DRIVER = 7;
+	private static final int STATUS = 8;
+	private static final int BEACON = 9;
+	private static final int RESERVED = 10;
+	private static final int SPEED = 11;
+	private static final int MALFUNCTION = 12;
+	private static final int OXYGEN = 13;
+	private static final int METHANE = 14;
+	private static final int WATER = 15;
+	private static final int FOOD = 16;
+	private static final int DESSERT = 17;
+	private static final int ROCK_SAMPLES = 18;
+	private static final int ICE = 19;
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 21;
+	private static final int COLUMNCOUNT = 20;
 	/** Names of Columns. */
 	private static String[] columnNames;
 
@@ -86,8 +85,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		columnTypes[NAME] = String.class;
 		columnNames[TYPE] = "Type";
 		columnTypes[TYPE] = String.class;
-		columnNames[HOME] = "Home";
-		columnTypes[HOME] = String.class;
 		columnNames[LOCATION] = "Location";
 		columnTypes[LOCATION] = String.class;
 		columnNames[DESTINATION] = "Next Waypoint";
@@ -181,16 +178,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 			case TYPE : {
 				result = vehicle.getVehicleType().getName();
-			} break;
-
-			case HOME : {
-				Settlement as = vehicle.getAssociatedSettlement();
-				if (as != null) {
-					result = as.getName();
-				}
-				else {
-					result = vehicle.getCoordinates().getFormattedString();
-				}
 			} break;
 
 			case LOCATION : {

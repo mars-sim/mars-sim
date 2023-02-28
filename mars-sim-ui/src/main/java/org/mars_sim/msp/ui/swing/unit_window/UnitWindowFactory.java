@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.equipment.EquipmentWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PersonWindow;
-import org.mars_sim.msp.ui.swing.unit_window.person.RobotWindow;
+import org.mars_sim.msp.ui.swing.unit_window.robot.RobotWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SettlementUnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingWindow;
 import org.mars_sim.msp.ui.swing.unit_window.vehicle.VehicleWindow;

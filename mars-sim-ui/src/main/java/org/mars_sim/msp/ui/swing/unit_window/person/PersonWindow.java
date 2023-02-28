@@ -27,6 +27,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SponsorTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
@@ -208,7 +209,7 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelSocial(person, desktop));
 
-		addTabPanel(new TabPanelSponsor(person, desktop));
+		addTabPanel(new SponsorTabPanel(person, person.getReportingAuthority(), desktop));
 		
 		addFirstPanel(new TabPanelGeneral(person, desktop));
 		

@@ -45,6 +45,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
+    public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
 
     private static final String DARK = "Flat Dark";
     private static final String LIGHT = "Flat Light";

@@ -48,17 +48,16 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private static final int ROLE = 4;
 	private static final int SHIFT = 5;
 	private static final int LOCATION = 6;
-	private static final int LOCALE = 7;
-	private static final int HEALTH = 8;
-	private static final int ENERGY = 9;
-	private static final int WATER = 10;
-	private static final int FATIGUE = 11;
-	private static final int STRESS = 12;
-	private static final int PERFORMANCE = 13;
-	private static final int EMOTION = 14;
+	private static final int HEALTH = 7;
+	private static final int ENERGY = 8;
+	private static final int WATER = 9;
+	private static final int FATIGUE = 10;
+	private static final int STRESS = 11;
+	private static final int PERFORMANCE = 12;
+	private static final int EMOTION = 13;
 
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = 14;
 	/** Names of Columns. */
 	private static String[] columnNames;
 	/** Types of Columns. */
@@ -92,8 +91,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		columnTypes[EMOTION] = String.class;
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
-		columnNames[LOCALE] = Msg.getString("PersonTableModel.column.locale"); //$NON-NLS-1$
-		columnTypes[LOCALE] = String.class;
 		columnNames[ROLE] = Msg.getString("PersonTableModel.column.role"); //$NON-NLS-1$
 		columnTypes[ROLE] = String.class;
 		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
@@ -365,11 +362,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 			case LOCATION: {
 				result = person.getLocationTag().getQuickLocation();
-			}
-				break;
-
-			case LOCALE: {
-				result = person.getLocationTag().getLocale();
 			}
 				break;
 

@@ -43,24 +43,22 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final int TYPE = 1;
 	/** Location column. */
 	private static final int LOCATION = 2;
-	/** Settlement column. */
-	private static final int SETTLEMENT_COL = 3;
 	/** Health column. */
-	private static final int HEALTH = 4;
+	private static final int HEALTH = 3;
 	/** Hunger column. */
-	private static final int BATTERY = 5;
+	private static final int BATTERY = 4;
 
 	/** Performance column. */
-	private static final int PERFORMANCE = 6;
+	private static final int PERFORMANCE = 5;
 	/** Job column. */
-	private static final int JOB = 7;
+	private static final int JOB = 6;
 	/** Task column. */
-	private static final int TASK = 8;
+	private static final int TASK = 7;
 	/** Mission column. */
-	private static final int MISSION_COL = 9;
+	private static final int MISSION_COL = 8;
 
 	/** The number of Columns. */
-	private static final int COLUMNCOUNT = 10;
+	private static final int COLUMNCOUNT = 9;
 	/** Names of Columns. */
 	private static String[] columnNames;
 	/** Types of Columns. */
@@ -85,8 +83,6 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("RobotTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
-		columnNames[SETTLEMENT_COL] = Msg.getString("RobotTableModel.column.settlement"); //$NON-NLS-1$
-		columnTypes[SETTLEMENT_COL] = String.class;
 		columnNames[JOB] = Msg.getString("RobotTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
 		columnNames[MISSION_COL] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
@@ -275,10 +271,6 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 			case LOCATION: 
 				result = robot.getLocationTag().getImmediateLocation();
-				break;
-
-			case SETTLEMENT_COL: 
-				result = robot.getLocationTag().getLocale();
 				break;
 
 			case JOB: 
