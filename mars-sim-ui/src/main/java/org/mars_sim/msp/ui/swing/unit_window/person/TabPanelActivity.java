@@ -50,7 +50,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private static final String TASK_ICON = "task";
 	
-	private static final int COL_WDITH = 16;
+	private static final int ROW_HEIGHT = 1;
+	private static final int COL_WIDTH = 16;
 
 	private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); // " (at the Moment
 																									// of Death)" ;
@@ -145,7 +146,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		content.add(activityPanel, BorderLayout.NORTH);
 
 		// Prepare task top panel
-		JPanel taskTopPanel = new JPanel(new GridLayout(6, 1, 0, 0));
+		JPanel taskTopPanel = new JPanel(new GridLayout(6, 1, 0, 10));
 //		taskTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(taskTopPanel, BorderLayout.CENTER);
 
@@ -169,7 +170,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				taskTextCache = t;
 		}
 
-		taskTextArea = new JTextArea(2, COL_WDITH);
+		taskTextArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		taskTextArea.setText(taskTextCache);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
@@ -196,7 +197,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		taskPhaseArea = new JTextArea(2, COL_WDITH);
+		taskPhaseArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		taskPhaseArea.setText(taskPhaseCache);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
@@ -224,7 +225,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				subTaskTextCache = "";
 		}
 
-		subTaskTextArea = new JTextArea(2, COL_WDITH);
+		subTaskTextArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		subTaskTextArea.setText(subTaskTextCache);
 		subTaskTextArea.setLineWrap(true);
 		subTaskTextArea.setEditable(false);
@@ -254,7 +255,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		subTaskPhaseArea = new JTextArea(2, COL_WDITH);
+		subTaskPhaseArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		subTaskPhaseArea.setText(subTaskPhaseCache);
 		subTaskPhaseArea.setLineWrap(true);
 		subTaskPhaseArea.setEditable(false);
@@ -282,7 +283,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				subTask2TextCache = "";
 		}
 
-		subTask2TextArea = new JTextArea(2, COL_WDITH);
+		subTask2TextArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		subTask2TextArea.setText(subTask2TextCache);
 		subTask2TextArea.setLineWrap(true);
 		subTask2TextArea.setEditable(false);
@@ -311,7 +312,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		subTask2PhaseArea = new JTextArea(2, COL_WDITH);
+		subTask2PhaseArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		subTask2PhaseArea.setText(subTask2PhaseCache);
 		subTask2PhaseArea.setLineWrap(true);
 		subTask2PhaseArea.setEditable(false);
@@ -369,7 +370,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		missionTextArea = new JTextArea(2, COL_WDITH);
+		missionTextArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
@@ -399,7 +400,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				missionPhaseText = botMind.getMission().getPhaseDescription();
 		}
 
-		missionPhaseTextArea = new JTextArea(2, COL_WDITH);
+		missionPhaseTextArea = new JTextArea(ROW_HEIGHT, COL_WIDTH);
 		// if (missionPhase.equals(""))
 		missionPhaseTextArea.setText(missionPhaseText);
 		missionPhaseTextArea.setLineWrap(true);
@@ -784,8 +785,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 					mind = person.getMind();
 					if (mind.hasActiveMission()) {
 						if (source == missionButton) {
-//							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
-//									.selectMission(mind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME, mind.getMission());
 						} else if (source == monitorButton) {
 							try {

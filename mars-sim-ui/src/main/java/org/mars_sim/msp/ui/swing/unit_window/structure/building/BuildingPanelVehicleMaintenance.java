@@ -67,10 +67,9 @@ public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(4, 2, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(2, 4, 0, 0));
 		center.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create vehicle number label
 		vehicleNumberLabel = addTextField(labelPanel, Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles"),
@@ -91,7 +90,7 @@ public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 				droneCapacity, 3, null);
 		
 		// Create vehicle list panel
-		vehicleList = new UnitListPanel<>(getDesktop(), new Dimension(260, 60)) {
+		vehicleList = new UnitListPanel<>(getDesktop()) {
 
 			@Override
 			protected Collection<Vehicle> getData() {
@@ -108,7 +107,7 @@ public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 		listPanel.add(vehiclePanel, BorderLayout.NORTH);
 
 		// Create drone list panel
-		flyerList = new UnitListPanel<>(getDesktop(), new Dimension(260, 60)) {
+		flyerList = new UnitListPanel<>(getDesktop()) {
 
 			@Override
 			protected Collection<Flyer> getData() {

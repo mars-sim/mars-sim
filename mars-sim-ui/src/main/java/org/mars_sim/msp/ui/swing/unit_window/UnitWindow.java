@@ -20,7 +20,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -52,6 +51,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
+	private Dimension tabPanelSize;
 
 	/**
 	 * Constructor
@@ -70,16 +70,19 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		setFrameIcon(MainWindow.getLanderIcon());
 
+		Dimension windowSize;
 		if (unit.getUnitType() == UnitType.PERSON 
 				|| unit.getUnitType() == UnitType.SETTLEMENT) {
-			setMaximumSize(new Dimension(WIDTH, HEIGHT));
-			setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			
+			windowSize = new Dimension(WIDTH, HEIGHT);
 		}
 		else { // for robot, equipment and vehicle
-			setMaximumSize(new Dimension(WIDTH, HEIGHT - STATUS_HEIGHT));
-			setPreferredSize(new Dimension(WIDTH, HEIGHT - STATUS_HEIGHT));
+			windowSize = new Dimension(WIDTH, HEIGHT - STATUS_HEIGHT);
 		}
 
+		setMaximumSize(windowSize);
+		setPreferredSize(windowSize);
+		tabPanelSize = new Dimension((int)windowSize.getWidth() - 30, (int)windowSize.getHeight() - 90);
 		this.setIconifiable(false);
 
 		initializeUI();
@@ -94,7 +97,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		setContentPane(mainPane);
 
 		tabPane = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
-		tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
+		tabPane.setPreferredSize(new Dimension(WIDTH - 25, HEIGHT - 120));
 
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(new ChangeListener() {
@@ -136,17 +139,10 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		if (!tabPanels.contains(panel)) {
 			tabPanels.add(panel);
 		}
-	}
 
-	/**
-	 * Adds the death tab panel to the center panel.
-	 *
-	 * @param panel the death tab panel to add.
-	 */
-	protected final void addDeathPanel(TabPanel panel) {
-		if (!tabPanels.contains(panel)) {
-			tabPanels.add(0, panel);
-		}
+		// Feel this is wrong
+		//panel.setPreferredSize(tabPanelSize);
+		//panel.setMaximumSize(tabPanelSize);
 	}
 	
 	/**

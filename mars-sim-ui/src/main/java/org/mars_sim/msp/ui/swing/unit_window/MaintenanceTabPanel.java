@@ -24,7 +24,6 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
@@ -66,18 +65,16 @@ public class MaintenanceTabPanel extends TabPanel {
 	 * @param malfunctionable the malfunctionable building the panel is for.
 	 * @param desktop         The main desktop.
 	 */
-	public MaintenanceTabPanel(Unit malfunctionable, MainDesktopPane desktop) {
+	public MaintenanceTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 		super(
 			Msg.getString("MaintenanceTabPanel.title"), 
 			ImageLoader.getIconByName(SPANNER_ICON), 
 			Msg.getString("MaintenanceTabPanel.tooltip"),             
-			malfunctionable, 
 			desktop
 		);
 
 		// Initialize data members.
-        Malfunctionable mal = (Malfunctionable) malfunctionable;
-		manager = mal.getMalfunctionManager();
+		manager = malfunctionable.getMalfunctionManager();
 
         tableModel = new PartTableModel(manager);
 	}

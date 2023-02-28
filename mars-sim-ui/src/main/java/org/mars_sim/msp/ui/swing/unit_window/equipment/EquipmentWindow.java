@@ -49,7 +49,7 @@ public class EquipmentWindow extends UnitWindow {
         addTabPanel(new LocationTabPanel(equipment, desktop));
 
         if (equipment instanceof Malfunctionable)
-        	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
+        	addTabPanel(new MaintenanceTabPanel((Malfunctionable) equipment, desktop));
 
 		addTabPanel(new NotesTabPanel(equipment, desktop));
 

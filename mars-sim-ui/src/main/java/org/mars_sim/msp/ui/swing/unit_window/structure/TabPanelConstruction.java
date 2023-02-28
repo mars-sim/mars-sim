@@ -48,7 +48,7 @@ extends TabPanel {
 			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(CONST_ICON),
 			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
 		settlement = (Settlement) unit;

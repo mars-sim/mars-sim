@@ -221,7 +221,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelScience(settlement, desktop));
 
-		addTabPanel(new SponsorTabPanel(settlement, settlement.getSponsor(), desktop));
+		addTabPanel(new SponsorTabPanel(settlement.getSponsor(), desktop));
 		
 		addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 

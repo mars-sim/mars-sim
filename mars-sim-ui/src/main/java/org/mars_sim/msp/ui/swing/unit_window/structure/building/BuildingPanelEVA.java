@@ -139,9 +139,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		occupiedLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.occupied"),
 									 eva.getNumInChamber(), 4, null);
 
-		// Create activationLabel
-		activationLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.activation"),
-										 buildingAirlock.isActivated() + "", 8, null);
+		// Create airlockModeLabel
+		airlockModeCache = buildingAirlock.getAirlockMode();
+		airlockModeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.mode"),
+				airlockModeCache.getName() + "", 8, null);
 
 		// Create emptyLabel
 		emptyLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.empty"),
@@ -157,12 +158,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create transitionLabel
 		transitionLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.transition"),
-				 buildingAirlock.isTransitioning() + "", 8, null);
-		
-		// Create airlockModeLabel
-		airlockModeCache = buildingAirlock.getAirlockMode();
-		airlockModeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.mode"),
-				airlockModeCache.getName() + "", 8, null);
+				 Boolean.toString(buildingAirlock.isTransitioning()), 8, null);
+
+		// Create activationLabel
+		activationLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.activation"),
+										 Boolean.toString(buildingAirlock.isActivated()), 4, null);
 
 		// Create OperatorLabel
 		operatorLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.operator"),

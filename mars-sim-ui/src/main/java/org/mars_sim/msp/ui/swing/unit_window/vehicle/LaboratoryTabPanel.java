@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -50,17 +49,17 @@ public class LaboratoryTabPanel extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public LaboratoryTabPanel(Unit unit, MainDesktopPane desktop) { 
+	public LaboratoryTabPanel(Rover unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("LaboratoryTabPanel.title"),	
 			Msg.getString("LaboratoryTabPanel.title"),
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("LaboratoryTabPanel.title"),
-			unit, desktop
+			desktop
 		);
 		
-		rover = (Rover) unit;
+		rover = unit;
 	}
 
 	@Override

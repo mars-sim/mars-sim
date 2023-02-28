@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
@@ -123,15 +124,15 @@ public class TabPanelOrganization extends TabPanel {
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelOrganization(Unit unit, MainDesktopPane desktop) {
+	public TabPanelOrganization(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null, 
 			ImageLoader.getIconByName(ORG_ICON),
 			Msg.getString("TabPanelStructure.title"), //$NON-NLS-1$
-			unit, desktop);
+			desktop);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 
 	@Override
@@ -163,7 +164,9 @@ public class TabPanelOrganization extends TabPanel {
 		tree.setModel(defaultTreeModel);
 
 		content.setBorder(new MarsPanelBorder());
-		content.add(tree);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(tree);
+		content.add(scrollPane);
 
 		buildTreeNodes();
 
@@ -589,8 +592,6 @@ public class TabPanelOrganization extends TabPanel {
 					if (p.getAssociatedSettlement() == settlement) {
 //						String personName = p.getName();
 						RoleType rt = p.getRole().getType();
-						String announcement = p + " just got the new role of " + rt.getName() + " in " + settlement.getName() + ".";
-						System.out.println(announcement);
 						// TODO: should only add/remove the affected person's listener and node
 //						removeListener(p);
 						emptyNodes();

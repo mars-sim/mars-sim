@@ -40,7 +40,7 @@ public class TabPanelGeneral extends TabPanel {
 			Msg.getString("BuildingPanelGeneral.title"),
 			ImageLoader.getIconByName(ID_ICON), 
 			Msg.getString("BuildingPanelGeneral.title"),
-			r, desktop);
+			desktop);
 		this.r = r;
 	}
 

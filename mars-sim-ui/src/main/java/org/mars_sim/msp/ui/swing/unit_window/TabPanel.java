@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
@@ -24,12 +23,11 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
@@ -41,7 +39,7 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final int YPAD_DEFAULT = 1;
 	protected static final int XPAD_DEFAULT = 5;
 	
-	protected static final int NUM_COL = 15;
+	private static final int NUM_COL = 15;
 	
 	private boolean isUIDone = false;
 	
@@ -70,9 +68,24 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param desktop    the main desktop.
 	 */
 	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
-		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, unit, desktop);
+		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, desktop);
+
+		this.unit = unit;
 	}
 	
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param desktop    the main desktop.
+	 */
+	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
+		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, desktop);
+	}
+
 	/**
 	 * Constructor.
 	 *
@@ -80,10 +93,9 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param description A longer descriptive title displayed at the top of the panel.
 	 * @param tabIcon    the icon to be displayed in the tab (may be null).
 	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
-	 * @param unit       the unit to display.
 	 * @param desktop    the main desktop.
 	 */
-	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
+	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
 
 		// Use JScrollPane constructor
 		super();
@@ -93,20 +105,10 @@ public abstract class TabPanel extends JScrollPane {
 		this.description = description;
 		this.tabIcon = tabIcon;
 		this.tabToolTip = tabToolTip;
-		this.unit = unit;
 		this.desktop = desktop;
 		
 		if (surfaceFeatures == null)
 			surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
-
-		if (unit.getUnitType() == UnitType.PERSON) {
-			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
-			this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
-		}
-		else {
-			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 90));
-			this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 90));
-		}
 		
 		// Create the view panel
 		JPanel viewPanel = new JPanel(new BorderLayout(0, 0));

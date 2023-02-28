@@ -28,7 +28,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
@@ -100,17 +99,16 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public NavigationTabPanel(Unit unit, MainDesktopPane desktop) {
+    public NavigationTabPanel(Vehicle unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(
         	Msg.getString("NavigationTabPanel.title"), 
-        	Msg.getString("NavigationTabPanel.title"), 
         	ImageLoader.getIconByName(NAV_ICON),
         	Msg.getString("NavigationTabPanel.title"), 
-        	unit, desktop
+        	desktop
         );
 	
-        vehicle = (Vehicle) unit;
+        vehicle = unit;
 
         missionManager = desktop.getSimulation().getMissionManager();
 	}

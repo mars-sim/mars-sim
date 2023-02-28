@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Collection;
 
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -80,18 +78,16 @@ public class TabPanelEVA extends TabPanel {
      * @param vehicle the vehicle.
      * @param desktop The main desktop.
      */
-    public TabPanelEVA(Vehicle vehicle, MainDesktopPane desktop) {
+    public TabPanelEVA(Rover vehicle, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(
             Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(EVA_ICON),        	
         	Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
-        	vehicle, 
         	desktop
         );
 
-        if (vehicle instanceof Rover)
-        	vehicleAirlock = (VehicleAirlock)((Rover) vehicle).getAirlock();
+        vehicleAirlock = (VehicleAirlock)vehicle.getAirlock();
     }
     
 	/**
@@ -142,9 +138,10 @@ public class TabPanelEVA extends TabPanel {
 		occupiedLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.occupied"),
 				vehicleAirlock.getNumInChamber(), 4, null);
 
-		// Create activationLabel
-		activationLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.activation"),
-										 vehicleAirlock.isActivated() + "", 8, null);
+		// Create airlockModeLabel
+		airlockModeLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.mode"),
+		vehicleAirlock.getAirlockMode().getName() + "", 8, null);
+
 		// Create emptyLabel
 		emptyLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.empty"),
 				vehicleAirlock.getNumEmptied(), 4, null);
@@ -161,9 +158,9 @@ public class TabPanelEVA extends TabPanel {
 		transitionLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.transition"),
 				 vehicleAirlock.isTransitioning() + "", 8, null);
 
-		// Create airlockModeLabel
-		airlockModeLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.mode"),
-				vehicleAirlock.getAirlockMode().getName() + "", 8, null);
+		// Create activationLabel
+		activationLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.airlock.activation"),
+				Boolean.toString(vehicleAirlock.isActivated()), 4, null);
 		
 		// Create OperatorLabel
 		operatorLabel = addTextField(labelGrid, Msg.getString("TabPanelEVA.operator"),
@@ -180,7 +177,7 @@ public class TabPanelEVA extends TabPanel {
 		content.add(occupantPanel, BorderLayout.SOUTH);
 		
         // Create occupant list
-        occupants = new UnitListPanel<>(getDesktop(), new Dimension(150, 100)) {
+        occupants = new UnitListPanel<>(getDesktop()) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(vehicleAirlock.getAllInsideOccupants());

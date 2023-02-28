@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -41,13 +40,13 @@ public class SponsorTabPanel extends TabPanel {
 	 * @param settlement the settlement.
 	 * @param desktop the main desktop.
 	 */
-	public SponsorTabPanel(Unit owner, ReportingAuthority ra, MainDesktopPane desktop) {
+	public SponsorTabPanel(ReportingAuthority ra, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(SPONSOR_ICON),
 			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
-			owner, desktop
+			desktop
 		);
 
 		this.ra = ra;

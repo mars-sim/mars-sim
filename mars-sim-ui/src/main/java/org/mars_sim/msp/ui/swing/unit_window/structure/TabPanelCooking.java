@@ -30,7 +30,6 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -111,16 +110,16 @@ public class TabPanelCooking extends TabPanel {
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelCooking(Unit unit, MainDesktopPane desktop) {
+	public TabPanelCooking(Settlement unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(COOKING_ICON),
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
-			unit, desktop);
+			desktop);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 
 	@Override
@@ -176,8 +175,8 @@ public class TabPanelCooking extends TabPanel {
 		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, 4, null); //$NON-NLS-1$
 
 		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(topPanel, 6, 2, // rows, cols
-				90, INITY_DEFAULT, // initX, initY
+		SpringUtilities.makeCompactGrid(topPanel, 3, 4, // rows, cols
+				20, INITY_DEFAULT, // initX, initY
 				5, 2); // xPad, yPad
 		
 		// Prepare cooking label panel.
@@ -218,7 +217,6 @@ public class TabPanelCooking extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		content.add(scrollPane, BorderLayout.CENTER);

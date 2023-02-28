@@ -186,7 +186,7 @@ public class PersonWindow extends UnitWindow {
 		if (person.isDeclaredDead()
 				|| person.getPhysicalCondition().isDead()) {
 			deadCache = true;
-			addDeathPanel(new TabPanelDeath(person, desktop));
+			addTabPanel(new TabPanelDeath(person, desktop));
 		}
 
 		addTabPanel(new TabPanelFavorite(person, desktop));
@@ -209,7 +209,7 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelSocial(person, desktop));
 
-		addTabPanel(new SponsorTabPanel(person, person.getReportingAuthority(), desktop));
+		addTabPanel(new SponsorTabPanel(person.getReportingAuthority(), desktop));
 		
 		addFirstPanel(new TabPanelGeneral(person, desktop));
 		
@@ -228,7 +228,7 @@ public class PersonWindow extends UnitWindow {
 			&& (person.isDeclaredDead()
 			|| person.getPhysicalCondition().isDead())) {
 			deadCache = true;
-			addDeathPanel(new TabPanelDeath(person, desktop));
+			addTabPanel(new TabPanelDeath(person, desktop));
 		}
 		
 		statusUpdate();

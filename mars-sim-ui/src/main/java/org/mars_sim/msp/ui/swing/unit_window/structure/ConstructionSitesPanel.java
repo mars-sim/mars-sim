@@ -8,20 +8,16 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -33,7 +29,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * A panel displaying a list of construction sites at a settlement.
@@ -65,7 +60,6 @@ public class ConstructionSitesPanel extends JPanel {
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();
-        sitesScrollPane.setPreferredSize(new Dimension(UnitWindow.WIDTH - 168, 250));
         sitesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(sitesScrollPane, BorderLayout.CENTER);  
         

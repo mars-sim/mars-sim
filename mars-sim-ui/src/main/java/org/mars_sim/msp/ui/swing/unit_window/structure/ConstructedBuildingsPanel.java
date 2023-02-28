@@ -37,7 +37,6 @@ extends JPanel {
 		super();
 
 		setLayout(new BorderLayout(0, 0));
-//		setBorder(new MarsPanelBorder());
 
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(titlePanel, BorderLayout.NORTH);
@@ -48,7 +47,6 @@ extends JPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(200, 75));
 		scrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPanel, BorderLayout.CENTER);
 

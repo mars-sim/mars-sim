@@ -7,14 +7,12 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 
-import java.awt.Dimension;
 import java.util.Collection;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -41,16 +39,16 @@ public class TabPanelVehicles extends TabPanel {
 	 * @param unit the unit to display
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelVehicles(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelVehicles(Settlement unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SUV_ICON),
 			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 	
 	@Override
@@ -61,7 +59,7 @@ public class TabPanelVehicles extends TabPanel {
 
 		// Parked Vehicles
 		MainDesktopPane desktop = getDesktop();
-		parkedVehicles = new UnitListPanel<>(desktop, new Dimension(175, 200)) {
+		parkedVehicles = new UnitListPanel<>(desktop) {
 			@Override
 			protected Collection<Vehicle> getData() {
 				return settlement.getParkedVehicles();
@@ -71,7 +69,7 @@ public class TabPanelVehicles extends TabPanel {
 		vehiclePanel.add(parkedVehicles);
 
 		// Mission vehicles
-		missionVehicles = new UnitListPanel<>(desktop, new Dimension(175, 200)) {
+		missionVehicles = new UnitListPanel<>(desktop) {
 			@Override
 			protected Collection<Vehicle> getData() {
 				return settlement.getMissionVehicles();
