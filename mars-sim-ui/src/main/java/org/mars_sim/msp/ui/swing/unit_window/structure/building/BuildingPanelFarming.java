@@ -38,6 +38,7 @@ import javax.swing.table.TableColumnModel;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
@@ -125,6 +126,7 @@ implements MouseListener {
 	private JList<String> list;
 
 	private CropConfig cropConfig;
+	private SurfaceFeatures surfaceFeatures;
 
 
 	/**
@@ -146,6 +148,8 @@ implements MouseListener {
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
+	
+		surfaceFeatures = getSimulation().getSurfaceFeatures();
 	}
 	
 	/**

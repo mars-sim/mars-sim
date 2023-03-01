@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -34,6 +33,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -73,7 +73,6 @@ public class TabPanelLog extends TabPanel {
 			Msg.getString("TabPanelLog.title"),
 			ImageLoader.getIconByName(LOG_ICON),
 			Msg.getString("TabPanelLog.title"), //$NON-NLS-1$
-			vehicle,
 			desktop
 		);
 		
@@ -141,7 +140,6 @@ public class TabPanelLog extends TabPanel {
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
 		table.getColumnModel().getColumn(1).setPreferredWidth(150);
 		table.setRowSelectionAllowed(true);
-		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		scrollPanel.setViewportView(table);
 
@@ -185,6 +183,16 @@ public class TabPanelLog extends TabPanel {
 		selectedSol = selectedItem;
 		update();
 	}
+
+	/**
+	 * Gets the mars clock instance.
+	 * 
+	 * @return
+	 */
+	private MarsClock getMarsClock() {
+		return getSimulation().getMasterClock().getMarsClock();
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

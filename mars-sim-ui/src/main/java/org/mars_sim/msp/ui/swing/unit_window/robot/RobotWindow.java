@@ -13,6 +13,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.MalfunctionTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
@@ -48,7 +49,7 @@ public class RobotWindow extends UnitWindow {
 		addTabPanel(new TabPanelActivity(robot, desktop));
 		addTabPanel(new TabPanelAttribute(robot, desktop));
 		addTabPanel(new MaintenanceTabPanel(robot, desktop));
-		// Add the generic Malfunction tab panel when created
+		addTabPanel(new MalfunctionTabPanel(robot, desktop));
 
 		// Add death tab panel if robot is inoperable.
 		if (robot.getSystemCondition().isInoperable()) {

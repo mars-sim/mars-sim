@@ -25,6 +25,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
@@ -64,8 +65,10 @@ public class TabPanelMaintenance extends TabPanel {
 		TableColumnModel tc = table.getColumnModel();
 		tc.getColumn(0).setPreferredWidth(120);
 		tc.getColumn(1).setPreferredWidth(60);
+		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer());
 		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
 		tc.getColumn(2).setPreferredWidth(60);
+		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer());
 		tc.getColumn(3).setPreferredWidth(60);
 		maintPane.setViewportView(table);
 	}
@@ -118,11 +121,11 @@ public class TabPanelMaintenance extends TabPanel {
 				case 0: 
 					return "Building";
 				case 1:
-					return "Condition %";
+					return "Condition";
 				case 2:
 					return "Last Maint.";
 				case 3:
-					return "Completed %";
+					return "Completed";
 				default:
 					return "";
 			}

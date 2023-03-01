@@ -4,7 +4,6 @@
  * @date 2022-10-21
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
@@ -19,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -28,6 +26,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.MalfunctionTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SponsorTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -205,8 +204,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		
 		addTabPanel(new TabPanelMaintenance(settlement, desktop));
 
-		addTabPanel(new TabPanelMalfunction(settlement, desktop));
-		
+		addTabPanel(new MalfunctionTabPanel(settlement, desktop));
+
 		addTabPanel(new TabPanelManufacture(settlement, desktop));
 
 		addTabPanel(new TabPanelMissions(settlement, desktop));

@@ -860,7 +860,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return associated unit.
 	 * @throws Exception if error finding associated unit.
 	 */
-	public Unit getUnit() {
+	public Malfunctionable getEntity() {
+		return entity;
+	}
+
+	/** 
+	 * What Unit is used to fire events
+	 */
+	private Unit getUnit() {
 		if (entity instanceof Unit)
 			return (Unit) entity;
 		else if (entity instanceof Building)

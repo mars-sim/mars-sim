@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 
 /**
  * The MaintenanceTabPanel is a tab panel for unit maintenance information.
@@ -128,10 +129,11 @@ public class MaintenanceTabPanel extends TabPanel {
 		partsPane.setViewportView(table);
 
 		TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(140);
-        columnModel.getColumn(2).setPreferredWidth(100);
-		columnModel.getColumn(2).setPreferredWidth(60);
-		columnModel.getColumn(3).setPreferredWidth(60);		
+        columnModel.getColumn(0).setPreferredWidth(160);
+        columnModel.getColumn(2).setPreferredWidth(120);
+		columnModel.getColumn(2).setPreferredWidth(40);
+		columnModel.getColumn(3).setPreferredWidth(40);		
+		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer());
 
 		// Added sorting
 		table.setAutoCreateRowSorter(true);
@@ -172,7 +174,7 @@ public class MaintenanceTabPanel extends TabPanel {
 	 * @return string.
 	 */
 	private String getPartsString(boolean useHtml) {
-		return MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, manager.getMaintenanceParts(), useHtml).toString();
+		return MalfunctionTabPanel.getPartsString(REPAIR_PARTS_NEEDED, manager.getMaintenanceParts(), useHtml).toString();
 	}
 
 	/**

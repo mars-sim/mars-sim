@@ -23,9 +23,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 
@@ -55,8 +52,6 @@ public abstract class TabPanel extends JScrollPane {
 	
 	private Unit unit;
 	private MainDesktopPane desktop;
-
-	protected static SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
@@ -106,9 +101,6 @@ public abstract class TabPanel extends JScrollPane {
 		this.tabIcon = tabIcon;
 		this.tabToolTip = tabToolTip;
 		this.desktop = desktop;
-		
-		if (surfaceFeatures == null)
-			surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
 		
 		// Create the view panel
 		JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
@@ -329,25 +321,7 @@ public abstract class TabPanel extends JScrollPane {
 		return desktop.getSimulation();
 	}
 	
-	/**
-	 * Gets the master clock instance.
-	 * 
-	 * @return
-	 */
-	protected MasterClock getMasterClock() {
-		return getSimulation().getMasterClock();
-	}
-	
-	/**
-	 * Gets the mars clock instance.
-	 * 
-	 * @return
-	 */
-	protected MarsClock getMarsClock() {
-		return getMasterClock().getMarsClock();
-	}
 
-	
 	@Override
 	public  String toString() {
 		return tabTitle;

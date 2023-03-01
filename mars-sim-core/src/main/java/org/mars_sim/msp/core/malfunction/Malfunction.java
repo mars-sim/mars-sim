@@ -649,6 +649,13 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
+	 * Get the soruce of the malfunction.
+	 */
+	public Malfunctionable getSource() {
+		return owner.getEntity();
+	}
+
+	/**
 	 * Gets the string value for the object.
 	 */
 	public String toString() {
