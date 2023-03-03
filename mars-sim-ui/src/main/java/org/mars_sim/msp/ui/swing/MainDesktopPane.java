@@ -128,7 +128,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		prepareListeners();
 		
-		SwingUtilities.invokeLater(() -> init());
+		init();
 	}
 
 	private void init() {
@@ -148,18 +148,10 @@ public class MainDesktopPane extends JDesktopPane
 		backgroundLabel.setLocation(0, 0);
 		// Push the background to the back
 		moveToBack(backgroundLabel);
+		// Prep tool windows
+		prepareToolWindows();
 		// Prep listeners
 		prepareListeners();
-
-		// Prep tool windows
-		SwingUtilities.invokeLater(() -> {
-			try {
-				prepareToolWindows();
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e, e);
-			}
-		});
-
 		// Setup announcement window
 		prepareAnnouncementWindow();
 		
@@ -196,21 +188,24 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	
 		Image backgroundImage = createImage((int)screenSize.getWidth(), (int)screenSize.getHeight());
-		Graphics backgroundGraphics = backgroundImage.getGraphics();
+		if (backgroundImage != null) {
+			// Not loaded when the window is first building
+			Graphics backgroundGraphics = backgroundImage.getGraphics();
 
-		int sourceWidth = baseImageIcon.getWidth(this);
-		int sourceHeight = baseImageIcon.getHeight(this);
-		int targetWidth = backgroundImage.getWidth(this);
-		int targetHeight = backgroundImage.getHeight(this);
-		for (int x = 0; x < targetWidth; x += sourceWidth) {
-			for (int y = 0; y < targetHeight; y += sourceHeight) {
-				backgroundGraphics.drawImage(baseImageIcon, x,y, this);
+			int sourceWidth = baseImageIcon.getWidth(this);
+			int sourceHeight = baseImageIcon.getHeight(this);
+			int targetWidth = backgroundImage.getWidth(this);
+			int targetHeight = backgroundImage.getHeight(this);
+			for (int x = 0; x < targetWidth; x += sourceWidth) {
+				for (int y = 0; y < targetHeight; y += sourceHeight) {
+					backgroundGraphics.drawImage(baseImageIcon, x,y, this);
+				}
 			}
-		}
 
-		backgroundImageIcon.setImage(backgroundImage);
-		// Set the backgroundLabel size to the size of the desktop
-		backgroundLabel.setSize(getSize());
+			backgroundImageIcon.setImage(backgroundImage);
+			// Set the backgroundLabel size to the size of the desktop
+			backgroundLabel.setSize(getSize());
+		}
 	}
 
 	// Additional Component Listener methods implemented but not used.
@@ -333,49 +328,47 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return the tool window
 	 */
 	private ToolWindow getToolWindow(String toolName, boolean createWindow) {
-		synchronized (toolWindows) {
-			for (ToolWindow w: toolWindows) {
-				if (toolName.equals(w.getToolName()))
-					return w;
-			}
+		for (ToolWindow w: toolWindows) {
+			if (toolName.equals(w.getToolName()))
+				return w;
+		}
 
-			if (createWindow) {
-				ToolWindow w = null;
-				if (toolName.equals(CommanderWindow.NAME)) {
-					w = new CommanderWindow(this);
-				}
-				else if(toolName.equals(NavigatorWindow.NAME)) {
-					w = new NavigatorWindow(this);
-				}
-				else if(toolName.equals(SearchWindow.NAME)) {
-					w = new SearchWindow(this);
-				}
-				else if(toolName.equals(TimeWindow.NAME)) {
-					w = new TimeWindow(this);
-				}
-				else if(toolName.equals(SettlementWindow.NAME)) {
-					w = new SettlementWindow(this);
-				} 
-				else if(toolName.equals(ScienceWindow.NAME)) {
-					w = new ScienceWindow(this);
-				}
-				else if(toolName.equals(GuideWindow.NAME)) {
-					w = new GuideWindow(this);
-				}		
-				else if(toolName.equals(MonitorWindow.NAME)) {
-					w = new MonitorWindow(this);
-				}		
-				else if(toolName.equals(MissionWindow.NAME)) {
-					w = new MissionWindow(this);
-				}		
-				else if(toolName.equals(ResupplyWindow.NAME)) {
-					w = new ResupplyWindow(this);
-				}
-				else {
-					return null;	
-				}
-				toolWindows.add(w);
+		if (createWindow) {
+			ToolWindow w = null;
+			if (toolName.equals(CommanderWindow.NAME)) {
+				w = new CommanderWindow(this);
 			}
+			else if(toolName.equals(NavigatorWindow.NAME)) {
+				w = new NavigatorWindow(this);
+			}
+			else if(toolName.equals(SearchWindow.NAME)) {
+				w = new SearchWindow(this);
+			}
+			else if(toolName.equals(TimeWindow.NAME)) {
+				w = new TimeWindow(this);
+			}
+			else if(toolName.equals(SettlementWindow.NAME)) {
+				w = new SettlementWindow(this);
+			} 
+			else if(toolName.equals(ScienceWindow.NAME)) {
+				w = new ScienceWindow(this);
+			}
+			else if(toolName.equals(GuideWindow.NAME)) {
+				w = new GuideWindow(this);
+			}		
+			else if(toolName.equals(MonitorWindow.NAME)) {
+				w = new MonitorWindow(this);
+			}		
+			else if(toolName.equals(MissionWindow.NAME)) {
+				w = new MissionWindow(this);
+			}		
+			else if(toolName.equals(ResupplyWindow.NAME)) {
+				w = new ResupplyWindow(this);
+			}
+			else {
+				return null;	
+			}
+			toolWindows.add(w);
 		}
 		return null;
 	}
@@ -702,11 +695,9 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		// Update all tool windows.
-		synchronized(toolWindows) {
-			for (ToolWindow w : toolWindows) {
-				if (w.isVisible() || w.isShowing())
-					w.update(pulse);
-			}
+		for (ToolWindow w : toolWindows) {
+			if (w.isVisible() || w.isShowing())
+				w.update(pulse);
 		}
 	}
 

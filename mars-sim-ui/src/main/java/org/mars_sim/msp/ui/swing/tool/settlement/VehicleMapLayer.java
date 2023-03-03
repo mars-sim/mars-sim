@@ -55,10 +55,6 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
 		svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>(21);
-
-		// Set Apache Batik library system property so that it doesn't output: 
-		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
-		System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override

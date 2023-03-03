@@ -123,6 +123,9 @@ extends JComponent implements ClockListener {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
 
+        // Set Apache Batik library system property so that it doesn't output:
+        // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
+        System.setProperty("org.apache.batik.warn_destination", "false"); 
 		
 		// Load a UI Config instance according to the user's choice
 		boolean loadConfig = true;
