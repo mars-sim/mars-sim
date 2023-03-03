@@ -165,23 +165,10 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tooltip Optional tooltip
 	 * @return The JTextField that can be updated.
 	 */
-	protected JTextField addTextField(JPanel parent, String label, int content, String tooltip) {
+	protected static JTextField addTextField(JPanel parent, String label, int content, String tooltip) {
 		return createTextField(parent, label, Integer.toString(content), NUM_COL, tooltip);
 	}
 
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field as an integer
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	protected JTextField addTextField(JPanel parent, int label, int content, String tooltip) {
-		return createTextField(parent, Integer.toString(label), Integer.toString(content), NUM_COL, tooltip);
-	}
-	
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
 	 * 
@@ -192,7 +179,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tooltip Optional tooltip
 	 * @return The JTextField that can be updated.
 	 */
-	protected JTextField addTextField(JPanel parent, String label, String content, int col, String tooltip) {
+	protected static JTextField addTextField(JPanel parent, String label, String content, int col, String tooltip) {
 		return createTextField(parent, label, content, col, tooltip);
 	}
 	
@@ -206,7 +193,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tooltip Optional tooltip
 	 * @return The JTextField that can be updated.
 	 */
-	protected JTextField addTextField(JPanel parent, String label, int content, int col, String tooltip) {
+	protected static JTextField addTextField(JPanel parent, String label, int content, int col, String tooltip) {
 		return createTextField(parent, label, Integer.toString(content), col, tooltip);
 	}
 	
@@ -220,7 +207,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tooltip Optional tooltip
 	 * @return The JTextField that can be updated.
 	 */
-	protected JTextField addTextField(JPanel parent, String label, String content, String tooltip) {
+	protected static JTextField addTextField(JPanel parent, String label, String content, String tooltip) {
 		return createTextField(parent, label, content, NUM_COL, tooltip);
 	}
 	
@@ -234,8 +221,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tooltip Optional tooltip
 	 * @return The JTextField that can be updated.
 	 */
-	private JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
-		parent.add(new JLabel(label + " ", SwingConstants.RIGHT));
+	private static JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
 						
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField typeTF = new JTextField();
@@ -246,10 +232,22 @@ public abstract class TabPanel extends JScrollPane {
 			typeTF.setToolTipText(tooltip);
 		}
 		wrapper3.add(typeTF);
-		parent.add(wrapper3);
+		addLabelledItem(parent, label, typeTF);
 		return typeTF;
 	}
 	
+	/**
+	 * Add a labelled content to the TabPanel. This ensures the styling is common.
+	 * @param parent Panel holding values
+	 * @param label Label to add
+	 * @param content Content showign the value
+	 */
+	protected static void addLabelledItem(JPanel parent, String label, JComponent content) {
+		parent.add(new JLabel(label + " ", SwingConstants.RIGHT));
+		parent.add(content);
+	}
+
+
 	/**
 	 * Adds a standard titled border.
 	 * 

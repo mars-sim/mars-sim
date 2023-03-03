@@ -8,12 +8,9 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -32,6 +29,7 @@ import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 
 /**
@@ -46,15 +44,11 @@ public class MaintenanceTabPanel extends TabPanel {
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
 	
-	/** The wear condition label. */
-	private JLabel wearConditionLabel;
-	/** The last completed label. */
+	private JProgressBar wearCondition;
 	private JLabel lastCompletedLabel;
-	/** Label for parts. */
 	private JLabel partsLabel;
+	private JProgressBar currentMaintenance;
 
-	/** The progress bar model. */
-	private BoundedRangeModel progressBarModel;
 	/** The parts table model. */
 	private PartTableModel tableModel;
 
@@ -86,37 +80,29 @@ public class MaintenanceTabPanel extends TabPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 	
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 2, 1));
+		AttributePanel labelPanel = new AttributePanel(4, 1);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
-		// Create wear condition label.
-		wearConditionLabel = new JLabel(Msg.getString("MaintenanceTabPanel.wearCondition", ""),
-				JLabel.CENTER);
-		wearConditionLabel.setToolTipText(Msg.getString("MaintenanceTabPanel.wear.toolTip"));
-		labelPanel.add(wearConditionLabel);
+		Dimension barSize = new Dimension(100, 15);
 
-		// Create lastCompletedLabel.
-		lastCompletedLabel = new JLabel(Msg.getString("MaintenanceTabPanel.lastCompleted", ""),
-				JLabel.CENTER);
-		labelPanel.add(lastCompletedLabel);
+		wearCondition = new JProgressBar();
+		wearCondition.setStringPainted(true);
+		wearCondition.setToolTipText(Msg.getString("MaintenanceTabPanel.wear.toolTip"));
+		wearCondition.setMaximumSize(barSize);
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.wearCondition"), wearCondition);
 
-		// Create maintenance progress bar panel.
-		JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		labelPanel.add(progressPanel);
-		progressPanel.setOpaque(false);
+		lastCompletedLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.lastCompleted"), "", 
+												null);
+		currentMaintenance = new JProgressBar();
+		currentMaintenance.setStringPainted(true);		
+		currentMaintenance.setMaximumSize(barSize);
+		currentMaintenance.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentMaintenance"), currentMaintenance);
 
-		// Prepare progress bar.
-		JProgressBar progressBar = new JProgressBar();
-		progressBarModel = progressBar.getModel();
-		progressBar.setStringPainted(true);
-		progressBar.setPreferredSize(new Dimension(300, 15));
-		progressPanel.add(progressBar);
+		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", 
+						   null);
 
-		// Prepare maintenance parts label.
-		partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
-		partsLabel.setPreferredSize(new Dimension(-1, -1));
-		labelPanel.add(partsLabel);
-		
+
 		// Create the parts panel
 		JScrollPane partsPane = new JScrollPane();
 		partsPane.setPreferredSize(new Dimension(160, 80));
@@ -149,21 +135,19 @@ public class MaintenanceTabPanel extends TabPanel {
 	public void update() {
 
 		// Update the wear condition label.
-		wearConditionLabel.setText(Msg.getString("MaintenanceTabPanel.wearCondition",
-                                    StyleManager.DECIMAL_PLACES0.format(manager.getWearCondition())));
+		wearCondition.setValue((int) manager.getWearCondition());
 
 		// Update last completed label.
-		lastCompletedLabel.setText(Msg.getString("MaintenanceTabPanel.lastCompleted",
-                                    StyleManager.DECIMAL_PLACES1.format(manager.getTimeSinceLastMaintenance()/1000D)));
+		lastCompletedLabel.setText(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
 
 		// Update progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
 		double total = manager.getMaintenanceWorkTime();
-		double percentDone = Math.round(100.0 * completed / total * 100.0)/100.0;
-		progressBarModel.setValue((int)percentDone);
+		currentMaintenance.setValue((int)(100.0 * completed / total));
 
 		// Update parts label.
-		partsLabel.setText(getPartsString(false));
+		partsLabel.setText(Integer.toString(manager.getMaintenanceParts().size()));
+
 		// Update tool tip.
 		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
 	}

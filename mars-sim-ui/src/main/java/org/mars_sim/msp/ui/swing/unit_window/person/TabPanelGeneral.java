@@ -8,18 +8,16 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
@@ -34,7 +32,7 @@ public class TabPanelGeneral extends TabPanel {
 	/** The Person instance. */
 	private Person person;
 	
-	private JTextField birthDateTF;
+	private JLabel birthDateTF;
 	
 	private String birthDate;
 	
@@ -44,13 +42,13 @@ public class TabPanelGeneral extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelGeneral(Unit unit, MainDesktopPane desktop) {
+	public TabPanelGeneral(Person unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(ID_ICON),		
 			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
 		person = (Person) unit;
@@ -60,12 +58,13 @@ public class TabPanelGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
+		AttributePanel infoPanel = new AttributePanel(8);
+		
 		content.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare gender textfield
 		String gender = person.getGender().getName();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), gender, 5, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender,null);
 		
 		// Prepare birthdate and age textfield
 		birthDate = person.getBirthDate();
@@ -73,25 +72,25 @@ public class TabPanelGeneral extends TabPanel {
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthTxt, 16, null);
+		birthDateTF = infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
 
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
-				birthLocation, 17, null);		
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
+				birthLocation, null);		
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
-				country, 12, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
+				country, null);
 
 		// Prepare weight textfield
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
-				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), 6, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
+				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), null);
 		
 		// Prepare height name label
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
-					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " m", 6, null);
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
+					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " m", null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
@@ -109,18 +108,12 @@ public class TabPanelGeneral extends TabPanel {
 
 		String BMItext = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 				Math.round(BMI*100.0)/100.0, weightClass);
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
-				BMItext, 10, null); 
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
+				BMItext, null); 
 		
 		// Prepare loading cap label
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
-				StyleManager.DECIMAL_KG.format(person.getCarryingCapacity()), 6, null); 
-		
-		// Use spring panel layout.
-		SpringUtilities.makeCompactGrid(infoPanel,
-		                                8, 2,	//rows, cols
-		                                95, 2,	//initX, initY
-		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
+		infoPanel.addTextField(Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
+				StyleManager.DECIMAL_KG.format(person.getCarryingCapacity()), null); 
 	}
 	
 	/**

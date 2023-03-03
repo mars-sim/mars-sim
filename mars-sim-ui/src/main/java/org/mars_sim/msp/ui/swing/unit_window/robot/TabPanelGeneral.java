@@ -7,10 +7,9 @@
 package org.mars_sim.msp.ui.swing.unit_window.robot;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.robot.Robot;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * This tab shows the general details of the Robot type.
@@ -30,7 +30,7 @@ public class TabPanelGeneral extends TabPanel {
 	
 	private Robot r;
 
-	private JTextField charge;
+	private JLabel charge;
 
 	/**
 	 * Constructor.
@@ -53,20 +53,19 @@ public class TabPanelGeneral extends TabPanel {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		center.add(topPanel, BorderLayout.NORTH);
 
-	
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 3, 1));
+		AttributePanel infoPanel = new AttributePanel(5);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
 		SystemCondition sc = r.getSystemCondition();
 
-		addTextField(infoPanel, "Type:", r.getRobotType().getName(), null);
-		addTextField(infoPanel, "Model:", r.getModel(), null);
-		charge = addTextField(infoPanel, "Battery Charge:", StyleManager.DECIMAL_PERC.format(sc.getBatteryState()), null);
-		addTextField(infoPanel, "Battery Capacity:", StyleManager.DECIMAL_KW.format(sc.getBatteryCapacity()), null);
+		infoPanel.addTextField("Type:", r.getRobotType().getName(), null);
+		infoPanel.addTextField("Model:", r.getModel(), null);
+		charge = infoPanel.addTextField("Battery Charge:", StyleManager.DECIMAL_PERC.format(sc.getBatteryState()), null);
+		infoPanel.addTextField("Battery Capacity:", StyleManager.DECIMAL_KW.format(sc.getBatteryCapacity()), null);
 
 		// Prepare mass label
-		addTextField(infoPanel, "Base Mass:", r.getBaseMass() + " kg", "The base mass of this robot");
+		infoPanel.addTextField("Base Mass:", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this robot");
 	}
 
 	@Override
