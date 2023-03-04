@@ -12,16 +12,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * A panel for the astronomical observation building function.
@@ -35,7 +34,7 @@ extends BuildingFunctionPanel {
 	// Data members
 	private int currentObserversAmount;
 
-	private JTextField observersLabel;
+	private JLabel observersLabel;
 
 	private AstronomicalObservation function;
 
@@ -68,24 +67,16 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 		
 		// Prepare label panelAstronomicalObservation
-		JPanel labelPanel = new JPanel(new SpringLayout());
+		AttributePanel labelPanel = new AttributePanel(2);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Observer number label
-		observersLabel = addTextField(labelPanel, Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers"),
-									  currentObserversAmount, null);
+		observersLabel = labelPanel.addTextField( Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers"),
+									  Integer.toString(currentObserversAmount), null);
 
 		// Observer capacityLabel
-		addTextField(labelPanel, Msg.getString("BuildingPanelAstronomicalObservation.observerCapacity"),
-					 function.getObservatoryCapacity(), 5, null);
-		
-		labelPanel.setOpaque(false);
-		
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(labelPanel,
-		                                2, 2, //rows, cols
-		                                65, 5,        //initX, initY
-		                                3, 1);       //xPad, yPad
+		labelPanel.addTextField(Msg.getString("BuildingPanelAstronomicalObservation.observerCapacity"),
+					 					Integer.toString(function.getObservatoryCapacity()), null);
 		
       	// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));

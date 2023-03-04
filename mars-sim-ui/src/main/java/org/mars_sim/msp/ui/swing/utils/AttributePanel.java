@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.ui.swing.StyleManager;
 
@@ -57,7 +58,7 @@ public class AttributePanel extends JPanel {
         if (!label.endsWith(":")) {
             label = label + " :";
         }
-        JLabel title = new JLabel(label, JLabel.RIGHT);
+        JLabel title = new JLabel(label, SwingConstants.RIGHT);
         title.setFont(StyleManager.BOLD_FONT);
 		add(title);
 		add(content);

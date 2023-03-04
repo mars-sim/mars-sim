@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -50,6 +49,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -110,25 +110,23 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		JPanel labelPane = new JPanel();
-		labelPane.setLayout(new GridLayout(3, 2, 0, 0));
-		center.add(labelPane, BorderLayout.NORTH);
+		AttributePanel labelPanel = new AttributePanel(3);
+		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		addTextField(labelPane, "Tech Level:", workshop.getTechLevel(), 5, null);
+		labelPanel.addTextField("Tech Level", Integer.toString(workshop.getTechLevel()), null);
 
 		// Prepare processCapacity label
-		addTextField(labelPane, "Process Capacity:", workshop.getMaxProcesses(), 5, null);
+		labelPanel.addTextField("Process Capacity", Integer.toString(workshop.getMaxProcesses()), null);
 
 		// Prepare processCapacity label
-		addTextField(labelPane, "# of Printers In Use: ",
-					 workshop.getNumPrintersInUse(), 5, null);
+		labelPanel.addTextField("# of Printers In Use",
+								Integer.toString(workshop.getNumPrintersInUse()), null);
 			
 		// Create scroll pane for manufacturing processes
 		scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
-		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create process list main panel
 		JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));

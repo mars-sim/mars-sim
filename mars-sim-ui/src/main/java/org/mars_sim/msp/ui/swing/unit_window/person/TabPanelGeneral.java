@@ -51,7 +51,7 @@ public class TabPanelGeneral extends TabPanel {
 			desktop
 		);
 
-		person = (Person) unit;
+		person = unit;
 	}
 	
 	@Override

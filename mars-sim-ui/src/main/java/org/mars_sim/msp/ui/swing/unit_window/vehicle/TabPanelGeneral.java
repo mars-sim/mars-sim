@@ -7,12 +7,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
-
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * This tab shows the general details of the Vehicle type.
@@ -64,15 +64,15 @@ public class TabPanelGeneral extends TabPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 3, 1));
+		AttributePanel infoPanel = new AttributePanel(5);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
-		addTextField(infoPanel, "Type:", v.getVehicleType().getName(), null);
-		addTextField(infoPanel, "Cargo Capacity:", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);
-		addTextField(infoPanel, "Fuel:", ResourceUtil.findAmountResourceName(v.getFuelType()), null);
-		addTextField(infoPanel, "Fuel Capacity:", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
+		infoPanel.addTextField( "Type", v.getVehicleType().getName(), null);
+		infoPanel.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);
+		infoPanel.addTextField( "Fuel", ResourceUtil.findAmountResourceName(v.getFuelType()), null);
+		infoPanel.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
 
 		// Prepare mass label
-		addTextField(infoPanel, "Base Mass:", v.getBaseMass() + " kg", "The base mass of this vehicle");
+		infoPanel.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
 	}
 }

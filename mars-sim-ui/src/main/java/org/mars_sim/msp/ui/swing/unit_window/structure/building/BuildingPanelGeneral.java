@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,8 +18,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
@@ -63,18 +64,18 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(6, 2, 3, 1));
+		AttributePanel infoPanel = new AttributePanel(6);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
-		addTextField(infoPanel, "Building Type:", building.getBuildingType(), null);
-		addTextField(infoPanel, "Category:", building.getCategory().getName(), null);
-		addTextField(infoPanel, "Construction:", building.getConstruction().name(), null);
+		infoPanel.addTextField("Building Type", building.getBuildingType(), null);
+		infoPanel.addTextField("Category", building.getCategory().getName(), null);
+		infoPanel.addTextField("Construction", building.getConstruction().name(), null);
 
 		// Prepare dimension label
-		addTextField(infoPanel, "Position:", building.getPosition().getShortFormat(), "According to the Settlement x[m] x y[m]");
-		addTextField(infoPanel, "Dimension:", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
+		infoPanel.addTextField("Position", building.getPosition().getShortFormat(), "According to the Settlement x[m] x y[m]");
+		infoPanel.addTextField("Dimension", building.getLength() + " x " + building.getWidth() + " x 2.5", "Length[m] x Width[m] x Height[m]");
 
 		// Prepare mass label
-		addTextField(infoPanel, "Base Mass:", building.getBaseMass() + " kg", "The base mass of this building");
+		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(building.getBaseMass()), "The base mass of this building");
 	}
 }

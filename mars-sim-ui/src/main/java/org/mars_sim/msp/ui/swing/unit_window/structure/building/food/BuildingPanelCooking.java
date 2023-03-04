@@ -6,15 +6,17 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
-
-import javax.swing.*;
-
-import java.awt.*;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * This class is a building function panel representing
@@ -28,14 +30,10 @@ extends BuildingFunctionPanel {
 	
 	// Domain members
 	private Cooking kitchen;
-	/** The number of cooks label. */
-	private JTextField numCooksLabel;
-	/** The number of available meals. */
-	private JTextField numMealsLabel;
-	/** The number of meals cooked today. */
-	private JTextField numMealsTodayLabel;
-	/** The quality of the meals. */
-	private JTextField mealGradeLabel;
+	private JLabel numCooksLabel;
+	private JLabel numMealsLabel;
+	private JLabel numMealsTodayLabel;
+	private JLabel mealGradeLabel;
 
 	// Cache
 	private int numCooksCache;
@@ -67,30 +65,32 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 1, 1));
+		AttributePanel labelPanel = new AttributePanel(5);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.numberOfCooks"), 
-				numCooksCache, 5, null); //$NON-NLS-1$
+		numCooksLabel = labelPanel.addTextField( Msg.getString("BuildingPanelCooking.numberOfCooks"), 
+									Integer.toString(numCooksCache), null); //$NON-NLS-1$
 
 		// Prepare cook capacity label
-		addTextField(labelPanel, Msg.getString("BuildingPanelCooking.cookCapacity"), 
-				kitchen.getCookCapacity(), 5, null);
+		labelPanel.addTextField( Msg.getString("BuildingPanelCooking.cookCapacity"), 
+									Integer.toString(kitchen.getCookCapacity()), null);
 
 		// Prepare # of available meal label
 		numMealsCache = kitchen.getNumberOfAvailableCookedMeals();
-		numMealsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.availableMeals"), 
-				numMealsCache, 5, null); //$NON-NLS-1$
+		numMealsLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.availableMeals"), 
+									Integer.toString(numMealsCache), null); //$NON-NLS-1$
 
 		// Prepare # of today cooked meal label
 		numMealsTodayCache = kitchen.getTotalNumberOfCookedMealsToday();
-		numMealsTodayLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.mealsToday"), numMealsTodayCache, 5, null); //$NON-NLS-1$
+		numMealsTodayLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.mealsToday"),
+									Integer.toString(numMealsTodayCache), null); //$NON-NLS-1$
 
 		// Prepare meal grade label
 		String grade = computeGrade(kitchen.getBestMealQualityCache());
-		mealGradeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.bestQualityOfMeals"), grade, 5, null); //$NON-NLS-1$
+		mealGradeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.bestQualityOfMeals"),
+									grade, null); //$NON-NLS-1$
 	}
 
 	/**

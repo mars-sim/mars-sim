@@ -17,11 +17,10 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -42,8 +41,8 @@ import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
@@ -82,11 +81,11 @@ public class TabPanelPowerGrid extends TabPanel {
 	
 	private JTable powerTable;
 
-	private JTextField powerGeneratedTF;
-	private JTextField powerUsedTF;
-	private JTextField energyStorageCapacityTF;
-	private JTextField energyStoredTF;
-	private JTextField solarCellEfficiencyTF;
+	private JLabel powerGeneratedTF;
+	private JLabel powerUsedTF;
+	private JLabel energyStorageCapacityTF;
+	private JLabel energyStoredTF;
+	private JLabel solarCellEfficiencyTF;
 
 	private JScrollPane powerScrollPane;
 
@@ -103,23 +102,21 @@ public class TabPanelPowerGrid extends TabPanel {
 
 	private List<Building> buildings;
 
-	private MainDesktopPane desktop;
 	/**
 	 * Constructor.
 	 * 
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) {
+	public TabPanelPowerGrid(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(POWER_ICON),
 			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
-		this.desktop = desktop;
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 	
 	@Override
@@ -132,43 +129,43 @@ public class TabPanelPowerGrid extends TabPanel {
 		content.add(topContentPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout power info panel.
-		JPanel powerInfoPanel = new JPanel(new SpringLayout());
+		AttributePanel powerInfoPanel = new AttributePanel(6);
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated tf.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
-		powerGeneratedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerGenerated"),
+		powerGeneratedTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"),
 										StyleManager.DECIMAL_KW.format(powerGeneratedCache),
 										Msg.getString("TabPanelPowerGrid.totalPowerGenerated.tooltip"));
 
 		// Prepare power used tf.
 		powerUsedCache = powerGrid.getRequiredPower();
-		powerUsedTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalPowerUsed"),
+		powerUsedTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.totalPowerUsed"),
 								   StyleManager.DECIMAL_KW.format(powerUsedCache),
 								   Msg.getString("TabPanelPowerGrid.totalPowerUsed.tooltip"));
 
 		// Prepare power storage capacity tf.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
-		energyStorageCapacityTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
+		energyStorageCapacityTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"),
 											   StyleManager.DECIMAL_KWH.format(energyStorageCapacityCache),
 											   Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip"));
 
 		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
-		energyStoredTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.totalEnergyStored"),
+		energyStoredTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.totalEnergyStored"),
 									  StyleManager.DECIMAL_KWH.format(energyStoredCache),
 									  Msg.getString("TabPanelPowerGrid.totalEnergyStored.tooltip"));
 
 		// Create solar cell eff tf
 		solarCellEfficiencyCache = getAverageEfficiency();
-		solarCellEfficiencyTF = addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
+		solarCellEfficiencyTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
 											 StyleManager.DECIMAL_PLACES2.format(solarCellEfficiencyCache * 100D) + PERCENT,
 											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 
 		// Create degradation rate tf.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		addTextField(powerInfoPanel, Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
+		powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"),
 									StyleManager.DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
 									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
@@ -201,7 +198,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		// Prepare power table.
 		powerTable = new JTable(powerTableModel);
 		// Call up the building window when clicking on a row on the table
-		powerTable.addMouseListener(new UnitTableLauncher(desktop));
+		powerTable.addMouseListener(new UnitTableLauncher(getDesktop()));
 
 		powerTable.setRowSelectionAllowed(true);
 		TableColumnModel powerColumns = powerTable.getColumnModel();
@@ -230,12 +227,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerTable.setAutoCreateRowSorter(true);
 
 		powerScrollPane.setViewportView(powerTable);
-
-		// Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(powerInfoPanel, 6, 2, // rows, cols
-				20, 10, // initX, initY
-				10, 1); // xPad, yPad
-
 	}
 
 	/**

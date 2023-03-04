@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -35,8 +34,7 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final int INITX_DEFAULT_1 = 135;
 	protected static final int YPAD_DEFAULT = 1;
 	protected static final int XPAD_DEFAULT = 5;
-	
-	private static final int NUM_COL = 15;
+
 	
 	private boolean isUIDone = false;
 	
@@ -109,8 +107,12 @@ public abstract class TabPanel extends JScrollPane {
 		createVerticalScrollBar();
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
 
+		// Ideally yes
+		//setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+
+
 		JScrollBar vertical = getVerticalScrollBar();
-		vertical.setValue(0);//vertical.getMinimum());
+		vertical.setValue(0);
 		
 		// Create top content panel
 		topContentPanel = new JPanel();
@@ -155,98 +157,6 @@ public abstract class TabPanel extends JScrollPane {
 	protected void buildUI(JPanel centerContentPanel) {
 		throw new UnsupportedOperationException("Build UI not implemented yet");
 	}
-	
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field as an integer
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	protected static JTextField addTextField(JPanel parent, String label, int content, String tooltip) {
-		return createTextField(parent, label, Integer.toString(content), NUM_COL, tooltip);
-	}
-
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field
-	 * @param col number of columns
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	protected static JTextField addTextField(JPanel parent, String label, String content, int col, String tooltip) {
-		return createTextField(parent, label, content, col, tooltip);
-	}
-	
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field
-	 * @param col number of columns
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	protected static JTextField addTextField(JPanel parent, String label, int content, int col, String tooltip) {
-		return createTextField(parent, label, Integer.toString(content), col, tooltip);
-	}
-	
-	
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	protected static JTextField addTextField(JPanel parent, String label, String content, String tooltip) {
-		return createTextField(parent, label, content, NUM_COL, tooltip);
-	}
-	
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field
-	 * @param col number of columns
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	private static JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
-						
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField typeTF = new JTextField();
-		typeTF.setText(content);
-		typeTF.setEditable(false);
-		typeTF.setColumns(col);
-		if (tooltip != null) {
-			typeTF.setToolTipText(tooltip);
-		}
-		wrapper3.add(typeTF);
-		addLabelledItem(parent, label, typeTF);
-		return typeTF;
-	}
-	
-	/**
-	 * Add a labelled content to the TabPanel. This ensures the styling is common.
-	 * @param parent Panel holding values
-	 * @param label Label to add
-	 * @param content Content showign the value
-	 */
-	protected static void addLabelledItem(JPanel parent, String label, JComponent content) {
-		parent.add(new JLabel(label + " ", SwingConstants.RIGHT));
-		parent.add(content);
-	}
-
 
 	/**
 	 * Adds a standard titled border.

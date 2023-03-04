@@ -10,19 +10,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Collection;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelAssociatedPeople is a tab panel for information on all people
@@ -39,9 +37,9 @@ public class TabPanelCitizen extends TabPanel{
 
 	private Settlement settlement;
 
-	private JTextField populationCitizensLabel;
-	private JTextField populationCapacityLabel;
-	private JTextField populationIndoorLabel;
+	private JLabel populationCitizensLabel;
+	private JLabel populationCapacityLabel;
+	private JLabel populationIndoorLabel;
 
 	private UnitListPanel<Person> populationList;
 
@@ -51,43 +49,38 @@ public class TabPanelCitizen extends TabPanel{
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelCitizen(Unit unit, MainDesktopPane desktop) {
+	public TabPanelCitizen(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(CITIZEN_ICON),
 			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 		// Prepare count spring layout panel.
-		JPanel countPanel = new JPanel(new SpringLayout());
+		AttributePanel countPanel = new AttributePanel(3);
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create associate label
 		populationCitizensCache = settlement.getNumCitizens();
-		populationCitizensLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.associated"),
-											   populationCitizensCache, 4, null);
+		populationCitizensLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.associated"),
+											   		Integer.toString(populationCitizensCache), null);
 
 		// Create population indoor label
 		populationIndoorCache = settlement.getIndoorPeopleCount();
-		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.indoor"),
-											 populationIndoorCache, 4, null);
+		populationIndoorLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.indoor"),
+											 		Integer.toString(populationIndoorCache), null);
 
 		// Create population capacity label
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.capacity"),
-											   populationCapacityCache, 4, null);
-
-		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				INITX_DEFAULT_1, INITY_DEFAULT, // initX, initY
-				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
+		populationCapacityLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.capacity"),
+											   		Integer.toString(populationCapacityCache), null);
 
 		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
 			@Override

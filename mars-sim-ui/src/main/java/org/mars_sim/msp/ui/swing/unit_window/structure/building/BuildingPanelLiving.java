@@ -8,15 +8,15 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -33,10 +33,10 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	private int bedOccupiedCache;
 	private int bedEmptyCache;
 
-	private JTextField bedCapLabel;
-	private JTextField bedAssignsLabel;
-	private JTextField bedOccupiedLabel;
-	private JTextField bedEmptyLabel;
+	private JLabel bedCapLabel;
+	private JLabel bedAssignsLabel;
+	private JLabel bedOccupiedLabel;
+	private JLabel bedEmptyLabel;
 
 	private LivingAccommodations living;
 
@@ -69,24 +69,24 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		AttributePanel labelPanel = new AttributePanel(4);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Create bed capacity label
-		bedCapLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.capacity"),
-								   living.getBedCap(), 5, "Max number of beds available");
+		bedCapLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.capacity"),
+									Integer.toString(living.getBedCap()), "Max number of beds available");
 
 		// Create # of assigned bed label
-		bedAssignsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.assigned"),
-									   living.getNumAssignedBeds(), 5, "Number of beds already assigned");
+		bedAssignsLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.assigned"),
+									Integer.toString(living.getNumAssignedBeds()), "Number of beds already assigned");
 
 		// Create bedOccupiedLabel
-		bedOccupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.occupied"),
-										living.getNumOccupiedActivitySpots(), 5, "Number of beds already occupied");
+		bedOccupiedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.occupied"),
+									Integer.toString(living.getNumOccupiedActivitySpots()), "Number of beds already occupied");
 
 		// Create bedEmptyLabel
-		bedEmptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.empty"),
-									 living.getNumEmptyActivitySpots(), 5, "Number of empty beds available");
+		bedEmptyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelLiving.beds.empty"),
+									 Integer.toString(living.getNumEmptyActivitySpots()), "Number of empty beds available");
 	}
 
 	@Override

@@ -10,11 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.stream.Collectors;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
@@ -22,7 +19,7 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelSponsorship is a tab panel for showing the settlement's 
@@ -56,41 +53,15 @@ public class SponsorTabPanel extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
+		AttributePanel infoPanel = new AttributePanel(2);
 		content.add(infoPanel, BorderLayout.NORTH);
 		
 		// Prepare sponsor name label
-		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(sponsorNameLabel);
-
-		// Prepare sponsor label
-		JTextField sponsorTF = new JTextField();
-		sponsorTF.setText(ra.getName()); 
-		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(8);
-		sponsorTF.setCaretPosition(0);
-		sponsorTF.setToolTipText (ra.getDescription());
-		infoPanel.add(sponsorTF);
+		infoPanel.addTextField(Msg.getString("TabPanelSponsorship.sponsor"), ra.getName(), ra.getDescription());
 		
 		// Prepare obj name label
-		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(objectiveNameLabel);
-
-		// Prepare obj tf
-		JTextField objectiveTF = new JTextField();
-		String objective = ra.getMissionAgenda().getObjectiveName();
-		
-		objectiveTF.setText(objective);
-		objectiveTF.setEditable(false);
-		objectiveTF.setColumns(16);
-		objectiveTF.setCaretPosition(0);
-		infoPanel.add(objectiveTF);
-		
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(infoPanel,
-		                                2, 2, //rows, cols
-		                                20, 10,        //initX, initY
-		                                10, 4);       //xPad, yPad
+		infoPanel.addTextField(Msg.getString("TabPanelSponsorship.objective"), ra.getMissionAgenda().getObjectiveName(),
+									null);
 		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(panel, "Mission Agendas");

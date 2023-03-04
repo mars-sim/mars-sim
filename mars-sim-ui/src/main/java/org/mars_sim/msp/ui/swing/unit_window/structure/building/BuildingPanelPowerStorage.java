@@ -9,16 +9,15 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The PowerStorageBuildingPanel class is a building function panel representing 
@@ -30,8 +29,8 @@ extends BuildingFunctionPanel {
 
 	private static final String ENERGY_ICON = "energy";
 	
-	private JTextField storedTF;
-	private JTextField capTF;
+	private JLabel storedTF;
+	private JLabel capTF;
 
 	private double capacityCache;
 	private double storedCache;
@@ -62,23 +61,18 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		JPanel springPanel = new JPanel(new SpringLayout());
+		AttributePanel springPanel = new AttributePanel(2);
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Create capacity label.
 		capacityCache = storage.getCurrentMaxCapacity();
-		capTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.cap"),
+		capTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.cap"),
 							 StyleManager.DECIMAL_KWH.format(capacityCache), null);
 		
 		// Create stored label.
 		storedCache = storage.getkWattHourStored();
-		storedTF = addTextField(springPanel, Msg.getString("BuildingPanelPowerStorage.stored"),
+		storedTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.stored"),
 									StyleManager.DECIMAL_KWH.format(storedCache), null);
-		
-		SpringUtilities.makeCompactGrid(springPanel,
-                2, 2, 			//rows, cols
-                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 	}
 
 	@Override

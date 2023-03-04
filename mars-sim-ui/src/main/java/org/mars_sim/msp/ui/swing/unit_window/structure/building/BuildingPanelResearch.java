@@ -8,17 +8,17 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -38,7 +38,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	/** The number of researchers cache. */
 	private int researchersCache;
 
-	private JTextField researchersLabel;
+	private JLabel researchersLabel;
 
 	/**
 	 * Constructor.
@@ -66,17 +66,17 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
+		AttributePanel labelPanel = new AttributePanel(2);
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = addTextField(labelPanel, Msg.getString("BuildingPanelResearch.numberOfResearchers"),
-										researchersCache, 5, null);
+		researchersLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.numberOfResearchers"),
+										Integer.toString(researchersCache), null);
 
 		// Prepare researcher capacityLabel
-		addTextField(labelPanel, Msg.getString("BuildingPanelResearch.researcherCapacity"),
-					 lab.getLaboratorySize(), 5, null);
+		labelPanel.addTextField(Msg.getString("BuildingPanelResearch.researcherCapacity"),
+					 					Integer.toString(lab.getLaboratorySize()), null);
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();

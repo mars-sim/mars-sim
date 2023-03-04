@@ -11,19 +11,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Collection;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * This is a tab panel for population information.
@@ -36,8 +34,8 @@ public class TabPanelIndoor extends TabPanel {
 	/** The Settlement instance. */
 	private Settlement settlement;
 
-	private JTextField populationIndoorLabel;
-	private JTextField populationCapacityLabel;
+	private JLabel populationIndoorLabel;
+	private JLabel populationCapacityLabel;
 
 	private UnitListPanel<Person> populationList;
 
@@ -49,16 +47,16 @@ public class TabPanelIndoor extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelIndoor(Unit unit, MainDesktopPane desktop) {
+	public TabPanelIndoor(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(POP_ICON),
 			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 
 	}
 
@@ -66,22 +64,19 @@ public class TabPanelIndoor extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		JPanel countPanel = new JPanel(new SpringLayout());
+		AttributePanel countPanel = new AttributePanel(2);
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create population indoor label
 		populationIndoorCache = settlement.getIndoorPeopleCount();
-		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelIndoor.indoor"),
-											 populationIndoorCache, 4, null);
+		populationIndoorLabel = countPanel.addTextField(Msg.getString("TabPanelIndoor.indoor"),
+											 Integer.toString(populationIndoorCache), null);
 
 		// Create population capacity label
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelIndoor.capacity"),
-											   populationCapacityCache, 4, null);
+		populationCapacityLabel = countPanel.addTextField(Msg.getString("TabPanelIndoor.capacity"),
+											   Integer.toString(populationCapacityCache), null);
 
-		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
-				150, INITY_DEFAULT, // initX, initY
-				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 		
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

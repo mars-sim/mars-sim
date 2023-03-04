@@ -20,12 +20,11 @@ import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -41,8 +40,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 @SuppressWarnings("serial")
@@ -59,8 +58,8 @@ public class TabPanelLog extends TabPanel {
 	private JTable table;
 	private JComboBoxMW<Integer> solBox;
 	
-	private JTextField odometerTF;
-	private JTextField maintTF;
+	private JLabel odometerTF;
+	private JLabel maintTF;
 	
 	private ScheduleTableModel scheduleTableModel;
 	
@@ -88,20 +87,14 @@ public class TabPanelLog extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 		
         // Create spring layout dataPanel
-        JPanel springPanel = new JPanel(new SpringLayout());
+        AttributePanel springPanel = new AttributePanel(2);
         northPanel.add(springPanel);
 
-		odometerTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.odometer"),
-								  StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()), 8, null);
+		odometerTF = springPanel.addTextField( Msg.getString("TabPanelLog.label.odometer"),
+								  	StyleManager.DECIMAL_KM.format(vehicle.getOdometerMileage()), null);
 
-		maintTF = addTextField(springPanel, Msg.getString("TabPanelLog.label.maintDist"),
-				  StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()), 8, null);
-
-	    // Lay out the spring panel.
-	    SpringUtilities.makeCompactGrid(springPanel,
-	     		                               2, 2, //rows, cols
-	     		                               50, 10,        //initX, initY
-	    		                               7, 7);       //xPad, yPad     	
+		maintTF = springPanel.addTextField(Msg.getString("TabPanelLog.label.maintDist"),
+				 					StyleManager.DECIMAL_KM.format(vehicle.getDistanceLastMaintenance()), null);	
 		
 		todayInteger = getMarsClock().getMissionSol();
 

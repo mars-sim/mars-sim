@@ -45,6 +45,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * A building panel displaying the foodProduction building function.
@@ -100,16 +101,15 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel();
-		labelPanel.setLayout(new GridLayout(2, 2, 0, 0));
+		AttributePanel labelPanel = new AttributePanel(2);
 
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare tech level label
-		addTextField(labelPanel, "Tech Level:", foodFactory.getTechLevel(), 3, null);
+		labelPanel.addTextField("Tech Level", Integer.toString(foodFactory.getTechLevel()), null);
 
 		// Prepare processCapacity label
-		addTextField(labelPanel, "Process Capacity:", foodFactory.getMaxProcesses(), 3, null);
+		labelPanel.addTextField("Process Capacity", Integer.toString(foodFactory.getMaxProcesses()), null);
 
 
 		// Create scroll pane for food production processes

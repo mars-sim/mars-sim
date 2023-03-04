@@ -8,12 +8,11 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -37,7 +37,7 @@ extends BuildingFunctionPanel {
 	/** The medical care. */
 	private MedicalCare medical;
 	/** Label of number of physicians. */
-	private JTextField physicianLabel;
+	private JLabel physicianLabel;
 	/** Table of medical info. */
 	private MedicalTableModel medicalTableModel;
 
@@ -71,18 +71,17 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(2, 2, 5, 1));
+		AttributePanel labelPanel = new AttributePanel(2);
 		center.add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
 		
 		// Create sick bed label
-		addTextField(labelPanel, Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
-					 medical.getSickBedNum(), 5, null);
+		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
+					 				Integer.toString(medical.getSickBedNum()), null);
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
-		physicianLabel = addTextField(labelPanel, Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
-									  physicianCache, 5, null);
+		physicianLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
+									  Integer.toString(physicianCache), null);
 
 		// Create scroll panel for medical table
 		JScrollPane scrollPanel = new JScrollPane();

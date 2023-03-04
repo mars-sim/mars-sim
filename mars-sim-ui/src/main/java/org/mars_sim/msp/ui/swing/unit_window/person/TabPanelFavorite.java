@@ -28,6 +28,7 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.fav.Preference;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -36,6 +37,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
@@ -58,16 +60,16 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelFavorite(Unit unit, MainDesktopPane desktop) {
+	public TabPanelFavorite(Person unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(FAV_ICON),	
 			Msg.getString("TabPanelFavorite.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		person = (Person) unit;
+		person = unit;
 	}
 
 	@Override
@@ -77,74 +79,14 @@ extends TabPanel {
 		content.add(topPanel, BorderLayout.NORTH);
 		
 		// Prepare SpringLayout for info panel.
-		JPanel infoPanel = new JPanel(new SpringLayout());
+		AttributePanel infoPanel = new AttributePanel(4);
 		topPanel.add(infoPanel);
 
-		// Prepare main dish name label
-		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(mainDishNameLabel);
-
-		// Prepare main dish label
-		String mainDish = person.getFavorite().getFavoriteMainDish();
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField mainDishTF = new JTextField(mainDish);
-		mainDishTF.setEditable(false);
-		mainDishTF.setColumns(17);
-		//mainDishTF.requestFocus();
-		mainDishTF.setCaretPosition(0);
-		wrapper1.add(mainDishTF);
-		infoPanel.add(wrapper1);
-
-		// Prepare side dish name label
-		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(sideDishNameLabel);
-
-		// Prepare side dish label
-		String sideDish = person.getFavorite().getFavoriteSideDish();
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField sideDishTF = new JTextField(sideDish);
-		sideDishTF.setEditable(false);
-		sideDishTF.setColumns(17);
-		//sideDishTF.requestFocus();
-		sideDishTF.setCaretPosition(0);
-		wrapper2.add(sideDishTF);
-		infoPanel.add(wrapper2);
-
-		// Prepare dessert name label
-		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(dessertNameLabel);
-
-		// Prepare dessert label
-		String dessert = person.getFavorite().getFavoriteDessert();
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField dessertTF = new JTextField(dessert);
-		dessertTF.setEditable(false);
-		dessertTF.setColumns(17);
-		//dessertTF.requestFocus();
-		dessertTF.setCaretPosition(0);
-		wrapper3.add(dessertTF);
-		infoPanel.add(wrapper3);
-
-		// Prepare activity name label
-		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(activityNameLabel);
-
-		// Prepare activity label
-		FavoriteType activity = person.getFavorite().getFavoriteActivity();
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField activityTF = new JTextField(activity.getName());
-		activityTF.setEditable(false);
-		activityTF.setColumns(17);
-		//activityTF.requestFocus();
-		activityTF.setCaretPosition(0);
-		wrapper4.add(activityTF);
-		infoPanel.add(wrapper4);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(infoPanel,
-		                                4, 2, //rows, cols
-		                                50, 10,        //initX, initY
-		                                10, 2);       //xPad, yPad
+		Favorite fav = person.getFavorite();
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.mainDish"), fav.getFavoriteMainDish(), null);
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.sideDish"), fav.getFavoriteSideDish(), null);
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dessert"), fav.getFavoriteDessert(), null);
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new BorderLayout(0, 0));

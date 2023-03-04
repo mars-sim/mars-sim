@@ -8,16 +8,15 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The BuildingPanelFishery class is a building function panel for
@@ -33,8 +32,8 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	private double weedMass;
 	
 	private Fishery tank;
-	private JTextField numFishLabel;
-	private JTextField weedLabel;
+	private JLabel numFishLabel;
+	private JLabel weedLabel;
 	
 	/**
 	 * Constructor.
@@ -58,24 +57,19 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		JPanel labelPanel = new JPanel(new SpringLayout());
+		AttributePanel labelPanel = new AttributePanel(3);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
-		addTextField(labelPanel, Msg.getString("BuildingPanelFishery.tankSize"), tank.getTankSize(), null);
+		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), Integer.toString(tank.getTankSize()), null);
 		
 		numFish = tank.getNumFish();
-		numFishLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.numFish"),
-									numFish, null);
+		numFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numFish"),
+									Integer.toString(numFish), null);
 	
 				
 		weedMass = tank.getWeedMass();	
-		weedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelFishery.weedMass"),
-								 StyleManager.DECIMAL_PLACES1.format(weedMass), null);
-		
-		SpringUtilities.makeCompactGrid(labelPanel,
-                3, 2, //rows, cols
-                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
+		weedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.weedMass"),
+								 StyleManager.DECIMAL_KG.format(weedMass), null);
 	}
 
 	/**

@@ -21,8 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -41,8 +39,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
@@ -93,11 +91,11 @@ public class TabPanelCooking extends TabPanel {
 	private double dessertsReplenishmentCache = 0;
 	
 	/** The number of cooks label. */
-	private JTextField numCooksLabel;
+	private JLabel numCooksLabel;
 	private int numCooksCache = 0;
 
 	/** The cook capacity label. */
-	private JTextField cookCapacityLabel;
+	private JLabel cookCapacityLabel;
 	private int cookCapacityCache = 0;
 
 	private Settlement settlement;
@@ -155,64 +153,52 @@ public class TabPanelCooking extends TabPanel {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 			
-		JPanel topPanel = new JPanel(new SpringLayout()); //new GridLayout(4, 1, 0, 0));
+		AttributePanel topPanel = new AttributePanel(3, 2);
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
-		addTextField(topPanel, Msg.getString("TabPanelCooking.breakfastTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), 6, null);
+		topPanel.addTextField(Msg.getString("TabPanelCooking.breakfastTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.lunchTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), 6, null);
+		topPanel.addTextField(Msg.getString("TabPanelCooking.lunchTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.dinnerTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), 6, null);
+		topPanel.addTextField(Msg.getString("TabPanelCooking.dinnerTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.midnightTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), 6, null);
+		topPanel.addTextField(Msg.getString("TabPanelCooking.midnightTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), null);
 		
 		// Prepare cook number label
-		numCooksLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.numberOfCooks"), numCooksCache, 4, null); //$NON-NLS-1$
-		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, 4, null); //$NON-NLS-1$
-
-		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(topPanel, 3, 4, // rows, cols
-				20, INITY_DEFAULT, // initX, initY
-				5, 2); // xPad, yPad
+		numCooksLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.numberOfCooks"),
+												Integer.toString(numCooksCache), null); //$NON-NLS-1$
+		cookCapacityLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.cookCapacity"),
+												Integer.toString(cookCapacityCache), null); //$NON-NLS-1$
 		
 		// Prepare cooking label panel.
 		JPanel splitPanel = new JPanel(new GridLayout(1, 2, 0, 0));
 		northPanel.add(splitPanel, BorderLayout.CENTER);
 
 		// Add TitledBorder
-		JPanel d = new JPanel(new GridLayout(3, 1, 0, 0));
+		AttributePanel d = new AttributePanel(3);
 		d.setBorder(StyleManager.createSubHeadingBorder("Desserts"));
-
-		// Prepare # of available Desserts label
-		availableDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache), //$NON-NLS-1$
-				JLabel.LEFT);
-		d.add(availableDessertsLabel);
-		// Prepare # of Desserts label
-		dessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache), //$NON-NLS-1$
-				JLabel.LEFT);
-		d.add(dessertsTodayLabel);
-		dessertsReplenishmentLabel = new JLabel(
-				Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishmentCache), JLabel.LEFT); //$NON-NLS-1$
-		d.add(dessertsReplenishmentLabel);
+		availableDessertsLabel = d.addTextField(Msg.getString("TabPanelCooking.availableDesserts"),
+												Integer.toString(availableDessertsCache), null);
+		dessertsTodayLabel = d.addTextField(Msg.getString("TabPanelCooking.dessertsToday"),
+												Integer.toString(dessertsTodayCache), null);
+		dessertsReplenishmentLabel = d.addTextField(Msg.getString("TabPanelCooking.dessertsReplenishment"),
+												Double.toString(dessertsReplenishmentCache), null); //$NON-NLS-1$
 		splitPanel.add(d);
 
-		JPanel m = new JPanel(new GridLayout(3, 1, 0, 0));
+		// Prepare available meals label
+		AttributePanel m = new AttributePanel(3);
 		m.setBorder(StyleManager.createSubHeadingBorder("Meals"));
 
-		// Prepare # of available meals label
-		availableMealsLabel = new JLabel(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache), //$NON-NLS-1$
-				JLabel.LEFT);
-		m.add(availableMealsLabel);
-		// Prepare # of cooked meals label
-		mealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
-		m.add(mealsTodayLabel);
-		mealsReplenishmentLabel = new JLabel(
-				Msg.getString("TabPanelCooking.mealsReplenishment", mealsReplenishmentCache), JLabel.LEFT); //$NON-NLS-1$
-		m.add(mealsReplenishmentLabel);
+		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.availableMeals"),
+												Integer.toString(availableMealsCache), null);
+		mealsTodayLabel = m.addTextField(Msg.getString("TabPanelCooking.mealsToday"),
+												Integer.toString(mealsTodayCache),null); //$NON-NLS-1$
+		mealsReplenishmentLabel = m.addTextField(
+				Msg.getString("TabPanelCooking.mealsReplenishment"), Double.toString(mealsReplenishmentCache), null); //$NON-NLS-1$
 		splitPanel.add(m);
 
 		// Create scroll panel for the outer table panel.

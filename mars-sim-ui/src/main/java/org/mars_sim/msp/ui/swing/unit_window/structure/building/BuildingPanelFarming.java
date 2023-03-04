@@ -7,13 +7,13 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,10 +29,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -51,8 +48,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -77,16 +74,18 @@ implements MouseListener {
 	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
 	private static final String MOL_M2_DAY = " mol/m2/day";
 
+	private static final DecimalFormat DECIMAL_KG_SOL = new DecimalFormat("#,##0.0 kg/Sol");
+
 	
 	// Data members
-	private JTextField radTF;
-	private JTextField farmersTF;
-	private JTextField cropsTF;
-	private JTextField waterUsageTF;
-	private JTextField greyWaterUsageTF;
-	private JTextField o2TF;
-	private JTextField co2TF;
-	private JTextField workTimeTF;
+	private JLabel radTF;
+	private JLabel farmersTF;
+	private JLabel cropsTF;
+	private JLabel waterUsageTF;
+	private JLabel greyWaterUsageTF;
+	private JLabel o2TF;
+	private JLabel co2TF;
+	private JLabel workTimeTF;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -159,55 +158,49 @@ implements MouseListener {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		JPanel springPanel = new JPanel(new SpringLayout());
+		AttributePanel springPanel = new AttributePanel(8);
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
-		radCache = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
-		radTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
-							 radCache + "", "Estimated sunlight on top of the greenhouse roof");
+		radCache = surfaceFeatures.getSolarIrradiance(location);
+		radTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
+							 radCache + " W/m", "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
-		farmersTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.numFarmers.title"),
-				                 farmersCache + "", "# of active gardeners tending the greenhouse");
+		farmersTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
+				                 Integer.toString(farmersCache), "# of active gardeners tending the greenhouse");
 
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
-		cropsTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.numCrops.title"),
-							   cropsCache + "", null);
+		cropsTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
+							   Integer.toString(cropsCache), null);
 
 		waterUsageCache = farm.computeUsage(ResourceUtil.waterID);
-		waterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.waterUsage.title"),
-									Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""),
+		waterUsageTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterUsage.title"),
+									DECIMAL_KG_SOL.format(waterUsageCache),
 									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 
 		greyWaterUsageCache = farm.computeUsage(ResourceUtil.greyWaterID);
-		greyWaterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
-									Msg.getString("BuildingPanelFarming.greyWaterUsage", greyWaterUsageCache + ""),
+		greyWaterUsageTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
+									DECIMAL_KG_SOL.format(greyWaterUsageCache),
 									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
 		
 		o2Cache = farm.computeUsage(ResourceUtil.oxygenID);
-		o2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.o2.title"),
-							Msg.getString("BuildingPanelFarming.o2", o2Cache + ""),
-							Msg.getString("BuildingPanelFarming.o2.tooltip"));
+		o2TF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2.title"),
+									DECIMAL_KG_SOL.format(o2Cache),
+									Msg.getString("BuildingPanelFarming.o2.tooltip"));
 
 		co2Cache = farm.computeUsage(ResourceUtil.co2ID);
-		co2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.co2.title"),
-							 Msg.getString("BuildingPanelFarming.co2", co2Cache + ""),
-							 Msg.getString("BuildingPanelFarming.co2.tooltip"));
+		co2TF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2.title"),
+									DECIMAL_KG_SOL.format(co2Cache),
+								 	Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		// Update the cumulative work time
-		workTimeCache = Math.round(farm.getCumulativeWorkTime())/100.0;
-		workTimeTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.workTime.title"),
-				 Msg.getString("BuildingPanelFarming.workTime", workTimeCache + ""),
-				 Msg.getString("BuildingPanelFarming.workTime.tooltip"));
-		
-		// Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(springPanel,
-		                                8, 2, //rows, cols
-		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
+		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
+		workTimeTF = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
+									StyleManager.DECIMAL_SOLS.format(workTimeCache),
+									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		center.add(southPanel, BorderLayout.SOUTH);
@@ -224,16 +217,6 @@ implements MouseListener {
 
 		// Prepare crop table
 		JTable cropTable = new JTable(cropTableModel) {
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer,int row, int col) {
-							super.setBackground(null);
-			                Component comp = super.prepareRenderer(renderer, row, col);
-			                if (isCellSelected(row, col)) {
-			                    comp.setBackground(new Color(242, 242, 242));
-			                }
-			                return comp;
-			            }
-
 			// Implement Table Cell ToolTip for crops
 			@Override
             public String getToolTipText(MouseEvent e) {
@@ -517,42 +500,42 @@ implements MouseListener {
 		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
-			radTF.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
+			radTF.setText(radCache + " W/m");
 		}
 
 		// Update the average water usage
 		double newWater = farm.computeUsage(ResourceUtil.waterID);
 		if (waterUsageCache != newWater) {
 			waterUsageCache = newWater;
-			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", newWater));
+			waterUsageTF.setText(DECIMAL_KG_SOL.format(newWater));
 		}
 
 		// Update the average O2 generated
 		double newO2 = farm.computeUsage(ResourceUtil.oxygenID);
 		if (o2Cache != newO2) {
 			o2Cache = newO2;
-			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", newO2));
+			o2TF.setText(DECIMAL_KG_SOL.format(newO2));
 		}
 
 		// Update the average CO2 consumed
 		double newCo2 = farm.computeUsage(ResourceUtil.co2ID);
 		if (co2Cache != newCo2) {
 			co2Cache = newCo2;
-			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", newCo2));
+			co2TF.setText(DECIMAL_KG_SOL.format(newCo2));
 		}
 
 		// Update the average grey water usage
 		double newGreyWater = farm.computeUsage(ResourceUtil.greyWaterID);
 		if (greyWaterUsageCache != newGreyWater) {
 			greyWaterUsageCache = newGreyWater;
-			greyWaterUsageTF.setText(Msg.getString("BuildingPanelFarming.greyWaterUsage", newGreyWater));
+			greyWaterUsageTF.setText(DECIMAL_KG_SOL.format(newGreyWater));
 		}
 		
 		// Update the cumulative work time
-		double workTime = Math.round(farm.getCumulativeWorkTime())/100.0;
+		double workTime = farm.getCumulativeWorkTime()/1000.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
-			workTimeTF.setText(Msg.getString("BuildingPanelFarming.workTime", workTime));
+			workTimeTF.setText(StyleManager.DECIMAL_SOLS.format(workTime));
 		}
 		
 		// Update crop table.

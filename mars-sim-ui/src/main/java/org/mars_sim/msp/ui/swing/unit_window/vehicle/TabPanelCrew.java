@@ -12,23 +12,17 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -50,10 +44,10 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
@@ -71,7 +65,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
 
-	private JTextField crewNumTF;
+	private JLabel crewNumTF;
 
 	private int crewNumCache;
 	private int crewCapacityCache;
@@ -106,24 +100,21 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         
 		// Create crew count panel
-		JPanel crewCountPanel = new JPanel(new SpringLayout());
+		AttributePanel crewCountPanel = new AttributePanel(2);
 		northPanel.add(crewCountPanel, BorderLayout.CENTER);
 
 		// Create crew num header label
 		crewNumCache = crewable.getCrewNum();
-		crewNumTF = addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewNum"), crewNumCache, 3,
+		crewNumTF = crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewNum"),
+								Integer.toString(crewNumCache),
 								 Msg.getString("TabPanelCrew.crew.tooltip"));
 
 		// Create crew cap header label
 		crewCapacityCache = crewable.getCrewCapacity();
-		addTextField(crewCountPanel, Msg.getString("TabPanelCrew.crewCapacity"), crewCapacityCache, 3,
-					 Msg.getString("TabPanelCrew.crewCapacity.tooltip"));
+		crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewCapacity"),
+								Integer.toString(crewCapacityCache),
+					 			Msg.getString("TabPanelCrew.crewCapacity.tooltip"));
 
-		// Prepare SpringLayout.
-		SpringUtilities.makeCompactGrid(crewCountPanel,
-				2, 2, // rows, cols
-				120, 2, // initX, initY
-				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create crew monitor button
 		JButton monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); 

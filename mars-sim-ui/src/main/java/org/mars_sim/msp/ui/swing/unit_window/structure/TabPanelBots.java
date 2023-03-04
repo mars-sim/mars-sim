@@ -10,19 +10,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Collection;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * This is a tab panel for robots.
@@ -38,9 +36,9 @@ public class TabPanelBots extends TabPanel {
 
 	private Settlement settlement;
 
-	private JTextField robotNumLabel;
-	private JTextField robotCapLabel;
-	private JTextField robotIndoorLabel;
+	private JLabel robotNumLabel;
+	private JLabel robotCapLabel;
+	private JLabel robotIndoorLabel;
 	private UnitListPanel<Robot> robotList;
 
 
@@ -50,41 +48,39 @@ public class TabPanelBots extends TabPanel {
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelBots(Unit unit, MainDesktopPane desktop) {
+	public TabPanelBots(Settlement unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(ROBOT_ICON),
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		settlement = (Settlement) unit;
+		settlement = unit;
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 
 		// Prepare count spring layout panel.
-		JPanel countPanel = new JPanel(new SpringLayout());
+		AttributePanel countPanel = new AttributePanel(3);
 		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create robot num label
 		robotNumCache = settlement.getNumBots();
-		robotNumLabel = addTextField(countPanel, Msg.getString("TabPanelBots.associated"), robotNumCache, 4, null); // $NON-NLS-1$
+		robotNumLabel = countPanel.addTextField(Msg.getString("TabPanelBots.associated"),
+													Integer.toString(robotNumCache), null); // $NON-NLS-1$
 
 		// Create robot indoor label
 		robotIndoorCache = settlement.getNumBots();
-		robotIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelBots.indoor"), robotIndoorCache, 4, null);
+		robotIndoorLabel = countPanel.addTextField(Msg.getString("TabPanelBots.indoor"),
+													Integer.toString(robotIndoorCache), null);
 
 		// Create robot capacity label
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = addTextField(countPanel, Msg.getString("TabPanelBots.capacity"), robotCapacityCache, 4, null); // $NON-NLS-1$
-
-		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				60, INITY_DEFAULT, // initX, initY
-				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
+		robotCapLabel = countPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
+													Integer.toString(robotCapacityCache), null); // $NON-NLS-1$
 
 		// Create spring layout robot display panel
 		robotList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {

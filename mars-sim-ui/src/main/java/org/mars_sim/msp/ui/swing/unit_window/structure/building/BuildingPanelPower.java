@@ -8,9 +8,8 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -20,7 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The BuildingPanelPower class is a building function panel representing 
@@ -40,9 +39,9 @@ extends BuildingFunctionPanel {
 	/** The power used cache. */
 	private double usedCache;
 	
-	private JTextField statusTF;
-	private JTextField producedTF;
-	private JTextField usedTF;
+	private JLabel statusTF;
+	private JLabel producedTF;
+	private JLabel usedTF;
 
 	/** The power status cache. */
 	private PowerMode powerStatusCache;
@@ -76,18 +75,18 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		
-		JPanel springPanel = new JPanel(new SpringLayout());
+		AttributePanel springPanel = new AttributePanel(isProducer ? 3 : 2);
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
-		statusTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerStatus"),
+		statusTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerStatus"),
 				                powerStatusCache.getName(), null);
 
 		// If power producer, prepare power producer label.
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
-			producedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerProduced"),
+			producedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerProduced"),
 									  StyleManager.DECIMAL_KG.format(powerCache), null);
 		}
 
@@ -97,22 +96,8 @@ extends BuildingFunctionPanel {
 		else if (powerStatusCache == PowerMode.POWER_DOWN) 
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
-		usedTF = addTextField(springPanel, Msg.getString("BuildingPanelPower.powerUsed"),
+		usedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerUsed"),
 													StyleManager.DECIMAL_KW.format(usedCache), null);
-		
-		//Lay out the spring panel.
-		if (isProducer) {
-			SpringUtilities.makeCompactGrid(springPanel,
-		                                3, 2, //rows, cols
-		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
-		}
-		else {
-			SpringUtilities.makeCompactGrid(springPanel,
-                    2, 2, //rows, cols
-                    INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-                    XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
-		}
 	}
 
 	/**
