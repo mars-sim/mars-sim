@@ -59,7 +59,7 @@ public class AttributePanel extends JPanel {
             label = label + " :";
         }
         JLabel title = new JLabel(label, SwingConstants.RIGHT);
-        title.setFont(StyleManager.BOLD_FONT);
+        title.setFont(StyleManager.getLabelFont());
 		add(title);
 		add(content);
 	}

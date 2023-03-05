@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,7 +31,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -42,6 +42,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The HealthTabPanel is a tab panel for a person's health.
@@ -55,8 +56,8 @@ extends TabPanel {
 	private static final String THIRTY_DAY = "30-Day";
 	private static final String ANNUAL = "Annual";
 	private static final String CAREER = "Career";
-	private static final String S4 = "%4d";
-	private static final String S6 = "%6d";
+	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
+
 
 	private int fatigueCache;
 	private int thirstCache;
@@ -116,16 +117,16 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelHealth(Unit unit, MainDesktopPane desktop) {
+	public TabPanelHealth(Person unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(HEALTH_ICON),
 			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
-			unit, desktop
+			desktop
 		);
 
-		person = (Person) unit;
+		person = unit;
 		condition = person.getPhysicalCondition();
 		circadianClock = person.getCircadianClock();
 	}
@@ -137,112 +138,39 @@ extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
 		// Prepare condition panel
-		JPanel conditionPanel = new JPanel(new SpringLayout());
+		AttributePanel conditionPanel = new AttributePanel(5, 2);
 		northPanel.add(conditionPanel);
-
-		// Prepare fatigue name label
-		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(fatigueNameLabel);
 		
-		// Prepare fatigue label
 		fatigueCache = (int)condition.getFatigue();
-		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, fatigueCache)), SwingConstants.RIGHT);
-		conditionPanel.add(fatigueLabel);
-
-		// Prepare hunger name label
-		JLabel thirstNameLabel = new JLabel(Msg.getString("TabPanelHealth.thirst"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(thirstNameLabel);
-
-		// Prepare hunger label
+		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.fatigue"),
+										DECIMAL_MSOLS.format(fatigueCache), null);
 		thirstCache = (int)condition.getThirst();
-		thirstLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, thirstCache)), SwingConstants.RIGHT);
-		conditionPanel.add(thirstLabel);
-		
-		// Prepare hunger name label
-		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(hungerNameLabel);
-
-		// Prepare hunger label
+		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"),
+										DECIMAL_MSOLS.format(thirstCache), null);
 		hungerCache = (int)condition.getHunger();
-		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, hungerCache)), SwingConstants.RIGHT);
-		conditionPanel.add(hungerLabel);
-
-		//
-		// Prepare energy name label
-		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(energyNameLabel);
-
-		// Prepare energy label
+		hungerLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.hunger"),
+										DECIMAL_MSOLS.format(thirstCache), null);
 		energyCache = (int)condition.getEnergy();
-		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-				String.format(S6, energyCache)), SwingConstants.RIGHT);
-		conditionPanel.add(energyLabel);
-
-
-		// Prepare stress name label
-		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(stressNameLabel);
-
-		// Prepare stress label
-		stressCache = (int)condition.getStress();
-		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-				String.format(S4, stressCache)), SwingConstants.RIGHT);
-		conditionPanel.add(stressLabel);
-
-		// Prepare performance rating label
-		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(performanceNameLabel);
-
-		// Performance rating label
+		energyLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.energy"),
+										StyleManager.DECIMAL_PLACES0.format(energyCache) + " kj", null);
+		stressCache = (int)condition.getStress();	
+		stressLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.stress"),
+										StyleManager.DECIMAL_PERC.format(stressCache), null);
 		performanceCache = (int)(person.getPerformanceRating() * 100);
-		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-				String.format(S4, performanceCache)), SwingConstants.RIGHT);
-		conditionPanel.add(performanceLabel);
-
-		// Prepare leptin label
-		JLabel leptinNameLabel = new JLabel(Msg.getString("TabPanelHealth.leptin"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(leptinNameLabel);
-
+		performanceLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.performance"),
+										StyleManager.DECIMAL_PERC.format(performanceCache), null);
 		leptinCache = (int)(circadianClock.getLeptin());
-		leptinLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, leptinCache)), SwingConstants.RIGHT);
-		conditionPanel.add(leptinLabel);
-		
-		// Prepare ghrelin label
-		JLabel ghrelinNameLabel = new JLabel(Msg.getString("TabPanelHealth.ghrelin"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(ghrelinNameLabel);
-
+		leptinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin"),
+										DECIMAL_MSOLS.format(leptinCache), null);
 		ghrelinCache = (int)(circadianClock.getGhrelin());
-		ghrelinLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, ghrelinCache)), SwingConstants.RIGHT);
-		conditionPanel.add(ghrelinLabel);
-
-		// Prepare leptin threshold label
-		JLabel leptinTNameLabel = new JLabel(Msg.getString("TabPanelHealth.leptin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(leptinTNameLabel);
-
+		ghrelinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin"),
+										DECIMAL_MSOLS.format(ghrelinCache), null);		
 		leptinTCache = (int)(circadianClock.getLeptinT());
-		leptinTLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, leptinTCache)), SwingConstants.RIGHT);
-		conditionPanel.add(leptinTLabel);
-		
-		// Prepare ghrelin threshold label
-		JLabel ghrelinTNameLabel = new JLabel(Msg.getString("TabPanelHealth.ghrelin.threshold"), SwingConstants.RIGHT); //$NON-NLS-1$
-		conditionPanel.add(ghrelinTNameLabel);
-
+		leptinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin.threshold"),
+										DECIMAL_MSOLS.format(leptinTCache), null);	
 		ghrelinTCache = (int)(circadianClock.getGhrelinT());
-		ghrelinTLabel = new JLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-				String.format(S4, ghrelinTCache)), SwingConstants.RIGHT);
-		conditionPanel.add(ghrelinTLabel);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(conditionPanel,
-		                                5, 4, //rows, cols
-		                                5, 4,        //initX, initY
-		                                15, 3);       //xPad, yPad
+		ghrelinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin.threshold"),
+										DECIMAL_MSOLS.format(ghrelinTCache), null);	
 		
 
 		// Prepare SpringLayout for info panel.
@@ -251,6 +179,7 @@ extends TabPanel {
 		
 		// Prepare sleep hour name label
 		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelFavorite.sleepHour"), SwingConstants.RIGHT); //$NON-NLS-1$
+		sleepHrLabel.setFont(StyleManager.getLabelFont());
 		springPanel.add(sleepHrLabel);
 
 		// Checks the 3 best sleep time
@@ -492,80 +421,70 @@ extends TabPanel {
 		int newF = (int)condition.getFatigue();
 		if (fatigueCache != newF) {
 			fatigueCache = newF;
-			fatigueLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newF)));
+			fatigueLabel.setText(DECIMAL_MSOLS.format(newF));
 		}
 
 		// Update thirst if necessary.
 		int newT = (int)condition.getThirst();
 		if (thirstCache != newT) {
 			thirstCache = newT;
-			thirstLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newT)));
+			thirstLabel.setText(DECIMAL_MSOLS.format(newT));
 		}
 		
 		// Update hunger if necessary.
 		int newH = (int)condition.getHunger();
 		if (hungerCache != newH) {
 			hungerCache = newH;
-			hungerLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newH)));
+			hungerLabel.setText(DECIMAL_MSOLS.format(newH));
 		}
 
 		// Update energy if necessary.
 		int newEnergy = (int)condition.getEnergy();
 		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
-			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-					String.format(S6, newEnergy)));
+			energyLabel.setText(StyleManager.DECIMAL_PLACES0.format(energyCache) + " kj");
 		}
 
 		// Update stress if necessary.
 		int newS = (int)condition.getStress();
 		if (stressCache != newS) {
 			stressCache = newS;
-			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-					String.format(S4, newS)));
+			stressLabel.setText(StyleManager.DECIMAL_PERC.format(newS));
 		}
 
 		// Update performance cache if necessary.
 		int newP = (int)(condition.getPerformanceFactor() * 100);
 		if (performanceCache != newP) {
 			performanceCache = newP;
-			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-					String.format(S4, newP)));
+			performanceLabel.setText(StyleManager.DECIMAL_PERC.format(newP));
 		}
 		
 		// Update leptin if necessary.
 		int newL = (int)(circadianClock.getLeptin());
 		if (leptinCache != newL) {
 			leptinCache = newL;
-			leptinLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newL)));
+			leptinLabel.setText(DECIMAL_MSOLS.format(newL));
 		}		
 		
 		// Update ghrelin if necessary.
 		int newG = (int)(circadianClock.getGhrelin());
 		if (ghrelinCache != newG) {
 			ghrelinCache = newG;
-			ghrelinLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newG)));
+			ghrelinLabel.setText(DECIMAL_MSOLS.format(newG));
 		}		
 		
 		// Update leptin threshold if necessary.
 		int newLT = (int)(circadianClock.getLeptinT());
 		if (leptinTCache != newLT) {
 			leptinTCache = newLT;
-			leptinTLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newLT)));
+			leptinTLabel.setText(DECIMAL_MSOLS.format(newLT));
 		}		
 		
 		// Update ghrelin threshold if necessary.
 		int newGT = (int)(circadianClock.getGhrelinT());
 		if (ghrelinTCache != newGT) {
 			ghrelinTCache = newGT;
-			ghrelinTLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
-					String.format(S4, newGT)));
+			ghrelinTLabel.setText(DECIMAL_MSOLS.format(newGT));
 		}
 		
 		// Checks the 3 best sleep times

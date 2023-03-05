@@ -368,6 +368,13 @@ public class MainDesktopPane extends JDesktopPane
 			else {
 				return null;	
 			}
+
+			// Close it from the start
+			try {
+				w.setClosed(true);
+			} catch (PropertyVetoException e) {
+				logger.warning("Problem creting closed tool window " + e.getMessage());
+			}
 			toolWindows.add(w);
 		}
 		return null;

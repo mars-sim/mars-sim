@@ -18,11 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
@@ -42,18 +42,17 @@ public class TabPanelTow extends TabPanel {
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
-	
-	public TabPanelTow(Unit unit, MainDesktopPane desktop) {
+
+	public TabPanelTow(Vehicle unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
 			null,
 			ImageLoader.getIconByName(TOW_ICON),
 			Msg.getString("TabPanelTow.title"), //$NON-NLS-1$
-			unit,
 			desktop
 		);
 
-		vehicle = (Vehicle) unit;
+		vehicle = unit;
 	}
 
 	@Override
@@ -69,7 +68,8 @@ public class TabPanelTow extends TabPanel {
 			mainPane.add(towingLabelPanel);
 			
 			// Create towing label.
-			JLabel towLabel = new JLabel("  " + Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
+			towLabel.setFont(StyleManager.getLabelFont());
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
@@ -98,6 +98,7 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed label.
 		JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
+		towedLabel.setFont(StyleManager.getLabelFont());
 		towedLabelPanel.add(towedLabel);
 
 		// Create the towed button.

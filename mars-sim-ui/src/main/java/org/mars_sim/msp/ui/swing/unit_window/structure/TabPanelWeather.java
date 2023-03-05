@@ -140,7 +140,7 @@ extends TabPanel {
         centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
 
         // Prepare temperature label
-        temperatureValueLabel = new JLabel(getTemperatureString(getTemperature()), JLabel.CENTER);
+        temperatureValueLabel = new JLabel(StyleManager.DECIMAL_CELCIUS.format(getTemperature()), JLabel.CENTER);
         temperatureValueLabel.setOpaque(false);
         temperaturePanel.add(temperatureValueLabel);
 
@@ -159,13 +159,6 @@ extends TabPanel {
         opticalDepthTF = springPanel.addTextField(Msg.getString("TabPanelWeather.opticalDepth.label"), "", null);
         zenithAngleTF = springPanel.addTextField(Msg.getString("TabPanelWeather.zenithAngle.label"), "", null);
         solarDeclinationTF = springPanel.addTextField(Msg.getString("TabPanelWeather.solarDeclination.label"), "", null);
-    }
-
-
-    public String getTemperatureString(double value) {
-    	// Use Msg.getString for the degree sign
-    	// Change from " °C" to " �C" for English Locale
-    	return StyleManager.DECIMAL_PLACES0.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     }
 
     public double getTemperature() {
@@ -192,10 +185,6 @@ extends TabPanel {
 		return weather.getWindDirection(locationCache);
     }
 
-    public String getWindDirectionString(double value) {
-     	return StyleManager.DECIMAL_PLACES0.format(value) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-    }
-
     public double getOpticalDepth() {
  		return surfaceFeatures.getOpticalDepth(locationCache);
      }
@@ -208,17 +197,10 @@ extends TabPanel {
  		return orbitInfo.getSolarZenithAngle(locationCache);
      }
 
-    public String getZenithAngleString(double value) {
-     	return StyleManager.DECIMAL_PLACES2.format(value * RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-    }
-
     public double getSolarDeclination() {
  		return orbitInfo.getSolarDeclinationAngleDegree();
      }
 
-    public String getSolarDeclinationString(double value) {
-     	return StyleManager.DECIMAL_PLACES2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-    }
 
     public double getAirDensity() {
 		return weather.getAirDensity(locationCache);
@@ -270,13 +252,13 @@ extends TabPanel {
 	        double t =  Math.round(getTemperature()*100.0)/100.0;
 	        if (temperatureCache != t) {
 	        	temperatureCache = t;
-	        	temperatureValueLabel.setText(getTemperatureString(temperatureCache));
+	        	temperatureValueLabel.setText(StyleManager.DECIMAL_CELCIUS.format(temperatureCache));
 	        }
  
 	        int wd = getWindDirection();
 	        if (windDirectionCache != wd) {
 	        	windDirectionCache = wd;
-	        	windDirTF.setText(" " + getWindDirectionString(windDirectionCache));
+	        	windDirTF.setText(StyleManager.DECIMAL_DEG.format(windDirectionCache));
 	        }
 
 	        double s = Math.round(getWindSpeed()*100.0)/100.0;
@@ -337,13 +319,14 @@ extends TabPanel {
 	        double za = getZenithAngle();
 	        if (zenithAngleCache != za) {
 	        	zenithAngleCache = za;
-	        	zenithAngleTF.setText(" " + getZenithAngleString(zenithAngleCache));
+	        	zenithAngleTF.setText(StyleManager.DECIMAL_DEG.format(zenithAngleCache * RADIANS_TO_DEGREES));
 	        }
 
+	   
 	        double sd = getSolarDeclination();
 	        if (solarDeclinationCache != sd) {
 	        	solarDeclinationCache = sd;
-	        	solarDeclinationTF.setText(" " + getSolarDeclinationString(solarDeclinationCache));
+	        	solarDeclinationTF.setText(StyleManager.DECIMAL_DEG.format(solarDeclinationCache));
 	        }
 
 	        double ir = getSolarIrradiance();
