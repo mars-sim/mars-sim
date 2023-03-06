@@ -84,50 +84,50 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		columnTypes[MISSION] = Integer.class;
 		
 		columnNames[COMPUTING_UNIT] = "CU(s)";
-		columnTypes[COMPUTING_UNIT] = Number.class;
+		columnTypes[COMPUTING_UNIT] = Double.class;
 
 		columnNames[POWER_GEN] = "kW Gen";
-		columnTypes[POWER_GEN] = Number.class;
+		columnTypes[POWER_GEN] = Double.class;
 		columnNames[POWER_LOAD] = "kW Load";
-		columnTypes[POWER_LOAD] = Number.class;
+		columnTypes[POWER_LOAD] = Double.class;
 		columnNames[ENERGY_STORED] = "kWh Stored";
-		columnTypes[ENERGY_STORED] = Number.class;
+		columnTypes[ENERGY_STORED] = Double.class;
 		
 		
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
 		
 		columnNames[OXYGEN_COL] = "Oxygen";
-		columnTypes[OXYGEN_COL] = Number.class;
+		columnTypes[OXYGEN_COL] = Double.class;
 		columnNames[HYDROGEN_COL] = "Hydrogen";
-		columnTypes[HYDROGEN_COL] = Number.class;	
+		columnTypes[HYDROGEN_COL] = Double.class;	
 		columnNames[METHANE_COL] = "Methane";
-		columnTypes[METHANE_COL] = Number.class;	
+		columnTypes[METHANE_COL] = Double.class;	
 		columnNames[METHANOL_COL] = "Methanol";
-		columnTypes[METHANOL_COL] = Number.class;
+		columnTypes[METHANOL_COL] = Double.class;
 		
 		columnNames[WATER_COL] = "Water";
-		columnTypes[WATER_COL] = Number.class;
+		columnTypes[WATER_COL] = Double.class;
 		columnNames[ICE_COL] = "Ice";
-		columnTypes[ICE_COL] = Number.class;
+		columnTypes[ICE_COL] = Double.class;
 		
 		columnNames[REGOLITHS_COL] = "Regoliths";
-		columnTypes[REGOLITHS_COL] = Number.class;
+		columnTypes[REGOLITHS_COL] = Double.class;
 
 		columnNames[SAND_COL] = "Sand";
-		columnTypes[SAND_COL] = Number.class;
+		columnTypes[SAND_COL] = Double.class;
 		
 		columnNames[ROCKS_COL] = "Rocks";
-		columnTypes[ROCKS_COL] = Number.class;	
+		columnTypes[ROCKS_COL] = Double.class;	
 		columnNames[ORES_COL] = "Ores";
-		columnTypes[ORES_COL] = Number.class;	
+		columnTypes[ORES_COL] = Double.class;	
 		columnNames[MINERALS_COL] = "Minerals";
-		columnTypes[MINERALS_COL] = Number.class;
+		columnTypes[MINERALS_COL] = Double.class;
 		
 		columnNames[CONCRETE_COL] = "Concrete";
-		columnTypes[CONCRETE_COL] = Number.class;
+		columnTypes[CONCRETE_COL] = Double.class;
 		columnNames[CEMENT_COL] = "Cement";
-		columnTypes[CEMENT_COL] = Number.class;
+		columnTypes[CEMENT_COL] = Double.class;
 		
 	};
 

@@ -104,23 +104,23 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		columnNames[RESERVED] = "Reserved";
 		columnTypes[RESERVED] = String.class;
 		columnNames[SPEED] = "Speed";
-		columnTypes[SPEED] = Number.class;
+		columnTypes[SPEED] = Double.class;
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Number.class;
+		columnTypes[OXYGEN] = Double.class;
 		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Number.class;
+		columnTypes[METHANE] = Double.class;
 		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Number.class;
+		columnTypes[WATER] = Double.class;
 		columnNames[FOOD] = "Food";
-		columnTypes[FOOD] = Number.class;
+		columnTypes[FOOD] = Double.class;
 		columnNames[DESSERT] = "Dessert";
-		columnTypes[DESSERT] = Number.class;
+		columnTypes[DESSERT] = Double.class;
 		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Number.class;
+		columnTypes[ROCK_SAMPLES] = Double.class;
 		columnNames[ICE] = "Ice";
-		columnTypes[ICE] = Number.class;
+		columnTypes[ICE] = Double.class;
 	}
 
 	private static final int FOOD_ID = ResourceUtil.foodID;

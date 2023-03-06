@@ -31,7 +31,7 @@ extends TableTab {
 			TableColumn tc = m.getColumn(i);
 			Class<?> columnClass = model.getColumnClass(tc.getModelIndex());
 			if (columnClass.equals(Double.class)) {
-				tc.setCellRenderer(DIGIT3_RENDERER);
+				tc.setCellRenderer(DIGIT2_RENDERER);
 			}
 			else if (columnClass.equals(Number.class)) {
 				tc.setCellRenderer(DIGIT2_RENDERER);
