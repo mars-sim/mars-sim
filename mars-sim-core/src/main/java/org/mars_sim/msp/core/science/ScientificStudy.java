@@ -1187,4 +1187,32 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
             return other.name == null;
 		} else return name.equals(other.name);
     }
+
+	/**
+	 * Get the percentage [0 -> 1.0] of the completion of the current phase
+	 */
+	public double getPhaseProgress() {
+		switch(phase) {
+			case PROPOSAL_PHASE:
+				return proposalWorkTime / baseProposalTime;
+			case INVITATION_PHASE:
+				return maxCollaborators / collaborators.size();
+			case PAPER_PHASE: {
+				double total = getTotalPrimaryPaperWorkTimeRequired() + (collaborators.size() * baseCollaborativePaperWritingTime);
+				double completed = getPrimaryPaperWorkTimeCompleted()
+							+ collaborators.values().stream().mapToDouble(v -> v.paperWorkTime).sum();
+				return completed/total;
+			}
+			case RESEARCH_PHASE: {
+				double total = getTotalPrimaryResearchWorkTimeRequired() + (collaborators.size() * baseCollaborativeResearchTime);	
+				double completed = getPrimaryResearchWorkTimeCompleted()
+							+ collaborators.values().stream().mapToDouble(v -> v.reseachWorkTime).sum();
+				return completed/total;
+			}
+			case PEER_REVIEW_PHASE:
+				return getPeerReviewTimeCompleted() / basePeerReviewTime;
+			default: 
+				return 0D;
+		}
+	}
 }
