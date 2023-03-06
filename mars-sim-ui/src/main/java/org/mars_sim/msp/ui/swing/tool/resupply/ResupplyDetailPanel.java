@@ -16,15 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.mars_sim.msp.core.Simulation;
@@ -40,10 +38,9 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -65,7 +62,7 @@ implements HistoricalEventListener {
 	private JLabel timeArrivalValueLabel;
 	private JLabel immigrantsValueLabel;
 	
-	private JPanel innerSupplyPane;
+	private JTabbedPane innerSupplyPane;
 
 	private MainDesktopPane desktop;
 
@@ -88,94 +85,33 @@ implements HistoricalEventListener {
 		resupply = null;
 
 		setLayout(new BorderLayout(0, 10));
-		setBorder(new MarsPanelBorder());
-
-		// Create the info panel.
-		JPanel infoPane = new JPanel(new BorderLayout());
-		add(infoPane, BorderLayout.NORTH);
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel("Resupply Mission", SwingConstants.CENTER);
 		StyleManager.applyHeading(titleLabel);
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
-		infoPane.add(titleLabel, BorderLayout.NORTH);
+		add(titleLabel, BorderLayout.NORTH);
 
-		// Create the spring panel.
-		JPanel springPane = new JPanel(new SpringLayout());
-		infoPane.add(springPane, BorderLayout.CENTER);
+		JPanel infoPane = new JPanel(new BorderLayout());
+		infoPane.setBorder(BorderFactory.createEtchedBorder());
+		add(infoPane, BorderLayout.CENTER);
 
-		// Create template name label.
-		JLabel templateNameLabel = new JLabel("Template : ", SwingConstants.RIGHT);
-		springPane.add(templateNameLabel);
-		
-		// Create destination value label.
-		templateLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(templateLabel);
-		
-		// Create destination title label.
-		JLabel destinationTitleLabel = new JLabel("Destination : ", SwingConstants.RIGHT);
-		springPane.add(destinationTitleLabel);
+		// Create the details panel.
+		AttributePanel detailsPane = new AttributePanel(7);
+		infoPane.add(detailsPane, BorderLayout.NORTH);
 
-		// Create destination value label.
-		destinationValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(destinationValueLabel);
+		templateLabel = detailsPane.addTextField("Template", "", null);
+		destinationValueLabel = detailsPane.addTextField("Destination", "", null);
+		stateValueLabel = detailsPane.addTextField("State", "", null);
+		launchDateValueLabel = detailsPane.addTextField("Launch Date", "", null);
+		arrivalDateValueLabel = detailsPane.addTextField("Arrival Date", "", null);
+		timeArrivalValueLabel = detailsPane.addTextField("Time Until Arrival", "", null);
+		immigrantsValueLabel = detailsPane.addTextField("Immigrants", "", null);
 
-		// Create state title label.
-		JLabel stateTitleLabel = new JLabel("State : ", SwingConstants.RIGHT);
-		springPane.add(stateTitleLabel);
+		innerSupplyPane = new JTabbedPane();
+		infoPane.add(innerSupplyPane, BorderLayout.CENTER);
 
-		// Create state value label.
-		stateValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(stateValueLabel);
-
-		// Create launch date title label.
-		JLabel launchDateTitleLabel = new JLabel("Launch Date : ", SwingConstants.RIGHT);
-		springPane.add(launchDateTitleLabel);
-
-		// Create launch date value label.
-		launchDateValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(launchDateValueLabel);
-
-		// Create arrival date title label.
-		JLabel arrivalDateTitleLabel = new JLabel("Arrival Date : ", SwingConstants.RIGHT);
-		springPane.add(arrivalDateTitleLabel);
-
-		// Create arrival date value label.
-		arrivalDateValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(arrivalDateValueLabel);
-
-		// Create time arrival title label.
-		JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival : ", SwingConstants.RIGHT);
-		springPane.add(timeArrivalTitleLabel);
-
-		// Create time arrival value label.
-		timeArrivalValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(timeArrivalValueLabel);
-
-		// Create immigrants title label.
-		JLabel immigrantsTitleLabel = new JLabel("Immigrants : ", SwingConstants.RIGHT);
-		springPane.add(immigrantsTitleLabel);
-
-		// Create immigrants value label.
-		immigrantsValueLabel = new JLabel("", SwingConstants.LEFT);
-		springPane.add(immigrantsValueLabel);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(springPane,
-						7, 2, //rows, cols
-						30, 10, // initX, initY
-						7, 3); // xPad, yPad
-
-		// Create the outer supply panel.
-		JPanel outerSupplyPane = new JPanel(new BorderLayout(0, 0));
-		outerSupplyPane.setBorder(new TitledBorder("Supplies"));
-		add(outerSupplyPane, BorderLayout.CENTER);
-
-		// Create the inner supply panel.
-		innerSupplyPane = new JPanel();
-		innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
-		outerSupplyPane.add(new JScrollPane(innerSupplyPane), BorderLayout.CENTER);
-
+		add(infoPane, BorderLayout.CENTER);
 
 		// Set as historical event listener.
 		sim.getEventManager().addListener(this);
@@ -242,38 +178,32 @@ implements HistoricalEventListener {
 		// Create buildings panel.
 		JPanel buildingsPanel = createBuildingsDisplayPanel();
 		if (buildingsPanel != null) {
-			innerSupplyPane.add(buildingsPanel);
-			innerSupplyPane.add(Box.createVerticalStrut(10));
+			innerSupplyPane.addTab("Building", buildingsPanel);
 		}
 
 		// Create vehicles panel.
 		JPanel vehiclesPanel = createVehiclesDisplayPanel();
 		if (vehiclesPanel != null) {
-			innerSupplyPane.add(vehiclesPanel);
-			innerSupplyPane.add(Box.createVerticalStrut(10));
+			innerSupplyPane.addTab("Vehicles", vehiclesPanel);
 		}
 
 		// Create equipment panel.
 		JPanel equipmentPanel = createEquipmentDisplayPanel();
 		if (equipmentPanel != null) {
-			innerSupplyPane.add(equipmentPanel);
-			innerSupplyPane.add(Box.createVerticalStrut(10));
+			innerSupplyPane.addTab("Equipment", equipmentPanel);
 		}
 
 		// Create resources panel.
 		JPanel resourcesPanel = createResourcesDisplayPanel();
 		if (resourcesPanel != null) {
-			innerSupplyPane.add(resourcesPanel);
-			innerSupplyPane.add(Box.createVerticalStrut(10));
+			innerSupplyPane.addTab("Resources", resourcesPanel);
 		}
 
 		// Create parts panel.
 		JPanel partsPanel = createPartsDisplayPanel();
 		if (partsPanel != null) {
-			innerSupplyPane.add(partsPanel);
+			innerSupplyPane.addTab("Parts", partsPanel);
 		}
-
-		innerSupplyPane.add(Box.createVerticalGlue());
 	}
 
 	/**
@@ -289,10 +219,6 @@ implements HistoricalEventListener {
 		if (buildings.size() > 0) {
 			// Create buildings panel.
 			buildingsPanel = new JPanel(new BorderLayout());
-
-			// Create buildings label.
-			JLabel buildingsLabel = new JLabel("Buildings", SwingConstants.CENTER);
-			buildingsPanel.add(buildingsLabel, BorderLayout.NORTH);
 
 			// Create table data.
 			Map<String, Integer> buildingMap = new HashMap<>(buildings.size());
@@ -342,8 +268,7 @@ implements HistoricalEventListener {
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = buildingTable.getPreferredSize().height +
-					buildingTable.getTableHeader().getPreferredSize().height +
-					buildingsLabel.getPreferredSize().height + 7;
+					buildingTable.getTableHeader().getPreferredSize().height + 7;
 			buildingsPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
 
@@ -363,10 +288,6 @@ implements HistoricalEventListener {
 		if (vehicles.size() > 0) {
 			// Create vehicles panel.
 			vehiclesPanel = new JPanel(new BorderLayout());
-
-			// Create vehicles label.
-			JLabel vehiclesLabel = new JLabel("Vehicles", SwingConstants.CENTER);
-			vehiclesPanel.add(vehiclesLabel, BorderLayout.NORTH);
 
 			// Create table data.
 			Map<String, Integer> vehicleMap = new HashMap<>(vehicles.size());
@@ -416,8 +337,7 @@ implements HistoricalEventListener {
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = vehicleTable.getPreferredSize().height +
-					vehicleTable.getTableHeader().getPreferredSize().height +
-					vehiclesLabel.getPreferredSize().height + 7;
+					vehicleTable.getTableHeader().getPreferredSize().height + 7;
 			vehiclesPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
 
@@ -437,10 +357,6 @@ implements HistoricalEventListener {
 		if (equipment.size() > 0) {
 			// Create equipment panel.
 			equipmentPanel = new JPanel(new BorderLayout());
-
-			// Create equipment label.
-			JLabel equipmentLabel = new JLabel("Equipment", SwingConstants.CENTER);
-			equipmentPanel.add(equipmentLabel, BorderLayout.NORTH);
 
 			// Create table model.
 			DefaultTableModel tableModel = new DefaultTableModel() {
@@ -476,8 +392,7 @@ implements HistoricalEventListener {
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = equipmentTable.getPreferredSize().height +
-					equipmentTable.getTableHeader().getPreferredSize().height +
-					equipmentLabel.getPreferredSize().height + 7;
+					equipmentTable.getTableHeader().getPreferredSize().height + 7;
 			equipmentPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
 
@@ -497,10 +412,6 @@ implements HistoricalEventListener {
 		if (resources.size() > 0) {
 			// Create resources panel.
 			resourcesPanel = new JPanel(new BorderLayout());
-
-			// Create resources label.
-			JLabel resourcesLabel = new JLabel("Resources", SwingConstants.CENTER);
-			resourcesPanel.add(resourcesLabel, BorderLayout.NORTH);
 
 			// Create table model.
 			DefaultTableModel tableModel = new DefaultTableModel(){
@@ -538,8 +449,7 @@ implements HistoricalEventListener {
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = resourcesTable.getPreferredSize().height +
-					resourcesTable.getTableHeader().getPreferredSize().height +
-					resourcesLabel.getPreferredSize().height + 7;
+					resourcesTable.getTableHeader().getPreferredSize().height + 7;
 			resourcesPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
 
@@ -559,10 +469,6 @@ implements HistoricalEventListener {
 		if (parts.size() > 0) {
 			// Create parts panel.
 			partsPanel = new JPanel(new BorderLayout());
-
-			// Create parts label.
-			JLabel partsLabel = new JLabel("Parts", SwingConstants.CENTER);
-			partsPanel.add(partsLabel, BorderLayout.NORTH);
 
 			// Create table model.
 			DefaultTableModel tableModel = new DefaultTableModel() {
@@ -600,8 +506,7 @@ implements HistoricalEventListener {
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = partsTable.getPreferredSize().height +
-					partsTable.getTableHeader().getPreferredSize().height +
-					partsLabel.getPreferredSize().height + 7;
+					partsTable.getTableHeader().getPreferredSize().height + 7;
 			partsPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
 
@@ -628,15 +533,9 @@ implements HistoricalEventListener {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory() &&
 				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
 			if ((resupply != null) && he.getSource().equals(resupply)) {
-//				SwingUtilities.invokeLater(new Runnable() {
-//					@Override
-//					public void run() {
-						// Update resupply info.
-						if (resupply != null) {
-							updateResupplyInfo();
-						}
-//					}
-//				});
+				if (resupply != null) {
+					updateResupplyInfo();
+				}
 			}
 		}
 	}

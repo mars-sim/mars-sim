@@ -130,16 +130,9 @@ implements ListSelectionListener {
 		setResizable(false);
 		setMaximizable(true);
 
-		setMinimumSize(new Dimension(640, 640));
-		setSize(new Dimension(768, 640));
+		setSize(new Dimension(900, 800));
 		setVisible(true);
 		pack();
-
-		Dimension desktopSize = desktop.getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
 	}
 
 	/**

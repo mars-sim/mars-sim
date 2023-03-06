@@ -8,11 +8,10 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -23,10 +22,10 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
@@ -63,8 +62,6 @@ implements HistoricalEventListener {
 		super();
 		this.desktop = desktop;
 	
-		MasterClock masterClock = desktop.getSimulation().getMasterClock();
-		//currentTime = masterClock.getMarsClock();
 		
 		setLayout(new BorderLayout(0, 10));
 		setBorder(new MarsPanelBorder());
@@ -74,103 +71,26 @@ implements HistoricalEventListener {
 			Msg.getString("ArrivingSettlementDetailPanel.arrivingSettlement"), //$NON-NLS-1$
 			JLabel.CENTER
 		);
-		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		StyleManager.applyHeading(titleLabel);
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
 		add(titleLabel, BorderLayout.NORTH);
 
-		// Create the info panel.
-		JPanel infoPane = new JPanel(new SpringLayout());
-		add(infoPane, BorderLayout.CENTER);
+		JPanel detailsPane = new JPanel(new BorderLayout());
+		detailsPane.setBorder(BorderFactory.createEtchedBorder());
+		add(detailsPane, BorderLayout.CENTER);
 
-		// Create name panel.
-//		JPanel namePane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(namePane);
+		// Create the info panel.
+		AttributePanel infoPane = new AttributePanel(7);
+		detailsPane.add(infoPane, BorderLayout.NORTH);
 
 		// Create name title label.
-		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.name"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(nameTitleLabel);
-
-		// Create name value label.
-		nameValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(nameValueLabel);
-
-		// Create state panel.
-//		JPanel statePane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(statePane);
-
-		// Create state title label.
-		JLabel stateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.state"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(stateTitleLabel);
-
-		// Create state value label.
-		stateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(stateValueLabel);
-
-		// Create template panel.
-//		JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(templatePane);
-
-		// Create template title label.
-		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(templateTitleLabel);
-
-		// Create template value label.
-		templateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(templateValueLabel);
-
-		// Create population panel.
-//		JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(populationPane);
-
-		// Create population title label.
-		JLabel populationTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(populationTitleLabel);
-
-		// Create population value label.
-		populationValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(populationValueLabel);
-
-		// Create arrival date panel.
-//		JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(arrivalDatePane);
-
-		// Create arrival date title label.
-		JLabel arrivalDateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(arrivalDateTitleLabel);
-
-		// Create arrival date value label.
-		arrivalDateValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(arrivalDateValueLabel);
-
-		// Create time arrival panel.
-//		JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(timeArrivalPane);
-
-		// Create time arrival title label.
-		JLabel timeArrivalTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(timeArrivalTitleLabel);
-
-		// Create time arrival value label.
-		timeArrivalValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(timeArrivalValueLabel);
-
-		// Create location panel.
-//		JPanel locationPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-//		infoPane.add(locationPane);
-
-		// Create location title label.
-		JLabel locationTitleLabel = new JLabel(Msg.getString("ArrivingSettlementDetailPanel.location"), JLabel.RIGHT); //$NON-NLS-1$
-		infoPane.add(locationTitleLabel);
-
-		// Create location value label.
-		locationValueLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(locationValueLabel);
-
-		// Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(infoPane, 
-						7, 2, // rows, cols
-						30, 10, // initX, initY
-						7, 3); // xPad, yPad
+		nameValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.name"), "", null);
+		stateValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.state"), "", null);
+		templateValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.layoutTemplate"), "", null);
+		populationValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.immigrants"), "", null);
+		arrivalDateValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.arrivalDate"), "", null);
+		timeArrivalValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), "", null);
+		locationValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.location"), "", null);
 
 		// Set as historical event listener.
 		desktop.getMainWindow().getSimulation().getEventManager().addListener(this);
