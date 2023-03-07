@@ -89,6 +89,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
@@ -110,12 +111,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private JLabel distanceNextNavLabel;
 	private JLabel traveledLabel;
 	
-	private JTextField typeTextField;
-	private JTextField designationTextField;
-	private JTextField settlementTextField;
-	private JTextField leadTextField;
-	private JTextField phaseTextField;
-	private JTextField statusTextField;
+	private JLabel typeTextField;
+	private JLabel designationTextField;
+	private JLabel settlementTextField;
+	private JLabel leadTextField;
+	private JLabel phaseTextField;
+	private JLabel statusTextField;
 	
 	private JLabel memberLabel = new JLabel("", SwingConstants.LEFT);
 	
@@ -158,7 +159,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
         setMaximumSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.HEIGHT));
         
 		JScrollPane scrollPane = new JScrollPane();
-//		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
@@ -189,7 +189,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new JPanel(new BorderLayout(1, 1));
-		Border blackline = BorderFactory.createTitledBorder("Team Members");
+		Border blackline = StyleManager.createLabelBorder("Team Members");
 		memberOuterPane.setBorder(blackline);
 			
 		memberPane = initMemberPane();
@@ -202,53 +202,23 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private JPanel initMissionPane() {
 
 		// Create the vehicle pane.
-		JPanel missionLayout = new JPanel(new FlowLayout(10, 10, 10));
-		Border blackline = BorderFactory.createTitledBorder("Profile");
+		JPanel missionLayout = new JPanel(new BorderLayout());
+		Border blackline = StyleManager.createLabelBorder("Profile");
 		missionLayout.setBorder(blackline);
 	
 		// Prepare count spring layout panel.
-		JPanel missionPanel = new JPanel(new SpringLayout());
+		AttributePanel missionPanel = new AttributePanel(6);
 		missionLayout.add(missionPanel, BorderLayout.NORTH);
 		
-		typeTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.type"), "", 20, null); // $NON-NLS-1$
-		designationTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.designation"), "", 16, null); // $NON-NLS-1$
-		settlementTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.settlement"), "", 16, null); // $NON-NLS-1$
-		leadTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.startingMember"), "", 16, null); // $NON-NLS-1$
-		phaseTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.phase"), "", 20, null); // $NON-NLS-1$
-		statusTextField = createTextField(missionPanel, Msg.getString("MainDetailPanel.missionStatus"), "", 30, null); // $NON-NLS-1$
-		
-		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(missionPanel, 6, 2, // rows, cols
-				0, 0, // initX, initY
-				5, 1); // xPad, yPad
+		typeTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.type"), "", null); // $NON-NLS-1$
+		designationTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null); // $NON-NLS-1$
+		settlementTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.settlement"), "", null); // $NON-NLS-1$
+		leadTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.startingMember"), "", null); // $NON-NLS-1$
+		phaseTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null); // $NON-NLS-1$
+		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null); // $NON-NLS-1$
+
 		
 		return missionLayout;
-	}
-
-	/**
-	 * Adds a text field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param parent Parent panel
-	 * @param label The fixed label
-	 * @param content Initial content of the text field
-	 * @param col number of columns
-	 * @param tooltip Optional tooltip
-	 * @return The JTextField that can be updated.
-	 */
-	private JTextField createTextField(JPanel parent, String label, String content, int col, String tooltip) {
-		parent.add(new JLabel(label + " ", SwingConstants.RIGHT));
-						
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField typeTF = new JTextField();
-		typeTF.setText(content);
-		typeTF.setEditable(false);
-		typeTF.setColumns(col);
-		if (tooltip != null) {
-			typeTF.setToolTipText(tooltip);
-		}
-		wrapper3.add(typeTF);
-		parent.add(wrapper3);
-		return typeTF;
 	}
 	
 	private JPanel initVehiclePane() {
@@ -312,59 +282,25 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 	private JPanel initTravelPane() {
 		
-		JPanel mainLayout = new JPanel(new FlowLayout(10, 10, 10));
-		Border blackline = BorderFactory.createTitledBorder("Travel");
+		JPanel mainLayout = new JPanel(new BorderLayout());
+		Border blackline = StyleManager.createLabelBorder("Travel");
 		mainLayout.setBorder(blackline);
 	
 		// Prepare travel grid layout.
-		JPanel travelGridPane = new JPanel(new GridLayout(4, 2, 10, 2));
-		mainLayout.add(travelGridPane);
+		AttributePanel travelGridPane = new AttributePanel(4);
+		mainLayout.add(travelGridPane, BorderLayout.NORTH);
 
-		// Create the vehicle status label.
-		JLabel vehicleStatusLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleStatus",SwingConstants.LEFT)); //$NON-NLS-2$
-		travelGridPane.add(vehicleStatusLabel0);
-
-		vehicleStatusLabel = new JLabel(" ", SwingConstants.LEFT);
-		JPanel wrapper01 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper01.add(vehicleStatusLabel);
-		travelGridPane.add(wrapper01);
-
-		// Create the speed label.
-		JLabel speedLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed", SwingConstants.LEFT)); //$NON-NLS-1$
-		travelGridPane.add(speedLabel0);
-
-		speedLabel = new JLabel(" ", SwingConstants.LEFT);
-//		speedLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		JPanel wrapper02 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper02.add(speedLabel);
-		travelGridPane.add(wrapper02);
-
-		// Create the distance next navpoint label.
-		JLabel distanceNextNavLabel0 = new JLabel(
-				Msg.getString("MainDetailPanel.distanceNextNavPoint", SwingConstants.LEFT)); //$NON-NLS-1$
-//		distanceNextNavLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		travelGridPane.add(distanceNextNavLabel0);
-
-		distanceNextNavLabel = new JLabel(" ", SwingConstants.LEFT); //$NON-NLS-1$
-		JPanel wrapper03 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper03.add(distanceNextNavLabel);
-		travelGridPane.add(wrapper03);
-
-		// Create the traveled distance label.
-		JLabel traveledLabel0 = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled", SwingConstants.LEFT)); //$NON-NLS-1$
-		travelGridPane.add(traveledLabel0);
-
-		traveledLabel = new JLabel(" ", SwingConstants.LEFT); //$NON-NLS-1$
-		JPanel wrapper04 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper04.add(traveledLabel);
-		travelGridPane.add(wrapper04);
+		vehicleStatusLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
+		speedLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
+		distanceNextNavLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.distanceNextNavPoint"), "", null);
+		traveledLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
 
 		return mainLayout;
 	}
 
 	private JPanel initLogPane() {
 
-		Border blackline = BorderFactory.createTitledBorder("Phase Log");
+		Border blackline = StyleManager.createLabelBorder("Phase Log");
 		
 		// Create the member panel.
 		JPanel logPane = new JPanel(new BorderLayout());
@@ -433,7 +369,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		missionCustomPane = new JPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-		Border blackline = BorderFactory.createTitledBorder("Mission Specific");
+		Border blackline = StyleManager.createLabelBorder("Mission Specific");
 		missionCustomPane.setBorder(blackline);
 		
 		// Create custom empty panel.
@@ -668,8 +604,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		
 		centerMapButton.setEnabled(true);
 		
-		NumberFormat formatter = StyleManager.DECIMAL_PLACES0;
-
 		// Update mission vehicle info in UI.
 		if (MissionType.isVehicleMission(mission.getMissionType())) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
@@ -678,10 +612,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				try {
 					int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", currentLegRemainingDist)); //$NON-NLS-1$
+					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(currentLegRemainingDist)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
 
@@ -710,9 +644,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					vehicleButton.setText(name);
 				
 				vehicleStatusLabel.setText(" ");
-				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
+				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
@@ -737,9 +670,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(
-						Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				vehicle.addUnitListener(this);
 				currentVehicle = vehicle;
@@ -753,9 +685,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(
-						Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
+				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				vehicle.addUnitListener(this);
 				currentVehicle = vehicle;
@@ -787,11 +718,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		logTableModel.setMission(null);
 		
 		centerMapButton.setEnabled(false);
-//		vehicleButton.setVisible(false);
 		
 		vehicleStatusLabel.setText(" ");
-		speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-		distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel.setText(Msg.getString(StyleManager.DECIMAL_KMH.format(0))); //$NON-NLS-1$ //$NON-NLS-2$
+		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		if (missionCache != null) {
@@ -961,14 +891,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",
-										StyleManager.DECIMAL_PLACES1.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
 				} else {
 					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText("Not Applicable");
-					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+					speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$
 					if (currentVehicle != null)
 						currentVehicle.removeUnitListener(panel);
 					currentVehicle = null;
@@ -977,7 +906,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				try {
 					int distanceNextNav = (int) vehicleMission.getDistanceCurrentLegRemaining();
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
+					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(distanceNextNav)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
@@ -1011,8 +940,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (type == UnitEventType.STATUS_EVENT) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
-				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed",
-									StyleManager.DECIMAL_PLACES1.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
 		}
 	}
 

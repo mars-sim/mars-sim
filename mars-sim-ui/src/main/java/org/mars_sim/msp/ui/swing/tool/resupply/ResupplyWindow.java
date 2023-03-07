@@ -127,7 +127,7 @@ implements ListSelectionListener {
 		});
 		buttonPane.add(cancelButton);
 
-		setResizable(false);
+		setResizable(true);
 		setMaximizable(true);
 
 		setSize(new Dimension(900, 800));

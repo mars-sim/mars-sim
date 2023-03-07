@@ -182,7 +182,7 @@ extends TabPanel {
 				Vehicle vehicle = (Vehicle) unit;
 				Mission m = missionManager.getMissionForVehicle(vehicle);
 				if (m != null) {
-					getDesktop().openToolWindow(MissionWindow.NAME, m);
+					((MissionWindow)getDesktop().openToolWindow(MissionWindow.NAME)).openMission(m);
 				}
 		});
 		missionButton.setEnabled(mission != null);

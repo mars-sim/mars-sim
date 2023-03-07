@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
@@ -38,7 +39,6 @@ public class CollectResourcesMissionCustomInfoPanel
 extends MissionCustomInfoPanel
 implements UnitListener {
 
-	private static final String KG_FORMAT = "%.2f kg";
 	// Data members.
 	private CollectResourcesMission mission;
 
@@ -58,7 +58,7 @@ implements UnitListener {
 
 		// Create content panel.
 		JPanel collectionPanel = new JPanel(new SpringLayout());
-		collectionPanel.setBorder(BorderFactory.createTitledBorder("Resource Collected - Aboard Vehicle"));
+		collectionPanel.setBorder(StyleManager.createLabelBorder("Resource Collected - Aboard Vehicle"));
 		add(collectionPanel, BorderLayout.CENTER);
 				
 		amountLabels = new JLabel[resourceIds.length];
@@ -67,12 +67,13 @@ implements UnitListener {
 			AmountResource ar = ResourceUtil.findAmountResource(resourceIds[i]);
 			resourcesCollected.add(ar);
 			
-			JLabel label = new JLabel(String.format("%12s :   ", Conversion.capitalize(ar.getName())),
+			JLabel label = new JLabel(String.format("%12s : ", Conversion.capitalize(ar.getName())),
 					                                    JLabel.LEFT); //$NON-NLS-1$
 			label.setAlignmentX(Component.LEFT_ALIGNMENT);
+			label.setFont(StyleManager.getLabelFont());
 			collectionPanel.add(label);
 
-			JLabel l = new JLabel(String.format(KG_FORMAT, 0D), JLabel.LEFT);
+			JLabel l = new JLabel(StyleManager.DECIMAL_KG.format(0D), JLabel.LEFT);
 			amountLabels[i] = l;
 			collectionPanel.add(l);
 		}
@@ -134,7 +135,7 @@ implements UnitListener {
 		int i = 0;
 		for (AmountResource resourceId : resourcesCollected) {
 			double amount = collected.getOrDefault(resourceId.getID(), 0D);
-			amountLabels[i++].setText(String.format(KG_FORMAT, amount));
+			amountLabels[i++].setText(StyleManager.DECIMAL_KG.format(amount));
 		}
 	}
 }

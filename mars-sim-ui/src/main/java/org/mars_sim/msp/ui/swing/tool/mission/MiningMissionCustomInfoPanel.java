@@ -50,7 +50,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private ConcentrationTableModel concentrationTableModel;
 	private ExcavationTableModel excavationTableModel;
 
-	private SurfaceFeatures surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+	private SurfaceFeatures surfaceFeatures;
 	
 	/**
 	 * Constructor
@@ -66,6 +66,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Initialize data members.
 		this.desktop = desktop;
+		surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
 
 		// Create LUV panel.
 		JPanel luvPane = new JPanel(new FlowLayout(FlowLayout.LEFT));

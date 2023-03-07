@@ -40,7 +40,7 @@ public class MissionTab extends TableTab {
 //		if (selection.size() > 0) {
 //			Object selected = selection.
 			if (mission instanceof Mission) {
-				desktop.openToolWindow(MissionWindow.NAME, mission);
+				((MissionWindow)desktop.openToolWindow(MissionWindow.NAME)).openMission(mission);
 			}
 //		}
 	}

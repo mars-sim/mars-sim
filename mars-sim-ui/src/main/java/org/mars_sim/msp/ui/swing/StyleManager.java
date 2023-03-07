@@ -249,13 +249,14 @@ public class StyleManager {
 
 
     /**
-     * Crete a Titled border that uses the SubHeading font
+     * Crete a Titled border that uses the Label font
      * @param title
      * @return
      */
-    public static Border createSubHeadingBorder(String title) {
-        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                                                subHeading, (Color)null);
+    public static Border createLabelBorder(String title) {
+        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        getLabelFont(), (Color)null);
     }
 
     /**

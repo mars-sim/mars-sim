@@ -68,7 +68,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class NavpointPanel
 extends JPanel
-implements ListSelectionListener, MissionListener {
+implements MissionListener {
 
 	private static final int WIDTH = MapDataUtil.GLOBE_BOX_WIDTH / 2;
 	private static final int HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT / 2;
@@ -399,21 +399,6 @@ implements ListSelectionListener, MissionListener {
 			if (!onTarget) {
 				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
-		}
-	}
-	
-	/**
-	 * Implements from ListSelectionListener.
-	 * 
-	 * Note: this is called when a mission is selected on MissionWindow's mission list.
-	 */
-	public void valueChanged(ListSelectionEvent e) {		
-		Mission mission = (Mission) missionWindow.getMissionList().getSelectedValue();
-		if (mission != null)
-			setMission(mission);
-		else {
-			Settlement settlement = (Settlement) missionWindow.getSettlementList().getSelectedValue();
-			clearNavTab(settlement);
 		}
 	}
 	

@@ -165,7 +165,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(StyleManager.createSubHeadingBorder(title));
+		panel.setBorder(StyleManager.createLabelBorder(title));
 	}
 	
 	/**

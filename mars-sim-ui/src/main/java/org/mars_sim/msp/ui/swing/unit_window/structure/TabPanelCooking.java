@@ -180,7 +180,7 @@ public class TabPanelCooking extends TabPanel {
 
 		// Add TitledBorder
 		AttributePanel d = new AttributePanel(3);
-		d.setBorder(StyleManager.createSubHeadingBorder("Desserts"));
+		d.setBorder(StyleManager.createLabelBorder("Desserts"));
 		availableDessertsLabel = d.addTextField(Msg.getString("TabPanelCooking.availableDesserts"),
 												Integer.toString(availableDessertsCache), null);
 		dessertsTodayLabel = d.addTextField(Msg.getString("TabPanelCooking.dessertsToday"),
@@ -191,7 +191,7 @@ public class TabPanelCooking extends TabPanel {
 
 		// Prepare available meals label
 		AttributePanel m = new AttributePanel(3);
-		m.setBorder(StyleManager.createSubHeadingBorder("Meals"));
+		m.setBorder(StyleManager.createLabelBorder("Meals"));
 
 		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.availableMeals"),
 												Integer.toString(availableMealsCache), null);

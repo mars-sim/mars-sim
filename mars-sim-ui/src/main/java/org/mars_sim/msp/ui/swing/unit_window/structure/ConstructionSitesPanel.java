@@ -56,7 +56,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         setLayout(new BorderLayout());
 
-        setBorder(StyleManager.createSubHeadingBorder("Construction Sites"));
+        setBorder(StyleManager.createLabelBorder("Construction Sites"));
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();

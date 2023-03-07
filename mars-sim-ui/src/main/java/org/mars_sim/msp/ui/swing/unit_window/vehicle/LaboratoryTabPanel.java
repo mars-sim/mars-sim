@@ -94,7 +94,7 @@ public class LaboratoryTabPanel extends TabPanel {
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setSize(150, 80);
 		listPanel.add(specialtyTA);
-		listPanel.setBorder(StyleManager.createSubHeadingBorder("Specialties"));
+		listPanel.setBorder(StyleManager.createLabelBorder("Specialties"));
 		
 		// Prepare specialties label	
 		laboratoryPanel.add(listPanel, BorderLayout.SOUTH);
