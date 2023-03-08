@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
@@ -45,9 +46,9 @@ public class MissionWindow extends ToolWindow {
 	public static final String NAME = "Mission Tool";
 	public static final String ICON = "mission";
 	
-	public static final int WIDTH = 640;
-	public static final int LEFT_PANEL_WIDTH = 200;
-	public static final int HEIGHT = 640;
+	static final int WIDTH = 640;
+	static final int LEFT_PANEL_WIDTH = 200;
+	static final int HEIGHT = 640;
 
 	// Private members
 	private MainDetailPanel mainPanel;
@@ -56,8 +57,6 @@ public class MissionWindow extends ToolWindow {
 	private NavpointPanel navpointPane;
 
 	private CreateMissionWizard createMissionWizard;
-
-	private EditMissionDialog editMissionDialog;
 
 	private MissionManager missionMgr;
 	private DefaultTreeModel treeModel;
@@ -106,7 +105,6 @@ public class MissionWindow extends ToolWindow {
 		missionRoot = new DefaultMutableTreeNode("Settlements");
 		treeModel = new DefaultTreeModel(missionRoot);
 		missionTree = new JTree(treeModel);
-		missionTree.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - 10));
 		missionTree.setExpandsSelectedPaths(true);              
 		missionTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
@@ -123,8 +121,10 @@ public class MissionWindow extends ToolWindow {
 				}
             }
         });
-		treePanel.add(missionTree, BorderLayout.CENTER);
 
+		JScrollPane scroller = new JScrollPane(missionTree);
+		scroller.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - 10));
+		treePanel.add(scroller, BorderLayout.CENTER);
 
 		for(Mission m : missionMgr.getMissions()) {
 			addMissionNode(m);
@@ -247,7 +247,7 @@ public class MissionWindow extends ToolWindow {
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		editMissionDialog = new EditMissionDialog(desktop, mission, this);
+		new EditMissionDialog(desktop, mission, this);
 	}
 
 	public CreateMissionWizard getCreateMissionWizard() {

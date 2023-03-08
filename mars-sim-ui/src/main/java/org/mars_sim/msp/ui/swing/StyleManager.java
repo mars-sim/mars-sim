@@ -49,10 +49,10 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
+    public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
     public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0.0 Sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
-
 
 
     private static final String DARK = "Flat Dark";
@@ -69,8 +69,6 @@ public class StyleManager {
 
     private static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 12);
     private static final Font BOLD_FONT = new Font("Segoe UI", Font.BOLD, 12);
-
-    private static Font subHeading;
 
     private static String selectedLAF = SYSTEM;
 
@@ -137,8 +135,6 @@ public class StyleManager {
                 // Apply LAF
                 UIManager.setLookAndFeel( newLAF );
                 selectedLAF = style;
-
-                subHeading = UIManager.getFont( SUB_HEADING_STYLE + ".font"); 
 
                 // Add color strippng on the table
                 UIDefaults defaults = UIManager.getLookAndFeelDefaults();

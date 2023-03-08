@@ -9,9 +9,9 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -40,8 +39,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
@@ -52,9 +51,11 @@ import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 public class TabPanelAirComposition extends TabPanel {
 
 	private static final String AIR_ICON = "air";
-	
-	private static final String LABEL_PERCENT = "TabPanelAirComposition.label.percent";
-	
+	private static final DecimalFormat DECIMAL_KPA = new DecimalFormat("0.00 kPa");
+	private static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.0 atm");
+	private static final DecimalFormat DECIMAL_MB = new DecimalFormat("0.00 mb");
+	private static final DecimalFormat DECIMAL_PSI = new DecimalFormat("0.00 psi");
+
 	private int numBuildingsCache;
 	
 	private double o2Cache;
@@ -126,127 +127,46 @@ public class TabPanelAirComposition extends TabPanel {
 		content.add(topContentPanel, BorderLayout.NORTH);
 		
 		// Prepare the top panel using spring layout.
-		JPanel topPanel = new JPanel(new SpringLayout());
+		AttributePanel topPanel = new AttributePanel(2);
 		topContentPanel.add(topPanel);
 
-		JLabel t_label = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), SwingConstants.RIGHT);
-		topPanel.add(t_label);
 		averageTemperatureCache = settlement.getTemperature();
-		averageTemperatureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", StyleManager.DECIMAL_PLACES2.format(averageTemperatureCache)), SwingConstants.LEFT); //$NON-NLS-1$
-		topPanel.add(averageTemperatureLabel);
-		
-		JLabel p_label = new JLabel(Msg.getString("TabPanelAirComposition.label.indoorPressure.title"), SwingConstants.RIGHT);
-		topPanel.add(p_label);
-		indoorPressureCache = Math.round(settlement.getAirPressure()*100.0)/100.0 + "";
-		indoorPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", indoorPressureCache), SwingConstants.LEFT); //$NON-NLS-1$
-		topPanel.add(indoorPressureLabel);
-		
-		// Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(topPanel,
-		                                2, 2, //rows, cols
-		                                5, 5,        //initX, initY
-		                                10, 1);       //xPad, yPad
-		
-		JPanel gasesPanel = new JPanel(new GridLayout(2,1));
-		topContentPanel.add(gasesPanel); 
+		averageTemperatureLabel = topPanel.addTextField(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"),
+							StyleManager.DECIMAL_CELCIUS.format(averageTemperatureCache), null); //$NON-NLS-1$
+
+		indoorPressureCache = DECIMAL_KPA.format(settlement.getAirPressure());
+		indoorPressureLabel = topPanel.addTextField(Msg.getString("TabPanelAirComposition.label.indoorPressure.title"),
+							indoorPressureCache, null); //$NON-NLS-1$
 		
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-		JPanel gasTitle = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel gasLabel = new JLabel(Msg.getString("TabPanelAirComposition.label"), SwingConstants.CENTER);
-		gasTitle.add(gasLabel);
-		gasesPanel.add(gasTitle);
+		AttributePanel gasPanel = new AttributePanel(2, 3);
+		gasPanel.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
+		topContentPanel.add(gasPanel); 
+		cO2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.cO2"),
+											StyleManager.DECIMAL_PERC2.format(cO2Cache), null);
+		arLabel = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.ar"),
+											StyleManager.DECIMAL_PERC2.format(arCache), null);
+		n2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.n2"),
+											StyleManager.DECIMAL_PERC2.format(n2Cache), null);
+		o2Label = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.o2"),
+											StyleManager.DECIMAL_PERC2.format(o2Cache), null);
+		h2OLabel = gasPanel.addTextField(Msg.getString("TabPanelAirComposition.h2o"),
+											StyleManager.DECIMAL_PERC2.format(h2OCache), null);
+		gasPanel.addTextField(null, null, null); // Add a blank to balance it out
 
-		JPanel gasPanel = new JPanel(new SpringLayout());
-		gasesPanel.add(gasPanel);
-
-		JLabel co2 = new JLabel(Msg.getString("TabPanelAirComposition.cO2.title"), SwingConstants.RIGHT);
-		gasPanel.add(co2);
-		cO2Cache = -1;
-		cO2Label = new JLabel(Msg.getString(LABEL_PERCENT, StyleManager.DECIMAL_PLACES3.format(cO2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
-		gasPanel.add(cO2Label);
-
-		JLabel ar = new JLabel(Msg.getString("TabPanelAirComposition.ar.title"), SwingConstants.RIGHT);
-		gasPanel.add(ar);
-		arCache = 0;
-		arLabel = new JLabel(Msg.getString(LABEL_PERCENT, StyleManager.DECIMAL_PLACES2.format(arCache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
-		gasPanel.add(arLabel);
-		
-		JLabel n2 = new JLabel(Msg.getString("TabPanelAirComposition.n2.title"), SwingConstants.RIGHT);
-		gasPanel.add(n2);
-		n2Cache = 0;
-		n2Label = new JLabel(Msg.getString(LABEL_PERCENT, StyleManager.DECIMAL_PLACES1.format(n2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
-		gasPanel.add(n2Label);
-
-		JLabel o2 = new JLabel(Msg.getString("TabPanelAirComposition.o2.title"), SwingConstants.RIGHT);
-		gasPanel.add(o2);
-		o2Cache = 0;
-		o2Label = new JLabel(Msg.getString(LABEL_PERCENT, StyleManager.DECIMAL_PLACES2.format(o2Cache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
-		gasPanel.add(o2Label);
-
-		JLabel h2O = new JLabel(Msg.getString("TabPanelAirComposition.h2O.title"), SwingConstants.RIGHT);
-		gasPanel.add(h2O);
-		h2OCache = 0;
-		h2OLabel = new JLabel(Msg.getString(LABEL_PERCENT, StyleManager.DECIMAL_PLACES2.format(h2OCache))+"   ", SwingConstants.LEFT); //$NON-NLS-1$
-		gasPanel.add(h2OLabel);
-		gasPanel.add(new JLabel(""));
-		gasPanel.add(new JLabel(""));
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(gasPanel,
-		                                2, 6, //rows, cols
-		                                70, 1,        //initX, initY
-		                                10, 1);       //xPad, yPad
-		
 		// Create override check box panel.
 		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(radioPane, BorderLayout.SOUTH);
 		
-	    percent_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.percent")); //$NON-NLS-1$
-	    percent_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.percent.tooltip")); //$NON-NLS-1$
-	    mass_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mass")); //$NON-NLS-1$
-	    mass_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mass.tooltip")); //$NON-NLS-1$
-   
-	    kPa_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.kPa")); //$NON-NLS-1$
-	    kPa_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.kPa.tooltip")); //$NON-NLS-1$
-	    atm_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.atm")); //$NON-NLS-1$
-	    atm_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.atm.tooltip")); //$NON-NLS-1$
-	    psi_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.psi")); //$NON-NLS-1$
-	    psi_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.psi.tooltip")); //$NON-NLS-1$
-	    mb_btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox.mb")); //$NON-NLS-1$
-	    mb_btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox.mb.tooltip")); //$NON-NLS-1$
-
-	    percent_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    kPa_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    atm_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    mb_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    psi_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
-	    mass_btn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				tableModel.update();
-			}
-		});
+		percent_btn = createSelectorButton("percent");
+		mass_btn = createSelectorButton("mass");
+		kPa_btn = createSelectorButton("kPa");
+		atm_btn = createSelectorButton("atm");
+		psi_btn = createSelectorButton("psi");
+		mb_btn = createSelectorButton("mb");
 
 		JPanel pressure_p = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure "));
+		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure"));
 		pressure_p.add(kPa_btn);
 		pressure_p.add(atm_btn);
 		pressure_p.add(mb_btn);
@@ -272,8 +192,7 @@ public class TabPanelAirComposition extends TabPanel {
 	    bG.add(psi_btn);
 	    bG.add(mass_btn);
 	    bG.add(percent_btn);
-	   // bG.add(moles_btn);
-	    //bG.add(temperature_btn);
+
 	    
 		// Create scroll panel for the outer table panel.
 		scrollPane = new JScrollPane();
@@ -315,6 +234,18 @@ public class TabPanelAirComposition extends TabPanel {
 
 	}
 
+	private JRadioButton createSelectorButton(String selector) {
+	    JRadioButton btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox." + selector)); //$NON-NLS-1$
+	    btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox." + selector + ".tooltip")); //$NON-NLS-1$
+	    btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tableModel.update();
+			}
+		});
+
+		return btn;
+	}
+
 	public double getOverallComposition(int gasId) {
 		double result = 0;
 		int size = buildingsCache.size();
@@ -326,51 +257,35 @@ public class TabPanelAirComposition extends TabPanel {
 		return (result/size);
 	}
 
-	public String getSubtotal(Building b) {
-		double v = 0;
+	public double getSubtotal(Building b) {
 		AirComposition air = b.getLifeSupport().getAir();
+		double v = air.getTotalPressure();
 
 		if (percent_btn.isSelected()) {
-			/** 
-			 * Percentage is ALWAYS going to be 100%
-			for (int gas = 0; gas < CompositionOfAir.numGases; gas++) {
-				v += air.getPartialPressure()[gas][row];
-			}			
-			// convert to percent
-			return String.format("%1.1f", v/air.getTotalPressure(b) *100D);
-			*/
-			return "100.0";
+			return 100D;
 		}
 		else if (kPa_btn.isSelected()) {
-			v = air.getTotalPressure();
 			// convert to kPascal
-			return String.format("%1.2f", v * AirComposition.KPA_PER_ATM);
+			return v * AirComposition.KPA_PER_ATM;
 		}
 		else if (atm_btn.isSelected()) {
-			v = air.getTotalPressure();
 			// convert to atm
-			return String.format("%1.4f", v);
+			return v;
 		}
 		else if (mb_btn.isSelected()) {
-			v = air.getTotalPressure();
 			// convert to millibar
-			return String.format("%1.1f", v * AirComposition.MB_PER_ATM);
+			return v * AirComposition.MB_PER_ATM;
 		}
 		else if (psi_btn.isSelected()) {
-			v = air.getTotalPressure();
 			// convert to psi
-			return String.format("%1.2f", v * AirComposition.PSI_PER_ATM);
+			return  v * AirComposition.PSI_PER_ATM;
 		}
-		//else if (moles_btn.isSelected()) {
-		//	v = air.getTotalMoles()[row];
-		//	return (String.format("%1.1e", v)).replaceAll("e+", "e"); 
-		//}
+
 		else if (mass_btn.isSelected()) {
-			v = air.getTotalMass();
-			return String.format("%1.2f", v); 
+			return air.getTotalMass();
 		}
 		else
-			return null;
+			return 0D;
 
 	}
 
@@ -393,29 +308,20 @@ public class TabPanelAirComposition extends TabPanel {
 			double cO2 = getOverallComposition(ResourceUtil.co2ID);
 			if (cO2Cache != cO2) {
 				cO2Cache = cO2;
-				cO2Label.setText(
-					Msg.getString(LABEL_PERCENT, //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES3.format(cO2Cache))+"   "
-					);
+				cO2Label.setText(StyleManager.DECIMAL_PERC2.format(cO2Cache));
 			}
 
 			double ar = getOverallComposition(ResourceUtil.argonID);
 			if (arCache != ar) {
 				arCache = ar;
-				arLabel.setText(
-					Msg.getString(LABEL_PERCENT,  //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES2.format(ar))+"   "
-					);
+				arLabel.setText(StyleManager.DECIMAL_PERC2.format(ar));
 			}
 			
 
 			double n2 =  getOverallComposition(ResourceUtil.nitrogenID);
 			if (n2Cache != n2) {
 				n2Cache = n2;
-				n2Label.setText(
-					Msg.getString(LABEL_PERCENT,  //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES1.format(n2))+"   "
-					);
+				n2Label.setText(StyleManager.DECIMAL_PERC2.format(n2));
 			}
 
 
@@ -423,51 +329,37 @@ public class TabPanelAirComposition extends TabPanel {
 			double o2 = getOverallComposition(ResourceUtil.oxygenID);
 			if (o2Cache != o2) {
 				o2Cache = o2;
-				o2Label.setText(
-					Msg.getString(LABEL_PERCENT, //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES2.format(o2Cache))+"   "
-					);
+				o2Label.setText(StyleManager.DECIMAL_PERC2.format(o2Cache));
 			}
 
 			double h2O = getOverallComposition(ResourceUtil.waterID);
 			if (h2OCache != h2O) {
 				h2OCache = h2O;
-				h2OLabel.setText(
-					Msg.getString(LABEL_PERCENT,  //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES2.format(h2O))+"   "
-					);
+				h2OLabel.setText(StyleManager.DECIMAL_PERC2.format(h2O));
 			}
 			
 			double averageTemperature = Math.round(settlement.getTemperature()*1000.0)/1000.0; // convert to kPascal by multiplying 1000
 			if (averageTemperatureCache != averageTemperature) {
 				averageTemperatureCache = averageTemperature;
-				averageTemperatureLabel.setText(
-					Msg.getString("TabPanelAirComposition.label.averageTemperature",  //$NON-NLS-1$
-					StyleManager.DECIMAL_PLACES2.format(averageTemperatureCache)
-					));
+				averageTemperatureLabel.setText(StyleManager.DECIMAL_CELCIUS.format(averageTemperatureCache));
 			}
 			
-			String indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
-					Math.round(settlement.getAirPressure()*100.0)/100.0);
+			String indoorPressure = DECIMAL_KPA.format(settlement.getAirPressure());
 			
 			if (kPa_btn.isSelected()) {
 				// convert from atm to kPascal
-				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()*100.0)/100.0);
+				indoorPressure = DECIMAL_KPA.format(settlement.getAirPressure());
 			}
 			else if (atm_btn.isSelected()) {
-				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM*10000.0)/10000.0);
+				indoorPressure = DECIMAL_ATM.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM);
 			}
 			else if (mb_btn.isSelected()) {
 				// convert from atm to mb
-				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.mb",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM*100.0)/100.0);
+				indoorPressure = DECIMAL_MB.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM);
 			}
 			else if (psi_btn.isSelected()) {
 				// convert from atm to kPascal
-				indoorPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
-						Math.round(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM*1000.0)/1000.0);
+				indoorPressure =  DECIMAL_PSI.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM);
 			}
 			
 			if (!indoorPressureCache.equals(indoorPressure)) {
@@ -530,11 +422,11 @@ public class TabPanelAirComposition extends TabPanel {
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelAirComposition.column.buildingName"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelAirComposition.column.total"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelAirComposition.column.cO2"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelAirComposition.column.ar"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelAirComposition.column.n2"); //$NON-NLS-1$
-			else if (columnIndex == 5) return Msg.getString("TabPanelAirComposition.column.o2"); //$NON-NLS-1$
-			else if (columnIndex == 6) return Msg.getString("TabPanelAirComposition.column.h2o"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelAirComposition.cO2"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
+			else if (columnIndex == 4) return Msg.getString("TabPanelAirComposition.n2"); //$NON-NLS-1$
+			else if (columnIndex == 5) return Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
+			else if (columnIndex == 6) return Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$
 
 			else return null;
 		}
@@ -561,9 +453,9 @@ public class TabPanelAirComposition extends TabPanel {
 				return getSubtotal(b);
 			}
 			else if (column > 1) {				
-				double amt = getValue(getGasId(column), b);
+				double amt = getGasValue(getGasId(column), b);
 				if (amt == 0)
-					return "N/A";
+					return null;
 				else
 					return amt;
 			}
@@ -572,7 +464,7 @@ public class TabPanelAirComposition extends TabPanel {
 			}
 		}
 
-		public double getValue(int gasId, Building b) {
+		private double getGasValue(int gasId, Building b) {
 			AirComposition.GasDetails gas = b.getLifeSupport().getAir().getGas(gasId);
 			if (percent_btn.isSelected())
 				return gas.getPercent();

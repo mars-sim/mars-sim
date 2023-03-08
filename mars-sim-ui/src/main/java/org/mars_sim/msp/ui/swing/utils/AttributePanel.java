@@ -55,7 +55,7 @@ public class AttributePanel extends JPanel {
 	 * @param content Content showign the value
 	 */
 	public void addLabelledItem(String label, JComponent content) {
-        if (!label.endsWith(":")) {
+        if ((label != null) && !label.endsWith(":")) {
             label = label + " :";
         }
         JLabel title = new JLabel(label, SwingConstants.RIGHT);

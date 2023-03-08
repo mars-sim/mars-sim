@@ -33,7 +33,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
@@ -74,8 +73,7 @@ public class InfoPanel extends JPanel {
 	protected JList<Worker> memberList;
 	protected JButton addMembersButton;
 	protected JButton removeMembersButton;
-	
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	
 	/**
 	 * Constructor.
@@ -316,6 +314,7 @@ public class InfoPanel extends JPanel {
 		}
 		
 		// Add people and robots who are outside at this location as well.
+		UnitManager unitManager = desktop.getSimulation().getUnitManager();
 		Coordinates missionLocation = mission.getCurrentMissionLocation();
 		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
