@@ -37,9 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
 
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
@@ -54,6 +51,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
@@ -188,11 +186,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
-		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
-		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-		globePane.add(globeNav);
 		globePane.add(globeNav);
 		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -200,22 +194,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		mapPane.add(globePane);
 	
 		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		detailPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
+		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 		mapPane.add(detailPane);
-	
-		JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
-		detailPane.add(mapPaneInner);
-	
-		mapPaneInner.setBackground(Color.black);
-		mapPaneInner.setOpaque(true);
-		mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
-		mapPaneInner.setAlignmentY(TOP_ALIGNMENT);
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
+		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		mapLayerPanel.setNavWin(this);
 		
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
-		// map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		// Create map layers.
 		unitIconLayer = new UnitIconMapLayer(mapLayerPanel);
@@ -237,9 +226,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		mapLayerPanel.addMapLayer(landmarkLayer, 6);
 
 		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
-		// mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapPaneInner.add(mapLayerPanel, BorderLayout.CENTER);
-		
+		detailPane.add(mapLayerPanel);
+
 		// turn on day night layer
 		setMapLayer(false, 0, shadingLayer);
 		
@@ -252,7 +240,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel(" Lat :", JLabel.RIGHT);
+		JLabel latLabel = new JLabel("Lat :", JLabel.RIGHT);
 		coordPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
@@ -271,7 +259,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
 		latCB.setSelectedItem(0);
-		//latCB.setSize(new Dimension(CB_WIDTH, -1));
 		coordPane.add(latCB);
 
 		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -345,9 +332,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
-		Font font = new Font("Times New Roman", Font.PLAIN, 11);
-		Font font1 = new Font(Font.DIALOG, Font.PLAIN, 10);
-		Font font2 = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
+		Font font = StyleManager.getSmallFont();
 		
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
@@ -366,11 +351,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		heightLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 
 		rgbLabel = new JLabel();
-		rgbLabel.setFont(font1);
+		rgbLabel.setFont(font);
 		rgbLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 
 		hsbLabel = new JLabel();
-		hsbLabel.setFont(font2);
+		hsbLabel.setFont(font);
 	    hsbLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    
 		statusBar.addLeftComponent(coordLabel, false);

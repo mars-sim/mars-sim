@@ -93,6 +93,7 @@ public class MapPanel extends JPanel {
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
+		setMaximumSize(getPreferredSize());
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}
