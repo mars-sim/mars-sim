@@ -688,7 +688,7 @@ implements MouseListener {
 				return String.valueOf(growth) + "%";
 			}
 			else if (column == 4) return category;
-			else if (column == 5) return StyleManager.DECIMAL_PLACES1.format(crop.getCurrentWorkRequired());
+			else if (column == 5) return crop.getCurrentWorkRequired();
 	
 			return null;
 		}

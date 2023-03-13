@@ -9,9 +9,15 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -24,25 +30,19 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 /**
  * This class provides a means to control the styles used in the UI.
- * This provides an abstract to the FlatLAF approach to managing fonts
- * {@link} https://www.formdev.com/flatlaf/typography/
  */
 public class StyleManager {
 
-    /**
-     *
-     */
-    private static final String FLAT_LAF_STYLE_CLASS = "FlatLaf.styleClass";
+    private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
-    public static final String HEADING_STYLE = "h2";
-    public static final String SUB_HEADING_STYLE = "h3";
 
-    // Shared formatters
+    // Shared generic formatters
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
+    // Unit specific formatters
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
@@ -54,7 +54,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
 
-
+    // Supported LAFs
     private static final String DARK = "Flat Dark";
     private static final String LIGHT = "Flat Light";
     private static final String LIGHT_BLUE = LIGHT + " - Blue";
@@ -62,21 +62,64 @@ public class StyleManager {
     private static final String LIGHT_ORANGE = LIGHT + " - Orange";
     private static final String LIGHT_GREEN = LIGHT + " - Green";
     private static final String SYSTEM = "Default System";
-
-    public static final String DEFAULT_LAF = LIGHT_RED;
-
     private static final String [] STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
 
-    private static final Font DEFAULT_FONT = new Font("Segoe UI", Font.PLAIN, 12);
-    private static final Font BOLD_FONT = new Font("Segoe UI", Font.BOLD, 12);
+    // Constants for font definition
+    private static final String UIMANAGER_FONT = "defaultFont";
+    private static final String DEFAULT_FONT_STYLE = "defaultFont";
+    private static final String LABEL_FONT_STYLE = "labelFont";
+    private static final String HEADING_FONT_STYLE = "headingFont";
+    private static final String SUBHEADING_FONT_STYLE = "subHeadingFont";
+    private static final String FONT_FAMILY = "family";
+    private static final String FONT_STYLE = "style";
+    private static final String FONT_SIZE = "size";
 
-    private static String selectedLAF = SYSTEM;
+    // Constrants for LaF styling
+    private static final String LAF_STYLE = "Look_and_Feel";
+    private static final String LAF_NAME = "name";
+
+    private static Font labelFont;
+    private static Font systemFont;
+    private static Font headingFont;
+    private static Font subHeadingFont;
+
+    private static Map<String,Properties> styles = new HashMap<>();
+
+    // Create the builtin defaults
+    static {
+        Properties defaultProps = new Properties();
+        defaultProps.setProperty(FONT_FAMILY, "Segoe UI");
+        defaultProps.setProperty(FONT_SIZE, "12");
+        defaultProps.setProperty(FONT_STYLE, "PLAIN");
+        styles.put(DEFAULT_FONT_STYLE, defaultProps);
+        Properties labelProps = new Properties();
+        labelProps.setProperty(FONT_STYLE, "BOLD");
+        styles.put(LABEL_FONT_STYLE, labelProps);
+        Properties headingProps = new Properties();
+        headingProps.setProperty(FONT_STYLE, "BOLD");
+        headingProps.setProperty(FONT_SIZE, "+8");
+        styles.put(HEADING_FONT_STYLE, headingProps);
+        Properties subHeadingProps = new Properties();
+        subHeadingProps.setProperty(FONT_STYLE, "BOLD");
+        subHeadingProps.setProperty(FONT_SIZE, "+4");
+        styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
+        Properties lafProps = new Properties();
+        lafProps.setProperty(LAF_NAME, LIGHT_RED);
+        styles.put(LAF_STYLE, lafProps);
+    }
 
     /**
      * Get available LAF
      */
     public static String[] getAvailableLAF() {
         return STYLES;
+    }
+
+    /**
+     * Which LAF has been selected.
+     */
+    public static String getLAF() {
+        return styles.get(LAF_STYLE).getProperty(LAF_NAME);
     }
 
     /**
@@ -119,7 +162,7 @@ public class StyleManager {
                     break;
                 
                 default:
-                    System.err.println( "Don't know LAF style " + style);
+                    logger.warning( "Don't know LAF style " + style);
             }
 
             if (newLAF != null) {
@@ -129,12 +172,11 @@ public class StyleManager {
                     applyAccentColor(accentColor);
                 }
 
-                // Hardcode the default font
-                UIManager.put( "defaultFont", DEFAULT_FONT);
+                calculateFonts();
 
                 // Apply LAF
                 UIManager.setLookAndFeel( newLAF );
-                selectedLAF = style;
+                styles.get(LAF_STYLE).setProperty(LAF_NAME, style);
 
                 // Add color strippng on the table
                 UIDefaults defaults = UIManager.getLookAndFeelDefaults();
@@ -168,10 +210,88 @@ public class StyleManager {
 	}
 
     /**
-     * Which LAF has been selected.
+     * Get the styles used.
+     * @return
      */
-    public static String getLAF() {
-        return selectedLAF;
+    public static Map<String, Properties> getStyles() {
+        return styles;
+    }
+
+    /**
+     * Load the styles defintions to use in this UI
+     * @param newStyles
+     */
+    public static void setStyles(Map<String,Properties> newStyles) {
+        // MErge the incoming styles with the ones used internally
+        for(Entry<String, Properties> usedStyle : styles.entrySet()) {
+            Properties overrides = newStyles.get(usedStyle.getKey());
+            if (overrides != null) {
+                usedStyle.getValue().putAll(overrides);
+            }
+        }
+
+        // Load LAF to use styles
+        setLAF(getLAF());
+    }
+
+    /**
+     * Calculate the various fonts used in the styling
+     */
+    private static void calculateFonts() {
+        if (systemFont == null) {
+            // Get the built-in default font. This is a terrible logic
+            systemFont = (new JLabel("Text")).getFont();
+        }
+
+        Font defaultFont = createFont(systemFont, styles.get(DEFAULT_FONT_STYLE));
+        labelFont = createFont(defaultFont, styles.get(LABEL_FONT_STYLE));
+        headingFont = createFont(defaultFont, styles.get(HEADING_FONT_STYLE));
+        subHeadingFont = createFont(defaultFont, styles.get(SUBHEADING_FONT_STYLE));
+
+        // Hardcode the default font
+        UIManager.put( UIMANAGER_FONT, defaultFont);
+    }
+
+    /**
+     * Creates a new Font by deriving it from a base font.
+     * @param base Base font
+     * @param attrs Attributes used to derive a new font
+     * @return
+     */
+    private static Font createFont(Font base, Properties attrs) {
+        String family = base.getFamily();
+        int style = base.getStyle();
+        int size = base.getSize();
+
+        if (attrs == null) {
+            return base;
+        }
+
+        if (attrs.getProperty(FONT_FAMILY) != null) {
+            family = attrs.getProperty(FONT_FAMILY);
+        }
+        if (attrs.getProperty(FONT_STYLE) != null) {
+            switch(attrs.getProperty(FONT_STYLE).toLowerCase()) {
+                case "bold": style = Font.BOLD; break;
+                case "italic": style = Font.ITALIC; break;
+                case "plain": style = Font.PLAIN; break;
+                case "bold_italic": style = Font.BOLD | Font.ITALIC; break;
+                default:
+            }
+        }
+        if (attrs.getProperty(FONT_SIZE) != null) {
+            String sizeText = attrs.getProperty(FONT_SIZE);
+            try {
+                size = Integer.parseInt(sizeText);
+                if (sizeText.startsWith("+") || sizeText.startsWith("-")) {
+                    size = base.getSize() + size;
+                }
+            }
+            catch (NumberFormatException n) {
+                logger.warning("Font size not correctly formatted " + sizeText);
+            }
+        }
+        return new Font(family, style, size);
     }
 
     /**
@@ -205,33 +325,7 @@ public class StyleManager {
             bgHSB[2] + ((bgHSB[2]<0.5f) ? 0.0005f : -0.0005f) 
             );
     }
-
-    /**
-     * Lookup a color by name. Only supports the static entries in the Color class.
-     */
-    private static Color getColorByName(String name) {
-        try {
-            return (Color)Color.class.getField(name.toUpperCase()).get(null);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Apply styling to make this a SubHeading; normally applied to a JLabel
-     */
-    public static void applyHeading(JComponent item) {
-        item.putClientProperty(FLAT_LAF_STYLE_CLASS, HEADING_STYLE);
-    }
-
-    /**
-     * Apply styling to make this a SubHeading; normally applied to a JLabel
-     */
-    public static void applySubHeading(JComponent item) {
-        item.putClientProperty(FLAT_LAF_STYLE_CLASS, SUB_HEADING_STYLE);
-    }
-    
+   
     /**
      * Set the accent colour
      * @param newColour
@@ -243,6 +337,31 @@ public class StyleManager {
         } );
     }
 
+    /**
+     * Lookup a color by name. Only supports the static entries in the Color class.
+     */
+    private static Color getColorByName(String name) {
+        try {
+            return (Color)Color.class.getField(name.toUpperCase()).get(null);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            logger.warning("Don't know Colour called style " + name);
+            return Color.RED;
+        }
+    }
+
+    /**
+     * Apply styling to make this a SubHeading; normally applied to a JLabel
+     */
+    public static void applyHeading(JComponent item) {
+        item.setFont(headingFont);
+    }
+
+    /**
+     * Apply styling to make this a SubHeading; normally applied to a JLabel
+     */
+    public static void applySubHeading(JComponent item) {
+        item.setFont(subHeadingFont);
+    }
 
     /**
      * Crete a Titled border that uses the Label font
@@ -252,7 +371,7 @@ public class StyleManager {
     public static Border createLabelBorder(String title) {
         return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
                                                         TitledBorder.DEFAULT_POSITION,
-                                                        getLabelFont(), (Color)null);
+                                                        labelFont, (Color)null);
     }
 
     /**
@@ -260,6 +379,6 @@ public class StyleManager {
      * @return
      */
     public static Font getLabelFont() {
-        return BOLD_FONT;
+        return labelFont;
     }
 }

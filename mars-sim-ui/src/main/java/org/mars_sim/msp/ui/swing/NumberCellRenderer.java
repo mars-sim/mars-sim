@@ -76,7 +76,13 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 
         String text = "";
 		if (value != null) {
-			text = formatter.format(value);
+			try {
+				text = formatter.format(value);
+			}
+			catch (IllegalArgumentException e) {
+				System.err.println("Cell is not a number table =" + table.getModel().getClass().getName()
+									+ " row=" + row + ", col=" + column);
+			}
 		}
 		cell.setText(text);
         return cell;

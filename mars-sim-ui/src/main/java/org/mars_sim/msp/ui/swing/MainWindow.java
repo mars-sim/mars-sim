@@ -138,7 +138,7 @@ extends JComponent implements ClockListener {
 		}
 
 		// Set up the look and feel library to be used
-		StyleManager.setLAF(configs.getLAF()); 
+		StyleManager.setStyles(configs.getPropSets());
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();

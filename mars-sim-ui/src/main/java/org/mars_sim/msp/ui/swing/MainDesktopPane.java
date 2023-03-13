@@ -18,7 +18,6 @@ import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,12 +33,8 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -71,17 +66,13 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 @SuppressWarnings("serial")
 public class MainDesktopPane extends JDesktopPane
-		implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
+		implements ClockListener, ComponentListener, UnitManagerListener {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 	
 	/** The sound player. */
 	private static AudioPlayer soundPlayer;
-	
-	// Data members
-//	private double timeCache = 0;
-	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	
 	/** The game mode of this simulation session. */
 	public GameMode mode;
@@ -249,17 +240,6 @@ public class MainDesktopPane extends JDesktopPane
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
 
-			Settlement settlement = (Settlement) unit;
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (eventType == UnitManagerEventType.ADD_UNIT) {
-				settlement.addUnitListener(this);
-			}
-
-			else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-				settlement.removeUnitListener(this);
-			}
-
 			SwingUtilities.invokeLater(() -> updateToolWindow());
 		}
 	}
@@ -271,14 +251,6 @@ public class MainDesktopPane extends JDesktopPane
 		// Attach UnitManagerListener to desktop
 		UnitManager unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
-
-		Collection<Settlement> settlements = unitManager.getSettlements();
-
-		// Attach UnitListener to each settlement
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) {
-			i.next().addUnitListener(this);
-		}
 	}
 
 	/**
@@ -835,14 +807,6 @@ public class MainDesktopPane extends JDesktopPane
 		return announcementWindow;
 	}
 
-	public boolean getIsTransportingBuilding() {
-		return isTransportingBuilding;
-	}
-
-	public boolean getIsConstructingSite() {
-		return isConstructingSite;
-	}
-
 	/**
 	 * Get a reference to the Simulation being displayed
 	 * @return
@@ -851,29 +815,6 @@ public class MainDesktopPane extends JDesktopPane
 		return sim;
 	}
 
-	@Override // @Override needed for Main window
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
-
-		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
-
-		}
-
-		else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
-			isTransportingBuilding = false;
-		}
-
-		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
-			if (!isConstructingSite) {
-				isConstructingSite = true;
-			}
-		}
-
-		else if (eventType == UnitEventType.END_CONSTRUCTION_WIZARD_EVENT) {
-			isConstructingSite = false;
-		}
-
-	}
 
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;

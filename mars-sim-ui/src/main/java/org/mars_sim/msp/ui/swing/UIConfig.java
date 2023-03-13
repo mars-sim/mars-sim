@@ -17,12 +17,15 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -43,13 +46,11 @@ public class UIConfig {
 	private static class WindowSpec {
 		Point position;
 		Dimension size;
-		String name;
 		int order;
 
-		public WindowSpec( String name, Point position, Dimension size, int order) {
+		public WindowSpec(Point position, Dimension size, int order) {
 			this.position = position;
 			this.size = size;
-			this.name = name;
 			this.order = order;
 		}
 	}
@@ -79,15 +80,16 @@ public class UIConfig {
 	private static final String WINDOW = "window";
 	private static final String TYPE = "type";
 	private static final String NAME = "name";
+	private static final String VALUE = "value";
 	private static final String DISPLAY = "display";
 	private static final String Z_ORDER = "z-order";
-	private static final String LAF = "look-and-feel";
+	private static final String PROP_SETS = "prop-sets";
 
 	private Map<String,WindowSpec> windows = new HashMap<>();
+	private Map<String,Properties> propSets = new HashMap<>();
 
 	private Point mainWindowPosn = new Point(0,0);
 	private Dimension mainWindowSize = new Dimension(1024, 720);
-	private String lookAndFeel = StyleManager.DEFAULT_LAF;
 
 	private boolean useDefault;
 	private boolean showToolBar = true;
@@ -126,12 +128,10 @@ public class UIConfig {
 				mainWindowSize = parseSize(mainWindow);
 				mainWindowPosn = parsePosition(mainWindow);
 
-
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
 				showToolBar = parseBoolean(root, SHOW_TOOL_BAR);
 				showUnitBar = parseBoolean(root, SHOW_UNIT_BAR);
-				lookAndFeel = root.getAttributeValue(LAF);
 
 				// Audo controls
 				Element volumeItem = root.getChild(VOLUME);
@@ -149,13 +149,31 @@ public class UIConfig {
 					Dimension size = parseSize(internalWindow);
 					int zOrder = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
 
-					windows.put(name, new WindowSpec(name, position, size, zOrder));
+					windows.put(name, new WindowSpec(position, size, zOrder));
+				}
+
+				// Parse props sets
+				List<Element> propsElement = root.getChild(PROP_SETS).getChildren();
+				for (Element propElement : propsElement) {
+					String name = propElement.getAttributeValue(NAME);
+					propSets.put(name, parseProperties(propElement));
 				}
 		    }
 		    catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot parse " + FILE_NAME + " : " + e.getMessage());
 		    }
 		}
+	}
+
+	private static Properties parseProperties(Element propElement) {
+		Properties props = new Properties();
+		for (Element valueElement : propElement.getChildren()) {
+			String name = valueElement.getAttributeValue(NAME);
+			String value = valueElement.getAttributeValue(VALUE);
+			props.setProperty(name, value);
+		}
+
+		return props;
 	}
 
 	private static Dimension parseSize(Element window) {
@@ -212,7 +230,6 @@ public class UIConfig {
 		outputDoc.setRootElement(uiElement);
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
-		uiElement.setAttribute(LAF, StyleManager.getLAF());
 		uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
 		uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
@@ -265,9 +282,14 @@ public class UIConfig {
 			}
 		}
 
+		Element propsElement = new Element(PROP_SETS);
+		uiElement.addContent(propsElement);
+		for(Entry<String,Properties> entry : StyleManager.getStyles().entrySet()) {
+			outputProperties(propsElement, entry.getKey(), entry.getValue());
+		}
+
 		// Load the DTD scheme from the ui_settings.dtd file
 		try (
-
 			OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME));
 			OutputStream stream = new FileOutputStream(configFile)) {
 
@@ -285,6 +307,20 @@ public class UIConfig {
 		}
 	}
 
+
+	private void outputProperties(Element parent, String name, Properties values) {
+		Element propParent = new Element("prop-set");
+		parent.addContent(propParent);
+		if (name != null) {
+			propParent.setAttribute(new Attribute(NAME, name));
+		}
+		for(Object key : values.keySet()) {
+			Element valueElement = new Element(VALUE);
+			valueElement.setAttribute(new Attribute(NAME, (String) key));
+			valueElement.setAttribute(new Attribute(VALUE, values.getProperty((String) key)));
+			propParent.addContent(valueElement);
+		}
+	}
 
 	/**
 	 * Checks if UI should use default configuration.
@@ -414,9 +450,10 @@ public class UIConfig {
 	}
 
 	/**
-	 * Can configued LAF.
+	 * Get the property sets deifned in the coonfig
+	 * @return
 	 */
-	public String getLAF() {
-		return lookAndFeel;
+	public Map<String, Properties> getPropSets() {
+		return propSets;
 	}
 }
