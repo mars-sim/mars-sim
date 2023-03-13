@@ -23,6 +23,9 @@ Copyright (C) 2023 Scott Davis
 ### UI IMPROVEMENT :
   <LI>Row Count : Correct row count on Monitor Window. </LI> 
   <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
+  <LI>  Styling : Single styling via look and feel applied to all components.</LI>
+  <li>      L&F : Look and Feel can be changed via Settings menu item.</li>
+  <li>   Panels : Panel lists converted into Tables for Maintenance, Waste & Resource processing. </li>
   
 ### FIXES :
  <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
