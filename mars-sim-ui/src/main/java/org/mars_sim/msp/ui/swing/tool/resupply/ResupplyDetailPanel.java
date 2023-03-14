@@ -161,7 +161,7 @@ implements HistoricalEventListener {
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
 		
-		updateTimeToArrival(desktop.getMainWindow().getSimulation().getMasterClock().getMarsClock());
+		updateTimeToArrival(desktop.getSimulation().getMasterClock().getMarsClock());
 		updateSupplyPanel();
 
 		validate();

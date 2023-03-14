@@ -93,7 +93,7 @@ implements HistoricalEventListener {
 		locationValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.location"), "", null);
 
 		// Set as historical event listener.
-		desktop.getMainWindow().getSimulation().getEventManager().addListener(this);
+		desktop.getSimulation().getEventManager().addListener(this);
 	}
 
 	/**
@@ -133,7 +133,7 @@ implements HistoricalEventListener {
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateTimeStamp());
 
-		MarsClock marsTime = desktop.getMainWindow().getSimulation().getMasterClock().getMarsClock();
+		MarsClock marsTime = desktop.getSimulation().getMasterClock().getMarsClock();
 		updateTimeToArrival(marsTime);
 
 		templateValueLabel.setText(arrivingSettlement.getTemplate());

@@ -91,7 +91,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		// Initialize data members
 		this.parentMainWindow = parentMainWindow;
-		masterClock = parentMainWindow.getSimulation().getMasterClock();
+		masterClock = parentMainWindow.getDesktop().getSimulation().getMasterClock();
 
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
@@ -37,6 +38,10 @@ public class AudioPlayer {
 			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	
 	public static final double DEFAULT_VOL = .5;
+
+	public static final String PROPS_NAME = "audio";
+	private static final String VOLUME = "volume";
+	private static final String MUTE = "mute";
 
 	/** The volume of the audio player (0.0 to 1.0) */
 	public static double currentMusicVol = DEFAULT_VOL;
@@ -70,19 +75,19 @@ public class AudioPlayer {
 		}
 		
 		UIConfig config = desktop.getMainWindow().getConfig();
-		if (!config.useUIDefault()) {
-			
-			if (config.isMute()) {
-				muteSoundEffect();
-				muteMusic();
-				currentMusicVol = 0;
-				currentSoundVol = 0;
-			}
-			else {
-				double v = config.getVolume();
-				currentMusicVol = v;
-				currentSoundVol = v;
-			}
+		Properties props = config.getPropSets().get(PROPS_NAME);
+		boolean mute = (props != null ? Boolean.parseBoolean(props.getProperty(MUTE, "TRUE"))
+										: true);
+		if (mute) {
+			muteSoundEffect();
+			muteMusic();
+			currentMusicVol = 0;
+			currentSoundVol = 0;
+		}
+		else {
+			double v = Double.parseDouble(props.getProperty(VOLUME, "0.5"));
+			currentMusicVol = v;
+			currentSoundVol = v;
 		}
 	}
 		
@@ -575,6 +580,17 @@ public class AudioPlayer {
 		return numTracks;
 	}
 	
+	/**
+	 * Get the UI properties of the audio player to be stored for later use
+	 */
+	public Properties getUIProps() {
+        Properties result = new Properties();
+		result.setProperty(VOLUME, Double.toString(currentSoundVol));
+		result.setProperty(MUTE, Boolean.toString(AudioPlayer.isEffectMute()));
+
+		return result;
+    }
+
 	public void destroy() {
 		allSoundClips = null;
 		currentSoundClip = null;

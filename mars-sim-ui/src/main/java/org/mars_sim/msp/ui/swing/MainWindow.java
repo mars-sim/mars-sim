@@ -20,6 +20,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +60,7 @@ import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
  * main desktop pane window are, status bar and tool bars.
  */
 public class MainWindow
-extends JComponent implements ClockListener {
+		extends JComponent implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,11 +71,12 @@ extends JComponent implements ClockListener {
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
-	/** The size of the weather icons */
-	public static final int WEATHER_ICON_SIZE = 64;
-
 	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
-	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");          
+	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
+
+	private static final String SHOW_UNIT_BAR = "show-unit-bar";
+	private static final String SHOW_TOOL_BAR = "show-tool-bar";
+	private static final String MAIN_PROPS = "main-window";
 
 	/** The main window frame. */
 	private static JFrame frame;
@@ -95,7 +99,7 @@ extends JComponent implements ClockListener {
 
 	private OrbitViewer orbitViewer;
 
-	/** WebSwitch for the control of play or pause the simulation*/
+	/** WebSwitch for the control of play or pause the simulation */
 	private JToggleButton pauseSwitch;
 	private JCheckBox blockingSwitch;
 
@@ -108,7 +112,6 @@ extends JComponent implements ClockListener {
 
 	private JMemoryMeter memoryBar;
 
-
 	/**
 	 * Constructor 1.
 	 *
@@ -116,17 +119,17 @@ extends JComponent implements ClockListener {
 	 */
 	public MainWindow(boolean cleanUI, Simulation sim) {
 		this.sim = sim;
-				
+
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
 		} else {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
 
-        // Set Apache Batik library system property so that it doesn't output:
-        // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
-        System.setProperty("org.apache.batik.warn_destination", "false"); 
-		
+		// Set Apache Batik library system property so that it doesn't output:
+		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
+		System.setProperty("org.apache.batik.warn_destination", "false");
+
 		// Load a UI Config instance according to the user's choice
 		boolean loadConfig = true;
 		if (cleanUI) {
@@ -139,27 +142,25 @@ extends JComponent implements ClockListener {
 
 		// Set up the look and feel library to be used
 		StyleManager.setStyles(configs.getPropSets());
-		
+
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
 
 		if (gs.length == 1) {
 			logger.log(Level.CONFIG, "Detecting only one screen.");
-			logger.config("1 screen detected.");	
-		}
-		else if (gs.length == 0) {
+			logger.config("1 screen detected.");
+		} else if (gs.length == 0) {
 			throw new RuntimeException("No Screens Found.");
-			// NOTE: what about the future server version of mars-sim in which no screen is needed.
+			// NOTE: what about the future server version of mars-sim in which no screen is
+			// needed.
+		} else {
+			logger.config(gs.length + " screens detected.");
 		}
-		else {
-			logger.config(gs.length + " screens detected.");	
-		}
-		
+
 		graphicsDevice = gs[0];
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
-
 
 		// Set up the frame
 		frame = new JFrame();
@@ -169,12 +170,11 @@ extends JComponent implements ClockListener {
 		// Set the UI configuration
 		boolean useDefault = configs.useUIDefault();
 		logger.config("useDefault is: " + useDefault);
-	
+
 		if (useDefault) {
 			logger.config("Will calculate screen size for default display instead.");
 			setUpCalculatedScreen(screenWidth, screenHeight, useDefault);
-		}
-		else {
+		} else {
 			setUpSavedScreen();
 		}
 
@@ -202,40 +202,40 @@ extends JComponent implements ClockListener {
 
 		logger.config("Do you want to use the last saved screen configuration ?");
 		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
-		
+
 		int reply = JOptionPane.showConfirmDialog(frame,
-				"Do you want to use the last saved screen configuration", 
-				"Screen Configuration", 
+				"Do you want to use the last saved screen configuration",
+				"Screen Configuration",
 				JOptionPane.YES_NO_OPTION);
-        return (reply == JOptionPane.YES_OPTION);
+		return (reply == JOptionPane.YES_OPTION);
 	}
-	
+
 	private void setUpSavedScreen() {
 		selectedSize = configs.getMainWindowDimension();
-		
+
 		// Set frame size
 		frame.setSize(selectedSize);
-		logger.config("The last saved window dimension is "	
-			+ selectedSize.width
-			+ " x "
-			+ selectedSize.height
-			+ ".");
-		
+		logger.config("The last saved window dimension is "
+				+ selectedSize.width
+				+ " x "
+				+ selectedSize.height
+				+ ".");
+
 		// Display screen at a certain location
 		frame.setLocation(configs.getMainWindowLocation());
-		logger.config("The last saved frame starts at (" 
+		logger.config("The last saved frame starts at ("
 				+ configs.getMainWindowLocation().x
 				+ ", "
 				+ configs.getMainWindowLocation().y
 				+ ").");
 	}
-	
+
 	private void setUpCalculatedScreen(int screenWidth, int screenHeight, boolean useDefaults) {
 		selectedSize = calculatedScreenSize(screenWidth, screenHeight, useDefaults);
-		
+
 		// Set frame size
 		frame.setSize(selectedSize);
-		
+
 		logger.config("The default window dimension is "
 				+ selectedSize.width
 				+ " x "
@@ -243,43 +243,40 @@ extends JComponent implements ClockListener {
 				+ ".");
 
 		frame.setLocation(
-			((screenWidth - selectedSize.width) / 2),
-			((screenHeight - selectedSize.height) / 2)
-		);
-		
-		logger.config("Use default configuration to set frame to the center of the screen.");	
-		logger.config("The window frame is centered and starts at (" 
-				+ (screenWidth - selectedSize.width) / 2 
+				((screenWidth - selectedSize.width) / 2),
+				((screenHeight - selectedSize.height) / 2));
+
+		logger.config("Use default configuration to set frame to the center of the screen.");
+		logger.config("The window frame is centered and starts at ("
+				+ (screenWidth - selectedSize.width) / 2
 				+ ", "
 				+ (screenHeight - selectedSize.height) / 2
 				+ ").");
 	}
-	
-	
+
 	/**
 	 * Calculates the screen size.
 	 * 
 	 * @param screenWidth
 	 * @param screenHeight
-	 * @param useDefault 
+	 * @param useDefault
 	 * @return
 	 */
 	private Dimension calculatedScreenSize(int screenWidth, int screenHeight, boolean useDefault) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
 		logger.config("useDefault is: " + useDefault);
-		
+
 		Dimension frameSize = null;
 		if (useDefault) {
 			frameSize = interactiveTerm.getSelectedScreen();
 			logger.config("Use default screen configuration.");
 			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
-		}
-		else {
+		} else {
 			// Use any stored size
 			frameSize = configs.getMainWindowDimension();
-			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
+			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);
 		}
-		
+
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if (screenSize != null) {
 			logger.config("Current toolkit screen size is " + screenSize.width + " x " + screenSize.height);
@@ -291,33 +288,31 @@ extends JComponent implements ClockListener {
 					logger.warning("Selected screen size cannot be larger than physical screen size.");
 					frameSize = null;
 				}
-//				else {
-//					// proceed to the next
-//				}
+				// else {
+				// // proceed to the next
+				// }
 			}
-			
 
 			if (frameSize == null) {
 				// Make frame size 80% of screen size.
 				if (screenSize.width > 800) {
 					frameSize = new Dimension(
-						(int) Math.round(screenSize.getWidth() * .8),
-						(int) Math.round(screenSize.getHeight() * .8)
-					);
+							(int) Math.round(screenSize.getWidth() * .8),
+							(int) Math.round(screenSize.getHeight() * .8));
 					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
-				}
-				else {
+				} else {
 					frameSize = new Dimension(screenSize);
 					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
 				}
 			}
 		}
- 
+
 		return frameSize;
 	}
 
 	/**
 	 * Get the selected screen size for the main window.
+	 * 
 	 * @return
 	 */
 	Dimension getSelectedSize() {
@@ -339,18 +334,18 @@ extends JComponent implements ClockListener {
 		});
 
 		frame.addWindowStateListener(new WindowStateListener() {
-			   public void windowStateChanged(WindowEvent e) {
-				   int state = e.getNewState();
-                   isIconified = (state == Frame.ICONIFIED);
-				   if (state == Frame.MAXIMIZED_HORIZ
-						   || state == Frame.MAXIMIZED_VERT)
-//					   frame.update(getGraphics());
-						logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
-					repaint();
-			   }
+			public void windowStateChanged(WindowEvent e) {
+				int state = e.getNewState();
+				isIconified = (state == Frame.ICONIFIED);
+				if (state == Frame.MAXIMIZED_HORIZ
+						|| state == Frame.MAXIMIZED_VERT)
+					// frame.update(getGraphics());
+					logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
+				repaint();
+			}
 		});
 
-    	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		changeTitle(false);
 
@@ -393,8 +388,14 @@ extends JComponent implements ClockListener {
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 
 		// set the visibility of tool and unit bars from preferences
-		unitToolbar.setVisible(configs.showUnitBar());
-		toolToolbar.setVisible(configs.showToolBar());
+		Properties props = configs.getPropSets().get(MAIN_PROPS);
+		boolean showUnitBar = (props != null ? Boolean.parseBoolean(props.getProperty(SHOW_UNIT_BAR, "FALSE"))
+				: false);
+		unitToolbar.setVisible(showUnitBar);
+
+		boolean showToolBar = (props != null ? Boolean.parseBoolean(props.getProperty(SHOW_TOOL_BAR, "TRUE"))
+				: true);
+		toolToolbar.setVisible(showToolBar);
 
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
@@ -423,15 +424,14 @@ extends JComponent implements ClockListener {
 
 		// Blocking image tht should be displayed in the overlap
 		// Icon pauseIcon = getIcon("pause_orange");
-        // blockingImage = new JLabel(
-        // 		pauseIcon,
-        //         SwingConstants.CENTER
-        // );
+		// blockingImage = new JLabel(
+		// pauseIcon,
+		// SwingConstants.CENTER
+		// );
 
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
 	}
-
 
 	private JCheckBox createOverlayCheckBox() {
 		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
@@ -448,27 +448,23 @@ extends JComponent implements ClockListener {
 
 		// Need to display the blocking image on the content pane
 		// if (isPaused && isBlocking) {
-		// 	// Checkbox has been selected
-		// 	layeredContent.add(blockingImage, 2);
+		// // Checkbox has been selected
+		// layeredContent.add(blockingImage, 2);
 		// } else {
-		// 	// Checkbox has been unselected
-		// 	if (blockingImage.isShowing()) {
-		// 		layeredContent.remove(blockingImage);
-		// 	}
+		// // Checkbox has been unselected
+		// if (blockingImage.isShowing()) {
+		// layeredContent.remove(blockingImage);
+		// }
 		// };
 	}
 
 	private void createPauseSwitch() {
 		pauseSwitch = new JToggleButton(PAUSE_ICON);
 		pauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? 
-															PLAY_ICON : PAUSE_ICON)
-								);
+		pauseSwitch.addItemListener(i -> pauseSwitch.setIcon(pauseSwitch.isSelected() ? PLAY_ICON : PAUSE_ICON));
 		pauseSwitch.setSelected(false);
-					
-		pauseSwitch.addActionListener(e -> 
-			masterClock.setPaused(pauseSwitch.isSelected(), false)
-			);	
+
+		pauseSwitch.addActionListener(e -> masterClock.setPaused(pauseSwitch.isSelected(), false));
 	}
 
 	/**
@@ -489,14 +485,12 @@ extends JComponent implements ClockListener {
 			orbitViewer = new OrbitViewer(desktop);
 			return;
 		}
-        orbitViewer.setVisible(!orbitViewer.isVisible());
+		orbitViewer.setVisible(!orbitViewer.isVisible());
 	}
-
 
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
 	}
-	
 
 	private void createSpeedButtons(JStatusBar statusBar) {
 		// Add the decrease speed button
@@ -565,8 +559,7 @@ extends JComponent implements ClockListener {
 			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				fileLocn = chooser.getSelectedFile();
-			}
-			else {
+			} else {
 				return;
 			}
 		}
@@ -579,7 +572,7 @@ extends JComponent implements ClockListener {
 			}
 		});
 
-		logger.log(Level.CONFIG, "Save requested"); 
+		logger.log(Level.CONFIG, "Save requested");
 	}
 
 	/**
@@ -607,22 +600,22 @@ extends JComponent implements ClockListener {
 		if (!masterClock.isPaused() && !sim.isSavePending()) {
 			int reply = JOptionPane.showConfirmDialog(frame,
 					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
-	        if (reply == JOptionPane.YES_OPTION) {
+			if (reply == JOptionPane.YES_OPTION) {
 
-	        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-	        	endSimulation();
-	    		// Save the UI configuration.
-	    		configs.saveFile(this);
-	    		masterClock.exitProgram();
-	    		frame.dispose();
-	    		destroy();
-	    		System.exit(0);
-	        }
+				endSimulation();
+				// Save the UI configuration.
+				configs.saveFile(this);
+				masterClock.exitProgram();
+				frame.dispose();
+				destroy();
+				System.exit(0);
+			}
 
-	        else {
-	        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-	        }
+			else {
+				frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			}
 		}
 	}
 
@@ -633,7 +626,6 @@ extends JComponent implements ClockListener {
 	private void endSimulation() {
 		sim.endSimulation();
 	}
-
 
 	/**
 	 * Gets the unit toolbar.
@@ -653,7 +645,6 @@ extends JComponent implements ClockListener {
 		return toolToolbar;
 	}
 
-
 	/**
 	 * Gets the lander hab icon instance
 	 *
@@ -667,19 +658,18 @@ extends JComponent implements ClockListener {
 		return ImageLoader.getImage(LANDER_PNG);
 	}
 
-
 	/**
 	 * Starts the splash window frame
 	 */
 	public static void startSplash() {
-        // Create a splash window
+		// Create a splash window
 		if (splashWindow == null) {
 			splashWindow = new SplashWindow();
 		}
 
 		splashWindow.setIconImage();
-        splashWindow.display();
-        splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+		splashWindow.display();
+		splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
 	}
 
 	/**
@@ -711,7 +701,7 @@ extends JComponent implements ClockListener {
 	public boolean isIconified() {
 		return isIconified;
 	}
-	
+
 	/**
 	 * Get the UIConfig for this UI.
 	 */
@@ -719,11 +709,24 @@ extends JComponent implements ClockListener {
 		return configs;
 	}
 
-	/** 
-	 * Get the active simualation.
+	/**
+	 * Get the UI properties of the application
 	 */
-	public Simulation getSimulation() {
-		return sim;
+	public Map<String, Properties> getUIProps() {
+		Map<String, Properties> result = new HashMap<>();
+
+		// Add the Style manager details
+		result.putAll(StyleManager.getStyles());
+
+		// Add any Desktop properties
+		result.putAll(desktop.getUIProps());
+
+		// Local details
+		Properties desktopProps = new Properties();
+		desktopProps.setProperty(SHOW_TOOL_BAR, Boolean.toString(toolToolbar.isVisible()));
+		desktopProps.setProperty(SHOW_UNIT_BAR, Boolean.toString(unitToolbar.isVisible()));
+		result.put(MAIN_PROPS, desktopProps);
+		return result;
 	}
 
 	@Override

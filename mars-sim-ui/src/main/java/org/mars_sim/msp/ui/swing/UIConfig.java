@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
@@ -22,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
@@ -32,7 +34,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
@@ -66,16 +67,11 @@ public class UIConfig {
 	// UI config elements and attributes.
 	private static final String UI = "ui";
 	private static final String USE_DEFAULT = "use-default";
-	private static final String SHOW_UNIT_BAR = "show-unit-bar";
-	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_WINDOW = "main-window";
 	private static final String LOCATION_X = "location-x";
 	private static final String LOCATION_Y = "location-y";
 	private static final String WIDTH = "width";
 	private static final String HEIGHT = "height";
-	private static final String VOLUME = "volume";
-	private static final String SOUND = "sound";
-	private static final String MUTE = "mute";
 	private static final String INTERNAL_WINDOWS = "internal-windows";
 	private static final String WINDOW = "window";
 	private static final String TYPE = "type";
@@ -92,11 +88,6 @@ public class UIConfig {
 	private Dimension mainWindowSize = new Dimension(1024, 720);
 
 	private boolean useDefault;
-	private boolean showToolBar = true;
-	private boolean showUnitBar;
-
-	private boolean mute;
-	private double volume;
 
 
 	/**
@@ -130,15 +121,6 @@ public class UIConfig {
 
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
-				showToolBar = parseBoolean(root, SHOW_TOOL_BAR);
-				showUnitBar = parseBoolean(root, SHOW_UNIT_BAR);
-
-				// Audo controls
-				Element volumeItem = root.getChild(VOLUME);
-				if (volumeItem != null) {
-					mute = parseBoolean(volumeItem, MUTE);
-					volume = Double.parseDouble(volumeItem.getAttributeValue(SOUND));
-				}
 
 				// Parse Internal Window
 				Element internalWindows = root.getChild(INTERNAL_WINDOWS);
@@ -230,27 +212,12 @@ public class UIConfig {
 		outputDoc.setRootElement(uiElement);
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
-		uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
-		uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
 		Element mainWindowElement = new Element(MAIN_WINDOW);
 		uiElement.addContent(mainWindowElement);
 
 		JFrame realWindow = mainWindow.getFrame();
-		mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
-		mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
-
-		// Get the real display size
-		mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
-		mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
-
-		AudioPlayer player = desktop.getSoundPlayer();
-		if (player != null) {
-			Element volumeElement = new Element(VOLUME);
-			uiElement.addContent(volumeElement);
-			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
-			volumeElement.setAttribute(MUTE, Boolean.toString(AudioPlayer.isEffectMute()));
-		}
+		outputWindowCoords(mainWindowElement, realWindow);
 
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
@@ -262,11 +229,8 @@ public class UIConfig {
 				Element windowElement = new Element(WINDOW);
 				internalWindowsElement.addContent(windowElement);
 
+				outputWindowCoords(windowElement, window1);
 				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-				windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-				windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-				windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-				windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
 				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
 				if (window1 instanceof ToolWindow) {
@@ -282,9 +246,10 @@ public class UIConfig {
 			}
 		}
 
+		// Output the extra properties
 		Element propsElement = new Element(PROP_SETS);
 		uiElement.addContent(propsElement);
-		for(Entry<String,Properties> entry : StyleManager.getStyles().entrySet()) {
+		for(Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
 
@@ -307,6 +272,13 @@ public class UIConfig {
 		}
 	}
 
+
+	private void outputWindowCoords(Element windowElement, Component realWindow) {			
+		windowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
+		windowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
+		windowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
+		windowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
+	}
 
 	private void outputProperties(Element parent, String name, Properties values) {
 		Element propParent = new Element("prop-set");
@@ -331,23 +303,6 @@ public class UIConfig {
 		return useDefault;
 	}
 
-	/**
-	 * Checks if UI should show the Tool bar.
-	 *
-	 * @return true if default.
-	 */
-	public boolean showToolBar() {
-		return showToolBar;
-	}
-
-	/**
-	 * Checks if UI should show the Unit bar.
-	 *
-	 * @return true if default.
-	 */
-	public boolean showUnitBar() {
-		return showUnitBar;
-	}
 
 	/**
 	 * Gets the screen location of the main window origin.
@@ -365,24 +320,6 @@ public class UIConfig {
 	 */
 	public Dimension getMainWindowDimension() {
 		return mainWindowSize;
-	}
-
-	/**
-	 * Gets the sound volume level.
-	 *
-	 * @return volume (0 (silent) to 1 (loud)).
-	 */
-	public double getVolume() {
-		return volume;
-	}
-
-	/**
-	 * Checks if sound volume is set to mute.
-	 *
-	 * @return true if mute.
-	 */
-	public boolean isMute() {
-		return mute;
 	}
 
 	/**

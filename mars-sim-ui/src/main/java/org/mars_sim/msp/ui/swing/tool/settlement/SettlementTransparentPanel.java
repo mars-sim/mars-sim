@@ -78,7 +78,6 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.StyleManager;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
@@ -97,6 +96,8 @@ public class SettlementTransparentPanel extends JComponent {
 
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
+
+	private static final int WEATHER_ICON_SIZE = 64;
 
 	private static final String TEMPERATURE 	= "   Temperature: ";
 	private static final String WINDSPEED 		= "   Windspeed: ";
@@ -604,7 +605,7 @@ public class SettlementTransparentPanel extends JComponent {
      * Builds the weather panel
      */
 	private void buildWeatherPanel() {
-        int size = MainWindow.WEATHER_ICON_SIZE;
+        int size = WEATHER_ICON_SIZE;
 
     	temperatureIcon = new JLabel();
     	temperatureIcon.setPreferredSize(new Dimension(size, size));

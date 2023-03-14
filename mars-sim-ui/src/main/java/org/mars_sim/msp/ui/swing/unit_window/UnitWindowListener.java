@@ -34,7 +34,6 @@ public class UnitWindowListener extends InternalFrameAdapter {
      * @param e internal frame event.
      */
     public void internalFrameClosing(InternalFrameEvent e) {
-    	desktop.makeUnitWindowInvisible((UnitWindow) e.getSource());
         desktop.disposeUnitWindow((UnitWindow) e.getSource());
     }
 }
