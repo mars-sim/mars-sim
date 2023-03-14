@@ -21,7 +21,7 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
@@ -100,13 +100,7 @@ public class PersonWindow extends UnitWindow {
 		JPanel namePane = new JPanel(new BorderLayout(50, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
 	
-		Font font = null;
-
-		if (MainWindow.OS.contains("linux")) {
-			font = new Font("DIALOG", Font.BOLD, 8);
-		} else {
-			font = new Font("DIALOG", Font.BOLD, 10);
-		}
+		Font font = StyleManager.getSmallLabelFont();
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);

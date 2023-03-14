@@ -83,10 +83,9 @@ public class StyleManager {
     private static Font headingFont;
     private static Font subHeadingFont;
     private static Font smallFont;
+    private static Font smallLabelFont;
 
     private static Map<String,Properties> styles = new HashMap<>();
-
-
 
     // Create the builtin defaults
     static {
@@ -255,9 +254,10 @@ public class StyleManager {
         Properties smallProps = new Properties();
         smallProps.setProperty(FONT_SIZE, "-2");
         smallFont = createFont(defaultFont, smallProps);
+        smallLabelFont = createFont(labelFont, smallProps);
 
         // Hardcode the default font
-        UIManager.put( UIMANAGER_FONT, defaultFont);
+        UIManager.put(UIMANAGER_FONT, defaultFont);
     }
 
     /**
@@ -395,5 +395,13 @@ public class StyleManager {
      */
     public static Font getSmallFont() {
         return smallFont;
+    }
+
+    /**
+     * Get a small label font
+     * @return
+     */
+    public static Font getSmallLabelFont() {
+        return smallLabelFont;
     }
 }

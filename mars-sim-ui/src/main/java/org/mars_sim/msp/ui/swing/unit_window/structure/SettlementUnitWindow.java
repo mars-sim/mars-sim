@@ -21,7 +21,7 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
@@ -100,13 +100,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		nameLabel.setToolTipText("Name of Settlement");
 		setImage(BASE, nameLabel);
 		
-		Font font = null;
-
-		if (MainWindow.OS.contains("linux")) {
-			font = new Font("DIALOG", Font.BOLD, 8);
-		} else {
-			font = new Font("DIALOG", Font.BOLD, 10);
-		}
+		Font font = StyleManager.getSmallLabelFont();
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		nameLabel.setFont(font);

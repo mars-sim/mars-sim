@@ -69,8 +69,6 @@ public class MainWindow
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "landerhab16.png";
 
-	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-
 	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
 	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
 
@@ -443,8 +441,8 @@ public class MainWindow
 	}
 
 	private void displayOverlay() {
-		boolean isPaused = pauseSwitch.isSelected();
-		boolean isBlocking = blockingSwitch.isSelected();
+		//boolean isPaused = pauseSwitch.isSelected();
+		//boolean isBlocking = blockingSwitch.isSelected();
 
 		// Need to display the blocking image on the content pane
 		// if (isPaused && isBlocking) {

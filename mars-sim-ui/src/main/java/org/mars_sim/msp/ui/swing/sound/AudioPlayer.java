@@ -84,7 +84,8 @@ public class AudioPlayer {
 			currentMusicVol = 0;
 			currentSoundVol = 0;
 		}
-		else {
+		else if (props != null) {
+			// COndition should never fail
 			double v = Double.parseDouble(props.getProperty(VOLUME, "0.5"));
 			currentMusicVol = v;
 			currentSoundVol = v;

@@ -126,10 +126,9 @@ public class MarsProject {
 					SwingUtilities.invokeLater(MainWindow::startSplash);
 				}
 				
-				// Use opengl
-				// Question: How compatible are linux and macos with opengl ?
-				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
-				if (!MainWindow.OS.contains("linux")) {
+				// Use opengl. This is very fragile logic
+				String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+				if (!os.contains("linux")) {
 					System.setProperty("sun.java2d.ddforcevram", "true");
 				}
 				
