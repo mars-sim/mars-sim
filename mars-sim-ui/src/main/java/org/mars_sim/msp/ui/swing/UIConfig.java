@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -43,15 +44,42 @@ import com.google.common.base.Charsets;
  */
 public class UIConfig {
 
-	private static class WindowSpec {
-		Point position;
-		Dimension size;
-		int order;
+	/**
+	 * The stored details of a window
+	 */
+	public static class WindowSpec {
+		private Point position;
+		private Dimension size;
+		private int order;
+		private String type;
+		private Properties props;
 
-		public WindowSpec(Point position, Dimension size, int order) {
+		public WindowSpec(Point position, Dimension size, int order, String type, Properties props) {
 			this.position = position;
 			this.size = size;
 			this.order = order;
+			this.type = type;
+			this.props = props;
+		}
+
+		public Point getPosition() {
+			return position;
+		}
+
+		public Dimension getSize() {
+			return size;
+		}
+
+		public int getOrder() {
+			return order;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public Properties getProps() {
+			return props;
 		}
 	}
 
@@ -79,6 +107,7 @@ public class UIConfig {
 	private static final String DISPLAY = "display";
 	private static final String Z_ORDER = "z-order";
 	private static final String PROP_SETS = "prop-sets";
+	private static final String PROP_SET = "prop-set";
 
 	private Map<String,WindowSpec> windows = new HashMap<>();
 	private Map<String,Properties> propSets = new HashMap<>();
@@ -87,7 +116,6 @@ public class UIConfig {
 	private Dimension mainWindowSize = new Dimension(1024, 720);
 
 	private boolean useDefault;
-
 
 	/**
 	 * Private singleton constructor.
@@ -126,11 +154,18 @@ public class UIConfig {
 				List<Element> internalWindowNodes = internalWindows.getChildren();
 				for (Element internalWindow : internalWindowNodes) {
 					String name = internalWindow.getAttributeValue(NAME);
+					String type = internalWindow.getAttributeValue(TYPE);
 					Point position = parsePosition(internalWindow);
 					Dimension size = parseSize(internalWindow);
 					int zOrder = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
 
-					windows.put(name, new WindowSpec(position, size, zOrder));
+					Element propElement = internalWindow.getChild(PROP_SET);
+					Properties props = null;
+					if (propElement != null) {
+						props = parseProperties(propElement);
+					}
+
+					windows.put(name, new WindowSpec(position, size, zOrder, type, props));
 				}
 
 				// Parse props sets
@@ -232,6 +267,11 @@ public class UIConfig {
 				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
 				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
+				if (window1 instanceof ConfigurableWindow) {
+					ConfigurableWindow cw = (ConfigurableWindow) window1;
+					outputProperties(windowElement, "props", cw.getUIProps());
+				}
+
 				if (window1 instanceof ToolWindow) {
 					windowElement.setAttribute(TYPE, TOOL);
 					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
@@ -280,7 +320,7 @@ public class UIConfig {
 	}
 
 	private void outputProperties(Element parent, String name, Properties values) {
-		Element propParent = new Element("prop-set");
+		Element propParent = new Element(PROP_SET);
 		parent.addContent(propParent);
 		if (name != null) {
 			propParent.setAttribute(new Attribute(NAME, name));
@@ -322,67 +362,27 @@ public class UIConfig {
 	}
 
 	/**
-	 * Gets the origin location of an internal window on the desktop.
+	 * Gets any saved properties of the internal window on the desktop.
 	 *
 	 * @param windowName the window name.
-	 * @return location.
+	 * @return properties maybe null.
 	 */
-	public Point getInternalWindowLocation(String windowName) {
+	public Properties getInternalWindowProps(String windowName) {
 		WindowSpec spec = windows.get(windowName);
-		Point result;
 		if (spec != null) {
-			result = spec.position;
+			return spec.props;
 		}
-		else {
-			result = new Point(0, 0);
-		}
-		return result;
+		return null;
 	}
 
 	/**
-	 * Gets the z order of an internal window on the desktop.
+	 * Get teh details of a previously stored window details
 	 *
 	 * @param windowName the window name.
-	 * @return z order (lower number represents higher up)
+	 * @return Known details; may return null
 	 */
-	public int getInternalWindowZOrder(String windowName) {
-		WindowSpec spec = windows.get(windowName);
-		int result;
-		if (spec != null) {
-			result = spec.order;
-		}
-		else {
-			result = -1;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the size of an internal window.
-	 *
-	 * @param windowName the window name.
-	 * @return size.
-	 */
-	public Dimension getInternalWindowDimension(String windowName) {
-		WindowSpec spec = windows.get(windowName);
-		Dimension result;
-		if (spec != null) {
-			result = spec.size;
-		}
-		else {
-			result = new Dimension(0, 0);;
-		}
-		return result;
-	}
-
-	/**
-	 * Checks if internal window is configured.
-	 *
-	 * @param windowName the window name.
-	 * @return true if configured.
-	 */
-	public boolean isInternalWindowConfigured(String windowName) {
-		return (windows.get(windowName) != null);
+	public WindowSpec getInternalWindowDetails(String windowName) {
+		return windows.get(windowName);
 	}
 
 	/**
@@ -392,4 +392,50 @@ public class UIConfig {
 	public Map<String, Properties> getPropSets() {
 		return propSets;
 	}
+
+	/**
+	 * Get the names of the tool windows
+	 * @return
+	 */
+	public List<String> getToolWindows() {
+		return windows.entrySet().stream().filter(e -> e.getValue().type.equals(TOOL))
+										  .sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
+										  .map(v -> v.getKey())
+										  .collect(Collectors.toList());
+	}
+
+	/**
+	 * Helper method to extract a Boolean out of a user properties
+	 * @param setting
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
+    public static boolean extractBoolean(Properties settings, String name, boolean defaultValue) {
+    	boolean result = defaultValue;
+    	if (settings != null && settings.containsKey(name)) {
+    		result = Boolean.parseBoolean(settings.getProperty(name));
+    	}
+    	return result;
+    }
+
+	/**
+	 * Helper method to extract a Double out of a user properties
+	 * @param setting
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
+    public static double extractDouble(Properties settings, String name, double defaultValue) {
+		double result = defaultValue;
+    	if (settings != null && settings.containsKey(name)) {
+			try {
+    			result = Double.parseDouble(settings.getProperty(name));
+			}
+			catch(NumberFormatException nfe) {
+				logger.warning("Cannot parse double property of " + name + ", value=" + settings.getProperty(name));
+			}
+    	}
+    	return result;
+    }
 }

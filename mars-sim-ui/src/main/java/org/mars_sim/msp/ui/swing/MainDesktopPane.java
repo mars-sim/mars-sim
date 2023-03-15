@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.ui.swing.UIConfig.WindowSpec;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -391,10 +392,11 @@ public class MainDesktopPane extends JDesktopPane
 		if (window.isClosed() && !window.wasOpened()) {
 			UIConfig config = mainWindow.getConfig();
 			Point location = null;
-			if (config.isInternalWindowConfigured(toolName)) {
-				location = config.getInternalWindowLocation(toolName);
+			WindowSpec previousDetails = config.getInternalWindowDetails(toolName);
+			if (previousDetails != null) {
+				location = previousDetails.getPosition();
 				if (window.isResizable()) {
-					window.setSize(config.getInternalWindowDimension(toolName));
+					window.setSize(previousDetails.getSize());
 				}
 			} else if (toolName.equals(TimeWindow.NAME))
 				location = computeLocation(window, 0, 2);
@@ -404,9 +406,9 @@ public class MainDesktopPane extends JDesktopPane
 				location = getCenterLocation(window);
 
 			// Check is visible
-			if ((location.x < 0) || (location.y < 0)) {
-				location = new Point(1, 1);
-			}
+			Dimension currentSize = getSize();
+			location = new Point(Math.max(1, Math.min(location.x, (int)currentSize.getWidth() - 20)),
+								 Math.max(1, Math.min(location.y, (int)currentSize.getHeight() - 20)));
 			window.setLocation(location);
 			window.setWasOpened(true);
 		}
@@ -488,13 +490,8 @@ public class MainDesktopPane extends JDesktopPane
 			// Set internal frame listener
 			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
-			if (initialWindow) {
-				// Put window in configured position on desktop.
-				tempWindow.setLocation(mainWindow.getConfig().getInternalWindowLocation(unit.getName()));
-			} else {
-				// Put window in random position on desktop.
-				tempWindow.setLocation(getRandomLocation(tempWindow));
-			}
+			// Put window in random position on desktop.
+			tempWindow.setLocation(getRandomLocation(tempWindow));
 
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
@@ -675,21 +672,24 @@ public class MainDesktopPane extends JDesktopPane
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-		List<String> startingWindows = new ArrayList<>();
-		
-		if (mode == GameMode.COMMAND) {
-			// Open the time window for the Commander Mode
-			startingWindows.add(TimeWindow.NAME);
-			startingWindows.add(CommanderWindow.NAME);
-		}
+		List<String> startingWindows = mainWindow.getConfig().getToolWindows();
 
-		else {
-			startingWindows.add(GuideWindow.NAME);
-		}
+		if (startingWindows.isEmpty()) {
+			startingWindows = new ArrayList<>();
+			if (mode == GameMode.COMMAND) {
+				// Open the time window for the Commander Mode
+				startingWindows.add(TimeWindow.NAME);
+				startingWindows.add(CommanderWindow.NAME);
+			}
 
+			else {
+				startingWindows.add(GuideWindow.NAME);
+			}
+		}
 		// Do we need to still open these in the background ?
+		final List<String> toOpen = startingWindows;
 		SwingUtilities.invokeLater(() -> {
-			for(String s : startingWindows) {
+			for(String s : toOpen) {
 				openToolWindow(s);
 			}
 		});

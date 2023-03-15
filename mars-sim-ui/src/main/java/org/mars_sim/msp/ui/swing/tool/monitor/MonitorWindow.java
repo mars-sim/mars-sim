@@ -4,30 +4,25 @@
  * @date 2022-07-02
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -46,6 +41,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -56,7 +52,8 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
  * of which monitor a set of Units.
  */
 @SuppressWarnings("serial")
-public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener{
+public class MonitorWindow extends ToolWindow
+			implements ConfigurableWindow, TableModelListener, ActionListener{
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
@@ -83,6 +80,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private static final String DETAILS_ICON = "details";
 	private static final String COLUMN_ICON = "action/column";
 	private static final String FILTER_ICON = "action/filter";
+
+	private static final String SETTLEMENT_PROP = "SETTLEMENT";
+	private static final String TAB_PROP = "TAB";
 
 	// Data members
 	private JTabbedPane tabsSection;
@@ -127,32 +127,42 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		JPanel mainPane = new JPanel(new BorderLayout(5, 5));
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
-		// Create top pane
-		JPanel topPane = new JPanel(new GridLayout(1, 5));
-		//topPane.setPreferredHeight(30);
-		mainPane.add(topPane, BorderLayout.NORTH);
+
+		// Get any saved props
+		Properties savedProps = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 
 		// Set up settlements
 		List<Settlement> initialSettlements = setupSettlements();
-		
+		if (!initialSettlements.isEmpty()) {
+			String defaultSettlement = (savedProps != null ? savedProps.getProperty(SETTLEMENT_PROP) : null);
+			if (defaultSettlement != null) {
+				for(Settlement s : initialSettlements) {
+					if (s.getName().equals(defaultSettlement)) {
+						selectedSettlement = s;
+					}
+				}
+			}
+
+			if (selectedSettlement == null) {
+				selectedSettlement = initialSettlements.get(0);
+			}
+		}
+
 		// Create the settlement combo box
         buildSettlementNameComboBox(initialSettlements);
 
-		// Create settlement pane
-		JPanel settlementPane = new JPanel(new BorderLayout(5, 5));
-        settlementPane.setSize(getNameLength() * 14, 30);
-		settlementPane.add(settlementComboBox, BorderLayout.CENTER);
-		topPane.add(new JPanel());
-		topPane.add(new JPanel());
-		topPane.add(settlementPane);
-		topPane.add(new JPanel());
-		topPane.add(new JPanel());
+		// Create top pane
+		JPanel topPane = new JPanel(new FlowLayout());
+		topPane.add(settlementComboBox);
+
+		mainPane.add(topPane, BorderLayout.NORTH);
 
 		// Create tabbed pane for the table
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Add all the tabs
-		addAllTabs(initialSettlements);
+		addAllTabs(initialSettlements,
+									(savedProps != null ? savedProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
@@ -162,10 +172,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection.addChangeListener(e -> updateTab());
 		
 		mainPane.add(tabsSection, BorderLayout.CENTER);
-		
-		// Open the Events tab at the start of the sim
-//		May call tabsSection.setSelectedIndex(2)
-//		May call table.repaint()
 
 		// Create a status panel
 		statusPanel = new JPanel();
@@ -182,12 +188,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		setSize(new Dimension(WIDTH, HEIGHT));	
 		setMinimumSize(new Dimension(640, 256));
-		Dimension desktopSize = desktop.getMainWindow().getFrame().getSize();
-		Dimension windowSize = getSize();
-
-		int width = (desktopSize.width - windowSize.width) / 2;
-		int height = (desktopSize.height - windowSize.height - 100) / 2;
-		setLocation(width, height);
 		
 		// Lastly activate the default tab
 		selectNewTab(getSelectedTab());
@@ -196,33 +196,39 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	/**
 	 * Adds all the tabs.
 	 */
-	private void addAllTabs(List<Settlement> initialSettlements) {
-		// Add tabs into the table
-		if (!initialSettlements.isEmpty())
-			this.selectedSettlement = initialSettlements.get(0);
-		
+	private void addAllTabs(List<Settlement> initialSettlements, String defaultTabName) {
+		List<MonitorTab> newTabs = new ArrayList<>();
+
+		// Add tabs into the table	
 		if (initialSettlements.size() > 1) {
-			addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
+			newTabs.add(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 		}
 		
-		addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
-		addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
-		addTab(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
-		addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
-		addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
+		newTabs.add(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
+		newTabs.add(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
+		newTabs.add(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
+		newTabs.add(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
+		newTabs.add(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 		
-		addTab(new FoodInventoryTab(selectedSettlement, this));
-		addTab(new BacklogTab(selectedSettlement, this));
+		newTabs.add(new FoodInventoryTab(selectedSettlement, this));
+		newTabs.add(new BacklogTab(selectedSettlement, this));
 
 		
-		addTab(new TradeTab(selectedSettlement, this));
+		newTabs.add(new TradeTab(selectedSettlement, this));
 		
 		eventsTab = new EventTab(this, desktop);
-		addTab(eventsTab);
+		newTabs.add(eventsTab);
 		
-		addTab(new MissionTab(this));
-		addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
+		newTabs.add(new MissionTab(this));
+		newTabs.add(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
 
+		// Add the enw tabs an search for default
+		for(MonitorTab m : newTabs) {
+			addTab(m);
+			if (m.getName().equals(defaultTabName)) {
+				tabsSection.setSelectedComponent(m);
+			}
+		}
 	}
 
 	/**
@@ -330,12 +336,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
 		model.addAll(startingSettlements);
-		model.setSelectedItem(startingSettlements.get(0));
+		model.setSelectedItem(selectedSettlement);
 		settlementComboBox = new JComboBox<>(model);
-		settlementComboBox.setSize(getNameLength() * 12, 30);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		//settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(event -> {
@@ -380,22 +384,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		settlementComboBox.setEnabled(!isOpaque);
 		settlementComboBox.setVisible(!isOpaque);
 	}
-	
-    /**
-     * Gets the length of the most lengthy settlement name/
-     *
-     * @return
-     */
-    private int getNameLength() {
-    	Collection<Settlement> list = unitManager.getSettlements();
-    	int max = 12;
-    	for (Settlement s: list) {
-    		int size = s.getName().length();
-    		if (max < size)
-    			max = size;
-    	}
-    	return max;
-    }
 
 	/**
 	 * Gets the index of the monitor tab with the model.
@@ -705,6 +693,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/** 
+	 * Get the details of which tab is selected
+	 */
+	@Override
+	public Properties getUIProps() {
+		Properties result = new Properties();
+		result.setProperty(SETTLEMENT_PROP, selectedSettlement.getName());
+		result.setProperty(TAB_PROP, getSelectedTab().getName());
+		return result;
+	}
 
 	/**
 	 * Prepares tool window for deletion.
@@ -714,36 +712,5 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		super.destroy();
 
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
-	}
-
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private static final long serialVersionUID = 1L;
-		private String prompt;
-
-		public PromptComboBoxRenderer(){
-		    setHorizontalAlignment(CENTER);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value,
-	            int index, boolean isSelected, boolean cellHasFocus) {
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null) {
-				setText(prompt);
-				return this;
-			}
-
-			if (isSelected) {
-	        	  c.setForeground(Color.black);
-	        	  c.setBackground(new Color(255,229,204,50)); // pale orange
-	          } else {
-					c.setForeground(Color.black);
-			        c.setBackground(new Color(184,134,11,50)); // mud orange
-	          }
-
-	        return c;
-	    }
 	}
 }

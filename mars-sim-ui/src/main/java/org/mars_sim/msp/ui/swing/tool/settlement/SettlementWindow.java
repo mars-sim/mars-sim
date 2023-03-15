@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
+import java.util.Properties;
 
 import javax.swing.JLabel;
 import javax.swing.JLayer;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
@@ -36,7 +38,7 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
 @SuppressWarnings("serial")
-public class SettlementWindow extends ToolWindow {
+public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	// default logger.
 	// private static final Logger logger = Logger.getLogger(SettlementWindow.class.getName());
@@ -52,8 +54,8 @@ public class SettlementWindow extends ToolWindow {
 	private static final String SETTLEMENT_MAP = "  Map : (";
 	private static final String PIXEL_MAP = "  Window : (";
 
-	private static final int HORIZONTAL = 800;// 630;
-	private static final int VERTICAL = 800;// 590;
+	private static final int HORIZONTAL = 800;
+	private static final int VERTICAL = 800;
 
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
@@ -115,7 +117,7 @@ public class SettlementWindow extends ToolWindow {
 		mainPanel.add(subPanel, BorderLayout.CENTER);
 		subPanel.setBackground(Color.BLACK);
 
-		mapPanel = new SettlementMapPanel(desktop, this);
+		mapPanel = new SettlementMapPanel(desktop, this, desktop.getMainWindow().getConfig().getInternalWindowProps(NAME));
 		mapPanel.createUI();
 
 		// Added SpotlightLayerUI
@@ -313,5 +315,13 @@ public class SettlementWindow extends ToolWindow {
 				mapPanel.selectPerson(p);
 		}
     }
+
+	/**
+	 * Get the current user configured properties
+	 */
+	@Override
+	public Properties getUIProps() {
+		return mapPanel.getUIProps();
+	}
 
 }

@@ -84,7 +84,7 @@ import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
 
 
-@SuppressWarnings({ "serial", "rawtypes" })
+@SuppressWarnings({ "serial"})
 public class SettlementTransparentPanel extends JComponent {
 
 	/** default logger. */
@@ -1135,7 +1135,7 @@ public class SettlementTransparentPanel extends JComponent {
 	}
 
 
-	public JComboBox getSettlementListBox() {
+	public JComboBox<Settlement> getSettlementListBox() {
 		return settlementListBox;
 	}
 

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JPanel;
 
@@ -38,12 +39,26 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.UIConfig;
 
 /**
  * A panel for displaying the settlement map.
  */
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
+
+	// Proeprty name s for UI Config
+	private static final String BUILDING_LBL_PROP = "BUILDING_LABELS";
+	private static final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
+	private static final String PERSON_LBL_PROP = "PERSON_LABELS";
+	private static final String VEHICLE_LBL_PROP = "VEHICLE_LABELS";
+	private static final String ROBOT_LBL_PROP = "ROBOT_LABELS";
+	private static final String SETTLEMENT_PROP = "SETTLEMENT";
+	private static final String DAYLIGHT_PROP = "DAYLIGHT_LAYER";
+	private static final String X_PROP = "XPOS";
+	private static final String Y_PROP = "YPOS";
+	private static final String SCALE_PROP = "SCALE";
+	private static final String ROTATION_PROP = "ROTATION";
 
 	// Static members.
 	private static final double WIDTH = 6D;
@@ -89,7 +104,8 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Constructor 1 A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow) {
+	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow,
+							Properties userSettings) {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
@@ -100,7 +116,21 @@ public class SettlementMapPanel extends JPanel {
 		
 		if (!settlements.isEmpty()) {
 			Collections.sort(settlements);
-			settlement = settlements.get(0);
+
+			// Search for matching settlement
+			String userChoice = ((userSettings != null) && userSettings.containsKey(SETTLEMENT_PROP) ?
+											userSettings.getProperty(SETTLEMENT_PROP) : null);
+			if (userChoice != null) {
+				for(Settlement s : settlements) {
+					if (s.getName().equals(userChoice)) {
+						settlement = s;
+					}
+				}
+			}
+										
+			if (settlement == null) {
+				settlement = settlements.get(0);
+			}
 		}
 		
 		setLayout(new BorderLayout());
@@ -108,16 +138,18 @@ public class SettlementMapPanel extends JPanel {
 		setDoubleBuffered(true);
 
 		// Initialize data members.
-		xPos = 0D;
-		yPos = 0D;
-		rotation = 0D;
-		scale = DEFAULT_SCALE;
-		showBuildingLabels = false;
-		showConstructionLabels = false;
-		showPersonLabels = false;
-		showVehicleLabels = false;
-		showRobotLabels = false;
-		showDaylightLayer = false; // turn off by default
+		xPos = UIConfig.extractDouble(userSettings, X_PROP, 0D);
+		yPos = UIConfig.extractDouble(userSettings, Y_PROP, 0D);
+		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
+		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
+		showBuildingLabels = UIConfig.extractBoolean(userSettings, BUILDING_LBL_PROP, false);
+		showConstructionLabels = UIConfig.extractBoolean(userSettings, CONSTRUCTION_LBL_PROP, false);
+		showPersonLabels = UIConfig.extractBoolean(userSettings, PERSON_LBL_PROP, false);
+		showVehicleLabels = UIConfig.extractBoolean(userSettings, VEHICLE_LBL_PROP, false);
+		showRobotLabels = UIConfig.extractBoolean(userSettings, ROBOT_LBL_PROP, false);
+		showDaylightLayer = UIConfig.extractBoolean(userSettings, DAYLIGHT_PROP, false); 
+
+
 		selectedBuilding = new HashMap<>();
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
@@ -163,6 +195,7 @@ public class SettlementMapPanel extends JPanel {
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		settlementTransparentPanel.createAndShowGUI();
+		settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
 
 		repaint();
 	}
@@ -1051,6 +1084,27 @@ public class SettlementMapPanel extends JPanel {
     void update(ClockPulse pulse) {
 		settlementTransparentPanel.update(pulse);
 		repaint();
+	}
+
+	/**
+	 * Get the user display settings
+	 */
+	Properties getUIProps() {
+		Properties props = new Properties();
+		props.setProperty(SETTLEMENT_PROP, settlement.getName());
+
+		props.setProperty(BUILDING_LBL_PROP, Boolean.toString(showBuildingLabels));
+		props.setProperty(CONSTRUCTION_LBL_PROP, Boolean.toString(showConstructionLabels));
+		props.setProperty(PERSON_LBL_PROP, Boolean.toString(showPersonLabels));
+		props.setProperty(VEHICLE_LBL_PROP, Boolean.toString(showVehicleLabels));
+		props.setProperty(ROBOT_LBL_PROP, Boolean.toString(showRobotLabels));
+		props.setProperty(DAYLIGHT_PROP, Boolean.toString(showDaylightLayer));
+		props.setProperty(X_PROP, Double.toString(xPos));
+		props.setProperty(Y_PROP, Double.toString(yPos));
+		props.setProperty(ROTATION_PROP, Double.toString(rotation));
+		props.setProperty(SCALE_PROP, Double.toString(scale));
+
+		return props;
 	}
 
 	/**
