@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -30,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
@@ -40,7 +42,7 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
  * Window for the mission tool.
  */
 @SuppressWarnings("serial")
-public class MissionWindow extends ToolWindow {
+public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
@@ -48,7 +50,8 @@ public class MissionWindow extends ToolWindow {
 	
 	static final int WIDTH = 640;
 	static final int LEFT_PANEL_WIDTH = 200;
-	static final int HEIGHT = 640;
+	static final int HEIGHT = 600;
+	private static final String MISSIONNAME_PROP = "selected";
 
 	// Private members
 	private MainDetailPanel mainPanel;
@@ -183,6 +186,18 @@ public class MissionWindow extends ToolWindow {
 		setResizable(true);
 
 		setVisible(true);
+
+		// Reselect previous mission
+		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
+		String selectedMission = (userSettings != null ? userSettings.getProperty(MISSIONNAME_PROP) : null);
+		if (selectedMission != null) {
+			for(Mission m : missionMgr.getMissions()) {
+				if (m.getName().equals(selectedMission)) {
+					openMission(m);
+					break;
+				}
+			}
+		}
 	}
 
 	private DefaultMutableTreeNode addMissionNode(Mission m) {
@@ -288,5 +303,12 @@ public class MissionWindow extends ToolWindow {
 
 		TreeNode[] path = found.getPath();
 		missionTree.setSelectionPath(new TreePath(path));
+	}
+
+	@Override
+	public Properties getUIProps() {
+		Properties results = new Properties();
+		results.setProperty(MISSIONNAME_PROP, missionCache.getName());
+		return results;
 	}
 }

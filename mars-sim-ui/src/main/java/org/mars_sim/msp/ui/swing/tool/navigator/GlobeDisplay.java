@@ -68,12 +68,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private int globeBoxWidth;
 	/** height of the globe display component. */
 	private int globeBoxHeight;
-	/** <code>true</code> if USGS surface map is to be used. */
-	private boolean useUSGSMap;
-	/** Array used to generate day/night shading image. */
-	private int[] shadingArray;
-//	/** <code>true</code> if day/night shading is to be used. */
-//	private boolean showDayNightShading;
 
 	/** Real surface sphere object. */
 	private MarsMap marsSphere;
@@ -156,12 +150,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
-//		update = true;
 		mapType = 0;
 		recreate = true;
-		useUSGSMap = false;
-		shadingArray = new int[globeBoxWidth * globeBoxHeight * 2 * 2];
-//		showDayNightShading = true;
+
 
 		addMouseListener(new MouseAdapter() {
 			// Note: must use MouseAdapter's mousePressed separately from Dragger
@@ -348,11 +339,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				return;
 			}
 		}
-
-//		if (showDayNightShading) {
-//			drawShading(g2d);
-//		}
-
+		
 		drawUnits(g2d);
 		drawCrossHair(g2d);
 
@@ -416,26 +403,15 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	protected void drawCrossHair(Graphics2D g) {
 		g.setColor(Color.orange);
 
-//		// If USGS map is used, use small crosshairs.
-//		if (useUSGSMap && mapType == 0) {
-//			g.drawRect(72, 72, 6, 6);
-//			g.drawLine(0, 75, 71, 75);
-//			g.drawLine(79, 75, 149, 75);
-//			g.drawLine(75, 20, 75, 71);
-//			g.drawLine(75, 79, 75, 149);
-//		}
-//		// If not USGS map, use large crosshairs.
-//		else {
-			g.drawRect(118 * RATIO, 118 * RATIO,  66 * RATIO,  66 * RATIO);
-			// Draw left horizontal line
-			g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
-			// Draw right horizontal line
-			g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
-			// Draw top vertical line
-			g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
-			// Draw bottom vertical line
-			g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
-//		}
+		g.drawRect(118 * RATIO, 118 * RATIO,  66 * RATIO,  66 * RATIO);
+		// Draw left horizontal line
+		g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
+		// Draw right horizontal line
+		g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
+		// Draw top vertical line
+		g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
+		// Draw bottom vertical line
+		g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
 
 		// use prepared font
 		g.setFont(positionFont);
@@ -467,24 +443,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
 		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, halfMap, lowEdge);
 	}
-
-	/**
-	 * Set USGS as surface map
-	 * 
-	 * @param useUSGSMap true if using USGS map.
-	 */
-	public void setUSGSMap(boolean useUSGSMap) {
-		this.useUSGSMap = useUSGSMap;
-	}
-
-//	/**
-//	 * Sets day/night tracking to on or off.
-//	 * 
-//	 * @param showDayNightShading true if globe is to use day/night tracking.
-//	 */
-//	public void setDayNightTracking(boolean showDayNightShading) {
-//		this.showDayNightShading = showDayNightShading;
-//	}
 
 	/**
 	 * Gets the center coordinates of the globe.

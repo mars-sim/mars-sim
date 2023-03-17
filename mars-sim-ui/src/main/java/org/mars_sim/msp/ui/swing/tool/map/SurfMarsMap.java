@@ -21,7 +21,7 @@ import org.mars_sim.mapdata.MapDataUtil;
 public class SurfMarsMap extends CannedMarsMap {
 
 	// The map type.
-	public static final String TYPE = "surface map";
+	public static final String TYPE = "surf";
 
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 	

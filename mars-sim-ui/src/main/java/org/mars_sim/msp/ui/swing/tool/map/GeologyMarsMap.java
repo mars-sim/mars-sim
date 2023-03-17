@@ -21,7 +21,7 @@ import org.mars_sim.mapdata.MapDataUtil;
 public class GeologyMarsMap extends CannedMarsMap {
 
 	// The map type.
-	public static final String TYPE = "geological map";
+	public static final String TYPE = "geo";
 
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 	

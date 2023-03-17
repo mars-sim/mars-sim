@@ -20,7 +20,7 @@ import org.mars_sim.mapdata.MapDataUtil;
 public class TopoMarsMap extends CannedMarsMap {
 
 	// The map type.
-	public static final String TYPE = "topographical map";
+	public static final String TYPE = "topo";
 
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 	
