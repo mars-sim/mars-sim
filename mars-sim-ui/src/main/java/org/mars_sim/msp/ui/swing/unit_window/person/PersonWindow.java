@@ -16,7 +16,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot;
@@ -270,11 +269,6 @@ public class PersonWindow extends UnitWindow {
 		String shiftDesc = TabPanelSchedule.getShiftDescription(newShiftType);
 		shiftLabel.setText(TWO_SPACES + newShiftType.getShift().getName());
 		shiftLabel.setToolTipText(shiftDesc);
-	}
-	
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		// nothing
 	}
 	
 	/**

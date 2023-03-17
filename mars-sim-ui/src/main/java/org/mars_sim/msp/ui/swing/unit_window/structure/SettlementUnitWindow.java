@@ -16,7 +16,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -251,10 +250,6 @@ public class SettlementUnitWindow extends UnitWindow {
 				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getOwnedVehicleNum());
 	}
 	
-	@Override
-	public void stateChanged(ChangeEvent e) {
-	}
-
 	/**
 	 * Prepares unit window for deletion.
 	 */

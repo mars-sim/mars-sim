@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.robot;
 
-import javax.swing.event.ChangeEvent;
-
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
@@ -84,21 +82,5 @@ public class RobotWindow extends UnitWindow {
 				addTabPanel(new TabPanelDeath(robot, desktop));
 			}
 		}
-	}
-
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		// SwingUtilities.updateComponentTreeUI(this);
-//		TabPanel newTab = getSelected();
-//
-//		if (newTab != oldTab) {
-//
-//			if (newTab instanceof TabPanelActivity) {
-////				if (tabPanelActivity.isUIDone());
-////				 	tabPanelActivity.initializeUI();
-//			} else if (newTab instanceof TabPanelAttribute) {
-//				
-//			}
-//		}
 	}
 }

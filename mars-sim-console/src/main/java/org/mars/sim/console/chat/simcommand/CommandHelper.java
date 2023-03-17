@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
@@ -406,7 +405,7 @@ public class CommandHelper {
 	 */
 	public static void outputMalfunction(StructuredResponse response, Malfunctionable source, Malfunction m) {
 		response.appendHeading(m.getName());
-		response.appendLabeledString(Msg.getString(source.getUnitType().getMsgKey()), source.getName());
+		response.appendLabeledString(source.getUnitType().getName(), source.getName());
 
 		response.appendLabelledDigit("Severity", m.getSeverity());
 		response.appendLabeledString("Fixed ", String.format(PERC_FORMAT, m.getPercentageFixed()));

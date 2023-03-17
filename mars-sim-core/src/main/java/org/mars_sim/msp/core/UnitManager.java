@@ -122,12 +122,11 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get the appropriate Unit Map for a Unit identifier
-	 * @param id
+	 * Get the appropriate Unit Map for a Unit type
+	 * @param type
 	 * @return
 	 */
-	private Map<Integer, ? extends Unit> getUnitMap(Integer id) {
-		UnitType type = getTypeFromIdentifier(id);
+	private Map<Integer, ? extends Unit> getUnitMap(UnitType type ) {
 		Map<Integer,? extends Unit> map = null;
 
 		switch (type) {
@@ -161,7 +160,22 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the unit with a particular identifier (unit id).
+	 * Get the Unit of a certian type matching the name
+	 * @param type The UnitType to search for
+	 * @param name Name of the unit
+	 */
+	public Unit getUnitByName(UnitType type, String name) {
+		Map<Integer,? extends Unit> map = getUnitMap(type);
+		for(Unit u : map.values()) {
+			if (u.getName().equalsIgnoreCase(name)) {
+				return u;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the unit with a particular identifier (unit id).
 	 *
 	 * @param id identifier
 	 * @return
@@ -173,9 +187,10 @@ public class UnitManager implements Serializable, Temporal {
 			return null;
 		}
 
-		Unit found = getUnitMap(id).get(id);
+		UnitType type = getTypeFromIdentifier(id);
+		Unit found = getUnitMap(type).get(id);
 		if (found == null) {
-			logger.warning("Unit not found " + id + ". Type of unit : " + getTypeFromIdentifier(id)
+			logger.warning("Unit not found " + id + ". Type of unit : " + type
 			               + " (Base ID:" + (id >>> TYPE_BITS) + ").");
 		}
 		return found;
@@ -294,7 +309,8 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param unit the unit to remove.
 	 */
 	public synchronized void removeUnit(Unit unit) {
-		Map<Integer,? extends Unit> map = getUnitMap(unit.getIdentifier());
+		UnitType type = getTypeFromIdentifier(unit.getIdentifier());
+		Map<Integer,? extends Unit> map = getUnitMap(type);
 
 		map.remove(unit.getIdentifier());
 
@@ -475,15 +491,6 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public Collection<Vehicle> getVehicles() {
 		return Collections.unmodifiableCollection(lookupVehicle.values());
-	}
-
-	/**
-	 * Get number of people
-	 *
-	 * @return the number of people
-	 */
-	public int getTotalNumPeople() {
-		return lookupPerson.size();
 	}
 
 	/**

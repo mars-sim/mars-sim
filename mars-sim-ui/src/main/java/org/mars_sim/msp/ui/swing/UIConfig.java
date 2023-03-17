@@ -48,18 +48,24 @@ public class UIConfig {
 	 * The stored details of a window
 	 */
 	public static class WindowSpec {
+		private String name;
 		private Point position;
 		private Dimension size;
 		private int order;
 		private String type;
 		private Properties props;
 
-		public WindowSpec(Point position, Dimension size, int order, String type, Properties props) {
+		public WindowSpec(String name, Point position, Dimension size, int order, String type, Properties props) {
+			this.name = name;
 			this.position = position;
 			this.size = size;
 			this.order = order;
 			this.type = type;
 			this.props = props;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public Point getPosition() {
@@ -165,7 +171,7 @@ public class UIConfig {
 						props = parseProperties(propElement);
 					}
 
-					windows.put(name, new WindowSpec(position, size, zOrder, type, props));
+					windows.put(name, new WindowSpec(name, position, size, zOrder, type, props));
 				}
 
 				// Parse props sets
@@ -394,13 +400,12 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the names of the tool windows
+	 * Get the details of the stored windows
 	 * @return
 	 */
-	public List<String> getToolWindows() {
-		return windows.entrySet().stream().filter(e -> e.getValue().type.equals(TOOL))
-										  .sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
-										  .map(v -> v.getKey())
+	public List<WindowSpec> getConfiguredWindows() {
+		return windows.entrySet().stream().sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
+										  .map(v -> v.getValue())
 										  .collect(Collectors.toList());
 	}
 

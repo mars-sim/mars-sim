@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import javax.swing.event.ChangeEvent;
-
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -116,17 +114,4 @@ public class BuildingWindow extends UnitWindow {
 		// Add to tab panels with icons 
         addTabIconPanels();
     }
-
-    /**
-     * Updates this window.
-     */
-	@Override
-    public void update() {
-        super.update();
-    }
-	
-    @Override
-	public void stateChanged(ChangeEvent e) {
-    	// nothing
-	}
 }

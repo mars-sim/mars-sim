@@ -9,8 +9,6 @@ package org.mars_sim.msp.core;
 
 public enum UnitType {
 
-	// Use (Msg.getString("UnitType.planet")), //$NON-NLS-1$
-
 	PLANET			("UnitType.planet"),
 	SETTLEMENT 		("UnitType.settlement"),
 	PERSON 			("UnitType.person"),
@@ -22,14 +20,14 @@ public enum UnitType {
 	BUILDING 		("UnitType.building"),
 	CONSTRUCTION 	("UnitType.construction");
 
-	private String msgKey;
+	private String name;
 
 	/** hidden constructor. */
 	private UnitType(String msgKey) {
-		this.msgKey = msgKey;
+		this.name = Msg.getString(msgKey);
 	}
 
-	public String getMsgKey() {
-		return this.msgKey;
+	public String getName() {
+		return this.name;
 	}
 }

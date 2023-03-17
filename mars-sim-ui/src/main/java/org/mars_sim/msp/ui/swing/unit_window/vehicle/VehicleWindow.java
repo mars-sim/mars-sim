@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
-import javax.swing.event.ChangeEvent;
-
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -104,18 +102,5 @@ public class VehicleWindow extends UnitWindow {
 	public void destroy() {
 		super.destroy();
 		vehicle = null;
-	}
-
-    @Override
-	public void stateChanged(ChangeEvent e) {
-//		// SwingUtilities.updateComponentTreeUI(this);
-//		TabPanel newTab = getSelected();
-//
-//		if (oldTab == null || newTab != oldTab) {
-//			oldTab = newTab;
-//			
-//			if (!newTab.isUIDone());
-//				newTab.initializeUI();		
-//		}
 	}
 }

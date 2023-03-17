@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.swing.Icon;
@@ -21,7 +22,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -32,12 +35,15 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
  * The UnitWindow is the base window for displaying units.
  */
 @SuppressWarnings("serial")
-public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
+public abstract class UnitWindow extends ModalInternalFrame
+			implements ConfigurableWindow {
 
 	public static final int WIDTH = 530;
 	public static final int HEIGHT = 620;
 
 	public static final int STATUS_HEIGHT = 60;
+	private static final String UNIT_TYPE = "unittype";
+	private static final String UNIT_NAME = "unitname";
 	
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
@@ -51,7 +57,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
-	private Dimension tabPanelSize;
 
 	/**
 	 * Constructor
@@ -82,7 +87,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		setMaximumSize(windowSize);
 		setPreferredSize(windowSize);
-		tabPanelSize = new Dimension((int)windowSize.getWidth() - 30, (int)windowSize.getHeight() - 90);
 		this.setIconifiable(false);
 
 		initializeUI();
@@ -139,10 +143,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		if (!tabPanels.contains(panel)) {
 			tabPanels.add(panel);
 		}
-
-		// Feel this is wrong
-		//panel.setPreferredSize(tabPanelSize);
-		//panel.setMaximumSize(tabPanelSize);
 	}
 	
 	/**
@@ -241,5 +241,32 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		tabPane = null;
 		desktop = null;
 		unit = null;
+	}
+
+	@Override
+	public Properties getUIProps() {
+		Properties result = new Properties();
+		result.setProperty(UNIT_NAME, unit.getName());
+		result.setProperty(UNIT_TYPE, unit.getUnitType().name());
+
+		return result;
+	}
+
+	/**
+	 * Find a Unit from a previously generated UI Settings instance.
+	 * @see #getUIProps()
+	 * @param uMgr
+	 * @param settings
+	 * @return
+	 */
+	public static Unit getUnit(UnitManager uMgr, Properties settings) {
+		String type = settings.getProperty(UNIT_TYPE);
+		String name = settings.getProperty(UNIT_NAME);
+
+		if ((type != null) && (name != null)) {
+			UnitType uType = UnitType.valueOf(type);
+			return uMgr.getUnitByName(uType, name);
+		}
+		return null;
 	}
 }

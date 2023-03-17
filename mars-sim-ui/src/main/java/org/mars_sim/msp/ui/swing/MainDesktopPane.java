@@ -466,6 +466,16 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
+		openUnitWindow(unit, null);
+	}
+
+	/**
+	 * Open a Unit Window for a specific Unit with a optional set of user properties
+	 * @param unit Unit to display
+	 * @param initProps Initial properties
+	 */
+	private void openUnitWindow(Unit unit, WindowSpec initProps) {
+
 		UnitWindow tempWindow = null;
 
 		for (UnitWindow window : unitWindows) {
@@ -490,8 +500,15 @@ public class MainDesktopPane extends JDesktopPane
 			// Set internal frame listener
 			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
+			Point newPosition = null;
+			if (initProps != null) {
+				newPosition = initProps.getPosition();
+			}
+			if (newPosition == null) {
+				newPosition = getRandomLocation(tempWindow);
+			}
 			// Put window in random position on desktop.
-			tempWindow.setLocation(getRandomLocation(tempWindow));
+			tempWindow.setLocation(newPosition);
 
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
@@ -672,27 +689,39 @@ public class MainDesktopPane extends JDesktopPane
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-		List<String> startingWindows = mainWindow.getConfig().getToolWindows();
+		List<WindowSpec> startingWindows = mainWindow.getConfig().getConfiguredWindows();
 
-		if (startingWindows.isEmpty()) {
-			startingWindows = new ArrayList<>();
+		if (!startingWindows.isEmpty()) {
+			UnitManager uMgr = mainWindow.getDesktop().getSimulation().getUnitManager();
+			for(WindowSpec w : startingWindows) {
+				switch(w.getType()) {
+					case UIConfig.TOOL:
+						openToolWindow(w.getName());
+					break;
+
+					case UIConfig.UNIT:
+						Unit u = UnitWindow.getUnit(uMgr, w.getProps());
+						if (u != null) {
+							openUnitWindow(u, w);
+						}
+						else {
+							logger.warning("Perserved Unit cannot be found");
+						}
+					break;
+				}
+ 			}
+		}
+		else {
 			if (mode == GameMode.COMMAND) {
 				// Open the time window for the Commander Mode
-				startingWindows.add(TimeWindow.NAME);
-				startingWindows.add(CommanderWindow.NAME);
+				openToolWindow(TimeWindow.NAME);
+				openToolWindow(CommanderWindow.NAME);
 			}
 
 			else {
-				startingWindows.add(GuideWindow.NAME);
+				openToolWindow(GuideWindow.NAME);
 			}
 		}
-		// Do we need to still open these in the background ?
-		final List<String> toOpen = startingWindows;
-		SwingUtilities.invokeLater(() -> {
-			for(String s : toOpen) {
-				openToolWindow(s);
-			}
-		});
 	}
 
 	/**
@@ -713,10 +742,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public Simulation getSimulation() {
 		return sim;
-	}
-
-	public Collection<ToolWindow> getToolWindowsList() {
-		return toolWindows;
 	}
 
 	@Override
