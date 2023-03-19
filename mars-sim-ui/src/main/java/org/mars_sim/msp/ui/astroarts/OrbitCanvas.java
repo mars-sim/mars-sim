@@ -61,7 +61,6 @@ class OrbitCanvas extends Canvas {
 	private Xyz objectPos;
 	private Xyz planetPos[];
 	private int centerObjectSelected;
-	private int timeStep;
 	private boolean orbitDisplay[];	
 	/**
 	 * Projection Parameters
@@ -218,13 +217,6 @@ class OrbitCanvas extends Canvas {
 	 */
 	public void selectCenterObject(int index) {
 		this.centerObjectSelected = index;
-	}
-	
-	/**
-	 * Select time step
-	 */
-	public void selectTimeStep(int index) {
-		this.timeStep = index;
 	}
 	
 	/**

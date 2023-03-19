@@ -20,7 +20,6 @@ public class Medicbot extends RobotJob {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private static final double POP_PER_BOT = 15;
-	private static final double SICKBAY_PER_BOT = 4;
 
 	/** Constructor. */
 	public Medicbot() {

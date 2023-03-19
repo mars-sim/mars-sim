@@ -51,7 +51,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.utils.JMemoryMeter;
 
@@ -94,8 +93,6 @@ public class MainWindow
 	private ToolToolBar toolToolbar;
 	/** The main desktop. */
 	private MainDesktopPane desktop;
-
-	private OrbitViewer orbitViewer;
 
 	/** WebSwitch for the control of play or pause the simulation */
 	private JToggleButton pauseSwitch;
@@ -473,21 +470,6 @@ public class MainWindow
 		if (StyleManager.setLAF(newStyle)) {
 			SwingUtilities.updateComponentTreeUI(frame);
 		}
-	}
-
-	/**
-	 * Open orbit viewer
-	 */
-	public void openOrbitViewer() {
-		if (orbitViewer == null) {
-			orbitViewer = new OrbitViewer(desktop);
-			return;
-		}
-		orbitViewer.setVisible(!orbitViewer.isVisible());
-	}
-
-	public void setOrbitViewer(OrbitViewer orbitViewer) {
-		this.orbitViewer = orbitViewer;
 	}
 
 	private void createSpeedButtons(JStatusBar statusBar) {

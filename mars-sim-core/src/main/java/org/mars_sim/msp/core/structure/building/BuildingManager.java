@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
@@ -143,7 +142,6 @@ public class BuildingManager implements Serializable {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static UnitManager unitManager = sim.getUnitManager();
-	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 
 	/**
 	 * Constructor 2 : construct buildings from name list. Called by constructor 1.

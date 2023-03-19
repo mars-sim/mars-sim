@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.UIConfig.WindowSpec;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
@@ -330,6 +331,8 @@ public class MainDesktopPane extends JDesktopPane
 				w = new MissionWindow(this);
 			} else if (toolName.equals(ResupplyWindow.NAME)) {
 				w = new ResupplyWindow(this);
+			} else if (toolName.equals(OrbitViewer.NAME)) {
+				w = new OrbitViewer(this);
 			} else {
 				return null;
 			}
@@ -341,6 +344,7 @@ public class MainDesktopPane extends JDesktopPane
 				logger.warning("Problem creting closed tool window " + e.getMessage());
 			}
 			toolWindows.add(w);
+			return w;
 		}
 		return null;
 	}

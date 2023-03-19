@@ -89,7 +89,7 @@ extends BuildingFunctionPanel {
 		starMap.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					getDesktop().getMainWindow().openOrbitViewer();
+					getDesktop().openToolWindow(OrbitViewer.NAME);
 				}
 			});
 		buttonPane.add(starMap);

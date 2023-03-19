@@ -237,10 +237,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				parentMainWindow.exitSimulation();
 				break;
 			
-			case OrbitViewer.NAME:
-				parentMainWindow.openOrbitViewer();
-				break;
-
 			case MARSCAL:
 				MarsClock mc = masterClock.getMarsClock();
 				calendarDisplay.update(mc);
