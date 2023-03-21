@@ -398,9 +398,9 @@ public class MainDesktopPane extends JDesktopPane
 			Point location = null;
 			WindowSpec previousDetails = config.getInternalWindowDetails(toolName);
 			if (previousDetails != null) {
-				location = previousDetails.getPosition();
+				location = previousDetails.position();
 				if (window.isResizable()) {
-					window.setSize(previousDetails.getSize());
+					window.setSize(previousDetails.size());
 				}
 			} else if (toolName.equals(TimeWindow.NAME))
 				location = computeLocation(window, 0, 2);
@@ -506,7 +506,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			Point newPosition = null;
 			if (initProps != null) {
-				newPosition = initProps.getPosition();
+				newPosition = initProps.position();
 			}
 			if (newPosition == null) {
 				newPosition = getRandomLocation(tempWindow);
@@ -698,13 +698,13 @@ public class MainDesktopPane extends JDesktopPane
 		if (!startingWindows.isEmpty()) {
 			UnitManager uMgr = mainWindow.getDesktop().getSimulation().getUnitManager();
 			for(WindowSpec w : startingWindows) {
-				switch(w.getType()) {
+				switch(w.type()) {
 					case UIConfig.TOOL:
-						openToolWindow(w.getName());
+						openToolWindow(w.name());
 					break;
 
 					case UIConfig.UNIT:
-						Unit u = UnitWindow.getUnit(uMgr, w.getProps());
+						Unit u = UnitWindow.getUnit(uMgr, w.props());
 						if (u != null) {
 							openUnitWindow(u, w);
 						}

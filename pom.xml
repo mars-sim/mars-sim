@@ -12,7 +12,7 @@
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
-		<release>11</release>
+		<release>17</release>
 		<project.version>3.5.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
 		<junit-jupiter.version>5.9.2</junit-jupiter.version>

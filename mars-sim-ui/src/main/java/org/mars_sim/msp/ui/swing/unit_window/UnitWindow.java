@@ -12,7 +12,6 @@ import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -162,7 +161,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	protected void sortTabPanels() {
 		tabPanels = tabPanels.stream()
 				.sorted((t1, t2) -> t1.getTabTitle().compareTo(t2.getTabTitle()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	/**
@@ -171,15 +170,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 	protected void addTabIconPanels() {
 		tabPanels.forEach(panel -> {
 			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
-		});
-	}
-	
-	/**
-	 * Adds tab panels with titles.
-	 */
-	protected void addTabTitlePanels() {
-		tabPanels.forEach(panel -> {
-			tabPane.addTab(panel.getTabTitle(), null, panel, panel.getTabToolTip());
 		});
 	}
 	
@@ -212,10 +202,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 			return unit.getName() +"'s unit window";
 		return null;
     }
-
-	public void setTitle(String value) {
-		super.setTitle(unit.getName());
-	}
 
 	/**
 	 * Return the currently selected tab.
