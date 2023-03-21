@@ -25,8 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.mapdata.MapDataUtil;
@@ -417,10 +415,16 @@ implements MissionListener {
 			}
 			// Update the cache
 			missionCache = newMission;
-			// Add this as listener for new mission.
-			missionCache.addMissionListener(this);
-			// Update the mission content on the Nav tab
-			updateNavTab();
+
+			if (missionCache != null) {
+				// Add this as listener for new mission.
+				missionCache.addMissionListener(this);
+				// Update the mission content on the Nav tab
+				updateNavTab();
+			}
+			else {
+				clearNavTab(null);
+			}
 		}
 	}
 	
@@ -428,7 +432,7 @@ implements MissionListener {
 	/**
 	 * Updates the mission content on the Nav tab.
 	 */
-	public void updateNavTab() {
+	private void updateNavTab() {
 		// Updates coordinates in map
 		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		
@@ -456,7 +460,7 @@ implements MissionListener {
 	/**
 	 * Clears the mission content on the Nav tab
 	 */
-	public void clearNavTab(Settlement settlement) {
+	private void clearNavTab(Settlement settlement) {
 		// Center the map to this settlement's coordinate
 		if (settlement != null)
 			updateCoords(settlement.getCoordinates());
@@ -469,12 +473,6 @@ implements MissionListener {
         if (mapPanel.hasMapLayer(mineralLayer)) 
         	mapPanel.removeMapLayer(mineralLayer);
 		mapPanel.showMap(null);
-		
-		// Remove missionCache as previous mission listener.
-		if (missionCache != null) {
-			missionCache.removeMissionListener(this);
-			missionCache = null;
-		}
 	}
 	
 	/**
