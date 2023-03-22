@@ -1,6 +1,6 @@
 # Build stage
 # the Maven project
-FROM maven:3.8.6-openjdk-11-slim AS build
+FROM maven:3.9.0-amazoncorretto-17 AS build
 WORKDIR /app/src
 
 # Ideally the source code shouo dbe under a src subdirectory in GitHub repo
@@ -15,7 +15,7 @@ COPY mars-sim-ui mars-sim-ui/
 RUN mvn -DskipTests=true package
 
 # Package stage
-FROM openjdk:11.0.16-jre
+FROM amazoncorretto:17
 WORKDIR /app
 # Override when building
 COPY --from=build /app/src/mars-sim-headless/target/mars-sim-headless.jar mars-sim-headless.jar
