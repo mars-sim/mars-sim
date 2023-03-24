@@ -9,7 +9,17 @@ jobs:
     name: SonarQube Trigger
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+            
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    # Setup java 17
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: 17
+
     - name: SonarCloud Analysis
       if: ${{ github.repository == 'mars-sim/mars-sim' }}
       env:
