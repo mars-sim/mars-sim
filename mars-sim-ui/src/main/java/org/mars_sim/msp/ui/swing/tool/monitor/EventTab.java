@@ -27,6 +27,8 @@ public class EventTab extends TableTab {
 		// Use TableTab constructor
 		super(window, new EventTableModel(desktop), true, false,
 				EVENT_ICON);
+		
+		setFilterable(true);
 
 	}
 

@@ -7,16 +7,12 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 /**
  * This class represents an abstraction of a view displayed in the Monitor
@@ -31,6 +27,9 @@ public abstract class MonitorTab extends JPanel {
 	private Icon icon;
 	private boolean mandatory;
 	private boolean ownModel = true;
+	private boolean navigatable;
+	private boolean filtered;
+	private boolean hasEntity;
 
 	/**
 	 * Tee constructor that creates a view within a tab displaying the specified model.
@@ -66,44 +65,13 @@ public abstract class MonitorTab extends JPanel {
 	 * Display details for selected rows
 	 */
 	public void displayDetails(MainDesktopPane desktop) {
-		List<?> rows = getSelection();
-		Iterator<?> it = rows.iterator();
-		while (it.hasNext()) {
-			Object selected = it.next();
-			if (selected instanceof Unit) {
-				desktop.openUnitWindow((Unit) selected, false);
-			}
-			else if (selected instanceof Mission) {
-				((MissionWindow)desktop.openToolWindow(MissionWindow.NAME)).openMission((Mission)selected);
-			}
-		}
-	}
-
-	/**
-	 * Center the map on the first selected row.
-	 *
-	 * @param desktop Main window of application.
-	 */
-	public void centerMap(MainDesktopPane desktop) {
-		List<?> rows = getSelection();
-		Iterator<?> it = rows.iterator();
-		if (it.hasNext()) {
-			Unit unit = (Unit) it.next();
-			desktop.centerMapGlobe(unit.getCoordinates());
-		}
+		// No implementation
 	}
 
 	/**
 	 * Display property window controlling this view.
 	 */
 	public abstract void displayProps(MainDesktopPane desktop);
-
-	/**
-	 * This return the selected objects that are current selected in this tab.
-	 *
-	 * @return List of objects selected in this tab.
-	 */
-	protected abstract List<?> getSelection();
 
 	/**
 	 * Gets the tab count string.
@@ -135,8 +103,39 @@ public abstract class MonitorTab extends JPanel {
 	 *
 	 * @return Mandatory view.
 	 */
-	public boolean getMandatory() {
+	public boolean isMandatory() {
 		return mandatory;
 	}
 
+	protected void setNavigatable(boolean b) {
+		navigatable = b;
+	}
+
+    public boolean isNavigatable() {
+        return navigatable;
+    }
+
+	protected void setFilterable(boolean b) {
+		filtered = b;
+	}
+
+    public boolean isFilterable() {
+        return filtered;
+    }
+
+	protected void setEntityDriven(boolean b) {
+		hasEntity = b;
+	}
+
+    public boolean isEntityDriven() {
+        return hasEntity;
+    }
+
+	/**
+	 * Get the Coordinates that best represent the selected rows
+	 * @return Cooridnates, maybe null
+	 */
+    public Coordinates getSelectedCoordinates() {
+        return null;
+    }
 }

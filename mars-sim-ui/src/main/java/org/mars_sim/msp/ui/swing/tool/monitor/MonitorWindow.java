@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,6 +30,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -96,7 +95,6 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonRemoveTab;
 	private JButton buttonMap;
 	private JButton buttonDetails;
-	private JButton buttonMissions;
 	private JButton buttonFilter;
 	private JButton buttonProps;
 
@@ -269,11 +267,6 @@ public class MonitorWindow extends ToolWindow
 		buttonDetails.addActionListener(this);
 		statusPanel.add(buttonDetails);
 
-		buttonMissions = new JButton(ImageLoader.getIconByName(MISSION_ICON)); // $NON-NLS-1$
-		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
-		buttonMissions.addActionListener(this);
-		statusPanel.add(buttonMissions);
-
 		buttonProps = new JButton(ImageLoader.getIconByName(COLUMN_ICON)); // $NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
@@ -331,7 +324,6 @@ public class MonitorWindow extends ToolWindow
 	/**
 	 * Builds the settlement combo box/
 	 */
-	@SuppressWarnings("unchecked")
 	private void buildSettlementNameComboBox(List<Settlement> startingSettlements) {
 
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
@@ -391,7 +383,7 @@ public class MonitorWindow extends ToolWindow
 	 * @param model the model to check for.
 	 * @return tab index or -1 if none.
 	 */
-	public int getModelIndex(UnitTableModel<?> model) {
+	private int getModelIndex(UnitTableModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
 			if (c instanceof MonitorTab tab) {
 				if (model.equals(tab.getModel())) {
@@ -467,61 +459,14 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void selectNewTab(MonitorTab selectedTab) {
 		
-		// Disable all buttons
-		boolean enableMap = false;
-		boolean enableDetails = false;
-		boolean enableMission = false;
-		boolean enableFilter = false;
-		boolean enableSettlement = true;
-		
 		MonitorModel tabTableModel = selectedTab.getModel();
 
-		if (selectedTab instanceof UnitTab) {
-			// Enable these buttons
-			enableDetails = true;
-			enableMap = true;
-
-			// Is select by Settlement supported ?
-			enableSettlement = tabTableModel.setSettlementFilter(selectedSettlement);
-			
-		}
-		else if (selectedTab instanceof MissionTab) {
-			// Enable these buttons
-			enableDetails = true;
-			enableMission = true;
-
-			// Hide the settlement box
-			enableSettlement = false;
-
-		}
-		else if (selectedTab instanceof EventTab) {
-			// Enable these buttons
-			enableDetails = true;
-			enableFilter = true;
-
-			// Hide the settlement box
-			enableSettlement = false;
-		}
-		else if (selectedTab instanceof BacklogTab) {
-			tabTableModel.setSettlementFilter(selectedSettlement);
-		}
-		else if (selectedTab instanceof FoodInventoryTab) {
-			tabTableModel.setSettlementFilter(selectedSettlement);
-
-		} else if (selectedTab instanceof TradeTab tradeTab) {
-			// Enable these buttons
-			enableFilter = true;
-			
-			int rowIndex = tradeTab.getTable().getSelectedRow();
-			tabTableModel.setSettlementFilter(selectedSettlement);
-
-			scrollToVisible(tradeTab.getTable(), rowIndex, 0);
-		}
-		else {
-			// Hide the settlement box
-			enableSettlement = false;
-		}
-
+		// Disable all buttons
+		boolean enableMap = selectedTab.isNavigatable();
+		boolean enableDetails = selectedTab.isEntityDriven();
+		boolean enableFilter = selectedTab.isFilterable();
+		boolean enableSettlement = tabTableModel.setSettlementFilter(selectedSettlement);
+		
 		boolean enableBar = false;
 		boolean enablePie = false;
 		if (selectedTab instanceof TableTab) {
@@ -556,12 +501,11 @@ public class MonitorWindow extends ToolWindow
 		
 		// Set the opaqueness of the settlement box
 		setSettlementBox(!enableSettlement);
-		buttonRemoveTab.setEnabled(!selectedTab.getMandatory());
+		buttonRemoveTab.setEnabled(!selectedTab.isMandatory());
 		buttonBar.setEnabled(enableBar);
 		buttonPie.setEnabled(enablePie);
 		buttonMap.setEnabled(enableMap);
 		buttonDetails.setEnabled(enableDetails);
-		buttonMissions.setEnabled(enableMission);
 		buttonFilter.setEnabled(enableFilter);
 	}
 
@@ -625,7 +569,10 @@ public class MonitorWindow extends ToolWindow
 	private void centerMap() {
 		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
-			selected.centerMap(desktop);
+			Coordinates place = selected.getSelectedCoordinates();
+			if (place != null) {
+				desktop.centerMapGlobe(place);
+			}
 		}
 	}
 
@@ -633,23 +580,6 @@ public class MonitorWindow extends ToolWindow
 		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
 			selected.displayDetails(desktop);
-		}
-	}
-
-	/**
-	 * Finds and highlights the mission in Mission Tool.
-	 */
-	private void displayMission() {
-		MonitorTab selected = getSelectedTab();
-		if (selected instanceof MissionTab mTab) {
-			List<?> rows = selected.getSelection();
-			Iterator<?> it = rows.iterator();
-			while (it.hasNext()) {
-				Object row = it.next();
-				if (row instanceof Mission m) {
-					mTab.displayMission(desktop, m);
-				}
-			}
 		}
 	}
 
@@ -676,15 +606,13 @@ public class MonitorWindow extends ToolWindow
 			createBarChart();
 		} else if (source == this.buttonRemoveTab) {
 			MonitorTab selected = getSelectedTab();
-			if (selected != null && !selected.getMandatory()) {
+			if (selected != null && !selected.isMandatory()) {
 				removeTab(getSelectedTab());
 			}
 		} else if (source == this.buttonDetails) {
 			displayDetails();
 		} else if (source == this.buttonMap) {
 			centerMap();
-		} else if (source == this.buttonMissions) {
-			displayMission();
 		} else if (source == this.buttonProps) {
 			displayProps();
 		} else if (source == this.buttonFilter) {

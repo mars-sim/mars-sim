@@ -32,7 +32,7 @@ public class SimpleEvent implements Serializable {
 	private short coordinates;
 	private String dateTime = null;
 
-	private DecimalFormat df = new DecimalFormat("000.000");
+	private static DecimalFormat df = new DecimalFormat("000.000");
 
 	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short source, short what, short whileDoing, short who, short container,
 			short homeTown, short coordinates) {
@@ -46,11 +46,7 @@ public class SimpleEvent implements Serializable {
 		this.who = who;
 		this.container = container;
 		this.homeTown = homeTown;
-		this.coordinates = coordinates;
-		
-		df.setMinimumFractionDigits(3);
-		df.setMinimumIntegerDigits(3);
-		
+		this.coordinates = coordinates;		
 	}
 
 	public String getFullDateTimeString() {

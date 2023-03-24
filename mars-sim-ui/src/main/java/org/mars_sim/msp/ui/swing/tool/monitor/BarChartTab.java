@@ -453,16 +453,14 @@ extends MonitorTab {
 		}
 	}
 
-	protected List<?> getSelection() {
-		return new ArrayList<Object>();
-	}
-
 	/**
 	 * The tab has been removed.
 	 */
+	@Override
 	public void removeTab() {
 		chart = null;
 		barModel.setModel(null);
 		barModel = null;
+		super.removeTab();
 	}
 }

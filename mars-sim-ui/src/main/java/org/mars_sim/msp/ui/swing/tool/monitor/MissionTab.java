@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -28,34 +28,33 @@ public class MissionTab extends TableTab {
 		super(window, new MissionTableModel(), true, true, MonitorWindow.MISSION_ICON);
 		
 		super.adjustColumnWidth(table);
+
+		setEntityDriven(true);
+		setNavigatable(true);
 	}
 
 	/**
-	 * Display selected mission in mission tool.
-	 *
-	 * @param desktop the main desktop.
+	 * Display details for selected Missions
 	 */
-	public void displayMission(MainDesktopPane desktop, Mission mission) {
-//		List<?> selection = getSelection();
-//		if (selection.size() > 0) {
-//			Object selected = selection.
-			if (mission instanceof Mission) {
-				((MissionWindow)desktop.openToolWindow(MissionWindow.NAME)).openMission(mission);
-			}
-//		}
-	}
-
-	/**
-	 * Center the map on the first selected row.
-	 *
-	 * @param desktop Main window of application.
-	 */
-	public void centerMap(MainDesktopPane desktop) {
+	@Override
+	public void displayDetails(MainDesktopPane desktop) {
 		List<?> rows = getSelection();
-		Iterator<?> it = rows.iterator();
-		if (it.hasNext()) {
-			Mission mission = (Mission) it.next();
-			desktop.centerMapGlobe(mission.getCurrentMissionLocation());
+		for(Object o : rows) {
+			if (o instanceof Mission u) {
+				((MissionWindow)desktop.openToolWindow(MissionWindow.NAME)).openMission(u);
+			}
 		}
 	}
+
+	/**
+	 * Get the Coordinates of the selected Mission
+	 * @return Cooridnates, maybe null
+	 */
+    public Coordinates getSelectedCoordinates() {
+		List<?> rows = getSelection();
+		if (!rows.isEmpty() && (rows.get(0) instanceof Mission m)) {
+			return m.getCurrentMissionLocation();
+		}
+		return null;
+    }
 }
