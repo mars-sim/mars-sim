@@ -14,7 +14,7 @@ https://github.com/mars-sim/mars-sim
 
 - 220 MB free disk space
 
-- Java 11 or openjdk 11
+- Java 17 or openjdk 17
 
 ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ mars-sim may come in under a few flavors as follows :
 
 A. Swing Edition
 
-- Double-click on `[$VERSION]_swing_java11.jar` to begin
+- Double-click on `[$VERSION]_swing_java17.jar` to begin
 a new simulation in GUI mode. The jar file is executable
 in most operating systems.
 
@@ -43,11 +43,11 @@ Alternatively, players may start mars-sim from a terminal / command line.
 
 - Go to the directory containing the jar file and type :
 
-> java -jar [$VERSION]_swing_java11.jar
+> java -jar [$VERSION]_swing_java17.jar
 
 	OR
 
-> java -jar [$VERSION]_swing_java11.jar new
+> java -jar [$VERSION]_swing_java17.jar new
 
 This gives users the advantage of seeing mars-sim's internal logging
 statements while running mars-sim.
@@ -73,11 +73,11 @@ of running the entire simulation on its own. Therefore, one may
 prefer to run it in a terminal for hours/days without GUI and in the 
 least intrusive manner utilizing minimal CPU resources. Type :
 
-> java -jar [$VERSION]_headless_java11.jar
+> java -jar [$VERSION]_headless_java17.jar
 
 	OR
 
-> java -jar [$VERSION]_headless_java11.jar new
+> java -jar [$VERSION]_headless_java17.jar new
 
 Note a: the 'new' argument is optional.
 
@@ -92,11 +92,11 @@ simulation.xml :
   by adding `512x` or `1024x` as follows when starting a new
   sim or loading from a saved sim :
 
-> java -jar [$VERSION]_headless_java11.jar -timeratio 512
+> java -jar [$VERSION]_headless_java17.jar -timeratio 512
 
 	OR
 
-> java -jar [$VERSION]_headless_java11.jar -timeratio 1024
+> java -jar [$VERSION]_headless_java17.jar -timeratio 1024
 
 Note d: the time ratio argument is optional and is by default
         `256` as defined in Simulations.xml.
@@ -122,7 +122,7 @@ of the jarfile.
 
 ## Command-Line Arguments Summary
 
-> java -jar [$VERSION]_{$EDITION]_java11.jar
+> java -jar [$VERSION]_{$EDITION]_java17.jar
 >                    (Note : start a new sim)
 >   or
 >

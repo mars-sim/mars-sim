@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -47,47 +46,13 @@ public class UIConfig {
 	/**
 	 * The stored details of a window
 	 */
-	public static class WindowSpec {
-		private String name;
-		private Point position;
-		private Dimension size;
-		private int order;
-		private String type;
-		private Properties props;
-
-		public WindowSpec(String name, Point position, Dimension size, int order, String type, Properties props) {
-			this.name = name;
-			this.position = position;
-			this.size = size;
-			this.order = order;
-			this.type = type;
-			this.props = props;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Point getPosition() {
-			return position;
-		}
-
-		public Dimension getSize() {
-			return size;
-		}
-
-		public int getOrder() {
-			return order;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public Properties getProps() {
-			return props;
-		}
-	}
+	public record WindowSpec(
+		 String name,
+		 Point position,
+		 Dimension size,
+		 int order,
+		 String type,
+		 Properties props) {};
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UIConfig.class.getName());
@@ -273,8 +238,7 @@ public class UIConfig {
 				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
 				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
-				if (window1 instanceof ConfigurableWindow) {
-					ConfigurableWindow cw = (ConfigurableWindow) window1;
+				if (window1 instanceof ConfigurableWindow cw) {
 					outputProperties(windowElement, "props", cw.getUIProps());
 				}
 
@@ -406,7 +370,7 @@ public class UIConfig {
 	public List<WindowSpec> getConfiguredWindows() {
 		return windows.entrySet().stream().sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
 										  .map(v -> v.getValue())
-										  .collect(Collectors.toList());
+										  .toList();
 	}
 
 	/**

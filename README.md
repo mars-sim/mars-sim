@@ -213,11 +213,10 @@ planetary surface.
         width="100">
 </a>
 
-Currently, mars-sim supports Java 11. We will transition to Java 17 in near future
-as JDK 17 is the latest long-term support (LTS) release.
+Currently, mars-sim supports Java 17 which is the latest long-term support (LTS) release.
 
-* Requires only JRE 11 for running mars-sim
-* Requires only JDK 11 (or openjdk 11) for compiling binary
+* Requires only JRE 17 for running mars-sim
+* Requires only JDK 17 (or openjdk 17) for compiling binary
 
 ### JDK and JavaFX
 
@@ -255,7 +254,7 @@ For windows platform, choose MSI version that will automatically set up the envi
 
 ### OS Platforms
 
-Assuming that OpenJDK 11 is being used.
+Assuming that OpenJDK 17 is being used.
 
 #### Linux
 
@@ -275,41 +274,43 @@ See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more 
 
 
 #### Windows
+A Java Installatino for Window will normally configure the path correctly so a command prompt a java cpmmand will be executable. `java -version`. Here are some implementaion of OpenJDK for Windows:
 
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.17\bin";%PATH%`.
+* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
 
-2. Alternatively, pre-set the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel.
+* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
 
-- a. Add `C:\Program Files\Java\jre-11.0.17\bin` to the `PATH` variable.
+If java cannot be found then follow the steps below. 
+
+1. Locate the Java  installation.
+
+2. Start a command prompt and type this `set JAVA_HOM£="<java home>\bin"`.
+
+3. Set the PATH variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
 
 > Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
-
-- b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.17\bin\` or
-`C:\Program Files\Java\jre-11.0.17\bin`.
 
 > Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
-- c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check
-the order of precedence when it comes to searching for the JDK.
 
 > Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.17)
 inside `PATH` and remove all other folders referencing other java versions/builds.
 
-3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
+4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
 interfere with the correct version of Java that you would like to use.
 
 > Note 4 : Depending on the order of precedence in Path variable,
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
 
-4. To test the version of Java that your machine is using, type "java -version"
+5. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
 
-5. It's very typical for a machine to have multiple versions of Java installed.
+6. It's possible for a machine to have multiple versions of Java installed.
 To check if a particular Oracle version of Java is being *enabled*,
 start [Java Control Panel (JCP)](https://www.java.com/en/download/help/win_controlpanel.html)
 from the Control Panel as follows :
@@ -326,7 +327,7 @@ only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 
 
-6. To track what versions of openjdk have been installed on your machine.
+7. To track what versions of openjdk have been installed on your machine.
 Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ### Remote Console Connection
