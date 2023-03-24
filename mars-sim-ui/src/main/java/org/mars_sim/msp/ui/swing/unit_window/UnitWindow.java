@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -159,9 +160,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	 * Sorts tab panels.
 	 */
 	protected void sortTabPanels() {
-		tabPanels = tabPanels.stream()
-				.sorted((t1, t2) -> t1.getTabTitle().compareTo(t2.getTabTitle()))
-				.toList();
+		Collections.sort(tabPanels, (t1, t2) -> t1.getTabTitle().compareTo(t2.getTabTitle()));
 	}
 	
 	/**

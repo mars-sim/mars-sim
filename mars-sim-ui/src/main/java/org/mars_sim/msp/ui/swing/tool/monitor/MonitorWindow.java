@@ -393,8 +393,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	public int getModelIndex(UnitTableModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
-			if (c instanceof MonitorTab) {
-				MonitorTab tab = (MonitorTab)c;
+			if (c instanceof MonitorTab tab) {
 				if (model.equals(tab.getModel())) {
 					return tabsSection.indexOfComponent(c);
 				}
@@ -509,14 +508,14 @@ public class MonitorWindow extends ToolWindow
 		else if (selectedTab instanceof FoodInventoryTab) {
 			tabTableModel.setSettlementFilter(selectedSettlement);
 
-		} else if (selectedTab instanceof TradeTab) {
+		} else if (selectedTab instanceof TradeTab tradeTab) {
 			// Enable these buttons
 			enableFilter = true;
 			
-			int rowIndex = ((TradeTab)selectedTab).getTable().getSelectedRow();
+			int rowIndex = tradeTab.getTable().getSelectedRow();
 			tabTableModel.setSettlementFilter(selectedSettlement);
 
-			scrollToVisible(((TradeTab)selectedTab).getTable(), rowIndex, 0);
+			scrollToVisible(tradeTab.getTable(), rowIndex, 0);
 		}
 		else {
 			// Hide the settlement box
@@ -642,13 +641,13 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void displayMission() {
 		MonitorTab selected = getSelectedTab();
-		if (selected instanceof MissionTab) {
+		if (selected instanceof MissionTab mTab) {
 			List<?> rows = selected.getSelection();
 			Iterator<?> it = rows.iterator();
 			while (it.hasNext()) {
 				Object row = it.next();
-				if (row instanceof Mission) {
-					((MissionTab) selected).displayMission(desktop, (Mission) row);
+				if (row instanceof Mission m) {
+					mTab.displayMission(desktop, m);
 				}
 			}
 		}

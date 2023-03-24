@@ -62,7 +62,7 @@ public class StyleManager {
     private static final String LIGHT_ORANGE = LIGHT + " - Orange";
     private static final String LIGHT_GREEN = LIGHT + " - Green";
     private static final String SYSTEM = "Default System";
-    private static final String [] STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
+    private static final String [] LAF_STYLES = {LIGHT_BLUE, LIGHT_GREEN, LIGHT_ORANGE, LIGHT_RED, DARK, SYSTEM};
 
     // Constants for font definition
     private static final String UIMANAGER_FONT = "defaultFont";
@@ -114,7 +114,7 @@ public class StyleManager {
      * Get available LAF
      */
     public static String[] getAvailableLAF() {
-        return STYLES;
+        return LAF_STYLES;
     }
 
     /**

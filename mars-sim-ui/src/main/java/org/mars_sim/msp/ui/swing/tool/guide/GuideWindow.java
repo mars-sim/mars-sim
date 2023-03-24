@@ -58,9 +58,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** The guide window URL. */
 	private URL guideURL;
 	
-	private Icon icon = ImageLoader.getIconByName("home");
+	private Icon homeIcon = ImageLoader.getIconByName("home");
 	
-	private JButton homeButton = new JButton(icon);
+	private JButton homeButton = new JButton(homeIcon);
 	private JButton backButton = new JButton("<");
 	private JButton forwardButton = new JButton(">");
 

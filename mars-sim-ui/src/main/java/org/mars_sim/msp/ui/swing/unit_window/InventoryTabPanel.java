@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,22 +26,17 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -62,10 +55,6 @@ public class InventoryTabPanel extends TabPanel {
     private ResourceTableModel resourceTableModel;
     private ItemTableModel itemTableModel;
     private EquipmentTableModel equipmentTableModel;
-
-    private JTable resourceTable;
-    private JTable itemTable;
-    private JTable equipmentTable;
     
     private Unit unit;
 
@@ -89,81 +78,85 @@ public class InventoryTabPanel extends TabPanel {
         JPanel inventoryContentPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         content.add(inventoryContentPanel, BorderLayout.CENTER);
 
-        // Create resources panel
-        JScrollPane resourcesPanel = new JScrollPane();
-        resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        inventoryContentPanel.add(resourcesPanel);
-
 		NumberCellRenderer digit2Renderer = new NumberCellRenderer(2);
-
-        // Create resources table model
-        resourceTableModel = new ResourceTableModel(getUnit());
-
-        // Create resources table
-        resourceTable = new JTable(resourceTableModel);
-
-        resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-		TableColumnModel resourceColumns = resourceTable.getColumnModel();
-        resourceColumns.getColumn(0).setPreferredWidth(140);
-        resourceColumns.getColumn(1).setPreferredWidth(30);
-        resourceColumns.getColumn(2).setPreferredWidth(30);
-
-        resourceTable.setRowSelectionAllowed(true);
-        resourcesPanel.setViewportView(resourceTable);
-
-		// Added sorting
-        resourceTable.setAutoCreateRowSorter(true);
-
-
-		// Align the preference score to the right of the cell
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		resourceColumns.getColumn(0).setCellRenderer(rightRenderer);
-		resourceColumns.getColumn(1).setCellRenderer(digit2Renderer);
-		resourceColumns.getColumn(2).setCellRenderer(digit2Renderer);
+
+        // Create resources panel
+		if (unit instanceof ResourceHolder rHolder) {
+			JScrollPane resourcesPanel = new JScrollPane();
+			resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+			inventoryContentPanel.add(resourcesPanel);
+
+			// Create resources table model
+			resourceTableModel = new ResourceTableModel(rHolder);
+
+			// Create resources table
+			JTable resourceTable = new JTable(resourceTableModel);
+
+			resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+			TableColumnModel resourceColumns = resourceTable.getColumnModel();
+			resourceColumns.getColumn(0).setPreferredWidth(140);
+			resourceColumns.getColumn(1).setPreferredWidth(30);
+			resourceColumns.getColumn(2).setPreferredWidth(30);
+
+			resourceTable.setRowSelectionAllowed(true);
+			resourcesPanel.setViewportView(resourceTable);
+
+			// Added sorting
+			resourceTable.setAutoCreateRowSorter(true);
+
+
+			// Align the preference score to the right of the cell
+			rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+			resourceColumns.getColumn(0).setCellRenderer(rightRenderer);
+			resourceColumns.getColumn(1).setCellRenderer(digit2Renderer);
+			resourceColumns.getColumn(2).setCellRenderer(digit2Renderer);
+		}
 
         // Create item panel
-        JScrollPane itemPanel = new JScrollPane();
-        itemPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        inventoryContentPanel.add(itemPanel);
+		if (unit instanceof ItemHolder iHolder) {
+			JScrollPane itemPanel = new JScrollPane();
+			itemPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+			inventoryContentPanel.add(itemPanel);
 
-        // Create item table model
-        itemTableModel = new ItemTableModel(getUnit());
+			// Create item table model
+			itemTableModel = new ItemTableModel(iHolder);
 
-        // Create item table
-        itemTable = new JTable(itemTableModel);
-        itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-		TableColumnModel itemColumns = itemTable.getColumnModel();
-        itemColumns.getColumn(0).setPreferredWidth(110);
-        itemColumns.getColumn(1).setPreferredWidth(30);
-        itemColumns.getColumn(2).setPreferredWidth(30);
-        itemColumns.getColumn(3).setPreferredWidth(30);
-        itemColumns.getColumn(4).setPreferredWidth(30);
+			// Create item table
+			JTable itemTable = new JTable(itemTableModel);
+			itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+			TableColumnModel itemColumns = itemTable.getColumnModel();
+			itemColumns.getColumn(0).setPreferredWidth(110);
+			itemColumns.getColumn(1).setPreferredWidth(30);
+			itemColumns.getColumn(2).setPreferredWidth(30);
+			itemColumns.getColumn(3).setPreferredWidth(30);
+			itemColumns.getColumn(4).setPreferredWidth(30);
 
-        itemTable.setRowSelectionAllowed(true);
-        itemPanel.setViewportView(itemTable);
+			itemTable.setRowSelectionAllowed(true);
+			itemPanel.setViewportView(itemTable);
 
-		// Added sorting
-        itemTable.setAutoCreateRowSorter(true);
+			// Added sorting
+			itemTable.setAutoCreateRowSorter(true);
 
-		// Align the preference score to the right of the cell
-		itemColumns.getColumn(0).setCellRenderer(rightRenderer);
-		itemColumns.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
-		itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
-		itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
-		itemColumns.getColumn(4).setCellRenderer(digit2Renderer);
+			// Align the preference score to the right of the cell
+			itemColumns.getColumn(0).setCellRenderer(rightRenderer);
+			itemColumns.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+			itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
+			itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
+			itemColumns.getColumn(4).setCellRenderer(digit2Renderer);
+		}
 
         // Create equipment panel
         JScrollPane equipmentPanel = new JScrollPane();
         equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(equipmentPanel);
 
-        if (!(unit instanceof Container) && !(unit instanceof EVASuit)) {
+        if (unit instanceof EquipmentOwner eo) {
 	        // Create equipment table model
-	        equipmentTableModel = new EquipmentTableModel(getUnit());
+	        equipmentTableModel = new EquipmentTableModel(eo);
 	
 	        // Create equipment table
-	        equipmentTable = new JTable(equipmentTableModel);
+	        JTable equipmentTable = new JTable(equipmentTableModel);
 	        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 	        equipmentTable.setRowSelectionAllowed(true);
 	        equipmentPanel.setViewportView(equipmentTable);
@@ -199,13 +192,12 @@ public class InventoryTabPanel extends TabPanel {
      */
 	@Override
     public void update() {
-
-        resourceTableModel.update();
-        itemTableModel.update();
-        equipmentTableModel.update();
-        resourceTable.repaint();
-        itemTable.repaint();
-        equipmentTable.repaint();
+		if (resourceTableModel != null)
+        	resourceTableModel.update();
+		if (itemTableModel != null)
+       		itemTableModel.update();
+		if (equipmentTableModel != null)
+        	equipmentTableModel.update();
     }
 
 	/**
@@ -220,61 +212,24 @@ public class InventoryTabPanel extends TabPanel {
 		private Map<Resource, Double> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
-		private Unit unit;
+		private ResourceHolder holder;
 
-        private ResourceTableModel(Unit unit) {
-        	this.unit = unit;
+        private ResourceTableModel(ResourceHolder unit) {
+        	this.holder = unit;
         	loadResources(keys, resources, capacity);
         }
 
-        private void loadResources(List<Resource> kys, Map<Resource, Double> res, Map<Resource, Double> cap) {
-           	// Has equipment resources
-        	if (unit instanceof EVASuit) {
-        		EVASuit e = (EVASuit) unit;
-        		Set<AmountResource> arItems = e.getAmountResourceIDs().stream()
-  					  .map(ar -> ResourceUtil.findAmountResource(ar))
-  					  .filter(Objects::nonNull)
-  					  .collect(Collectors.toSet());
+        private void loadResources(List<Resource> kys, Map<Resource, Double> res, Map<Resource, Double> cap) {  
+			List<AmountResource> arItems = holder.getAmountResourceIDs().stream()
+							.map(ar -> ResourceUtil.findAmountResource(ar))
+							.filter(Objects::nonNull)
+							.toList();
 
-		  		kys.addAll(arItems);
-		        for (AmountResource resource : arItems) {
-		        	res.put(resource, e.getAmountResourceStored(resource.getID()));
-		        	cap.put(resource, e.getAmountResourceCapacity(resource.getID()));
-		        }
-        	}
-
-           	// Has equipment resources
-        	else if (unit instanceof EquipmentOwner) {
-        		EquipmentOwner eo = (EquipmentOwner) unit;
-        		Set<AmountResource> arItems = eo.getAmountResourceIDs().stream()
-    					  .map(ar -> ResourceUtil.findAmountResource(ar))
-    					  .filter(Objects::nonNull)
-    					  .collect(Collectors.toSet());
-
-  		  		kys.addAll(arItems);
-  		        for (AmountResource resource : arItems) {
-  		        	res.put(resource, eo.getAmountResourceStored(resource.getID()));
-  		        	cap.put(resource, eo.getAmountResourceCapacity(resource.getID()));
-  		        }
-        	}
-
-        	// New approach based on interfaces
-        	else if (unit instanceof ResourceHolder) {
-        		ResourceHolder holder = (ResourceHolder) unit;
-        		Set<AmountResource> arItems = holder.getAmountResourceIDs().stream()
-        					  .map(ar -> ResourceUtil.findAmountResource(ar))
-        					  .filter(Objects::nonNull)
-        					  .collect(Collectors.toSet());
-
-        		kys.addAll(arItems);
- 	            for (AmountResource resource : arItems) {
- 	                res.put(resource, holder.getAmountResourceStored(resource.getID()));
- 	                cap.put(resource, holder.getAmountResourceCapacity(resource.getID()));
- 	            }
-        	}
-
-            // Sort resources alphabetically by name.
-            kys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+			kys.addAll(arItems);
+			for (AmountResource resource : arItems) {
+				res.put(resource, holder.getAmountResourceStored(resource.getID()));
+				cap.put(resource, holder.getAmountResourceCapacity(resource.getID()));
+			}
         }
 
         public int getRowCount() {
@@ -331,8 +286,6 @@ public class InventoryTabPanel extends TabPanel {
     			fireTableDataChanged();
 
     		}
-
-            keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
     	}
     }
 
@@ -344,77 +297,24 @@ public class InventoryTabPanel extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Map<Resource, Number> quantity = new HashMap<>();
-		private Map<Resource, Double> mass = new HashMap<>();		
-		private Map<Resource, Double> reliabilities = new HashMap<>();
-		private Map<Resource, Double> mtbf = new HashMap<>();
-		private List<Resource> keys = new ArrayList<>();
+		private ItemHolder holder;
 
-		private Unit unit;
+		private List<Part> items;
 
-        private ItemTableModel(Unit unit) {
-        	this.unit = unit;
-        	loadItems(keys, quantity, mass, reliabilities, mtbf);
+        private ItemTableModel(ItemHolder unit) {
+        	this.holder = unit;
+        	this.items = getItems();
         }
 
-        private void loadItems(List<Resource> kys, Map<Resource, Number> quan, Map<Resource, Double> mass, Map<Resource, Double> rel, Map<Resource, Double> mtbf) {
-           	// Has equipment resources
-        	if (unit instanceof EVASuit) {
-        		EVASuit e = (EVASuit) unit;
-        		Set<Resource> irItems = e.getItemResourceIDs().stream()
-            				.map(ir -> ItemResourceUtil.findItemResource(ir))
-            				.filter(Objects::nonNull)
-            		        .collect(Collectors.toSet());
-
-            	kys.addAll(irItems);
- 	            for(Resource resource : irItems) {
- 	                quan.put(resource, e.getItemResourceStored(resource.getID()));
- 	                mass.put(resource, ((ItemResource)resource).getMassPerItem());
- 	                rel.put(resource, ((Part)resource).getReliability());
- 	               mtbf.put(resource, ((Part)resource).getMTBF());
- 	            }
-        	}
-
-           	// Has equipment resources
-        	else if (unit instanceof EquipmentOwner) {
-        		EquipmentOwner eo = (EquipmentOwner) unit;
-        		Set<Resource> irItems = eo.getItemResourceIDs().stream()
-            				.map(ir -> ItemResourceUtil.findItemResource(ir))
-            				.filter(Objects::nonNull)
-            		        .collect(Collectors.toSet());
-
-            	kys.addAll(irItems);
- 	            for (Resource resource : irItems) {
- 	                quan.put(resource, eo.getItemResourceStored(resource.getID()));
- 	                mass.put(resource, ((ItemResource)resource).getMassPerItem()); 	                
- 	                rel.put(resource, ((Part)resource).getReliability());
- 	               mtbf.put(resource, ((Part)resource).getMTBF());
- 	            }
-        	}
-
-          	// Has Item resources
-        	else if (unit instanceof ItemHolder) {
-        		ItemHolder holder = (ItemHolder) unit;
-        		Set<Resource> irItems = holder.getItemResourceIDs().stream()
-            				.map(ir -> ItemResourceUtil.findItemResource(ir))
-            				.filter(Objects::nonNull)
-            		        .collect(Collectors.toSet());
-
-            	kys.addAll(irItems);
- 	            for(Resource resource : irItems) {
- 	                quan.put(resource, holder.getItemResourceStored(resource.getID()));
- 	                mass.put(resource, ((ItemResource)resource).getMassPerItem());	                
- 	                rel.put(resource, ((Part)resource).getReliability());
- 	               mtbf.put(resource, ((Part)resource).getMTBF());
- 	            }
-        	}
-
-            // Sort resources alphabetically by name.
-            kys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-        }
+        private List<Part> getItems() {
+			return holder.getItemResourceIDs().stream()
+							.map(ir -> ItemResourceUtil.findItemResource(ir))
+							.filter(Objects::nonNull)
+							.toList();
+		}
 
         public int getRowCount() {
-            return keys.size();
+            return items.size();
         }
 
         public int getColumnCount() {
@@ -441,49 +341,25 @@ public class InventoryTabPanel extends TabPanel {
         }
 
         public Object getValueAt(int row, int column) {
-            if (column == 0) {
-    			// Capitalize Resource Names
-            	return keys.get(row).getName();
-            }
-            else if (column == 1) {
-				return quantity.get(keys.get(row));
-            }
-            else if (column == 2) {
-            	return mass.get(keys.get(row));
-            }
-            else if (column == 3) {
-            	return reliabilities.get(keys.get(row));
-            }
-            else if (column == 4) {
-            	return mtbf.get(keys.get(row));
-            }
-            return 0 + "";
+			Part i = items.get(row);
+			switch(column) {
+				case 0: return i.getName();
+				case 1: return holder.getItemResourceStored(i.getID());
+				case 2: return i.getMassPerItem();
+				case 3: return i.getReliability();
+				case 4: return i.getMTBF();
+			}
+           
+            return null;
         }
 
         public void update() {
-        	List<Resource> newResourceKeys = new ArrayList<>();
-        	Map<Resource, Number> newQ = new HashMap<>();
-			Map<Resource, Double> newMass = new HashMap<>();
-			Map<Resource, Double> newReliabilities = new HashMap<>();
-			Map<Resource, Double> newMTBF = new HashMap<>();
+        	List<Part> newItems = getItems();
 
-    		loadItems(newResourceKeys, newQ, newMass, newReliabilities, newMTBF);
-
-    		if (!keys.equals(newResourceKeys)
-    				|| !quantity.equals(newQ)
-    				|| !mass.equals(newQ)   				
-    				|| !reliabilities.equals(newReliabilities)
-    				|| !mtbf.equals(newMTBF)
-    				) {
-    			quantity = newQ;
-    			mass = newMass;
-    			reliabilities = newReliabilities;
-    			mtbf = newMTBF;
-    			keys = newResourceKeys;
+    		if (!items.equals(newItems)) {
+    			items = newItems;
     			fireTableDataChanged();
     		}
-
-            keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
     	}
     }
 
@@ -495,58 +371,23 @@ public class InventoryTabPanel extends TabPanel {
 
 		private List<Equipment> equipmentList = new ArrayList<>();
 
-		private Map<String, String> types = new HashMap<>();
-		private Map<String, Double> mass = new HashMap<>();
-		private Map<String, String> owner = new HashMap<>();
-		private Map<String, String> content = new HashMap<>();
-
-		private Unit unit;
+		private EquipmentOwner unit;
 
 		/**
 		 * Constructor.
 		 * 
 		 * @param inventory {@link Inventory}
 		 */
-		public EquipmentTableModel(Unit unit) {
+		public EquipmentTableModel(EquipmentOwner unit) {
 			this.unit = unit;
-			equipmentList = new ArrayList<>(((EquipmentOwner)unit).getEquipmentSet());
-			loadModel();
+			equipmentList = new ArrayList<>(unit.getEquipmentSet());
 		}
 
-  		private void loadModel() {
-  			
-            if (unit.getUnitType() == UnitType.PERSON
-            		|| unit.getUnitType() == UnitType.ROBOT
-            		|| unit.getUnitType() == UnitType.VEHICLE
-            		|| unit.getUnitType() == UnitType.SETTLEMENT
-            		) {
-            	for (Equipment e : equipmentList) {
-					String name = e.getName();
-					types.put(name, e.getEquipmentType().getName());
-					owner.put(name, getOwner(e));
-					content.put(name, getContent(e));
-					mass.put(name, e.getMass());
-				}
-            }
-
-			// Sort equipment alphabetically by name.
-			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-		}
-
-		private String getOwner(Equipment e) {
-			String s = "";
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				Person p = e.getLastOwner();
-				if (p != null)
-					s = p.getName();
-			}
-			return s;
-		}
 
 		private String getContent(Equipment e) {
 			String s = "";
-			if (e instanceof Container) {
-				int resource = ((Container)e).getResource();
+			if (e instanceof Container c) {
+				int resource = c.getResource();
 				if (resource != -1) {
 					s = ResourceUtil.findAmountResourceName(resource);
 				}
@@ -555,15 +396,6 @@ public class InventoryTabPanel extends TabPanel {
 			return s;
 		}
 
-		public Equipment getEquipment(String name) {
-			for (Equipment e: equipmentList) {
-				if (e.getName().equalsIgnoreCase(name)) {
-					return e;
-				}
-			}
-			return null;
-		}
-		
 		public int getRowCount() {
 			return equipmentList.size();
 		}
@@ -590,43 +422,30 @@ public class InventoryTabPanel extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (equipmentList != null && row >= 0 && row < owner.size()) {
-				if (column == 0) return equipmentList.get(row).getName();
-				else if (column == 1) {
-					String name = equipmentList.get(row).getName();
-					if (name != null && mass.get(name) != null)
-						return mass.get(name);
+			if (equipmentList != null && row >= 0 && row < equipmentList.size()) {
+				Equipment e = equipmentList.get(row);
+				switch(column) {
+					case 0: return e.getName();
+					case 1: return e.getMass();
+					case 2: {
+						Person owner = e.getLastOwner();
+						return (owner != null ? owner.getName() : null);
+					}
+					case 3: return getContent(e);
 				}
-				else if (column == 2) return owner.get(equipmentList.get(row).getName());
-				else if (column == 3) return content.get(equipmentList.get(row).getName());
 			}
 			return "unknown";
 		}
 
 		public void update() {
 
-			if (unit.getUnitType() == UnitType.PERSON
-            		|| unit.getUnitType() == UnitType.ROBOT
-            		|| unit.getUnitType() == UnitType.VEHICLE
-            		|| unit.getUnitType() == UnitType.SETTLEMENT
-            		) {
-				
-				List<Equipment> newEquipmentList = new ArrayList<>(((EquipmentOwner)unit).getEquipmentSet());
-				
-				// Sort equipment alphabetically by name.
-				newEquipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-				
-				if (equipmentList.size() != newEquipmentList.size()
-    				|| !equipmentList.equals(newEquipmentList)) {
+			List<Equipment> newEquipmentList = new ArrayList<>(unit.getEquipmentSet());
 			
-	            	for (Equipment e : newEquipmentList) {
-						String name = e.getName();
-						types.put(name, e.getEquipmentType().getName());
-						owner.put(name, getOwner(e));
-						content.put(name, getContent(e));
-						mass.put(name, e.getMass());
-					}
-	            }
+			if (equipmentList.size() != newEquipmentList.size()
+				|| !equipmentList.equals(newEquipmentList)) {
+				equipmentList = newEquipmentList;
+
+				fireTableDataChanged();
 			}
 		}
 
@@ -634,21 +453,5 @@ public class InventoryTabPanel extends TabPanel {
 		public Unit getAssociatedUnit(int row) {
 			return equipmentList.get(row);
 		}
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		// take care to avoid null exceptions
-		resourceTableModel = null;
-		equipmentTableModel = null;
-		itemTableModel = null;
-		equipmentTable = null;
-		resourceTable = null;
-		itemTable = null;
 	}
 }

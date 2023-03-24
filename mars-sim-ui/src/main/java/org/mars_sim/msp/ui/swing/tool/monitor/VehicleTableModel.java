@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -38,8 +37,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 @SuppressWarnings("serial")
 public class VehicleTableModel extends UnitTableModel<Vehicle> {
-
-	private static final Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
 	private static final String ON = "On";
 	private static final String OFF = "Off";
@@ -90,7 +87,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		columnNames[DESTINATION] = "Next Waypoint";
 		columnTypes[DESTINATION] = Coordinates.class;
 		columnNames[DESTDIST] = "Dist. to next [km]";
-		columnTypes[DESTDIST] = Integer.class;
+		columnTypes[DESTDIST] = Double.class;
 		columnNames[MISSION] = "Mission";
 		columnTypes[MISSION] = String.class;
 		columnNames[CREW] = "Crew";
