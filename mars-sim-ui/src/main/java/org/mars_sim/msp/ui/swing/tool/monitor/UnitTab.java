@@ -67,6 +67,7 @@ extends TableTab {
 	 * Get the Coordinates of the selectd Unit
 	 * @return Cooridnates, maybe null
 	 */
+	@Override
     public Coordinates getSelectedCoordinates() {
 		List<?> rows = getSelection();
 		if (!rows.isEmpty() && (rows.get(0) instanceof Unit u)) {

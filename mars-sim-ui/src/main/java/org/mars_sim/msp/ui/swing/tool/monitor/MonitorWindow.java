@@ -24,8 +24,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -68,7 +66,6 @@ public class MonitorWindow extends ToolWindow
 	private static final String COLONY_ICON = "settlement";
 	private static final String MARS_ICON = "mars";
 	private static final String BOT_ICON = "robot";
-	public static final String MISSION_ICON = "mission";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
 	private static final String PEOPLE_ICON = "people";
@@ -508,21 +505,6 @@ public class MonitorWindow extends ToolWindow
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
 	}
-
-	/**
-	 * Scrolls the mouse cursor to a particular row and column.
-	 * 
-	 * @param table
-	 * @param rowIndex
-	 * @param vColIndex
-	 */
-	private static void scrollToVisible(JTable table, int rowIndex, int vColIndex) {
-        if (!(table.getParent() instanceof JViewport)) {
-            return;
-        }
-        
-        table.scrollRectToVisible(table.getCellRect(rowIndex, vColIndex, true));
-    }
 
 	@Override
 	public void tableChanged(TableModelEvent e) {
