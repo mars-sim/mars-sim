@@ -13,13 +13,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -29,12 +24,11 @@ import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth
@@ -53,15 +47,15 @@ public class TimeWindow extends ToolWindow {
 	public static final String ICON = "time";
 	
 	/** the execution time label string */
-	public static final String EXEC = "Execution : ";
+	public static final String EXEC = "Execution";
 	/** the sleep time label string */
-	public static final String SLEEP_TIME = "Sleep : ";
+	public static final String SLEEP_TIME = "Sleep";
 	/** the residual time label string */
-	public static final String MARS_PULSE_TIME = "Pulse Width : ";
+	public static final String MARS_PULSE_TIME = "Pulse Width";
 	/** the execution time unit */
 	public static final String MILLISOLS = " millisols";
 	/** the ave TPS label string */
-	public static final String AVE_TPS = "Average TPS : ";
+	public static final String AVE_TPS = "Average TPS";
 	/** the execution time unit */
 	public static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
@@ -82,8 +76,6 @@ public class TimeWindow extends ToolWindow {
 	private JLabel martianTimeLabel;
 	/** label for Earth time. */
 	private JLabel earthTimeLabel;
-	/** label for Martian month. */
-	private JLabel martianMonthHeaderLabel;
 	/** label for areocentric longitude. */
 	private JLabel lonLabel;
 	/** label for Northern hemisphere season. */
@@ -98,18 +90,8 @@ public class TimeWindow extends ToolWindow {
 	private JLabel actuallTRLabel;
 	/** label for preferred time ratio. */
 	private JLabel preferredTRLabel;
-	/** header label for execution time. */
-	private JLabel execTimeHeader;
-	/** header label for ave TPS. */
-	private JLabel aveTPSHeader;
-	/** header label for sleep time. */
-	private JLabel sleepTimeHeader;
-	/** header label for mars simulation time. */
-	private JLabel marsPulseHeader;
 	/** label for execution time. */
 	private JLabel execTimeLabel;
-	/** label for ave TPS. */
-	private JLabel aveTPSLabel;
 	/** label for sleep time. */
 	private JLabel sleepTimeLabel;
 	/** label for mars simulation time. */
@@ -122,11 +104,7 @@ public class TimeWindow extends ToolWindow {
 	
 	/** Arial font. */
 	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
-	/** Sans serif font. */
-	private static final Font sansSerifFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
-	private static final Font monospacedFont = new Font(Font.MONOSPACED, Font.ITALIC, 12);
-	private static final Font dialogFont = new Font(Font.DIALOG, Font.BOLD, 14);
-	private static final Font serifFont = new Font(Font.SERIF, Font.ITALIC, 12);
+
 
 	private long lastDateUpdate = 0;
 	
@@ -149,8 +127,6 @@ public class TimeWindow extends ToolWindow {
 		EarthClock earthTime = masterClock.getEarthClock();
 		orbitInfo = sim.getOrbitInfo();
 		
-		UpTimer uptimer = masterClock.getUpTimer();
-
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -161,9 +137,6 @@ public class TimeWindow extends ToolWindow {
 		mainPane.add(martianTimePane, BorderLayout.NORTH);
 
 		// Create Martian time header label
-		JLabel martianTimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.martianTime"), JLabel.CENTER); //$NON-NLS-1$
-		martianTimeHeaderLabel.setFont(dialogFont);
-
 		martianTimeLabel = new JLabel();
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
@@ -172,12 +145,7 @@ public class TimeWindow extends ToolWindow {
 		martianTimeLabel.setText(marsTime.getDisplayDateTimeStamp() + UMT);
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
-		martianTimePane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				martianTimeHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
+		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
 
 		// Create Martian calendar panel
 		JPanel martianCalendarPane = new JPanel(new FlowLayout());
@@ -187,9 +155,6 @@ public class TimeWindow extends ToolWindow {
 		JPanel calendarMonthPane = new JPanel(new BorderLayout());
 		martianCalendarPane.add(calendarMonthPane);
 
-		// Create martian month label
-		martianMonthHeaderLabel = new JLabel("Month of " + marsTime.getMonthName(), JLabel.CENTER);
-		martianMonthHeaderLabel.setFont(dialogFont);
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -197,34 +162,16 @@ public class TimeWindow extends ToolWindow {
 		calendarMonthPane.setMaximumSize(new Dimension(140, 125));
 		calendarMonthPane.setMinimumSize(new Dimension(140, 125));
 		innerCalendarPane.add(calendarDisplay);
-//		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, Color.ORANGE));//new Color(210,105,30)));
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.NORTH);
-
-		martianCalendarPane.setBorder(BorderFactory.createTitledBorder(
-				MainDesktopPane.newEmptyBorder(),
-//				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				martianMonthHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
+		martianCalendarPane.setBorder(StyleManager.createLabelBorder("Current Month"));
 		
 		JPanel statPane = new JPanel(new BorderLayout());//FlowLayout(FlowLayout.LEFT));
 		mainPane.add(statPane, BorderLayout.SOUTH);
 
 		// Create Martian hemisphere panel
-		JPanel hemiPane = new JPanel(new SpringLayout());
-		statPane.add(hemiPane, BorderLayout.NORTH);
-		
-		// Create Martian season label
-		JLabel marsSeasonHeaderLabel = new JLabel(Msg.getString("TimeWindow.martianSeasons"), JLabel.CENTER); //$NON-NLS-1$
-		marsSeasonHeaderLabel.setFont(dialogFont);
-		hemiPane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				marsSeasonHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
-
+		AttributePanel hemiPane = new AttributePanel(3);
+		statPane.add(hemiPane, BorderLayout.NORTH);		
+		hemiPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianSeasons")));
 
 		String str =
 				"<html>&#8201;Earth (days) vs Mars (sols)" +
@@ -241,48 +188,15 @@ public class TimeWindow extends ToolWindow {
 //		&#8195; Em tab space
 			
 		// Create areocentric longitude header label
-		JLabel longHeader = new JLabel("Areocentric Longitude (Ls):",
-				JLabel.RIGHT); //$NON-NLS-1$
-		hemiPane.add(longHeader);
-
-		// Create areocentric longitude label
-		lonLabel = new JLabel(" ", 
-				JLabel.LEFT);
-		hemiPane.add(lonLabel);
-		
-		// Create Northern season header label
-		JLabel northernSeasonHeader = new JLabel(Msg.getString("TimeWindow.northernHemisphere"),
-				JLabel.RIGHT); //$NON-NLS-1$
-		hemiPane.add(northernSeasonHeader);
-
-		// Create Northern season label
-		northernSeasonLabel = new JLabel(" ", 
-				JLabel.LEFT);
-		hemiPane.add(northernSeasonLabel);
-
-		// Create Southern season header label
-		JLabel southernSeasonHeader = new JLabel(Msg.getString("TimeWindow.southernHemisphere"),
-				JLabel.RIGHT); //$NON-NLS-1$
-		hemiPane.add(southernSeasonHeader);
-
-		// Create Southern season label
-		southernSeasonLabel = new JLabel(" ", 
-				JLabel.LEFT);
-		hemiPane.add(southernSeasonLabel);
-
-		// Use spring panel layout.
-		SpringUtilities.makeCompactGrid(hemiPane,
-				3, 2, 		// rows, cols
-				5, 5,	// initX, initY
-				7, 3);		// xPad, yPad
+		lonLabel = hemiPane.addTextField("Areocentric Longitude (Ls):", "", null);
+		northernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.northernHemisphere"),
+													"", null);
+		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"),
+													"", null);
 
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
 		statPane.add(earthTimePane, BorderLayout.CENTER);
-
-		// Create Earth time header label
-		JLabel earthTimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.earthTime"), JLabel.CENTER); //$NON-NLS-1$
-		earthTimeHeaderLabel.setFont(dialogFont);
 
 		// Create Earth time label
 		earthTimeLabel = new JLabel();
@@ -293,131 +207,26 @@ public class TimeWindow extends ToolWindow {
 		earthTimeLabel.setText(earthTime.getTimeStampF4() + GMT);
 		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
-		earthTimePane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				earthTimeHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
+		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
 
 		JPanel southPane = new JPanel(new BorderLayout());
 		statPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create param panel
-		JPanel paramPane = new JPanel(new SpringLayout());
-//		paramPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+		AttributePanel paramPane = new AttributePanel(8);
 		southPane.add(paramPane, BorderLayout.NORTH);
 
-		JLabel TPSHeaderLabel = new JLabel(Msg.getString("TimeWindow.ticksPerSecond"),
-				JLabel.RIGHT); //$NON-NLS-1$
-		TPSHeaderLabel.setFont(sansSerifFont);
-		TPSHeaderLabel.setForeground(Color.MAGENTA.darker());
-		
-		String TicksPerSec = StyleManager.DECIMAL_PLACES2.format(masterClock.getCurrentPulsesPerSecond());
-		ticksPerSecLabel = new JLabel(TicksPerSec, JLabel.LEFT);
-		ticksPerSecLabel.setFont(sansSerifFont);
-		ticksPerSecLabel.setForeground(Color.red.darker());
-		
-		aveTPSHeader = new JLabel(AVE_TPS, JLabel.RIGHT);
-		aveTPSLabel = new JLabel(0 + "", JLabel.LEFT);
-
-		// Create execution time label
-		execTimeHeader = new JLabel(EXEC, JLabel.RIGHT);
-		long execTime = masterClock.getExecutionTime();
-		execTimeLabel = new JLabel(execTime + MS, JLabel.LEFT);
-
-		// Create sleep time label
-		sleepTimeHeader = new JLabel(SLEEP_TIME, JLabel.RIGHT);
-		long sleepTime = masterClock.getSleepTime();
-		sleepTimeLabel = new JLabel(sleepTime + MS, JLabel.LEFT);
-
-		// Create pulse time label
-		marsPulseHeader = new JLabel(MARS_PULSE_TIME, JLabel.RIGHT);
-		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new JLabel(StyleManager.DECIMAL_PLACES3.format(pulseTime) + MILLISOLS, JLabel.LEFT);
-
-		// Create the target time ratio label
-		JLabel prefTRHeader = new JLabel(Msg.getString("TimeWindow.prefTRHeader"), JLabel.RIGHT); //$NON-NLS-1$
-		prefTRHeader.setToolTipText("User-preferred target time ratio");
-		int prefTR = masterClock.getDesiredTR();
-		preferredTRLabel = new JLabel(prefTR + "", JLabel.LEFT); //$NON-NLS-1$
-		preferredTRLabel.setFont(monospacedFont);
-
-		// Create the actual time ratio label
-		JLabel actualTRHeader = new JLabel(Msg.getString("TimeWindow.actualTRHeader"), JLabel.RIGHT); //$NON-NLS-1$
-		actualTRHeader.setToolTipText("Master clock's actual time ratio");
-		double actualTR = masterClock.getActualTR();
-		actuallTRLabel = new JLabel(Math.round(actualTR*10.0)/10.0 + "", JLabel.LEFT); //$NON-NLS-1$
-		actuallTRLabel.setFont(serifFont);
-
-		paramPane.add(TPSHeaderLabel);
-		paramPane.add(ticksPerSecLabel);
-		paramPane.add(aveTPSHeader);
-		paramPane.add(aveTPSLabel);
-		paramPane.add(execTimeHeader);
-		paramPane.add(execTimeLabel);
-
-		paramPane.add(sleepTimeHeader);
-		paramPane.add(sleepTimeLabel);
-		paramPane.add(marsPulseHeader);
-		paramPane.add(marsPulseLabel);
-
-		paramPane.add(prefTRHeader);
-		paramPane.add(preferredTRLabel);
-		paramPane.add(actualTRHeader);
-		paramPane.add(actuallTRLabel);
-
-		// Use spring panel layout.
-		SpringUtilities.makeCompactGrid(paramPane,
-				7, 2, //rows, cols
-				43, 2,        //initX, initY
-				7, 3);       //xPad, yPad
-
-		// Create the compressionPane pane
-		JPanel compressionPane = new JPanel(new BorderLayout());
-		southPane.add(compressionPane, BorderLayout.CENTER);
-
-		// Create the time compression header label
-		JLabel compressionHeaderLabel = new JLabel(Msg.getString("TimeWindow.timeCompression"), 
-				JLabel.CENTER); //$NON-NLS-1$
-		compressionHeaderLabel.setFont(dialogFont);
-		
-		// Create the time compression label
-		timeCompressionLabel = new JLabel();
-		compressionPane.add(timeCompressionLabel);
-		compressionPane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				compressionHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
-
-		// Create the compressionPane pane
-		JPanel upTimePane = new JPanel(new BorderLayout());
-		southPane.add(upTimePane, BorderLayout.SOUTH);
-
-		JLabel uptimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.simUptime"), JLabel.RIGHT); //$NON-NLS-1$
- 		upTimePane.setBorder(BorderFactory.createTitledBorder(
-				new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()),
-				uptimeHeaderLabel.getText(),
-				TitledBorder.LEFT,
-                TitledBorder.TOP,
-                dialogFont));
-
-		// Create uptime label
-		uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
-		upTimePane.add(uptimeLabel);
-		
-		// addMouseListener(new MouseInputAdapter() {
-		// 	@Override
-		// 	public void mouseClicked(MouseEvent e) {
-		// 		super.mouseClicked(e);
-				
-		// 		// Update the two time labels
-		// 		updateRateLabels();
-		// 	}
-		// });
-
+		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", null);
+		execTimeLabel = paramPane.addTextField(EXEC, "", null);
+		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", null);
+		marsPulseLabel = paramPane.addTextField(MARS_PULSE_TIME, "", null);
+		preferredTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.prefTRHeader"), "", 
+									"User-preferred target time ratio");
+		actuallTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.actualTRHeader"), "",
+									"Master clock's actual time ratio");
+		timeCompressionLabel = paramPane.addTextField("01s [real-time]", "", null);
+		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", null);
+	
 		// Pack window
 		pack();
 
@@ -435,10 +244,6 @@ public class TimeWindow extends ToolWindow {
 	 * Update various time labels
 	 */
 	private void updateRateLabels(MasterClock mc) {
-
-		// Update average TPS label
-		double ave = mc.getAveragePulsesPerSecond();
-		aveTPSLabel.setText(StyleManager.DECIMAL_PLACES2.format(ave));
 
 		// Update execution time label
 		long execTime = mc.getExecutionTime();
@@ -524,8 +329,6 @@ public class TimeWindow extends ToolWindow {
 		
 		// Update season
 		if (mc.getClockPulse().isNewSol()) {
-			String mn = mc.getMarsClock().getMonthName();
-			martianMonthHeaderLabel.setText("Month of " + mn);
 			updateSeason();
 		}
 	}
@@ -539,7 +342,16 @@ public class TimeWindow extends ToolWindow {
 
 		ts = mc.getEarthClock().getTimeStampF4() + GMT;
 		earthTimeLabel.setText(ts);
-		ticksPerSecLabel.setText(StyleManager.DECIMAL_PLACES2.format(mc.getCurrentPulsesPerSecond()));
+
+		// Update average TPS label
+		double ave = mc.getAveragePulsesPerSecond();
+		StringBuilder tpText = new StringBuilder();
+		tpText.append(StyleManager.DECIMAL_PLACES2.format(mc.getCurrentPulsesPerSecond()))
+			  .append(" (ave. ")
+			  .append(StyleManager.DECIMAL_PLACES2.format(ave))
+			  .append(")");
+		
+		ticksPerSecLabel.setText(tpText.toString());
 
 		uptimeLabel.setText(mc.getUpTimer().getUptime());
 	}

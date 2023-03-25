@@ -63,8 +63,6 @@ public class ClockUtils implements Serializable {
 
 	public static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400, SEC_PER_YR = 31536000;
 
-	/** the real second label string */
-	public static final String ONE_REAL_SEC = " -> 01s [real-time]";
 	/** the sim time label string */
 	public static final String SIM_TIME = " [sim-time]";
 
@@ -197,7 +195,7 @@ public class ClockUtils implements Serializable {
 		}
 
 		b.append(String.format("%02d", (int)secs) + SECONDS)
-			.append(SIM_TIME).append(ONE_REAL_SEC);
+			.append(SIM_TIME);
 		
 		String s = b.toString();
 
