@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
+
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -102,12 +103,6 @@ public class UIConfig {
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
-		    // In order to get rid of the XMLConstants.ACCESS_EXTERNAL_DTD as well
-		    // Need to switch to using internal DTD first
-		    // Gets rid of ACCESS_EXTERNAL_SCHEMA
-		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		    // Gets rid of ACCESS_EXTERNAL_SCHEMA
-		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
 		    	Document configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
 		    	Element root = configDoc.getRootElement();
