@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.resource;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -48,13 +50,11 @@ public class TestItemResource extends TestCase {
     }
 
     public void testFindItemResourceNegative() {
-        try {
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
         	ItemResourceUtil.findItemResource("test");
-            //fail("Should have thrown an exception");
-        }
-        catch (Exception e) {
-            // Expected.
-        }
+        });
+
+        assertEquals("No ItemResource called " + "test", e.getMessage());
     }
 
     public void testGetItemResourcesContents() {

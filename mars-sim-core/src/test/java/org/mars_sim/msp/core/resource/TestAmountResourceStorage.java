@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.resource;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
@@ -34,11 +36,9 @@ public class TestAmountResourceStorage extends TestCase {
 	public void testInventoryAmountResourceTypeCapacityNegativeCapacity() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
 		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-		try {
+		assertThrows(IllegalStateException.class, () -> {
 			storage.addAmountResourceTypeCapacity(carbonDioxide, -100D);
-			fail("Cannot add negative capacity for a type.");
-		}
-		catch (Exception e) {}
+		});
 	}
 	
 	/**
@@ -63,15 +63,9 @@ public class TestAmountResourceStorage extends TestCase {
         assertEquals(0D, amountCarbonDioxide3);
         
         // Test removing another 50 kg of CO2 capacity (should throw IllegalStateException).
-        try {
-            storage.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
-            fail("Should have thrown an IllegalStateException, no capacity left.");
-        }
-        catch (IllegalStateException e) {
-            // Expected.
-        }
-        double amountCarbonDioxide4 = storage.getAmountResourceCapacity(carbonDioxide);
-        assertEquals(0D, amountCarbonDioxide4);
+		assertThrows(IllegalStateException.class, () -> {
+        	storage.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+		});
 	}
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
@@ -84,11 +78,9 @@ public class TestAmountResourceStorage extends TestCase {
 	
 	public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
-		try {
+		assertThrows(IllegalStateException.class, () -> {
 			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
-			fail("Cannot add negative capacity for a phase.");
-		}
-		catch (Exception e) {}
+		});
 	}
 	
 	public void testInventoryAmountResourceComboCapacityGood() throws Exception {
@@ -116,16 +108,16 @@ public class TestAmountResourceStorage extends TestCase {
 		assertEquals("Amount resource type stored is correct.", 100D, amountTypeStored, 0D);
 	}
 	
-	public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
-		AmountResourceStorage storage = new AmountResourceStorage(settlement);
-		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-		try {
-			storage.storeAmountResource(carbonDioxide, 101D);
-//			fail("Throws exception if overloaded");
-		}
-		catch (Exception e) {}
-	}
+// 	public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
+// 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
+// 		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+// 		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+// 		try {
+// 			storage.storeAmountResource(carbonDioxide, 101D);
+// //			fail("Throws exception if overloaded");
+// 		}
+// 		catch (Exception e) {}
+// 	}
 	
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
@@ -136,37 +128,35 @@ public class TestAmountResourceStorage extends TestCase {
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
 	
-	public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
-		AmountResourceStorage storage = new AmountResourceStorage(settlement);
-		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
-		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
-		try {
-			storage.storeAmountResource(hydrogen, 101D);
-//			fail("Throws exception if overloaded");
-		}
-		catch (Exception e) {}
-	}
+// 	public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
+// 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
+// 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
+// 		AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
+// 		try {
+// 			storage.storeAmountResource(hydrogen, 101D);
+// //			fail("Throws exception if overloaded");
+// 		}
+// 		catch (Exception e) {}
+// 	}
 	
 	public void testInventoryAmountResourceStoreNegativeAmount() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
 		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-		try {
+		assertThrows(IllegalStateException.class, () -> {
 			storage.storeAmountResource(carbonDioxide, -1D);
-			fail("Throws exception if negative amount");
-		}
-		catch (Exception e) {}
+		});
 	}
 	
-	public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
-		AmountResourceStorage storage = new AmountResourceStorage(settlement);
-		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-		try {
-			storage.storeAmountResource(carbonDioxide, 100D);
-//			fail("Throws exception if capacity not set (overloaded)");
-		}
-		catch (Exception e) {}
-	}
+// 	public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
+// 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
+// 		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+// 		try {
+// 			storage.storeAmountResource(carbonDioxide, 100D);
+// //			fail("Throws exception if capacity not set (overloaded)");
+// 		}
+// 		catch (Exception e) {}
+// 	}
 	
 	public void testInventoryAmountResourceRemainingCapacityGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
@@ -195,42 +185,41 @@ public class TestAmountResourceStorage extends TestCase {
 		double remainingCapacity = storage.getAmountResourceRemainingCapacity(carbonDioxide);
 		assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
-	
-	public void testInventoryAmountResourceRetrieveTooMuch() throws Exception {
-		try {
-			AmountResourceStorage storage = new AmountResourceStorage(settlement);
-			AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-			storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
-			storage.storeAmountResource(carbonDioxide, 100D);
-			storage.retrieveAmountResource(carbonDioxide, 101D);
-//			fail("Amount type retrieved fails correctly.");
-		}
-		catch (Exception e) {}
-	}
+
+// The retrieve amount methods no logner throw an exception ??	
+// 	public void testInventoryAmountResourceRetrieveTooMuch() throws Exception {
+// 		try {
+// 			AmountResourceStorage storage = new AmountResourceStorage(settlement);
+// 			AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+// 			storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
+// 			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
+// 			storage.storeAmountResource(carbonDioxide, 100D);
+// 			storage.retrieveAmountResource(carbonDioxide, 101D);
+// //			fail("Amount type retrieved fails correctly.");
+// 		}
+// 		catch (Exception e) {}
+// 	}
 	
 	public void testInventoryAmountResourceRetrieveNegative() throws Exception {
-		try {
-			AmountResourceStorage storage = new AmountResourceStorage(settlement);
-			AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-			storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
-			storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
-			storage.storeAmountResource(carbonDioxide, 100D);
+		AmountResourceStorage storage = new AmountResourceStorage(settlement);
+		AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+		storage.addAmountResourceTypeCapacity(carbonDioxide, 50D);
+		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
+		storage.storeAmountResource(carbonDioxide, 100D);
+		assertThrows(IllegalStateException.class, () -> {
 			storage.retrieveAmountResource(carbonDioxide, -100D);
-			fail("Amount type retrieved fails correctly.");
-		}
-		catch (Exception e) {}
+		});
 	}
 	
-	public void testInventoryAmountResourceRetrieveNoCapacity() throws Exception {
-		try {
-			AmountResourceStorage storage = new AmountResourceStorage(settlement);
-			AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-			storage.retrieveAmountResource(carbonDioxide, 100D);
-//			fail("Amount type retrieved fails correctly.");
-		}
-		catch (Exception e) {}
-	}
+// 	public void testInventoryAmountResourceRetrieveNoCapacity() throws Exception {
+// 		try {
+// 			AmountResourceStorage storage = new AmountResourceStorage(settlement);
+// 			AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+// 			storage.retrieveAmountResource(carbonDioxide, 100D);
+// //			fail("Amount type retrieved fails correctly.");
+// 		}
+// 		catch (Exception e) {}
+// 	}
 	
 	public void testInventoryAmountResourceTotalAmount() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage(settlement);
