@@ -474,7 +474,7 @@ public class TimeWindow extends ToolWindow {
 		if (!northernSeasonCache.equals(northernSeason)) {
 			northernSeasonCache = northernSeason;
 
-			if (orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE) != null && northernSeasonLabel != null) {
+			if (orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE) != null) {
 				northernSeasonLabel.setText(northernSeason);
 			}
 

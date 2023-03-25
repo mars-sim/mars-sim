@@ -1196,7 +1196,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 			case PROPOSAL_PHASE:
 				return proposalWorkTime / baseProposalTime;
 			case INVITATION_PHASE:
-				return maxCollaborators / collaborators.size();
+				return (double)maxCollaborators / collaborators.size();
 			case PAPER_PHASE: {
 				double total = getTotalPrimaryPaperWorkTimeRequired() + (collaborators.size() * baseCollaborativePaperWritingTime);
 				double completed = getPrimaryPaperWorkTimeCompleted()

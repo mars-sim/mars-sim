@@ -25,7 +25,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -729,6 +728,11 @@ class ConstructionProjectPanel extends WizardPanel {
                             site = manager.getConstructionSites()
                                     .get(existingSiteIndex);
                         }
+                        else {
+                            logger.severe(settlement, 
+                                    "No site selected for Construction Project");
+                            return;
+                        }   
                         ConstructionStage stage = site.getCurrentConstructionStage();
                         
                         // Add resources.

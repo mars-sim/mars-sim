@@ -122,7 +122,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for(Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            double result = farm.getTendingScore() * 2;
+            double result = farm.getTendingScore() * 2D;
 
             // Settlement factors
             result *= goodsFactor;
