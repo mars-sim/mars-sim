@@ -5,9 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.5.0 (build ____) - __ Jan 2023
-
-### ISSUES ADDRESSED :
+## v3.5.0 (build ____) - __ Mar 2023
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>   Battery : Standardize battery capacity. </LI>
@@ -36,8 +34,18 @@ Copyright (C) 2023 Scott Davis
  <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
  <LI>  Vehicle : Correct fuel consumption calculation. </LI>
  
+
+------------------------------------------|---------------------
+
+## v3.4.1 (build 3681d3e) - 31 Dec 2022
+
+### ISSUES ADDRESSED :
+ 
+ <LI> Fix #783 that relates to a failure of starting from the JAR file. </LI>
+ 
 ------------------------------------------|--------------------- 
  
+  
 ## v3.4.0 (build 7642) - 19 Nov 2022
 
 ### ISSUES ADDRESSED :
