@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,7 +30,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
@@ -61,6 +62,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER
+								= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -213,8 +217,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			missionSol.setText("Sol : " + marsClock.getMissionSol());
 		}
 
-		EarthClock earthClock = master.getEarthClock();
-		earthDate.setText(master.getEarthClock().getCurrentDateTimeString(earthClock));
+		earthDate.setText(master.getEarthTime().format(DATE_TIME_FORMATTER));
 		marsTime.setText(marsClock.getDisplayTruncatedTimeStamp());
 	}
 

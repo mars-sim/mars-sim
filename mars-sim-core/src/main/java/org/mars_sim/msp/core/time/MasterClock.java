@@ -7,6 +7,9 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -115,6 +118,7 @@ public class MasterClock implements Serializable {
 	private MarsClock initialMarsTime;
 	/** The Earth Clock. */
 	private EarthClock earthClock;
+	private LocalDateTime earthTime;
 	/** The Uptime Timer. */
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
@@ -138,6 +142,8 @@ public class MasterClock implements Serializable {
 
 		// Create an Earth clock
 		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
+		earthTime = LocalDateTime.parse(simulationConfig.getEarthStartDateTime(),
+								DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS"));
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
@@ -208,6 +214,15 @@ public class MasterClock implements Serializable {
 	 */
 	public EarthClock getEarthClock() {
 		return earthClock;
+	}
+
+	/**
+	 * Returns the Earth date.
+	 *
+	 * @return Earth date
+	 */
+	public LocalDateTime getEarthTime() {
+		return earthTime;
 	}
 
 	/**
@@ -519,6 +534,7 @@ public class MasterClock implements Serializable {
 
 					// Add time to the Earth clock.
 					earthClock.addTime(earthMillisec);
+					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
 
 					// Add time pulse to Mars clock.
 					marsClock.addTime(lastPulseTime);
