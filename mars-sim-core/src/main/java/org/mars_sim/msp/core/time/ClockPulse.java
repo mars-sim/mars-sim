@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.time;
 
-import java.time.LocalDateTime;
-
 public class ClockPulse {
 	/**
 	 * The sols passed since last pulse
@@ -43,8 +41,6 @@ public class ClockPulse {
 	 * Pulse id
 	 */
 	private long id;
-
-	private LocalDateTime earthLocalTime;
 	
 	/**
 	 * Create a pulse defining a step forward in the simulation.
@@ -68,7 +64,6 @@ public class ClockPulse {
 		this.elapsed = elapsed;
 		this.marsTime = marsTime;
 		this.earthTime = earthTime;
-		this.earthLocalTime = master.getEarthTime();
 		this.master = master;
 		this.newSol = newSol;
 		this.newMSol = newMSol;
@@ -104,14 +99,6 @@ public class ClockPulse {
 	
 	public EarthClock getEarthTime() {
 		return earthTime;
-	}
-
-	/**
-	 * Get the local date time on Earth
-	 * @return
-	 */
-	public LocalDateTime getEarthLocalTime() {
-		return earthLocalTime;
 	}
 
 	/**

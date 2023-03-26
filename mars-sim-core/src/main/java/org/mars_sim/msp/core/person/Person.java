@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +74,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -85,7 +85,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, EquipmentOwner, ResearcherInterface {
+public class Person extends Unit implements Worker, Temporal, ResearcherInterface {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -320,7 +320,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		// Add to a random building
 		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
 		// Set up the time stamp for the person
-		calculateBirthDate(earthClock);
+		calculateBirthDate(masterClock.getEarthTime());
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
@@ -664,25 +664,19 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		return shiftSlot.getStatus() == WorkStatus.ON_DUTY;
 	}
 
-	/**
-	 * Gets the instance of the task schedule for a person.
-	 */
-	// public TaskSchedule getTaskSchedule() {
-	// 	return taskSchedule;
-	// }
 
 	/**
 	 * Creates a string representing the birth time of the person.
 	 * @param clock
 	 *
 	 */
-	private void calculateBirthDate(EarthClock clock) {
+	private void calculateBirthDate(LocalDateTime earthLocalTime) {
 		// Set a birth time for the person
 		if (age != -1) {
-			year = EarthClock.getCurrentYear(earthClock) - age - 1;
+			year = earthLocalTime.getYear() - age - 1;
 		}
 		else {
-			year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(21, 65);
+			year = earthLocalTime.getYear() - RandomUtil.getRandomInt(21, 65);
 		}
 
 		month = RandomUtil.getRandomInt(11) + 1;
@@ -709,7 +703,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 
 		// Calculate the year
 		// Set the age
-		age = updateAge(clock);
+		age = updateAge(earthLocalTime);
 	}
 
 	/**
@@ -912,7 +906,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 						}
 
 						// Check if a person's age should be updated
-						age = updateAge(pulse.getEarthTime());
+						age = updateAge(pulse.getMasterClock().getEarthTime());
 
 						// Checks if a person has a role
 						if (role.getType() == null)
@@ -993,10 +987,10 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	 *
 	 * @return the person's age
 	 */
-	private int updateAge(EarthClock clock) {
-		int newage = clock.getYear() - year - 1;
-		if (clock.getMonth() >= month)
-			if (clock.getDayOfMonth() >= day)
+	private int updateAge(LocalDateTime localDateTime) {
+		int newage = localDateTime.getYear() - year - 1;
+		if (localDateTime.getMonth().getValue() >= month)
+			if (localDateTime.getDayOfMonth() >= day)
 				newage++;
 		age = newage;
 		return age;

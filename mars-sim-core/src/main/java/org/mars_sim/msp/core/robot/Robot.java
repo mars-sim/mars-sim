@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.robot;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -359,9 +360,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		if (pulse.isNewSol()) {
 			// Check if a person's age should be updated
-			EarthClock earthTime = pulse.getEarthTime();
+			LocalDateTime earthTime = pulse.getMasterClock().getEarthTime();
 			age = earthTime.getYear() - year - 1;
-			if (earthTime.getMonth() >= month)
+			if (earthTime.getMonth().getValue() >= month)
 				if (earthTime.getDayOfMonth() >= day)
 					age++;
 		}
