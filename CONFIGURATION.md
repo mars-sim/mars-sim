@@ -9,8 +9,7 @@ Most attributes and properties are designed to
 tolerate a range of values. However, they are not all 
 created equal to have the same degree of user customization. 
 
-Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) with us in  
-whatever you have in mind.
+Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) with us with any ideas you have in mind.
 
 
 ## Utility Tool

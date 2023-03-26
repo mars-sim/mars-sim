@@ -10,12 +10,12 @@
 <H2>Version History</H2>
 <hr>
 
-<H3> v3.5.0 (build ____) - __ Jan 2023 </H3>
+<H3> v3.5.0 (build 7882) - 26 Mar 2023 </H3>
 
 <H4> CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
   <LI>   Battery : Standardize battery capacity. </LI>
-  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI>    
+  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI> 
   <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
   <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
   <LI>     Robot : Define specifications using RobotSpec class. </LI>  
@@ -32,12 +32,18 @@
   <LI>  Styling : Single styling via look and feel applied to all components.</LI>
   <li>      L&F : Look and Feel can be changed via Settings menu item.</li>
   <li>   Panels : Panel lists converted into Tables for Maintenance, Waste & Resource processing. </li>
+  <li>  Mission : Use a tree structure to represent missions from each settlement. </li>  
+</OL>
+
+<H4> RUNTIME ENVIRONMENT :</H4>
+<OL>
+  <LI>Java : Java 17 required. </LI> 
 </OL>
 
 <H4> FIXES :</H4>
 <OL>
- <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
- <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using repair task. </LI>
+ <LI> Jar file : Make settlement template name readable by using lowercase letters. </LI>
  <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
  <LI>  Vehicle : Correct fuel consumption calculation. </LI>
 </OL>

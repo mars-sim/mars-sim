@@ -1,7 +1,7 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.5.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.4.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.4.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
@@ -227,7 +227,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> Note 1 : Specifically, the official release of v3.1.0, v3.2.0, v3.3.0 and v3.4.0 of mars-sim do not
+> Note 1 : Specifically, the official release of mars-sim (v3.1.0 to v3.5.0) do not
 utilize JavaFX / OpenJFX. 
 
 Therefore, it's NOT a requirement to install it for running mars-sim.
@@ -282,7 +282,7 @@ A Java Installatino for Window will normally configure the path correctly so a c
 
 If java cannot be found then follow the steps below. 
 
-1. Locate the Java  installation.
+1. Locate the Java installation.
 
 2. Start a command prompt and type this `set JAVA_HOM£="<java home>\bin"`.
 
@@ -297,7 +297,7 @@ the Windows OS may not be able to locate the `java.exe` and may continue to go d
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
 
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.17)
+> Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.6)
 inside `PATH` and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
@@ -380,8 +380,8 @@ e.g. Include the followings :
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle JDK 11.0.17, AdoptOpenJDK 11.0.17, openjfx 11 etc.]
- - mars-sim build version : [e.g. r7688, 3.4.0, pre-3.5.0, etc.]
+ - Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17 etc.]
+ - mars-sim build version : [e.g. r7882, 3.5.0, pre-3.5.0, etc.]
 
 **Additional context**
  - Add any other context about the problem here.
@@ -418,12 +418,12 @@ For a more detail description of this project, see our [project website](https:/
 
 
 ### Download
-Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).
+* Check out the most recent release or pre-release build in GitHub [Release](https://github.com/mars-sim/mars-sim/releases) page.
 
-Also, see the previous and official release version at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.4.0/).
+* Or see the previous and current official release versions at
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.5.0/).
 
-If you like, click on the SF's button below to automatically sense the correct OS platform to download.
+Note: if you prefer, click SF's button below to automatically sense the correct OS platform to download.
 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 

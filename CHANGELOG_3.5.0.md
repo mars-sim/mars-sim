@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.5.0 (build ____) - __ Mar 2023
+## v3.5.0 (build 7882) - 26 Mar 2023
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>   Battery : Standardize battery capacity. </LI>
@@ -25,12 +25,12 @@ Copyright (C) 2023 Scott Davis
   <li>      L&F : Look and Feel can be changed via Settings menu item.</li>
   <li>  Desktop : Windows in the Desktop remember their position and contents between runs, if possible.</li>
 
-### RUNTIME ENVIRONMENT:
+### RUNTIME ENVIRONMENT :
   <LI>Java : Java 17 required. </LI> 
  
 ### FIXES :
- <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
- <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using repair task. </LI>
+ <LI> Jar file : Make settlement template name readable by using lowercase letters. </LI>
  <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
  <LI>  Vehicle : Correct fuel consumption calculation. </LI>
  

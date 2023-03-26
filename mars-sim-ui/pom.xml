@@ -96,15 +96,6 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>3.7.12</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 124 KB
-			 https://github.com/jIconFont/jiconfont-font_awesome -->
-		<dependency>
-		    <groupId>com.github.jiconfont</groupId>
-		    <artifactId>jiconfont-font_awesome</artifactId>
-		    <version>4.7.0.1</version>
-		    <!-- version>4.5.0.3</version-->
-		</dependency>
-
   </dependencies>
 
 	<repositories>

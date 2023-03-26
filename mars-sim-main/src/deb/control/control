@@ -3,7 +3,7 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: default-jre (>= 11)
+Depends: default-jre (>= 17)
 Maintainer: Manny Kung <mannykung@gmail.com>
 Homepage: https://mars-sim.github.io
 Distribution: development

@@ -1,30 +1,32 @@
   * Version 3.5.0 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           __, __ ___ 2023 00:00:00 -0700 
+ -- By Manny Kung									Sun, 26 Mar 2023 00:00:00 -0700 
+ 
+  * Version 3.4.1 debian package release.
+ -- By Barry Evans									Sat, 31 Dec 2022 00:00:00 -0700 
  
   * Version 3.4.0 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           Sat, 19 Nov 2022 00:00:00 -0700 
+ -- By Manny Kung									Sat, 19 Nov 2022 00:00:00 -0700 
  
   * Version 3.3.0 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           Sat, 25 Sep 2021 00:00:00 -0700 
+ -- By Manny Kung									Sat, 25 Sep 2021 00:00:00 -0700 
  
-  * Version 3.2.0 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           Tue, 06 Jul 2021 00:00:00 -0700   
-
+   * Version 3.2.0 debian package release.
+ -- By Manny Kung									Tue, 06 Jul 2021 00:00:00 -0700  
+ 
   * Version 3.1.1 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           Tue, 22 Jul 2020 00:00:00 -0700
+ -- By Manny Kung									Tue, 22 Jul 2020 00:00:00 -0700
  
   * Version 3.1.0 debian package release.
- -- By Manny Kung <mannykung@gmail.com>           Tue, 28 Jan 2020 00:00:00 -0700
+ -- By Manny Kung									Tue, 28 Jan 2020 00:00:00 -0700
  
   * Version 3.07 debian package release.
- -- By Scott Davis <scud1@users.sourceforge.net>  Sun, 18 Jan 2015 00:00:00 -0700
+ -- By Scott Davis									Sun, 18 Jan 2015 00:00:00 -0700
 
   * Version 3.06 debian package release.
- -- By Scott Davis <scud1@users.sourceforge.net>  Mon, 12 May 2014 00:00:00 -0700
+ -- By Scott Davis									Mon, 12 May 2014 00:00:00 -0700
 
    * Version 3.05 debian package release.
- -- By Scott Davis <scud1@users.sourceforge.net>  Sun, 15 Sep 2013 00:00:00 -0700
+ -- By Scott Davis									Sun, 15 Sep 2013 00:00:00 -0700
 
   * Initial debian package release.
- -- By Scott Davis <scud1@users.sourceforge.net>  Wed, 31 Jul 2013 14:04:40 -0700
-
+ -- By Scott Davis									Wed, 31 Jul 2013 14:04:40 -0700
