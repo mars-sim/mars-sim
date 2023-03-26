@@ -62,7 +62,13 @@ public class UIConfig {
 	public static final String TOOL = "tool";
 	public static final String UNIT = "unit";
 	private static final String FILE_NAME = "ui_settings.xml";
-
+	
+	// Copied from javax.xml.XMLConstants to get around the problem with 2 implementations of 
+	// javax.xml classes. The problem JAR is batik-transformer that includes xml-apis
+	// see https://www.eclipse.org/forums/index.php/t/1110036/
+	private static final String ACCESS_EXTERNAL_DTD = "http://javax.xml.XMLConstants/property/accessExternalDTD";
+	private static final String ACCESS_EXTERNAL_SCHEMA = "http://javax.xml.XMLConstants/property/accessExternalSchema";
+			
 	// UI config elements and attributes.
 	private static final String UI = "ui";
 	private static final String USE_DEFAULT = "use-default";
@@ -103,6 +109,8 @@ public class UIConfig {
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
+		    builder.setProperty(ACCESS_EXTERNAL_DTD, "");
+		    builder.setProperty(ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
 		    	Document configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
 		    	Element root = configDoc.getRootElement();

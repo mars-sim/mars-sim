@@ -88,8 +88,6 @@ public class TimeWindow extends ToolWindow {
 	private JLabel ticksPerSecLabel;
 	/** label for actual time ratio. */
 	private JLabel actuallTRLabel;
-	/** label for preferred time ratio. */
-	private JLabel preferredTRLabel;
 	/** label for execution time. */
 	private JLabel execTimeLabel;
 	/** label for sleep time. */
@@ -220,8 +218,6 @@ public class TimeWindow extends ToolWindow {
 		execTimeLabel = paramPane.addTextField(EXEC, "", null);
 		sleepTimeLabel = paramPane.addTextField(SLEEP_TIME, "", null);
 		marsPulseLabel = paramPane.addTextField(MARS_PULSE_TIME, "", null);
-		preferredTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.prefTRHeader"), "", 
-									"User-preferred target time ratio");
 		actuallTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.actualTRHeader"), "",
 									"Master clock's actual time ratio");
 		timeCompressionLabel = paramPane.addTextField("01s [real-time]", "", null);
@@ -257,16 +253,16 @@ public class TimeWindow extends ToolWindow {
 		double pulseTime = mc.getMarsPulseTime();
 		marsPulseLabel.setText(StyleManager.DECIMAL_PLACES3.format(pulseTime) + MILLISOLS);
 
-		// Update Preferred TR label
-		int prefTR = mc.getDesiredTR();
-		preferredTRLabel.setText(prefTR + "x");
-
 		// Update actual TR label
-		double actualTR = mc.getActualTR();
-		actuallTRLabel.setText((int)actualTR + "x");
+		StringBuilder trText = new StringBuilder();
+		trText.append((int)mc.getActualTR())
+			  .append("x (target ")
+			  .append(mc.getDesiredTR())
+			  .append("x)");
+		actuallTRLabel.setText(trText.toString());
 
 		// Update time compression label
-		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));
+		timeCompressionLabel.setText(ClockUtils.getTimeString((int)mc.getActualTR()));
 	}
 
 	/**
