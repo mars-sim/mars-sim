@@ -278,7 +278,7 @@ public class UnloadVehicleGarage extends Task {
 
 					if (p.transfer(settlement)) {
 
-						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
+						BuildingManager.addToMedicalBuilding(p, settlement);
 
 						p.setAssociatedSettlement(settlement.getIdentifier());
 

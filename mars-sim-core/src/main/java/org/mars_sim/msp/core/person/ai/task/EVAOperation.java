@@ -818,10 +818,9 @@ public abstract class EVAOperation extends Task {
 	 * @param s the settlement
 	 */
 	public static void send2Medical(Person p, Settlement s) {
-		// Gets the settlement id
-		int id = s.getIdentifier();
+
 		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, id);
+		BuildingManager.addToMedicalBuilding(p, s);
 
 		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
 		Complaint complaint = p.getPhysicalCondition().getMostSerious();
