@@ -746,8 +746,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				logger.info(p, "Unable to do emergency transfer to " + s + ".");
 		}
 
+		// Gets the settlement id
+		int id = s.getIdentifier();
 		// Store the person into a medical building
-		BuildingManager.addToMedicalBuilding(p, s);
+		BuildingManager.addToMedicalBuilding(p, id);
 
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,

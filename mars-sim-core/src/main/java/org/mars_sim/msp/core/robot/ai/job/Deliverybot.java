@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public class Deliverybot extends RobotJob {
 
@@ -65,7 +64,13 @@ public class Deliverybot extends RobotJob {
 	 */
 	@Override
 	public double getOptimalCount(Settlement settlement) {
-		// Check there is a garage space otherwise DeliveryRobot cannot load vehicles
-		return settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE).size();
+
+        double result = settlement.getAllAssociatedPeople().size()/POP_PER_BOT;
+		if (settlement.getObjective() == ObjectiveType.TRADE_CENTER) {
+			result += 1D;
+		}
+
+		return result;
 	}
+	
 }

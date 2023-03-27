@@ -268,7 +268,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 						
 					if (p.transfer(settlement)) {
 					
-						BuildingManager.addToMedicalBuilding(p, settlement);			
+						BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 						
 						p.setAssociatedSettlement(settlement.getIdentifier());
 						

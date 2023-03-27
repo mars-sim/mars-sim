@@ -386,8 +386,9 @@ public class RescueSalvageVehicle extends RoverMission {
 						// Retrieve the dead person
 						p.transfer(disembarkSettlement);
 						
-						BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-						p.setAssociatedSettlement(disembarkSettlement.getIdentifier());
+						int id = disembarkSettlement.getIdentifier();
+						BuildingManager.addToMedicalBuilding(p, id);
+						p.setAssociatedSettlement(id);
 
 						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
 								this,
