@@ -179,11 +179,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		unitManager = sim.getUnitManager();
 
 		// Add this robot to be owned by the settlement
-		unitManager.getSettlementByID(associatedSettlementID).addOwnedRobot(this);
-		// Set the container unit
-//		setContainerUnit(settlement);
+		Settlement s = unitManager.getSettlementByID(associatedSettlementID);
+		s.addOwnedRobot(this);
+
 		// Put robot in proper building.
-		BuildingManager.addRobotToRandomBuilding(this, associatedSettlementID);
+		BuildingManager.addRobotToRandomBuilding(this, s);
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);

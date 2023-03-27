@@ -62,7 +62,6 @@ public class ChargeMeta extends FactoryMetaTask {
         	
         	Building currentBldg = robot.getBuildingLocation();
 			if (currentBldg == null) {
-				logger.warning(robot, "Not in a building");
 				return 0;
 			}
         	
@@ -72,9 +71,6 @@ public class ChargeMeta extends FactoryMetaTask {
 				result /= 2;
 				return result;
 			}
-            
-            if (result <= 0)
-            	logger.info(robot, "level: " + level + "  prob: " + result);
         }
 
         return result;

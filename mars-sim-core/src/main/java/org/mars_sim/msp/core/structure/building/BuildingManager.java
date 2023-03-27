@@ -240,7 +240,7 @@ public class BuildingManager implements Serializable {
 
 		if (buildings.contains(oldBuilding)) {
 			// Remove building connections (hatches) to old building.
-			unitManager.getSettlementByID(settlementID).getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
+			settlement.getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
 			// Remove the building's functions from the settlement.
 			oldBuilding.removeFunctionsFromSettlement();
 
@@ -249,7 +249,7 @@ public class BuildingManager implements Serializable {
 			// Call to remove all references of this building in all functions
 			removeAllFunctionsfromBFMap(oldBuilding);
 
-			unitManager.getSettlementByID(settlementID).fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
+			settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
 		}
 	}
 
@@ -466,22 +466,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
 		addBuilding(new Building(template, this), template, createBuildingConnections);
-	}
-
-	/**
-	 * Adds a building with a template to the settlement.
-	 *
-	 * @param template                  the building template.
-	 * @param createBuildingConnections true if automatically create building
-	 *                                  connections.
-	 * @return newBuilding
-	 */
-	public Building prepareToAddBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-		// Add prepareToAddBuilding-- called by confirmBuildingLocation() in
-		// Resupply.java
-		Building newBuilding = new Building(template, this);
-		addBuilding(newBuilding, createBuildingConnections);
-		return newBuilding;
 	}
 
 	/**
@@ -987,12 +971,11 @@ public class BuildingManager implements Serializable {
 	 * Adds a person to a random medical building within a settlement.
 	 *
 	 * @param unit       the person/robot to add.
-	 * @param settlementID the settlement to find a building.
+	 * @param s the settlement to find a building.
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
-	public static void addToMedicalBuilding(Person p, int settlementID) {
+	public static void addToMedicalBuilding(Person p, Settlement s) {
 
-		Settlement s = unitManager.getSettlementByID(settlementID);
 		Building building = s.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
@@ -1003,7 +986,7 @@ public class BuildingManager implements Serializable {
 		else {
 			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
-			addPersonToRandomBuilding(p, settlementID);
+			addPersonToRandomBuilding(p, s);
 		}
 	}
 
@@ -1011,16 +994,16 @@ public class BuildingManager implements Serializable {
 	 * Adds a person/robot to a random inhabitable building within a settlement.
 	 *
 	 * @param unit       the person/robot to add.
-	 * @param settlementID the settlement to find a building.
+	 * @param s the settlement to find a building.
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
-	public static void addToRandomBuilding(Unit unit, int settlementID) {
+	public static void addToRandomBuilding(Unit unit, Settlement s) {
 		if (unit.getUnitType() == UnitType.PERSON) {
-			addPersonToRandomBuilding((Person) unit, settlementID);
+			addPersonToRandomBuilding((Person) unit, s);
 		}
 		
 		else {
-			addRobotToRandomBuilding((Robot) unit, settlementID);
+			addRobotToRandomBuilding((Robot) unit, s);
 		}
 	}
 	
@@ -1028,19 +1011,11 @@ public class BuildingManager implements Serializable {
 	 * Adds a person to a random inhabitable building within a settlement.
 	 *
 	 * @param unit       the person to add.
-	 * @param settlementID the settlement to find a building.
+	 * @param s the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
-	public static void addPersonToRandomBuilding(Person person, int settlementID) {
-		BuildingManager manager = null;
-		Settlement s = unitManager.getSettlementByID(settlementID);
-		if (s == null) {
-			logger.warning(person, "Invalid settlement id.");
-			return;
-		}
-		else {
-			manager = s.getBuildingManager();
-		}
+	public static void addPersonToRandomBuilding(Person person, Settlement s) {
+		BuildingManager manager = s.getBuildingManager();
 
 		List<Building> list = manager.getBuildingsWithLifeSupport();
 		
@@ -1069,8 +1044,7 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Adds a robot to a random inhabitable building within a settlement.
 	 *
-	 * @param unit       the robot to add.
-	 * @param settlementID the settlement to find a building.
+	 * @param robot       the robot to add.
 	 * @throws BuildingException if robot cannot be added to any building.
 	 */
 	public static void addRobotToRoboticStation(Robot robot) {
@@ -1109,39 +1083,39 @@ public class BuildingManager implements Serializable {
 	 * Adds a robot to a random inhabitable building within a settlement.
 	 *
 	 * @param unit       the robot to add.
-	 * @param settlementID the settlement to find a building.
+	 * @param s the settlement to find a building.
 	 * @throws BuildingException if robot cannot be added to any building.
 	 */
-	public static void addRobotToRandomBuilding(Robot robot, int settlementID) {
-		BuildingManager manager = null;
-		Settlement s = unitManager.getSettlementByID(settlementID);
-		if (s == null) {
-			logger.severe(robot, "Invalid settlement id.");
-			return;
-		}
-		else {
-			manager = s.getBuildingManager();
-		}
+	public static void addRobotToRandomBuilding(Robot robot, Settlement s ) {
+		BuildingManager manager = s.getBuildingManager();
 		
 		final FunctionType function = FunctionType.getDefaultFunction(robot.getRobotType());
 
 		final List<Building> functionBuildings = manager.getBuildings(function);
 
 		Collections.shuffle(functionBuildings);
+		Building destination = null;
 		for (Building bldg : functionBuildings) {
 			RoboticStation roboticStation = bldg.getRoboticStation();
 			if (roboticStation != null) {
-				Building destination = null;
 				BuildingCategory category = bldg.getCategory();
 				// Do not add robot to hallway, tunnel
 				if ((category != BuildingCategory.HALLWAY)
 						&& bldg.hasFunction(function)) {
 					destination = bldg;
-					addRobotToRoboticStation(robot, destination);
 					break;
 				}
 			}
 		}
+
+		if (destination == null) {
+			List<Building> robotStations = manager.getBuildings(FunctionType.LIFE_SUPPORT);
+			destination = robotStations.get(0);
+
+			logger.warning(robot, "Initially placed in random building " + destination.getName());
+		}
+		
+		addRobotToRoboticStation(robot, destination);
 	}
 	
 	/**
@@ -1687,7 +1661,6 @@ public class BuildingManager implements Serializable {
 				if (loc != null) {
 					// Put the robot there
 					robot.setPosition(loc);
-//					System.out.println(robot + " is at " + loc + " in " + building);
 				}
 			}
 
@@ -1783,7 +1756,6 @@ public class BuildingManager implements Serializable {
 
 		else {
 			double result = 0D;
-			Settlement settlement = unitManager.getSettlementByID(settlementID);
 			BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
 			for(FunctionType supported : spec.getFunctionSupported()) {
 				switch (supported) {
@@ -1992,7 +1964,7 @@ public class BuildingManager implements Serializable {
 		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
 														   position.getXLocation(), position.getYLocation(),
 														   position.getFacing(),
-														   unitManager.getSettlementByID(settlementID).getCoordinates());
+														   settlement.getCoordinates());
 
 		return goodLocation;
 	}
@@ -2026,7 +1998,7 @@ public class BuildingManager implements Serializable {
 		if (!result) {
 			ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);
 			if (frameStageInfo != null) {
-				ConstructionManager constManager = unitManager.getSettlementByID(settlementID).getConstructionManager();
+				ConstructionManager constManager = settlement.getConstructionManager();
 				Iterator<ConstructionSite> j = constManager.getConstructionSites().iterator();
 				while (j.hasNext()) {
 					ConstructionSite site = j.next();
