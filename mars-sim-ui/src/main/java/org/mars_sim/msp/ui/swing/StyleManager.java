@@ -11,22 +11,24 @@ import java.awt.Font;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.ColorUIResource;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.util.HSLColor;
 
 /**
  * This class provides a means to control the styles used in the UI.
@@ -145,59 +147,54 @@ public class StyleManager {
             lafName = style.substring(0, split).trim();
         }
 
-        LookAndFeel newLAF = null;
+        String lafClass = null;
         try {
             switch(lafName) {
                 case LIGHT: 
-                    newLAF = new FlatLightLaf();
+                    lafClass = FlatLightLaf.class.getName();
                     break;
 
                 case DARK:
-                    newLAF = new FlatDarkLaf(); 
+                    lafClass = FlatDarkLaf.class.getName();
                     break;
 
                 case SYSTEM:
-                    // Feels a bit messy
-                    String systemClassName = UIManager.getSystemLookAndFeelClassName();
-                    Class<LookAndFeel> lafClass = (Class<LookAndFeel>) Class.forName(systemClassName);
-                    newLAF = lafClass.getDeclaredConstructor().newInstance();
+                    lafClass = UIManager.getSystemLookAndFeelClassName();
+                    accentColor = null;   // No accent colouring for system
                     break;
                 
                 default:
                     logger.warning( "Don't know LAF style " + style);
             }
 
-            if (newLAF != null) {
-                // Flat LAF supports accent colour
-                boolean isFlatLAF = (newLAF instanceof FlatLaf);
-                if ((accentColor != null) && isFlatLAF) {
-                    applyAccentColor(accentColor);
-                }
-
+            if (lafClass != null) {
+                // Preamble settingfs
+                applyAccentColor(accentColor);
                 calculateFonts();
 
-                // Apply LAF
-                UIManager.setLookAndFeel( newLAF );
+                // Apply LAF but clear any previously installed customised settings
+                UIManager.getLookAndFeelDefaults().put("Table.alternateRowColor", null);
+                UIManager.setLookAndFeel(lafClass);
                 styles.get(LAF_STYLE).setProperty(LAF_NAME, style);
 
-                // Add color strippng on the table
+                // Adjust colors on JTable
                 UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+                Color selBackground = (Color) defaults.get("Table.selectionBackground");
                 if (defaults.get("Table.alternateRowColor") == null) {
                     Color tabBackground = (Color) defaults.get("Table.background");
-                    Color selBackground = (Color) defaults.get("Table.selectionBackground");
 
                     defaults.put("Table.alternateRowColor", getTableAlternativeColor(selBackground, tabBackground));
-
-                    // Header is scalled from the inactive Select colour
-                    Color inactiveBackground = (Color) defaults.get("Table.selectionInactiveBackground");
-                    if (inactiveBackground != null) {
-                        defaults.put("TableHeader.background", getScalledColor(inactiveBackground, 0.8));
-                        
-                        // Make sure sort icon is noticable
-                        defaults.put("Table.sortIconColor", defaults.get("TableHeader.foreground"));
-                    }
                 }
 
+                // Table Header is a shade off from the inactive Select colour
+                if (accentColor != null) {
+                    HSLColor baseColor = new HSLColor(selBackground);
+                    Color tableHeader = baseColor.adjustShade(20F);
+                    defaults.put("TableHeader.background", new ColorUIResource(tableHeader));
+                    defaults.put("TableHeader.foreground", new ColorUIResource(Color.WHITE));
+                    // Make sure sort icon is noticable
+                    defaults.put("Table.sortIconColor", defaults.get("TableHeader.foreground"));
+                }
                 // Always use a grid on Tables
                 defaults.put("Table.showHorizontalLines", true);
                 defaults.put("Table.showVerticalLines", true);
@@ -205,10 +202,10 @@ public class StyleManager {
         }
         catch (Exception e) {
             // Many things can go wrong so catch all
-            e.printStackTrace();
-            newLAF = null;
+            logger.log(Level.SEVERE, "Problem setting LAF", e);
+            lafClass = null;
         } 
-        return (newLAF != null);
+        return (lafClass != null);
 	}
 
     /**
@@ -300,19 +297,6 @@ public class StyleManager {
             }
         }
         return new Font(family, style, size);
-    }
-
-    /**
-     * Create a new color by scaling the soruce by a percentge factor.
-     * @param source
-     * @param factor
-     * @return
-     */
-    private static Color getScalledColor(Color source, double factor) {
-        return new Color(Math.max((int)(source.getRed()  * factor), 0),
-                        Math.max((int)(source.getGreen()* factor), 0),
-                        Math.max((int)(source.getBlue() * factor), 0),
-                        source.getAlpha());
     }
 
     /**

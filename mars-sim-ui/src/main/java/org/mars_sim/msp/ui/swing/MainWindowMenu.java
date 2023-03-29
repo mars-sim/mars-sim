@@ -12,11 +12,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.KeyStroke;
@@ -161,15 +163,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create submenu for LAF
 		JMenu lafMenu = new JMenu("Look and Feel");
+		ButtonGroup group = new ButtonGroup();
 		settingsMenu.add(lafMenu);
 		settingsMenu.add(new JSeparator());
 		for( String i : StyleManager.getAvailableLAF()) {
-			JCheckBoxMenuItem lafItem = new JCheckBoxMenuItem(i);
+			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
 			if (i.equals(StyleManager.getLAF()))
 				lafItem.setSelected(true);
 			lafItem.setActionCommand(LAF);
 			lafItem.addActionListener(this);
 			lafMenu.add(lafItem);
+			group.add(lafItem);
 		}
 
 		// Create Background Music Volume slider menu item
@@ -389,17 +393,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case TUTORIAL:
 				newGuideURL = Msg.getString("doc.tutorial"); //$NON-NLS-1$
 				break;
-			case LAF: {
+			case LAF: 
 				String text = selectedItem.getText();
 				mainWindow.updateLAF(text);
-
-				// Passive approach
-				//StyleManager.setLAF(text);
-				//JOptionPane.showMessageDialog(mainWindow.getFrame(), "Restart for Look & Feel to be fully applied.");				
-			} break;
+				break;
 			default:
-				// Unknown command
-				System.err.println("Unknown menu commadn " + command);
+				// Shouldn't be here
+				break;
 		}
 
 		if (newGuideURL != null) {

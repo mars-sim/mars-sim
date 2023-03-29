@@ -17,6 +17,7 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -169,9 +170,13 @@ abstract class TableTab extends MonitorTab {
 		int indexes[] = {};
 		if (table != null)
 			indexes = table.getSelectedRows();
+		RowSorter<? extends TableModel> sorter = table.getRowSorter();
 		List<Object> selectedRows = new ArrayList<>();
-		for (int indexe : indexes) {
-			Object selected = target.getObject(indexe);
+		for (int index : indexes) {
+            if (sorter != null)
+                index = sorter.convertRowIndexToModel(index);
+
+			Object selected = target.getObject(index);
 			if (selected != null)
 				selectedRows.add(selected);
 		}
