@@ -31,11 +31,6 @@ public class ClockPulse {
 	 * Has this pulse crossed into a new millisol integer
 	 */
 	private boolean newMSol;
-	
-	/**
-	 * Time back on Earth
-	 */
-	private EarthClock earthTime;
 
 	/**
 	 * Pulse id
@@ -48,11 +43,10 @@ public class ClockPulse {
 	 * @param id Unique pulse ID. Sequential.
 	 * @param elapsed This must be a final & positive number.
 	 * @param marsTime
-	 * @param earthTime
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 */
-	public ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
+	public ClockPulse(long id, double elapsed, MarsClock marsTime, MasterClock master, 
 			boolean newSol, boolean newMSol) {
 		super();
 		
@@ -63,7 +57,6 @@ public class ClockPulse {
 		this.id = id;
 		this.elapsed = elapsed;
 		this.marsTime = marsTime;
-		this.earthTime = earthTime;
 		this.master = master;
 		this.newSol = newSol;
 		this.newMSol = newMSol;
@@ -96,10 +89,6 @@ public class ClockPulse {
 	public boolean isNewMSol() {
 		return newMSol;
 	}
-	
-	public EarthClock getEarthTime() {
-		return earthTime;
-	}
 
 	/**
 	 * Creates a new pulse based on this one but add extra msol elapsed time.
@@ -113,6 +102,6 @@ public class ClockPulse {
 		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
 		boolean actualNewSol = newSol || (actualElapsed > marsTime.getMillisol());
 
-		return new ClockPulse(id, actualElapsed, marsTime, earthTime, master, actualNewSol, newMSol);
+		return new ClockPulse(id, actualElapsed, marsTime, master, actualNewSol, newMSol);
 	}
 }

@@ -430,17 +430,6 @@ public class ClockUtils implements Serializable {
 	 *
 	 * @return in degrees
 	 */
-	public static double getEOTDegree0(EarthClock clock) {
-		double Ls = getLs(clock) * OrbitInfo.DEGREE_TO_RADIAN;
-		double EOT = 2.861 * Math.sin(2 * Ls) - 0.071 * Math.sin(4 * Ls) + 0.002 * Math.sin(6 * Ls) - getEOC(clock);
-		return EOT;
-	}
-
-	/*
-	 * Determine Equation of Time. (AM2000, eq. 20)
-	 *
-	 * @return in degrees
-	 */
 	public static double getEOTDegree(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
 		double M = (19.3871 + 0.52402073 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
@@ -457,16 +446,6 @@ public class ClockUtils implements Serializable {
 		double alphaFMS = 270.3871 + 0.524038496 * j2000;
 		double Ls = (alphaFMS + EOC) * OrbitInfo.DEGREE_TO_RADIAN;
 		double EOT = 2.861 * Math.sin(2 * Ls) - 0.071 * Math.sin(4 * Ls) + 0.002 * Math.sin(6 * Ls) - EOC;
-		return EOT;
-	}
-
-	/*
-	 * Determine Equation of Time. (AM2000, eq. 20)
-	 *
-	 * @return in hour
-	 */
-	public static double getEOTHour0(EarthClock clock) {
-		double EOT = getEOTDegree0(clock) / 15.0;
 		return EOT;
 	}
 

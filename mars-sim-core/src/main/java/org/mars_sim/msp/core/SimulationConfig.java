@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -629,6 +630,16 @@ public class SimulationConfig implements Serializable {
 		return earthStartDate;
 	}
 
+	/**
+	 * Gets the Earth date/time when the simulation starts.
+	 *
+	 * @return 
+	 */
+	public LocalDateTime getEarthStartDate() {
+		return LocalDateTime.parse(earthStartDate,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS"));
+	}
+	
 	/**
 	 * Gets the Mars date/time when the simulation starts.
 	 *

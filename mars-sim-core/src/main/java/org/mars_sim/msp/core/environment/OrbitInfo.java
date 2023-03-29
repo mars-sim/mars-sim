@@ -7,13 +7,14 @@
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
@@ -59,14 +60,11 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	private static final double HRS_TO_MILLISOLS = 1.0275 * ClockUtils.MILLISOLS_PER_DAY / 24; 
 	
-	
-	/** Astronomical Dawn is the point at which it becomes possible to detect light in the sky. */
-	private static final double ASTRONOMICAL_DAWN_ANGLE = 18; // in degree
 	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
 	private static final double NAUTICAL_DAWN_ANGLE = 12; // in degree
-	/** Civil Dawn occurs when the sun is 6° below the horizon and there is enough light for activities to take place without artificial lighting. */
-	private static final double CIVIL_DAWN_ANGLE = 6; // in degree
 
+	// Date of the 2000K start second
+	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
 	/** 
 	 * Adopts the nautical dawn as the angle of the sun below the horizon for calculating the zenith angle at dawn.
 	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
@@ -81,7 +79,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 */
 	private static final double ZENITH_ANGLE_AT_DUSK = (90 + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
 	/** The cosine of the dusk zenith angle. */
-	private static final double COSINE_ZENITH_ANGLE_AT_DUSK =  Math.cos(ZENITH_ANGLE_AT_DAWN);
+	private static final double COSINE_ZENITH_ANGLE_AT_DUSK =  Math.cos(ZENITH_ANGLE_AT_DUSK);
 	
 	
 	// from https://www.teuse.net/games/mars/mars_dates.html
@@ -111,27 +109,10 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final String WINTER = "Winter";
 	
 	private static final String R_IS = "r is ";
-	
-	/**
-	 * The initial areocentric solar longitude (or the orbital position of Mars
-	 * around the sun) at the start of the sim on 2043-Sep-30 00:00:00 Note: may
-	 * obtain the most accurate value of L_AT_START numerically by running
-	 * ClockUtils.getLs()
-	 */
-//	private static final double L_AT_START = 12.72010790886634; // 252.5849107170493;
-	// Note : An areocentric orbit is an orbit around the planet Mars.
-
-	/**
-	 * The initial distance from the Sun to Mars (in au) on 2043-Sep-30 00:00:00
-	 * Note: may obtain the most accurate value numerically by running
-	 * ClockUtils.getHeliocentricDistance()
-	 */
-//	private static final double SUN_MARS_DIST_AT_START = 1.587624202793963;// 1.5876367428334057;//1.3817913894302327;
-																			// //1.665732D; //
 
 	// Data members
 	/** The difference between the L_s and the true anomaly v in degree. */
-	private double offsetL_s;// = 251.0001;
+	private double sunLongitudeOffset;
 	/** The total time in the current orbit (in seconds). */
 	private double orbitTime;
 	/** The angle of Mars's position to the Sun (in radians). */
@@ -146,7 +127,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * The current areocentric longitude of the Sun (or the orbital position of
 	 * Mars).
 	 */
-	private double L_s;
+	private double sunAreoLongitude;
 
 	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly
 	// measured in terms of the areocentric
@@ -162,12 +143,10 @@ public class OrbitInfo implements Serializable, Temporal {
 	// The areocentric longitude at perihelion, L_s = 251 + 0.0064891 * (yr - 2000),
 
 	/** The areocentric longitude at perihelion. */
-//	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000); when L_s at ~250
 	// e.g. At year 2000, L_s_perihelion = 251.2790
 	// e.g. At year 2043, L_s_perihelion = 251
 
 	/** The areocentric longitude at aphelion. */
-//	private double L_s_aphelion;// = L_s_perihelion - 180D; when L_s at ~70
 
 	// Note 3 : L_s_perihelion indicates a near alignment of the planet's closest
 	// approach to the Sun
@@ -187,9 +166,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** The cache value of the cos zenith angle. */
 	private double cosZenithAngleCache = 0;
 
-	/** The solar zenith angle z */
-	// private double solarZenithAngle;
-
 	/**  The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
 
@@ -206,18 +182,13 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
-		EarthClock c = new EarthClock(SimulationConfig.instance().getEarthStartDateTime());
-
-		instantaneousSunMarsDistance = ClockUtils.getHeliocentricDistance(c);
-		// instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
-		L_s = ClockUtils.getLs(c) % 360;
-		// L_s = L_AT_START;
+		LocalDateTime earthTime = SimulationConfig.instance().getEarthStartDate();
+		sunAreoLongitude = getLs(earthTime) % 360;
+		instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
 
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 
-//		testOrbitData();
-
-		offsetL_s = computePerihelion(2043);
+		sunLongitudeOffset = computePerihelion(2043);
 	}
 
 	public void testOrbitData() {
@@ -239,8 +210,8 @@ public class OrbitInfo implements Serializable, Temporal {
 //		if (newL_s > 360D)
 //			newL_s = newL_s - 360D;
 //		double Ls = newL_s;
-		offsetL_s = computePerihelion(2000);
-		double Ls = computeL_s(v);
+		sunLongitudeOffset = computePerihelion(2000);
+		double Ls = computeSunLongitude(v);
 
 // 		Back calculate the offset between v and Ls
 //		x = 277.18758 - v;
@@ -260,8 +231,8 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		v = 76.2982 * DEGREE_TO_RADIAN;
 		r = getRadius(v);
-		offsetL_s = computePerihelion(2004);
-		Ls = computeL_s(v);
+		sunLongitudeOffset = computePerihelion(2004);
+		Ls = computeSunLongitude(v);
 
 // 		Back calculate the offset between v and Ls
 //		x = 277.18758 - v;
@@ -278,9 +249,9 @@ public class OrbitInfo implements Serializable, Temporal {
 		// (1) v
 		// (2) Ls
 
-		offsetL_s = computePerihelion(2043);
+		sunLongitudeOffset = computePerihelion(2043);
 		v = getTrueAnomaly(instantaneousSunMarsDistance);
-		Ls = computeL_s(v);
+		Ls = computeSunLongitude(v);
 		System.out.println("Scenario 3");
 		System.out.println("v (deg) is " + Math.round(v / DEGREE_TO_RADIAN * 10000.0) / 10000.0);
 		System.out.println("Ls is " + Math.round(Ls * 10000.0) / 10000.0);
@@ -295,13 +266,13 @@ public class OrbitInfo implements Serializable, Temporal {
 		// (2) r
 
 		System.out.println("Scenario 4");
-		L_s = 12.72008961663414;
+		sunAreoLongitude = 12.72008961663414;
 		v = 121.39623354876494 * DEGREE_TO_RADIAN;
 
 		r = getRadius(v);
 
-		offsetL_s = computePerihelion(2043);
-		v = (L_s - offsetL_s) + 360;
+		sunLongitudeOffset = computePerihelion(2043);
+		v = (sunAreoLongitude - sunLongitudeOffset) + 360;
 
 		System.out.println("v_old (deg) is " + Math.round(v * 10000.0) / 10000.0);
 		System.out.println(R_IS + r);// Math.round(r * 10000.0)/10000.0);
@@ -358,11 +329,8 @@ public class OrbitInfo implements Serializable, Temporal {
 		// Determine new radius
 		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
 
-//		offsetL_s = computePerihelion(earthClock.getYear());
-//		double v = getTrueAnomaly(instantaneousSunMarsDistance);
-
 		// Recompute the areocentric longitude of Mars
-		L_s = computeL_s(pulse.getEarthTime());
+		sunAreoLongitude = computeSunLongitude(pulse.getMasterClock().getEarthTime());
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
@@ -381,8 +349,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		return true;
 	}
 
-
-	public double computePerihelion(double yr) {
+	public static double computePerihelion(double yr) {
 		return 251D + .0064891 * (yr - 2000);
 	}
 
@@ -412,7 +379,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return angle in radians (0 - PI).
 	 */
 	public double getSunAngleFromPhi(double phi) {
-		// double a = Math.abs(phi - sunDirection.getPhi());
 		return Math.abs(phi - sunDirection.getPhi());
 	}
 
@@ -503,7 +469,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
-		double solar_time = marsClock.getMillisol();
+		double solarTime = marsClock.getMillisol();
 		// compute latitude in radians rather than in degree
 		double lat = location.getPhi2LatRadian();
 
@@ -539,35 +505,35 @@ public class OrbitInfo implements Serializable, Temporal {
 		computeSineSolarDeclinationAngle();
 		double d = getCacheSolarDeclinationAngle();
 
-		double equation_of_time_offset = 0;
+		double equationTimeOffset = 0;
 
-		double Ls = getL_s();
+		double Ls = getSunAreoLongitude();
 		if (Ls == 57.7)
-			equation_of_time_offset = 0;
+			equationTimeOffset = 0;
 		else if (Ls <= 90)
-			equation_of_time_offset = 0.7106 * Ls - 41D; // slope = 41/57.7, b = -41
+			equationTimeOffset = 0.7106 * Ls - 41D;
 		else if (Ls <= 180)
-			equation_of_time_offset = 0.1803 * Ls + 6.7277;
+			equationTimeOffset = 0.1803 * Ls + 6.7277;
 		else if (Ls <= 190)
-			equation_of_time_offset = 39.1817;
+			equationTimeOffset = 39.1817;
 		else if (Ls == 258)
-			equation_of_time_offset = 39.1817 * Math.cos(90D / 68D * (Ls - 190) * DEGREE_TO_RADIAN);
+			equationTimeOffset = 39.1817 * Math.cos(90D / 68D * (Ls - 190) * DEGREE_TO_RADIAN);
 		else if (Ls <= 326)
-			equation_of_time_offset = -51D * Math.sin(90D / 69D * (Ls - 258) * DEGREE_TO_RADIAN);
+			equationTimeOffset = -51D * Math.sin(90D / 69D * (Ls - 258) * DEGREE_TO_RADIAN);
 		else if (Ls <= 360)
-			equation_of_time_offset = -41D - 10 * Math.sin(90D / 34D * (Ls - 326) * DEGREE_TO_RADIAN);
+			equationTimeOffset = -41D - 10 * Math.sin(90D / 34D * (Ls - 326) * DEGREE_TO_RADIAN);
 
-		double theta_offset = location.getTheta() * 159.1519;
+		double thetaOffset = location.getTheta() * 159.1519;
 		// 159.1519 = 1000D / 2D / Math.PI ; // convert theta (longitude) from radians
 		// to millisols;
 
-		double EOT_in_millisol = equation_of_time_offset * 0.6759;
+		double etoMillisol = equationTimeOffset * 0.6759;
 		// 0.6759 = 60D / SOLAR_DAY * 1000D; // convert from min to millisols
 
-		double modified_solar_time = theta_offset + solar_time + EOT_in_millisol;
+		double modifiedSolarTime = thetaOffset + solarTime + etoMillisol;
 		// The hour angle is measured from the true noon westward, represented by h = 2
 		// * pi * t / P, t is time past noon in seconds
-		double h = 0.0063 * Math.abs(modified_solar_time - 500D);
+		double h = 0.0063 * Math.abs(modifiedSolarTime - 500D);
 		// 0.0063 = 2D * Math.PI / 1000D;
 
 		return Math.sin(lat) * sineSolarDeclinationAngle + Math.cos(lat) * Math.cos(d) * Math.cos(h);
@@ -613,11 +579,11 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * 
 	 * @param v the true anomaly in radians
 	 */
-	public double computeL_s(double v) {
-		double newL_s = v / DEGREE_TO_RADIAN + offsetL_s; // why was the offset 248 in the past ?
-		if (newL_s > 360D)
-			newL_s = newL_s - 360D;
-		return newL_s;
+	public double computeSunLongitude(double v) {
+		double newSL = v / DEGREE_TO_RADIAN + sunLongitudeOffset; // why was the offset 248 in the past ?
+		if (newSL > 360D)
+			newSL = newSL - 360D;
+		return newSL;
 	}
 
 
@@ -625,10 +591,50 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * Computes the instantaneous areocentric longitude numerically using
 	 * ClockUtil's methods.
 	 */
-	private double computeL_s(EarthClock c) {
-		double ls = ClockUtils.getLs(c) % 360;
-		L_s = ls;
+	private double computeSunLongitude(LocalDateTime c) {
+		double ls = getLs(c) % 360;
+		sunAreoLongitude = ls;
 		return ls;
+	}
+
+	/**
+	 * Determine areocentric solar longitude. (AM2000, eq. 19)
+	 *
+	 * @return degree L_s
+	 */
+	private static double getLs(LocalDateTime earthTime) {
+		double j2000 = getDaysSinceJ2kEpoch(earthTime);
+
+		double M = (19.3871 + 0.52402073 * j2000) * DEGREE_TO_RADIAN;
+		double d = 360.0 / 365.25;
+		double PBS = 0.0071 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.2353) + 49.409))
+				+ 0.0057 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.7543) + 168.173))
+				+ 0.0039 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 1.1177) + 191.837))
+				+ 0.0037 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 15.7866) + 21.736))
+				+ 0.0021 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.1354) + 15.704))
+				+ 0.0020 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 2.4694) + 95.528))
+				+ 0.0018 * Math.cos(DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) + 49.095));
+		double EOC = (10.691 + 3.0 * j2000 / 1_000_000) * Math.sin(M) + 0.623 * Math.sin(2 * M)
+				+ 0.050 * Math.sin(3 * M) + 0.005 * Math.sin(4 * M) + 0.0005 * Math.sin(5 * M) + PBS;// DEGREE_TO_RADIAN;
+		double alphaFMS = 270.3871 + 0.524038496 * j2000;
+		return alphaFMS + EOC;
+	}
+
+	/*
+	 * Determine heliocentric distance. (AM2000, eq. 25, corrected)
+	 *
+	 * @param clock Earth clock
+	 *
+	 * @return distance in A.U.
+	 */
+	private static double getHeliocentricDistance(LocalDateTime earthTime) {
+		double M = (19.3871 + 0.52402073 * getDaysSinceJ2kEpoch(earthTime)) * DEGREE_TO_RADIAN;
+		return 1.52367934 * (1.00436 - 0.09309 * Math.cos(M) - 0.004336 * Math.cos(2 * M) - 0.00031 * Math.cos(3 * M)
+				- 0.00003 * Math.cos(4 * M));
+	}
+
+	private static double getDaysSinceJ2kEpoch(LocalDateTime earthTime) {
+		return Duration.between(Y2K, earthTime).getSeconds() / 86400D;
 	}
 
 	/**
@@ -636,8 +642,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * 
 	 * @return angle in degrees (0 - 360).
 	 */
-	public double getL_s() {
-		return L_s;
+	public double getSunAreoLongitude() {
+		return sunAreoLongitude;
 	}
 
 	/**
@@ -665,8 +671,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * longitude.
 	 */
 	public void computeSineSolarDeclinationAngle() {
-		sineSolarDeclinationAngle = - SINE_TILT * Math.sin(L_s * DEGREE_TO_RADIAN);
-		// return sineSolarDeclinationAngle;
+		sineSolarDeclinationAngle = - SINE_TILT * Math.sin(sunAreoLongitude * DEGREE_TO_RADIAN);
 	}
 
 	/**
@@ -692,7 +697,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	public double getHourAngle(Coordinates location) {
 		computeSineSolarDeclinationAngle();
 		double phi = location.getPhi();
-//		logger.info(location + " phi(latitude): " + phi);
 		double geoLat = 0;
 		// For the geographical latitude
 		// Northward is positive
@@ -702,27 +706,20 @@ public class OrbitInfo implements Serializable, Temporal {
 			geoLat = HALF_PI; 
 		}
 		else if (phi < HALF_PI) {
-//			logger.info(location + " case 1.");
 			geoLat = HALF_PI - phi; 
 		}
 		else if (phi == HALF_PI) {
-//			logger.info(location + " case 2.");
 			geoLat = 0; 
 		}
 		else if (phi > HALF_PI) {
-//			logger.info(location + " case 3.");
 			geoLat = - (phi - HALF_PI); 
 		}
 		
-//		logger.info(location + " geoLat: " + geoLat);
 		double tanPhi = Math.tan(geoLat);
 		
 		double dec = getCacheSolarDeclinationAngle();
-//		logger.info(location + " dec: " + dec);
 
-//		logger.info(location + " tanPhi: " + tanPhi);
 		double tanSDA = Math.tan(dec);
-//		logger.info(location + " tanSDA: " + tanSDA);
 		
 		double omega = tanSDA * tanPhi;
 		if (- omega > 1) {
@@ -755,17 +752,14 @@ public class OrbitInfo implements Serializable, Temporal {
 		if (omegaSunrise == -10) {
 			return new double[] {-1, -1, 0};
 		}
-//		logger.info(location.getCoordinateString() + " hour angle in radian: " + omegaSunrise);
 		double sunriseMillisol = 0;
 		double sunsetMillisol = 0;
 		
 		double sunriseHrs = 12 + (omegaSunrise - lon) * ANGLE_TO_HOURS;
 		if (sunriseHrs < 0)
 			sunriseHrs = 24 + sunriseHrs;
-//		logger.info(location.getCoordinateString() + " sunriseHrs: " + sunriseHrs);
 		
 		sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
-//		logger.info(location.getCoordinateString() + " sunriseMillisol: " + sunriseMillisol);
 		if (sunriseMillisol < 0)
 			sunriseMillisol = 1000 + sunriseMillisol;
 		if (sunriseMillisol > 999)
@@ -774,10 +768,8 @@ public class OrbitInfo implements Serializable, Temporal {
 		double sunsetHrs = 12 - (omegaSunrise + lon) * ANGLE_TO_HOURS;
 		if (sunriseHrs > 24)
 			sunriseHrs = sunriseHrs - 24;
-//		logger.info(location.getCoordinateString() + " sunsetHrs: " + sunsetHrs);
 		
 		sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
-//		logger.info(location.getCoordinateString() + " sunsetMillisol: " + sunsetMillisol);
 		if (sunsetMillisol < 0)
 			sunsetMillisol = 1000 + sunsetMillisol;
 		if (sunsetMillisol > 999)
@@ -810,8 +802,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	 */
 	public String getSeason(int hemisphere) {
 		StringBuilder season = new StringBuilder();
-
-		// System.out.println(" L_s :" + L_s );
 	
 		// SUMMER_SOLSTICE = 168;
 		// AUTUMN_EQUINOX = 346;
@@ -823,10 +813,10 @@ public class OrbitInfo implements Serializable, Temporal {
 		// Autumn lasts 142.70 sols
 		// Winter lasts 153.94 sols
 	
-		if (L_s < 90 || L_s == 360) {
-			if (L_s < 30 || L_s == 360)
+		if (sunAreoLongitude < 90 || sunAreoLongitude == 360) {
+			if (sunAreoLongitude < 30 || sunAreoLongitude == 360)
 				season.append(EARLY);
-			else if (L_s < 60)
+			else if (sunAreoLongitude < 60)
 				season.append(MID);
 			else
 				season.append(LATE);
@@ -834,10 +824,10 @@ public class OrbitInfo implements Serializable, Temporal {
 				season.append(SPRING);
 			else if (hemisphere == SOUTHERN_HEMISPHERE)
 				season.append(AUTUMN);
-		} else if (L_s < 180) {
-			if (L_s < 120)
+		} else if (sunAreoLongitude < 180) {
+			if (sunAreoLongitude < 120)
 				season.append(EARLY);
-			else if (L_s < 150)
+			else if (sunAreoLongitude < 150)
 				season.append(MID);
 			else
 				season.append(LATE);
@@ -845,10 +835,10 @@ public class OrbitInfo implements Serializable, Temporal {
 				season.append(SUMMER);
 			else if (hemisphere == SOUTHERN_HEMISPHERE)
 				season.append(WINTER);
-		} else if (L_s < 270) {
-			if (L_s < 210)
+		} else if (sunAreoLongitude < 270) {
+			if (sunAreoLongitude < 210)
 				season.append(EARLY);
-			else if (L_s < 240)
+			else if (sunAreoLongitude < 240)
 				season.append(MID);
 			else
 				season.append(LATE);
@@ -856,10 +846,10 @@ public class OrbitInfo implements Serializable, Temporal {
 				season.append(AUTUMN);
 			else if (hemisphere == SOUTHERN_HEMISPHERE)
 				season.append(SPRING);
-		} else if (L_s < 360) {
-			if (L_s < 300)
+		} else if (sunAreoLongitude < 360) {
+			if (sunAreoLongitude < 300)
 				season.append(EARLY);
-			else if (L_s < 330)
+			else if (sunAreoLongitude < 330)
 				season.append(MID);
 			else
 				season.append(LATE);
@@ -870,13 +860,5 @@ public class OrbitInfo implements Serializable, Temporal {
 		}
 	
 		return season.toString();
-	}
-	
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		sunDirection = null;
 	}
 }

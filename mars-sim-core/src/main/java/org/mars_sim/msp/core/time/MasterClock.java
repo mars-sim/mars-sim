@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Collections;
@@ -142,8 +141,7 @@ public class MasterClock implements Serializable {
 
 		// Create an Earth clock
 		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
-		earthTime = LocalDateTime.parse(simulationConfig.getEarthStartDateTime(),
-								DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS"));
+		earthTime = simulationConfig.getEarthStartDate();
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
@@ -704,7 +702,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsClock, earthClock, this, isNewSol, isNewMSol);
+		currentPulse = new ClockPulse(newPulseId, time, marsClock, this, isNewSol, isNewMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 

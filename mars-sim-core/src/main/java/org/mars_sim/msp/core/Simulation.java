@@ -1307,7 +1307,6 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = null;
 
 		if (orbitInfo != null) {
-			orbitInfo.destroy();
 			orbitInfo = null;
 		}
 		
