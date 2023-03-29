@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.5.0 (build 7882) - 26 Mar 2023
+## v3.5.0 (build 7890) - 27 Mar 2023
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>   Battery : Standardize battery capacity. </LI>
