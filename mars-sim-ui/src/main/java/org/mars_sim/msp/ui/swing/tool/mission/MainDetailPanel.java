@@ -716,7 +716,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerMapButton.setEnabled(false);
 		
 		vehicleStatusLabel.setText(" ");
-		speedLabel.setText(Msg.getString(StyleManager.DECIMAL_KMH.format(0))); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
