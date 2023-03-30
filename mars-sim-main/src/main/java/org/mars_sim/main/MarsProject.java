@@ -71,7 +71,7 @@ public class MarsProject {
 	private boolean useProfile = false;
 	private boolean isSandbox = false;
 
-	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
+	private static InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
 	private Simulation sim;
 
@@ -344,7 +344,7 @@ public class MarsProject {
 
 		JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
 		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSavedSim")); // $NON-NLS-1$
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+		if (chooser.showOpenDialog(interactiveTerm.getTerminal().getFrame()) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
 
