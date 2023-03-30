@@ -44,6 +44,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	public static final int STATUS_HEIGHT = 60;
 	private static final String UNIT_TYPE = "unittype";
 	private static final String UNIT_NAME = "unitname";
+	private static final String SELECTED_TAB = "selected_tab";
 	
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
@@ -216,6 +217,32 @@ public abstract class UnitWindow extends ModalInternalFrame
 		return selected;
 	}
 
+	@Override
+	public Properties getUIProps() {
+		Properties result = new Properties();
+		result.setProperty(UNIT_NAME, unit.getName());
+		result.setProperty(UNIT_TYPE, unit.getUnitType().name());
+		result.setProperty(SELECTED_TAB, getSelected().getTabTitle());
+
+		return result;
+	}
+
+	/**
+	 * Apply the preiously saved UI props to a window
+	 * @param props
+	 */	
+    public void setUIProps(Properties props) {
+		String previousSelection = props.getProperty(SELECTED_TAB);
+		if (previousSelection != null) {
+			for(TabPanel tb : tabPanels) {
+				if (tb.getTabTitle().equals(previousSelection)) {
+					tabPane.setSelectedComponent(tb);
+					break;
+				}
+			}
+		}
+    }
+
 	/**
 	 * Prepares unit window for deletion.
 	 */
@@ -226,15 +253,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 		tabPane = null;
 		desktop = null;
 		unit = null;
-	}
-
-	@Override
-	public Properties getUIProps() {
-		Properties result = new Properties();
-		result.setProperty(UNIT_NAME, unit.getName());
-		result.setProperty(UNIT_TYPE, unit.getUnitType().name());
-
-		return result;
 	}
 
 	/**
