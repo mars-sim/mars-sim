@@ -158,7 +158,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		jobComboBox = new JComboBox<>(jobNames);
 		jobComboBox.setSelectedItem(jobCache.getName());
 		jobComboBox.addActionListener(this);
-		jobComboBox.setToolTipText(Msg.getString("TabPanelCareer.jobtype.tooltip"));
+		jobComboBox.setToolTipText(Msg.getString("TabPanelCareer.jobType.tooltip"));
 		attrPanel.addLabelledItem(Msg.getString("TabPanelCareer.jobType"), jobComboBox);
 
 

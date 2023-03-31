@@ -103,8 +103,8 @@ public class FieldSitePanel extends WizardPanel {
     @Override
     boolean commitChanges() {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-        Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
-                navpointPixel.getiY() - 150, CannedMarsMap.PIXEL_RHO);
+        Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150D, 
+                navpointPixel.getiY() - 150D, CannedMarsMap.PIXEL_RHO);
         getWizard().getMissionData().setFieldSite(navpoint);
         return true;
     }
@@ -229,8 +229,8 @@ public class FieldSitePanel extends WizardPanel {
                 if (withinBounds(displayPos)) {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-                    Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, 
-                            displayPos.getiY() - 150, CannedMarsMap.PIXEL_RHO);
+                    Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150D, 
+                            displayPos.getiY() - 150D, CannedMarsMap.PIXEL_RHO);
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();

@@ -150,7 +150,7 @@ public class SVGGraphicNodeIcon implements Icon {
         BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = rotated.createGraphics();
         AffineTransform at = new AffineTransform();
-        at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+        at.translate((newWidth - w) / 2D, (newHeight - h) / 2D);
 
         int x = w / 2;
         int y = h / 2;

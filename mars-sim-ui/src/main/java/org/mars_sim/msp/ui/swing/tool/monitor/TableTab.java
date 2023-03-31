@@ -167,9 +167,7 @@ abstract class TableTab extends MonitorTab {
 	protected List<Object> getSelection() {
 		MonitorModel target = getModel();
 
-		int indexes[] = {};
-		if (table != null)
-			indexes = table.getSelectedRows();
+		int indexes[] = table.getSelectedRows();
 		RowSorter<? extends TableModel> sorter = table.getRowSorter();
 		List<Object> selectedRows = new ArrayList<>();
 		for (int index : indexes) {
