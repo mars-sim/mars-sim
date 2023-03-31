@@ -305,10 +305,15 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		missionTree.setSelectionPath(new TreePath(path));
 	}
 
+	/**
+	 * Get the current status of the window in terms of User experience.
+	 */
 	@Override
 	public Properties getUIProps() {
 		Properties results = new Properties();
-		results.setProperty(MISSIONNAME_PROP, missionCache.getName());
+		if (missionCache != null) {
+			results.setProperty(MISSIONNAME_PROP, missionCache.getName());
+		}
 		return results;
 	}
 }

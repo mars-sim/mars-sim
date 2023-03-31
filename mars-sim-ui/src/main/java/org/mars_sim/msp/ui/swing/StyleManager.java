@@ -91,22 +91,31 @@ public class StyleManager {
 
     // Create the builtin defaults
     static {
+        // Default Font
         Properties defaultProps = new Properties();
         defaultProps.setProperty(FONT_FAMILY, "Segoe UI");
         defaultProps.setProperty(FONT_SIZE, "12");
         defaultProps.setProperty(FONT_STYLE, "PLAIN");
         styles.put(DEFAULT_FONT_STYLE, defaultProps);
+
+        // Label font for name value pairs and borders is the label but bold
         Properties labelProps = new Properties();
         labelProps.setProperty(FONT_STYLE, "BOLD");
         styles.put(LABEL_FONT_STYLE, labelProps);
+
+        // Heading font of main section is bold and size +6
         Properties headingProps = new Properties();
         headingProps.setProperty(FONT_STYLE, "BOLD");
-        headingProps.setProperty(FONT_SIZE, "+8");
+        headingProps.setProperty(FONT_SIZE, "+6");
         styles.put(HEADING_FONT_STYLE, headingProps);
+
+        // Sub heading font used inside panels is BOLD & size +4
         Properties subHeadingProps = new Properties();
         subHeadingProps.setProperty(FONT_STYLE, "BOLD");
         subHeadingProps.setProperty(FONT_SIZE, "+4");
         styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
+
+        // Default is the LAF with a Red accent colour
         Properties lafProps = new Properties();
         lafProps.setProperty(LAF_NAME, LIGHT_RED);
         styles.put(LAF_STYLE, lafProps);

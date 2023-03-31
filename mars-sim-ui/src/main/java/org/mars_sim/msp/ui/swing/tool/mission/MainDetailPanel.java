@@ -161,7 +161,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create the main panel.
 		JPanel mainBox = new JPanel(new BorderLayout(1, 1));
-		mainBox.setBorder(new MarsPanelBorder());
 		scrollPane.setViewportView(mainBox);
 
 		// Create the top box.

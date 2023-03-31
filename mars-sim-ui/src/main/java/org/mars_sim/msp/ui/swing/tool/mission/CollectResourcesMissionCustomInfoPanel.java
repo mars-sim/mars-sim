@@ -54,7 +54,7 @@ implements UnitListener {
 		// Create content panel.
 		AttributePanel collectionPanel = new AttributePanel(resourceIds.length);
 		collectionPanel.setBorder(StyleManager.createLabelBorder("Resource Collected - Aboard Vehicle"));
-		add(collectionPanel, BorderLayout.CENTER);
+		add(collectionPanel, BorderLayout.NORTH);
 				
 		amountLabels = new JLabel[resourceIds.length];
 		for (int i=0; i<resourceIds.length; i++) {
