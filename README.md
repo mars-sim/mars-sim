@@ -240,16 +240,20 @@ configure the OpenJFX or JavaFX package on top of the JDK.
 See ticket #156 to read the discussions on how to set up JavaFX to run it
 under Java 11.
 
-You may go to [Bellsoft](https://bell-sw.com/pages/downloads/) or 
-[OpenLogic](https://www.openlogic.com/openjdk-downloads) to
-obtain the latest JRE/JDK for your platform.
+Obtain the latest JRE/JDK for your platform. Here are some of the popular OpenJDK packages out there :
+
+* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+
+* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+
+* [Liberica](https://bell-sw.com/pages/downloads/)
+
+* [OpenLogic](https://www.openlogic.com/openjdk-downloads)
 
 If you need JavaFX, we recommend downloading the `Full JDK` 64-bits package.
 
 In case of Liberica, the `Full JDK` includes LibericaFX, which is based on OpenJFX, for
 running other apps that requires JavaFX.
-
-For windows platform, choose MSI version that will automatically set up the environment path.
 
 
 ### OS Platforms
@@ -274,17 +278,18 @@ See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more 
 
 
 #### Windows
-A Java Installatino for Window will normally configure the path correctly so a command prompt a java cpmmand will be executable. `java -version`. Here are some implementaion of OpenJDK for Windows:
 
-* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+Choose MSI version that will automatically set up the environment path correctly.
 
-* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+However, there are cases that the path and JAVE_HOME variables are not being configured properly.
 
-If java cannot be found then follow the steps below. 
+In the command prompt, try `java -version` to see what version of Java is first being found in your specific cases. 
+
+IN case java cannot be found or is erroneous, then follow the steps below :
 
 1. Locate the Java installation.
 
-2. Start a command prompt and type this `set JAVA_HOM£="<java home>\bin"`.
+2. Start a command prompt and type this `set JAVA_HOME="<java home>\bin"`.
 
 3. Set the PATH variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
 
@@ -295,7 +300,6 @@ executable inside will be the one to be loaded by Windows OS.
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
-
 
 > Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.6)
 inside `PATH` and remove all other folders referencing other java versions/builds.
@@ -326,9 +330,9 @@ from the Control Panel as follows :
 only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 
+7. To track what versions of openjdk have been installed on your machine, you may try using 
+[JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
-7. To track what versions of openjdk have been installed on your machine.
-Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ### Remote Console Connection
 
