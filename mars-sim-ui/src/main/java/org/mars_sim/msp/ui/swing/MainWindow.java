@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2021-08-15
+ * @date 2023-03-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;

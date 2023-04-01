@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StyleManager.java
- * @date 2023-02-03
+ * @date 2023-03-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing;

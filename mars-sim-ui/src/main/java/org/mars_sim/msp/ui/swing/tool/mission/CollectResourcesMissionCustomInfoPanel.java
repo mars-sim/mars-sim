@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMissionCustomInfoPanel.java
- * @date 2021-11-29
+ * @date 2023-03-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
