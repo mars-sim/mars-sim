@@ -7,7 +7,11 @@
 
 package org.mars_sim.msp.core.robot;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,7 +53,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -93,11 +96,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The building the robot is at. */
 	private int currentBuildingInt;
 	/** The year of birth of this robot. */
-	private int year;
-	/** The month of birth of this robot. */
-	private int month;
-	/** The day of birth of this robot. */
-	private int day;
+	private LocalDate birthDate;
 	/** The age of this robot. */
 	private int age;
 	/** The settlement the robot is currently associated with. */
@@ -177,12 +176,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public void initialize() {
 
-		unitManager = sim.getUnitManager();
-
 		// Add this robot to be owned by the settlement
 		unitManager.getSettlementByID(associatedSettlementID).addOwnedRobot(this);
-		// Set the container unit
-//		setContainerUnit(settlement);
+
 		// Put robot in proper building.
 		BuildingManager.addRobotToRandomBuilding(this, associatedSettlementID);
 
@@ -209,28 +205,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 */
 	private void createBirthDate() {
-		// Set a birth time for the person
-		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
-		month = RandomUtil.getRandomInt(11) + 1;
-		if (month == 2) {
-			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-				day = RandomUtil.getRandomInt(28) + 1;
-			} else {
-				day = RandomUtil.getRandomInt(27) + 1;
-			}
-		}
-		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-			day = RandomUtil.getRandomInt(30) + 1;
-		}
-		else {
-			day = RandomUtil.getRandomInt(29) + 1;
-		}
+		// Remove a random number of days from the current earth date
+		int daysPast = RandomUtil.getRandomInt(31, 5*365);
+		birthDate = masterClock.getEarthTime().minusDays(daysPast).toLocalDate();
 
-		// TODO: find out why sometimes day = 0 as seen on
-		if (day == 0) {
-			logger.warning(this, "date of birth is on the day 0th. Incrementing to the 1st.");
-			day = 1;
-		}
+		updateAge(masterClock.getEarthTime());
 	}
 
 	/**
@@ -360,11 +339,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		if (pulse.isNewSol()) {
 			// Check if a person's age should be updated
-			LocalDateTime earthTime = pulse.getMasterClock().getEarthTime();
-			age = earthTime.getYear() - year - 1;
-			if (earthTime.getMonth().getValue() >= month)
-				if (earthTime.getDayOfMonth() >= day)
-					age++;
+			updateAge(pulse.getMasterClock().getEarthTime());
+
 		}
 		return true;
 	}
@@ -416,12 +392,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return the robot's age
 	 */
-	public int updateAge(EarthClock earthTime) {
-		age = earthTime.getYear() - year - 1;
-		if (earthTime.getMonth() >= month)
-			if (earthTime.getDayOfMonth() >= day)
-				age++;
-
+	private int updateAge(LocalDateTime earthTime) {
+		age = (int)ChronoUnit.YEARS.between(birthDate, earthTime);
 		return age;
 	}
 
@@ -440,18 +412,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return the robot's birth date
 	 */
 	public String getBirthDate() {
-		StringBuilder s = new StringBuilder();
-		s.append(year).append("-");
-		if (month < 10)
-			s.append("0").append(month).append("-");
-		else
-			s.append(month).append("-");
-		if (day < 10)
-			s.append("0").append(day);
-		else
-			s.append(day);
-
-		return s.toString();
+		return birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
 	}
 
     /**

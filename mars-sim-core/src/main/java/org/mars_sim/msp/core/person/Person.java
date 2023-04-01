@@ -7,7 +7,11 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -128,12 +132,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** True if the person is declared dead. */
 	private boolean declaredDead;
 
-	/** The year of birth of a person */
-	private int year;
-	/** The month of birth of a person */
-	private int month;
-	/** The day of birth of a person */
-	private int day;
+	/** The birth of a person */
+	private LocalDate birthDate;
 	/** The age of a person */
 	private int age = -1;
 	/** The quarters that the person belongs. */
@@ -671,35 +671,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 *
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime) {
-		// Set a birth time for the person
-		if (age != -1) {
-			year = earthLocalTime.getYear() - age - 1;
-		}
-		else {
-			year = earthLocalTime.getYear() - RandomUtil.getRandomInt(21, 65);
-		}
-
-		month = RandomUtil.getRandomInt(11) + 1;
-
-		if (month == 2) {
-			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-				day = RandomUtil.getRandomInt(28) + 1;
-			} else {
-				day = RandomUtil.getRandomInt(27) + 1;
-			}
-		}
-
-		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-			day = RandomUtil.getRandomInt(30) + 1;
-		} else {
-			day = RandomUtil.getRandomInt(29) + 1;
-		}
-
-		// Note: find out why sometimes day = 0 as seen on
-		if (day == 0) {
-			logger.warning(this, "Date of birth is on the day 0th. Incrementing to the 1st.");
-			day = 1;
-		}
+		// Remove a random number of days from the current earth date
+		int daysPast = RandomUtil.getRandomInt(21*365, 65*365);
+		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
 		// Set the age
@@ -988,11 +962,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return the person's age
 	 */
 	private int updateAge(LocalDateTime localDateTime) {
-		int newage = localDateTime.getYear() - year - 1;
-		if (localDateTime.getMonth().getValue() >= month)
-			if (localDateTime.getDayOfMonth() >= day)
-				newage++;
-		age = newage;
+		age = (int)ChronoUnit.YEARS.between(birthDate, localDateTime);
 		return age;
 	}
 
@@ -1003,9 +973,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	public void changeAge(int newAge) {
 		// Back calculate a person's year
-		int y = earthClock.getYear() - newAge - 1;
+		int offset = age - newAge;
 		// Set year to newYear
-		year = y;
+		birthDate = LocalDate.of(birthDate.getYear() + offset, birthDate.getMonth(), birthDate.getDayOfMonth());
 		age = newAge;
 	}
 
@@ -1015,18 +985,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return the person's birth date
 	 */
 	public String getBirthDate() {
-		StringBuilder s = new StringBuilder();
-		s.append(year).append("-");
-		if (month < 10)
-			s.append("0").append(month).append("-");
-		else
-			s.append(month).append("-");
-		if (day < 10)
-			s.append("0").append(day);
-		else
-			s.append(day);
-
-		return s.toString();
+		return birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
 	}
 
 	/**
@@ -2016,7 +1975,11 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			Coordinates newCoords = newContainer.getCoordinates();
+			if (newCoords != null) {
+				// A surface has no coords
+				setCoordinates(newCoords);
+			}
 			// 2. Set LocationStateType
 			updatePersonState(newContainer);
 			// 3. Set containerID

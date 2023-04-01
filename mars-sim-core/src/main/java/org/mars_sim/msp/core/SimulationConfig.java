@@ -619,17 +619,7 @@ public class SimulationConfig implements Serializable {
 	public double getMinEVALight() {
 		return minEVALight;
 	}
-
-	/**
-	 * Gets the Earth date/time when the simulation starts.
-	 *
-	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
-	 * @throws Exception if value is null or empty.
-	 */
-	public String getEarthStartDateTime() {
-		return earthStartDate;
-	}
-
+	
 	/**
 	 * Gets the Earth date/time when the simulation starts.
 	 *

@@ -116,7 +116,6 @@ public class MasterClock implements Serializable {
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsClock initialMarsTime;
 	/** The Earth Clock. */
-	private EarthClock earthClock;
 	private LocalDateTime earthTime;
 	/** The Uptime Timer. */
 	private UpTimer uptimer;
@@ -140,7 +139,6 @@ public class MasterClock implements Serializable {
 		initialMarsTime = new MarsClock(marsClock);
 
 		// Create an Earth clock
-		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
 		earthTime = simulationConfig.getEarthStartDate();
 
 		// Create an Uptime Timer
@@ -203,15 +201,6 @@ public class MasterClock implements Serializable {
 	 */
 	public MarsClock getInitialMarsTime() {
 		return initialMarsTime;
-	}
-
-	/**
-	 * Returns the Earth clock.
-	 *
-	 * @return Earth clock instance
-	 */
-	public EarthClock getEarthClock() {
-		return earthClock;
 	}
 
 	/**
@@ -531,7 +520,6 @@ public class MasterClock implements Serializable {
 					uptimer.updateTime(optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
 
 					// Add time to the Earth clock.
-					earthClock.addTime(earthMillisec);
 					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
 
 					// Add time pulse to Mars clock.
@@ -972,8 +960,6 @@ public class MasterClock implements Serializable {
 	public void destroy() {
 		marsClock = null;
 		initialMarsTime = null;
-		earthClock.destroy();
-		earthClock = null;
 		uptimer = null;
 		clockThreadTask = null;
 		listenerExecutor = null;

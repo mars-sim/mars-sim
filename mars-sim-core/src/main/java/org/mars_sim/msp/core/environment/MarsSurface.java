@@ -34,20 +34,11 @@ public class MarsSurface extends Unit {
 	private Set<Vehicle> vehicleList;
 
 	public MarsSurface() {
-		super(NAME, null);
+		super(NAME, Unit.MARS_SURFACE_UNIT_ID, Unit.OUTER_SPACE_UNIT_ID);
 
 		personList = new UnitSet<>();
 		robotList = new UnitSet<>();
 		vehicleList = new UnitSet<>();
-
-		setContainerUnit(null);
-
-		setContainerID(Unit.OUTER_SPACE_UNIT_ID);
-
-		// This is hack playing on how the identifiers are created
-		if (getIdentifier() != Unit.MARS_SURFACE_UNIT_ID) {
-			throw new IllegalStateException("MarsSurface has wrong ID: " + getIdentifier());
-		}
 	}
 
 	@Override
