@@ -708,7 +708,7 @@ public class MainWindow
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
 			// Increments the Earth and Mars clock labels.
-			toolToolbar.incrementClocks(pulse.getMasterClock(), pulse.isNewSol());
+			toolToolbar.incrementClocks(pulse.getMasterClock());
 
 			memoryBar.refresh();
 

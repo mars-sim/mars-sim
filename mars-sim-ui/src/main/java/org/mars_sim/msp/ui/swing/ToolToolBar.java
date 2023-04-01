@@ -101,7 +101,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Prepare tool buttons
 		prepareToolButtons();
 		setMaximumSize(new Dimension(0, 32));
-		incrementClocks(masterClock, true);
+		incrementClocks(masterClock);
 	}
 
 	/** Prepares tool buttons */
@@ -207,11 +207,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/**
 	 * Increment the label of both the earth and mars clocks
 	 */
-	public void incrementClocks(MasterClock master, boolean newSol) {
+	public void incrementClocks(MasterClock master) {
 		MarsClock marsClock = master.getMarsClock();
-		if (newSol) {
-			missionSol.setText("Sol : " + marsClock.getMissionSol());
-		}
+		missionSol.setText("Sol : " + marsClock.getMissionSol());
 
 		EarthClock earthClock = master.getEarthClock();
 		earthDate.setText(master.getEarthClock().getCurrentDateTimeString(earthClock));
