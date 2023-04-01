@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
@@ -58,7 +57,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// On earth, use 15; On Mars, use 14.6 instead.
 	private static final double ANGLE_TO_HOURS = 90 / HALF_PI  / 14.6;
 
-	private static final double HRS_TO_MILLISOLS = 1.0275 * ClockUtils.MILLISOLS_PER_DAY / 24; 
+	private static final double HRS_TO_MILLISOLS = 1.0275 * MarsClock.MILLISOLS_PER_DAY / 24; 
 	
 	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
 	private static final double NAUTICAL_DAWN_ANGLE = 12; // in degree
