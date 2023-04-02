@@ -2256,7 +2256,7 @@ public class BuildingManager implements Serializable {
 	private Building getEVAAttachedBuilding(Building evaBuilding) {
 		SettlementTemplate settlementTemplate = simulationConfig
 				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
-		List<BuildingTemplate> templates = settlementTemplate.getBuildingTemplates();
+		List<BuildingTemplate> templates = settlementTemplate.getBuildings();
 
 		int idEVAAttachedBuilding = -1;
 		String nickName = null;

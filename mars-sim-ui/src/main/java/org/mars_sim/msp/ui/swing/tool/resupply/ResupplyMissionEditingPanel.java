@@ -796,15 +796,13 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		List<SupplyItem> supplyItems = supplyTableModel.getSupplyItems();
 
 		// Set new buildings.
-		if (resupplyMission.getNewBuildings() != null) {
+		if (resupplyMission.getBuildings() != null) {
 			// Modify resupply mission buildings from table.
 			modifyNewBuildings(resupplyMission, supplyItems);
 		} else {
 			// Create new buildings from table in resupply mission.
 			List<BuildingTemplate> newBuildings = new ArrayList<>();
-			Iterator<SupplyItem> i = supplyItems.iterator();
-			while (i.hasNext()) {
-				SupplyItem item = i.next();
+			for(SupplyItem item : supplyItems) {
 				if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
 					int num = item.number.intValue();
 					for (int x = 0; x < num; x++) {
@@ -815,28 +813,26 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 					}
 				}
 			}
-			resupplyMission.setNewBuildings(newBuildings);
+			resupplyMission.setBuildings(newBuildings);
 		}
 
 		// Set new vehicles.
-		List<String> newVehicles = new ArrayList<>();
-		Iterator<SupplyItem> j = supplyItems.iterator();
-		while (j.hasNext()) {
-			SupplyItem item = j.next();
+		Map<String, Integer> newVehicles = new HashMap<>();
+		for(SupplyItem item : supplyItems) {
 			if (SupplyTableModel.VEHICLE.equals(item.category.trim())) {
+				String type = item.type.trim();
 				int num = item.number.intValue();
-				for (int x = 0; x < num; x++) {
-					newVehicles.add(item.type.trim());
+				if (newVehicles.containsKey(type)) {
+					num += newVehicles.get(type);
 				}
+				newVehicles.put(type, num);
 			}
 		}
-		resupplyMission.setNewVehicles(newVehicles);
+		resupplyMission.setVehicles(newVehicles);
 
 		// Set new equipment.
 		Map<String, Integer> newEquipment = new HashMap<>();
-		Iterator<SupplyItem> k = supplyItems.iterator();
-		while (k.hasNext()) {
-			SupplyItem item = k.next();
+		for(SupplyItem item : supplyItems) {
 			if (SupplyTableModel.EQUIPMENT.equals(item.category.trim())) {
 				String type = item.type.trim();
 				int num = item.number.intValue();
@@ -846,13 +842,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				newEquipment.put(type, num);
 			}
 		}
-		resupplyMission.setNewEquipment(newEquipment);
+		resupplyMission.setEquipment(newEquipment);
 
 		// Set new resources.
 		Map<AmountResource, Double> newResources = new HashMap<>();
-		Iterator<SupplyItem> l = supplyItems.iterator();
-		while (l.hasNext()) {
-			SupplyItem item = l.next();
+		for(SupplyItem item : supplyItems) {
 			if (SupplyTableModel.RESOURCE.equals(item.category.trim())) {
 				String type = item.type.trim();
 				AmountResource resource = ResourceUtil.findAmountResource(type);
@@ -863,13 +857,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				newResources.put(resource, amount);
 			}
 		}
-		resupplyMission.setNewResources(newResources);
+		resupplyMission.setResources(newResources);
 
 		// Set new parts.
 		Map<Part, Integer> newParts = new HashMap<>();
-		Iterator<SupplyItem> m = supplyItems.iterator();
-		while (m.hasNext()) {
-			SupplyItem item = m.next();
+		for(SupplyItem item : supplyItems) {
 			if (SupplyTableModel.PART.equals(item.category.trim())) {
 				String type = item.type.trim();
 				Part part = (Part) ItemResourceUtil.findItemResource(type);
@@ -880,7 +872,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				newParts.put(part, num);
 			}
 		}
-		resupplyMission.setNewParts(newParts);
+		resupplyMission.setParts(newParts);
 
 		// return true;
 	}
@@ -905,7 +897,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	 */
 	private void modifyNewBuildings(Resupply resupplyMission, List<SupplyItem> supplyItems) {
 
-		List<BuildingTemplate> newBuildings = resupplyMission.getNewBuildings();
+		List<BuildingTemplate> newBuildings = resupplyMission.getBuildings();
 
 		// Create map of resupply mission's buildings and numbers.
 		Map<String, Integer> oldBuildings = new HashMap<>();

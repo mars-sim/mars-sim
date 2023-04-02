@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.resource.Part;
  * This class defines a template for modeling the initial conditions and building configurations of a settlement. 
  * Called by ConstructionConfig and ResupplyConfig
  */
-public class SettlementTemplate implements Serializable, UserConfigurable {
+public class SettlementTemplate implements Serializable, UserConfigurable, SettlementSupplies {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -164,7 +164,8 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return list of building templates.
 	 */
-	public List<BuildingTemplate> getBuildingTemplates() {
+	@Override
+	public List<BuildingTemplate> getBuildings() {
 		return Collections.unmodifiableList(buildings);
 	}
 
@@ -186,6 +187,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return map.
 	 */
+	@Override
 	public Map<String, Integer> getVehicles() {
 		return Collections.unmodifiableMap(vehicles);
 	}
@@ -208,6 +210,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return map.
 	 */
+	@Override
 	public Map<String, Integer> getEquipment() {
 		return Collections.unmodifiableMap(equipment);
 	}
@@ -230,6 +233,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return map.
 	 */
+	@Override
 	public Map<AmountResource, Double> getResources() {
 		return Collections.unmodifiableMap(resources);
 	}
@@ -252,6 +256,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * 
 	 * @return map.
 	 */
+	@Override
 	public Map<Part, Integer> getParts() {
 		return Collections.unmodifiableMap(parts);
 	}

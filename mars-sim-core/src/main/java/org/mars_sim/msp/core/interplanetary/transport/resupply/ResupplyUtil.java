@@ -106,17 +106,17 @@ public final class ResupplyUtil {
 
 	                String resupplyName = template.getName();
 	                // Get new building types.
-	                resupply.setNewBuildings(resupplyConfig.getResupplyBuildings(resupplyName));
+	                resupply.setBuildings(resupplyConfig.getResupplyBuildings(resupplyName));
 	                // Get new vehicle types.
-	                resupply.setNewVehicles(resupplyConfig.getResupplyVehicleTypes(resupplyName));
+	                resupply.setVehicles(resupplyConfig.getResupplyVehicleTypes(resupplyName));
 	                // Get new equipment types.
-	                resupply.setNewEquipment(resupplyConfig.getResupplyEquipment(resupplyName));
+	                resupply.setEquipment(resupplyConfig.getResupplyEquipment(resupplyName));
 	                // Get number of new immigrants.
 	                resupply.setNewImmigrantNum(resupplyConfig.getNumberOfResupplyImmigrants(resupplyName));
 	                // Get new resources map.
-	                resupply.setNewResources(resupplyConfig.getResupplyResources(resupplyName));
+	                resupply.setResources(resupplyConfig.getResupplyResources(resupplyName));
 	                // Get new parts map.
-	                resupply.setNewParts(resupplyConfig.getResupplyParts(resupplyName));
+	                resupply.setParts(resupplyConfig.getResupplyParts(resupplyName));
 
 	                resupplies.add(resupply);
 

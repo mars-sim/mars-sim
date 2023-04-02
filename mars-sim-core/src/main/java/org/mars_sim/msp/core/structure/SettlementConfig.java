@@ -387,7 +387,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		}
 
 		// Check that building connections point to valid building ID's.
-		List<BuildingTemplate> buildingTemplates = template.getBuildingTemplates();
+		List<BuildingTemplate> buildingTemplates = template.getBuildings();
 		for (BuildingTemplate buildingTemplate : buildingTemplates) {
 			List<BuildingConnectionTemplate> connectionTemplates = buildingTemplate
 					.getBuildingConnectionTemplates();

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,6 @@ public class ResupplyConfig implements Serializable {
     private static final String NAME = "name";
     private static final String ZONE = "zone";
     private static final String BUILDING = "building";
-    private static final String FACING = "facing";
     private static final String VEHICLE = "vehicle";
     private static final String EQUIPMENT = "equipment";
     private static final String PERSON = "person";
@@ -242,18 +242,9 @@ public class ResupplyConfig implements Serializable {
      * @param resupplyName name of the resupply mission.
      * @return list of vehicle types as strings.
      */
-    public List<String> getResupplyVehicleTypes(String resupplyName) {
-
+    public Map<String, Integer> getResupplyVehicleTypes(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        List<String> result = new ArrayList<>();
-        Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
-        while (j.hasNext()) {
-            String vehicleType = j.next();
-            int vehicleNumber = foundTemplate.vehicles.get(vehicleType);
-            for (int x = 0; x < vehicleNumber; x++)
-                result.add(vehicleType);
-        }
-        return result;
+        return Collections.unmodifiableMap(foundTemplate.vehicles);
     }
 
     /**
@@ -263,7 +254,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<String, Integer> getResupplyEquipment(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<>(foundTemplate.equipment);
+        return Collections.unmodifiableMap(foundTemplate.equipment);
     }
 
     /**
@@ -283,7 +274,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<Part, Integer> getResupplyParts(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<>(foundTemplate.parts);
+        return Collections.unmodifiableMap(foundTemplate.parts);
     }
 
     /**
@@ -293,7 +284,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<>(foundTemplate.resources);
+        return Collections.unmodifiableMap(foundTemplate.resources);
     }
 
     /**

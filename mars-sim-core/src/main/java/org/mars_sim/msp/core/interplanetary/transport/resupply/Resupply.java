@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementSupplies;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -64,7 +66,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * Resupply mission from Earth for a settlement.
  */
-public class Resupply implements Serializable, Transportable {
+public class Resupply implements Serializable, SettlementSupplies, Transportable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -109,7 +111,7 @@ public class Resupply implements Serializable, Transportable {
 	private ResupplyMissionTemplate template;
 	
 	private List<BuildingTemplate> newBuildings;
-	private List<String> newVehicles;
+	private Map<String, Integer> newVehicles;
 	private Map<String, Integer> newEquipment;
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
@@ -342,7 +344,7 @@ public class Resupply implements Serializable, Transportable {
 			Resupply r = i.next();
 			if (r.getSettlement().equals(mgr.getSettlement()) || r.getSettlement() == mgr.getSettlement()) {
 
-				List<BuildingTemplate> templates = r.getNewBuildings();
+				List<BuildingTemplate> templates = r.getBuildings();
 				Iterator<BuildingTemplate> j = templates.iterator();
 				while (j.hasNext()) {
 					BuildingTemplate t = j.next();
@@ -435,30 +437,29 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig, RobotConfig robotConfig) {
 		ReportingAuthority sponsor = settlement.getSponsor();
-		Iterator<String> vehicleI = getNewVehicles().iterator();
-		while (vehicleI.hasNext()) {
-			String vehicleType = vehicleI.next();
-			Vehicle vehicle = null;
-			String name = Vehicle.generateName(vehicleType, sponsor);
-			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-				vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
-			} 
-			else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-				vehicle = new Drone(name, vehicleType, settlement);
+		for( Entry<String, Integer> e : getVehicles().entrySet()) {
+			String vehicleType = e.getKey();
+			for( int i = 0; i < e.getValue(); i++){
+				Vehicle vehicle = null;
+				String name = Vehicle.generateName(vehicleType, sponsor);
+				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
+					vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
+				} 
+				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
+					vehicle = new Drone(name, vehicleType, settlement);
+				}
+				else {
+					vehicle = new Rover(name, vehicleType, settlement);
+				}
+				unitManager.addUnit(vehicle);
+				settlement.addOwnedVehicle(vehicle);
 			}
-			else {
-				vehicle = new Rover(name, vehicleType, settlement);
-			}
-			unitManager.addUnit(vehicle);
-			settlement.addOwnedVehicle(vehicle);
 		}
 
 		// Deliver equipment.
-		Iterator<String> equipmentI = getNewEquipment().keySet().iterator();
-		while (equipmentI.hasNext()) {
-			String equipmentType = equipmentI.next();
-			int number = getNewEquipment().get(equipmentType);
-			for (int x = 0; x < number; x++) {
+		for(Entry<String, Integer> eq : getEquipment().entrySet()) {
+			String equipmentType = eq.getKey();
+			for (int x = 0; x < eq.getValue(); x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement);
 				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
@@ -469,11 +470,10 @@ public class Resupply implements Serializable, Transportable {
 		}
 
 		// Deliver resources.
-		Iterator<AmountResource> resourcesI = getNewResources().keySet().iterator();
-		while (resourcesI.hasNext()) {
-			AmountResource resource = resourcesI.next();
+		for(Entry<AmountResource, Double> er : getResources().entrySet()) {
+			AmountResource resource = er.getKey();
 			int id = resource.getID();
-			double amount = getNewResources().get(resource);
+			double amount = er.getValue();
 			double capacity = settlement.getAmountResourceRemainingCapacity(id);
 			if (amount > capacity)
 				amount = capacity;
@@ -481,11 +481,8 @@ public class Resupply implements Serializable, Transportable {
 		}
 
 		// Deliver parts.
-		Iterator<Part> partsI = getNewParts().keySet().iterator();
-		while (partsI.hasNext()) {
-			Part part = partsI.next();
-			int number = getNewParts().get(part);
-			settlement.storeItemResource(part.getID(), number);
+		for(Entry<Part,Integer> ep : getParts().entrySet()) {
+			settlement.storeItemResource(ep.getKey().getID(), ep.getValue());
 		}
 
 		// Deliver Robots.
@@ -576,7 +573,7 @@ public class Resupply implements Serializable, Transportable {
 	private List<BuildingTemplate> orderNewBuildings(BuildingConfig buildingConfig) {
 		List<BuildingTemplate> result = new CopyOnWriteArrayList<>();
 		
-		List<BuildingTemplate> list = getNewBuildings().stream()
+		List<BuildingTemplate> list = getBuildings().stream()
 				.sorted(Comparator.comparing(bt -> bt.getID()))
 				.collect(Collectors.toList());
 		
@@ -1289,7 +1286,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return list of building types.
 	 */
-	public List<BuildingTemplate> getNewBuildings() {
+	@Override
+	public List<BuildingTemplate> getBuildings() {
 		return newBuildings;
 	}
 
@@ -1298,7 +1296,7 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param newBuildings list of building types.
 	 */
-	public void setNewBuildings(List<BuildingTemplate> newBuildings) {
+	public void setBuildings(List<BuildingTemplate> newBuildings) {
 		this.newBuildings = newBuildings;
 	}
 
@@ -1307,7 +1305,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return list of vehicle types.
 	 */
-	public List<String> getNewVehicles() {
+	@Override
+	public Map<String, Integer> getVehicles() {
 		return newVehicles;
 	}
 
@@ -1316,7 +1315,7 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param newVehicles list of vehicle types.
 	 */
-	public void setNewVehicles(List<String> newVehicles) {
+	public void setVehicles(Map<String, Integer> newVehicles) {
 		this.newVehicles = newVehicles;
 	}
 
@@ -1325,7 +1324,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return map of equipment type and number.
 	 */
-	public Map<String, Integer> getNewEquipment() {
+	@Override
+	public Map<String, Integer> getEquipment() {
 		return newEquipment;
 	}
 
@@ -1334,7 +1334,7 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param newEquipment map of equipment type and number.
 	 */
-	public void setNewEquipment(Map<String, Integer> newEquipment) {
+	public void setEquipment(Map<String, Integer> newEquipment) {
 		this.newEquipment = newEquipment;
 	}
 
@@ -1380,7 +1380,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return map of resource and amount (kg).
 	 */
-	public Map<AmountResource, Double> getNewResources() {
+	@Override
+	public Map<AmountResource, Double> getResources() {
 		return newResources;
 	}
 
@@ -1389,7 +1390,7 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param newResources map of resource and amount (kg).
 	 */
-	public void setNewResources(Map<AmountResource, Double> newResources) {
+	public void setResources(Map<AmountResource, Double> newResources) {
 		this.newResources = newResources;
 	}
 
@@ -1398,7 +1399,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return map of part and number.
 	 */
-	public Map<Part, Integer> getNewParts() {
+	@Override
+	public Map<Part, Integer> getParts() {
 		return newParts;
 	}
 
@@ -1407,7 +1409,7 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param newParts map of part and number.
 	 */
-	public void setNewParts(Map<Part, Integer> newParts) {
+	public void setParts(Map<Part, Integer> newParts) {
 		this.newParts = newParts;
 	}
 
