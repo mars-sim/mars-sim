@@ -28,7 +28,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -77,7 +76,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JCheckBoxMenuItem showToolBarItem;
 
 	// Notification Menu
-	private NotificationMenu notificationMenu;
+//	private NotificationMenu notificationMenu;
 
 	/** Music mute menu item. */
 	private JCheckBoxMenuItem musicMuteItem;
@@ -239,7 +238,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		// Add notificationMenu
-		notificationMenu = new NotificationMenu(this);
+//		notificationMenu = new NotificationMenu(this);
 
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$

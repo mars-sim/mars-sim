@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.5.0 (build 7899) - 30 Mar 2023
+## 3.5.0 (build 7905) - 3 Apr 2023
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>   Battery : Standardize battery capacity. </LI>
@@ -19,14 +19,15 @@ Copyright (C) 2023 Scott Davis
   <LI>      Task : Define SettlementMetaTask and track a pool of shared tasks. </LI>  
       
 ### UI IMPROVEMENT :
-  <LI>Row Count : Correct row count on Monitor Window. </LI> 
+  <LI>  Desktop : Remember tools' position and contents. </LI>
+  <LI>      L&F : Look and Feel can be changed via Settings menu item. </LI>
+  <LI>  Mission : Organize missions under a tree structure for each settlement. </LI>  
+  <LI>   Panels : Separate tables for Maintenance, Waste and Resource processing. </LI>
+  <LI>  Styling : Single styling via look and feel applied to all components. </LI>
   <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
-  <LI>  Styling : Single styling via look and feel applied to all components.</LI>
-  <li>      L&F : Look and Feel can be changed via Settings menu item.</li>
-  <li>  Desktop : Windows in the Desktop remember their position and contents between runs, if possible.</li>
 
 ### RUNTIME ENVIRONMENT :
-  <LI>Java : Java 17 required. </LI> 
+  <LI>Java : Require Java 17 or above. </LI> 
  
 ### FIXES :
  <LI> EVA Suit : Allow suit repair in a vehicle using repair task. </LI>
