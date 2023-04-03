@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsCalendarDisplay.java
- * @date 2021-09-20
+ * @date 2023-04-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.time;
@@ -95,6 +95,7 @@ public class MarsCalendarDisplay extends JComponent {
 
 	/**
 	 * Updates the calendar display.
+	 * 
 	 * @param mc Current Mars time
 	 */
 	public void update(MarsClock mc) {
