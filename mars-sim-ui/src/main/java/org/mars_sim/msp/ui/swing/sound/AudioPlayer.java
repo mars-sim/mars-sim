@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AudioPlayer.java
- * @date 2021-08-21
+ * @date 2023-03-30
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -75,18 +75,16 @@ public class AudioPlayer {
 		}
 		
 		UIConfig config = desktop.getMainWindow().getConfig();
-		Properties props = config.getPropSets().get(PROPS_NAME);
-		boolean mute = (props != null ? Boolean.parseBoolean(props.getProperty(MUTE, "TRUE"))
-										: true);
+		Properties props = config.getPropSet(PROPS_NAME);
+		boolean mute = UIConfig.extractBoolean(props, MUTE, true);
 		if (mute) {
 			muteSoundEffect();
 			muteMusic();
 			currentMusicVol = 0;
 			currentSoundVol = 0;
 		}
-		else if (props != null) {
-			// COndition should never fail
-			double v = Double.parseDouble(props.getProperty(VOLUME, "0.5"));
+		else {
+			double v = UIConfig.extractDouble(props, VOLUME, 0.5D);
 			currentMusicVol = v;
 			currentSoundVol = v;
 		}

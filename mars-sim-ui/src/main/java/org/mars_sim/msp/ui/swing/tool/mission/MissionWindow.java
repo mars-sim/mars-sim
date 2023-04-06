@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionWindow.java
- * @date 2022-07-31
+ * @date 2023-03-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -305,10 +305,15 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		missionTree.setSelectionPath(new TreePath(path));
 	}
 
+	/**
+	 * Get the current status of the window in terms of User experience.
+	 */
 	@Override
 	public Properties getUIProps() {
 		Properties results = new Properties();
-		results.setProperty(MISSIONNAME_PROP, missionCache.getName());
+		if (missionCache != null) {
+			results.setProperty(MISSIONNAME_PROP, missionCache.getName());
+		}
 		return results;
 	}
 }

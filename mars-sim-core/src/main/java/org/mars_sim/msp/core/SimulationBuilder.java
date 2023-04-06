@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @date 2022-11-02
+ * @date 2023-03-31
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * he various options.
  */
 public class SimulationBuilder {
-	private static final String LOAD_ARG = "load";
 	private static final String NEW_ARG = "new";
 	private static final String TIMERATIO_ARG = "timeratio";
 	private static final String TEMPLATE_ARG = "template";
@@ -125,19 +124,21 @@ public class SimulationBuilder {
 		}
 	}
 	
+	/**
+	 * Reload a previous simulation
+	 * @param filename
+	 */
 	public void setSimFile(String filename) {
 		if (filename == null) {
-			this.simFile = new File(SimulationFiles.getSaveDir(),
-						Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+			throw new IllegalArgumentException("No simultion file specified");
+		}
+
+		if (Paths.get(filename).isAbsolute()) {
+			this.simFile = new File(filename);
 		}
 		else {
-			if (Paths.get(filename).isAbsolute()) {
-				this.simFile = new File(filename);
-			}
-			else {
-				this.simFile = new File(SimulationFiles.getSaveDir(),
-										filename);
-			}
+			this.simFile = new File(SimulationFiles.getSaveDir(),
+									filename);
 		}
 	}
 
@@ -174,8 +175,6 @@ public class SimulationBuilder {
 		
 		options.add(Option.builder(NEW_ARG)
 						.desc("Create a new simulation if one is not present").build());
-		options.add(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
-						.desc("Load the a previously saved sim, default is used if none specifed").build());
 		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg().optionalArg(false)
 				.desc("New simulation from a scenario").build());
 		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg().optionalArg(false)
@@ -214,9 +213,6 @@ public class SimulationBuilder {
 		}
 		if (line.hasOption(SCENARIO_ARG)) {
 			setScenarioName(line.getOptionValue(SCENARIO_ARG));
-		}
-		if (line.hasOption(LOAD_ARG)) {
-			setSimFile(line.getOptionValue(LOAD_ARG));
 		}
 		if (line.hasOption(LATITUDE_ARG)) {
 			setLatitude(line.getOptionValue(LATITUDE_ARG));

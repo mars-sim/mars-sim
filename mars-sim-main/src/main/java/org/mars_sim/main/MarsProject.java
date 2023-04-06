@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProject.java
- * @date 2022-11-02
+ * @date 2023-03-30
  * @author Scott Davis
  */
 package org.mars_sim.main;
@@ -57,8 +57,11 @@ public class MarsProject {
 	private static final String SANDBOX = "sandbox";
 	private static final String SITE_EDITOR = "site";
 	private static final String PROFILE = "profile";
-	
+	private static final String LOAD_ARG = "load";
+
 	private static final String SANDBOX_MODE_Q = "Do you want to bypass the console menu and start a new default simulation in Sandbox Mode ?";
+
+	private static final String DEFAULT_FILE = "default";
 	
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
@@ -68,11 +71,13 @@ public class MarsProject {
 	private boolean useProfile = false;
 	private boolean isSandbox = false;
 
-	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
+	private static InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
 	private Simulation sim;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
+
+	private String simFile;
 
 	/**
 	 * Constructor
@@ -144,6 +149,9 @@ public class MarsProject {
 			else if (useProfile) {
 				setupProfile();
 			}
+			else if (simFile != null) {
+				builder.setSimFile(simFile);
+			}
 		
 			// Go to console main menu if there is no template well-defined in the startup string
 			else if (!builder.isFullyDefined() && useNew) {
@@ -160,7 +168,7 @@ public class MarsProject {
 					else if (type == 2) {
 						// Load simulation
 						logger.config("Load the sim...");
-						String filePath = selectSimFile(false);
+						String filePath = selectSimFile();
 						if (filePath != null) {
 							builder.setSimFile(filePath);
 						}
@@ -236,6 +244,9 @@ public class MarsProject {
 				.desc("Start the Scenario Editor").build());
 		options.addOption(Option.builder(PROFILE)
 				.desc("Set up the Commander Profile").build());
+		options.addOption(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
+				.desc("Load the a previously saved sim. No argument open file selection dialog. '"
+									+ DEFAULT_FILE + "' will use default").build());
 		
 		CommandLineParser commandline = new DefaultParser();
 		try {
@@ -258,6 +269,15 @@ public class MarsProject {
 			}
 			if (line.hasOption(CLEANUI)) {
 				useCleanUI = true;
+			}
+			if (line.hasOption(LOAD_ARG)) {
+				simFile = line.getOptionValue(LOAD_ARG);
+				if (simFile == null) {
+					simFile = selectSimFile();
+				}
+				else if (DEFAULT_FILE.equals(simFile)) {
+					simFile = Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION;
+				}
 			}
 			if (line.hasOption(SITE_EDITOR)) {
 				useSiteEditor = true;
@@ -313,32 +333,18 @@ public class MarsProject {
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
 		logger.config(message);
-		format.printHelp("", options);
+		format.printHelp("marsProject", options);
 		System.exit(1);
 	}
 
 	/**
 	 * Performs the process of loading a simulation.
-	 *
-	 * @param autosave
 	 */
-	protected static String selectSimFile(boolean autosave) {
+	private static String selectSimFile() {
 
-		String dir = null;
-		String title = null;
-
-		// Add autosave
-		if (autosave) {
-			dir = SimulationFiles.getAutoSaveDir();
-			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
-		} else {
-			dir = SimulationFiles.getSaveDir();
-			title = Msg.getString("MainWindow.dialogLoadSavedSim");
-		}
-
-		JFileChooser chooser = new JFileChooser(dir);
-		chooser.setDialogTitle(title); // $NON-NLS-1$
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+		JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
+		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSavedSim")); // $NON-NLS-1$
+		if (chooser.showOpenDialog(interactiveTerm.getTerminal().getFrame()) == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getAbsolutePath();
 		}
 

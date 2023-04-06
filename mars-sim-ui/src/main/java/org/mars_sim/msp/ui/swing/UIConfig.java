@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UIConfig.java
- * @date 2021-08-28
+ * @date 2023-03-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -359,12 +359,22 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the property sets deifned in the coonfig
+	 * Get the property sets deifned in the configs
 	 * @return
 	 */
 	public Map<String, Properties> getPropSets() {
 		return propSets;
 	}
+
+	/**
+	 * Get the property set for a particular name.
+	 * If a match is not found an empty property set is returned
+	 * @return
+	 */
+	public Properties getPropSet(String name) {
+		return propSets.getOrDefault(name, new Properties());
+	}
+
 
 	/**
 	 * Get the details of the stored windows

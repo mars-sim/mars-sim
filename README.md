@@ -1,7 +1,7 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.4.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/3.4.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.5.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.4.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
@@ -227,7 +227,7 @@ For the open source community, the OpenJDK is also being decoupled from the Open
 
 Currently, mars-sim does not require JavaFX.
 
-> Note 1 : Specifically, the official release of v3.1.0, v3.2.0, v3.3.0 and v3.4.0 of mars-sim do not
+> Note 1 : Specifically, the official release of mars-sim (v3.1.0 to v3.5.0) do not
 utilize JavaFX / OpenJFX. 
 
 Therefore, it's NOT a requirement to install it for running mars-sim.
@@ -240,16 +240,20 @@ configure the OpenJFX or JavaFX package on top of the JDK.
 See ticket #156 to read the discussions on how to set up JavaFX to run it
 under Java 11.
 
-You may go to [Bellsoft](https://bell-sw.com/pages/downloads/) or 
-[OpenLogic](https://www.openlogic.com/openjdk-downloads) to
-obtain the latest JRE/JDK for your platform.
+Obtain the latest JRE/JDK for your platform. Here are some of the popular OpenJDK packages out there :
+
+* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+
+* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+
+* [Liberica](https://bell-sw.com/pages/downloads/)
+
+* [OpenLogic](https://www.openlogic.com/openjdk-downloads)
 
 If you need JavaFX, we recommend downloading the `Full JDK` 64-bits package.
 
 In case of Liberica, the `Full JDK` includes LibericaFX, which is based on OpenJFX, for
 running other apps that requires JavaFX.
-
-For windows platform, choose MSI version that will automatically set up the environment path.
 
 
 ### OS Platforms
@@ -274,21 +278,22 @@ See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more 
 
 
 #### Windows
-A Java Installatino for Window will normally configure the path correctly so a command prompt a java cpmmand will be executable. `java -version`. Here are some implementaion of OpenJDK for Windows:
 
-* [Amazon Cornetto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+Choose MSI version that will automatically set up the environment path correctly.
 
-* [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+However, there are cases that the `path` variable and `JAVE_HOME` variable are not being configured properly.
 
-If java cannot be found then follow the steps below. 
+In the command prompt, try `java -version` to see what version of Java is first being found in your specific cases. 
 
-1. Locate the Java  installation.
+IN case java cannot be found or is erroneous, then follow the steps below :
 
-2. Start a command prompt and type this `set JAVA_HOM£="<java home>\bin"`.
+1. Locate the Java installation.
 
-3. Set the PATH variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
+2. Start a command prompt and type this `set JAVA_HOME="<java home>\bin"`.
 
-> Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java
+3. Set the `PATH` variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
+
+> Note 2 : The order of precedence inside `PATH` variable is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
 > Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
@@ -296,14 +301,13 @@ presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
-
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.17)
-inside `PATH` and remove all other folders referencing other java versions/builds.
+> Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.6)
+inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
 interfere with the correct version of Java that you would like to use.
 
-> Note 4 : Depending on the order of precedence in Path variable,
+> Note 4 : Depending on the order of precedence in `Path` variable,
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
 
@@ -326,9 +330,9 @@ from the Control Panel as follows :
 only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 
+7. To track what versions of openjdk have been installed on your machine, you may try using 
+[JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
-7. To track what versions of openjdk have been installed on your machine.
-Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ### Remote Console Connection
 
@@ -380,8 +384,8 @@ e.g. Include the followings :
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle JDK 11.0.17, AdoptOpenJDK 11.0.17, openjfx 11 etc.]
- - mars-sim build version : [e.g. r7688, 3.4.0, pre-3.5.0, etc.]
+ - Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17 etc.]
+ - mars-sim build version : [e.g. r7882, 3.5.0, pre-3.5.0, etc.]
 
 **Additional context**
  - Add any other context about the problem here.
@@ -418,12 +422,12 @@ For a more detail description of this project, see our [project website](https:/
 
 
 ### Download
-Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).
+* Check out the most recent release or pre-release build in GitHub [Release](https://github.com/mars-sim/mars-sim/releases) page.
 
-Also, see the previous and official release version at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.4.0/).
+* Or see the previous and current official release versions at
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.5.0/).
 
-If you like, click on the SF's button below to automatically sense the correct OS platform to download.
+Note: if you prefer, click SF's button below to automatically sense the correct OS platform to download.
 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 

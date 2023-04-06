@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TimeWindow.java
- * @date 2022-08-02
+ * @date 2023-04-01
  * @author Scott Davis
  */
 
@@ -185,7 +185,7 @@ public class TimeWindow extends ToolWindow {
 //		&#8195; Em tab space
 			
 		// Create areocentric longitude header label
-		lonLabel = hemiPane.addTextField("Areocentric Longitude (Ls):", "", null);
+		lonLabel = hemiPane.addTextField("Areocentric Longitude (Ls) :", "", null);
 		northernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.northernHemisphere"),
 													"", null);
 		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"),

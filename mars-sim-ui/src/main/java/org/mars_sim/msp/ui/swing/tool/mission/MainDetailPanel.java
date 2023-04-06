@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainDetailPanel.java
- * @date 2022-07-31
+ * @date 2023-03-31
  * @author Scott Davis
  */
 
@@ -161,7 +161,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create the main panel.
 		JPanel mainBox = new JPanel(new BorderLayout(1, 1));
-		mainBox.setBorder(new MarsPanelBorder());
 		scrollPane.setViewportView(mainBox);
 
 		// Create the top box.
@@ -716,7 +715,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerMapButton.setEnabled(false);
 		
 		vehicleStatusLabel.setText(" ");
-		speedLabel.setText(Msg.getString(StyleManager.DECIMAL_KMH.format(0))); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		

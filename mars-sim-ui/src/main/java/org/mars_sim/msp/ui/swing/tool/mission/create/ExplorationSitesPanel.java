@@ -314,8 +314,6 @@ class ExplorationSitesPanel extends WizardPanel {
 	private double getRange() {
 		// Use range modifier.
 		double range = getWizard().getMissionData().getRover().getRange(Exploration.MISSION_TYPE) * RANGE_MODIFIER;
-//		if (range > MAX_RANGE)
-//			range = MAX_RANGE;
 		return range;
 	}
 
@@ -646,7 +644,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150,
+				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150D, displayPos.getiY() - 150D,
 						CannedMarsMap.PIXEL_RHO);
 
 				// Only drag navpoint flag if within ellipse range bounds.

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProjectHeadless.java
- * @date 2021-08-28
+ * @date 2023-03-30
  * @author Manny Kung
  */
 
@@ -39,6 +39,8 @@ public class MarsProjectHeadless {
 	private static final String NOREMOTE = "noremote";
 	private static final String DISPLAYHELP = "help";
 	private static final String RESETADMIN = "resetadmin";
+	private static final String LOAD_ARG = "load";
+
 
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProjectHeadless.class.getName());
@@ -82,6 +84,8 @@ public class MarsProjectHeadless {
 			options.addOption(o);
 		}
 
+		options.addOption(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
+				.desc("Load the a previously saved sim. No argument then the default is used").build());
 		options.addOption(Option.builder(DISPLAYHELP)
 				.desc("Help of the options").build());
 		OptionGroup remoteGrp = new OptionGroup();
@@ -118,6 +122,13 @@ public class MarsProjectHeadless {
 			if (line.hasOption(RESETADMIN)) {
 				resetAdmin = true;
 			}
+			if (line.hasOption(LOAD_ARG)) {
+				String simFile = line.getOptionValue(LOAD_ARG);
+				if (simFile == null) {
+					simFile = Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION;
+				}
+				builder.setSimFile(simFile);
+			}
 		}
 		catch (Exception e1) {
 			usage("Problem with arguments: " + e1.getMessage(), options);
@@ -145,7 +156,7 @@ public class MarsProjectHeadless {
 		HelpFormatter format = new HelpFormatter();
 		System.out.println();
 		System.out.println(message);
-		format.printHelp(" [for mars-sim console edition]", options);
+		format.printHelp(" [for mars-sim headless edition]", options);
 		System.exit(1);
 	}
 

@@ -7,7 +7,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.5.0</version>
+		<version>pre-3.6.0</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
@@ -85,7 +85,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
-			<version>3.0</version>
+			<version>3.1</version>
 		</dependency>
 
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
@@ -94,15 +94,6 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>3.7.12</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 124 KB
-			 https://github.com/jIconFont/jiconfont-font_awesome -->
-		<dependency>
-		    <groupId>com.github.jiconfont</groupId>
-		    <artifactId>jiconfont-font_awesome</artifactId>
-		    <version>4.7.0.1</version>
-		    <!-- version>4.5.0.3</version-->
 		</dependency>
 
   </dependencies>

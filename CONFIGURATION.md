@@ -1,5 +1,5 @@
 # Configuration
-`Revised : 7 Jul 2019`
+`Revised : 26 Mar 2023`
 
 Most of the Mars Simulation Project's configuration files are 
 primarily written in XML format. This guide will get you 
@@ -9,8 +9,7 @@ Most attributes and properties are designed to
 tolerate a range of values. However, they are not all 
 created equal to have the same degree of user customization. 
 
-Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) with us in  
-whatever you have in mind.
+Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) with us with any ideas you have in mind.
 
 
 ## Utility Tool
@@ -45,9 +44,12 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | --- | --- |
 | buildings.xml | Define new buildings with functions |                  
 | construction.xml | Define type of foundations, frames and buildings |
-| crew.xml | Store the alpha crew roster |
+| crew_alpha.xml | Store the alpha crew roster |
+| crew_founders.xml | Store the founders roster |
+| crew.xsd | Define xsd schemes |
 | crops.xml | Define food crops grown in greenhouses |
 | foodProduction.xml | Define food technology related processes |
+| governance.xml | Define various default mission agenda, as well as sponsors' settlement and rover names |
 | landmarks.xml | Define landmarks on the surface of Mars |  
 | malfunctions.xml | Define malfunctions that can occur in the sim |
 | manufacturing.xml | Define manufacturing processes  |
@@ -57,16 +59,19 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | part_packages.xml | Define part packages for initial settlements or resupplies from Earth |
 | parts.xml | Define parts  |
 | people.xml | Define properties related to people |
+| quotations.xml | Define a list of space-related quotes |
+| resourceprocess.xml | Define resource processes |
 | resources.xml | Define resources |
 | resupplies.xml | Define initial settlement resupply packages from Earth |
-| settlements.xml | Store settlement templates and define properties related to settlements |           
+| robots.xml | Define robot types |
+| settlements.xml | Store settlement templates and define properties related to settlements |   
 | simulation.xml | Define simulation properties |
 | vehicles.xml | Define properties related to vehicles and rovers |
 
 
 ## Further Information
 
-You can find out more information about mars-sim in its [github](
+You can find out more information about mars-sim in its [Github](
 https://github.com/mars-sim/mars-sim) page.
 
 

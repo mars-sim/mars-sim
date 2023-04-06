@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2021-08-15
+ * @date 2023-03-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -383,14 +383,9 @@ public class MainWindow
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 
 		// set the visibility of tool and unit bars from preferences
-		Properties props = configs.getPropSets().get(MAIN_PROPS);
-		boolean showUnitBar = (props != null ? Boolean.parseBoolean(props.getProperty(SHOW_UNIT_BAR, "FALSE"))
-				: false);
-		unitToolbar.setVisible(showUnitBar);
-
-		boolean showToolBar = (props != null ? Boolean.parseBoolean(props.getProperty(SHOW_TOOL_BAR, "TRUE"))
-				: true);
-		toolToolbar.setVisible(showToolBar);
+		Properties props = configs.getPropSet(MAIN_PROPS);
+		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
+		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
 
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
@@ -713,7 +708,7 @@ public class MainWindow
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0 && !isIconified) {
 			// Increments the Earth and Mars clock labels.
-			toolToolbar.incrementClocks(pulse.getMasterClock(), pulse.isNewSol());
+			toolToolbar.incrementClocks(pulse.getMasterClock());
 
 			memoryBar.refresh();
 

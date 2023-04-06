@@ -1,6 +1,6 @@
 # Only a packing stage. JAR must be available
 # Package stage
-FROM amazoncorretto:17
+FROM amazoncorretto:20
 WORKDIR /app
 
 # Version name

@@ -1,6 +1,6 @@
-# Mars Simulation Project
+# Mars Simulation Project v3.5.0
 
-Copyright (C) 2022 Scott Davis
+Copyright (C) 2023 Scott Davis
 https://mars-sim.github.io
 https://github.com/mars-sim/mars-sim
 

@@ -252,7 +252,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		setContainerUnit(settlement);
 
 		// Add to a random building
-		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
+		BuildingManager.addPersonToRandomBuilding(this, settlement);
 		// Create PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
 	}
@@ -318,7 +318,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Reloading from a saved sim
 		
 		// Add to a random building
-		BuildingManager.addPersonToRandomBuilding(this, associatedSettlementID);
+		BuildingManager.addPersonToRandomBuilding(this, getAssociatedSettlement());
 		// Set up the time stamp for the person
 		calculateBirthDate(masterClock.getEarthTime());
 		// Create favorites

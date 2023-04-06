@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +74,10 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 public class MainDesktopPane extends JDesktopPane
 		implements ClockListener, ComponentListener, UnitManagerListener {
 
+	// Properties for UIConfig settings
+	private static final String DESKTOP_PROPS = "desktop";
+	private static final String PRELOAD_TOOLS = "preload_tools";
+
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
@@ -96,7 +101,11 @@ public class MainDesktopPane extends JDesktopPane
 	private AnnouncementWindow announcementWindow;
 
 	private MainWindow mainWindow;
+	
+	// Preload the Tool windows
+	private boolean preloadTools = true;
 
+	// Siumulation refernece used by the UI windows
 	private Simulation sim;
 
 	/**
@@ -118,8 +127,8 @@ public class MainDesktopPane extends JDesktopPane
 		// Prepare unit windows.
 		unitWindows = new ArrayList<>();
 
-		// Prepare tool windows.
-		toolWindows = new ArrayList<>();
+		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse
+		toolWindows = new CopyOnWriteArrayList<>();
 
 		prepareListeners();
 
@@ -143,8 +152,14 @@ public class MainDesktopPane extends JDesktopPane
 		backgroundLabel.setLocation(0, 0);
 		// Push the background to the back
 		moveToBack(backgroundLabel);
-		// Prep tool windows
-		prepareToolWindows();
+
+		Properties props = mainWindow.getConfig().getPropSet(DESKTOP_PROPS);
+		preloadTools = UIConfig.extractBoolean(props, PRELOAD_TOOLS, false);
+		if (preloadTools) {
+			// Prep tool windows
+			prepareToolWindows();
+		}
+		
 		// Prep listeners
 		prepareListeners();
 		// Setup announcement window
@@ -497,7 +512,7 @@ public class MainDesktopPane extends JDesktopPane
 		else {
 			// Create new window for unit.
 			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
-
+			
 			add(tempWindow, 0);
 			tempWindow.pack();
 
@@ -506,6 +521,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			Point newPosition = null;
 			if (initProps != null) {
+				tempWindow.setUIProps(initProps.props());
 				newPosition = initProps.position();
 			}
 			if (newPosition == null) {
@@ -770,6 +786,10 @@ public class MainDesktopPane extends JDesktopPane
 			result.put(AudioPlayer.PROPS_NAME, soundPlayer.getUIProps());
 		}
 
+		// Add desktop properties
+		Properties desktopProps = new Properties();
+		desktopProps.setProperty(PRELOAD_TOOLS, Boolean.toString(preloadTools));
+		result.put(DESKTOP_PROPS, desktopProps);
 		return result;
     }
 
@@ -778,7 +798,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void destroy() {
 
-		logger = null;
 		mode = null;
 		if (unitWindows != null) {
 			for (UnitWindow u : unitWindows) {

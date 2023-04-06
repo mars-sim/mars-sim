@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TableTab.java
- * @date 2021-12-07
+ * @date 2023-03-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -17,6 +17,7 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -166,12 +167,14 @@ abstract class TableTab extends MonitorTab {
 	protected List<Object> getSelection() {
 		MonitorModel target = getModel();
 
-		int indexes[] = {};
-		if (table != null)
-			indexes = table.getSelectedRows();
+		int indexes[] = table.getSelectedRows();
+		RowSorter<? extends TableModel> sorter = table.getRowSorter();
 		List<Object> selectedRows = new ArrayList<>();
-		for (int indexe : indexes) {
-			Object selected = target.getObject(indexe);
+		for (int index : indexes) {
+            if (sorter != null)
+                index = sorter.convertRowIndexToModel(index);
+
+			Object selected = target.getObject(index);
 			if (selected != null)
 				selectedRows.add(selected);
 		}

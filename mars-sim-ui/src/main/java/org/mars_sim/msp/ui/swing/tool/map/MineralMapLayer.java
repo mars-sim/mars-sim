@@ -72,8 +72,8 @@ public class MineralMapLayer implements MapLayer {
 			// Clear map concentration array.
 			Arrays.fill(mineralConcentrationArray, 0);
 
-			int centerX = 150;
-			int centerY = 150;
+			double centerX = 150;
+			double centerY = 150;
 
 			double rho = CannedMarsMap.PIXEL_RHO;
 

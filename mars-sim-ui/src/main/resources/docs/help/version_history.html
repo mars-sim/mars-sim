@@ -10,12 +10,12 @@
 <H2>Version History</H2>
 <hr>
 
-<H3> v3.5.0 (build ____) - __ Jan 2023 </H3>
+<H3> 3.5.0 (build 7907) - 5 Apr 2023 </H3>
 
 <H4> CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
   <LI>   Battery : Standardize battery capacity. </LI>
-  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI>    
+  <LI>    Events : Supports future scheduled events to better handle periodic actions on the entities. </LI> 
   <LI>   Mission : Add deadline on rover mission departure. Split embarking phase into loading & departing. </LI> 
   <LI>     Parts : Add silica aerogel as transparent rooftop tiles. </LI>  
   <LI>     Robot : Define specifications using RobotSpec class. </LI>  
@@ -27,17 +27,23 @@
 
 <H4> UI IMPROVEMENT :</H4>
 <OL>
-  <LI>Row Count : Correct row count on Monitor Window. </LI> 
+  <LI>  Desktop : Remember tools' position and contents. </LI>
+  <LI>      L&F : Look and Feel can be changed via Settings menu item. </LI>
+  <LI>  Mission : Organize missions under a tree structure for each settlement. </LI>  
+  <LI>   Panels : Separate tables for Maintenance, Waste and Resource processing. </LI>
+  <LI>  Styling : Single styling via look and feel applied to all components. </LI>
   <LI>      Tab : Add new tab to the Monitor Tool to show task backlog of each settlement. </LI>
-  <LI>  Styling : Single styling via look and feel applied to all components.</LI>
-  <li>      L&F : Look and Feel can be changed via Settings menu item.</li>
-  <li>   Panels : Panel lists converted into Tables for Maintenance, Waste & Resource processing. </li>
+</OL>
+
+<H4> RUNTIME ENVIRONMENT :</H4>
+<OL>
+  <LI>Java : Require Java 17 or above. </LI> 
 </OL>
 
 <H4> FIXES :</H4>
 <OL>
- <LI> EVA Suit : Allow suit repair in a vehicle using Repair task. </LI>
- <LI> Jar file : Make settlement template name readable by using lowercase. </LI>
+ <LI> EVA Suit : Allow suit repair in a vehicle using repair task. </LI>
+ <LI> Jar file : Make settlement template name readable by using lowercase letters. </LI>
  <LI>    Robot : Correct robot battery status to be based on percentage, instead of actual KWh. </LI>
  <LI>  Vehicle : Correct fuel consumption calculation. </LI>
 </OL>
