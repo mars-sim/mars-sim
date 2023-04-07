@@ -11,6 +11,8 @@ package org.mars_sim.msp.core.logging;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -37,6 +39,9 @@ public class SimuLoggingFormatter extends Formatter {
 	private static String lastMarsTimestamp = null;
     private static MasterClock masterClock;
 	private static int timeStampType = 2;
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER
+						= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     
     public SimuLoggingFormatter() {
 		super();
@@ -53,7 +58,7 @@ public class SimuLoggingFormatter extends Formatter {
 				sb.append(getLocalTime());
 			}
 			else if (timeStampType == 1) {
-				sb.append(masterClock.getEarthClock().getTimeStampF0());
+				sb.append(masterClock.getEarthTime().format(DATE_TIME_FORMATTER));
 			}
 			else if (timeStampType == 2  && isMarsClockValid()) {
 				String marsTime = getMarsTimestamp();
@@ -149,35 +154,6 @@ public class SimuLoggingFormatter extends Formatter {
 		return dt.substring(0, dt.lastIndexOf(".")+2);
     }
     
-    /**
-     * Replace characters in a string quickly without using regex
-     * 
-     * @param str
-     * @param target
-     * @param replacement
-     * @return
-     */
-    private static final String fastReplace(String str, String target, String replacement) {
-        int targetLength = target.length();
-        if( targetLength == 0 ) {
-            return str;
-        }
-        int idx2 = str.indexOf( target );
-        if( idx2 < 0 ) {
-            return str;
-        }
-        StringBuilder buffer = new StringBuilder( targetLength > replacement.length() ? str.length() : str.length() * 2 );
-        int idx1 = 0;
-        do {
-            buffer.append( str, idx1, idx2 );
-            buffer.append( replacement );
-            idx1 = idx2 + targetLength;
-            idx2 = str.indexOf( target, idx1 );
-        } while( idx2 > 0 );
-        buffer.append( str, idx1, str.length() );
-        return buffer.toString();
-    }
-
     /**
      * Define the clock to use
      * @param mc

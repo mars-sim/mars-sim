@@ -256,9 +256,6 @@ public abstract class Vehicle extends Unit
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-		
 		this.vehicleTypeString = vehicleTypeString;
 		
 		// Set description
@@ -549,9 +546,6 @@ public abstract class Vehicle extends Unit
 
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
-
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
 
 		this.vehicleTypeString = vehicleType;
 

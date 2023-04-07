@@ -49,7 +49,7 @@ public class MarsClock implements Serializable {
 	public static final int SOLS_PER_MONTH_LONG = 28;
 	public static final int NUM_SOLS_SIX_MONTHS = SOLS_PER_MONTH_LONG * 5 + SOLS_PER_MONTH_SHORT;
 
-	public static final double AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR = ClockUtils.SOLS_PER_ORBIT;
+	public static final double AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR = 668.5921;
 
 	// Mars is at aphelion (its greatest distance from the Sun, 249 million
 	// kilometers, where it moves most slowly) at Ls = 70 , near the northern
@@ -69,6 +69,7 @@ public class MarsClock implements Serializable {
 	public static final double HOURS_PER_MILLISOL  = SECONDS_PER_MILLISOL / 3600D;
 	/** Number of millisols per hour. */
 	public static final double MILLISOLS_PER_HOUR  = 3600D / SECONDS_PER_MILLISOL;
+	public static final double MILLISOLS_PER_DAY = MILLISOLS_PER_HOUR * 24;
 
 	// Mars is near perihelion when it is summer in the southern hemisphere and
 	// winter in the north, and near aphelion when it is winter in the southern

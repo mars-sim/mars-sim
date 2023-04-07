@@ -206,6 +206,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
     }
 
 	protected ClockPulse createPulse(MarsClock marsTime, boolean newSol) {
-        return new ClockPulse(pulseID++, 1D, marsTime, null, null, newSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, true);
     }
 }

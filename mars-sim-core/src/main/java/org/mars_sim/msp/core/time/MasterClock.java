@@ -7,6 +7,8 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -114,7 +116,7 @@ public class MasterClock implements Serializable {
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsClock initialMarsTime;
 	/** The Earth Clock. */
-	private EarthClock earthClock;
+	private LocalDateTime earthTime;
 	/** The Uptime Timer. */
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
@@ -137,7 +139,7 @@ public class MasterClock implements Serializable {
 		initialMarsTime = new MarsClock(marsClock);
 
 		// Create an Earth clock
-		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
+		earthTime = simulationConfig.getEarthStartDate();
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer();
@@ -202,12 +204,12 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Returns the Earth clock.
+	 * Returns the Earth date.
 	 *
-	 * @return Earth clock instance
+	 * @return Earth date
 	 */
-	public EarthClock getEarthClock() {
-		return earthClock;
+	public LocalDateTime getEarthTime() {
+		return earthTime;
 	}
 
 	/**
@@ -518,7 +520,7 @@ public class MasterClock implements Serializable {
 					uptimer.updateTime(optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
 
 					// Add time to the Earth clock.
-					earthClock.addTime(earthMillisec);
+					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
 
 					// Add time pulse to Mars clock.
 					marsClock.addTime(lastPulseTime);
@@ -688,7 +690,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsClock, earthClock, this, isNewSol, isNewMSol);
+		currentPulse = new ClockPulse(newPulseId, time, marsClock, this, isNewSol, isNewMSol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
@@ -958,8 +960,6 @@ public class MasterClock implements Serializable {
 	public void destroy() {
 		marsClock = null;
 		initialMarsTime = null;
-		earthClock.destroy();
-		earthClock = null;
 		uptimer = null;
 		clockThreadTask = null;
 		listenerExecutor = null;

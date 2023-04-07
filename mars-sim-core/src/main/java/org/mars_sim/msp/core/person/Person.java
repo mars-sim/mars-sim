@@ -7,6 +7,11 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +78,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -85,7 +89,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, EquipmentOwner, ResearcherInterface {
+public class Person extends Unit implements Worker, Temporal, ResearcherInterface {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -128,12 +132,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	/** True if the person is declared dead. */
 	private boolean declaredDead;
 
-	/** The year of birth of a person */
-	private int year;
-	/** The month of birth of a person */
-	private int month;
-	/** The day of birth of a person */
-	private int day;
+	/** The birth of a person */
+	private LocalDate birthDate;
 	/** The age of a person */
 	private int age = -1;
 	/** The quarters that the person belongs. */
@@ -320,7 +320,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		// Add to a random building
 		BuildingManager.addPersonToRandomBuilding(this, getAssociatedSettlement());
 		// Set up the time stamp for the person
-		calculateBirthDate(earthClock);
+		calculateBirthDate(masterClock.getEarthTime());
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
@@ -664,52 +664,20 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		return shiftSlot.getStatus() == WorkStatus.ON_DUTY;
 	}
 
-	/**
-	 * Gets the instance of the task schedule for a person.
-	 */
-	// public TaskSchedule getTaskSchedule() {
-	// 	return taskSchedule;
-	// }
 
 	/**
 	 * Creates a string representing the birth time of the person.
 	 * @param clock
 	 *
 	 */
-	private void calculateBirthDate(EarthClock clock) {
-		// Set a birth time for the person
-		if (age != -1) {
-			year = EarthClock.getCurrentYear(earthClock) - age - 1;
-		}
-		else {
-			year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(21, 65);
-		}
-
-		month = RandomUtil.getRandomInt(11) + 1;
-
-		if (month == 2) {
-			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-				day = RandomUtil.getRandomInt(28) + 1;
-			} else {
-				day = RandomUtil.getRandomInt(27) + 1;
-			}
-		}
-
-		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-			day = RandomUtil.getRandomInt(30) + 1;
-		} else {
-			day = RandomUtil.getRandomInt(29) + 1;
-		}
-
-		// Note: find out why sometimes day = 0 as seen on
-		if (day == 0) {
-			logger.warning(this, "Date of birth is on the day 0th. Incrementing to the 1st.");
-			day = 1;
-		}
+	private void calculateBirthDate(LocalDateTime earthLocalTime) {
+		// Remove a random number of days from the current earth date
+		int daysPast = RandomUtil.getRandomInt(21*365, 65*365);
+		birthDate = earthLocalTime.minusDays(daysPast).toLocalDate();
 
 		// Calculate the year
 		// Set the age
-		age = updateAge(clock);
+		age = updateAge(earthLocalTime);
 	}
 
 	/**
@@ -912,7 +880,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 						}
 
 						// Check if a person's age should be updated
-						age = updateAge(pulse.getEarthTime());
+						age = updateAge(pulse.getMasterClock().getEarthTime());
 
 						// Checks if a person has a role
 						if (role.getType() == null)
@@ -993,12 +961,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	 *
 	 * @return the person's age
 	 */
-	private int updateAge(EarthClock clock) {
-		int newage = clock.getYear() - year - 1;
-		if (clock.getMonth() >= month)
-			if (clock.getDayOfMonth() >= day)
-				newage++;
-		age = newage;
+	private int updateAge(LocalDateTime localDateTime) {
+		age = (int)ChronoUnit.YEARS.between(birthDate, localDateTime);
 		return age;
 	}
 
@@ -1009,9 +973,9 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	 */
 	public void changeAge(int newAge) {
 		// Back calculate a person's year
-		int y = earthClock.getYear() - newAge - 1;
+		int offset = age - newAge;
 		// Set year to newYear
-		year = y;
+		birthDate = LocalDate.of(birthDate.getYear() + offset, birthDate.getMonth(), birthDate.getDayOfMonth());
 		age = newAge;
 	}
 
@@ -1021,18 +985,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	 * @return the person's birth date
 	 */
 	public String getBirthDate() {
-		StringBuilder s = new StringBuilder();
-		s.append(year).append("-");
-		if (month < 10)
-			s.append("0").append(month).append("-");
-		else
-			s.append(month).append("-");
-		if (day < 10)
-			s.append("0").append(day);
-		else
-			s.append(day);
-
-		return s.toString();
+		return birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
 	}
 
 	/**
@@ -2022,7 +1975,11 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			Coordinates newCoords = newContainer.getCoordinates();
+			if (newCoords != null) {
+				// A surface has no coords
+				setCoordinates(newCoords);
+			}
 			// 2. Set LocationStateType
 			updatePersonState(newContainer);
 			// 3. Set containerID

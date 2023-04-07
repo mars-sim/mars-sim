@@ -43,7 +43,7 @@ public class TestSaving extends TestCase implements SimulationListener {
 
         // Simualtion a clock pulse to trigger the save
         MasterClock mc = sim.getMasterClock();
-        ClockPulse pulse = new ClockPulse(1, 0.01D, mc.getMarsClock(), mc.getEarthClock(), mc, false, false);
+        ClockPulse pulse = new ClockPulse(1, 0.01D, mc.getMarsClock(), mc, false, false);
         sim.clockPulse(pulse);
 
         // Check simualtions saved and it contains data

@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,7 +23,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -46,22 +47,22 @@ public class TimeWindow extends ToolWindow {
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "time";
 	
+	    
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = 
+                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+
 	/** the execution time label string */
-	public static final String EXEC = "Execution";
+	private static final String EXEC = "Execution";
 	/** the sleep time label string */
-	public static final String SLEEP_TIME = "Sleep";
+	private static final String SLEEP_TIME = "Sleep";
 	/** the residual time label string */
-	public static final String MARS_PULSE_TIME = "Pulse Width";
+	private static final String MARS_PULSE_TIME = "Pulse Width";
 	/** the execution time unit */
-	public static final String MILLISOLS = " millisols";
-	/** the ave TPS label string */
-	public static final String AVE_TPS = "Average TPS";
+	private static final String MILLISOLS = " millisols";
 	/** the execution time unit */
-	public static final String MS = " ms";
+	private static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
 	private static final String UMT = " (UMT) ";
-	/** the Greenwich Mean Time abbreviation */
-	private static final String GMT = " (GMT) ";
 
 	// Data members
 	private String northernSeasonTip ="";
@@ -97,7 +98,6 @@ public class TimeWindow extends ToolWindow {
 	/** label for time compression. */
 	private JLabel timeCompressionLabel;
 
-
 	private OrbitInfo orbitInfo;
 	
 	/** Arial font. */
@@ -122,7 +122,6 @@ public class TimeWindow extends ToolWindow {
 		Simulation sim = desktop.getSimulation();
 		MasterClock masterClock = sim.getMasterClock();
 		MarsClock marsTime = masterClock.getMarsClock();
-		EarthClock earthTime = masterClock.getEarthClock();
 		orbitInfo = sim.getOrbitInfo();
 		
 		// Get content pane
@@ -202,7 +201,7 @@ public class TimeWindow extends ToolWindow {
 		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		earthTimeLabel.setFont(arialFont);
 		earthTimeLabel.setForeground(new Color(0, 69, 165));
-		earthTimeLabel.setText(earthTime.getTimeStampF4() + GMT);
+		earthTimeLabel.setText("");
 		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
@@ -321,7 +320,7 @@ public class TimeWindow extends ToolWindow {
 		// Update the calender
 		calendarDisplay.update(mc.getMarsClock());
 		// Update areocentric longitude
-		lonLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");	
+		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 1000.0)/1000.0 + "");	
 		
 		// Update season
 		if (mc.getClockPulse().isNewSol()) {
@@ -336,7 +335,7 @@ public class TimeWindow extends ToolWindow {
 		String ts = mc.getMarsClock().getDisplayDateTimeStamp() + UMT;
 		martianTimeLabel.setText(ts);
 
-		ts = mc.getEarthClock().getTimeStampF4() + GMT;
+		ts = mc.getEarthTime().format(DATE_TIME_FORMATTER);
 		earthTimeLabel.setText(ts);
 
 		// Update average TPS label
