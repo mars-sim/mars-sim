@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCareer.java
- * @date 2021-12-05
+ * @date 2023-04-08
  * @author Manny KUng
  */
 
@@ -54,7 +54,7 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job
- * history.
+ * history and current role.
  */
 @SuppressWarnings("serial")
 public class TabPanelCareer extends TabPanel implements ActionListener {
@@ -115,7 +115,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		);
 
 		person = unit;
-		marsClock	= getSimulation().getMasterClock().getMarsClock();
+		marsClock = getSimulation().getMasterClock().getMarsClock();
 
 		if (person.getAssociatedSettlement() != null) {
 			settlement = person.getAssociatedSettlement();
@@ -279,7 +279,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	/*
 	 * Checks a job rating is submitted or a job reassignment is submitted and is
-	 * still not being reviewed
+	 * still not being reviewed.
 	 *
 	 * @param list
 	 */
@@ -342,8 +342,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		changeNotice.setText(s);
 		changeNotice.setForeground((error ? Color.RED : Color.BLUE));
 	}
+	
 	/*
-	 * Calculate the cumulative career performance score of a person
+	 * Calculates the cumulative career performance score of a person.
 	 */
 	public int calculateAveRating(List<JobAssignment> list) {
 		double score = 0;
@@ -359,7 +360,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	/*
 	 * Checks for any role change or reassignment.
-	 * Note that change in population affects the list of role types
+	 * Note that change in population affects the list of role types.
 	 */
 	@SuppressWarnings("unchecked")
 	public void checkRoleChange() {
@@ -377,7 +378,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
         	}
         }
 
-		// Prepare role combo box
+		// Prepares role combo box
 		RoleType newRole = person.getRole().getType();
 
 		if (roleCache != newRole) {
@@ -526,18 +527,21 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if ((selectedRole.isChief() || selectedRole.isCouncil())
 						&& (!roleCache.isChief() || !roleCache.isCouncil())) {
 					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
-							"Are you sure you want to promote the role to " + selectedRole.getName() + " ?");
+							"Are you sure you want to promote the person's role from " 
+							 + roleCache + " to " + selectedRole.getName() + " ?");
 				}
 
 				else if ((roleCache.isChief() || roleCache.isCouncil())
 						&& (!selectedRole.isChief() || !selectedRole.isCouncil())) {
 					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
-							"Are you sure you want to demote the role to " + selectedRole.getName() + " ?");
+							"Are you sure you want to demote the person's role from "
+							 + roleCache + " to "  + selectedRole.getName() + " ?");
 				}
 
 				else {
 					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
-							"Are you sure you want to change the role to " + selectedRole.getName() + " ?");
+							"Are you sure you want to change the person's role from "
+							 + roleCache + " to " + selectedRole.getName() + " ?");
 				}
 
 				if (box == JOptionPane.YES_OPTION) {
@@ -545,7 +549,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					person.getRole().changeRoleType(selectedRole);
 				}
 				else {
-					roleComboBox.setSelectedItem(selectedRole.getName());
+					roleComboBox.setSelectedItem(roleCache.getName());
 				}
 			}
 		}
@@ -553,11 +557,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (source == jobComboBox) {
 
 			JobType selectedJob = JobType.getJobTypeByName((String) jobComboBox.getSelectedItem());
-			JobType jobCache = person.getMind().getJob();
+//			JobType jobCache = person.getMind().getJob();
 
 			if (selectedJob != jobCache) {
 				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
-						"Are you sure you want to change the job to " + selectedJob.getName() + " ?");
+						"Are you sure you want to change the person's job from "
+						 + jobCache + " to " + selectedJob.getName() + " ?");
+				
 				if (box == JOptionPane.YES_OPTION) {
 					considerJobChange(jobCache, selectedJob);
 				}
@@ -569,7 +575,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	}
 
 	/**
-	 * Determine if the job change request should be granted
+	 * Determines if the job change request should be granted.
 	 *
 	 * @param jobStrCache
 	 * @param selectedJobStr
@@ -731,7 +737,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Prepares the job history of the person
+		 * Prepares the job history of the person.
 		 */
 		void update() {
 			jobAssignmentList = jobHistory.getJobAssignmentList();
