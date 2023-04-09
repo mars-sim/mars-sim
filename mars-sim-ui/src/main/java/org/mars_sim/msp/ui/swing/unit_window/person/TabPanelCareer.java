@@ -229,7 +229,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			starRater.setEnabled(false);
 
 		} else
-			// Added checking for the status of Job Reassignment
+			// Add checking for the status of Job Reassignment
 			checkJobReassignment(person, list);
 
 		// Prepare job title panel
@@ -270,7 +270,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		tc.getColumn(3).setCellRenderer(renderer);
 		tc.getColumn(4).setCellRenderer(renderer);
 
-		// Added sorting
+		// Add sorting
 		table.setAutoCreateRowSorter(true);
 		
 		update();
@@ -390,7 +390,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 
 	/*
-	 * Checks for the status of Job Reassignment
+	 * Checks for the status of job reassignment.
 	 */
 	public void checkJobReassignment(Person person, List<JobAssignment> list) {
 		int pop = settlement.getNumCitizens();
@@ -404,9 +404,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			if (status == JobAssignmentType.PENDING) {
 				statusCache = JobAssignmentType.PENDING;
 				jobComboBox.setEnabled(false);
+				
 				String s = "Job Reassignment submitted on " + list.get(last).getTimeSubmitted();
 				changeNotice.setText(s);
-				if (firstNotification) logger.info(person, s);
+				
+				if (firstNotification) 
+					logger.info(person, s);
+				
 				firstNotification = false;
 			}
 
@@ -415,11 +419,16 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if (status.equals(JobAssignmentType.APPROVED)) {
 					statusCache = JobAssignmentType.APPROVED;
 					logger.info(person, "Job reassignment reviewed and approved.");
+					
 					JobType selectedJob = list.get(last).getJobType();
-					jobCache = selectedJob;
-					// must update the jobCache prior to setSelectedItem
-					// or else a new job reassignment will be submitted
-					jobComboBox.setSelectedItem(selectedJob.getName());
+
+					if (jobCache != selectedJob) {
+						jobCache = selectedJob;
+						// Note: must update the jobCache prior to calling setSelectedItem
+						// or else a new job reassignment will be submitted
+						jobComboBox.setSelectedItem(selectedJob.getName());
+						changeNotice.setText("Job just changed to " + selectedJob);
+					}
 
 					person.getMind().setJobLock(true);
 
@@ -428,11 +437,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					logger.info(person, "Job reassignment reviewed and NOT approved.");
 
 					JobType selectedJob = list.get(last - 1).getJobType();
-					jobCache = selectedJob;
-					// must update the jobCache prior to setSelectedItem
-					// or else a new job reassignment will be submitted
-					jobComboBox.setSelectedItem(selectedJob.getName());
-
+	
+					if (jobCache != selectedJob) {
+						jobCache = selectedJob;
+						// Note: must update the jobCache prior to calling setSelectedItem
+						// or else a new job reassignment will be submitted
+						jobComboBox.setSelectedItem(selectedJob.getName());
+						changeNotice.setText("Job just changed to " + selectedJob);
+					}
 				}
 
 				jobComboBox.setEnabled(true);
@@ -447,9 +459,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				// updates the jobHistoryList in jobHistoryTableModel
 				jobHistoryTableModel.update();
 
-				RoleType roleNew = person.getRole().getType();
-				if (roleCache != roleNew) {
-					roleCache = roleNew;
+				RoleType newRole = person.getRole().getType();
+				if (roleCache != newRole) {
+					roleCache = newRole;
+					roleComboBox.setSelectedItem(roleCache.getName());
+					changeNotice.setText("Role just changed to " + newRole);
 				}
 
 			}
@@ -461,10 +475,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Update the jobComboBox if pop is less than
 			// POPULATION_WITH_COMMANDER
 			JobType selectedJob = list.get(last).getJobType();
-			jobCache = selectedJob;
-			// must update the jobCache prior to setSelectedItem
-			// or else a new job reassignment will be submitted
-			jobComboBox.setSelectedItem(selectedJob.getName());
+			
+			if (jobCache != selectedJob) {
+				jobCache = selectedJob;
+				// Note: must update the jobCache prior to calling setSelectedItem
+				// or else a new job reassignment will be submitted
+				jobComboBox.setSelectedItem(selectedJob.getName());
+				changeNotice.setText("Job just changed to " + selectedJob);
+			}
 		}
 	}
 
@@ -489,6 +507,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		} else {
 
+			// Check for the role change
 			checkRoleChange();
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();

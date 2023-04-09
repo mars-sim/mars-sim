@@ -745,7 +745,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * creates a standardized empty border.
+	 * Creates a standardized empty border.
 	 */
 	public static EmptyBorder newEmptyBorder() {
 		return new EmptyBorder(1, 1, 1, 1);
@@ -756,7 +756,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Get a reference to the Simulation being displayed
+	 * Gets a reference to the Simulation being displayed.
 	 * 
 	 * @return
 	 */
@@ -777,7 +777,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gte UI properties of the Desktop
+	 * Gets UI properties of the Desktop.
 	 */
 	public Map<String, Properties> getUIProps() {
 		Map<String, Properties> result = new HashMap<>();
