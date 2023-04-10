@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.environment;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.ClockUtils;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 
@@ -118,7 +118,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 
 		// i. probability of impact per square meter per sol
-		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / ClockUtils.SOLS_PER_ORBIT;
+		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 //		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
 //						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
@@ -130,7 +130,6 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// Part II
 		// Assuming size and impact speed of the meteorites are homogeneous,
 		// determine how far the meteorites may penetrate the wall
-		double penetrationRate = numMeteoritesPerYearPerMeter / ClockUtils.SOLS_PER_ORBIT;
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impact_vel, 1 / 3D);
 
 		// TODO: does it account for all angles of penetration on average ?

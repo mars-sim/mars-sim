@@ -15,6 +15,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,9 +23,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.astroarts.ATime;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
@@ -53,14 +52,10 @@ public class DateDialog extends ModalInternalFrame {
 				false, // closable
 				false, // maximizable
 				false); // iconifiable
-				
-//		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		// setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		
 		this.viewer = viewer;
 		
 		// Set the layout.
-		//setLayout(new BorderLayout());//0, 0));
 		setLayout(new GridLayout(2, 4, 4, 4));
 		
 		super.setFrameIcon(MainWindow.getLanderIcon());
@@ -118,17 +113,11 @@ public class DateDialog extends ModalInternalFrame {
 		add(buttonSimDate);	
 		buttonSimDate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				ATime atime = null;
-//				JComponent source = (JComponent) e.getSource();
-//
-//		        if (source == buttonSimDate) {
-					EarthClock clock = Simulation.instance().getMasterClock().getEarthClock();
-					monthCB.setSelectedIndex(clock.getMonth() - 1);
-					tfDate.setText(Integer.toString(clock.getDayOfMonth()));
-					tfYear.setText(Integer.toString(clock.getYear()));    					
-//				}
-//				dispose();
-//				viewer.endDateDialog(atime);
+				LocalDateTime earthTime = viewer.getDesktop().getSimulation().getMasterClock().getEarthTime();
+				monthCB.setSelectedIndex(earthTime.getMonthValue() - 1);
+				tfDate.setText(Integer.toString(earthTime.getDayOfMonth()));
+				tfYear.setText(Integer.toString(earthTime.getYear()));    					
+
 				viewer.repaint();
 			};
 		});
@@ -139,17 +128,11 @@ public class DateDialog extends ModalInternalFrame {
 		add(buttonToday);	
 		buttonToday.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				ATime atime = null;
-//				JComponent source = (JComponent) e.getSource();
-//
-//		        if (source == buttonToday) {
-		        	LocalDate currentdate = LocalDate.now();
-					monthCB.setSelectedIndex(currentdate.getMonth().getValue() - 1);
-					tfDate.setText(Integer.toString(currentdate.getDayOfMonth()));
-					tfYear.setText(Integer.toString(currentdate.getYear()));    					
-//				}
-//				dispose();
-//				viewer.endDateDialog(atime);
+				LocalDate currentdate = LocalDate.now();
+				monthCB.setSelectedIndex(currentdate.getMonth().getValue() - 1);
+				tfDate.setText(Integer.toString(currentdate.getDayOfMonth()));
+				tfYear.setText(Integer.toString(currentdate.getYear()));    					
+
 				viewer.repaint();
 			};
 		});
@@ -162,16 +145,9 @@ public class DateDialog extends ModalInternalFrame {
 		ActionListener listener00 = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-//    				ATime atime = null;
-//    				JComponent source = (JComponent) evt.getSource();
-    				//1986-02-09
-//    		        if (source == button1986) {
-    		        	monthCB.setSelectedIndex(2);
-    					tfDate.setText(9 + "");
-    					tfYear.setText(1986 + ""); 
-//    				}
-//    				dispose();
-//    				viewer.endDateDialog(atime);
+					monthCB.setSelectedIndex(2);
+					tfDate.setText(9 + "");
+					tfYear.setText(1986 + ""); 
     				viewer.repaint();
     			}
 		};
@@ -186,15 +162,7 @@ public class DateDialog extends ModalInternalFrame {
 		ActionListener listener2 = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-//    				ATime atime = null;
-//    				JComponent source = (JComponent) evt.getSource();
-//    				if (source != buttonCancel) {
-//    					//return false;
-//    				}
-//    				dispose();
     				setVisible(false);
-//    				viewer.endDateDialog(atime);
-    				//return true;
     			}
 		};
 		
@@ -203,27 +171,16 @@ public class DateDialog extends ModalInternalFrame {
 		setSize(new Dimension(350, 110));
 		setPreferredSize(new Dimension(350, 110));		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);	
-		
-//		if (viewer.getDesktop() != null) {
-			viewer.getDesktop().add(this);
+					
+		viewer.getDesktop().add(this);
 			
-			Dimension desktopSize = viewer.getDesktop().getParent().getSize();
-		    Dimension jInternalFrameSize = this.getSize();
-		    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-		    int height = (int)((desktopSize.height - jInternalFrameSize.height) / 1.4);
-		    setLocation(width, height);
-		    
-//		}
-//		else {
-//			viewer.getContentPane().add(this);
-//			setLocation(0, 0);
-//		}
+		Dimension desktopSize = viewer.getDesktop().getParent().getSize();
+		Dimension jInternalFrameSize = this.getSize();
+		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		int height = (int)((desktopSize.height - jInternalFrameSize.height) / 1.4);
+		setLocation(width, height);
 			
-	    setVisible(true);
-
-//	    setModal(true);
 	    viewer.repaint();
-	    //validate();
 
-		}
 	}
+}

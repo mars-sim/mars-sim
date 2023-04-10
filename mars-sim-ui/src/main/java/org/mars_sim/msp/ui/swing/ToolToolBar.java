@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToolToolBar.java
- * @date 2022-07-19
+ * @date 2023-04-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,7 +30,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
@@ -61,6 +62,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER
+								= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -174,33 +178,36 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
 		innerPane.add(calendarDisplay);
 
-		final JPanel midPane = new JPanel(new BorderLayout(0, 0));
+		final JPanel midPane = new JPanel(new BorderLayout(2, 2));
 
 		midPane.add(innerPane, BorderLayout.CENTER);
-		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
+		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
 
-		final JPanel outerPane = new JPanel(new BorderLayout(10, 10));
+		final JPanel outerPane = new JPanel(new BorderLayout(2, 2));
 		outerPane.add(midPane, BorderLayout.CENTER);
 
 		// Create martian month label
     	String mn = "Month of " + marsClock.getMonthName();
     	monthLabel = new JLabel(mn, SwingConstants.CENTER);
 		JPanel monthPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-		monthPane.add(monthLabel);
+		monthPane.add(monthLabel, SwingConstants.CENTER);
 		midPane.add(monthPane, BorderLayout.NORTH);
 
 		JButton link = new JButton(WIKI_TEXT);
 		link.setAlignmentX(.5f);
+		link.setAlignmentY(.5f);
 		link.setToolTipText("Open the Timekeeping wiki in mars-sim GitHub site");
 		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 
-		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
-		linkPane.add(link);
+		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		linkPane.add(link, SwingConstants.CENTER);
 		outerPane.add(linkPane, BorderLayout.SOUTH);
 
-    	JLabel headerLabel = new JLabel("Mars Calendar", SwingConstants.CENTER);
-    	outerPane.add(headerLabel, BorderLayout.NORTH);
-    	
+//    	JLabel headerLabel = new JLabel("Mars Calendar", SwingConstants.CENTER);
+//    	headerLabel.setAlignmentX(.5f);
+//    	headerLabel.setAlignmentY(.5f);
+//    	outerPane.add(headerLabel, BorderLayout.NORTH);
+
     	return outerPane;
 	}
 
@@ -211,8 +218,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		MarsClock marsClock = master.getMarsClock();
 		missionSol.setText("Sol : " + marsClock.getMissionSol());
 
-		EarthClock earthClock = master.getEarthClock();
-		earthDate.setText(master.getEarthClock().getCurrentDateTimeString(earthClock));
+		earthDate.setText(master.getEarthTime().format(DATE_TIME_FORMATTER));
 		marsTime.setText(marsClock.getDisplayTruncatedTimeStamp());
 	}
 

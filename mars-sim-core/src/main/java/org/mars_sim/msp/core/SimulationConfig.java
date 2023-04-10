@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -618,17 +619,17 @@ public class SimulationConfig implements Serializable {
 	public double getMinEVALight() {
 		return minEVALight;
 	}
-
+	
 	/**
 	 * Gets the Earth date/time when the simulation starts.
 	 *
-	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
-	 * @throws Exception if value is null or empty.
+	 * @return 
 	 */
-	public String getEarthStartDateTime() {
-		return earthStartDate;
+	public LocalDateTime getEarthStartDate() {
+		return LocalDateTime.parse(earthStartDate,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS"));
 	}
-
+	
 	/**
 	 * Gets the Mars date/time when the simulation starts.
 	 *

@@ -29,4 +29,3 @@ Provide pictures and screenshots. Use copy (Ctrl-C) and paste (Ctrl-V) to attach
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
-

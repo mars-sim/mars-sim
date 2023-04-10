@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
  * A simple panel implementation that supports adding JComponents accompanied by a JLabel.
  * These are added in a row layout.
  */
+@SuppressWarnings("serial")
 public class AttributePanel extends JPanel {
 
     public AttributePanel(int rows) {
@@ -52,7 +53,7 @@ public class AttributePanel extends JPanel {
 	/**
 	 * Add a labelled content to the TabPanel. This ensures the styling is common.
 	 * @param label Label to add
-	 * @param content Content showign the value
+	 * @param content Content showing the value
 	 */
 	public void addLabelledItem(String label, JComponent content) {
         if ((label != null) && !label.endsWith(":")) {

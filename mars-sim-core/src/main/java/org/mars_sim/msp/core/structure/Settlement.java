@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
-import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -303,8 +302,6 @@ public class Settlement extends Structure implements Temporal,
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new HashMap<>();
-	/** The settlement's resource statistics. */
-	private Map<String, Double> mineralConcentrationMap = new HashMap<>();
 	
 	/** The last 20 mission scores */
 	private List<Double> missionScores;
@@ -345,8 +342,6 @@ public class Settlement extends Structure implements Temporal,
 	private Settlement() {
 		super(null, null);
 
-		unitManager = sim.getUnitManager();
-
 		// set location
 		location = getCoordinates();
 	}
@@ -362,10 +357,6 @@ public class Settlement extends Structure implements Temporal,
 		// Use Structure constructor.
 		super(name, location);
 
-		if (unitManager == null) {// for passing maven test
-			unitManager = sim.getUnitManager();
-		}
-
 		this.templateID = id;
 		this.location = location;
 
@@ -375,10 +366,6 @@ public class Settlement extends Structure implements Temporal,
 		parkedVehicles = new UnitSet<>();
 		peopleWithin = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-
-		if (missionManager == null) {// for passing maven test
-			missionManager = sim.getMissionManager();
-		}
 
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
@@ -546,13 +533,6 @@ public class Settlement extends Structure implements Temporal,
 		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, QUARTER_RANGE);
 		missionRange.put(MissionType.TRADE, MAX_RANGE);
 		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
-		
-		// Check nearby mineral concentration
-		mineralConcentrationMap = checkNearbyMineral();
-		if (!mineralConcentrationMap.isEmpty())
-			logger.log(this, Level.INFO, 0L, "Settlement vicinity mineral concentration: " + mineralConcentrationMap.toString());
-		
-
 	}
 
 	/*
@@ -3042,23 +3022,6 @@ public class Settlement extends Structure implements Temporal,
 		return mineralValue;
 	}
 
-	/**
-	 * Checks if there are any mineral locations in the vicinity.
-	 *
-	 * @return a map of mineral and amounts.
-	 */
-	public Map<String, Double> checkNearbyMineral() {
-		Map<String, Double> minerals = new HashMap<>();
-
-		MineralMap map = surfaceFeatures.getMineralMap();
-		Coordinates mineralLocation = map.findRandomMineralLocation(getCoordinates(), 1.5);
-
-		if (mineralLocation != null)
-			minerals = map.getAllMineralConcentrations(mineralLocation);
-
-		return minerals;
-	}
-	
     public double getIceCollectionRate() {
     	return iceCollectionRate;
     }

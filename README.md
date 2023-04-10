@@ -281,7 +281,7 @@ See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more 
 
 Choose MSI version that will automatically set up the environment path correctly.
 
-However, there are cases that the path and JAVE_HOME variables are not being configured properly.
+However, there are cases that the `path` variable and `JAVE_HOME` variable are not being configured properly.
 
 In the command prompt, try `java -version` to see what version of Java is first being found in your specific cases. 
 
@@ -291,9 +291,9 @@ IN case java cannot be found or is erroneous, then follow the steps below :
 
 2. Start a command prompt and type this `set JAVA_HOME="<java home>\bin"`.
 
-3. Set the PATH variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
+3. Set the `PATH` variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
 
-> Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java
+> Note 2 : The order of precedence inside `PATH` variable is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
 > Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
@@ -302,12 +302,12 @@ the Windows OS may not be able to locate the `java.exe` and may continue to go d
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
 > Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.6)
-inside `PATH` and remove all other folders referencing other java versions/builds.
+inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
 interfere with the correct version of Java that you would like to use.
 
-> Note 4 : Depending on the order of precedence in Path variable,
+> Note 4 : Depending on the order of precedence in `Path` variable,
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
 

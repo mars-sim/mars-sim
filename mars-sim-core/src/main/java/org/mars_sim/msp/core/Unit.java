@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -76,18 +74,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
-	protected static Simulation sim = Simulation.instance();
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	protected static MarsClock marsClock;
-	protected static EarthClock earthClock;
 	protected static MasterClock masterClock;
 
-	protected static UnitManager unitManager = sim.getUnitManager();
+	protected static UnitManager unitManager;
 	protected static MissionManager missionManager;
 
 	protected static Weather weather;
-	protected static SurfaceFeatures surfaceFeatures;
 
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
@@ -131,23 +126,38 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
+	 * Constructor wher ethe identifer is predefined
+	 *
+	 * @param name     {@link String} the name of the unit
+	 * @param id Unit identifer
+	 * @param containerId Identifier of the container
+	 */
+	protected Unit(String name, int id, int containerId) {
+		// Initialize data members from parameters
+		this.name = name;
+		this.description = name;
+		this.baseMass = 0;
+		this.identifer = id;
+		this.containerID = containerId;
+		currentStateType = LocationStateType.MARS_SURFACE;
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * @param name     {@link String} the name of the unit
 	 * @param location {@link Coordinates} the unit's location
 	 */
-	public Unit(String name, Coordinates location) {
+	protected Unit(String name, Coordinates location) {
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
 		this.baseMass = 0;
 
-		if (sim.getMasterClock() != null) {
+		if (masterClock != null) {
 			// Needed for maven test
-			this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
+			this.lastPulse = masterClock.getNextPulse() - 1;
 
-			unitManager = sim.getUnitManager();
-	
 			// Creates a new location tag instance for each unit
 			tag = new LocationTag(this);
 	
@@ -741,28 +751,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/**
 	 * Loads instances.
 	 *
-	 * @param c0 {@link MasterClock}
-	 * @param c1 {@link MarsClock}
-	 * @param e  {@link EarthClock}
-	 * @param s  {@link Simulation}
-	 * @param m  {@link Environment}
-	 * @param w  {@link Weather}
-	 * @param u  {@link UnitManager}
-	 * @param mm {@link MissionManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Weather w, SurfaceFeatures sf, MissionManager mm) {
+	public static void initializeInstances(MasterClock c0, UnitManager um,
+			Weather w, MissionManager mm) {
 		masterClock = c0;
-		marsClock = c1;
-		earthClock = e;
-		sim = s;
+		marsClock = masterClock.getMarsClock();
 		weather = w;
-		surfaceFeatures = sf;
+		unitManager = um;
 		missionManager = mm;
-	}
-
-	public static void setUnitManager(UnitManager u) {
-		unitManager = u;
 	}
 
 	/**

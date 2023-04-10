@@ -251,7 +251,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// 6. Dust storm sequences occur in three seasonal windows, with L=140—250 the primary season.
 		
 		// Get the instantaneous areocentric longitude
-		double areoLon = Math.round(orbitInfo.getL_s() * 1000.0)/1000.0;
+		double areoLon = Math.round(orbitInfo.getSunAreoLongitude() * 1000.0)/1000.0;
 		
 		double phi = location.getPhi();
 		boolean isNorthern = false;

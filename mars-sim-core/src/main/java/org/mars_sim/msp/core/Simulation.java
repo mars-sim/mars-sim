@@ -78,7 +78,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
@@ -289,7 +288,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
 		MarsClock marsClock = masterClock.getMarsClock();
-//		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
@@ -312,7 +310,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
 		MarsClock marsClock = masterClock.getMarsClock();
-		EarthClock earthClock = masterClock.getEarthClock();
 
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
@@ -344,9 +341,10 @@ public class Simulation implements ClockListener, Serializable {
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 
-		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, 
-				 weather, surfaceFeatures, new MissionManager());
-		Unit.setUnitManager(unitManager);
+		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		// Initialize instances in Airlock
@@ -354,8 +352,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		eventManager = new HistoricalEventManager();
 
-		missionManager = new MissionManager();
-		missionManager.initializeInstances(simulationConfig);
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
 
@@ -379,7 +375,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Clock is always first
 		masterClock = new MasterClock(timeRatio);
 		MarsClock marsClock = masterClock.getMarsClock();
-		EarthClock earthClock = masterClock.getEarthClock();
 
 		// Set log data
 		DataLogger.changeTime(marsClock);
@@ -407,13 +402,11 @@ public class Simulation implements ClockListener, Serializable {
 		scientificStudyManager = new ScientificStudyManager();
 		eventManager = new HistoricalEventManager();
 
-		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, 
-				weather, surfaceFeatures, missionManager);
-		TaskManager.initializeInstances(this, simulationConfig);
-
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+		TaskManager.initializeInstances(this, simulationConfig);
+
 		EquipmentFactory.initialise(unitManager);
 
 		// Initialize MarsSurface instance
@@ -424,9 +417,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		AirComposition.initializeInstances(pc);
-		
-		// Gets the MarsSurface instance
-		Unit.setUnitManager(unitManager);
 
 		// Initialise the Building Functions
 		ResourceProcess.initializeInstances(marsClock);
@@ -624,7 +614,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		if (lastSaveTimeStamp != null)
 			logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
-		logger.config("           Earth Time Stamp : " + masterClock.getEarthClock().getTimeStampF4());
+		logger.config("           Earth Time Stamp : " + masterClock.getEarthTime());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
 
 		logger.config(DASHES);
@@ -678,8 +668,6 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
-		// Gets he MarsClock instance
-		EarthClock earthClock = masterClock.getEarthClock();
 		
 		Weather.initializeInstances(this, marsClock, orbitInfo);
 		// Initialize instances in Airlock
@@ -690,8 +678,7 @@ public class Simulation implements ClockListener, Serializable {
 		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
 				marsClock, orbitInfo, weather);
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, weather, surfaceFeatures, missionManager);
-		Unit.setUnitManager(unitManager);
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		EquipmentFactory.initialise(unitManager);
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
@@ -1307,7 +1294,6 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = null;
 
 		if (orbitInfo != null) {
-			orbitInfo.destroy();
 			orbitInfo = null;
 		}
 		

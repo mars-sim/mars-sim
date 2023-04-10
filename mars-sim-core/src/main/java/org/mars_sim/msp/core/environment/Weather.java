@@ -445,7 +445,7 @@ public class Weather implements Serializable, Temporal {
 			// for
 			// over five Mars Years (MY), at the “Tleilax” site.
 
-			double lS = orbitInfo.getL_s();
+			double lS = orbitInfo.getSunAreoLongitude();
 
 			// split into 6 zones for linear curve fitting for each martian year
 			// See chart at https://www.hou.usra.edu/meetings/marspolar2016/pdf/6012.pdf
@@ -675,7 +675,7 @@ public class Weather implements Serializable, Temporal {
 
 			// Note : The Mars dust storm season begins just after perihelion at around Ls =
 			// 260°.
-			double lS = Math.round(orbitInfo.getL_s() * 10.0) / 10.0;
+			double lS = Math.round(orbitInfo.getSunAreoLongitude() * 10.0) / 10.0;
 			int lSint = (int) lS;
 
 			if (lSint == 230) {

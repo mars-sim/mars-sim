@@ -8,6 +8,8 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -139,8 +141,8 @@ public class DeathInfo implements Serializable {
 		MasterClock masterClock = Simulation.instance().getMasterClock();
 		timeOfDeath = masterClock.getMarsClock().getDateTimeStamp();	
 		missionSol = masterClock.getMarsClock().getMissionSol();
-		earthTimeOfDeath = masterClock.getEarthClock().getTimeStampF1();
-
+		earthTimeOfDeath = masterClock.getEarthTime().format(
+								DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
 		if (problem == null) {
 			Complaint serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
