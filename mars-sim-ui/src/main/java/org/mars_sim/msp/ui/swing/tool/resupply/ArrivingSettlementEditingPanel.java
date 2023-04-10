@@ -787,49 +787,49 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				errorLabel.setText(errorString);
 			} else {
 				boolean good = true;
-				// Add checking if that sol has already been taken
-				JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
-				ListModel<?> model = jList.getModel();
+				// // Add checking if that sol has already been taken
+				// JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
+				// ListModel<?> model = jList.getModel();
 
-				for (int i = 0; i < model.getSize(); i++) {
-					Transportable transportItem = (Transportable) model.getElementAt(i);
+				// for (int i = 0; i < model.getSize(); i++) {
+				// 	Transportable transportItem = (Transportable) model.getElementAt(i);
 
-					if ((transportItem != null)) {
-						if (transportItem instanceof Resupply) {
-							// Create modify resupply mission dialog.
-							Resupply resupply = (Resupply) transportItem;
-							MarsClock arrivingTime = resupply.getArrivalDate();
-							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-							sols.add(solsDiff);
+				// 	if ((transportItem != null)) {
+				// 		if (transportItem instanceof Resupply) {
+				// 			// Create modify resupply mission dialog.
+				// 			Resupply resupply = (Resupply) transportItem;
+				// 			MarsClock arrivingTime = resupply.getArrivalDate();
+				// 			int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+				// 			sols.add(solsDiff);
 
-						} else if (transportItem instanceof ArrivingSettlement) {
-							// Create modify arriving settlement dialog.
-							ArrivingSettlement newS = (ArrivingSettlement) transportItem;
-							if (!newS.equals(settlement)) {
-								MarsClock arrivingTime = newS.getArrivalDate();
-								int solsDiff = (int) Math
-										.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-								sols.add(solsDiff);
-							}
-						}
-					}
-				}
+				// 		} else if (transportItem instanceof ArrivingSettlement) {
+				// 			// Create modify arriving settlement dialog.
+				// 			ArrivingSettlement newS = (ArrivingSettlement) transportItem;
+				// 			if (!newS.equals(settlement)) {
+				// 				MarsClock arrivingTime = newS.getArrivalDate();
+				// 				int solsDiff = (int) Math
+				// 						.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+				// 				sols.add(solsDiff);
+				// 			}
+				// 		}
+				// 	}
+				//}
 
 				// System.out.println("sols.size() : " + sols.size() );
 
-				Iterator<Integer> i = sols.iterator();
-				while (i.hasNext()) {
-					int sol = i.next();
-					if (sol == (int) timeArrival) {
-//						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
-						validation_result = false;
-						good = false;
-						enableButton(false);
-						errorString = Msg.getString("ArrivingSettlementEditingPanel.error.duplicatedSol"); //$NON-NLS-1$
-						errorLabel.setText(errorString);
-						break;
-					}
-				}
+// 				Iterator<Integer> i = sols.iterator();
+// 				while (i.hasNext()) {
+// 					int sol = i.next();
+// 					if (sol == (int) timeArrival) {
+// //						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
+// 						validation_result = false;
+// 						good = false;
+// 						enableButton(false);
+// 						errorString = Msg.getString("ArrivingSettlementEditingPanel.error.duplicatedSol"); //$NON-NLS-1$
+// 						errorLabel.setText(errorString);
+// 						break;
+// 					}
+// 				}
 
 				if (good) {
 					validation_result = true;

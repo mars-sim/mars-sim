@@ -14,16 +14,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.SettlementSupplies;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
@@ -34,7 +36,7 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class ArrivingSettlementDetailPanel
 extends JPanel
-implements HistoricalEventListener {
+{
 
 	// Data members
 	private JLabel nameValueLabel;
@@ -49,9 +51,8 @@ implements HistoricalEventListener {
 	
 	private MainDesktopPane desktop;
 	
-	//private MarsClock currentTime;
-	
 	private int solsToArrival = -1;
+	private SettlementSuppliesPanel suppliesPanel;
 	
 	/**
 	 * Constructor.
@@ -64,7 +65,6 @@ implements HistoricalEventListener {
 	
 		
 		setLayout(new BorderLayout(0, 10));
-		setBorder(new MarsPanelBorder());
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel(
@@ -92,8 +92,8 @@ implements HistoricalEventListener {
 		timeArrivalValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.timeUntilArrival"), "", null);
 		locationValueLabel = infoPane.addTextField(Msg.getString("ArrivingSettlementDetailPanel.location"), "", null);
 
-		// Set as historical event listener.
-		desktop.getSimulation().getEventManager().addListener(this);
+		suppliesPanel = new SettlementSuppliesPanel();
+		detailsPane.add(suppliesPanel.getComponent(), BorderLayout.CENTER);
 	}
 
 	/**
@@ -107,6 +107,15 @@ implements HistoricalEventListener {
 				clearInfo();
 			}
 			else {
+				SettlementConfig sConfig = SimulationConfig.instance().getSettlementConfiguration();
+				SettlementSupplies template = sConfig.getItem(arrivingSettlement.getTemplate());
+				if (template != null) {
+					suppliesPanel.show(template);
+				}
+				else {
+					suppliesPanel.clear();
+				}
+
 				updateArrivingSettlementInfo();
 			}
 		}
@@ -123,6 +132,8 @@ implements HistoricalEventListener {
 		templateValueLabel.setText(""); //$NON-NLS-1$
 		locationValueLabel.setText(""); //$NON-NLS-1$
 		populationValueLabel.setText(""); //$NON-NLS-1$
+
+		suppliesPanel.clear();
 	}
 
 	/** 
@@ -161,22 +172,6 @@ implements HistoricalEventListener {
 		timeArrivalValueLabel.setText(timeArrival);
 	}
 
-
-	@Override
-	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
-		if (HistoricalEventCategory.TRANSPORT == he.getCategory() && 
-				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
-			if ((arrivingSettlement != null) && he.getSource().equals(arrivingSettlement)) {
-				updateArrivingSettlementInfo();
-			}
-		}
-	}
-
-	@Override
-	public void eventsRemoved(int startIndex, int endIndex) {
-		// Do nothing.
-	}
-
 	private void updateArrival(MarsClock currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
@@ -196,23 +191,4 @@ implements HistoricalEventListener {
 	void update(ClockPulse pulse) {
 		updateArrival(pulse.getMarsTime());			
 	}
-	
-
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		desktop.getSimulation().getEventManager().removeListener(this);
-		
-		nameValueLabel = null;
-		stateValueLabel = null;
-		arrivalDateValueLabel = null;
-		timeArrivalValueLabel = null;
-		templateValueLabel = null;
-		locationValueLabel = null;
-		populationValueLabel = null;
-		arrivingSettlement = null;		
-		desktop = null;
-	}
-
 }

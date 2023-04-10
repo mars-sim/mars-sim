@@ -14,13 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventCategory;
-import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -32,9 +26,7 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
  * A panel showing a selected resupply mission details.
  */
 @SuppressWarnings("serial")
-public class ResupplyDetailPanel
-extends JPanel
-implements HistoricalEventListener {
+public class ResupplyDetailPanel extends JPanel {
 
 	// Data members
 	private int solsToArrival = -1;
@@ -63,8 +55,6 @@ implements HistoricalEventListener {
 		super();
 
 		this.desktop = desktop;
-		
-		Simulation sim = desktop.getSimulation();
 	
 		// Initialize data members.
 		resupply = null;
@@ -97,9 +87,6 @@ implements HistoricalEventListener {
 		infoPane.add(suppliesPanel.getComponent(), BorderLayout.CENTER);
 
 		add(infoPane, BorderLayout.CENTER);
-
-		// Set as historical event listener.
-		sim.getEventManager().addListener(this);
 	}
 
 	/**
@@ -167,23 +154,6 @@ implements HistoricalEventListener {
 		timeArrivalValueLabel.setText(timeArrival);
 	}
 
-	@Override
-	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
-		if (HistoricalEventCategory.TRANSPORT == he.getCategory() &&
-				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
-			if ((resupply != null) && he.getSource().equals(resupply)) {
-				if (resupply != null) {
-					updateResupplyInfo();
-				}
-			}
-		}
-	}
-
-	@Override
-	public void eventsRemoved(int startIndex, int endIndex) {
-		// Do nothing.
-	}
-
 	private void updateArrival(MarsClock currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
@@ -199,24 +169,5 @@ implements HistoricalEventListener {
 
 	void update(ClockPulse pulse) {
 		updateArrival(pulse.getMarsTime());
-	}
-	
-
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		Simulation sim = desktop.getSimulation();
-		sim.getEventManager().removeListener(this);
-		
-		resupply = null;
-		templateLabel = null;
-		destinationValueLabel = null;
-		stateValueLabel = null;
-		arrivalDateValueLabel = null;
-		launchDateValueLabel = null;
-		timeArrivalValueLabel = null;
-		immigrantsValueLabel = null;
-		desktop = null;
 	}
 }
