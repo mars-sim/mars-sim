@@ -151,6 +151,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 * 
 	 * @return transit state string.
 	 */
+	@Override
 	public TransitState getTransitState() {
 		return transitState;
 	}

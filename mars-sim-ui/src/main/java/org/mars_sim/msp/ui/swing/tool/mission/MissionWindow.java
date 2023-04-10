@@ -7,12 +7,14 @@
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,6 +24,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -29,9 +32,12 @@ import javax.swing.tree.TreePath;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
@@ -108,7 +114,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		missionRoot = new DefaultMutableTreeNode("Settlements");
 		treeModel = new DefaultTreeModel(missionRoot);
 		missionTree = new JTree(treeModel);
-		missionTree.setExpandsSelectedPaths(true);              
+		missionTree.setExpandsSelectedPaths(true);    
+		missionTree.setCellRenderer(new MissionTreeRenderer());          
 		missionTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
@@ -316,4 +323,32 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		}
 		return results;
 	}
+
+	private static class MissionTreeRenderer extends DefaultTreeCellRenderer {
+		private static final Icon COMPLETED = ImageLoader.getIconByName("mission/completed");
+		//private static final Icon ABORTED = ImageLoader.getIconByName("mission/aborted");
+		private static final Icon IN_PROGRESS = ImageLoader.getIconByName("mission/inprogress");
+		private static final Icon REVIEW = ImageLoader.getIconByName("mission/review");
+	  
+	  
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
+													  boolean leaf, int row, boolean hasFocus) {
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			Object userObject = node.getUserObject();
+			if (userObject instanceof Mission m) {
+				Icon mIcon = IN_PROGRESS;
+				MissionPlanning mp = m.getPlan();
+				if ((mp != null) && (mp.getStatus() == PlanType.PENDING)) {
+					mIcon = REVIEW;
+				}
+				else if (m.isDone()) {
+					mIcon = COMPLETED;
+				}
+				this.setIcon(mIcon);
+			}
+			return this;
+		}
+	  }
 }

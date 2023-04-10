@@ -460,10 +460,10 @@ public class Settlement extends Structure implements Temporal,
 		SettlementTemplate sTemplate = settlementConfig.getItem(template);
 
 		// Initialize building manager
-		buildingManager = new BuildingManager(this, sTemplate.getBuildingTemplates());
+		buildingManager = new BuildingManager(this, sTemplate.getBuildings());
 		
 		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildingTemplates());
+		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildings());
 
 		futureEvents = new ScheduledEventManager(marsClock);
 

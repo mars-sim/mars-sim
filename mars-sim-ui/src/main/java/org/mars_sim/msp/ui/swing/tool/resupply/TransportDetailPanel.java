@@ -9,10 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -26,8 +23,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  */
 @SuppressWarnings("serial")
 public class TransportDetailPanel
-extends JPanel
-implements ListSelectionListener {
+extends JPanel {
 
 	// Panel key strings.
 	private static final String RESUPPLY = "resupply";
@@ -62,20 +58,18 @@ implements ListSelectionListener {
 		cardLayout.show(this, RESUPPLY);
 	}
 
-	@Override
-	public void valueChanged(ListSelectionEvent evt) {
-
-		JList<?> transportList = (JList<?>) evt.getSource();
-		if (!transportList.getValueIsAdjusting()) {
-			Transportable newTransportable = (Transportable) transportList.getSelectedValue();
-			if (newTransportable instanceof Resupply) {
-				resupplyPanel.setResupply((Resupply) newTransportable);
-				cardLayout.show(this, RESUPPLY);
-			}
-			else if (newTransportable instanceof ArrivingSettlement) {
-				arrivingSettlementPanel.setArrivingSettlement((ArrivingSettlement) newTransportable);
-				cardLayout.show(this, SETTLEMENT);
-			}
+	/**
+	 * Change the Trans[otalbe displayed
+	 * @param newTransportable
+	 */
+	void setTransportable(Transportable newTransportable) {
+		if (newTransportable instanceof Resupply resupply) {
+			resupplyPanel.setResupply(resupply);
+			cardLayout.show(this, RESUPPLY);
+		}
+		else if (newTransportable instanceof ArrivingSettlement arriving) {
+			arrivingSettlementPanel.setArrivingSettlement(arriving);
+			cardLayout.show(this, SETTLEMENT);
 		}
 	}
 
@@ -87,14 +81,4 @@ implements ListSelectionListener {
 		resupplyPanel.update(pulse);
 		arrivingSettlementPanel.update(pulse);
 	}
-
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		resupplyPanel.destroy();
-		arrivingSettlementPanel.destroy();
-	}
-
-
 }
