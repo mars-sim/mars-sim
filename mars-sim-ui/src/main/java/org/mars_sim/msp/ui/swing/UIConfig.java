@@ -349,7 +349,7 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get teh details of a previously stored window details
+	 * Get the details of a previously stored window.
 	 *
 	 * @param windowName the window name.
 	 * @return Known details; may return null
@@ -359,7 +359,8 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the property sets deifned in the configs
+	 * Get the property sets defined in the config.
+	 * 
 	 * @return
 	 */
 	public Map<String, Properties> getPropSets() {
@@ -377,7 +378,8 @@ public class UIConfig {
 
 
 	/**
-	 * Get the details of the stored windows
+	 * Get the details of the stored windows.
+	 * 
 	 * @return
 	 */
 	public List<WindowSpec> getConfiguredWindows() {

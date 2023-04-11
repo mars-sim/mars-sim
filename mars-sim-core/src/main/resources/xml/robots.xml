@@ -15,7 +15,7 @@
 	<!ATTLIST robot type CDATA #REQUIRED>
 	<!ATTLIST robot make CDATA #REQUIRED>
 	<!ATTLIST robot standby-power-consumption  CDATA #IMPLIED>
-	<!ATTLIST robot fuel-consumption-rate CDATA #IMPLIED>
+	<!ATTLIST robot consumption-rate CDATA #IMPLIED>
 	<!ATTLIST robot low-power-mode CDATA #IMPLIED>
 	<!ATTLIST robot max-capacity CDATA #IMPLIED>
 	<!ATTLIST robot mass CDATA #IMPLIED>
@@ -32,13 +32,13 @@
 
 <robot-configuration>
 	
-	<!-- Minimum air pressure (Pa) a robt can withstand without harm -->
+	<!-- Minimum air pressure (Pa) a robot can withstand without harm -->
 	<min-air-pressure value="500" />
 
-	<!-- Minimum temperature (degrees celsius) a robot can withstand without harm -->
+	<!-- Minimum temperature (degree Celsius) a robot can withstand without harm -->
 	<min-temperature value="-30.0" />
 
-	<!-- Maximum temperature (degrees celsius) a robot can withstand without harm -->
+	<!-- Maximum temperature (degree Celsius) a robot can withstand without harm -->
 	<max-temperature value="78.0" />
 
 	<!-- Number of millisols a robot can survive below minimum temperature -->
@@ -49,7 +49,7 @@
 	<robot-list>
 
 		<robot type="GardenBot" make="Standard" mass="60" height="100"
-				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="35"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -65,7 +65,7 @@
 		</robot>
 
 		<robot type="GardenBot" make="Advanced" mass="60" height="100"
-				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="15"
+				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="15"
 				max-capacity="30">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="55"/>
@@ -82,7 +82,7 @@
 		</robot>
 		
 		<robot type="MakerBot" make="Standard"
-					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -98,7 +98,7 @@
 		</robot>				
 		
 		<robot type="RepairBot" make="Standard"
-					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -114,7 +114,7 @@
 		</robot>			
 		
 		<robot type="ChefBot" make="Standard"
-					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -130,7 +130,7 @@
 		</robot>
 	
 		<robot type="MedicBot" make="Standard" mass="90"
-					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -147,7 +147,7 @@
 		</robot>				
 		
 		<robot type="ConstructionBot" make="Standard" mass="120" height="160"
-				standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -164,7 +164,7 @@
 		</robot>
 		
 		<robot type="DeliveryBot" make="Standard" mass="50" height="80" max-capacity="20"
-					standby-power-consumption="0.05" fuel-consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>

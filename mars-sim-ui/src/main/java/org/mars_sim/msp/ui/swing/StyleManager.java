@@ -89,7 +89,7 @@ public class StyleManager {
 
     private static Map<String,Properties> styles = new HashMap<>();
 
-    // Create the builtin defaults
+    // Creates the built-in defaults.
     static {
         // Default Font
         Properties defaultProps = new Properties();
@@ -122,7 +122,7 @@ public class StyleManager {
     }
 
     /**
-     * Get available LAF
+     * Gets available LAF.
      */
     public static String[] getAvailableLAF() {
         return LAF_STYLES;
@@ -195,7 +195,7 @@ public class StyleManager {
                     defaults.put("Table.alternateRowColor", getTableAlternativeColor(selBackground, tabBackground));
                 }
 
-                // Table Header is a shade off from the inactive Select colour
+                // Table Header is a shade off from the inactive select colour
                 if (accentColor != null) {
                     HSLColor baseColor = new HSLColor(selBackground);
                     Color tableHeader = baseColor.adjustShade(20F);
@@ -218,7 +218,8 @@ public class StyleManager {
 	}
 
     /**
-     * Get the styles used.
+     * Gets the styles used.
+     * 
      * @return
      */
     public static Map<String, Properties> getStyles() {
@@ -226,7 +227,8 @@ public class StyleManager {
     }
 
     /**
-     * Load the styles defintions to use in this UI
+     * Loads the styles defintions to use in this UI.
+     * 
      * @param newStyles
      */
     public static void setStyles(Map<String,Properties> newStyles) {
@@ -243,7 +245,7 @@ public class StyleManager {
     }
 
     /**
-     * Calculate the various fonts used in the styling
+     * Calculates the various fonts used in the styling.
      */
     private static void calculateFonts() {
         if (systemFont == null) {
@@ -268,6 +270,7 @@ public class StyleManager {
 
     /**
      * Creates a new Font by deriving it from a base font.
+     * 
      * @param base Base font
      * @param attrs Attributes used to derive a new font
      * @return
@@ -309,7 +312,8 @@ public class StyleManager {
     }
 
     /**
-     * Copied approach from ZTable
+     * Copied approach from ZTable.
+     * 
      * @param selBackground
      * @param tabBackground
      * @return
@@ -328,7 +332,8 @@ public class StyleManager {
     }
    
     /**
-     * Set the accent colour
+     * Sets the accent colour.
+     * 
      * @param newColour
      */
     private static void applyAccentColor(Color newColour) {
@@ -339,7 +344,7 @@ public class StyleManager {
     }
 
     /**
-     * Lookup a color by name. Only supports the static entries in the Color class.
+     * Looks up a color by name. Only supports the static entries in the Color class.
      */
     private static Color getColorByName(String name) {
         try {
@@ -351,21 +356,22 @@ public class StyleManager {
     }
 
     /**
-     * Apply styling to make this a SubHeading; normally applied to a JLabel
+     * Applies styling to make this a SubHeading; normally applied to a JLabel.
      */
     public static void applyHeading(JComponent item) {
         item.setFont(headingFont);
     }
 
     /**
-     * Apply styling to make this a SubHeading; normally applied to a JLabel
+     * Applies styling to make this a SubHeading; normally applied to a JLabel.
      */
     public static void applySubHeading(JComponent item) {
         item.setFont(subHeadingFont);
     }
 
     /**
-     * Crete a Titled border that uses the Label font
+     * Creates a Titled border that uses the Label font.
+     * 
      * @param title
      * @return
      */
@@ -376,7 +382,8 @@ public class StyleManager {
     }
 
     /**
-     * Get the Bold default font
+     * Gets the Bold default font.
+     * 
      * @return
      */
     public static Font getLabelFont() {
@@ -384,14 +391,14 @@ public class StyleManager {
     }
 
     /**
-     * Get a smaller version of the main default font.
+     * Gets a smaller version of the main default font.
      */
     public static Font getSmallFont() {
         return smallFont;
     }
 
     /**
-     * Get a small label font
+     * Gets a small label font.
      * @return
      */
     public static Font getSmallLabelFont() {

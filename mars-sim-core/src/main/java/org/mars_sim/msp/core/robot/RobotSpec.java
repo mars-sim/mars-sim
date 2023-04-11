@@ -26,7 +26,7 @@ public class RobotSpec implements Serializable {
 	private Map<NaturalAttributeType, Integer> attributeMap;
 	private Map<SkillType, Integer> skillMap;
 
-	private double fcr;
+	private double rate;
 	private double standbyPower;
 	private double lowPowerMode;
 	private double maxCapacity;
@@ -35,7 +35,7 @@ public class RobotSpec implements Serializable {
 	private int mass;
 
 	public RobotSpec(RobotType robotType, String makeModel,
-			double standbyPower, double fcr, double lowPowerMode, double maxCapacity,
+			double standbyPower, double rate, double lowPowerMode, double maxCapacity,
 			int height, int mass,
 			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
 		this.robotType = robotType;
@@ -44,7 +44,7 @@ public class RobotSpec implements Serializable {
 		this.skillMap = skillMap;
 		this.standbyPower = standbyPower;
 		this.lowPowerMode = lowPowerMode;
-		this.fcr = fcr;
+		this.rate = rate;
 		this.maxCapacity = maxCapacity;
 		this.height = height;
 		this.mass = mass;
@@ -76,14 +76,15 @@ public class RobotSpec implements Serializable {
 	}
 
 	/**
-	 * Get teh fuel consumption for this Robot type.
+	 * Get the consumption rate for this Robot type.
 	 */
-	public double getFuelConsumption() {
-		return fcr;
+	public double getConsumptionRate() {
+		return rate;
 	}
 
 	/**
-	 * When is the low power mode enabked for this robot model
+	 * Gets the percentage that triggers the low power mode enabled for this robot model.
+	 * 
 	 * @return
 	 */
 	public double getLowPowerModePercent() {
@@ -91,7 +92,7 @@ public class RobotSpec implements Serializable {
 	}
 
 	/**
-	 * Gets the attpribute map.
+	 * Gets the attribute map.
 	 * 
 	 * @return
 	 */

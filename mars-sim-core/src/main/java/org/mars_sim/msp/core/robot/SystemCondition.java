@@ -27,9 +27,6 @@ public class SystemCondition implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName());
 
-    /** The standby power consumption in kW. */
-    private double standbyPower;
-
     // Data members
     /** Is the robot operational ? */
     private boolean operable;
@@ -38,21 +35,24 @@ public class SystemCondition implements Serializable {
     /** Is the robot charging ? */  
     private boolean isCharging;
     
+    /** The standby power consumption in kW. */
+    private double standbyPower;
     /** Robot's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
     private double performance;
-
+	/** The percentage that triggers low power warning. */
     private double lowPowerPercent;
-
 	/** The current energy of the robot in kWh. */
 	private double currentEnergy;
+	/** The maximum capacity of the battery in kWh. */	
 	private double maxCapacity;
 
     private Robot robot;
 
     /**
-     * Constructor 2.
+     * Constructor.
+     * 
      * @param robot The robot requiring a physical presence.
      */
     public SystemCondition(Robot newRobot, RobotSpec spec) {
@@ -72,8 +72,8 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * This timePassing method 2 reflect a passing of time for robots.
-
+     * This timePassing method 2 reflect a passing of time.
+     * 
      * @param time amount of time passing (in millisols)
      * @param support life support system.
      * @param config robot configuration.
@@ -99,7 +99,7 @@ public class SystemCondition implements Serializable {
 	    	double diff = currentEnergy - kWh;
 	    	if (diff >= 0) {
 	    		currentEnergy = diff; 
-	    		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+	    		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
                 updateLowPowerMode();
 	    	}
@@ -223,7 +223,7 @@ public class SystemCondition implements Serializable {
     	}
     	double diff = newEnergy - currentEnergy;
     	currentEnergy = newEnergy;
-		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+		robot.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
         updateLowPowerMode();
 

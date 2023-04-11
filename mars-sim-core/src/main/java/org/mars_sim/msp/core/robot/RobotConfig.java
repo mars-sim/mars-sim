@@ -32,7 +32,7 @@ public class RobotConfig {
 	private static final String ROBOT_TYPE = "type";
 	
 	private static final String STANDBY_POWER_CONSUMPTION = "standby-power-consumption";
-	private static final String FUEL_CONSUMPTION_RATE = "fuel-consumption-rate";
+	private static final String CONSUMPTION_RATE = "consumption-rate";
 	private static final String LOW_POWER_MODE = "low-power-mode";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String MIN_TEMPERATURE = "min-temperature";
@@ -108,7 +108,7 @@ public class RobotConfig {
 			String robotMake = listElement.getAttributeValue(ROBOT_MAKE);
 	
 			double standbyPower = ConfigHelper.getOptionalAttributeDouble(listElement, STANDBY_POWER_CONSUMPTION, 0.05D);
-			double fcr = ConfigHelper.getOptionalAttributeDouble(listElement, FUEL_CONSUMPTION_RATE, 1D);
+			double rate = ConfigHelper.getOptionalAttributeDouble(listElement, CONSUMPTION_RATE, 1D);
 			double lowPower = ConfigHelper.getOptionalAttributeDouble(listElement, LOW_POWER_MODE, 20D);
 			double maxCapacity = ConfigHelper.getOptionalAttributeDouble(listElement, MAX_CAPACITY, 15D);
 			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
@@ -145,7 +145,7 @@ public class RobotConfig {
 
 			RobotSpec spec = new RobotSpec(
 					robotType, robotMake, 
-					standbyPower, fcr, lowPower, maxCapacity,
+					standbyPower, rate, lowPower, maxCapacity,
 					height, mass,
 					attributeMap,
 					skillMap);

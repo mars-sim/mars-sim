@@ -34,8 +34,7 @@ public enum UnitEventType {
 	
 	ADD_ASSOCIATED_EQUIPMENT_EVENT		("add associated equipment"),
 	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
-	
-	ROBOT_POWER_EVENT					("robot power event"),
+
 
 	BACKLOG_EVENT						("backlog event"),
 
@@ -125,6 +124,7 @@ public enum UnitEventType {
 	STORED_POWER_CAPACITY_EVENT		("stored power capacity"),
 	REQUIRED_POWER_EVENT			("required power"),
 	POWER_VALUE_EVENT				("power value"),
+	BATTERY_EVENT					("battery event"),
 
 	// For thermal/heating system
 	HEAT_MODE_EVENT					("heat mode"),
