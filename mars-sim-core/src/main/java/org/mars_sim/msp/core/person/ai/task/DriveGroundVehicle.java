@@ -57,7 +57,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	private double computingUsed = 0;
 	
 	/**
-	 * Default Constructor.
+	 * Default Constructor for a person operator.
 	 * 
 	 * @param person            the person to perform the task
 	 * @param vehicle           the vehicle to be driven
@@ -79,6 +79,15 @@ public class DriveGroundVehicle extends OperateVehicle {
 		logger.log(person, Level.INFO, 20_000, "Took the wheel of the rover.");
 	}
 
+	/**
+	 * Default Constructor for a robot operator.
+	 * 
+	 * @param robot
+	 * @param vehicle
+	 * @param destination
+	 * @param startTripTime
+	 * @param startTripDistance
+	 */
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
 			double startTripDistance) {
 
@@ -94,7 +103,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	}
 
 	/**
-	 * Constructs with a given starting phase.
+	 * Constructs this task for a person with a given starting phase.
 	 * 
 	 * @param person            the person to perform the task
 	 * @param vehicle           the vehicle to be driven
@@ -121,6 +130,16 @@ public class DriveGroundVehicle extends OperateVehicle {
 
 	}
 
+	/**
+	 * Constructs this task for a robot with a given starting phase.
+	 * 
+	 * @param robot
+	 * @param vehicle
+	 * @param destination
+	 * @param startTripTime
+	 * @param startTripDistance
+	 * @param startingPhase
+	 */
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 

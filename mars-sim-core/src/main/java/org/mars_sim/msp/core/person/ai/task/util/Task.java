@@ -786,6 +786,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return modifier;
 	}
 
+	/**
+	 * Gets the crowding probability modifier.
+	 * 
+	 * @param robot
+	 * @param newBuilding
+	 * @return
+	 */
 	protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
 		double modifier = 1D;
 
@@ -851,6 +858,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/**
 	 * Who is working on this Task.
+	 * 
 	 * @return
 	 */
 	public Worker getWorker() {
@@ -1177,7 +1185,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
-
 	
 	/**
 	 * Walks to a random interior location in a building.
@@ -1192,7 +1199,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Create subtask for walking to destination.
 		createWalkingSubtask(building, adjustedInteriorPos, allowFail);
 	}
-
 
 	
 	/**

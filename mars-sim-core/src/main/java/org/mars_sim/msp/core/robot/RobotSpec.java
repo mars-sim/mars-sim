@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RobotSpec.java
- * @date 2022-06-16
+ * @date 2023-04-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;

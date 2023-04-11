@@ -236,7 +236,8 @@ public abstract class Vehicle extends Unit
 	private SalvageInfo salvageInfo;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-
+	/** The VehicleController instance. */
+	private VehicleController vehicleController;
 
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
@@ -257,6 +258,8 @@ public abstract class Vehicle extends Unit
 		super(name, settlement.getCoordinates());
 
 		this.vehicleTypeString = vehicleTypeString;
+		
+		vehicleController = new VehicleController(this);
 		
 		// Set description
 		setDescription(vehicleTypeString);
@@ -2369,6 +2372,10 @@ public abstract class Vehicle extends Unit
 		return eqmInventory;
 	}
 
+	public VehicleController getController() {
+		return vehicleController;
+	}
+	
 	/**
 	 * Compares if an object is the same as this unit
 	 *
