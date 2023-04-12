@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mars_sim.msp.core.Simulation;
@@ -41,6 +43,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -186,13 +189,24 @@ public class ResupplyWindow extends ToolWindow
 			DefaultMutableTreeNode sNode = settlementNodes.get(receiver);
 			if (sNode == null) {
 				sNode = new DefaultMutableTreeNode(receiver, true);
-				//missionRoot.add(parent);
 				treeModel.insertNodeInto(sNode, deliveryRoot, deliveryRoot.getChildCount());
 				settlementNodes.put(receiver, sNode);
 			}
-
 			dNode = new DefaultMutableTreeNode(at, false);
-			treeModel.insertNodeInto(dNode, sNode, sNode.getChildCount());
+
+			// Find the order according to arrival date
+			int newIdx = 0;
+			Enumeration<TreeNode> existing = sNode.children();
+			while(existing.hasMoreElements()) {
+				Transportable n = (Transportable) ((DefaultMutableTreeNode)existing.nextElement()).getUserObject();
+				if (MarsClock.getTimeDiff(at.getArrivalDate(), n.getArrivalDate()) < 0D) {
+					// Found the Transportable arriving later than the target
+					break;
+				} 
+				
+				newIdx++;
+			}
+			treeModel.insertNodeInto(dNode, sNode, newIdx);
 			deliveryNodes.put(at, dNode);
 		}
 
@@ -338,6 +352,17 @@ public class ResupplyWindow extends ToolWindow
 					case IN_TRANSIT -> IN_TRANSIT;
 				};
 				this.setIcon(mIcon);
+
+				// Build a name
+				StringBuilder name = new StringBuilder();
+				if (t instanceof Resupply r) {
+					name.append(r.getTemplate().getName());
+				}
+				else if (t instanceof ArrivingSettlement a) {
+					name.append(a.getTemplate());
+				}				
+				name.append(" @ ").append(t.getArrivalDate().getDateString());
+				this.setText(name.toString());
 			}
 			return this;
 		}
