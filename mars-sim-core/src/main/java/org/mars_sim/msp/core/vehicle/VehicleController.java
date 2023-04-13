@@ -80,6 +80,18 @@ public class VehicleController implements Serializable {
     	// Note: if a_ms is negative, it gives off free momentum to move forward.
     	double a_ms = (v_ms - u_ms) / secs; // [in m/s2]
     	
+		if (a_ms < 0) {
+			
+			// FUTURE : Will consider how to convert excess kinetic energy to 
+			// potential energy to be stored in on-board battery via regenerative braking
+			
+			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed from " 
+					+  Math.round(u_kph * 1000.0)/1000.0 + " kph "
+					+ " to " + Math.round(v_kph * 1000.0)/1000.0
+					+ " kph. Deceleration: " + Math.round(a_ms * 1000.0)/1000.0 
+					+ " m/s2.");
+		}
+    	
         double mass = vehicle.getMass(); // [in kg]
         
         double initFE = vehicle.getInitialFuelEconomy(); // [in km/kg]
@@ -120,12 +132,12 @@ public class VehicleController implements Serializable {
         
         double fTot = fInitialFriction + fGravity + fAeroDrag + fRolling + fGradingResistance + fAccel;
         // Note: 1 m/s = 3.6 km/hr (or kph)
-        double power = fTot * v_ms; // [in W]
-        
-        double energyUsed = power * secs; // [in J]
+        double iPower = fTot * v_ms; // [in W]
+      
+        // FUTURE: will account for the use of onboard battery to supply the energy
         
         // Convert the energy usage from J to Wh
-        energyUsed = energyUsed / JOULES_PER_WH ; // [in Wh]
+        double energyUsed = iPower * secs / JOULES_PER_WH ; // [in Wh]
               
         // Derive the mass of fuel needed kg = Wh / Wh/kg
         double fuelUsed = energyUsed / vehicle.getFuelConv();
@@ -147,41 +159,31 @@ public class VehicleController implements Serializable {
 			
 			hr = d_km / v_kph;
 			
-			power = fTot * v_ms; // [in W]
+			iPower = fTot * v_ms; // [in W]
 	        
 			a_ms = (v_ms - u_ms) / secs; // [in m/s^2]
 			
-	        energyUsed = power * secs; // [in J]
 	        // Convert the energy usage from J to Wh
-	        energyUsed = energyUsed / JOULES_PER_WH ; // [in Wh]
+	        energyUsed = iPower * secs / JOULES_PER_WH ; // [in Wh]
+	        
 			// Cache the new value of hr
 			hrsTimeCache = hr;
 			// Cache the new value of d_km
 			distanceCache = d_km;
-     	}      
-		else if (fuelUsed < 0) {
-			// TODO: will consider how to add an on-board battery to 
-			// absorb the power via regenerative braking
-			
-			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed from " 
-					+  Math.round(u_kph * 1000.0)/1000.0 + " kph "
-					+ " to " + Math.round(v_kph * 1000.0)/1000.0
-					+ " kph. Deceleration: " + Math.round(a_ms * 1000.0)/1000.0 
-					+ " m/s2. Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
-		}
-		
-		else {
-			// Reset the cache time to zero
-			hrsTimeCache = 0;
-			// Reset the cache distance to zero
-			distanceCache = 0;
-		}
+     	}
 
-    	if (v_kph < 0) {
-    		logger.log(vehicle, Level.INFO, 20_000, "v_kph was negative (" 
-    				+  Math.round(v_kph * 1000.0)/1000.0 + " kph) and was reset to zero.");
+	   	if (v_kph < 0 || v_ms < 0) {
+    		logger.log(vehicle, Level.INFO, 20_000, "Final speed was negative (" 
+    				+  Math.round(v_kph * 1000.0)/1000.0 + " kph). Reset back to zero.");
     		v_kph = 0;
     		v_ms = 0; //v_kph / KPH_CONV;
+    	}
+	   	
+	   	if (u_kph < 0 || u_ms < 0) {
+    		logger.log(vehicle, Level.INFO, 20_000, "Initial speed was negative (" 
+    				+  Math.round(u_kph * 1000.0)/1000.0 + " kph). Reset back to zero.");
+    		u_kph = 0;
+    		u_ms = 0; //v_kph / KPH_CONV;
     	}
 
 		// Adjust the speed
@@ -229,17 +231,17 @@ public class VehicleController implements Serializable {
         	        + "u_kph: "				+ Math.round(u_kph * 10_000.0)/10_000.0 + KPH
                 	+ "v_kph: " 			+ Math.round(v_kph * 10_000.0)/10_000.0 + KPH
         	        + "a_ms: "				+ Math.round(a_ms * 10_000.0)/10_000.0 + " m/s2   "
+            	    + "avePower: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
+    				+ "energyUsed: " 		+ Math.round(energyUsed * 1_000.0)/1_000.0 + " Wh   "
+            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
         	        + "fAccel: " 			+ Math.round(fAccel * 10_000.0)/10_000.0 + N
         	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg   "
-        			+ "fInitialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
+        			+ "fInitialF: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
         			+ "fGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
         			+ "fAeroDrag: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
     	    		+ "fRolling: " 		+ Math.round(fRolling * 10_000.0)/10_000.0 + N
     	    		+ "fGradingRes: "		+ Math.round(fGradingResistance * 10_000.0)/10_000.0 + N
     	    		+ "fTot: " 			+ Math.round(fTot * 10_000.0)/10_000.0 + N
-    	    		+ "Power: " 			+ Math.round(power)/1_000.0 + KW
-    				+ "Energy Used: " 		+ Math.round(energyUsed * 100_000.0)/100_000.0 + " Wh   "
-            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
     	    		+ "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
                    	+ "estFE: " 			+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
                    	+ "initFE: " 			+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
@@ -248,13 +250,26 @@ public class VehicleController implements Serializable {
     	    		+ "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
     	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
  	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
-    	    		+ "ave Power: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
     				);
         
-        if (fuelUsed <= 0)
+		// Cache the new value of hr
+		hrsTimeCache = hr;
+		// Cache the new value of d_km
+		distanceCache = d_km;
+		
+		// Cache the new value of fuelUsed	
+        if (fuelUsed <= 0) {
+        	// No fuel is expended. 
+        	// Usually indicative of vehicle deceleration.
+        	// FUTURE : may engage regenerative braking to recharge the battery
         	fuelUsedCache = 0;
+        }
+        
         else
         	fuelUsedCache = fuelUsed;
+        
+        // Determine new position
+        vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), d_km));
         
         return fuelUsed;
     }
@@ -265,7 +280,7 @@ public class VehicleController implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getHrsTime() {
+	public double getHrsTimeCache() {
 		return hrsTimeCache;
 	}
 	

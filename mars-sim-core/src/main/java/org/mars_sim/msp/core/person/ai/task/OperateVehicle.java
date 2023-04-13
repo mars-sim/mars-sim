@@ -67,6 +67,8 @@ public abstract class OperateVehicle extends Task {
 	private static final double HALF_PI = Math.PI / 2D;
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
+    /** The ratio of the amount of oxidizer to fuel. */
+    private static final double RATIO_OXIDIZER_FUEL = 2d;
     /** Distance buffer for arriving at destination (km). */
     private static final double DESTINATION_BUFFER = .000_1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
@@ -360,7 +362,6 @@ public abstract class OperateVehicle extends Task {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-        double remainingTime = 0;
 
         if (worker.getUnitType() == UnitType.ROBOT
         	&& ((Robot)worker).getSystemCondition().isLowPower()) {
@@ -391,7 +392,7 @@ public abstract class OperateVehicle extends Task {
         	return time;
     	}
 
-    	if (remainingOxidizer < LEAST_AMOUNT) {
+    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
     		logger.log(vehicle, Level.SEVERE, 20_000L, 
 					"Case B: Out of fuel oxidizer. Cannot drive.");
     		// Turn on emergency beacon
@@ -404,11 +405,13 @@ public abstract class OperateVehicle extends Task {
         double startingDistanceToDestination = getDistanceToDestination();
        
         if (Double.isNaN(startingDistanceToDestination)) {
-        	logger.severe("startingDistance is " + startingDistanceToDestination );
+    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+					"Case C: Invalid starting distance.");
+        	endTask();
         	return time;
         }
         
-        // Case 0: arrived
+        // Case 0: Arrived
         if (startingDistanceToDestination <= DESTINATION_BUFFER) {
         	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived at " + destination 
         			+ " (startingDistanceToDestination: " 
@@ -425,10 +428,28 @@ public abstract class OperateVehicle extends Task {
                 determineInitialSettlementParkedLocation();
             
 			endTask();
-        	return remainingTime;
+        	return 0;
         }
         
-        // Determine the hours used.
+        else {
+        	// Vehicle is moving
+        	return useMotor(time, startingDistanceToDestination, remainingFuel, remainingOxidizer);
+        }
+	}
+        
+	/**
+	 * Uses the motor controller to compute fuel usage and distance to be traversed.
+	 * 
+	 * @param time
+	 * @param remainingDistance
+	 * @param remainingFuel
+	 * @param remainingOxidizer
+	 * @return
+	 */
+	private double useMotor(double time, double remainingDistance, double remainingFuel, double remainingOxidizer) {
+		double remainingTime = 0;
+		
+        // Convert time from millisols to hours
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
         
 //		logger.log(vehicle, Level.CONFIG, 20_000L, 
@@ -458,13 +479,13 @@ public abstract class OperateVehicle extends Task {
         }
         
         // Case 1 : overshot. Need to recalculate d, t and u
-        if (startingDistanceToDestination <= (d_km + DESTINATION_BUFFER)) {
+        if (remainingDistance <= (d_km + DESTINATION_BUFFER)) {
         	logger.log(vehicle, Level.INFO,  20_000L, "Case 1: Arriving near "
         			+ destination + " - " 
-        			+ Math.round(startingDistanceToDestination * 1_000.0)/1_000.0 + " km away.");
+        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + " km away.");
         	
         	// Reset d_km to the remaining distance and recalculate speed and time
-        	d_km = startingDistanceToDestination; // [in km]
+        	d_km = remainingDistance; // [in km]
         	// Recalculate the time based on previous speed
         	// Note: assume no emergency and the vehicle will choose to use constant velocity to get there
         	hrsTime = d_km / u_kph; // [in hrs]
@@ -476,6 +497,15 @@ public abstract class OperateVehicle extends Task {
     		
             // Calculate the fuel needed
             fuelUsed = vehicle.getController().calculateFuelUsed(u_ms, v_ms, d_km, hrsTime, remainingFuel);
+        	
+        	if (remainingOxidizer < fuelUsed * RATIO_OXIDIZER_FUEL) {
+        		logger.log(vehicle, Level.SEVERE, 20_000L, 
+    					"Case D: not enough oxidizer. Cannot drive.");
+        		// Turn on emergency beacon
+    	    	turnOnBeacon(OXYGEN_ID);
+            	endTask();
+            	return time;
+            }
             
             // Assume it won't run out of fuel there
             
@@ -487,41 +517,51 @@ public abstract class OperateVehicle extends Task {
             // Calculate the fuel needed
             fuelUsed = vehicle.getController().calculateFuelUsed(u_ms, v_ms, d_km, hrsTime, remainingFuel);
 		    
+        	if (remainingOxidizer < fuelUsed * RATIO_OXIDIZER_FUEL) {
+        		logger.log(vehicle, Level.SEVERE, 20_000L, 
+    					"Case D: not enough oxidizer. Cannot drive.");
+        		// Turn on emergency beacon
+    	    	turnOnBeacon(OXYGEN_ID);
+            	endTask();
+            	return time;
+            }
+        	
         	// Bring back the cache values of hrsTime and d_km
-        	hrsTime = vehicle.getController().getHrsTime();
-        	d_km = vehicle.getController().getDistanceCache();
-            
-            if (hrsTime > 0 || d_km > 0) {
-            	// Case 2 : ran out of fuel. The rover may use whatever amount of fuel left
+        	double hrsTimeCache = vehicle.getController().getHrsTimeCache();
+        	double distanceCache = vehicle.getController().getDistanceCache();
+           
+            if (hrsTime > hrsTimeCache || d_km > distanceCache) {
+            	// Case 2 : The rover uses less time or distance than anticipated
 				logger.log(vehicle, Level.WARNING,  20_000L, 
-						"Case 2: Used up the last drop of fuel to drive toward "
+						"Case 2: The rover uses less time or distance than anticipated. "
 						+ destination + " - " 
 	        			+ Math.round(d_km * 1_000.0)/1_000.0 + " km away.");
 				
-            	remainingTime = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
+				// Recalculate the remaining time
+            	remainingTime = time - hrsTimeCache / MarsClock.MILLISOLS_PER_HOUR;
             }
+            
             else {
             	// Case 3 : the rover may use all the prescribed time to drive 
 				logger.log(vehicle, Level.INFO,  20_000L, "Case 3: Driving toward "
 						+ destination + " - " 
-	        			+ Math.round(startingDistanceToDestination * 1_000.0)/1_000.0 + " km away.");
+	        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + " km away.");
+				
 				// Consume all time
             	remainingTime = 0;
             }
-
-            // Determine new position
- 			// ----- Calling this is PROBLEMATIC
-            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), d_km));
-
 		}
         
-        if (fuelUsed > 0) {
+        
+    	double fuelUsedCache = vehicle.getController().getFuelUsedCache();
+    	
+        if (fuelUsedCache > 0) {
 	    	// Retrieve the fuel needed for the distance traveled
-		    vehicle.retrieveAmountResource(fuelType, fuelUsed);
+		    vehicle.retrieveAmountResource(fuelType, fuelUsedCache);
 		    // Assume double amount of oxygen as fuel oxidizer
-		    vehicle.retrieveAmountResource(OXYGEN_ID, 2 * fuelUsed);
+		    vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelUsedCache);
 		    // Generate 1.75 times amount of the water from the fuel cells
-		    vehicle.storeAmountResource(WATER_ID, 1.75 * fuelUsed);
+		    vehicle.storeAmountResource(WATER_ID, 1.75 * fuelUsedCache);
         }
         
         return remainingTime;   
