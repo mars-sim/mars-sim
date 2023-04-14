@@ -195,7 +195,7 @@ public class CollectResources extends EVAOperation {
 			return time;
 		}
 
-		double remainingPersonCapacity = person.getAmountResourceRemainingCapacity(resourceType);
+		double remainingPersonCapacity = container.getAmountResourceRemainingCapacity(resourceType);
 		double currentSamplesCollected = rover.getAmountResourceStored(resourceType) - startingCargo;
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);

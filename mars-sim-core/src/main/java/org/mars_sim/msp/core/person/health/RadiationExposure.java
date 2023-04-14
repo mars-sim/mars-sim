@@ -234,9 +234,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
 		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
 
-		BodyRegionType region = null;
-
-		Radiation rad = new Radiation(radiationType, region, Math.round(amount * 10000.0) / 10000.0);
+		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 10000.0) / 10000.0);
 		eventMap.put(rad, solCache);
 
 		return rad;
