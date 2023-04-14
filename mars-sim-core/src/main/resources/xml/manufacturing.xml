@@ -1577,7 +1577,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="5" />
 			<part name="rover chassis panel" number="2" />
 			<part name="motor - small" number="4" />
-			<part name="methane fuel cell stack" number="3" />
+			<part name="methane fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -1603,12 +1603,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="5" />			
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
+			<part name="utility vehicle control panel" number="1" />			
 			<part name="vehicle frame - small" number="2" />
 			<part name="rover chassis panel" number="3" />
 			<part name="aluminum sheet" number="5" />			
 			<part name="motor - small" number="4" />
 			<part name="methane fuel cell stack" number="1" />
-			<part name="utility vehicle control panel" number="1" />
+			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="3" />
@@ -1633,17 +1634,16 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="15" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-
+			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame - large" number="2" />
 			<part name="rover chassis panel" number="6" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
+			<part name="motor - large" number="3" />			
 			<part name="methane fuel cell stack" number="4" />
-			<part name="motor - large" number="3" />
 			<part name="battery module" number="2" />
-			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
 			<part name="water tank" number="1" />
@@ -1673,17 +1673,16 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="20" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-
+			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame - large" number="3" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
+			<part name="motor - large" number="4" />			
 			<part name="methane fuel cell stack" number="5" />
-			<part name="motor - large" number="4" />
 			<part name="battery module" number="3" />
-			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
 			<part name="water tank" number="1" />
@@ -1713,17 +1712,16 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="30" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-
+			<part name="rover control panel" number="1" />
 			<part name="vehicle frame - large" number="3" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
+			<part name="motor - large" number="5" />			
 			<part name="methane fuel cell stack" number="6" />
-			<part name="motor - large" number="5" />
 			<part name="battery module" number="4" />
-			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
 			<part name="water tank" number="1" />
@@ -2132,7 +2130,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 
-	<process name="Manufacture chemical battery" tech="2" skill="3" work-time="300" process-time="100"
+	<process name="Manufacture battery module" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
 		 For a cathode material (LiMn1.5Ni0.5O4) on a lithium ion battery, when cycled at C/30 

@@ -1052,8 +1052,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// if useMargin is true, include more oxygen
 			double amountOxygen = FUEL_OXIDIZER_FACTOR * amount;
 			
-			// if useMargin is true, include just 2x the amount of methane 
-			if (!useMargin)	amountOxygen = 2 * amount;
+			if (!useMargin)	amountOxygen = 1.25 * amount;
 
 			result.put(ResourceUtil.oxygenID, amountOxygen);
 		}

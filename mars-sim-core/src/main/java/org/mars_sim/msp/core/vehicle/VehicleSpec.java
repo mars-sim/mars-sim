@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleSpec.java
- * @date 2021-08-20
+ * @date 2023-04-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
@@ -23,36 +23,52 @@ public class VehicleSpec implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	private String name;
-	private String description;
-	private double width, length;
-	private double drivetrainEff, baseSpeed, averagePower, emptyMass;
-	private int crewSize;
-	private double totalCapacity = 0D;
-	private Map<Integer, Double> cargoCapacityMap;
-	private boolean hasSickbay = false;
-	private int sickbayTechLevel = -1, sickbayBeds = 0;
-	private int labTechLevel = -1;
-	private int attachmentSlots;
+	// Data members
 	private boolean hasLab = false;
 	private boolean hasPartAttachments = false;
+	private boolean hasSickbay = false;
+
+	private int crewSize;
+	private int sickbayTechLevel = -1;
+	private int sickbayBeds = 0;
+	private int labTechLevel = -1;
+	private int attachmentSlots;
+	private int batteryModule;	
+	private int fuelCellStack;
+	
+	private double width, length;
+	private double drivetrainEff;
+	private double baseSpeed;
+	private double averagePower;
+	private double emptyMass;
+	private double totalCapacity = 0D;
+
+	private String name;
+	private String description;
+	
+	private Map<Integer, Double> cargoCapacityMap;
 	private List<ScienceType> labTechSpecialties = null;
 	private List<Part> attachableParts = null;
 	private List<LocalPosition> operatorActivitySpots;
 	private List<LocalPosition> passengerActivitySpots;
 	private List<LocalPosition> sickBayActivitySpots;
 	private List<LocalPosition> labActivitySpots;
+	
 	private LocalPosition airlockLoc;
 	private LocalPosition airlockInteriorLoc;
 	private LocalPosition airlockExteriorLoc;
 
 	private double terrainHandling;
 
-	public VehicleSpec(String name, String description2, double drivetrainEff2, 
+	public VehicleSpec(String name, String description2,
+			int batteryModule, int fuelCellStack,
+			double drivetrainEff2, 
 			double baseSpeed2, double averagePower2,
 			double emptyMass2, int crewSize2) {
 		this.name = name;
 		this.description = description2;
+		this.batteryModule = batteryModule;	
+		this.fuelCellStack = fuelCellStack;
 		this.drivetrainEff = drivetrainEff2;
 		this.baseSpeed = baseSpeed2;
 		this.averagePower = averagePower2;
@@ -102,6 +118,16 @@ public class VehicleSpec implements Serializable {
 		return length;
 	}
 
+	/** @return the batteryModule */
+	public final int getBatteryModule() {
+		return batteryModule;
+	}
+	
+	/** @return the fuelCellStack */
+	public final int getFuelCellStack() {
+		return fuelCellStack;
+	}
+	
 	/** @return the driveTrainEff */
 	public final double getDriveTrainEff() {
 		return drivetrainEff;

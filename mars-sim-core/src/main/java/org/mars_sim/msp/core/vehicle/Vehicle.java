@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2022-06-27
+ * @date 2023-04-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -110,7 +110,7 @@ public abstract class Vehicle extends Unit
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 
 	/** The factor for estimating the adjusted fuel economy. */
-	private static final double FE_FACTOR = 3.0;
+	private static final double FE_FACTOR = 2.5;
 	
 	// Format for unit
 	private static final String KWH = " kWh   ";

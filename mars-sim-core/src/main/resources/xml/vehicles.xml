@@ -1,13 +1,18 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, drivetrain-efficiency, base-speed, average-power,
+	<!ELEMENT vehicle (description?, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, average-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle type CDATA #REQUIRED>
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
+
+	<!ELEMENT battery-module EMPTY>
+	<!ATTLIST battery-module number CDATA #REQUIRED>
+	<!ELEMENT fuel-cell-stack EMPTY>
+	<!ATTLIST fuel-cell-stack number CDATA #REQUIRED>
 	<!ELEMENT drivetrain-efficiency EMPTY>
 	<!ATTLIST drivetrain-efficiency value CDATA #REQUIRED>
 	<!ELEMENT base-speed EMPTY>
@@ -85,6 +90,14 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
+		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
+		<!-- Default: varied according to the type of vehicle -->
+		<battery-module number="2" />
+		
+		<!-- The number of methane fuel cell stacks for the vehicle [dimension-less].(required) -->
+		<!-- Default: varied according to the type of vehicle -->
+		<fuel-cell-stack number="4" />
+		
 		<!-- The efficiency of the vehicle's drivetrain [dimension-less]. (required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<drivetrain-efficiency value=".8" />
@@ -205,6 +218,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
+		<battery-module number="3" />
+		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".75" />
 		<base-speed value="25.0" />
 		<average-power value="20" />
@@ -254,6 +269,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
+		<battery-module number="4" />
+		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".75" />
 		<base-speed value="25.0" />
 		<average-power value="25" />		
@@ -297,6 +314,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	-->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
+		<battery-module number="1" />
+		<fuel-cell-stack number="1" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="20.0" />
 		<average-power value="10" />		
@@ -323,6 +342,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle type="Delivery Drone" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
+		<battery-module number="1" />
+		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="100.0" />
 		<average-power value ="10" />		
