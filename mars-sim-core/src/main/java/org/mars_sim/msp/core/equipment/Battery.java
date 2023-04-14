@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2023-04-11
+ * @date 2023-04-13
  * @author Manny Kung
  */
 
@@ -12,7 +12,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -27,7 +26,9 @@ public class Battery implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 
-
+	/** The maximum power that can be safetly drawn from this battery pack in kW. */
+    private static final double MAX_POWER_DRAW = 150.0;
+    
     // Data members
     /** Is the unit operational ? */
     private boolean operable;
@@ -62,7 +63,7 @@ public class Battery implements Serializable {
         performance = 1.0D;
         operable = true;
 
-        currentEnergy = RandomUtil.getRandomDouble(1, maxCapacity);
+        currentEnergy = RandomUtil.getRandomDouble(10, maxCapacity);
         updateLowPowerMode();
     }
 
@@ -71,7 +72,7 @@ public class Battery implements Serializable {
     }
 
     /**
-     * This timePassing method 2 reflect a passing of time.
+     * This timePassing method reflects a passing of time.
      * 
      * @param time amount of time passing (in millisols)
      * @param support life support system.
@@ -79,34 +80,89 @@ public class Battery implements Serializable {
      */
     public boolean timePassing(double time) {
 
-        // 3. Consume a minute amount of energy even if a unit does not perform any tasks
+        // Consume a minute amount of energy even if a unit does not perform any tasks
         if (!isCharging)
-        	consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * standbyPower);
+        	; 
 
         return operable;
     }
 
     /**
-     * Consumes a given amount of energy.
+     * Requests to consume a given amount of energy within an interval of time.
      * 
-     * @param amount amount of energy to consume [in kWh].
-     * @param container unit to get power from
-     * @throws Exception if error consuming power.
+     * @param amount amount of energy to consume [in kWh]
+     * @param time in hrs
+     * @return energy to be delivered
      */
-    public void consumeEnergy(double kWh) {
-    	if (!isCharging) {
-	    	double diff = currentEnergy - kWh;
-	    	if (diff >= 0) {
-	    		currentEnergy = diff; 
+    public double requestEnergy(double kWh, double time) {
+    	if (!isLowPower) {
+    		double powerRequest = kWh / time;
+    		double powerSupport = currentEnergy / maxCapacity * MAX_POWER_DRAW * 1.25;
+    		double powerAvailable = 0;
+    		if (powerRequest <= powerSupport)
+    			powerAvailable = powerRequest;
+    		else
+    			powerAvailable = powerSupport;
+    		
+    		double energyToDeliver = 0;
+    		double energyAvailable = powerAvailable * time;
+	    	double energyMax = currentEnergy - maxCapacity * lowPowerPercent / 2 / 100;
+	    	if (energyMax <= 0)
+	    		return 0;
+	    	
+	    	if (energyAvailable <= energyMax)
+	    		energyToDeliver = energyAvailable;
+    		else
+    			energyToDeliver = energyMax;
+
+	    	if (energyToDeliver >= 0) {
+	    		currentEnergy -= energyToDeliver; 
 	    		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
                 updateLowPowerMode();
+                
+                return energyToDeliver;
 	    	}
-	    	else
-	    		logger.warning(unit, 30_000L, "Out of power.");
     	}
+    	
+		return 0;
     }
 
+    /**
+     * Provides a given amount of energy to the battery within an interval of time.
+     * 
+     * @param amount amount of energy to consume [in kWh]
+     * @param time in hrs
+     * @return energy to be delivered
+     */
+    public double provideEnergy(double kWh, double time) {
+    	// FUTURE: Consider the effect of the charging rate and the time parameter
+    	
+    	double percent = currentEnergy / maxCapacity;
+    	double energyAccepted = 0;
+    	double percentAccepted = 0;
+    	if (percent >= 100)
+    		return 0;
+    	
+    	else {
+    		percentAccepted = 100 - percent;
+    		energyAccepted = percentAccepted / 100.0 * maxCapacity;
+
+    		if (kWh < energyAccepted) {
+    			energyAccepted = kWh;
+    		}
+    		
+        	currentEnergy += energyAccepted;
+    		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+            updateLowPowerMode();
+            
+        	return energyAccepted;
+    	}
+    }
+    
+    
+    
     /**
      * Is the battery level at above this prescribed percentage ?
      * 
@@ -137,7 +193,8 @@ public class Battery implements Serializable {
 	}
 
     /**
-     * Get the performance factor that effect Person with the complaint.
+     * Gets the performance factor.
+     * 
      * @return The value is between 0 -> 1.
      */
     public double getPerformanceFactor() {
@@ -146,6 +203,7 @@ public class Battery implements Serializable {
 
     /**
      * Sets the performance factor.
+     * 
      * @param newPerformance new performance (between 0 and 1).
      */
     private void setPerformanceFactor(double newPerformance) {
@@ -157,21 +215,14 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Gets the unit system stress level
+     * Gets the unit system stress level.
+     * 
      * @return stress (0.0 to 100.0)
      */
     public double getStress() {
         return systemLoad;
     }
 
-    /**
-     * This Person is now dead.
-     * @param illness The compliant that makes person dead.
-     */
-    public void setInoperable(HealthProblem illness) {
-        setPerformanceFactor(0D);
-        operable = false;
-    }
 
     /**
      * Checks if the unit is inoperable.
@@ -192,14 +243,14 @@ public class Battery implements Serializable {
     }
     
     /**
-     * Get teh maximum battery capacity in kWh.
+     * Gets the maximum battery capacity in kWh.
      */
     public double getBatteryCapacity() {
         return maxCapacity;
     }
 
     /**
-     * Is the unit on low power mode ?
+     * Is the battery on low power mode ?
      * 
      * @return
      */
@@ -240,17 +291,19 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        unit = null;
-    }
-
-    /**
-     * Get the minimum battery power when charging.
+     * Gets the minimum battery power when charging.
+     * 
      * @return Percentage (0..100)
      */
     public double getMinimumChargeBattery() {
         return 70D;
     }
+    
+    /**
+     * Prepares object for garbage collection.
+     */
+    public void destroy() {
+        unit = null;
+    }
+
 }

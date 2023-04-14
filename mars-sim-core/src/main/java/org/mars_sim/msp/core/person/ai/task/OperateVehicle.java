@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OperateVehicle.java
- * @date 2023-04-11
+ * @date 2023-04-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -73,7 +73,8 @@ public abstract class OperateVehicle extends Task {
     private static final double DESTINATION_BUFFER = .000_1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
-			
+    /** The static String that describes how far away in km. */		
+    private static final String KM_AWAY = " km away.";
     /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
     /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
@@ -482,7 +483,7 @@ public abstract class OperateVehicle extends Task {
         if (remainingDistance <= (d_km + DESTINATION_BUFFER)) {
         	logger.log(vehicle, Level.INFO,  20_000L, "Case 1: Arriving near "
         			+ destination + " - " 
-        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + " km away.");
+        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + KM_AWAY);
         	
         	// Reset d_km to the remaining distance and recalculate speed and time
         	d_km = remainingDistance; // [in km]
@@ -535,7 +536,7 @@ public abstract class OperateVehicle extends Task {
 				logger.log(vehicle, Level.WARNING,  20_000L, 
 						"Case 2: The rover uses less time or distance than anticipated. "
 						+ destination + " - " 
-	        			+ Math.round(d_km * 1_000.0)/1_000.0 + " km away.");
+	        			+ Math.round(d_km * 1_000.0)/1_000.0 + KM_AWAY);
 				
 				// Recalculate the remaining time
             	remainingTime = time - hrsTimeCache / MarsClock.MILLISOLS_PER_HOUR;
@@ -545,7 +546,7 @@ public abstract class OperateVehicle extends Task {
             	// Case 3 : the rover may use all the prescribed time to drive 
 				logger.log(vehicle, Level.INFO,  20_000L, "Case 3: Driving toward "
 						+ destination + " - " 
-	        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + " km away.");
+	        			+ Math.round(remainingDistance * 1_000.0)/1_000.0 + KM_AWAY);
 				
 				// Consume all time
             	remainingTime = 0;

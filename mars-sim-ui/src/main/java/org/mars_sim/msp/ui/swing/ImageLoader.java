@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ImageLoader.java
- * @date 2022-08-03
+ * @date 2023-04-13
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing;
@@ -55,8 +55,7 @@ public class ImageLoader {
 		try (InputStream input = ImageLoader.class.getResourceAsStream("/icons.properties")) {
 			iconPaths.load(input);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.severe("Can't load icons.properties.");
 		}
 
 		defaultIcon = getIconByName("unknown");
@@ -69,9 +68,10 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Get icon by it's logical name. The logicla name is mapped to a file 
+	 * Get icon by it's logical name. The logical name is mapped to a file 
 	 * by the icon.properties or if not present the icon naming convention
 	 * is applied.
+	 * 
 	 * @param iconName Logical name of icon. 
 	 */
 	public static Icon getIconByName(String iconName) {
@@ -125,7 +125,7 @@ public class ImageLoader {
 
             newIcon = new SVGIcon(resource.toString(), size, size);
         } catch (TranscoderException e) {
-            e.printStackTrace();
+			logger.severe("Can't transcode the specs into svg icon.");
         }
 
 		return newIcon;
@@ -165,8 +165,7 @@ public class ImageLoader {
 			try {
 				newImage = ImageIO.read(imageURL);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.severe("Can't read image URL.");
 			}
 			imageCache.put(imageName, newImage);
 		}

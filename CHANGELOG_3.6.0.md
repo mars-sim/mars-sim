@@ -5,6 +5,25 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
+## 3.6.0 (build ____) - __ ___ 2023
+
+###  CORE ENGINE IMPROVEMENTS :
+<OL>
+  <LI> </LI>
+</OL>
+
+### UI IMPROVEMENT :
+<OL>
+  <LI> </LI>
+</OL>
+
+### FIXES :
+<OL>
+  <LI> </LI>
+</OL>
+
+------------------------------------------|---------------------
+
 ## 3.5.0 (build 7907) - 5 Apr 2023
 
 ### CORE ENGINE IMPROVEMENTS :
