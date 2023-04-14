@@ -3107,6 +3107,25 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="wire connector" number="10" />
 	</salvage>
 
+
+	<!-- Salvage process for a light utility vehicle (LUV) -->
+	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
+		<part-salvage name="vehicle frame - small" number="1" />
+		<part-salvage name="motor - small" number="4" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="methane fuel cell stack" number="1" />		
+		<part-salvage name="utility vehicle control panel" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="epoxy resin bottle" number="1" />
+		<part-salvage name="lubricant bottle" number="1" />
+		<part-salvage name="wheel - small" number="8" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="steel scrap" number="1" />
+		<part-salvage name="aluminum scrap" number="2" />
+		<part-salvage name="optical cable" number="3" />
+	</salvage>
+
 	<!-- Salvage process for an explorer rover. -->
 	<salvage item-name="explorer rover" type="vehicle" tech="3" skill="4" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
@@ -3181,7 +3200,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methane fuel cell stack" number="6" />
 		<part-salvage name="motor - large" number="5" />
-		<part-salvage name="battery module" number="3" />
+		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3201,24 +3220,6 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />
-	</salvage>
-
-	<!-- Salvage process for a light utility vehicle (LUV) -->
-	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
-		<part-salvage name="vehicle frame - small" number="1" />
-		<part-salvage name="methane fuel cell stack" number="1" />
-		<part-salvage name="motor - large" number="2" />
-		<part-salvage name="battery module" number="1" />
-		<part-salvage name="utility vehicle control panel" number="1" />
-		<part-salvage name="electrical wire" number="10" />
-		<part-salvage name="wire connector" number="10" />
-		<part-salvage name="epoxy resin bottle" number="1" />
-		<part-salvage name="lubricant bottle" number="1" />
-		<part-salvage name="wheel - small" number="8" />
-		<part-salvage name="radio antenna" number="1" />
-		<part-salvage name="steel scrap" number="1" />
-		<part-salvage name="aluminum scrap" number="2" />
-		<part-salvage name="optical cable" number="3" />
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->

@@ -233,7 +233,7 @@ public class VehicleController implements Serializable {
 	    				+  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 	    		uKPH = 0;
 	    	}
-	
+
 			// Adjust the speed
 			vehicle.setSpeed(vKPH);
 	        // Add distance traveled to vehicle's odometer.

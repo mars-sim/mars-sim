@@ -119,12 +119,12 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/** @return the batteryModule */
-	public final int getBatteryModule() {
+	public int getBatteryModule() {
 		return batteryModule;
 	}
 	
 	/** @return the fuelCellStack */
-	public final int getFuelCellStack() {
+	public int getFuelCellStack() {
 		return fuelCellStack;
 	}
 	

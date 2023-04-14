@@ -112,16 +112,18 @@ public class VehicleConfig {
 			}
 			int battery = Integer.parseInt(vehicleElement.getChild(BATTERY_MODULE).getAttributeValue(NUMBER));
 			int fuelCell = Integer.parseInt(vehicleElement.getChild(FUEL_CELL_STACK).getAttributeValue(NUMBER));
+        	
 			double drivetrainEff = Double
 					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
 			double averagePower = Double.parseDouble(vehicleElement.getChild(AVERAGE_POWER).getAttributeValue(VALUE));
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
+			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
 			VehicleSpec v = new VehicleSpec(type, description, battery, fuelCell, 
 					drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
-
+			
 			v.setWidth(width);
 			v.setLength(length);
 			

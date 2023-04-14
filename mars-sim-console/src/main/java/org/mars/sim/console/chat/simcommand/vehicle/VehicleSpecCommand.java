@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleSpecCommand.java
- * @date 2022-08-24
+ * @date 2023-04-14
  * @author Barry Evans
  */
 
@@ -60,11 +60,12 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
 		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + "");
+		buffer.appendLabeledString("# of Battery Modules", source.getBatteryModule() + "");
 
 		int id = source.getFuelType();
 		String fuelName = ResourceUtil.findAmountResourceName(id);
 		buffer.appendLabeledString("Power Source", Conversion.capitalize(fuelName));
-
+		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
 		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 		buffer.appendLabeledString("Energy Capacity", String.format(KWH_FORMAT, source.getEnergyCapacity()));		
 		buffer.appendLabeledString("Drivetrain Energy", String.format(KWH_FORMAT, source.getDrivetrainEnergy()));

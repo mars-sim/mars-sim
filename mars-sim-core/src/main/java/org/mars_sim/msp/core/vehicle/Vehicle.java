@@ -148,7 +148,11 @@ public abstract class Vehicle extends Unit
 
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
-
+	/** The # of battery modules of the vehicle.  */
+	private int numBatteryModule;
+	/** The # of fuel cell stacks of the vehicle.  */
+	private int numFuelCellStack;
+	
 	/** The Base Lifetime Wear in msols **/
 	private double baseWearLifetime;
 	/** Current speed of vehicle in kph. */
@@ -201,13 +205,15 @@ public abstract class Vehicle extends Unit
 	private double width;
 	/** Length of vehicle (meters). */
 	private double length;
-	/** Parked position (meters) from center of settlement. */
-	private LocalPosition posParked;
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 
 	/** The vehicle type string. */
 	private String vehicleTypeString;
+	
+	/** Parked position (meters) from center of settlement. */
+	private LocalPosition posParked;
+	
 	/** The vehicle type. */
 	private VehicleType vehicleType;
 
@@ -259,11 +265,6 @@ public abstract class Vehicle extends Unit
 
 		this.vehicleTypeString = vehicleTypeString;
 		
-		vehicleController = new VehicleController(this);
-		
-		// Set description
-		setDescription(vehicleTypeString);
-		
 		vehicleType = VehicleType.convertNameToVehicleType(vehicleTypeString);
 
 		// Obtain the associated settlement ID
@@ -302,8 +303,11 @@ public abstract class Vehicle extends Unit
 		width = spec.getWidth();
 		length = spec.getLength();
 
-		setupSpecs(spec);
+		setupSpecsByType(spec);
 
+		// Instantiate the motor controller
+		vehicleController = new VehicleController(this);
+		
 		// Set initial parked location and facing at settlement.
 		findNewParkingLoc();
 
@@ -357,12 +361,16 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param spec
 	 */
-	private void setupSpecs(VehicleSpec spec) {
-		// Gets the crew capacity
+	private void setupSpecsByType(VehicleSpec spec) {
+		// Get the description
+		String description = spec.getDescription();
+		// Set the description
+		setDescription(description);
+		// Get the crew capacity
 		int numCrew = spec.getCrewSize();
-		// Gets estimated total crew weight
+		// Get estimated total crew weight
 		double estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
-		// Gets cargo capacity
+		// Get cargo capacity
 		double cargoCapacity = spec.getTotalCapacity();
 		// Create microInventory instance
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
@@ -383,6 +391,10 @@ public abstract class Vehicle extends Unit
 		averagePower = spec.getAveragePower();
 		// Set the empty mass of the vehicle.
 		setBaseMass(spec.getEmptyMass());
+		// Set the # of battery modules of the vehicle.
+		numBatteryModule = spec.getBatteryModule();
+		// Set the # of fuel cell stacks of the vehicle.
+		numFuelCellStack = spec.getFuelCellStack();
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
 		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
@@ -403,14 +415,12 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-
 			// Accounts for the fuel (methane and oxygen) and the traded goods
 			beginningMass = getBaseMass() + 500;
 			// Accounts for water and the traded goods
@@ -424,14 +434,12 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-			
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-
 			// Accounts for the occupant weight
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight;
 			// Accounts for the occupant weight
@@ -445,19 +453,16 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-			
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-			
 			// Accounts for the occupant consumables
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 800;	
-			
 		}
 		
 		else if (vehicleType == VehicleType.CARGO_ROVER) {
@@ -467,14 +472,12 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;		
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-			
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-
 			// Accounts for the occupant consumables and traded goods 
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 2 * 50 + 1500;
 			// Accounts for the occupant consumables and traded goods
@@ -488,14 +491,12 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-			
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-
 			// Accounts for the occupant consumables and personal possession
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 8 * (50 + 100);
 			// Accounts for the reduced occupant consumables
@@ -1289,6 +1290,24 @@ public abstract class Vehicle extends Unit
 		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / FE_FACTOR;
 	}
 	
+	/**
+	 * Gets the number of battery modules of the vehicle.
+	 *
+	 * @return
+	 */
+	public int getBatteryModule() {
+		return numBatteryModule;
+	}
+	
+	/**
+	 * Gets the number of fuel cell stacks of the vehicle.
+	 *
+	 * @return
+	 */
+	public int getFuellCellStack() {
+		return numFuelCellStack;
+	}
+			
 	/**
 	 * Gets the drivetrain efficiency of the vehicle.
 	 *

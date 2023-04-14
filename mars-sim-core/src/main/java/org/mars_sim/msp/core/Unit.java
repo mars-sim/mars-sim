@@ -544,6 +544,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return baseMass;
 	}
     
+	/**
+	 * Checks if it has a unit listener.
+	 * 
+	 * @param listener
+	 * @return
+	 */
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if (listeners == null)
 			return false;

@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents the modeling of an electrical battery
@@ -24,10 +25,13 @@ public class Battery implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Battery.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 
-	/** The maximum power that can be safetly drawn from this battery pack in kW. */
+	/** The maximum power that can be safely drawn from this battery pack in kW. */
     private static final double MAX_POWER_DRAW = 150.0;
+    
+    /** The maximum energy capacity of a standard battery module in kWh. */
+    private static final int ENERGY_PER_MODULE = 15;
     
     // Data members
     /** Is the unit operational ? */
@@ -48,14 +52,14 @@ public class Battery implements Serializable {
     /** The standby power consumption in kW. */
     private double standbyPower = 0.01;
 	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity = 100;
+	private double maxCapacity = 15;
 
 	private Unit unit;
 	
     /**
      * Constructor.
      * 
-     * @param unit The unit requiring a physical presence.
+     * @param unit The unit requiring a battery.
      * 
      */
     public Battery(Unit unit) {
@@ -63,7 +67,14 @@ public class Battery implements Serializable {
         performance = 1.0D;
         operable = true;
 
-        currentEnergy = RandomUtil.getRandomDouble(10, maxCapacity);
+        if (unit instanceof Vehicle) {
+        	Vehicle vehicle = (Vehicle) unit;
+        	int modules = vehicle.getBatteryModule();
+        	maxCapacity = ENERGY_PER_MODULE * modules;
+        }
+
+        currentEnergy = RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
+ 
         updateLowPowerMode();
     }
 
