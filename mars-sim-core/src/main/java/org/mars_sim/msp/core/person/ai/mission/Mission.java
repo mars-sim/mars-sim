@@ -13,6 +13,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -99,11 +100,10 @@ public interface Mission extends Serializable {
 	double getMissionQualification(Worker member);
 
 	/**
-	 * Gets the current phase of the mission.
-	 *
-	 * @return phase
+	 * Get the stage of the Mission
+	 * @return
 	 */
-	MissionPhase getPhase();
+	Stage getStage();
 
     /**
 	 * Gets the description of the current phase.

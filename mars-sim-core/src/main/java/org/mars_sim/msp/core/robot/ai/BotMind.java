@@ -186,7 +186,7 @@ public class BotMind implements Serializable, Temporal {
 			}
 		}
 		
-		if (hasActiveMission && mission.getPhase() != null) {
+		if (hasActiveMission) {
 			hasTask = resumeMission();
 
 		}

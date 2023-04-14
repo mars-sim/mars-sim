@@ -47,7 +47,7 @@ public class MissionSummaryCommand extends ChatCommand {
 			}
 			if (showAll || !m.isDone()) {
 				response.appendTableRow(m.getName(),
-										m.getPhase().getName(),
+										m.getPhaseDescription(),
 										vName,
 										m.getAssociatedSettlement());
 			}

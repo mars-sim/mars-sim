@@ -9,18 +9,12 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.project.Stage;
 
 /**
  * A phase of a mission.
  */
 public final class MissionPhase implements Serializable {
-	// Classificatino of the phase interms of Stage
-	public enum Stage {
-		PREPARATION,
-		ACTIVE,
-		CLOSEDOWN
-	};
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

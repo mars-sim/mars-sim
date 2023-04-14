@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -81,7 +82,7 @@ public class MissionUtil {
 	public static int numEmbarkingMissions(Settlement settlement) {
 		int result = 0;
 		for(Mission i : missionManager.getMissionsForSettlement(settlement)) {
-			if (i.getPhase().getStage() == MissionPhase.Stage.PREPARATION) {
+			if (i.getStage() == Stage.PREPARATION) {
 				result++;
 			}
 		}

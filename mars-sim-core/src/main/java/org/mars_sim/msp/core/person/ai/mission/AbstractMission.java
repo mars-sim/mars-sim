@@ -36,10 +36,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -87,9 +87,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	private static final int MAX_CAP = 8;
 
-	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", MissionPhase.Stage.CLOSEDOWN);
-	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", MissionPhase.Stage.CLOSEDOWN);
-	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", MissionPhase.Stage.PREPARATION);
+	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
+	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
+	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
 
 
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
@@ -446,6 +446,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * 
 	 * @param newName
 	 */
+	@Override
     public void setName(String newName) {
 		this.missionName = newName;
     }
@@ -461,11 +462,18 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
+	 * Get the Stage
+	 */
+	@Override
+	public Stage getStage() {
+		return (done ? Stage.DONE : phase.getStage());
+	}
+
+	/**
 	 * Gets the current phase of the mission.
 	 *
 	 * @return phase
 	 */
-	@Override
 	public MissionPhase getPhase() {
 		return phase;
 	}

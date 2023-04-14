@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -230,14 +231,14 @@ public class InfoPanel extends JPanel {
 		Vector<String> actions = new Vector<String>();
 		actions.add(ACTION_NONE);
 		
-		MissionPhase phase = mission.getPhase();
+		// MissionPhase phase = mission.getPhase();
 		
-		// Check if continue action can be added.
-		if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
-			CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
-			if (collectResourcesMission.getNumEVASites() > collectResourcesMission.getNumEVASitesVisited())
-				actions.add(ACTION_CONTINUE);
-		}
+		// // Check if continue action can be added.
+		// if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
+		// 	CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
+		// 	if (collectResourcesMission.getNumEVASites() > collectResourcesMission.getNumEVASitesVisited())
+		// 		actions.add(ACTION_CONTINUE);
+		// }
 		
 		if (mission instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
@@ -245,7 +246,7 @@ public class InfoPanel extends JPanel {
 			// Check if go home action can be added.
 			int nextNavpointIndex = vehicleMission.getNextNavpointIndex();
 			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (vehicleMission.getNumberOfNavpoints() - 1))) {
-				if (mission.getPhase().getStage() == MissionPhase.Stage.ACTIVE)
+				if (mission.getStage() == Stage.ACTIVE)
 					actions.add(ACTION_HOME);
 			}
 		}
@@ -263,10 +264,10 @@ public class InfoPanel extends JPanel {
 		// Add people and robots in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
-			MissionPhase phase = mission.getPhase();
+			Stage phase = mission.getStage();
 			Collection<Worker> membersAtLocation = new ArrayList<>();
 			if (rover != null) {
-				if (phase.getStage() == MissionPhase.Stage.PREPARATION) {
+				if (phase == Stage.PREPARATION) {
 					// Add available people and robots at the local settlement.
 					Settlement settlement = rover.getSettlement();
 					if (settlement != null) {

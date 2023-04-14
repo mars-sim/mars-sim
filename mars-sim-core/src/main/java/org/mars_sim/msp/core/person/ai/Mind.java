@@ -277,7 +277,7 @@ public class Mind implements Serializable, Temporal {
 		if (hasActiveMission) {
 			if (mission.getMissionType() == MissionType.DELIVERY) {
 				// In case of a delivery mission, the person doesn't need to be onboard
-				if (mission.getPhase() != null) {
+				if (!mission.isDone()) {
 					resumeMission(0);
 				}
 			}
@@ -286,7 +286,7 @@ public class Mind implements Serializable, Temporal {
 				// If the mission vehicle has embarked but the person is not on board,
 				// then release the person from the mission
 
-				if (mission.getPhase() != null) {
+				if (!mission.isDone()) {
 			        // Missions have to be done and are stressfull so allow high stress.
 					if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
 			        	// Cannot perform the mission if a person is not well
