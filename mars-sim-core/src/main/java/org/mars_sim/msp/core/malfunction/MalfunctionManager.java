@@ -174,8 +174,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.baseWearLifeTime = wearLifeTime;
 
-		// Assume the maintenace period is 20% of the component lifetime
-		this.maintenancePeriod = wearLifeTime * 0.2D;
+		// Assume the maintenace period is 1% of the component lifetime
+		this.maintenancePeriod = wearLifeTime * 0.01D;
 
 		// Assume that a random value since the last maintenance but biased
 		// towards below the maintenance period
