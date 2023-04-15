@@ -138,7 +138,13 @@ public class MaintenanceTabPanel extends TabPanel {
 		wearCondition.setValue((int) manager.getWearCondition());
 
 		// Update last completed label.
-		lastCompletedLabel.setText(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
+		StringBuilder text = new StringBuilder();
+		text.append(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
+		text.append(" (cycle ");
+		text.append(StyleManager.DECIMAL_SOLS.format(manager.getMaintenancePeriod()/1000D));
+		text.append(")");
+
+		lastCompletedLabel.setText(text.toString());
 
 		// Update progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
