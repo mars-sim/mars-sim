@@ -177,8 +177,9 @@
 
 		<building type="MD1 Nuclear Reactor" xloc="60.0" yloc="-80.0" facing="0.0" />
 
-		<building type="ERV-A" xloc="120.0" yloc="45.0" facing="0.0" />
-		<building type="ERV-B" xloc="120.0" yloc="-15.0" facing="0.0" />
+		<building type="ERV-A" xloc="120.0" yloc="-15.0" facing="0.0" />
+		<building type="ERV-B" xloc="120.0" yloc="25.0" facing="0.0" />
+		<building type="ERV-C" xloc="120.0" yloc="65.0" facing="0.0" />
 								
 		<building type="Hallway" length="4.0" xloc="0.0" yloc="6.5" facing="0.0" />
 		<building type="Hallway" length="3.0" xloc="-6.0" yloc="13.0" facing="270.0" />
@@ -221,9 +222,10 @@
 	
 		<building type="MD4 Nuclear Reactor" xloc="100.0" yloc="-100" facing="0.0" />
 		
-		<building type="ERV-A" xloc="160.0" yloc="45.0" facing="0.0" />
-		<building type="ERV-B" xloc="160.0" yloc="-15.0" facing="0.0" />
-						
+		<building type="ERV-A" xloc="160.0" yloc="-15.0" facing="0.0" />
+		<building type="ERV-B" xloc="160.0" yloc="25.0" facing="0.0" />
+		<building type="ERV-C" xloc="160.0" yloc="65.0" facing="0.0" />
+								
 		<building type="Hallway" length="4.0" xloc="0.0" yloc="19.5" facing="0.0" />
 		<building type="Hallway" length="3.0" xloc="-6.0" yloc="26.0" facing="270.0" />
 		
@@ -262,9 +264,10 @@
 		<building zone ="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
 		
 		<building type="MD4 Nuclear Reactor" xloc="120.0" yloc="-100" facing="0.0" />
-						
-		<building type="ERV-A" xloc="200.0" yloc="45.0" facing="0.0" />
-		<building type="ERV-B" xloc="200.0" yloc="-15.0" facing="0.0" />
+
+		<building type="ERV-A" xloc="200.0" yloc="-15.0" facing="0.0" />
+		<building type="ERV-B" xloc="200.0" yloc="25.0" facing="0.0" />
+		<building type="ERV-C" xloc="200.0" yloc="65.0" facing="0.0" />		
 									
 		<building type="Atmospheric Processor" xloc="20" yloc="-60.0" facing="90.0" />												
 		<building type="Atmospheric Processor" xloc="20" yloc="-70.0" facing="90.0" />

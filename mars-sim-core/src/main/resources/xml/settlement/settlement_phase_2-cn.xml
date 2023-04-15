@@ -121,15 +121,20 @@
     <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-80.0" facing="0.0" />
 
-    <building type="ERV-A" xloc="80.0" yloc="45.0"
+    <building type="ERV-A" xloc="80.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="120.0" yloc="45.0"
+    <building type="ERV-A" xloc="120.0" yloc="-15.0"
         facing="0.0" />
         
-    <building type="ERV-B" xloc="80.0" yloc="-15.0"
+    <building type="ERV-B" xloc="80.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="120.0" yloc="-15.0"
+    <building type="ERV-B" xloc="120.0" yloc="25.0"
         facing="0.0" />
+		
+    <building type="ERV-C" xloc="80.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="120.0" yloc="65.0"
+        facing="0.0" />	
 
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-70.0" facing="90.0" />

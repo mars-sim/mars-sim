@@ -817,10 +817,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV-A" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="3000">
 		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
-		    of the arrival of the human crew. It supplies the settlement with H2 that can be
-			converted into CH4 and H2O via Sabatier with RWGS. It performs also
-			water electrolysis to generate H2 and O2. It is NOT fully flight capable
-			and would require retrofitting to be flight ready.
+		    of the arrival of the human crew. It provides equipment package for producing and handling
+		    viable life-support and mission-capable resources. It is NOT fully flight capable
+			and would require retrofitting to become flight-ready space vehicle.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -887,10 +886,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="3000">
-		<description> The Earth Return Vehicle Type B (ERV-B) is a flight-ready space
-		vehicle and arrives on Mars with a Lander Hab. It furnishes a regolith related processing
-		equipment package not available in ERV-A. It may in principle be
-		reconfigured to provide for habitation space.
+		<description> The Earth Return Vehicle Type B (ERV-B) It furnishes many regolith-related processing
+		equipment package that extract ores and minerals. It may be reconfigured into a flight-ready space
+		vehicle with habitation space. 
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -901,13 +899,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
+				<!-- 5 processes for breaking down regolith -->		
 				<process-engine name="convert regolith to ores with sand" number-modules="10"/>
 				<process-engine name="extract nitrogen compounds from regolith" number-modules="10"/>
 				<process-engine name="process regolith-B rich in poly-hydrated sulfate" number-modules="3"/> 
 				<process-engine name="process regolith-C rich in phyllo-silicate" number-modules="3"/>
 				<process-engine name="process regolith-D rich in basaltic" number-modules="3"/>
 				
-				<!-- 6 types of ore deposits -->
+				<!-- 10 processes for breaking down minerals -->
 				<process-engine name="do chalcopyrite smelting" number-modules="3"/>
 				<!-- https://geologyscience.com/minerals/goethite/ -->
 				<process-engine name="do goethite smelting" number-modules="3"/>				
@@ -921,43 +920,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="do taenite smelting" number-modules="3"/>
 				<process-engine name="do sylvite smelting" number-modules="3"/>
 								
-				<!-- 6 types of ore deposits -->
+				<!-- 9 processes for extracting ore deposits -->
 				<process-engine name="extract minerals from basaltic deposits" number-modules="3"/>
 				<process-engine name="extract minerals from smectite deposits" number-modules="3"/>
 				<process-engine name="extract minerals from allophane deposits" number-modules="3"/>
 				<process-engine name="extract minerals from akaganeite deposits" number-modules="3"/> 
 				<process-engine name="extract minerals from bassanite deposits" number-modules="3"/> 
-				
 				<process-engine name="extract minerals from sand" number-modules="5"/>
 				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="3"/>
 				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="3"/>
 				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="3"/>
-				<process-engine name="make quartz from silica" number-modules="2"/>
-				<process-engine name="make soda from sodium oxide" number-modules="3"/>
-				<process-engine name="make cement" number-modules="5"/>
-				<process-engine name="mix sulfur concrete" number-modules="5"/>
-				<process-engine name="mix limecrete" number-modules="5"/>
-				<process-engine name="make magnesium-based concrete" number-modules="2"/>
-				<process-engine name="produce ethylene" number-modules="2"/>
-				<process-engine name="produce polyethylene" number-modules="50"/>
-				<process-engine name="produce styrene" number-modules="20"/>
-				<process-engine name="produce polystyrene" number-modules="10"/>
-				<process-engine name="bake calcium carbonate to lime"/> 										
+							
 			</resource-processing>
 
 			<storage capacity="300000">
-
-				<resource-storage resource="glass" capacity="3000.0" />
-				<resource-storage resource="silica" capacity="3000.0" />
-				<resource-storage resource="aluminum oxide" capacity="3000.0" />
-				<resource-storage resource="aluminum" capacity="3000.0" />
-				<resource-storage resource="calcium carbonate" capacity="2500.0" />	 			
-				<resource-storage resource="sulfur" capacity="2500.0" />
-				<resource-storage resource="lime" capacity="3000.0" />			
-				<resource-storage resource="ethylene" capacity="1000.0" />	
-				<resource-storage resource="polyethylene" capacity="1000.0" />	
-				<resource-storage resource="polystyrene" capacity="1000.0" />	
-				<resource-storage resource="styrene" capacity="1000.0" />	
 												
 				<!-- 6 types of ore deposits -->
 				<resource-storage resource="allophane" capacity="1000.0" />
@@ -976,6 +952,61 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 <!-- end of ERV-B -->
+
+	<building type="ERV-C" width="10.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="3000">
+		<description> The Earth Return Vehicle Type C (ERV-C) possesses many chemical-related processing
+		equipment packages that synthesize industrial chemicals. It may be reconfigured into a flight-ready space
+		vehicle with habitation space. 
+		</description>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
+
+		<functions>
+			<earth-return capacity="4" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20" discharge-rate="1.25"/>
+			<resource-processing power-down-level="0.0">
+					
+				<!-- 3 chemical processes -->
+				<process-engine name="make quartz from silica" number-modules="2"/>
+				<process-engine name="make soda from sodium oxide" number-modules="3"/>
+				<process-engine name="bake calcium carbonate to lime"/> 	
+					
+				<!-- 4 types of cement/concrete -->			
+				<process-engine name="make cement" number-modules="5"/>
+				<process-engine name="mix sulfur concrete" number-modules="5"/>
+				<process-engine name="mix limecrete" number-modules="5"/>
+				<process-engine name="make magnesium-based concrete" number-modules="2"/>
+				
+				<!-- 4 industrial ingredients -->	
+				<process-engine name="produce ethylene" number-modules="2"/>
+				<process-engine name="produce polyethylene" number-modules="50"/>
+				<process-engine name="produce styrene" number-modules="20"/>
+				<process-engine name="produce polystyrene" number-modules="10"/>
+									
+			</resource-processing>
+
+			<storage capacity="300000">
+
+				<resource-storage resource="glass" capacity="3000.0" />
+				<resource-storage resource="silica" capacity="3000.0" />
+				<resource-storage resource="aluminum oxide" capacity="3000.0" />
+				<resource-storage resource="aluminum" capacity="3000.0" />
+				<resource-storage resource="calcium carbonate" capacity="2500.0" />
+					 			
+				<resource-storage resource="sulfur" capacity="2500.0" />
+				<resource-storage resource="lime" capacity="3000.0" />			
+				<resource-storage resource="ethylene" capacity="1000.0" />	
+				<resource-storage resource="polyethylene" capacity="1000.0" />	
+				<resource-storage resource="polystyrene" capacity="1000.0" />	
+				<resource-storage resource="styrene" capacity="1000.0" />	
+				
+			</storage>
+		</functions>
+	</building>
+<!-- end of ERV-C -->
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="3000">

@@ -49,15 +49,10 @@
     <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-60.0" facing="0.0" />
 
-    <!-- Earth Return Vehicle Type A building has a Sabatier reactor for converting
-        hydrogen and carbon dioxide into methane, water and oxygen. It has a full
-        load of hydrogen and has not reacted yet. -->
-    <building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
-
-    <!-- Earth Return Vehicle Type B building has numerous regolith processing
-            capabilities for making cement and concrete for construction purposes. -->
-    <building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
-
+    <building type="ERV-A" xloc="80.0" yloc="-15.0" facing="0.0" />
+    <building type="ERV-B" xloc="80.0" yloc="25.0" facing="0.0" />
+    <building type="ERV-C" xloc="80.0" yloc="65.0" facing="0.0" />
+    
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-70.0" facing="90.0" />
     <building type="Large Sabatier Processor" xloc="0.0"

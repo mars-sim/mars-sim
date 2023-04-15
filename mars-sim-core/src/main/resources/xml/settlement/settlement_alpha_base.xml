@@ -234,25 +234,39 @@
     <building type="MD4 Nuclear Reactor" xloc="120.0"
         yloc="-100" facing="0.0" />
 
-    <building type="ERV-A" xloc="80.0" yloc="45.0"
+    <!-- Earth Return Vehicle Type A building has a Sabatier reactor for converting
+        hydrogen and carbon dioxide into methane, water and oxygen. -->
+    <building type="ERV-A" xloc="80.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="120.0" yloc="45.0"
+    <building type="ERV-A" xloc="120.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="160.0" yloc="45.0"
+    <building type="ERV-A" xloc="160.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="200.0" yloc="45.0"
+    <building type="ERV-A" xloc="200.0" yloc="-15.0"
         facing="0.0" />
         
-    <building type="ERV-B" xloc="80.0" yloc="-15.0"
+    <!-- Earth Return Vehicle Type B building has regolith-related processing
+            capabilities. -->
+    <building type="ERV-B" xloc="80.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="120.0" yloc="-15.0"
+    <building type="ERV-B" xloc="120.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="160.0" yloc="-15.0"
+    <building type="ERV-B" xloc="160.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="200.0" yloc="-15.0"
+    <building type="ERV-B" xloc="200.0" yloc="25.0"
         facing="0.0" />
-
-
+        
+    <!-- Earth Return Vehicle Type C building has industrial chemical processing
+            capabilities for synthesizing chemicals. -->
+    <building type="ERV-C" xloc="80.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="120.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="160.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="200.0" yloc="65.0"
+        facing="0.0" />
+        
     <building type="Atmospheric Processor" xloc="20"
         yloc="-60.0" facing="90.0" />
     <building type="Atmospheric Processor" xloc="20"

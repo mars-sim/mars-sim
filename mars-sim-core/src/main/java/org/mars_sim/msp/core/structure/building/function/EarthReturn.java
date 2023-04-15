@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EarthReturn.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-04-15
  * @author Scott Davis
  */
 
@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
- * A building function for launching an Earth return mission.
+ * A building function for an Earth return vehicle.
  */
 public class EarthReturn extends Function {
 
@@ -32,7 +32,7 @@ public class EarthReturn extends Function {
 	 */
 	public EarthReturn(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.EARTH_RETURN,spec, building);
+		super(FunctionType.EARTH_RETURN, spec, building);
 
 		// Populate data members.
 		crewCapacity = spec.getCapacity();

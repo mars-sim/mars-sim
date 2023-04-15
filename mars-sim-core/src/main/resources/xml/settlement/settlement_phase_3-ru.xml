@@ -206,19 +206,25 @@
     <building type="Solar Photovoltaic Array" xloc="60.0"
         yloc="-90.0" facing="0.0" />   
         
-
-    <building type="ERV-A" xloc="80.0" yloc="45.0"
+    <building type="ERV-A" xloc="80.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="120.0" yloc="45.0"
+    <building type="ERV-A" xloc="120.0" yloc="-15.0"
         facing="0.0" />
-    <building type="ERV-A" xloc="160.0" yloc="45.0"
+    <building type="ERV-A" xloc="160.0" yloc="-15.0"
         facing="0.0" />
-                        
-    <building type="ERV-B" xloc="80.0" yloc="-15.0"
+        
+    <building type="ERV-B" xloc="80.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="120.0" yloc="-15.0"
+    <building type="ERV-B" xloc="120.0" yloc="25.0"
         facing="0.0" />
-    <building type="ERV-B" xloc="160.0" yloc="-15.0"
+    <building type="ERV-B" xloc="160.0" yloc="25.0"
+        facing="0.0" />
+   
+    <building type="ERV-C" xloc="80.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="120.0" yloc="65.0"
+        facing="0.0" />
+    <building type="ERV-C" xloc="160.0" yloc="65.0"
         facing="0.0" />
 
     <building type="Atmospheric Processor" xloc="20"
