@@ -225,8 +225,6 @@ public class Settlement extends Structure implements Temporal,
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
 	private double currentPressure = NORMAL_AIR_PRESSURE;
-//	/** Amount of time (millisols) that the settlement has had zero population. */
-//	private double zeroPopulationTime;
 	/** The settlement's current meal replenishment rate. */
 	public double mealsReplenishmentRate = 0.3;
 	/** The settlement's current dessert replenishment rate. */
@@ -1034,7 +1032,8 @@ public class Settlement extends Structure implements Temporal,
 			// Compute whether a baseline, GCR, or SEP event has occurred
 			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == 5) {
-				checkRadiationProbability(pulse.getElapsed());
+				RadiationStatus newExposed = RadiationStatus.calculateCurrent(pulse.getElapsed());
+				setExposed(newExposed);
 			}
 
 			remainder = msol % RESOURCE_UPDATE_FREQ;
@@ -2505,12 +2504,12 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/*
-	 * Compute the probability of radiation exposure during EVA/outside walk
+	 * Update the status of Radiation exposure
+	 * @param newExposed
 	 */
-	private void checkRadiationProbability(double time) {
-
+	public void setExposed(RadiationStatus newExposed) {
 		RadiationStatus oldStatus = exposed;
-		exposed = RadiationStatus.calculateCurrent(time);
+		exposed = newExposed;
 		
 		if (exposed.isBaselineEvent() && !oldStatus.isBaselineEvent()) {
 			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.BASELINE_EVENT.toString() + " is imminent.");

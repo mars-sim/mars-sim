@@ -8,9 +8,6 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -94,6 +91,62 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class RadiationExposure implements Serializable, Temporal {
 
+	/**
+	 * Class models a dose of radiation over a time range
+	 */
+	public static class DoseHistory implements Serializable {
+		private double thirtyDay;
+		private double annual;
+		private double career;
+		
+		public DoseHistory(double thirtyDay, double annual, double career) {
+			this.thirtyDay = thirtyDay;
+			this.annual = annual;
+			this.career = career;
+		}
+		
+		public double getThirtyDay() {
+			return thirtyDay;
+		}
+
+		public double getAnnual() {
+			return annual;
+		}
+
+		public double getCareer() {
+			return career;
+		}
+
+		void addToThirtyDay(double delta) {
+			thirtyDay += delta;
+			if (thirtyDay < 0) {
+				thirtyDay = 0;
+			}
+		}
+
+		void addToAnnual(double delta) {
+			annual += delta;
+			if (annual < 0) {
+				annual = 0;
+			}
+		}
+
+		void addToCareer(double delta) {
+			career += delta;
+			if (career < 0) {
+				career = 0;
+			}
+		}
+
+		/**
+		 * Compare this dose hsitory to another and see if any values are higher
+		 */
+		boolean higherThan(DoseHistory limit) {
+			// Only check the 30 day value currently
+			return thirtyDay > limit.thirtyDay;
+		}
+	};
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -105,14 +158,6 @@ public class RadiationExposure implements Serializable, Temporal {
 	public static final double SEP_CHANCE_SWING = 2D;
 	/** The chance modifier for GCR. Can be 3x as much probability of occurrence (an arbitrary value for now). */
 	public static final double GCR_CHANCE_SWING = 3D;
-
-	/**
-	 * Assuming the following 3 types of radiation below add up to 100%, 
-	 * <br> BL = 72.5%, GCR = 25%, SEP = 2.5% : BL + GCR + SEP = 100%
-	 * <br> Note : vary the chance according to the solar cycle, day/night and other factors. 
-	 * <br> On MSL, SEPs is only 5% of GCRs, not like 10% (=25/2.5) here
-	 */
-//	public static final double BASELINE_PERCENT = 72.5; // [in %] calculated
 
 	/** 
 	 * The percentage of probability per millisol of having a Galactic cosmic rays (GCRs) event. 
@@ -156,31 +201,12 @@ public class RadiationExposure implements Serializable, Temporal {
 	// Pavlov et al. assumed an absorbed dose of 50 ±5 mGy/year.
 	// The actual absorbed dose measured by the RAD is 76 mGy/yr at the surface.
 
-	// ROWS of the 2-D dose array.
-	private static final int THIRTY_DAY = 0;
-	private static final int ANNUAL = 1;
-	private static final int CAREER = 2;
-
-	// COLUMNS of the 2-D dose array.
-	/** 
-	 * Organ dose equivalent limits, per NCRP guidelines. 
-	 */
-	private static final int BFO = 0; // BFO = blood-forming organs
-	private static final int OCULAR = 1;
-	private static final int SKIN = 2;
-
 	/**
 	 * Career whole-body effective dose limits, per NCRP guidelines. 
 	 * <br> Note : it should vary with age and differs in male and female
 	 */
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
-//	private static final String BL_STRING = "Baseline";
-//	private static final String GCR_STRING = "Galactic Comsic Radiation";
-//	private static final String SEP_STRING = "Solar Energetic Particles ";
-//	private static final String BFO_STRING = "Blood-Forming Organs";
-//	private static final String OCULAR_STRING = "Ocular";
-//	private static final String SKIN_STRING = "SKin";
 	private static final String EXPOSED_TO = "Exposed to ";
 	private static final String DOSE_OF_RAD = " mSv dose of radiation";
 	private static final String EVA_OPERATION = " during an EVA operation.";
@@ -190,12 +216,15 @@ public class RadiationExposure implements Serializable, Temporal {
 	private boolean isSick;
 
 	/** Dose equivalent limits in mSv (milliSieverts). */
-	private static final int[][] DOSE_LIMITS = { { 250, 1000, 1500 }, { 500, 2000, 3000 }, { WHOLE_BODY_DOSE, 4000, 6000 } };
+	private static final DoseHistory[] DOSE_LIMITS = {
+										new DoseHistory(250, 1000, 1500), 
+										new DoseHistory(500, 2000, 3000), 
+										new DoseHistory(WHOLE_BODY_DOSE, 4000, 6000) };
 
 	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
-	private double[][] dose;
+	private DoseHistory[] dose;
 
-	private Map<Radiation, Integer> eventMap = new ConcurrentHashMap<>();
+	private Map<Integer,Radiation> eventMap = new ConcurrentHashMap<>();
 
 	private Person person;
 
@@ -205,11 +234,18 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	public RadiationExposure(Person person) {
 		this.person = person;
-		dose = new double[3][3];
-	}
+		dose = new DoseHistory[BodyRegionType.values().length];
+		DoseHistory bfoDose = new DoseHistory(rand(10), rand(30), rand(40));
+		DoseHistory ocularDose = new DoseHistory(bfoDose.getThirtyDay() + rand(15),
+												 bfoDose.getAnnual() + rand(45),
+												 bfoDose.getCareer() + rand(70));
+		DoseHistory skinDose = new DoseHistory(ocularDose.getThirtyDay() + rand(25),
+												ocularDose.getAnnual() + rand(60),
+												ocularDose.getCareer() + rand(100));
+		dose[BodyRegionType.BFO.ordinal()] = bfoDose;
+		dose[BodyRegionType.OCULAR.ordinal()] = ocularDose;
+		dose[BodyRegionType.SKIN.ordinal()] = skinDose;
 
-	public Map<Radiation, Integer> getRadiationEventMap() {
-		return eventMap;
 	}
 
 	/**
@@ -219,23 +255,17 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param amount
 	 * @see checkForRadiation() in EVAOperation and WalkOutside
 	 */
-	public Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
-		int bodyRegion = -1;
-
-		if (bodyRegionType == BodyRegionType.BFO)
-			bodyRegion = 0;
-		else if (bodyRegionType == BodyRegionType.OCULAR)
-			bodyRegion = 1;
-		else if (bodyRegionType == BodyRegionType.SKIN)
-			bodyRegion = 2;
+	private Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
+		DoseHistory active = dose[bodyRegionType.ordinal()];
 		
 		// Since amount is cumulative, need to carry over
-		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] + amount;
-		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
-		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
+		active.addToThirtyDay(amount);
+		active.addToAnnual(amount);
+		active.addToCareer(amount);
 
+		// Record for later
 		Radiation rad = new Radiation(radiationType, bodyRegionType, Math.round(amount * 10000.0) / 10000.0);
-		eventMap.put(rad, solCache);
+		eventMap.put(solCache, rad);
 
 		return rad;
 
@@ -248,43 +278,15 @@ public class RadiationExposure implements Serializable, Temporal {
 	 *
 	 * @amount
 	 */
-	public void reduceDose(int bodyRegion, double amount) {
+	public void reduceDose(BodyRegionType bodyRegionType, double amount) {
+		DoseHistory active = dose[bodyRegionType.ordinal()];
 
 		// amount is cumulative
-		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] - amount;
-		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] - amount;
-		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] - amount;
-
-		if (dose[bodyRegion][THIRTY_DAY] < 0)
-			dose[bodyRegion][THIRTY_DAY] = 0;
-		if (dose[bodyRegion][ANNUAL] < 0)
-			dose[bodyRegion][ANNUAL] = 0;
-		if (dose[bodyRegion][CAREER] < 0)
-			dose[bodyRegion][CAREER] = 0;
-
+		active.addToThirtyDay(-amount);
+		active.addToAnnual(-amount);
+		active.addToCareer(-amount);
 	}
 
-	/*
-	 * Initialize the dose
-	 */
-	public void initializeWithRandomDose() {
-		for (int y = 0; y < 3; y++) {
-			if (y == THIRTY_DAY) {
-				dose[BFO][THIRTY_DAY] = rand(10);
-				dose[OCULAR][THIRTY_DAY] = dose[BFO][THIRTY_DAY] + rand(15);
-				dose[SKIN][THIRTY_DAY] = dose[OCULAR][THIRTY_DAY] + rand(25);
-			} else if (y == ANNUAL) {
-				dose[BFO][ANNUAL] = rand(30);
-				dose[OCULAR][ANNUAL] = dose[BFO][ANNUAL] + rand(45);
-				dose[SKIN][ANNUAL] = dose[OCULAR][ANNUAL] + rand(60);
-			} else if (y == CAREER) {
-				dose[BFO][CAREER] = rand(40);
-				dose[OCULAR][CAREER] = dose[BFO][CAREER] + rand(70);
-				dose[SKIN][CAREER] = dose[OCULAR][CAREER] + rand(100);
-			}
-		}
-
-	}
 
 	private int rand(int num) {
 		return RandomUtil.getRandomInt(num);
@@ -297,20 +299,11 @@ public class RadiationExposure implements Serializable, Temporal {
 		if (pulse.isNewSol()) {
 			counter30++;
 			counter360++;
-			// set the boolean
-			// isExposureChecked = false;
 		}
 
-		// if (!isExposureChecked && marsClock.getMillisol() > 100 &&
-		// marsClock.getMillisol() < 110) {
-		// check on the effect of the exposure once a day at between 100 & 110 millisols
-		// Note: at fastest simulation speed, it can skip as much as ~5 millisols
-
-		int msol = pulse.getMarsTime().getMillisolInt();// (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+		int msol = pulse.getMarsTime().getMillisolInt();
 		if (msol % 17 == 0) {
 			checkExposureLimit();
-			// reset the boolean
-			// isExposureChecked = true;
 		}
 		return true;
 	}
@@ -322,46 +315,29 @@ public class RadiationExposure implements Serializable, Temporal {
 	/*
 	 * Checks if the exposure exceeds the limit and reset counters
 	 */
-	public void checkExposureLimit() {
+	private void checkExposureLimit() {
 
 		// Compare if any element in a person's dose matrix exceeds the limit
 		boolean exceeded = false;
-		// int interval = -1;
-		// int bodyRegion = -1;
-		for (int x = 0; x < 3; x++) {
-			// Set y < 2 to ignore the annual limit and the career limit for now
-			for (int y = 0; y < 1; y++) {
-				final double dosage = dose[x][y];
-				final int limit = DOSE_LIMITS[x][y];
-				if (dosage > limit) {
-					// interval = x;
-					// bodyRegion = y;
-					exceeded = true;
-					break;
-				}
+		for(BodyRegionType type : BodyRegionType.values()) {
+			DoseHistory active = dose[type.ordinal()];
+			DoseHistory limit = DOSE_LIMITS[type.ordinal()];
+			if (active.higherThan(limit)) {
+				exceeded = true;
 			}
 		}
-
+	
         isSick = exceeded;
 
-		// Note: exposure to a dose of 1 Sv is associated with a five percent increase
-		// in fatal cancer risk.
-		// TODO if sick is true, call methods in HealthProblem...
-		// if (sick) {
-		// Complaint radiationScikness = ;
-		// condition.addMedicalComplaint(complaint);
-		// condition.getPerson().fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-		// }
-
 		if (counter30 == 30) {
-			carryOverDosage(THIRTY_DAY);
+			carryOverDosage(false);
 			counter30 = 0;
 		}
 
 		// TODO: convert to martian system. For now, use 360 sol for simplicity and
 		// synchronization with the 30-day carryover
 		if (counter360 == 360) {
-			carryOverDosage(ANNUAL);
+			carryOverDosage(true);
 			counter360 = 0;
 		}
 
@@ -372,45 +348,26 @@ public class RadiationExposure implements Serializable, Temporal {
 	 *
 	 * @param type of interval
 	 */
-	public void carryOverDosage(int interval) {
+	private void carryOverDosage(boolean annualCheck) {
 
-		double dosage = 0;
-		BodyRegionType region = null;
+		int targetSol = solCache - (annualCheck ? 360 : 30);
+		Radiation previous = eventMap.get(targetSol);
+		if (previous != null) {
+			double dosage = previous.getAmount();
+			BodyRegionType region = previous.getBodyRegion();
 
-		Iterator<Map.Entry<Radiation, Integer>> entries = eventMap.entrySet().iterator();
-
-		while (entries.hasNext()) {
-			Map.Entry<Radiation, Integer> entry = entries.next();
-			Radiation key = entry.getKey();
-			Integer value = entry.getValue();
-
-			if (solCache - (int) value == interval + 1) {
-				dosage = key.getAmount();
-				region = key.getBodyRegion();
-
-				int type = 0;
-
-				if (region == BodyRegionType.BFO)
-					type = 0;
-				else if (region == BodyRegionType.OCULAR)
-					type = 1;
-				else if (region == BodyRegionType.SKIN)
-					type = 2;
-
-				if (interval == 0) {
-					// remove the recorded dosage from 31 sols ago
-					dose[type][THIRTY_DAY] = dose[type][THIRTY_DAY] - dosage;
-					// dose[type][ANNUAL] = dose[type][ANNUAL] + dosage;
-				} else if (interval == 1) {
-					// remove the recorded dosage from 361 sols ago
-					dose[type][ANNUAL] = dose[type][ANNUAL] - dosage;
-					// dose[type][CAREER] = dose[type][CAREER] + dosage;
-				}
+			if (!annualCheck) {
+				// remove the recorded dosage from 31 sols ago
+				dose[region.ordinal()].addToThirtyDay(-dosage);
+			}
+			else {
+				// remove the recorded dosage from 361 sols ago
+				dose[region.ordinal()].addToAnnual(-dosage);
 			}
 		}
 	}
 
-	public double[][] getDose() {
+	public DoseHistory[] getDose() {
 		return dose;
 	}
 
@@ -465,9 +422,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					bodyRegionType = BodyRegionType.BFO;
 				else
 					bodyRegionType = BodyRegionType.SKIN;
-				
-				List<Radiation> eventMap = new ArrayList<>();
-				
+								
 				double baselevel = 0;
 				if (exposed.isSEPEvent()) {
 					radiationType = RadiationType.SEP;
@@ -479,7 +434,6 @@ public class RadiationExposure implements Serializable, Temporal {
 							* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, exposure);
-						eventMap.add(rad);
 					}	
 				}
 				// for now, if SEP happens, ignore GCR and Baseline
@@ -495,7 +449,6 @@ public class RadiationExposure implements Serializable, Temporal {
 							.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); 
 					if (gcr > 0) {
 						rad = addDose(radiationType, bodyRegionType, exposure);
-						eventMap.add(rad);
 					}	
 				}
 				// for now, if GCR happens, ignore Baseline
@@ -507,7 +460,6 @@ public class RadiationExposure implements Serializable, Temporal {
 							+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); 
 					if (baseline > 0) {
 						rad = addDose(radiationType, bodyRegionType, exposure);
-						eventMap.add(rad);
 					}	
 				}
 				else {

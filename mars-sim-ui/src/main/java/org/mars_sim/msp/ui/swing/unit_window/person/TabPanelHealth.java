@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.person.health.RadiationExposure.DoseHistory;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -533,7 +534,7 @@ extends TabPanel {
 
 		private RadiationExposure radiation;
 
-		private double dose[][];
+		private DoseHistory[] dose;
 
 		private RadiationTableModel(PhysicalCondition condition) {
 			radiation = condition.getRadiationExposure();
@@ -594,8 +595,17 @@ extends TabPanel {
 				else if (row == 2)
 					str = CAREER;
 			}
-			else
-				str = Math.round(dose[row][column-1] * 100.0D)/100.0D + "";
+			else {
+				DoseHistory active = dose[column-1];
+				double value = switch(row) {
+					case 0 -> active.getThirtyDay();
+					case 1 -> active.getAnnual();
+					case 2 -> active.getCareer();
+					default -> 0D;
+				};
+			
+				str = Math.round(value * 100.0D)/100.0D + "";
+			}
 			return str;
 		}
 

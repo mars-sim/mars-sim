@@ -56,6 +56,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	new MalfunctionCreateCommand(SETTLEMENT_GROUP),
 																	ResourceProcessCommand.PROCESS,
 																	ObjectiveCommand.OBJECTIVE,
+																	RadiationCommand.RADIATION,
 																	ResearcherCommand.RESEARCHER,
 																	ResourceCommand.RESOURCE,
 																	RobotCommand.ROBOT,

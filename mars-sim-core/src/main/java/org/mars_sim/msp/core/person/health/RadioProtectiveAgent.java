@@ -47,7 +47,7 @@ public class RadioProtectiveAgent extends Medication {
         super.timePassing(pulse);
         
         int region = RandomUtil.getRandomInt(2);
-        exposure.reduceDose(region, pulse.getElapsed() * REDUCTION);
+        exposure.reduceDose(BodyRegionType.values()[region], pulse.getElapsed() * REDUCTION);
         return true;
     }
 }

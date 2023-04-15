@@ -23,7 +23,7 @@ public class RadiationStatus implements Serializable {
     private boolean gcrEvent;
     private boolean sepEvent;
 
-    private RadiationStatus(boolean baselineEvent, boolean gcrEvent, boolean sepEvent) {
+    public RadiationStatus(boolean baselineEvent, boolean gcrEvent, boolean sepEvent) {
         this.baselineEvent = baselineEvent;
         this.gcrEvent = gcrEvent;
         this.sepEvent = sepEvent;

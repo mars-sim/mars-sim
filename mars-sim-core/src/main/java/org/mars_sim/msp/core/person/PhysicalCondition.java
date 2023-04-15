@@ -292,7 +292,6 @@ public class PhysicalCondition implements Serializable {
 		alive = true;
 
 		radiation = new RadiationExposure(newPerson);
-		radiation.initializeWithRandomDose();
 
 		deathDetails = null;
 
