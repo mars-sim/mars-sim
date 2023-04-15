@@ -77,7 +77,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
-        svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
+        svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>();
     }
 
     @Override
@@ -99,7 +99,6 @@ public class StructureMapLayer implements SettlementMapLayer {
         // Rotate map from North.
         g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
-        //2014-11-05 Added adjustScaleFactor()
         // discard the old scale value, compute a new value of scale.
         if (building != null) {
         	// Displaying a svg image for one single building
@@ -107,8 +106,6 @@ public class StructureMapLayer implements SettlementMapLayer {
 	        double length = building.getLength();
 	        scale = adjustScaleFactor(width, length);
         	drawOneBuilding(building, g2d0);
-	    	//System.out.println("StructureMapLayer.java : displayLayer() : width is "+ width);
-	      	//System.out.println("StructureMapLayer.java : displayLayer() : length is "+ length);
         }
 
         else {  // Displaying svg images of all buildings in the entire settlement

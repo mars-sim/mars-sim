@@ -60,7 +60,8 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
     protected int height;
 
     /**
-     * Create a new SVGIcon object.
+     * Creates a new SVGIcon object.
+     * 
      * @param uri The URI to read the SVG document from.
      */
     public SVGIcon(String uri) throws TranscoderException {
@@ -68,7 +69,8 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
     }
 
     /**
-     * Create a new SVGIcon object.
+     * Creates a new SVGIcon object.
+     * 
      * @param uri The URI to read the SVG document from.
      * @param w The width of the icon.
      * @param h The height of the icon.
@@ -80,7 +82,12 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
     }
 
     /**
-     * Generate the BufferedImage.
+     * Generates the BufferedImage.
+     * 
+     * @param in
+     * @param w
+     * @param h
+     * @throws TranscoderException
      */
     protected void generateBufferedImage(TranscoderInput in, int w, int h)
             throws TranscoderException {
@@ -106,6 +113,7 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
 
         /**
          * Creates a new ARGB image with the specified dimension.
+         * 
          * @param width the image width in pixels
          * @param height the image height in pixels
          */
@@ -115,6 +123,7 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
 
         /**
          * Writes the specified image to the specified output.
+         * 
          * @param img the image to write
          * @param output the output where to store the image
          * @param TranscoderException if an error occured while storing the image
@@ -132,7 +141,10 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
         }
 
         /**
-         * Set the dimensions to be used for the image.
+         * Sets the dimensions to be used for the image.
+         * 
+         * @param w
+         * @param h
          */
         public void setDimensions(int w, int h) {
             hints.put(KEY_WIDTH, (float) w);
@@ -141,7 +153,8 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
     }
 
     /**
-     * Get the underlyign backing image
+     * Gets the underlying backing image.
+     * 
      * @return
      */
     public Image getImage() {
@@ -165,7 +178,7 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
     }
 
     /**
-     * Draw the icon at the specified location.
+     * Draws the icon at the specified location.
      */
     public void paintIcon(Component c, Graphics g, int x, int y) {
         g.drawImage(bufferedImage, x, y, null);

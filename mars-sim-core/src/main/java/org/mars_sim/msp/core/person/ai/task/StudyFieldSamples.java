@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @date 2022-07-17
+ * @date 2023-04-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -98,15 +98,15 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 				if (lab != null) {
 					addPersonToLab();
 				} else {
-					logger.log(person, Level.WARNING, 0, "lab could not be determined.");
+					logger.log(person, Level.WARNING, 0, "No lab was available.");
 					endTask();
 				}
 			} else {
-				logger.log(person, Level.WARNING, 0, "science could not be determined");
+				logger.log(person, Level.WARNING, 0, "The science subject could not be determined.");
 				endTask();
 			}
 		} else {
-			logger.log(person, Level.WARNING, 0, "study could not be determined");
+			logger.log(person, Level.WARNING, 0, "The scientific study could not be determined.");
 			endTask();
 		}
 
@@ -168,7 +168,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 	private ScientificStudy determineStudy() {
 		ScientificStudy result = null;
 
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = getFieldSciences();

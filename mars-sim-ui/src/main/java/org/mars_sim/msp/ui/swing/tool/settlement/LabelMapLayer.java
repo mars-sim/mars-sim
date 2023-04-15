@@ -96,7 +96,7 @@ implements SettlementMapLayer {
 	public LabelMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		labelImageCache = new HashMap<String, BufferedImage>(30);
+		labelImageCache = new HashMap<String, BufferedImage>();
 	}
 
 	@Override

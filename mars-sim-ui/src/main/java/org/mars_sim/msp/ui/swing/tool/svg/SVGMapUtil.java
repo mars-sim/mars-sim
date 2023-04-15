@@ -59,6 +59,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets an SVG graphics node for a given map item name.
+     * 
      * @param prefix the property key prefix (ex: building)
      * @param name the name of the map item.
      * @return the SVG graphics node.
@@ -97,6 +98,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a building.
+     * 
      * @param buildingName the building's name.
      * @return SVG node or null if none found.
      */
@@ -107,6 +109,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a building overlay pattern.
+     * 
      * @param buildingName the building's name.
      * @return SVG node or null if none found.
      */
@@ -117,6 +120,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a construction site.
+     * 
      * @param constructionSiteStageName the construction site's current stage name.
      * @return SVG node or null if none found.
      */
@@ -127,6 +131,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a construction site overlay pattern.
+     * 
      * @param constructionSiteStageName the construction site's current stage name.
      * @return SVG node or null if none found.
      */
@@ -137,6 +142,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a vehicle.
+     * 
      * @param vehicleType the vehicle type.
      * @return SVG node or null if none found.
      */
@@ -147,6 +153,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a vehicle maintenance/repair overlay.
+     * 
      * @param vehicleType the vehicle type.
      * @return SVG node of null if none found.
      */
@@ -157,6 +164,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a vehicle loading/unloading overlay.
+     * 
      * @param vehicleType the vehicle type.
      * @return SVG node of null if none found.
      */
@@ -167,6 +175,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for an attachment part.
+     * 
      * @param partType the part type.
      * @return SVG node or null if none found.
      */
@@ -177,6 +186,7 @@ public final class SVGMapUtil {
 
     /**
      * Gets a SVG node for a building connector.
+     * 
      * @param connectorType the connector type.
      * @return SVG node or null if none found.
      */

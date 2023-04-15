@@ -48,17 +48,18 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private double scale;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
 	public VehicleMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>(21);
+		svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>();
 	}
 
+
 	@Override
-	// 2014-11-04 Added building parameter
 	public void displayLayer(Graphics2D g2d, Settlement settlement,Building building,
 			double xPos, double yPos, int mapWidth, int mapHeight,
 			double rotation, double scale) {
@@ -86,7 +87,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw all of the vehicles parked at the settlement.
+	 * Draws all of the vehicles parked at the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 */
@@ -109,6 +111,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws a vehicle on the map.
+	 * 
 	 * @param vehicle the vehicle.
 	 * @param g2d the graphics context.
 	 */
@@ -148,6 +151,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Checks if the vehicle is currently being repaired or maintained.
+	 * 
 	 * @param vehicle the vehicle
 	 * @return true if vehicle is being repaired or maintained.
 	 */
@@ -165,7 +169,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw the SVG repair/maint overlay on the vehicle.
+	 * Draws the SVG repair/maint overlay on the vehicle.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
@@ -181,6 +186,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Checks if the vehicle is currently being loaded or unloaded.
+	 * 
 	 * @param vehicle the vehicle
 	 * @return true if vehicle is being loaded or unloaded.
 	 */
@@ -232,7 +238,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw the SVG loading/unloading overlay on the vehicle.
+	 * Draws the SVG loading/unloading overlay on the vehicle.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param vehicle the vehicle.
 	 */
@@ -249,6 +256,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws a vehicle as a SVG image on the map.
+	 * 
 	 * @param g2d the graphics2D context.
 	 * @param xLoc the X location from center of settlement (meters).
 	 * @param yLoc the y Location from center of settlement (meters).
@@ -265,6 +273,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws a vehicle as a rectangle on the map.
+	 * 
 	 * @param g2d the graphics2D context.
 	 * @param xLoc the X location from center of settlement (meters).
 	 * @param yLoc the y Location from center of settlement (meters).
@@ -281,6 +290,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws a vehicle on the map.
+	 * 
 	 * @param isSVG true if using a SVG image.
 	 * @param g2d the graphics2D context.
 	 * @param xLoc the X location from center of settlement (meters).
@@ -345,6 +355,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws the parts attached to a light utility vehicle.
+	 * 
 	 * @param g2d the graphics context
 	 * @param vehicle the light utility vehicle.
 	 */
@@ -366,6 +377,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Draws an overlay for a vehicle on the map.
+	 * 
 	 * @param g2d the graphics2D context.
 	 * @param xLoc the X location from center of settlement (meters).
 	 * @param yLoc the y Location from center of settlement (meters).
@@ -419,6 +431,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Gets a buffered image for a given graphics node.
+	 * 
 	 * @param svg the graphics node.
 	 * @param width the vehicle width.
 	 * @param length the vehicle length.
@@ -449,6 +462,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 	/**
 	 * Creates a buffered image from a SVG graphics node.
+	 * 
 	 * @param svg the SVG graphics node.
 	 * @param width the width of the produced image.
 	 * @param length the length of the produced image.

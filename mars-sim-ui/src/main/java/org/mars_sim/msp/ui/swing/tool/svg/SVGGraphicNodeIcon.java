@@ -23,8 +23,8 @@ import javax.swing.Icon;
 import org.apache.batik.gvt.GraphicsNode;
 
 /**
- * This class takes a SVG Graphics nodes and maps it into a Icon. It auto scales the original image
- * and perserves the aspect ratio.
+ * This class takes a SVG Graphics node and maps it into a Icon. It auto scales the original image
+ * and preserves the aspect ratio.
  */
 public class SVGGraphicNodeIcon implements Icon {
 
@@ -35,7 +35,7 @@ public class SVGGraphicNodeIcon implements Icon {
     private static Map<GraphicsNode, BufferedImage> svgImageCache = new HashMap<>();
 
     /**
-     * @param rotate Rotate the soruce image to fit
+     * @param rotate Rotate the source image to fit
      */
     public SVGGraphicNodeIcon(GraphicsNode source, int width, int height, boolean rotate) {
         this.source = source;

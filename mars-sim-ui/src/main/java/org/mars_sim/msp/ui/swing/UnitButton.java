@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 

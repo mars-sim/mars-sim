@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * StudyFieldSamplesMeta.java
- * @date 2021-10-21
+ * @date 2023-04-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
