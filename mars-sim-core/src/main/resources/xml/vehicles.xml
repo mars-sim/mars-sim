@@ -76,7 +76,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 https://www.sciencedaily.com/releases/2012/05/120531165720.htm
 
 6. According to Zubrin, it is estimated that a 1 tonne pressurized ground rover would require about 0.5 kg of
-methane/oxygen bipropellant to travel 1 km. Thus a 800 km round trip excursion would consume about 400 kg of
+methanol/oxygen bipropellant to travel 1 km. Thus a 800 km round trip excursion would consume about 400 kg of
 propellant.
 http://www.marspapers.org/paper/Zubrin_1991.pdf
 -->
@@ -94,7 +94,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varied according to the type of vehicle -->
 		<battery-module number="2" />
 		
-		<!-- The number of methane fuel cell stacks for the vehicle [dimension-less].(required) -->
+		<!-- The number of methanol fuel cell stacks for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<fuel-cell-stack number="4" />
 		
@@ -136,7 +136,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methane" value="150.0" />
+			<capacity resource="methanol" value="200.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="oxygen" value="400.0" />
@@ -172,7 +172,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="toxic waste" value="40.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="grey water" value="240.0" />
+			<capacity resource="grey water" value="180.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="black water" value="60.0" />
@@ -227,7 +227,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
-			<capacity resource="methane" value="300.0" />
+			<capacity resource="methanol" value="400.0" />
 			<capacity resource="oxygen" value="800.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
@@ -240,8 +240,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="solid waste" value="160.0" />
 			<capacity resource="toxic waste" value="80.0" />
 
-			<capacity resource="grey water" value="480.0" />
-			<capacity resource="black water" value="120.0" />
+			<capacity resource="grey water" value="300.0" />
+			<capacity resource="black water" value="100.0" />
 
 			<capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" />
@@ -278,7 +278,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
-			<capacity resource="methane" value="300.0" />
+			<capacity resource="methanol" value="400.0" />
 			<capacity resource="oxygen" value="700.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
@@ -291,7 +291,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="solid waste" value="40.0" />
 			<capacity resource="toxic waste" value="20.0" />
 
-			<capacity resource="grey water" value="120.0" />
+			<capacity resource="grey water" value="90.0" />
 			<capacity resource="black water" value="30.0" />
 
 			<capacity resource="rock samples" value="400.0" />
@@ -323,8 +323,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="1.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
-			<capacity resource="methane" value="20.0" />
-			<capacity resource="oxygen" value="20.0" />		
+			<capacity resource="methanol" value="15.0" />
+			<capacity resource="oxygen" value="35.0" />		
 		</cargo>
 		<part-attachment number-slots="3">
             <part name="bulldozer blade" />
@@ -350,9 +350,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="100.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">
-			<capacity resource="methane" value="75.0" />
-			<capacity resource="oxygen" value="120.0" />
-			<capacity resource="water" value="100.0" />
+			<capacity resource="methanol" value="100.0" />
+			<capacity resource="oxygen" value="200.0" />
 		</cargo>
 	</vehicle>
 
@@ -364,7 +363,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="250.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">
-			<capacity resource="methane" value="100.0" />
+			<capacity resource="methanol" value="100.0" />
 		</cargo>
 	</vehicle>-->
 <!--

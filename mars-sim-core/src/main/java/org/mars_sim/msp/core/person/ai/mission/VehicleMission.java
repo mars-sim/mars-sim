@@ -97,7 +97,7 @@ public interface VehicleMission extends Mission {
     int getNextNavpointIndex();
 
     /**
-     * Somehting has gone wrong so request help
+     * Something has gone wrong so request help
      */
     void getHelp(MissionStatus status);
 

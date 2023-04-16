@@ -81,6 +81,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public static final int CO2_ID = ResourceUtil.co2ID;
 	public static final int WATER_ID = ResourceUtil.waterID;
 	public static final int METHANE_ID = ResourceUtil.methaneID;
+	public static final int METHANOL_ID = ResourceUtil.methanolID;
 	public static final int FOOD_ID = ResourceUtil.foodID;
 
 	public static final int FOOD_WASTE_ID = ResourceUtil.foodWasteID;
@@ -96,6 +97,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private static final double GAS_RATIO;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi) */
 	private static final double MIN_O2_PRESSURE;
+	
+	public static final AmountResource METHANOL_AR = ResourceUtil.methanolAR;
 	
 	// Data members
 	/** The rover's capacity for crew members. */
@@ -883,16 +886,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel, namely, methane
+	 * Gets the resource type id that this vehicle uses as fuel
 	 *
 	 * @return resource type id
 	 */
 	public int getFuelType() {
-		return METHANE_ID;
+		return METHANOL_ID;
 	}
 
+	/**
+	 * Gets the amount resource type that this vehicle uses as fuel
+	 *
+	 * @return amount resource
+	 */
 	public AmountResource getFuelTypeAR() {
-		return ResourceUtil.methaneAR;
+		return METHANOL_AR;
 	}
 
 	/**

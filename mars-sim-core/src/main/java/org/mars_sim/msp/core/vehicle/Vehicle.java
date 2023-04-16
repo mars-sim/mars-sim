@@ -87,23 +87,43 @@ public abstract class Vehicle extends Unit
 
 	// Future : may move fuel specs to a separate config file
 	/**
-	 * <p> Methane's Specific Energy is 55.5 MJ/kg, or 15,416 Wh/kg, or 15.416kWh/kg
+	 * <p> Methane's Specific Energy is 55.5 MJ/kg,  or 15.416 kWh/kg
 	 * <p> Energy density is 0.0364 MJ/L, 36.4 kJ/L, or 10 Wh/L
 	 * <p> Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
-	 * <p> As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. Energy Density is 8.9 kWh/L
 	 */
 	public static final double METHANE_SPECIFIC_ENERGY = 15.416; // [in kWh/kg]
-
 	/**
-	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using methane is dimension-less.
-	 * Light hydrocarbon fuels, such as methane can be internally reformed within the anode of the fuel cells.
+	 * <p> Methane's Specific Energy is 22.034 MJ/kg,  or 6.1206 kWh/kg
+	 * <p> As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. Energy Density is 8.9 kWh/L or 44-46 MJ/kg
+	 */
+	public static final double METHANOL_SPECIFIC_ENERGY = 6.1206; // [in kWh/kg]
+	
+	public static final double METHANOL_ENERGY_DENSITY = 4.33; // [in kWh/L]
+	
+	/**
+	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using 
+	 * methane is dimension-less. Assume methane can be internally 
+	 * reformed within the anode of the fuel cells.
 	 */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
+	
+	/**
+	 * Direct-methanol fuel cells (DMFC)s are a subcategory of proton-exchange 
+	 * fuel cells in which methanol is used as the fuel.
+	 */
+	public static final double DMFC_CONVERSION_EFFICIENCY = .95;
+	
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methane. */
-	public static final double KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
+	public static final double METHANE_KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methane. */	
-	public static final double WH_PER_KG = 1000.0 / KG_PER_KWH; // 1000.0 * SOFC_CONVERSION_EFFICIENCY * METHANE_SPECIFIC_ENERGY;
+	public static final double METHANE_WH_PER_KG = 1000.0 / METHANE_KG_PER_KWH;
 
+	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methanol. */
+	public static final double METHANOL_KG_PER_KWH = 1.0 / DMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
+	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methanol. */	
+	public static final double METHANOL_WH_PER_KG = 1000.0 / METHANOL_KG_PER_KWH; 
+
+	
 	//	/** Lifetime Wear in millisols **/
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
@@ -179,8 +199,10 @@ public abstract class Vehicle extends Unit
 	private double fuelCumUsed;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
-	/** The total energy of the vehicle in full tank [kWh]. */
-	private double energyCapacity;
+	/** The total energy of the vehicle in full tank of methane [kWh]. */
+//	private double methaneEnergyCapacity;
+	/** The total energy of the vehicle in full tank of methanol [kWh]. */
+	private double methanolEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
 	private double drivetrainEnergy;
 	/** The base fuel economy of the vehicle [km/kg]. */
@@ -400,9 +422,15 @@ public abstract class Vehicle extends Unit
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = spec.getCargoCapacity(getFuelType());
 		// Gets the energy capacity [kWh] based on a full tank of methane
-		energyCapacity = fuelCapacity / KG_PER_KWH;
+//		methaneEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
+		// Gets the energy capacity [kWh] based on a full tank of methanol
+		methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
+		
+//		System.out.println("methaneEnergyCapacity: " + methaneEnergyCapacity + " kWh");
+//		System.out.println("methanolEnergyCapacity: " + methanolEnergyCapacity + " kWh");
+		
 		// Gets the conversion factor for a specific vehicle [Wh/kg]
-		conversionFuel2DriveEnergy =  WH_PER_KG * drivetrainEfficiency;
+		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
 		// Assume the peak power is 4x the average power.
@@ -412,7 +440,7 @@ public abstract class Vehicle extends Unit
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 5.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			// Gets the base range [in km] of the vehicle
@@ -420,7 +448,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			// Accounts for the fuel (methane and oxygen) and the traded goods
 			beginningMass = getBaseMass() + 500;
 			// Accounts for water and the traded goods
@@ -431,7 +459,7 @@ public abstract class Vehicle extends Unit
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 30.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			// Gets the base range [in km] of the vehicle
@@ -439,7 +467,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			// Accounts for the occupant weight
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight;
 			// Accounts for the occupant weight
@@ -450,7 +478,7 @@ public abstract class Vehicle extends Unit
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 15.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			// Gets the base range [in km] of the vehicle
@@ -458,7 +486,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			// Accounts for the occupant consumables
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
 			// Accounts for the rock sample, ice or regolith collected
@@ -469,7 +497,7 @@ public abstract class Vehicle extends Unit
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 10.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;		
+			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;		
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			// Gets the base range [in km] of the vehicle
@@ -477,7 +505,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			// Accounts for the occupant consumables and traded goods 
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 2 * 50 + 1500;
 			// Accounts for the occupant consumables and traded goods
@@ -488,7 +516,7 @@ public abstract class Vehicle extends Unit
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 20.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			// Gets the base range [in km] of the vehicle
@@ -496,7 +524,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel economy [in km/kg] of this vehicle
 			baseFuelEconomy = baseRange / fuelCapacity;
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			// Accounts for the occupant consumables and personal possession
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 8 * (50 + 100);
 			// Accounts for the reduced occupant consumables
@@ -515,7 +543,7 @@ public abstract class Vehicle extends Unit
 	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
     	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
-    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + KWH 
+    	    	+ "energyCapacity: " + Math.round(methanolEnergyCapacity * 100.0)/100.0 + KWH 
     	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
 
     	logger.log(this, Level.INFO, 0, 	     	    	
@@ -1150,7 +1178,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEnergyCapacity() {
-		return energyCapacity;
+		return methanolEnergyCapacity;
 	}
 
 	/**
@@ -1190,7 +1218,7 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0.0d)
 			return 0;
-		return WH_PER_KG * fuelCumUsed / odometerMileage;
+		return METHANE_WH_PER_KG * fuelCumUsed / odometerMileage;
 	}
 
 	/**

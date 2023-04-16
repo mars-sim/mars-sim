@@ -560,7 +560,7 @@
 			<part name="power cable" number="10" />
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
-			<part name="epoxy resin bottle" number="25" />
+			<part name="plastic bottle" number="25" />
 			<part name="motor - small" number="1" />
 			<part name="brick" number="100" />
 			<part name="gas tank" number="3" />
@@ -581,7 +581,7 @@
 			<part name="power cable" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="25" />
+			<part name="plastic bottle" number="25" />
 			<part name="air duct" number="3" />				
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
@@ -972,7 +972,7 @@
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
-			<part name="epoxy resin bottle" number="50" />
+			<part name="plastic bottle" number="50" />
 			<part name="gas tank" number="5" />
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
@@ -1029,7 +1029,7 @@
 			<part name="power cable" number="10" />
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
-			<part name="epoxy resin bottle" number="25" />
+			<part name="plastic bottle" number="25" />
 			<part name="motor - small" number="1" />
 			<part name="brick" number="100" />
 			<part name="air duct" number="5" />			
@@ -1074,7 +1074,7 @@
 			<part name="gasket" number="4" />
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="3" />
-			<part name="epoxy resin bottle" number="15" />
+			<part name="plastic bottle" number="15" />
 			<part name="air duct" number="1" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />

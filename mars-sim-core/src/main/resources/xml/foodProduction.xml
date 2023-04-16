@@ -1149,7 +1149,7 @@
 		<description>Clean bottle with bleach. Add water to white rice and heat up mixture.
 			Add bacteria and wait for fermentation to complete</description>
 		<inputs>
-			<part name="bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="White Rice" amount="5.0" />
 			<resource name="Acetic Acid Bacteria" amount="0.3" />
@@ -1159,7 +1159,7 @@
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="Grey Water" amount="1.25" />
 			<resource name="Rice Vinegar" amount="15.0" />
@@ -1172,14 +1172,14 @@
 			power-required="1.0">
 		<description>Soak seeds, crush and ground. Hulls and bran are sifted out. Liquids added to the seed flour.</description>
 		<inputs>
-			<part name="bottle" number="2" />
+			<part name="plastic bottle" number="2" />
 			<resource name="Mustard Seed" amount="0.5" />
 			<resource name="Rice Vinegar" amount="0.1" />
 			<resource name="Sugar" amount=".4" />
 			<resource name="Water" amount="4" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="2" />
+			<part name="plastic bottle" number="2" />
 			<resource name="Mustard" amount="5.0" />
 		</outputs>
 	</process>
@@ -1189,7 +1189,7 @@
 			power-required="1.0">
 		<description>Cook tomatoes. Then grind them with garlic, onions, vinegar, and spice.</description>
 		<inputs>
-			<part name="bottle" number="2" />
+			<part name="plastic bottle" number="2" />
 			<part name="stove" number="1" />
 			<resource name="tomato" amount="5.0" />
 			<resource name="Garlic" amount="0.022" />
@@ -1200,7 +1200,7 @@
 			<resource name="Sugar" amount="0.367" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="2" />
+			<part name="plastic bottle" number="2" />
 			<part name="stove" number="1" />
 			<resource name="Ketchup" amount="5.0" />
 		</outputs>
@@ -1214,7 +1214,7 @@
 		Carbohydrates contained in wheat gives soy sauce its fine aroma and adds sweetness to the soy sauce.
 		Wheat is roasted at high temperatures, then crushed by rollers to facilitate fermentation.</description>
 		<inputs>
-			<part name="bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="Soybean" amount="5.0" />
 			<resource name="Wheat" amount="1.0" />
@@ -1224,7 +1224,7 @@
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="Grey Water" amount="1.25" />			
 			<resource name="Soy Sauce" amount="15.0" />
@@ -1237,7 +1237,7 @@
 			power-required="1.0">
 		<description>Clean bottle with bleach. Soybeans are soaked and fermented with rice and brine to produce a thick paste.</description>
 		<inputs>
-			<part name="bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
 			<resource name="Soybean" amount="0.7" />
@@ -1248,7 +1248,7 @@
 			<resource name="sodium hypochlorite" amount="0.002" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
 			<resource name="Miso" amount="2.81" />

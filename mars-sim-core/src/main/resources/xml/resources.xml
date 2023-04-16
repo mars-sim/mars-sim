@@ -281,8 +281,16 @@
 	 and holes that need to remain watertight. See comparison between polyester resin and 
 	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
 	</resource>
+	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
+		The common name for the organic chemical compound propene. An alkene which is a colorless gaseous
+		(at room temperature and pressure) hydrocarbon with the chemical formula C3H6.</resource>
+	<resource name="polypropylene" type="chemical" phase="solid" demand=".01">
+		A thermoplastic polymer stiffer than polyethylene. Characterized by a more transparent appearance 
+		and higher tensile strength, polypropylene bags offer a higher heat and chemical resistance than 
+		polyethylene bags, as well as rigid protective edges to prevent scratches. Polypropylene is a soft, 
+		flexible type of plastic that is considered safer than other plastics.</resource>		
 	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
-		Polyethylene pellets or flakes.</resource>
+		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
 	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
 		Synthetic styrene, which is chemically
 		identical to naturally occurring styrene, is manufactured as a chemical building block for

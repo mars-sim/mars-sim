@@ -58,7 +58,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private static final int SPEED = 11;
 	private static final int MALFUNCTION = 12;
 	private static final int OXYGEN = 13;
-	private static final int METHANE = 14;
+	private static final int METHANOL = 14;
 	private static final int WATER = 15;
 	private static final int FOOD = 16;
 	private static final int DESSERT = 17;
@@ -106,8 +106,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[OXYGEN] = "Oxygen";
 		columnTypes[OXYGEN] = Double.class;
-		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Double.class;
+		columnNames[METHANOL] = "Methanol";
+		columnTypes[METHANOL] = Double.class;
 		columnNames[WATER] = "Water";
 		columnTypes[WATER] = Double.class;
 		columnNames[FOOD] = "Food";
@@ -123,7 +123,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int METHANOL_ID = ResourceUtil.methanolID;
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 	private static final int ICE_ID = ResourceUtil.iceID;
 
@@ -279,8 +279,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				result = vehicle.getAmountResourceStored(OXYGEN_ID);
 				break;
 
-			case METHANE : 
-				result = vehicle.getAmountResourceStored(METHANE_ID);
+			case METHANOL : 
+				result = vehicle.getAmountResourceStored(METHANOL_ID);
 				break;
 
 			case ROCK_SAMPLES : 
@@ -339,8 +339,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 
 				if (resourceId == OXYGEN_ID) 
 					columnNum = OXYGEN;
-				else if (resourceId == METHANE_ID)
-					columnNum = METHANE;
+				else if (resourceId == METHANOL_ID)
+					columnNum = METHANOL;
 				else if (resourceId == FOOD_ID)
 					columnNum = FOOD;
 				else if (resourceId == WATER_ID)

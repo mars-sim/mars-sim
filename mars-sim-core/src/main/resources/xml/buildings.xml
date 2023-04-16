@@ -349,8 +349,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor" number-modules="2"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>		
 				<process-engine name="Oxygen Generation System" number-modules="2"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				<process-engine name="Carbon Dioxide Pump"/>
@@ -831,6 +832,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>
 				<process-engine name="Carbon Formation Reactor" number-modules="2"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
 				<process-engine name="Oxygen Generation System" number-modules="2"/>			
@@ -980,11 +982,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="mix limecrete" number-modules="5"/>
 				<process-engine name="make magnesium-based concrete" number-modules="2"/>
 				
-				<!-- 4 industrial ingredients -->	
-				<process-engine name="produce ethylene" number-modules="2"/>
-				<process-engine name="produce polyethylene" number-modules="50"/>
-				<process-engine name="produce styrene" number-modules="20"/>
-				<process-engine name="produce polystyrene" number-modules="10"/>
+				<!-- 6 industrial ingredients -->	
+				<process-engine name="Produce Ethylene" number-modules="2"/>
+				<process-engine name="Produce Polyethylene from Ethylene" number-modules="50"/>
+				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
+				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
+				<process-engine name="Produce Polypropylene from Prophylene" number-modules="10"/>
+				<process-engine name="Methanol-to-olefin (MTO) process" number-modules="10"/>
 									
 			</resource-processing>
 
@@ -1081,8 +1085,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			
 			<resource-processing power-down-level="0.0">
-
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor" number-modules="2"/>
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>
 				<process-engine name="Oxygen Generation System" number-modules="6"/>
@@ -1668,8 +1672,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage capacity="20000">
-				<resource-storage resource="methane" capacity="2000.0" />
-				<resource-storage resource="methanol" capacity="2000.0" />				
+				<resource-storage resource="methane" capacity="5000.0" />
+				<resource-storage resource="methanol" capacity="5000.0" />				
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
@@ -2544,6 +2548,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="4" />
+				<process-engine name="Selective Partial Oxidation of Methane to Methanol" number-modules="4"/>				
 				<process-engine name="Carbon Formation Reactor" number-modules="2" />
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Oxygen Generation System" number-modules="2" />
@@ -2774,8 +2779,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage capacity="30000">
-				<resource-storage resource="methane" capacity="3000.0" />
-				<resource-storage resource="methanol" capacity="3000.0" />
+				<resource-storage resource="methane" capacity="10000.0" />
+				<resource-storage resource="methanol" capacity="10000.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="15" />

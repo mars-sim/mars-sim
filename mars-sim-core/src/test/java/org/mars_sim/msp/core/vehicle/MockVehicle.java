@@ -12,7 +12,7 @@ public class MockVehicle extends Vehicle {
 	}
 
 	public int getFuelType() {
-		return ResourceUtil.methaneID;
+		return ResourceUtil.methanolID;
 	}
 
     @Override

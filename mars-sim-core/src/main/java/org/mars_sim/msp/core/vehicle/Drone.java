@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -26,6 +27,10 @@ public class Drone extends Flyer {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
 
+	public static final int METHANOL_ID = ResourceUtil.methanolID;
+	
+	public static final AmountResource METHANOL_AR = ResourceUtil.methanolAR;
+	
 	/** Vehicle name. */
 	public static final String NAME = VehicleType.DELIVERY_DRONE.getName();
 
@@ -36,8 +41,9 @@ public class Drone extends Flyer {
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
 
-	public static final int METHANE = ResourceUtil.methaneID;
-
+//	public static final int METHANE = ResourceUtil.methaneID;
+//	public static final int METHANOL = ResourceUtil.methanolID;
+	
 	/**
 	 * Constructs a Rover object at a given settlement
 	 *
@@ -99,15 +105,24 @@ public class Drone extends Flyer {
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel, namely, methane
+	 * Gets the resource type id that this vehicle uses as fuel
 	 *
 	 * @return resource type id
 	 */
 	@Override
 	public int getFuelType() {
-		return ResourceUtil.methaneID;
+		return METHANOL_ID;
 	}
 
+	/**
+	 * Gets the amount resource type that this vehicle uses as fuel
+	 *
+	 * @return amount resource
+	 */
+	public AmountResource getFuelTypeAR() {
+		return METHANOL_AR;
+	}
+	
 	/**
 	 * Gets the range of the vehicle
 	 *

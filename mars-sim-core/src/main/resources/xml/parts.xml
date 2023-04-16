@@ -54,7 +54,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Epoxy Resin Bottle" type="utility" mass=".2">
+	<part name="Plastic Bottle" type="utility" mass=".2">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="6" />
 			<entity name="farming" probability="5" max-number="12" />
@@ -127,8 +127,10 @@
 
 	<!-- one steel sheet can make two steel canisters -->
 	<part name="Steel Canister" type="utility" mass="3.9" />
-
-	<part name="Bottle" type="utility" mass=".1" />
+	
+	<part name="Glass Bottle" type="utility" mass="2.5" />
+	
+	<part name="Rope" type="utility" mass="2" />
 
 	<part name="Iron Ingot" type="metallic" mass="7.0" />
 
@@ -391,7 +393,7 @@
 	</part>
 
 	<part name="Rover Control Panel" type="vehicle" mass="100.0" >
-		<description>Made from polyethelene and reinforced fiberglass.</description>
+		<description>Made from polyethylene and reinforced fiberglass.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 		</maintenance-entity-list>

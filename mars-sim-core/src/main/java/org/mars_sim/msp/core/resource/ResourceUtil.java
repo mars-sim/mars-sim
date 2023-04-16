@@ -20,7 +20,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
-import org.mars_sim.msp.core.logging.SimLogger;
 
 public class ResourceUtil implements Serializable {
 
@@ -28,8 +27,7 @@ public class ResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
-
+//	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
 	
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
 	public static final int FIRST_ITEM_RESOURCE_ID = 500;
@@ -50,7 +48,6 @@ public class ResourceUtil implements Serializable {
 	public static final String HYDROGEN = "hydrogen";
 	public static final String METHANE = "methane";
 	public static final String METHANOL = "methanol";
-	
 	
 	public static final String SOIL = "soil";
 	public static final String ICE = "ice";
@@ -219,6 +216,7 @@ public class ResourceUtil implements Serializable {
 	
 	public static AmountResource hydrogenAR;
 	public static AmountResource methaneAR;
+	public static AmountResource methanolAR;
 	public static AmountResource nitrogenAR;
 	
 	public static AmountResource argonAR;
@@ -489,6 +487,7 @@ public class ResourceUtil implements Serializable {
 		coAR = findAmountResource(CO);
 		hydrogenAR = findAmountResource(HYDROGEN);
 		methaneAR = findAmountResource(METHANE);
+		methanolAR = findAmountResource(METHANOL); 
 		iceAR = findAmountResource(ICE);
 		greyWaterAR = findAmountResource(GREY_WATER);
 		blackWaterAR = findAmountResource(BLACK_WATER);

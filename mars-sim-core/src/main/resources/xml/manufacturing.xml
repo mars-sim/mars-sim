@@ -45,7 +45,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
 
-
 <!-- 
  work-time means the amount of time it takes for settlers to examine, operate and direct this process.
  process-time means the amount of time it takes for the output resource to be synthesized.
@@ -658,6 +657,26 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Make polypropylene barrel" tech="1" skill="1" work-time="10" process-time="10"
+			power-required="0.1">
+		<inputs>
+			<resource name="polypropylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<equipment name="barrel" number="6" />
+		</outputs>
+	</process>
+	
+	<process name="Make polypropylene rope" tech="1" skill="1" work-time="10" process-time="10"
+			power-required="0.1">
+		<inputs>
+			<resource name="polypropylene" amount="2" />
+		</inputs>
+		<outputs>
+			<part name="rope" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="Make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
@@ -753,17 +772,17 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polyethylene" amount="1.0" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="10" />
+			<part name="Plastic Bottle" number="10" />
 		</outputs>
 	</process>
 
-	<process name="Make clear glass bottle" tech="2" skill="1" work-time="200" process-time="200"
-			power-required=".1">
+	<process name="Make clear glass bottle" tech="2" skill="1" work-time="100" process-time="100"
+			power-required=".2">
 		<inputs>
-			<resource name="sand" amount="1.0" />
+			<resource name="sand" amount="3.0" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="10" />
+			<part name="Glass Bottle" number="11" />
 		</outputs>
 	</process>
 
@@ -867,14 +886,13 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Epoxy uses bisphenol-a (C15H16O2) -->
-	<process name="Make epoxy resin bottle" tech="3" skill="1" work-time="20" process-time="300"
+	<process name="Make Plastic bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
-			<resource name="bisphenol-a" amount=".5" />
-			<part name="bottle" number="5" />
+			<resource name="bisphenol-a" amount="1" />
 		</inputs>
 		<outputs>
-			<part name="epoxy resin bottle" number="5" />
+			<part name="Plastic Bottle" number="5" />
 		</outputs>
 	</process>
 
@@ -882,24 +900,19 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
-			<resource name="polyester resin" amount=".5" />
-			<part name="bottle" number="5" />
+			<resource name="polyester resin" amount="1" />
 		</inputs>
 		<outputs>
-			<part name="lubricant bottle" number="5" />
+			<part name="Lubricant Bottle" number="5" />
 		</outputs>
 	</process>
 
 	<process name="Make coolant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<description>
-			Using ethylene glycol as a coolant.
-			C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt;O + H&lt;sub&gt;2&lt;/sub&gt;O -> HOCH&lt;sub&gt;2&lt;/sub&gt;CH&lt;sub&gt;2&lt;/sub&gt;OH
 		</description>
 		<inputs>
-			<resource name="ethylene" amount=".35" />
-			<resource name="water" amount=".15" />
-			<part name="bottle" number="5" />
+			<resource name="polypropylene" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="coolant bottle" number="5" />
@@ -911,7 +924,6 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="polyester resin" amount="7.5" />
 			<resource name="styrene" amount="7.5" />
-			<part name="epoxy resin bottle" number="5" />
 		</inputs>
 		<outputs>
 			<part name="airleak patch" number="10" />
@@ -1414,7 +1426,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="communications circuit board" number="1" />
 			<part name="electrical wire" number="4" />
 			<part name="wire connector" number="20" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 		</inputs>
 		<outputs>
 			<part name="rover control panel" number="1" />
@@ -1429,7 +1441,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
 			<part name="plastic tubing" number="1" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 		</inputs>
 		<outputs>
 			<part name="fuel tank" number="1" />
@@ -1444,7 +1456,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
 			<part name="plastic tubing" number="1" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 		</inputs>
 		<outputs>
 			<part name="gas tank" number="1" />
@@ -1460,7 +1472,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
 			<part name="plastic tubing" number="1" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 		</inputs>
 		<outputs>
 			<part name="water tank" number="1" />
@@ -1536,7 +1548,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fiberglass" number="5" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="5" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 		</inputs>
 		<outputs>
 			<part name="utility vehicle control panel" number="1" />
@@ -1555,7 +1567,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="wheel - small" number="4" />
 			<part name="radio antenna" number="1" />
@@ -1583,7 +1595,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="2" />
 			<part name="plastic pipe" number="1" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="wheel - small" number="8" />
 			<part name="radio antenna" number="1" />
@@ -1614,7 +1626,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="3" />
 			<part name="plastic pipe" number="2" />
-			<part name="epoxy resin bottle" number="1" />
+			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="wheel - small" number="8" />
 			<part name="radio antenna" number="1" />
@@ -1656,7 +1668,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic tubing" number="5" />
 			<part name="plastic pipe" number="2" />
 			<part name="steel pipe" number="2" />
-			<part name="epoxy resin bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />
@@ -1695,7 +1707,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic tubing" number="5" />
 			<part name="plastic pipe" number="2" />
 			<part name="steel pipe" number="2" />
-			<part name="epoxy resin bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="8" />
@@ -1734,7 +1746,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic tubing" number="5" />
 			<part name="plastic pipe" number="2" />
 			<part name="steel pipe" number="2" />
-			<part name="epoxy resin bottle" number="5" />
+			<part name="plastic bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="10" />
@@ -2758,7 +2770,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture flexible hose" tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
-			<resource name="polyethylene" amount=".5" />
+			<resource name="polypropylene" amount=".5" />
 		</inputs>
 		<outputs>
 			<part name="flexible hose" number="5" />
@@ -3117,7 +3129,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
-		<part-salvage name="epoxy resin bottle" number="1" />
+		<part-salvage name="plastic bottle" number="1" />
 		<part-salvage name="lubricant bottle" number="1" />
 		<part-salvage name="wheel - small" number="8" />
 		<part-salvage name="radio antenna" number="1" />
@@ -3150,7 +3162,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="plastic tubing" number="5" />
 		<part-salvage name="plastic pipe" number="2" />
 		<part-salvage name="steel pipe" number="2" />
-		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="plastic bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="12" />
 		<part-salvage name="steel scrap" number="4" />
@@ -3182,7 +3194,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="plastic tubing" number="5" />
 		<part-salvage name="plastic pipe" number="2" />
 		<part-salvage name="steel pipe" number="2" />
-		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="plastic bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="16" />
 		<part-salvage name="steel scrap" number="5" />
@@ -3214,7 +3226,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="plastic tubing" number="5" />
 		<part-salvage name="plastic pipe" number="2" />
 		<part-salvage name="steel pipe" number="2" />
-		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="plastic bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="14" />
 		<part-salvage name="steel scrap" number="4" />

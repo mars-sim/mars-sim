@@ -258,7 +258,7 @@
 			<part name="valve" number="4" probability="5" />
 			<part name="electrical wire" number="4" probability="5" />
 			<part name="wire connector" number="4" probability="5" />
-			<part name="epoxy resin bottle" number="1" probability="15" />
+			<part name="plastic bottle" number="1" probability="15" />
 			<part name="work gloves" number="1" probability="10" />
 			<part name="decontamination kit" number="1" probability="30" />
 		</repair-parts-list>
@@ -313,7 +313,7 @@
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
-			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="plastic bottle" number="1" probability="10" />
 			<part name="heat pipe" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -332,7 +332,7 @@
 			<part name="work gloves" number="1" probability="10" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
-			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="plastic bottle" number="1" probability="10" />
 			<part name="heat pipe" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -351,7 +351,7 @@
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
-			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="plastic bottle" number="1" probability="10" />
 			<part name="heat pipe" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -370,7 +370,7 @@
 			<part name="work gloves" number="1" probability="10" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
-			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="plastic bottle" number="1" probability="10" />
 			<part name="heat pipe" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -391,7 +391,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="15" />
 			<part name="valve" number="1" probability="15" />
-			<part name="epoxy resin bottle" number="1" probability="15" />
+			<part name="plastic bottle" number="1" probability="15" />
 			<part name="plastic tubing" number="1" probability="15" />
 			<part name="fuel tank" number="1" probability="10" />
 			<part name="work gloves" number="1" probability="10" />
@@ -411,7 +411,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="10" />
 			<part name="spark plug" number="1" probability="15" />
-			<part name="coolant bottle" number="1" probability="10" />
+			<part name="coolant bottle" number="2" probability="10" />
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
 			<part name="plastic tubing" number="1" probability="5" />
@@ -588,7 +588,7 @@
 			<part name="gasket" number="1" probability="15" />
 			<part name="valve" number="1" probability="15" />
 			<part name="plastic tubing" number="2" probability="15" />
-			<part name="epoxy resin bottle" number="1" probability="15" />
+			<part name="plastic bottle" number="1" probability="15" />
 			<part name="copper pipe" number="1" probability="2" />
 			<part name="water tank" number="1" probability="3" />
 			<part name="water pump - small" number="1" probability="15" />
@@ -638,7 +638,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="20" />
 			<part name="valve" number="1" probability="20" />
-			<part name="epoxy resin bottle" number="1" probability="20" />
+			<part name="plastic bottle" number="1" probability="20" />
 			<part name="plastic tubing" number="5" probability="15" />
 			<part name="plastic pipe" number="2" probability="15" />
 			<part name="flexible hose" number="2" probability="10" />

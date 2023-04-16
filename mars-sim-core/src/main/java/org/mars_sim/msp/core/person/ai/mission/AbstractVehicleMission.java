@@ -73,8 +73,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
-	/** The multiplication factor for the amount of oxygen needed. */
-	private static final double FUEL_OXIDIZER_FACTOR = 2.25;
+	/** The multiplication factor for the amount of oxygen needed with methanol fuel. */
+	private static final double FUEL_OXIDIZER_FACTOR = 1.5;
 	
 	/** Mission phases. */
 	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);

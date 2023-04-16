@@ -71,7 +71,7 @@
 		<part type="gasket" number="94" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="48" />
-		<part type="epoxy resin bottle" number="180" />
+		<part type="plastic bottle" number="180" />
 		<part type="spark plug" number="18" />
 		<part type="coolant bottle" number="18" />
 		<part type="electrical wire" number="330" />
@@ -187,7 +187,7 @@
 		<part type="gasket" number="168" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="92" />
-		<part type="epoxy resin bottle" number="286" />
+		<part type="plastic bottle" number="286" />
 		<part type="spark plug" number="18" />
 		<part type="coolant bottle" number="18" />
 		<part type="electrical wire" number="521" />
@@ -305,7 +305,7 @@
 		<part type="gasket" number="258" />
 		<part type="timing belt" number="34" />
 		<part type="valve" number="138" />
-		<part type="epoxy resin bottle" number="460" />
+		<part type="plastic bottle" number="460" />
 		<part type="spark plug" number="36" />
 		<part type="coolant bottle" number="36" />
 		<part type="electrical wire" number="797" />
@@ -423,7 +423,7 @@
 		<part type="gasket" number="372" />
 		<part type="timing belt" number="58" />
 		<part type="valve" number="202" />
-		<part type="epoxy resin bottle" number="620" />
+		<part type="plastic bottle" number="620" />
 		<part type="spark plug" number="64" />
 		<part type="coolant bottle" number="64" />
 		<part type="electrical wire" number="1104" />

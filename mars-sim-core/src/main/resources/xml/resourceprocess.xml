@@ -151,6 +151,26 @@
 		<output resource="hydrogen" rate="26.0"  />
 	</process>
 	
+	<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
+		<description>
+		Requires oxidant : O2 in the presence of very small amount of H2O2. 
+		Catalyst : Colloidal Au-Pd nanop-articles (3-5nm)
+		
+		Au-Pd catalysts form Methyl radicals, which break the C-H bond, leading to 
+		successful methanol production. 
+		
+		High selectivity of 92% 
+		
+		2 Ch4 + O2 -> 2 Ch3OH
+		32g ,  32 g , 64 g 
+		
+		</description> 
+		<input resource="methane" rate="5.0"  />
+		<input resource="oxygen" rate="5.0"  />
+		<output resource="methanol" rate="9.2"  />
+		<output resource="methane" rate="0.8"  />
+	</process>
+	
 	<!-- Oxygen Generation System can split water into H2 and O2.
 
 	NASA's Oxygen Generation System is designed to generate
@@ -657,7 +677,7 @@
 		<output resource="iron powder" rate="0.05"  />
 	</process>
 
-	<process name="Produce Polyethylene" power-required="0.001" >
+	<process name="Produce Polyethylene from Ethylene" power-required="0.01" >
 		<description>
 			This reaction occurs when ethylene (aka ethene) is heated 
 			and put under pressure in the presence of a catalyst. 
@@ -667,7 +687,7 @@
 		<output resource="polyethylene" rate="4.5"  />
 	</process>
 
-	<process name="Produce Styrene" power-required=".002" >
+	<process name="Produce Styrene from Ethylene" power-required=".05" >
 		<description>
 			Wrapping four processes into one as follows: 
 			3C + CaO -> CaC2 + CO
@@ -683,10 +703,26 @@
 		<output resource="styrene" rate="30.95"  />
 	</process>
 
-	<process name="Produce Polystyrene" power-required=".005" >
+	<process name="Produce Polystyrene from Styrene" power-required=".01" >
 		<input resource="styrene" rate="5"  />
-		<output resource="polystyrene" rate="5"  />
+		<output resource="polystyrene" rate="4.5"  />
 	</process>
+
+	<process name="Produce Polypropylene from Prophylene" power-required=".01" >
+		<input resource="Prophylene" rate="5"  />
+		<output resource="Polypropylene" rate="4.5"  />
+	</process>
+	
+	<process name="Methanol-to-olefin (MTO) process" power-required=".5" >
+		<description> 99.8 % conversion of methanol. 
+			MTO base case mass distribution : produce 39% prophylene, 41% ethylene,
+			14% ethane, 5% tailgas  
+		</description>	
+		<input resource="methanol" rate="10"  />
+		<output resource="ethylene" rate="4.1"  />
+		<output resource="prophylene" rate="3.9"  />
+	</process>
+
 
 	<process name="Bake calcium carbonate to lime" power-required=".1"  >
 		<description>
