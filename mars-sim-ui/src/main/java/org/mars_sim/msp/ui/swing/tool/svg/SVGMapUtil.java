@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -22,7 +24,7 @@ public final class SVGMapUtil {
 
     // Static members.
 	private static final String fileName = SVGLoader.SVG_DIR + "svg_image_mapping.properties";
-	 
+	private static Logger logger = Logger.getLogger(SVGMapUtil.class.getName());
     private static Properties svgMapProperties;
 
     /**
@@ -44,7 +46,7 @@ public final class SVGMapUtil {
             svgMapProperties.load(inputStream);
         }
         catch (IOException e) {
-            e.printStackTrace(System.err);
+            logger.log(Level.SEVERE, "Problem reading SVG properties file", e);
         }
         finally {
             try {
@@ -52,7 +54,7 @@ public final class SVGMapUtil {
             		inputStream.close();
             }
             catch (IOException e) {
-                e.printStackTrace(System.err);
+                // Do not report exception in finally
             }
         }
     }
@@ -62,9 +64,10 @@ public final class SVGMapUtil {
      * 
      * @param prefix the property key prefix (ex: building)
      * @param name the name of the map item.
+     * @param optional Finding an image is optional
      * @return the SVG graphics node.
      */
-    private static GraphicsNode getSVGGraphicsNode(String prefix, String name) {
+    private static GraphicsNode getSVGGraphicsNode(String prefix, String name, boolean optional) {
 
         GraphicsNode result = null;
 
@@ -92,6 +95,9 @@ public final class SVGMapUtil {
         if (svgFileName != null) {
             result = SVGLoader.getSVGImage(prefix, svgFileName);
         }
+        else if (!optional) {
+            logger.warning("No SVGImage found for property " + propertyNameBuff.toString());
+        }
 
         return result;
     }
@@ -104,7 +110,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getBuildingSVG(String buildingName) {
 
-        return getSVGGraphicsNode("building", buildingName);
+        return getSVGGraphicsNode("building", buildingName, false);
     }
 
     /**
@@ -115,7 +121,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getBuildingPatternSVG(String buildingName) {
 
-        return getSVGGraphicsNode("building.pattern", buildingName);
+        return getSVGGraphicsNode("building.pattern", buildingName, true);
     }
 
     /**
@@ -126,7 +132,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getConstructionSiteSVG(String constructionSiteStageName) {
 
-        return getSVGGraphicsNode("construction_stage", constructionSiteStageName);
+        return getSVGGraphicsNode("construction_stage", constructionSiteStageName, false);
     }
 
     /**
@@ -137,7 +143,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getConstructionSitePatternSVG(String constructionSiteStageName) {
 
-        return getSVGGraphicsNode("construction_stage.pattern", constructionSiteStageName);
+        return getSVGGraphicsNode("construction_stage.pattern", constructionSiteStageName, true);
     }
 
     /**
@@ -148,7 +154,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getVehicleSVG(String vehicleType) {
 
-        return getSVGGraphicsNode("vehicle", vehicleType);
+        return getSVGGraphicsNode("vehicle", vehicleType, false);
     }
 
     /**
@@ -159,7 +165,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getMaintenanceOverlaySVG(String vehicleType) {
 
-        return getSVGGraphicsNode("vehicle.maintenance", vehicleType);
+        return getSVGGraphicsNode("vehicle.maintenance", vehicleType, false);
     }
 
     /**
@@ -170,7 +176,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getLoadingOverlaySVG(String vehicleType) {
 
-        return getSVGGraphicsNode("vehicle.loading", vehicleType);
+        return getSVGGraphicsNode("vehicle.loading", vehicleType, false);
     }
 
     /**
@@ -181,7 +187,7 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getAttachmentPartSVG(String partType) {
 
-        return getSVGGraphicsNode("vehicle.attachment_part", partType);
+        return getSVGGraphicsNode("vehicle.attachment_part", partType, false);
     }
 
     /**
@@ -192,6 +198,6 @@ public final class SVGMapUtil {
      */
     public static GraphicsNode getBuildingConnectorSVG(String connectorType) {
 
-        return getSVGGraphicsNode("building_connector", connectorType);
+        return getSVGGraphicsNode("building_connector", connectorType, false);
     }
 }

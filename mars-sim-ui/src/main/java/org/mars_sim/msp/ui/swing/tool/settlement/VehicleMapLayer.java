@@ -118,7 +118,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawVehicle(Vehicle vehicle, Graphics2D g2d) {
 
 		// Use SVG image for vehicle if available.
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
+		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleTypeString());
 		if (svg != null) {
 			// Draw base SVG image for vehicle.
 			drawSVGVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
