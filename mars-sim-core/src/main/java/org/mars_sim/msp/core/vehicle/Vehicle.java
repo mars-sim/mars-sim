@@ -108,10 +108,10 @@ public abstract class Vehicle extends Unit
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
 	
 	/**
-	 * Direct-methanol fuel cells (DMFC)s are a subcategory of proton-exchange 
+	 * Reformed (or indirect)-methanol fuel cells (RMFC) are a subcategory of proton-exchange 
 	 * fuel cells in which methanol is used as the fuel.
 	 */
-	public static final double DMFC_CONVERSION_EFFICIENCY = .95;
+	public static final double RMFC_CONVERSION_EFFICIENCY = .95;
 	
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methane. */
 	public static final double METHANE_KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
@@ -119,7 +119,7 @@ public abstract class Vehicle extends Unit
 	public static final double METHANE_WH_PER_KG = 1000.0 / METHANE_KG_PER_KWH;
 
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methanol. */
-	public static final double METHANOL_KG_PER_KWH = 1.0 / DMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
+	public static final double METHANOL_KG_PER_KWH = 1.0 / RMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methanol. */	
 	public static final double METHANOL_WH_PER_KG = 1000.0 / METHANOL_KG_PER_KWH; 
 
@@ -130,7 +130,7 @@ public abstract class Vehicle extends Unit
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 
 	/** The factor for estimating the adjusted fuel economy. */
-	private static final double FE_FACTOR = 2.5;
+	private static final double FE_FACTOR = 1.5;
 	
 	// Format for unit
 	private static final String KWH = " kWh   ";

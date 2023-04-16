@@ -48,7 +48,7 @@ public class LoadingController implements Serializable {
 	private static final int[] BACKGROUND_RESOURCES = {
 			ResourceUtil.oxygenID,
 			ResourceUtil.waterID,
-			ResourceUtil.methaneID
+			ResourceUtil.methanolID
 	};
 
 	// Avoid transferring micro-small amount

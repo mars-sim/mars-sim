@@ -49,7 +49,7 @@ public class UnloadVehicleGarage extends Task {
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int FOOD_ID = ResourceUtil.foodID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int METHANOL_ID = ResourceUtil.methanolID;
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
@@ -199,7 +199,7 @@ public class UnloadVehicleGarage extends Task {
 				vehicle.retrieveAmountResource(id, amount);
 				settlement.storeAmountResource(id, amount);
 
-				if (id != WATER_ID && id != METHANE_ID
+				if (id != WATER_ID && id != METHANOL_ID
 						&& id != FOOD_ID && id != OXYGEN_ID) {
 					double laborTime = 0;
 					if (id == ICE_ID || id == REGOLITH_ID)

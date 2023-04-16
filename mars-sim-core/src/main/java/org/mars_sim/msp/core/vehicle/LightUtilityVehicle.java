@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LightUtilityVehicle.java
- * @date 2021-10-16
+ * @date 2023-04-16
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;
@@ -26,6 +26,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int METHANOL_ID = ResourceUtil.methanolID;
+	
 	/** Vehicle name. */
 	public static final String NAME = VehicleType.LUV.getName();
 
@@ -65,7 +67,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
 	@Override
 	public int getFuelType() {
-		return ResourceUtil.methaneID;
+		return METHANOL_ID;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * LoadVehicleTest
- * @date 2021-10-21
+ * LoadControllerTest
+ * @date 2023-04-16
  * @author Scott Davis
  */
 
@@ -83,8 +83,8 @@ extends TestCase {
 	 */
 	public void testBackgroundLoading() throws Exception {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ResourceUtil.oxygenID, 10D);
-		requiredResourcesMap.put(ResourceUtil.methaneID, 10D);
+		requiredResourcesMap.put(ResourceUtil.oxygenID, 20D);
+		requiredResourcesMap.put(ResourceUtil.methanolID, 10D);
 
 		loadSettlementResources(settlement, requiredResourcesMap);
 

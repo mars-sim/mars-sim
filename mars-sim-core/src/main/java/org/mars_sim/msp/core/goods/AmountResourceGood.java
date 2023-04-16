@@ -68,6 +68,7 @@ class AmountResourceGood extends Good {
 	
 	// Cost modifiers
 	private static final double CH4_COST = 0.1;
+	private static final double METHANOL_COST = 0.11;
 	private static final double H2_COST = 1;
 	private static final double CO_COST = 0.05;
     private static final double CO2_COST = 0.0000005;
@@ -155,7 +156,7 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
 	
-	private static final double METHANOL_DEMAND_FACTOR = 30;
+	private static final double METHANOL_DEMAND_FACTOR = 1;
 	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
@@ -274,6 +275,8 @@ class AmountResourceGood extends Good {
   
         else if (ar.getID() == ResourceUtil.methaneID)
             result += CH4_COST;
+        else if (ar.getID() == ResourceUtil.methanolID)
+            result += METHANOL_COST;
         else if (ar.getID() == ResourceUtil.hydrogenID)
             result += H2_COST;
         else if (ar.getID() == ResourceUtil.chlorineID)
@@ -1535,15 +1538,20 @@ class AmountResourceGood extends Good {
 	 */
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
-		if (getID() == ResourceUtil.methaneID) {
+		if (getID() == ResourceUtil.methanolID) {
+			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
+				double fuelDemand = v.getAmountResourceCapacity(getID());
+				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANOL_VALUE_MODIFIER;
+			}
+		}
+		
+		else if (getID() == ResourceUtil.methaneID) {
 			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 				double fuelDemand = v.getAmountResourceCapacity(getID());
 				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANE_VALUE_MODIFIER;
 			}
 		}
-		else if (getID() == ResourceUtil.methanolID) {
-			demand += owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANOL_VALUE_MODIFIER;
-		}
+
 		else if (getID() == ResourceUtil.hydrogenID) {
 			demand +=  owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * HYDROGEN_VALUE_MODIFIER;
 		}

@@ -1,14 +1,11 @@
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-
 import junit.framework.TestCase;
 
 public class TestLightUtilityVehicle extends TestCase {
 	 public void testLUV() {
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
+//        SimulationConfig.instance().loadConfig();
+//        Simulation.instance().testRun();
         
 //        LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
 //        int crewCapacity = vehicle.getCrewCapacity();

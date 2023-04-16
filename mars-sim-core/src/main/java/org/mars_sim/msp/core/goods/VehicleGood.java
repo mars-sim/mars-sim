@@ -615,9 +615,9 @@ class VehicleGood extends Good {
 	private static double getVehicleRange(VehicleSpec v) {
 		double range = 0D;
 
-		double fuelCapacity = v.getCargoCapacity(ResourceUtil.methaneID);
+		double fuelCapacity = v.getCargoCapacity(ResourceUtil.methanolID);
 		double fuelEfficiency = v.getDriveTrainEff();
-		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;
+		range = fuelCapacity * fuelEfficiency * Vehicle.RMFC_CONVERSION_EFFICIENCY;
 
         int crewSize = v.getCrewSize();
         if (crewSize > 0) {

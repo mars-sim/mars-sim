@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @date 2021-10-21
+ * @date 2023-04-16
  * @author Scott Davis
  */
 
@@ -141,7 +141,8 @@ class StartingSettlementPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		int selectedIndex = settlementTable.getSelectedRow();
@@ -195,8 +196,8 @@ class StartingSettlementPanel extends WizardPanel {
 			columns.add("Oxygen");
 			columns.add("Water");
 			columns.add("Food");
-//			columns.add("Dessert");
 			columns.add("Methane");
+			columns.add("Methanol");
 			columns.add("EVA Suits");
 		}
 
@@ -231,30 +232,33 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 6) {
 						result = (int) settlement.getAmountResourceStored(ResourceUtil.methaneID);
 					}
-					else if (column == 7)
+					else if (column == 7) {
+						result = (int) settlement.getAmountResourceStored(ResourceUtil.methanolID);
+					}
+					else if (column == 8)
 						result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 
 					MissionType type = getWizard().getMissionData().getMissionType();
 					if (MissionType.EXPLORATION == type) {
-						if (column == 8)
+						if (column == 9)
 							result = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
 					}
 					else if (MissionType.COLLECT_ICE == type ||
 							MissionType.COLLECT_REGOLITH == type) {
-						if (column == 8)
+						if (column == 9)
 							result = settlement.findNumContainersOfType(EquipmentType.BAG);
 					}
 					else if (MissionType.MINING == type) {
-						if (column == 8) {
+						if (column == 9) {
 							result = settlement.findNumContainersOfType(EquipmentType.BAG);
 						}
-						else if (column == 9) {
+						else if (column == 10) {
 							result = settlement.findNumVehiclesOfType(VehicleType.LUV);
 						}
-						else if (column == 10) {
+						else if (column == 11) {
 							result = settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID);
 						}
-						else if (column == 11) {
+						else if (column == 12) {
 							result = settlement.getItemResourceStored(ItemResourceUtil.backhoeID);
 						}
 					}
@@ -366,35 +370,38 @@ class StartingSettlementPanel extends WizardPanel {
 					if (settlement.getAmountResourceStored(ResourceUtil.methaneID) < 100D) result = true;
 				}
 				else if (column == 7) {
+					if (settlement.getAmountResourceStored(ResourceUtil.methanolID) < 100D) result = true;
+				}
+				else if (column == 8) {
 					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) == 0) result = true;
 				}
 
 				MissionType type = getWizard().getMissionData().getMissionType();
 				if (MissionType.EXPLORATION == type) {
-					if (column == 8) {
+					if (column == 9) {
 						if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < 
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (MissionType.COLLECT_ICE == type ||
 						MissionType.COLLECT_REGOLITH == type) {
-					if (column == 8) {
+					if (column == 9) {
 						if (settlement.findNumContainersOfType(EquipmentType.BAG) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 				}
 				else if (MissionType.MINING == type ) {
-					if (column == 8) {
+					if (column == 9) {
 						if (settlement.findNumContainersOfType(EquipmentType.BAG) <
 								CollectIce.REQUIRED_BARRELS) result = true;
 					}
-					if (column == 9) {
+					if (column == 10) {
 						if (settlement.findNumVehiclesOfType(VehicleType.LUV) == 0) result = true;
 					}
-					else if (column == 10) {
+					else if (column == 11) {
 						if (settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID) == 0) result = true;
 					}
-					else if (column == 11) {
+					else if (column == 12) {
 						if (settlement.getItemResourceStored(ItemResourceUtil.backhoeID) == 0) result = true;
 					}
 				}

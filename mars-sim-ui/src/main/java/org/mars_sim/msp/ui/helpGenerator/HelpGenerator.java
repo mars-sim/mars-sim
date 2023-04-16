@@ -489,7 +489,7 @@ public class HelpGenerator {
 		// second loop over vehicle types to generate a help file for each one
 		int[] cargoArray = new int[] {
 			ResourceUtil.hydrogenID,
-			ResourceUtil.methaneID,
+			ResourceUtil.methanolID,
 			ResourceUtil.oxygenID,
 			ResourceUtil.waterID,
 			ResourceUtil.foodID,

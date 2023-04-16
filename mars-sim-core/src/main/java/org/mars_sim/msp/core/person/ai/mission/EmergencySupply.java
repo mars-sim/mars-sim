@@ -61,7 +61,7 @@ public class EmergencySupply extends RoverMission {
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
-	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int METHANOL_ID = ResourceUtil.methanolID;
 
 	public static final double BASE_STARTING_PROBABILITY = 20D;
 
@@ -614,7 +614,7 @@ public class EmergencySupply extends RoverMission {
 			int numPeople = startingSettlement.getNumCitizens();
 			result = numPeople * amountNeededOrbit;
 		} else {
-			if (resource.equals(METHANE_ID)) {
+			if (resource.equals(METHANOL_ID)) {
 				Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
 				while (i.hasNext()) {
 					double fuelDemand = i.next().getAmountResourceCapacity(resource);
@@ -728,15 +728,15 @@ public class EmergencySupply extends RoverMission {
 
 		// Determine methane amount needed.
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-		double methaneAmountAvailable = settlement.getAmountResourceStored(METHANE_ID);
+		double methaneAmountAvailable = settlement.getAmountResourceStored(METHANOL_ID);
 
-		methaneAmountAvailable += getResourcesOnMissions(settlement, METHANE_ID);
+		methaneAmountAvailable += getResourcesOnMissions(settlement, METHANOL_ID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
 			double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
 			if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
 				methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
 			}
-			result.put(METHANE_ID, methaneAmountEmergency);
+			result.put(METHANOL_ID, methaneAmountEmergency);
 		}
 
 		return result;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Rover.java
- * @date 2021-10-16
+ * @date 2023-04-16
  * @author Scott Davis
  */
 
@@ -80,7 +80,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public static final int NITROGEN_ID = ResourceUtil.nitrogenID;
 	public static final int CO2_ID = ResourceUtil.co2ID;
 	public static final int WATER_ID = ResourceUtil.waterID;
-	public static final int METHANE_ID = ResourceUtil.methaneID;
+//	public static final int METHANE_ID = ResourceUtil.methaneID;
 	public static final int METHANOL_ID = ResourceUtil.methanolID;
 	public static final int FOOD_ID = ResourceUtil.foodID;
 
