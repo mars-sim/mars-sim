@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -54,7 +53,6 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -136,9 +134,6 @@ public abstract class Vehicle extends Unit
 	private static final String KWH = " kWh   ";
 	private static final String KG = " kg   ";
 	private static final String KM_KG = " km/kg   ";
-	
-	// Name format for numbers units
-	private static final String VEHICLE_TAG_NAME = "%s %03d";
 
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
@@ -1896,45 +1891,7 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
-	/**
-	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
-	 * or an auto-generated one.
-	 * @param type
-	 * @param sponsor Sponsor.
-	 * @return
-	 */
-	public static String generateName(String type, ReportingAuthority sponsor) {
-		String result = null;
-		String baseName = type;
-
-		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
-			baseName = "LUV";
-		}
-		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
-			baseName = "Drone";
-		}
-		else {
-			List<String> possibleNames = sponsor.getVehicleNames();
-			if (!possibleNames.isEmpty()) {
-				List<String> availableNames = new ArrayList<>(possibleNames);
-				Collection<Vehicle> vehicles = unitManager.getVehicles();
-				List<String> usedNames = vehicles.stream()
-								.map(Vehicle::getName).collect(Collectors.toList());
-				availableNames.removeAll(usedNames);
-
-				if (!availableNames.isEmpty()) {
-					result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
-				}
-			}
-		}
-
-		if (result == null) {
-			int number = unitManager.incrementTypeCount(type);
-			result = String.format(VEHICLE_TAG_NAME, baseName, number);
-		}
-		return result;
-	}
-
+	
 	/**
 	 * Mass of Equipment is the stored mass plus the base mass.
 	 */
