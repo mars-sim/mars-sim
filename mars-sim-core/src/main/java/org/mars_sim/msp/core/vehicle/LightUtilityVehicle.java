@@ -47,12 +47,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** The robot occupants. */
 	private List<Robot> robotOccupants = new ArrayList<>();
 	
-	public LightUtilityVehicle(String name, String type, Settlement settlement) {
+	public LightUtilityVehicle(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor.
-		super(name, type, settlement, MAINTENANCE_WORK_TIME);
+		super(name, spec, settlement, MAINTENANCE_WORK_TIME);
 		
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
 		if (spec.hasPartAttachments()) {
 			attachments = spec.getAttachableParts();
 			slotNumber = spec.getPartAttachmentSlotNumber();

@@ -110,7 +110,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
                 if (unit.getUnitType() == UnitType.VEHICLE) {
                 	Vehicle vehicle = (Vehicle) unit;
-                	description = vehicle.getDescription(vehicle.getVehicleTypeString());
+                	description = vehicle.getDescription();
                 	type = vehicle.getVehicleTypeString();
                 	name = vehicle.getName();
                 }

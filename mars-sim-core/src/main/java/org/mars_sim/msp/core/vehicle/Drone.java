@@ -30,9 +30,6 @@ public class Drone extends Flyer {
 	public static final int METHANOL_ID = ResourceUtil.methanolID;
 	
 	public static final AmountResource METHANOL_AR = ResourceUtil.methanolAR;
-	
-	/** Vehicle name. */
-	public static final String NAME = VehicleType.DELIVERY_DRONE.getName();
 
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;
@@ -40,19 +37,16 @@ public class Drone extends Flyer {
 	public static final double MISSION_RANGE_FACTOR = 1.9;
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 100D;
-
-//	public static final int METHANE = ResourceUtil.methaneID;
-//	public static final int METHANOL = ResourceUtil.methanolID;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
 	 *
 	 * @param name        the name of the rover
-	 * @param type the configuration type of the vehicle.
+	 * @param spec the configuration type of the vehicle.
 	 * @param settlement  the settlement the rover is parked at
 	 */
-	public Drone(String name, String type, Settlement settlement) {
-		super(name, type, settlement, MAINTENANCE_WORK_TIME);
+	public Drone(String name, VehicleSpec spec, Settlement settlement) {
+		super(name, spec, settlement, MAINTENANCE_WORK_TIME);
 	}
 
 

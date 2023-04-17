@@ -32,10 +32,11 @@ extends TestCase {
 	private MockSettlement settlement;
 	private MarsSurface surface;
 	private UnitManager unitManager;
+	private SimulationConfig config;
 
 	@Override
     public void setUp() throws Exception {
-        SimulationConfig config = SimulationConfig.instance();
+        config = SimulationConfig.instance();
         config.loadConfig();
         Simulation sim = Simulation.instance();
         sim.testRun();
@@ -275,7 +276,8 @@ extends TestCase {
 		
 		assertInsideSettllement("Initial Person", person, settlement);
 		
-		Rover vehicle = new Rover("Test Rover", "cargo rover", settlement);
+		Rover vehicle = new Rover("Test Rover",
+								  config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
         unitManager.addUnit(vehicle);
         settlement.addOwnedVehicle(vehicle);
         

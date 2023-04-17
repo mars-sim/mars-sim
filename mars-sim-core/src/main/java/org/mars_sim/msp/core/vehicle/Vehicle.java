@@ -276,13 +276,12 @@ public abstract class Vehicle extends Unit
 	 * @param settlement          the settlement the vehicle is parked at.
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	Vehicle(String name, String vehicleTypeString, Settlement settlement, double maintenanceWorkTime) {
+	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 
-		this.vehicleTypeString = vehicleTypeString;
-		
-		vehicleType = VehicleType.convertNameToVehicleType(vehicleTypeString);
+		this.vehicleTypeString = spec.getName();
+		this.vehicleType = spec.getType();
 
 		// Obtain the associated settlement ID
 		associatedSettlementID = settlement.getIdentifier();
@@ -315,7 +314,6 @@ public abstract class Vehicle extends Unit
 		
 		writeLog();
 
-		VehicleSpec spec = simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleTypeString);
 		// Set width and length of vehicle.
 		width = spec.getWidth();
 		length = spec.getLength();
@@ -360,17 +358,12 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the scope string.
 	 */
-	private void setupScopeString() {
+	protected void setupScopeString() {
 		// Add "vehicle" as scope
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 	
 		// Add its vehicle type as scope
 		malfunctionManager.addScopeString(vehicleTypeString);
-	
-		// Add "rover" as scope
-		if (vehicleTypeString.contains(SystemType.ROVER.getName())) {
-			malfunctionManager.addScopeString(SystemType.ROVER.getName());
-		}
 	}
 	
 	/**
@@ -622,17 +615,6 @@ public abstract class Vehicle extends Unit
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
-	}
-
-	/**
-	 * Gets the vehicle description.
-	 * 
-	 * @param vehicleType
-	 * @return
-	 */
-	public String getDescription(String vehicleType) {
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		return vehicleConfig.getVehicleSpec(vehicleType).getDescription();
 	}
 
 	public String getVehicleTypeString() {

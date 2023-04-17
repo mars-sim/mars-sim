@@ -52,7 +52,9 @@ extends TestCase {
 
 	@Override
     public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+
+        SimulationConfig config = SimulationConfig.instance();
+		config.loadConfig();
         Simulation.instance().testRun();
 
         unitManager = Simulation.instance().getUnitManager();
@@ -61,7 +63,8 @@ extends TestCase {
 		settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
 
-		vehicle = new Rover("Test Cargo Rover", "Cargo Rover", settlement);
+		vehicle = new Rover("Test Cargo Rover",
+							config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
 		settlement.addOwnedVehicle(vehicle);
 		unitManager.addUnit(vehicle);
 
