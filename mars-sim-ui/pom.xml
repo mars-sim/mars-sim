@@ -85,7 +85,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
-			<version>3.1</version>
+			<version>3.1.1</version>
 		</dependency>
 
 		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
