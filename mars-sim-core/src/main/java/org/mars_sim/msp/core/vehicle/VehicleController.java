@@ -149,7 +149,7 @@ public class VehicleController implements Serializable {
 	        double energyforCharging = battery.provideEnergy(potentialEnergy / 1000, hrsTime) * 1000;
 	      
 	        logger.log(vehicle, Level.INFO, 10_000, 
-        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+        			"type: " 				+ vehicle.getVehicleType() + "   "
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
         		 	+ "d_km: " 				+ Math.round(dKM * 1_000.0)/1_000.0 + KM
@@ -273,7 +273,7 @@ public class VehicleController implements Serializable {
 	        double aveP = energyNeeded / 1000.0 / hr;
 	        
 	        logger.log(vehicle, Level.INFO, 10_000, 
-	        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+	        			"type: " 				+ vehicle.getVehicleType() + "   "
 	        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
 	        		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
 	        		 	+ "d_km: " 				+ Math.round(dKM * 1_000.0)/1_000.0 + KM

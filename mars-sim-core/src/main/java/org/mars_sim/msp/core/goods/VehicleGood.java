@@ -116,11 +116,10 @@ class VehicleGood extends Good {
 
     @Override
     public double getNumberForSettlement(Settlement settlement) {
-        final String vName = getName();
 		double number = settlement.getAllAssociatedVehicles().stream()
-			                    .filter(v -> vName.equalsIgnoreCase(v.getVehicleTypeString()))
+			                    .filter(v -> vehicleType == v.getVehicleType())
                                 .count();
-
+ 
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
 		number += getManufacturingProcessOutput(settlement);

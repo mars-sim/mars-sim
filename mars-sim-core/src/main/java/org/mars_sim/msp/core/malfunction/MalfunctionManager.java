@@ -200,11 +200,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Add a scope string of a system or a function to the manager.
 	 *
-	 * @param scopeString
+	 * @param scope
 	 */
-	public void addScopeString(String scopeString) {
-		if ((scopeString != null) && !scopes.contains(scopeString.toLowerCase()))
-			scopes.add(scopeString.toLowerCase());
+	public void addScopeString(String scope) {
+		String scopeString = scope.toLowerCase().replace("_", " ");
+		if ((scopeString != null) && !scopes.contains(scopeString))
+			scopes.add(scopeString);
 
 		// Update maintenance parts.
 		determineNewMaintenanceParts();

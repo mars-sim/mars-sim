@@ -14,7 +14,6 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -55,8 +54,9 @@ public class VehicleSpecCommand extends ChatCommand {
 		
 		StructuredResponse buffer = new StructuredResponse();
 		buffer.appendLabeledString("Name", source.getName());
-		buffer.appendLabeledString("Type", Conversion.capitalize(source.getVehicleTypeString()));
-		buffer.appendLabeledString("Description", Conversion.capitalize(source.getDescription()));
+		buffer.appendLabeledString("Type", source.getVehicleType().getName());
+		buffer.appendLabeledString("Specification", source.getSpecName());
+		buffer.appendLabeledString("Description", source.getDescription());
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
 		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + "");
@@ -64,7 +64,7 @@ public class VehicleSpecCommand extends ChatCommand {
 
 		int id = source.getFuelType();
 		String fuelName = ResourceUtil.findAmountResourceName(id);
-		buffer.appendLabeledString("Power Source", Conversion.capitalize(fuelName));
+		buffer.appendLabeledString("Power Source", fuelName);
 		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
 		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 		buffer.appendLabeledString("Energy Capacity", String.format(KWH_FORMAT, source.getEnergyCapacity()));		

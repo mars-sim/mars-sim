@@ -13,43 +13,28 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Function;
-import org.mars_sim.msp.core.vehicle.MockVehicle;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import junit.framework.TestCase;
 
-public class TestContainment
-extends TestCase {
+public class TestContainment extends AbstractMarsSimUnitTest {
 
 	
-	private Building garage;
-	private MockSettlement settlement;
+	private VehicleGarage garage;
+	private Settlement settlement;
 	private MarsSurface surface;
-	private UnitManager unitManager;
-	private SimulationConfig config;
 
 	@Override
-    public void setUp() throws Exception {
-        config = SimulationConfig.instance();
-        config.loadConfig();
-        Simulation sim = Simulation.instance();
-        sim.testRun();
-        unitManager = sim.getUnitManager();
+    public void setUp() {
+		super.setUp();
+              
+		settlement = buildSettlement();
         
-        Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, unitManager);
-        
-		settlement = new MockSettlement();
-        unitManager.addUnit(settlement);
-        
-		garage = new Building(1, 0, "Garage", "Garage", new BoundedObject(0D, 0D, 0D, 0D, 0D), settlement.getBuildingManager());
-        unitManager.addUnit(garage);
-        settlement.getBuildingManager().addBuilding(garage, false);
+		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0), 0D, 0);
         surface = unitManager.getMarsSurface();
     }
 
@@ -179,22 +164,21 @@ extends TestCase {
 
 		assertInsideSettllement("Initial person", person, settlement);
 		
-		person.setCurrentBuilding(garage);
+		person.setCurrentBuilding(garage.getBuilding());
 		
-		assertInBuilding("Person in garage", person, garage, settlement);
+		assertInBuilding("Person in garage", person, garage.getBuilding(), settlement);
 	}
 	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testVehicleInGarage() throws Exception {
-		Vehicle vehicle = new MockVehicle(settlement);
-		unitManager.addUnit(vehicle);
-        settlement.addOwnedVehicle(vehicle);
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
         
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
 		
-		assertTrue("Parking vehicle in garage", settlement.getBuildingManager().addToGarage(vehicle));
+		boolean addedTogarage = settlement.getBuildingManager().addToGarage(vehicle);
+		assertTrue("Parking vehicle in garage", addedTogarage);
 		
 		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
 	}
@@ -203,8 +187,7 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testVehicleNearSettlement() throws Exception {
-		Vehicle vehicle = new MockVehicle(settlement);
-        unitManager.addUnit(vehicle);
+		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1));
 
 		vehicle.setContainerUnit(settlement);
 
@@ -215,8 +198,7 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testVehicleOnSurface() throws Exception {
-		Vehicle vehicle = new MockVehicle(settlement);
-        unitManager.addUnit(vehicle);
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
 
 		vehicle.transfer(surface);
 
@@ -249,9 +231,7 @@ extends TestCase {
 		
 		assertInsideSettllement("Initial equipment", bag, settlement);
 		
-		Vehicle vehicle = new MockVehicle(settlement);
-        unitManager.addUnit(vehicle);
-        settlement.addOwnedVehicle(vehicle);
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
 		
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
@@ -270,16 +250,11 @@ extends TestCase {
 	 */
 	public void testPersonOnVehicle() throws Exception {
 
-		Person person = new Person("Test Person", settlement);
-		unitManager.addUnit(person);
-		settlement.addACitizen(person);
+		Person person = buildPerson("Test Person", settlement);
 		
 		assertInsideSettllement("Initial Person", person, settlement);
 		
-		Rover vehicle = new Rover("Test Rover",
-								  config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
-        unitManager.addUnit(vehicle);
-        settlement.addOwnedVehicle(vehicle);
+		Rover vehicle = buildRover(settlement, getName(), new LocalPosition(1,1));
         
 		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);

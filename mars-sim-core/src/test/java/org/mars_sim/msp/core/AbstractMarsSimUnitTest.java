@@ -96,6 +96,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    VehicleGarage garage = new VehicleGarage(building0,
 	            new LocalPosition[] { parkingLocation });
 	    building0.addFunction(garage);
+
+		buildingManager.addNewBuildingtoBFMap(building0);
 	    
 	    return garage;
 	}

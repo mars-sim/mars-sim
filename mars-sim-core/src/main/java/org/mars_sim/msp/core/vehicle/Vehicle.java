@@ -225,8 +225,8 @@ public abstract class Vehicle extends Unit
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 
-	/** The vehicle type string. */
-	private String vehicleTypeString;
+	/** The vehicle specification */
+	private String specName;
 	
 	/** Parked position (meters) from center of settlement. */
 	private LocalPosition posParked;
@@ -280,7 +280,7 @@ public abstract class Vehicle extends Unit
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 
-		this.vehicleTypeString = spec.getName();
+		this.specName = spec.getName();
 		this.vehicleType = spec.getType();
 
 		// Obtain the associated settlement ID
@@ -363,7 +363,7 @@ public abstract class Vehicle extends Unit
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 	
 		// Add its vehicle type as scope
-		malfunctionManager.addScopeString(vehicleTypeString);
+		malfunctionManager.addScopeString(vehicleType.name());
 	}
 	
 	/**
@@ -550,75 +550,14 @@ public abstract class Vehicle extends Unit
     		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
 	}
 	
+	
 	/**
-	 * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle).
-	 *
-	 * @param name                the vehicle's name
-	 * @param vehicleType         the configuration description of the vehicle.
-	 * @param settlement          the settlement the vehicle is parked at.
-	 * @param baseSpeed           the base speed of the vehicle [kph]
-	 * @param baseMass            the base mass of the vehicle [kg]
-	 * @param fuelEconomy		  the fuel economy of the vehicle [km/kg]
-	 * @param maintenanceWorkTime the work time required for maintenance [millisols]
+	 * Get the name of the vehicle specification
+	 * @see VehicleConfig#getVehicleSpec(String)
+	 * @return Name of the VehicleSpec
 	 */
-	protected Vehicle(String name, String vehicleType, Settlement settlement, double baseSpeed, double baseMass,
-			double fuelEconomy, double maintenanceWorkTime) {
-
-		// Use Unit constructor
-		super(name, settlement.getCoordinates());
-
-		this.vehicleTypeString = vehicleType;
-
-		associatedSettlementID = settlement.getIdentifier();
-
-		setContainerID(associatedSettlementID);
-
-		direction = new Direction(0);
-		trail = new ArrayList<>();
-		statusTypes = new HashSet<>();
-
-		// Set description
-		setDescription(vehicleType);
-		// Set total distance traveled by vehicle [km]
-		odometerMileage = 0;
-		// Set distance traveled by vehicle since last maintenance [km]
-		distanceMaint = 0;
-		// Set the base fuel economy of the vehicle [km/kg]
-		baseFuelEconomy = fuelEconomy;
-		// Set base speed.
-		this.baseSpeed = baseSpeed;
-		// Set the empty mass of the vehicle.
-		setBaseMass(baseMass);
-
-		isReservedMission = false;
-		distanceMark = false;
-		reservedForMaintenance = false;
-		emergencyBeacon = false;
-
-		isSalvaged = false;
-		salvageInfo = null;
-		width = 0D;
-		length = 0D;
-		posParked = LocalPosition.DEFAULT_POSITION;
-		facingParked = 0D;
-
-		// Create microInventory instance for testing. 
-		// Set up a 2000 kg cargo cap
-		eqmInventory = new EquipmentInventory(this, 2_000D);
-
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
-
-		primaryStatus = StatusType.PARKED;
-		writeLog();
-
-		// Add to the settlement
-		settlement.addOwnedVehicle(this);
-	}
-
-	public String getVehicleTypeString() {
-		return vehicleTypeString;
+	public String getSpecName() {
+		return specName;
 	}
 
 	public VehicleType getVehicleType() {

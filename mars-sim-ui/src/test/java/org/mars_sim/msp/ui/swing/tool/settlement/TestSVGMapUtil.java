@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 
 import junit.framework.TestCase;
@@ -66,7 +67,7 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all vehicle types are mapped to a SVG image.
         for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
-            String vehicleType = vs.getName();
+            String vehicleType = vs.getType().name();
             GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicleType);
             assertNotNull(vehicleType + " is not mapped to a SVG image.", svg);
         }
@@ -79,9 +80,9 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all vehicle types have a maintenance overlay mapped to a SVG image.
         for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
-            String vehicleType = vs.getName();
-            GraphicsNode svg = SVGMapUtil.getMaintenanceOverlaySVG(vehicleType);
-            assertNotNull(vehicleType + " does not have a maintenance overlay mapped to a SVG image.", svg);
+            VehicleType type = vs.getType();
+            GraphicsNode svg = SVGMapUtil.getMaintenanceOverlaySVG(type.name());
+            assertNotNull(type + " does not have a maintenance overlay mapped to a SVG image.", svg);
         }
     }
     
@@ -92,10 +93,10 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all vehicle types have a loading overlay mapped to a SVG image.
         for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
-            String vehicleType = vs.getName();
-            if (!vehicleType.equalsIgnoreCase("Light Utility Vehicle")) {
-                GraphicsNode svg = SVGMapUtil.getLoadingOverlaySVG(vehicleType);
-                assertNotNull(vehicleType + " does not have a loading overlay mapped to a SVG image.", svg);
+            VehicleType type = vs.getType();
+            if (type != VehicleType.LUV) {
+                GraphicsNode svg = SVGMapUtil.getLoadingOverlaySVG(type.name());
+                assertNotNull(type + " does not have a loading overlay mapped to a SVG image.", svg);
             }
         }
     }
