@@ -353,7 +353,7 @@
 		643 km), this battery allows traveling a distance of 96.5 km on a single charge.
 		</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="2" max-number="4" />
+			<entity name="rover" probability="2" max-number="1" />
 			<entity name="light utility vehicle" probability="2" max-number="1" />
 			<entity name="delivery drone" probability="2" max-number="1" />
 		</maintenance-entity-list>

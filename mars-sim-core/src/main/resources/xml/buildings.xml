@@ -1733,12 +1733,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="aluminum oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
 				<resource-storage resource="iron powder" capacity="200.0" />
-				<resource-storage resource="ethylene" capacity="100.0" />
-				<resource-storage resource="polyethylene" capacity="100.0" />
+				<resource-storage resource="ethylene" capacity="500.0" />
+				<resource-storage resource="polyethylene" capacity="500.0" />
 				<resource-storage resource="gypsum" capacity="100.0" />
 				<resource-storage resource="calcium Carbonate" capacity="100.0" />
 				<resource-storage resource="lime" capacity="100.0" />
-				<resource-storage resource="styrene" capacity="100.0" />
+				<resource-storage resource="styrene" capacity="500.0" />
 				<resource-storage resource="polyester resin" capacity="100.0" />
 				<resource-storage resource="cement" capacity="500.0" />
 				<resource-storage resource="concrete" capacity="500.0" />
@@ -2372,13 +2372,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="aluminum oxide" capacity="100.0" />
 				<resource-storage resource="sand" capacity="2000.0" />
 				<resource-storage resource="iron powder" capacity="100.0" />
-				<resource-storage resource="ethylene" capacity="50.0" />
-				<resource-storage resource="polyethylene" capacity="50.0" />
-				<resource-storage resource="gypsum" capacity="50.0" />
-				<resource-storage resource="calcium carbonate" capacity="50.0" />
-				<resource-storage resource="lime" capacity="50.0" />
-				<resource-storage resource="styrene" capacity="50.0" />
-				<resource-storage resource="polyester resin" capacity="50.0" />
+				<resource-storage resource="ethylene" capacity="200.0" />
+				<resource-storage resource="polyethylene" capacity="200.0" />
+				<resource-storage resource="gypsum" capacity="100.0" />
+				<resource-storage resource="calcium carbonate" capacity="100.0" />
+				<resource-storage resource="lime" capacity="100.0" />
+				<resource-storage resource="styrene" capacity="200.0" />
+				<resource-storage resource="polyester resin" capacity="100.0" />
 				<resource-storage resource="cement" capacity="100.0" />
 				<resource-storage resource="concrete" capacity="100.0" />
 			</storage>

@@ -267,7 +267,7 @@ public class ResourceProcess implements Serializable {
 					// Retrieve the right amount
 					if (stored > SMALL_AMOUNT) {
 						if (required > stored) {
-							logger.warning(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
+							logger.fine(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
 								+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							required = stored;
@@ -281,7 +281,7 @@ public class ResourceProcess implements Serializable {
 						
 					}
 					else {
-						logger.warning(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
+						logger.fine(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
 							+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 							+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 						setProcessRunning(false);
@@ -303,7 +303,7 @@ public class ResourceProcess implements Serializable {
 					// Store the right amount
 					if (remainingCap > SMALL_AMOUNT) {
 						if (required > remainingCap) {
-							logger.warning(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
+							logger.fine(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
 									+ "' output in '" + name + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: 0 kg.");
@@ -318,7 +318,7 @@ public class ResourceProcess implements Serializable {
 						
 					}
 					else {
-						logger.warning(settlement, 30_000, "Case D. Not enough space for storing '" 
+						logger.fine(settlement, 30_000, "Case D. Not enough space for storing '" 
 								+ ResourceUtil.findAmountResourceName(resource)
 								+ "' output to continue '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 
 								+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");

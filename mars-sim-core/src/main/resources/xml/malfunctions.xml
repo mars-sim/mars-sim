@@ -124,7 +124,7 @@
 			<part name="oxygen pump" number="1" probability="5" />
 			<part name="fuel pump" number="1" probability="5" />
 			<part name="heating element" number="1" probability="5" />
-			<part name="battery module" number="1" probability="5" />
+			<part name="battery module" number="1" probability="2" />
 			<part name="gas tank" number="1" probability="5" />
 			<part name="valve" number="2" probability="5" />
 			<part name="electrical wire" number="2" probability="5" />
@@ -439,7 +439,7 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="40" />
 			<part name="electrical wire" number="2" probability="40" />
-			<part name="battery module" number="1" probability="5" />
+			<part name="battery module" number="1" probability="2" />
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="logic board" number="1" probability="5" />
 			<part name="power cable" number="1" probability="5" />
@@ -462,7 +462,7 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="40" />
 			<part name="electrical wire" number="2" probability="40" />
-			<part name="battery module" number="1" probability="5" />
+			<part name="battery module" number="1" probability="2" />
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="logic board" number="1" probability="5" />
 			<part name="power cable" number="2" probability="20" />
@@ -470,7 +470,7 @@
 		</repair-parts-list>
 	</malfunction>
 
-		<!-- Battery failure. -->
+		<!-- EVA Power failure. -->
 	<malfunction name="EVA Power Failure">
 		<severity value="40" />
 		<probability value="3.0" />
@@ -484,7 +484,7 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="40" />
 			<part name="electrical wire" number="2" probability="40" />
-			<part name="eva battery" number="1" probability="5" />
+			<part name="eva battery" number="1" probability="2" />
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="logic board" number="1" probability="5" />
 		</repair-parts-list>

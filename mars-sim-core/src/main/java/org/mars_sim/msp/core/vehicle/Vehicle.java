@@ -175,6 +175,8 @@ public abstract class Vehicle extends Unit
 	
 	/** The Base Lifetime Wear in msols **/
 	private double baseWearLifetime;
+	/** Current accel of vehicle in m/s2. */
+	private double accel = 0;
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; //
 	/** Base speed of vehicle in kph (can be set in child class). */
@@ -433,8 +435,8 @@ public abstract class Vehicle extends Unit
 		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
-		// Assume the peak power is 4x the average power.
-		double peakPower = averagePower * 4.0;
+		// Assume the peak power is a multiple of the average power.
+		double peakPower = averagePower * 3.0;
 		
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
@@ -540,7 +542,7 @@ public abstract class Vehicle extends Unit
 				vehicleType.getName() + "   "
 				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
 				+ "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   " 
-	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
+	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
     	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
     	    	+ "energyCapacity: " + Math.round(methanolEnergyCapacity * 100.0)/100.0 + KWH 
@@ -1105,7 +1107,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base speed of vehicle
 	 *
-	 * @return the vehicle's base speed (in km/hr)
+	 * @return the vehicle's base speed (in kph or km/hr)
 	 */
 	public double getBaseSpeed() {
 		return baseSpeed;
@@ -1423,11 +1425,39 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getAccel() {
-		if (speed <= 1)
-			return baseAccel;
-		return (baseAccel + Math.min(baseAccel, averagePower / getMass() / speed * 3600)) / 2.0;
+		return accel;
 	}
 
+	/**
+	 * Sets the acceleration in [m/s2].
+	 * 
+	 * @param accel
+	 */
+	public void setAccel(double accel) {
+		this.accel = accel;
+	}
+	
+	/**
+	 * Gets the allowable acceleration of the vehicle [m/s2].
+	 * 
+	 * @return
+	 */
+	public double getAllowedAccel() {
+		if (speed <= 1)
+			return baseAccel;
+		return baseAccel * beginningMass / getMass();
+//		return (baseAccel + Math.min(baseAccel, averagePower / getMass() / speed * 3600)) / 2.0;
+	}
+	
+	/**
+	 * Gets the base acceleration of the vehicle [m/s2].
+	 * 
+	 * @return
+	 */
+	public double getBaseAccel() {
+		return baseAccel;
+	}
+	
 	public abstract double getTerrainGrade();
 
 	public abstract double getElevation();
