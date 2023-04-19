@@ -428,7 +428,7 @@ public abstract class OperateVehicle extends Task {
         	// distance away.
         	
         	// Sets final speed to zero and use regen braking to recharge the battery.
-        	vehicle.getController().adjustSpeed(hrsTime, dist, 0, remainingFuel, remainingOxidizer);
+//        	vehicle.getController().adjustSpeed(hrsTime, dist, 0, remainingFuel, remainingOxidizer);
    
         	// Stop the vehicle
         	haltVehicle();

@@ -1220,7 +1220,7 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0.0d)
 			return 0;
-		return METHANE_WH_PER_KG * fuelCumUsed / odometerMileage;
+		return METHANOL_WH_PER_KG * fuelCumUsed / odometerMileage;
 	}
 
 	/**
