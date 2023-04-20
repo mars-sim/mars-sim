@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2023-04-13
+ * @date 2023-04-19
  * @author Manny Kung
  */
 
@@ -22,14 +22,11 @@ public class Battery implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(Battery.class.getName());
-
 	/** The maximum power that can be safely drawn from this battery pack in kW. */
     private static final double MAX_POWER_DRAW = 150.0;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-    private static final int ENERGY_PER_MODULE = 15;
+    private static final double ENERGY_PER_MODULE = 15.0;
     
     // Data members
     /** Is the unit operational ? */

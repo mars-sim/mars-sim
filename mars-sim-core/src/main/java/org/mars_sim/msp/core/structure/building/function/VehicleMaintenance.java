@@ -285,27 +285,32 @@ public abstract class VehicleMaintenance extends Function {
 			// if there are in the crew
 			Crewable c = ((Crewable)vehicle);
 			for (Person p: new ArrayList<>(c.getCrew())) {
-				
 				// If person's origin is already in this vehicle
 				// and it's called by removeFromGarage()
-				if (p.getVehicle().equals(vehicle)) {
-					p.setContainerUnit(vehicle);
-					p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-				}
-				else {
-					p.transfer(vehicle);
-					BuildingManager.removePersonFromBuilding(p, building);
+				Vehicle v = p.getVehicle();
+				if (v != null) {
+					if (p.getVehicle().equals(vehicle)) {
+						p.setContainerUnit(vehicle);
+						p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+					}
+					else {
+						p.transfer(vehicle);
+						BuildingManager.removePersonFromBuilding(p, building);
+					}
 				}
 			}
 			// Remove the robot occupants from the settlement
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-				if (r.getVehicle().equals(vehicle)) {
-					r.setContainerUnit(vehicle);
-					r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-				}
-				else {
-					r.transfer(vehicle);
-					BuildingManager.removeRobotFromBuilding(r, building);
+				Vehicle v = r.getVehicle();
+				if (v != null) {
+					if (r.getVehicle().equals(vehicle)) {
+						r.setContainerUnit(vehicle);
+						r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+					}
+					else {
+						r.transfer(vehicle);
+						BuildingManager.removeRobotFromBuilding(r, building);
+					}
 				}
 			}
 		}

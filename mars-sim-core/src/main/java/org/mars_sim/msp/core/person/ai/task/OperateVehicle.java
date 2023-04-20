@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -46,7 +45,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * driving it to a destination.
  */
 public abstract class OperateVehicle extends Task {
-	
+
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
