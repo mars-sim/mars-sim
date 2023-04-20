@@ -127,7 +127,7 @@ public class InventoryTabPanel extends TabPanel {
 			itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 			TableColumnModel itemColumns = itemTable.getColumnModel();
 			itemColumns.getColumn(0).setPreferredWidth(110);
-			itemColumns.getColumn(1).setPreferredWidth(30);
+			itemColumns.getColumn(1).setPreferredWidth(20);
 			itemColumns.getColumn(2).setPreferredWidth(30);
 			itemColumns.getColumn(3).setPreferredWidth(30);
 			itemColumns.getColumn(4).setPreferredWidth(30);
@@ -164,9 +164,9 @@ public class InventoryTabPanel extends TabPanel {
 	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 	
 			TableColumnModel equipmentColumns = equipmentTable.getColumnModel();
-	        equipmentColumns.getColumn(0).setPreferredWidth(60);
-	        equipmentColumns.getColumn(1).setPreferredWidth(80);
-	        equipmentColumns.getColumn(2).setPreferredWidth(30);
+	        equipmentColumns.getColumn(0).setPreferredWidth(80);
+	        equipmentColumns.getColumn(1).setPreferredWidth(30);
+	        equipmentColumns.getColumn(2).setPreferredWidth(50);
 	        equipmentColumns.getColumn(3).setPreferredWidth(70);
 	
 			// Align the preference score to the center of the cell
