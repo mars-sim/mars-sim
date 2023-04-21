@@ -124,32 +124,6 @@ public class MissionUtil {
 		return result;
 	}
 
-    /**
-	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
-	 *
-	 * @param tripDistance   the distance (km) of the trip.
-	 * @param fuelEconomy the vehicle's instantaneous fuel economy (km/kg).
-	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
-	 * @return amount of fuel needed for trip (kg)
-     * 
-     * TODO This should be implemented on the Vehicle or VehicleSpec and be re-usable. Not in the Mission package
-	 */
-	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
-		double result = tripDistance / fuelEconomy;
-		double factor = 1;
-		if (useMargin) {
-			if (tripDistance < 200) {
-				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
-				// in case of getting stranded locally
-				factor = - tripDistance / 100.0 + 3 ;
-			}	
-			factor *= Vehicle.getFuelRangeErrorMargin();
-			result *= factor;
-		}
-		return result;
-	}
-
-
     public static void initializeInstances(UnitManager u, MissionManager m) {
         unitManager = u;
         missionManager = m;

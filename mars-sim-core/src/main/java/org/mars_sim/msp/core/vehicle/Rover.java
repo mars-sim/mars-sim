@@ -886,7 +886,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel
+	 * Gets the resource type id that this vehicle uses as fueln
 	 *
 	 * @return resource type id
 	 */
@@ -894,14 +894,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		return METHANOL_ID;
 	}
 
-	/**
-	 * Gets the amount resource type that this vehicle uses as fuel
-	 *
-	 * @return amount resource
-	 */
-	public AmountResource getFuelTypeAR() {
-		return METHANOL_AR;
-	}
+//	/**
+//	 * Gets the amount resource type that this vehicle uses as fueln
+//	 *
+//	 * @return amount resource
+//	 */
+//	public AmountResource getFuelTypeAR() {
+//		return METHANOL_AR;
+//	}
 
 	/**
 	 * Sets unit's location coordinates
@@ -941,7 +941,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @throws Exception if error getting range.
 	 */
 	public double getRange(MissionType missionType) {
-		// Note: multiply by 0.9 would account for the extra distance travelled in between sites
+		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
 		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;
 		// Obtains the max mission range [in km] based on the type of mission
 		// Note: total route ~= mission radius * 2

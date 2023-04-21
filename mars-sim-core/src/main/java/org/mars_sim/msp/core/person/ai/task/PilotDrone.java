@@ -315,7 +315,7 @@ public class PilotDrone extends OperateVehicle {
 		if (!horizontalMovement)
 			mod = 4;
 			
-		double currentE = ((Flyer)getVehicle()).getHoveringElevation();
+		double currentE = ((Flyer)getVehicle()).getHoveringHeight();
 		double oldGroundE = ((Flyer)getVehicle()).getElevation();
 		double newGroundE = getGroundElevation();
 		

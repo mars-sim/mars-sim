@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.equipment.Battery;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
@@ -27,6 +28,27 @@ public class VehicleController implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(VehicleController.class.getName());
 
+    /** Speed in kph */
+    public static final double SPEED_BUFFER = .01;
+	
+    /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
+	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
+    /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
+	public static final int WATER_ID = ResourceUtil.waterID;
+    /** The ratio of the amount of oxidizer to fuel. */
+	public static final double RATIO_OXIDIZER_FUEL = 1.5;
+    /** The ratio of water produced to methanol consumed. */
+    private static final double RATIO_WATER_METHANOL = 1.125;
+	/** The factor for estimating the adjusted fuel economy. */
+    public static final double FUEL_ECONOMY_FACTOR = 1.25;
+	
+    /** Mars surface gravity is 3.72 m/s2. */
+    private static final double GRAVITY = 3.72;
+	/** Conversion factor : 1 Wh = 3.6 kilo Joules */
+    private static final double JOULES_PER_WH = 3_600.0;
+	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
+	private static final double KPH_CONV = 3.6;
+	   
 	private static final String KG = " kg  ";
 	private static final String N = " N  ";
 	private static final String KM_KG = " km/kg  ";
@@ -36,14 +58,11 @@ public class VehicleController implements Serializable {
 	private static final String KPH = " kph  ";
 	private static final String WH = " Wh  ";
 	private static final String KWH = " kWh  ";
-    /** Mars surface gravity is 3.72 m/s2. */
-    private static final double GRAVITY = 3.72;
-	/** Conversion factor : 1 Wh = 3.6 kilo Joules */
-    private static final double JOULES_PER_WH = 3_600.0;
-	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
-	private static final double KPH_CONV = 3.6;
-	
+	private static final String W = " W  ";		
+		
     // Data members
+	/** The fuel type of this vehicle. */
+	private int fuelType;
 	/**  Cache the time in hr. */ 
 	private double hrsTimeCache;
 	/** Cache the distance traveled in km. */ 
@@ -65,6 +84,7 @@ public class VehicleController implements Serializable {
     public VehicleController(Vehicle vehicle) {
     	this.vehicle = vehicle;
     	battery = new Battery(vehicle);
+    	fuelType = vehicle.getFuelType();
     }
 
     /**
@@ -130,9 +150,12 @@ public class VehicleController implements Serializable {
         
     	double mg = mass * GRAVITY;
     	
+    	double potentialEnergyDrone = 0;
+    	
         if (vehicle instanceof Drone) {
             // For drones, it needs energy to ascend into the air and hover in the air
             // Note: Refine this equation for drones 
+        	double currentHeight = ((Drone) vehicle).getHoveringHeight();
         	
         	fGravity = - mg;
         	
@@ -141,6 +164,40 @@ public class VehicleController implements Serializable {
         	fRoadSlope = 0;
         	 // FUTURE : How to simulate controlled descent to land at the destination ?
         	 // Also need to account for the use of fuel or battery's power to ascend and descend 
+        	
+        	if (uMS < vMS) {
+        		// Case A : During ascent
+              	if (currentHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
+              		// Do NOT ascent anymore
+              		potentialEnergyDrone = 0;
+            	}
+              	else {
+    	        	// For ascent, assume the height gained is the same as distanceTravelled
+              		potentialEnergyDrone = mg * distanceTravelled;
+              	}
+        	}
+
+        	else {
+        		// Case B : During controlled descent
+        		if (currentHeight <= 0) {
+              		// Do NOT ascent anymore
+        			potentialEnergyDrone = 0;
+            	}
+              	else {
+           			// Assume using about 25% of energy gain in potenial energy to maintain optimal descent,
+              		// avoid instability and perform a controlled descent
+              		
+              		// See detail strategies on https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
+              		if (currentHeight < distanceTravelled) {
+              			// Assume the height lost is the same as distanceTravelled
+              			potentialEnergyDrone = .25 * mg * currentHeight;
+              		}
+              		else {
+	                	// For descent, assume the height lost is the same as distanceTravelled
+              			potentialEnergyDrone = .25 * mg * distanceTravelled;
+              		}
+              	}
+        	}
         }
     
         else if (vehicle instanceof Rover) {
@@ -157,23 +214,36 @@ public class VehicleController implements Serializable {
         double fInitialFriction = - 5.0 / (0.5 + averageSpeed);  // [in N]
         // Note : Aerodynamic drag force = 0.5 * air drag coeff * air density * vehicle frontal area * vehicle speed ^2 
         // https://x-engineer.org/aerodynamic-drag
-        double fAeroDrag = - 0.5 * 0.4 * 0.02 * 1.5 * averageSpeedSQ;
+        
+        double frontalArea = vehicle.getWidth() * vehicle.getWidth() * .9;
+        		
+        double fAeroDrag = - 0.5 * 0.4 * 0.02 * frontalArea * averageSpeedSQ;
     	// Gets the summation of all the forces acting against the forward motion of the vehicle
         double totalForce = fInitialFriction + fAeroDrag + fGravity + fRolling + fRoadSlope;
         // Gets the natural deceleration due to these forces
         double aForcesAgainst = totalForce / mass;
         // Gets the acceleration of the motor
         double aMotor = accelTarget - aForcesAgainst;
-  	
+        
         if (aMotor >= 0) {
-        	// Case 1: acceleration is needed
+        	// Case 1: acceleration is needed to either maintain the speed or to go up to the top speed
  
             // Set new vehicle acceleration
             vehicle.setAccel(aMotor);
             
-            double iPower = aMotor * mass * vMS; // [in W]
+            double iPower = aMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
             
-    		logger.log(vehicle, Level.INFO, 20_000, 
+            if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
+            	logger.log(vehicle, Level.INFO, 0, 
+    				"Need to exert power just to maintain the speed at "
+    				+ Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
+    				+ "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
+    				+ "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
+    	    		+ "aForcesAgainst: " + Math.round(aForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
+    				);
+            }
+            else {
+            	logger.log(vehicle, Level.INFO, 0, 
     				"Need to accelerate and increase the speed from "
     				+  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
     				+ "to " + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
@@ -181,72 +251,89 @@ public class VehicleController implements Serializable {
     				+ "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
     	    		+ "aForcesAgainst: " + Math.round(aForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
     				);
+            }        
  
             // Convert the total energy needed from J to Wh
 	        double totalEnergyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
 	        // Get energy from the battery
-	        double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000;
+	        double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000.0, hrsTime) * 1000.0;
 	        // Get energy from the fuel
 	        double energyByFuel = totalEnergyNeeded - energyByBattery;
 	        
 	        double fuelNeeded = 0;
 	        
 	        // Case A : Battery has enough juice for the acceleration
-	     	if (energyByFuel <= 0) {
-				logger.log(vehicle, Level.INFO,  20_000L, 
-						"Using on-board battery solely. energyByBattery: " 
-						+  Math.round(energyByBattery * 1000.0)/1000.0 + " Wh  "
-	        			+ "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 
+	     	if (totalEnergyNeeded == energyByBattery) {
+				logger.log(vehicle, Level.INFO, 0, 
+						"Case A: Use on-board battery only. "
+						+ "energyByBattery: " + Math.round(energyByBattery * 1000.0)/1000.0 + WH
+						+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				
+	        			+ "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
 						);  
 	     	}
 	     	
-	     	else {
-	     		// Case B: If the battery is unable to meet the needed energy requirement
+	     	else if (energyByFuel > 0.001) {
+	     		// Case B and C: If the battery is unable to meet the needed energy requirement
 		        // Need to turn on fuel cells to supply more power
 	     		
 		        // Derive the mass of fuel needed kg = Wh / Wh/kg
 		        fuelNeeded = energyByFuel / vehicle.getFuelConv();
 		        
-				if (fuelNeeded > remainingFuel) {
-		     		// Case 3 : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
-					
-					// Limit the fuel to be used
-					fuelNeeded = remainingFuel;				
-					// Recompute the new distance it could travel
-					distanceTravelled = vehicle.getConservativeFuelEconomy() * fuelNeeded;
-					
-					// FUTURE : may need to find a way to optimize motor power usage 
-					// and slow down the vehicle to the minimal to conserve power
-					
-					// Find the new speed           
-					vKPH = distanceTravelled / hrsTime; // [in kph]
-					
-					vMS = vKPH / KPH_CONV; // [in m/s^2]
-					
-		            iPower =  mass * (vMS + uMS)/2.0; // [in W]
-
-					accelTarget = (vMS - uMS) / secs; // [in m/s^2]			
-			        // Convert the energy usage from J to Wh
-					energyByFuel = iPower * secs / JOULES_PER_WH ; // [in Wh]	
-					
-					logger.log(vehicle, Level.WARNING,  20_000L, 
-							"Both battery and fuel are insufficient.  " 
-							+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + " Wh  "
-				        	+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 
-							+ "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
-							+ "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + " km."
-							+ "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + " km."
-							);
-		     	}
-				else {
-					// Case D: fuel is sufficient
-					logger.log(vehicle, Level.WARNING,  20_000L, 
-						"Insufficent battery. Sufficient fuel. Using both fuel cell and battery.  " 
-						+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + " Wh  "
+				if (fuelNeeded <= remainingFuel) {
+					// Case B: fuel is sufficient
+					logger.log(vehicle, Level.INFO, 0, 
+						"Case B: Partial battery with sufficient fuel.  " 
+						+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
+						+ "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 						
+						+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
 						+ "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 						+ "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + " km."
 						);
+		     	}
+				else {				
+					// Case C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
+					
+					// Limit the fuel to be used
+					fuelNeeded = remainingFuel;
+
+					energyByFuel = fuelNeeded * vehicle.getFuelConv();
+		
+					// FUTURE: need to consider the on-board vehicle power usage
+					iPower = energyByFuel / secs * JOULES_PER_WH;
+
+					// Find the new speed   
+					vKPH = iPower - potentialEnergyDrone / secs / aMotor / mass;
+					
+					// FUTURE : may need to find a way to optimize motor power usage 
+					// and slow down the vehicle to the minimal to conserve power	
+					
+					vMS = vKPH / KPH_CONV; // [in m/s^2]
+
+					accelTarget = (vMS - uMS) / secs; // [in m/s^2]
+					// Recompute the new distance it could travel
+				   	distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
+				   	
+					logger.log(vehicle, Level.INFO, 0, 
+							"Case C: Partial battery and insufficient fuel.  " 
+							+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
+				        	+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
+							+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				        	
+							+ "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
+		            	    + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W							
+		                	+ "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH   							
+							+ "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
+							+ "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM
+							);
 				}
+	     	}
+	     	else {
+	     		logger.log(vehicle, Level.INFO, 0, 
+						"Case D: Unknown.  " 
+						+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
+			        	+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
+						+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				        	
+						+ "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
+						);
 	     	}
 		   			
 			// Adjust the speed
@@ -259,7 +346,7 @@ public class VehicleController implements Serializable {
 	        
 	        double iFE = 0;
 	        
-	        if (fuelNeeded != 0) {
+	        if (fuelNeeded > 0) {
 		        // Derive the instantaneous fuel economy [in km/kg]
 		        iFE = distanceTravelled / fuelNeeded;	        
 		        // Set the instantaneous fuel economy [in km/kg]
@@ -287,7 +374,7 @@ public class VehicleController implements Serializable {
 			 * 
 			 * NOTE: DO NOT delete any of them. Needed for testing when new features are added in future.
 			 */
-	        logger.log(vehicle, Level.INFO, 10_000, 
+	        logger.log(vehicle, Level.INFO, 0, 
         			Conversion.capitalize(vehicle.getVehicleTypeString()) + "  "
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
@@ -296,16 +383,19 @@ public class VehicleController implements Serializable {
         	        + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
         	        + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
                 	+ "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH      	        
-        			+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH    
-        			
+					+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
+					+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH    
+					+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
+					
                 	+ "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
-            	    + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + " W  "
+            	    + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
             	    
                	    + "avePower: " 			+ Math.round(aveP * 1_000.0)/1_000.0 + KW
                	    
     				+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1_000.0)/1_000.0 + WH
     				+ "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
     				+ "energyByBattery: " 	+ Math.round(energyByBattery * 1_000.0)/1_000.0 + WH
+    				+ "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
     				
             		+ "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG 
         	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg  "
@@ -323,17 +413,18 @@ public class VehicleController implements Serializable {
     	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
  	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
 	    	);
-	        
-			
+	        		
 			// Cache the new value of fuelUsed	
-	        if (fuelNeeded <= 0) {
-	        	// No fuel is expended. 
-	        	// Usually indicative of vehicle deceleration.
-	        	// FUTURE : may engage regenerative braking to recharge the battery
-	        	fuelUsedCache = 0;
-	        }
-	        else
+	        if (fuelNeeded > 0) {
+		    	// Retrieve the fuel needed for the distance traveled
+			    vehicle.retrieveAmountResource(fuelType, fuelUsedCache);
+			    // Assume double amount of oxygen as fuel oxidizer
+			    vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelUsedCache);
+			    // Generate 1.75 times amount of the water from the fuel cells
+			    vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelUsedCache);
+	        	
 	        	fuelUsedCache = fuelNeeded;
+	        }
         }
         
         else {
@@ -343,9 +434,9 @@ public class VehicleController implements Serializable {
             // Set new vehicle acceleration
             vehicle.setAccel(aRegen);
             
-            double iPower = - aRegen * mass * (vMS + uMS)/2.0; // [in W]
+            double iPower = - aRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
             
-    		logger.log(vehicle, Level.INFO, 20_000, "Need to decelerate and reduce the speed from " 
+    		logger.log(vehicle, Level.INFO, 0, "Need to decelerate and reduce the speed from " 
     				+  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
     				+ "to " + Math.round(vKPH * 1_000.0)/1_000.0
     				+ " kph.  "
@@ -355,17 +446,17 @@ public class VehicleController implements Serializable {
     				+ " m/s2. "			
     		);
             
-    	    // Convert the potential energy from J to Wh
-            double potentialEnergy = iPower * secs / JOULES_PER_WH ; // [in Wh]
+    	    // Convert the energyNeeded energy from J to Wh
+            double energyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
     	        
-            double energyforCharging = battery.provideEnergy(potentialEnergy / 1000, hrsTime) * 1000; 
+            double energyforCharging = battery.provideEnergy(energyNeeded / 1000, hrsTime) * 1000; 
 	        
 	        /*
 			 * May comment off the block of codes below once debugging is done.
 			 * 
 			 * NOTE: DO NOT delete any of them. Needed for testing when new features are added in future.
 			 */
-    	    logger.log(vehicle, Level.INFO, 10_000, 
+    	    logger.log(vehicle, Level.INFO, 0, 
     	    		Conversion.capitalize(vehicle.getVehicleTypeString()) + "  "
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
@@ -377,11 +468,21 @@ public class VehicleController implements Serializable {
     				+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
     				
                 	+ "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
-            	    + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + " W  "
+            	    + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
             	    
-    				+ "potentialEnergy: " 	+ Math.round(potentialEnergy * 1_000.0)/1_000.0 + WH
+    				+ "energyNeeded: " 		+ Math.round(energyNeeded * 1_000.0)/1_000.0 + WH
     				+ "energyforCharging: " + Math.round(energyforCharging * 1_000.0)/1_000.0 + WH
     	    );
+     
+            // Derive the instantaneous fuel consumption [Wh/km]
+            double iFC = 0;	
+            
+            if (distanceTravelled > 0) {
+    	        // Derive the instantaneous fuel consumption [Wh/km]
+    	        iFC = energyforCharging / distanceTravelled;	        
+    	        // Set the instantaneous fuel consumption [Wh/km]
+    	        vehicle.setIFuelConsumption(iFC);
+            }
         }
         
         // Set new vehicle speed
@@ -391,10 +492,30 @@ public class VehicleController implements Serializable {
 
         return remainingHrs;   
 	}
-	
-	
 
-    
+    /**
+	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
+	 *
+	 * @param tripDistance   the distance (km) of the trip.
+	 * @param fuelEconomy the vehicle's instantaneous fuel economy (km/kg).
+	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
+	 * @return amount of fuel needed for trip (kg)
+	 */
+	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
+		double result = tripDistance / fuelEconomy;
+		double factor = 1;
+		if (useMargin) {
+			if (tripDistance < 100) {
+				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
+				// in case of getting stranded locally
+				factor = - tripDistance / 50.0 + 3 ;
+			}	
+			factor *= Vehicle.getFuelRangeErrorMargin();
+			result *= factor;
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the HrsTime cache in hr.
 	 * 

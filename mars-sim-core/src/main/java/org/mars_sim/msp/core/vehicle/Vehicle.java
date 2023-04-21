@@ -128,9 +128,6 @@ public abstract class Vehicle extends Unit
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
-
-	/** The factor for estimating the adjusted fuel economy. */
-	private static final double FE_FACTOR = 1.5;
 	
 	// Format for unit
 	private static final String KWH = " kWh   ";
@@ -1207,7 +1204,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (fuelCumUsed == 0.0d)
+		if (fuelCumUsed == 0)
 			return 0;
 		return odometerMileage / fuelCumUsed;
 	}
@@ -1218,7 +1215,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0.0d)
+		if (odometerMileage == 0 || fuelCumUsed == 0)
 			return 0;
 		return METHANOL_WH_PER_KG * fuelCumUsed / odometerMileage;
 	}
@@ -1317,7 +1314,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getConservativeFuelEconomy() {
-		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / FE_FACTOR;
+		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 	
 	/**
@@ -1719,7 +1716,7 @@ public abstract class Vehicle extends Unit
 	 * @return resource type
 	 */
 	public abstract int getFuelType();
-
+	
 	/**
 	 * Gets the estimated distance traveled in one sol.
 	 *

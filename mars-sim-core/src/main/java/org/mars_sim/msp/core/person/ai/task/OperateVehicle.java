@@ -56,6 +56,11 @@ public abstract class OperateVehicle extends Task {
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
     
+    /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
+ 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
+     /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
+ 	public static final int WATER_ID = ResourceUtil.waterID;
+ 	
 	/** The ratio of time per experience points. */
 	private static final double EXP = .2D;
 	/** The stress modified per millisol. */
@@ -70,16 +75,13 @@ public abstract class OperateVehicle extends Task {
     private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
     /** The ratio of the amount of oxidizer to fuel. */
     private static final double RATIO_OXIDIZER_FUEL = 1.5;
-    /** Distance buffer for arriving at destination (km). */
-    public static final double DESTINATION_BUFFER = .000_1;
+    /** Distance buffer for arriving at destination (km). Good within 20 meters or 0.02 km. */
+    public static final double DESTINATION_BUFFER = .02;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
-    /** The static String that describes how far away in km. */		
-    private static final String KM_AWAY = " km away.";
-    /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
-	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-    /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
-	public static final int WATER_ID = ResourceUtil.waterID;
+    
+    private static final String KM = " km  ";	
+    private static final String KPH = " kph  ";
 	
 	// Data members
 	/** The fuel type of this vehicle. */
@@ -323,14 +325,20 @@ public abstract class OperateVehicle extends Task {
         	vehicle.setSpeed(LOW_SPEED * 1.1);
         		
         // Mobilize vehicle
-        double timeUsed = time - mobilizeVehicle(time);
+        double mobilizedTime = mobilizeVehicle(time);
+//        double timeUsed = time - mobilizedTime;
+//		logger.log(vehicle, Level.CONFIG, 20_000, 
+//				"time: " +  Math.round(time * 1000.0)/1000.0 + " millisols"
+//				+ "  mobilizedTime: " +  Math.round(mobilizedTime * 1000.0)/1000.0 + " millisols"
+//				+ "  timeUsed: " +  Math.round(timeUsed * 1000.0)/1000.0 + " millisols"
+//				);
 
         // Add experience to the operator
-        addExperience(timeUsed);
+        addExperience(mobilizedTime);
         
         // Check for accident.
         if (!isDone()) {
-            checkForAccident(timeUsed);
+            checkForAccident(mobilizedTime);
         }
         
         // If vehicle has malfunction, end task.
@@ -338,7 +346,7 @@ public abstract class OperateVehicle extends Task {
             endTask();
         }
         
-        return time - timeUsed;
+        return mobilizedTime;
 	}
 	
 	/**
@@ -418,7 +426,7 @@ public abstract class OperateVehicle extends Task {
               
         // Case 2: Already arrived
         if (dist <= DESTINATION_BUFFER) {
-        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 2: Arrived at " + getNavpointName()
+        	logger.log(vehicle, Level.INFO,  20_000L, "Case 2: Arrived at " + getNavpointName()
         			+ " (dist: " 
         			+ Math.round(dist * 1_000.0)/1_000.0 + " km).");
 
@@ -432,7 +440,6 @@ public abstract class OperateVehicle extends Task {
         	// Stop the vehicle
         	haltVehicle();
        
-
             if (isSettlementDestination())
                 determineInitialSettlementParkedLocation();
             
@@ -461,63 +468,53 @@ public abstract class OperateVehicle extends Task {
     	double uKPH = vehicle.getSpeed(); 
     	// Gets initial speed in m/s
     	double uMS = uKPH / KPH_CONV;
+    	// Reduce the speed by 20% in m/s   	
+       	double vMS = uMS * .8; 
+       	
+    	double vKPH = vMS * KPH_CONV;
     	
-    	double oldSecs = hrsTime * 3600;
-    	double newDist = uMS * oldSecs;
-    	
-		  // Case 1 : Overshot. Need to recalculate d, t and v
-        if (dist <= (newDist + DESTINATION_BUFFER)) {
-        	
-        	double vMS = 0; 
-        	
-        	double newSec = 2 * newDist /(vMS + uMS);
-        	
-           	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 1: Overshot at " + getNavpointName() 
-        			+ ".  Slow down and set vKPH to zero"
-        			+ ".  old time: " + Math.round(oldSecs * 1_000.0)/1_000.0 + " secs"
-        			+ ".  new time: " + Math.round(newSec * 1_000.0)/1_000.0 + " secs"
-        			+ "  Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + " km.");
+    	double distanceToCover = (uMS + vMS) / 2 * hrsTime * 3.6;
+
+		  // Case 1 : Will soon arrive
+        if (dist <= (distanceToCover + DESTINATION_BUFFER)) {
+ 	
+           	logger.log(vehicle, Level.INFO, 0, "Case 1: Will soon arrive at " + getNavpointName() 
+           		+ ". Slowing down. Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + KM
+           		+ "distanceToCover: " + Math.round(distanceToCover * 1_000.0)/1_000.0 + KM
+           		+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
+        		+ "vKPH: " + + Math.round(vKPH * 1_000.0)/1_000.0 + KPH);
            	
-        	remainingHrs = vehicle.getController().adjustSpeed(newSec/3600, dist, 0, remainingFuel, remainingOxidizer);
+        	remainingHrs = vehicle.getController().adjustSpeed(hrsTime, dist, vKPH, remainingFuel, remainingOxidizer);
         }
         	
         else {
-        	// Case 0: Going to Next waypont at " 
+        	// Case 0: Going to the next waypoint
         	
-        	// Gets top speed in kph
-        	double topSpeed = getSpeedMod();
-        	   	
+        	// Gets top speed in kph allowed by this driver
+        	double topSpeedKPH = getSpeedMod();    	   	
         	// Gets the max allowable accel of this vehicle in m/s2
         	double maxAccel = vehicle.getAllowedAccel();
-        	// Gets max possible speed in m/s in this interval of time
-        	double maxSpeed = uMS + maxAccel * hrsTime * 3600;
-        	// Gets the 
+        	// Gets the max possible speed in m/s in this interval of time
+        	double maxSpeed = maxAccel * hrsTime * 3600;
+        	// Gets the max possible speed in kph
         	double maxSpeedKPH = maxSpeed * KPH_CONV;
-        	
-        	if (maxSpeedKPH > topSpeed) {
-        		maxSpeedKPH = topSpeed;
+        	// Gets the next speed to be used in kph      	
+        	double nextSpeedKPH = maxSpeedKPH;
+           	
+        	if (nextSpeedKPH > topSpeedKPH) {
+        		nextSpeedKPH = topSpeedKPH;
         	}
 
-           	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Going to " + getNavpointName() 
-           			+ ".  Max allowed accel: " + Math.round(maxAccel * 1_000.0)/1_000.0 + " m/s2." 
-                   	+ "  Max speed: " + + Math.round(maxSpeed * 1_000.0)/1_000.0 + " m/s."            			
-        			+ "  Current speed: " + + Math.round(uKPH * 1_000.0)/1_000.0 + " kph."          			
-        			+ "  Next speed: " + + Math.round(maxSpeedKPH * 1_000.0)/1_000.0 + " kph."
-                   	+ "  Time: " + + Math.round(hrsTime * 3600 * 1_000.0)/1_000.0 + " secs." 
-        			+ "  Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + " km.");
+           	logger.log(vehicle, Level.INFO, 0, "Case 0: Going to " + getNavpointName() 
+           			+ ".  Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + KM
+        			+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
+                	+ "topSpeedKPH: " + + Math.round(topSpeedKPH * 1_000.0)/1_000.0 + KPH
+                   	+ "maxSpeedKPH: " + + Math.round(maxSpeedKPH * 1_000.0)/1_000.0 + KPH		
+        			+ "nextSpeedKPH: " + + Math.round(nextSpeedKPH * 1_000.0)/1_000.0 + KPH
+           			+ "maxAccel: " + Math.round(maxAccel * 1_000.0)/1_000.0 + " m/s2  "
+                   	+ "Time: " + + Math.round(hrsTime * 3600 * 1_000.0)/1_000.0 + " secs.");
            	
-        	remainingHrs = vehicle.getController().adjustSpeed(hrsTime, dist, maxSpeedKPH, remainingFuel, remainingOxidizer);	  
-        }
-        
-    	double fuelUsedCache = vehicle.getController().getFuelUsedCache();
-    	
-        if (fuelUsedCache > 0) {
-	    	// Retrieve the fuel needed for the distance traveled
-		    vehicle.retrieveAmountResource(fuelType, fuelUsedCache);
-		    // Assume double amount of oxygen as fuel oxidizer
-		    vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelUsedCache);
-		    // Generate 1.75 times amount of the water from the fuel cells
-		    vehicle.storeAmountResource(WATER_ID, 1.75 * fuelUsedCache);
+        	remainingHrs = vehicle.getController().adjustSpeed(hrsTime, dist, nextSpeedKPH, remainingFuel, remainingOxidizer);	  
         }
 		
 		return remainingHrs;
@@ -701,6 +698,47 @@ public abstract class OperateVehicle extends Task {
     }
     
     /**
+     * Gets the average operating speed of a vehicle for a given operator.
+     * 
+     * @param vehicle the vehicle.
+     * @param operator the vehicle operator.
+     * @return average operating speed (km/h)
+     */
+    public static double getAverageVehicleSpeed(Vehicle vehicle, Worker operator) {
+    	if (vehicle != null) {
+    		// Need to update this to reflect the particular operator's average speed operating the vehicle.
+    		double baseSpeed = vehicle.getBaseSpeed();
+    		double mod = 0;
+    		if (operator instanceof Person) {
+    			Person p = (Person)operator;
+    			
+    			if (p.getMind().getJob() == JobType.PILOT) {
+    				mod = baseSpeed; 
+    			}
+    			
+    			// Look up a person's prior pilot related training.
+    			mod += baseSpeed * getPilotingMod(p);
+    			
+    			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
+    			if (skill <= 5) {
+    				mod += - baseSpeed / 10 * (5D - skill) / 5;
+    	        }
+    	        else {
+    	            double tempSpeed = baseSpeed;
+    	            for (int x=0; x < skill - 5; x++) {
+    	                tempSpeed /= 5;
+    	                mod += tempSpeed;
+    	            }
+    	        }
+    		}
+    		
+    		return baseSpeed + mod;
+    	}
+    	else
+    		return 0;
+    }
+    
+    /**
      * Determines the modified speed based on the driver's skill level.
      * 
      * @return speed modifier (kph or km/hr)
@@ -804,44 +842,5 @@ public abstract class OperateVehicle extends Task {
     	}
     }
     
-    /**
-     * Gets the average operating speed of a vehicle for a given operator.
-     * 
-     * @param vehicle the vehicle.
-     * @param operator the vehicle operator.
-     * @return average operating speed (km/h)
-     */
-    public static double getAverageVehicleSpeed(Vehicle vehicle, Worker operator) {
-    	if (vehicle != null) {
-    		// Need to update this to reflect the particular operator's average speed operating the vehicle.
-    		double baseSpeed = vehicle.getBaseSpeed();
-    		double mod = 0;
-    		if (operator instanceof Person) {
-    			Person p = (Person)operator;
-    			
-    			if (p.getMind().getJob() == JobType.PILOT) {
-    				mod = baseSpeed; 
-    			}
-    			
-    			// Look up a person's prior pilot related training.
-    			mod += baseSpeed * getPilotingMod(p);
-    			
-    			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
-    			if (skill <= 5) {
-    				mod += - baseSpeed / 10 * (5D - skill) / 5;
-    	        }
-    	        else {
-    	            double tempSpeed = baseSpeed;
-    	            for (int x=0; x < skill - 5; x++) {
-    	                tempSpeed /= 5;
-    	                mod += tempSpeed;
-    	            }
-    	        }
-    		}
-    		
-    		return baseSpeed + mod;
-    	}
-    	else
-    		return 0;
-    }
+
 }

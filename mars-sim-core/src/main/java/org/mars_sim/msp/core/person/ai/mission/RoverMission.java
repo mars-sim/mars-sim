@@ -67,7 +67,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double WATER_MARGIN = 1.5;
 	
 	/* The marginal factor for the amount of oxygen to be brought during a mission. */
-	private static final double OXYGEN_MARGIN = 1.5;
+	private static final double OXYGEN_MARGIN = 1.25;
 	
 	/* The marginal factor for the amount of food to be brought during a mission. */
 	private static final double FOOD_MARGIN = 2.25;
