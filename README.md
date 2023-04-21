@@ -13,8 +13,44 @@
 [![SF Monthly Download](https://img.shields.io/sourceforge/dm/mars-sim.svg?label=sf%20download&style=flat-square)](https://sourceforge.net/projects/mars-sim/files/mars-sim/)
 
 
+# $$\color{#D29922}\textsf{\Large\&#x26A0;\kern{0.2cm}\normalsize mars-sim}$$ 
 
-# mars-sim
+## Table of contents
+* [Introduction](#introduction)  
+* [Simulation](#simulation)  
+* [Operation Modeling](#operation-modeling)
+* [Timekeeping](#timekeeping)
+* [Indoor Atmosphere](#indoor-atmosphere)
+* [EVA](#eva)
+* [Radiation](#radiation)
+* [Economics](#economics)
+* [Space Agencies](#space-agencies)
+* [Job](#job)
+* [Role](#role)
+* [Task](#task)
+* [Work Shift](#work-shift)
+* [Mission](#mission)
+* [Weather](#weather)
+* [Reliability, Maintenance and Malfunction](#reliability-maintenance-malfunction)
+* [Settlement Development](#settlement-development)
+* [Summary](#summary)
+* [Getting Started](#getting-started)
+* [Prerequisites](#prerequisites)
+* [JDK and JavaFX](#JDK-and-JavaFX)
+* [OS Platforms](#os-platforms)
+* [Remote Console Connection](#remote-console-connection)
+* [Outreach](#outreach)
+* [Discussions](#discussions)
+* [Issues and Tickets](#issues-and-tickets)
+* [Website](#website)
+* [Wiki](#wiki)
+* [Supported Platforms](#supported-platforms)
+* [Official Codebase](#official-codebase)
+* [Download](#download)
+* [License](#license)
+
+
+## Introduction
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
 simulates daily activities of the first generation of settlers on Mars with a higher fidelity of
 modeling and simulation details than a typical PC strategy game.
@@ -66,7 +102,7 @@ between Mars and Earth by merely a simple equation.
 See [timekeeping wiki](https://github.com/mars-sim/mars-sim/wiki/Timekeeping) for further discussions on 
 this topic.
 
-### Indoor Atmospheric Modeling
+### Indoor Atmosphere
 
 While at the Earth's sea level, the atmospheric pressure is **101.35 kPa** (14.7 psi) and has 20.9% oxygen,
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
@@ -92,7 +128,7 @@ Structurally speaking, a low-pressure environment reduces the need for a rigid s
 various load requirements for a building. It also facilitates occupants' Extra-Vehicular Activity (EVA)
 with the outside world.
 
-### EVA Modeling 
+### EVA
 
 An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks.
 
@@ -117,7 +153,7 @@ exit to the outside surface of Mars.
 
 See [Airlock wiki](https://github.com/mars-sim/mars-sim/wiki/Airlock) for details on this topic.
 
-### Radiation Modeling 
+### Radiation
 
 Another example is [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
 which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)**
@@ -126,14 +162,14 @@ namely, the 30-day, the annual and the career lifetime of a settler. It would af
 of our body, namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose limits are
 measured in *milli-Severt*.
 
-### Economic Modeling
+### Economics
 
 In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
 **Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
 As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
 by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
-### Earth Space Agencies 
+### Space Agencies 
 
 A settler may come from any one of 29 major countries as listed in this [countries wiki](https://github.com/mars-sim/mars-sim/wiki/Countries).
 
@@ -141,30 +177,43 @@ Note that the European Space Agency (ESA) consists of 22 member nations who are 
 
 Altogether, there's also 10 possible space agencies that can be acted as a sponsor to a settlement.
 
-### Job, Work Shift and Task Modeling
+### Job
 
-Settlers spend much of their time learning to *live off the land*. Assigning a meaningful [role](https://github.com/mars-sim/mars-sim/wiki/Role) 
-with interesting [job](https://github.com/mars-sim/mars-sim/wiki/Jobs) to each settler is crucial. 
-Each settler is assigned a [work shift](https://github.com/mars-sim/mars-sim/wiki/Work-Shift) and 
-engages in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
+Each settler is initially assigned a meaningful [job](https://github.com/mars-sim/mars-sim/wiki/Jobs) 
+that fit one's attributes and career profile. Player may designate the job of a settler in the xml file.
+
+### Role
+
+Each settlement has a command structure that brings each settler a [role](https://github.com/mars-sim/mars-sim/wiki/Role) 
+to play. 
+
+### Task
+
+Settlers spend much of their time learning to *live off the land* and engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
 maintenance, ensuring life support resources are plentifully supplied, growing food crops in
 [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary
 [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts
 and equipment in workshops, all of which are vital to the health of the economy of the settlements. 
 
-### Mission Modeling
+### Work Shift
+
+Each settler is assigned a [work shift](https://github.com/mars-sim/mars-sim/wiki/Work-Shift) during each sol.
+The duration of a work shift may be one third of a sol or a quarter of a sol.
+
+
+### Mission
 
 Settlers also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and
 study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc.
 They may even decide to migrate from one settlement to another.
 
-### Weather Modeling
+### Weather
 
 The perils of living on Mars are very real. Even though we do not have a complete surface weather model for Mars,
 we do currently simulate a total of 9 outside [weather metrics](https://github.com/mars-sim/mars-sim/wiki/Weather)
 in mars-sim. 
 
-### Reliability, Maintenance and Malfunction Modeling
+### Reliability, Maintenance and Malfunction
 
 The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions)
 that can occur at a given moment. There are 3 metrics
@@ -204,6 +253,8 @@ planetary surface.
 ---
 
 ## Getting Started
+
+Below is a summary of how player may set up one's machine to evaluate and develop mars-sim
 
 ### Prerequisites
 
@@ -351,7 +402,7 @@ Feel free to start a thread on a particular topic at our GitHub
 [Discussion](https://github.com/mars-sim/mars-sim/discussions) page.
 
 
-### Issues/Tickets
+### Issues and Tickets
 * Current : [GH Issues](https://github.com/mars-sim/mars-sim/issues)
 * Past/Archived : [SF Issues](https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed)
 

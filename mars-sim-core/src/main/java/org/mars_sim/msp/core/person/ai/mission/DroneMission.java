@@ -204,7 +204,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 				setPhaseEnded(true);
 			}
 			else {
-				endMissionProblem(v, "Could not transfer to Surface");
+				endMissionProblem(v, "Could not transfer to Mars Surface.");
 			}
 		}
 	}
