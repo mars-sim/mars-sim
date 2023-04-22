@@ -446,8 +446,7 @@ public final class CommerceUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getGood(delivery.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleController.getFuelNeededForTrip(delivery, distance, 
-				delivery.getConservativeFuelEconomy(), false));
+		neededResources.put(fuelGood, (int) delivery.getFuelNeededForTrip(distance, false));
 
 		if (delivery instanceof Crewable) {
 			// Needs a crew
@@ -456,7 +455,7 @@ public final class CommerceUtil {
 			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
-			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
+			double lifeSupportMargin = delivery.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;

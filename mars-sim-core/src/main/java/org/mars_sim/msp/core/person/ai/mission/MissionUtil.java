@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Helper class that provides numerous assessment method for the state of various
@@ -104,7 +103,7 @@ public class MissionUtil {
 		if (settlement != null) {
 
 			String template = settlement.getTemplate();
-			// Override the mininum num req if the settlement is too small
+			// Override the minimum num req if the settlement is too small
 			if (template.toLowerCase().contains(PHASE_1)
 					|| template.toLowerCase().contains(MINING)
 					|| template.toLowerCase().contains(TRADING))

@@ -234,7 +234,7 @@ public class VehicleController implements Serializable {
             double iPower = aMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
             
             if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
-            	logger.log(vehicle, Level.INFO, 0, 
+            	logger.log(vehicle, Level.INFO, 20_000,  
     				"Need to exert power just to maintain the speed at "
     				+ Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
     				+ "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
@@ -243,7 +243,7 @@ public class VehicleController implements Serializable {
     				);
             }
             else {
-            	logger.log(vehicle, Level.INFO, 0, 
+            	logger.log(vehicle, Level.INFO, 20_000,  
     				"Need to accelerate and increase the speed from "
     				+  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
     				+ "to " + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
@@ -264,7 +264,7 @@ public class VehicleController implements Serializable {
 	        
 	        // Case A : Battery has enough juice for the acceleration
 	     	if (totalEnergyNeeded == energyByBattery) {
-				logger.log(vehicle, Level.INFO, 0, 
+				logger.log(vehicle, Level.INFO, 20_000,  
 						"Case A: Use on-board battery only. "
 						+ "energyByBattery: " + Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						+ "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				
@@ -281,7 +281,7 @@ public class VehicleController implements Serializable {
 		        
 				if (fuelNeeded <= remainingFuel) {
 					// Case B: fuel is sufficient
-					logger.log(vehicle, Level.INFO, 0, 
+					logger.log(vehicle, Level.INFO, 20_000,  
 						"Case B: Partial battery with sufficient fuel.  " 
 						+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						+ "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 						
@@ -313,7 +313,7 @@ public class VehicleController implements Serializable {
 					// Recompute the new distance it could travel
 				   	distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
 				   	
-					logger.log(vehicle, Level.INFO, 0, 
+					logger.log(vehicle, Level.INFO, 20_000,  
 							"Case C: Partial battery and insufficient fuel.  " 
 							+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 				        	+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
@@ -327,7 +327,7 @@ public class VehicleController implements Serializable {
 				}
 	     	}
 	     	else {
-	     		logger.log(vehicle, Level.INFO, 0, 
+	     		logger.log(vehicle, Level.INFO, 20_000,  
 						"Case D: Unknown.  " 
 						+ "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 			        	+ "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
@@ -374,7 +374,7 @@ public class VehicleController implements Serializable {
 			 * 
 			 * NOTE: DO NOT delete any of them. Needed for testing when new features are added in future.
 			 */
-	        logger.log(vehicle, Level.INFO, 0, 
+	        logger.log(vehicle, Level.INFO, 20_000,  
         			Conversion.capitalize(vehicle.getVehicleTypeString()) + "  "
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
@@ -436,7 +436,7 @@ public class VehicleController implements Serializable {
             
             double iPower = - aRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
             
-    		logger.log(vehicle, Level.INFO, 0, "Need to decelerate and reduce the speed from " 
+    		logger.log(vehicle, Level.INFO, 20_000,  "Need to decelerate and reduce the speed from " 
     				+  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
     				+ "to " + Math.round(vKPH * 1_000.0)/1_000.0
     				+ " kph.  "
@@ -456,7 +456,7 @@ public class VehicleController implements Serializable {
 			 * 
 			 * NOTE: DO NOT delete any of them. Needed for testing when new features are added in future.
 			 */
-    	    logger.log(vehicle, Level.INFO, 0, 
+    	    logger.log(vehicle, Level.INFO, 20_000,  
     	    		Conversion.capitalize(vehicle.getVehicleTypeString()) + "  "
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
@@ -501,7 +501,7 @@ public class VehicleController implements Serializable {
 	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
-	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
+	public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
 		double result = tripDistance / fuelEconomy;
 		double factor = 1;
 		if (useMargin) {
@@ -510,7 +510,7 @@ public class VehicleController implements Serializable {
 				// in case of getting stranded locally
 				factor = - tripDistance / 50.0 + 3 ;
 			}	
-			factor *= Vehicle.getFuelRangeErrorMargin();
+			factor *= vehicle.getFuelRangeErrorMargin();
 			result *= factor;
 		}
 		return result;

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -678,7 +679,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Adjust the air pressure of the rover
+	 * Adjusts the air pressure of the rover.
 	 *
 	 * @param time
 	 */
@@ -951,7 +952,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
 		// Gets the life support resource margin
-		double margin = Vehicle.getLifeSupportRangeErrorMargin();
+		double margin = getLifeSupportRangeErrorMargin();
 
 		// Check food capacity as range limit.
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -1017,6 +1018,27 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		}
 	}
 
+	/**
+	 * Gets the time limit of the trip based on life support capacity.
+	 *
+	 * @param useBuffer use time buffer in estimation if true.
+	 * @return time (millisols) limit.
+	 */
+	public double getTotalTripTimeLimit(boolean useBuffer) {
+		return RoverMission.getTotalTripTimeLimit(this, getCrewCapacity(), useBuffer);
+	}
+	
+	/**
+	 * Gets the time limit of the trip based on life support capacity.
+	 * 
+	 * @param number of members
+	 * @param useBuffer use time buffer in estimation if true.
+	 * @return time (millisols) limit.
+	 */
+	public double getTotalTripTimeLimit(int member, boolean useBuffer) {
+		return RoverMission.getTotalTripTimeLimit(this, member, useBuffer);
+	}
+	
 	@Override
 	public String getNickName() {
 		return getName();

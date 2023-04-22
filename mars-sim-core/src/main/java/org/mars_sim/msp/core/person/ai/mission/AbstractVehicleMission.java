@@ -1043,8 +1043,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double amount = 0;
 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
-			amount = VehicleController.getFuelNeededForTrip(vehicle, distance, 
-							vehicle.getConservativeFuelEconomy(), useMargin);
+			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
 			

@@ -434,7 +434,7 @@ public class Mining extends EVAMission
 
 		try {
 			double roverRange = rover.getRange(MissionType.MINING);
-			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+			double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;
 			if (tripRange < range) {
@@ -475,7 +475,7 @@ public class Mining extends EVAMission
 
 		try {
 			double roverRange = rover.getRange(MissionType.MINING);
-			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+			double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;
 			if (tripRange < range) {

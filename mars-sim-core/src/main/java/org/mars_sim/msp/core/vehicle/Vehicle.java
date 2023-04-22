@@ -535,7 +535,7 @@ public abstract class Vehicle extends Unit
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
-		logger.log(this, Level.INFO, 0, 
+		logger.log(this, Level.INFO, 20_000,  
 				vehicleType.getName() + "   "
 				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
 				+ "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   " 
@@ -545,7 +545,7 @@ public abstract class Vehicle extends Unit
     	    	+ "energyCapacity: " + Math.round(methanolEnergyCapacity * 100.0)/100.0 + KWH 
     	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
 
-    	logger.log(this, Level.INFO, 0, 	     	    	
+    	logger.log(this, Level.INFO, 20_000,  	     	    	
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
@@ -553,7 +553,7 @@ public abstract class Vehicle extends Unit
     	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
 	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
-    	logger.log(this, Level.INFO, 0, 	 	
+    	logger.log(this, Level.INFO, 20_000,  	 	
 				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG 			
     		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + KG
     	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + KG
@@ -1791,11 +1791,11 @@ public abstract class Vehicle extends Unit
 		}
 	}
 
-	public static double getFuelRangeErrorMargin() {
+	public double getFuelRangeErrorMargin() {
 		return fuel_range_error_margin;
 	}
 
-	public static double getLifeSupportRangeErrorMargin() {
+	public double getLifeSupportRangeErrorMargin() {
 		return life_support_range_error_margin;
 	}
 
@@ -2442,6 +2442,18 @@ public abstract class Vehicle extends Unit
 		return transferred;
 	}
 
+    /**
+	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
+	 *
+	 * @param tripDistance   the distance (km) of the trip.
+	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
+	 * @return amount of fuel needed for trip (kg)
+	 */
+	public double getFuelNeededForTrip(double tripDistance, boolean useMargin) {
+		return vehicleController.getFuelNeededForTrip(this, tripDistance, 
+				getConservativeFuelEconomy(), useMargin);
+	}
+	
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
 	}

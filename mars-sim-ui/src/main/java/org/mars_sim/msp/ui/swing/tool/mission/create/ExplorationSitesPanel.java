@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -326,7 +325,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		Rover rover = getWizard().getMissionData().getRover();
 		int memberNum = getWizard().getMissionData().getMixedMembers().size();
 		try {
-			return RoverMission.getTotalTripTimeLimit(rover, memberNum, true);
+			return rover.getTotalTripTimeLimit(memberNum, true);
 		} catch (Exception e) {
 			return 0D;
 		}
