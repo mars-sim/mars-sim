@@ -146,7 +146,7 @@ extends TabPanel {
 		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.fatigue"),
 										DECIMAL_MSOLS.format(fatigueCache), null);
 		thirstCache = (int)condition.getThirst();
-		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"),
+		thirstLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"),
 										DECIMAL_MSOLS.format(thirstCache), null);
 		hungerCache = (int)condition.getHunger();
 		hungerLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.hunger"),
