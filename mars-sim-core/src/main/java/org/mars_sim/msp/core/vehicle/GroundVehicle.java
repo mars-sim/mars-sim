@@ -52,8 +52,6 @@ public abstract class GroundVehicle extends Vehicle {
 	/** True if vehicle is stuck. */
 	private boolean isStuck;
 
-//	private static TerrainElevation terrain;
-
 	/**
 	 * Constructs a {@link GroundVehicle} object at a given settlement.
 	 * 
@@ -73,7 +71,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Returns the elevation of the vehicle in km.
+	 * Returns the elevation of the vehicle [in km].
 	 * 
 	 * @return elevation of the ground vehicle (in km)
 	 */
@@ -82,7 +80,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Sets the elevation of the vehicle (in km.)
+	 * Sets the elevation of the vehicle [in km].
 	 * 
 	 * @param elevation new elevation for ground vehicle
 	 */
@@ -91,7 +89,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Returns the vehicle's terrain capability
+	 * Returns the vehicle's terrain capability.
 	 * 
 	 * @return terrain handling capability of the ground vehicle
 	 */
@@ -100,7 +98,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Sets the vehicle's terrain capability
+	 * Sets the vehicle's terrain capability.
 	 * 
 	 * @param c sets the ground vehicle's terrain handling capability
 	 */
@@ -132,7 +130,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
     
 	/**
-	 * Returns true if ground vehicle is stuck
+	 * Returns true if ground vehicle is stuck.
 	 * 
 	 * @return true if vehicle is currently stuck, false otherwise
 	 */
@@ -141,7 +139,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Sets the ground vehicle's stuck value
+	 * Sets the ground vehicle's stuck value.
 	 * 
 	 * @param stuck true if vehicle is currently stuck, false otherwise
 	 */
@@ -236,38 +234,4 @@ public abstract class GroundVehicle extends Vehicle {
 			setParkedLocation(newLoc, newFacing);
 		}
 	}
-
-	/**
-	 * Checks if the vehicle has enough amount of fuel as prescribed
-	 * 
-	 * @param fuelConsumed
-	 * @return
-	 */
-	/* 
-	protected boolean hasEnoughFuel(double fuelConsumed) {
-		Vehicle v = getVehicle();
-        int fuelType = v.getFuelType();
-        
-    	try {
-    		double remainingFuel = v.getAmountResourceStored(fuelType);
-	
-    		if (remainingFuel < LEAST_AMOUNT) {
-    			v.setPrimaryStatus(StatusType.PARKED, StatusType.OUT_OF_FUEL);
-    			return false;
-    		}
-    			
-    		if (fuelConsumed > remainingFuel) {
-            	fuelConsumed = remainingFuel;
-            	return false;
-    		}
-    		else
-    			return true;
-	    }
-	    catch (Exception e) {
-	    	logger.log(this, Level.SEVERE, 0, 
-	    			"Could not retrieve methane. Cannot drive.", e);
-	    	return false;
-	    }
-	}
-	*/
 }

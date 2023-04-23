@@ -42,8 +42,8 @@ public abstract class Flyer extends Vehicle {
 	/** Current total elevation above the sea level in km. */
 	private double elevation;
 
-	/** Current hovering elevation in km. */
-	private double hoveringElevation;
+	/** Current hovering height in km. */
+	private double hoveringHeight;
 
 //	/** Current Angle of Attack in degree. */
 //	private double AoA;
@@ -67,36 +67,36 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Returns the hovering elevation of the vehicle in km.
+	 * Returns the hovering height of the vehicle above ground [in km].
 	 * 
-	 * @return elevation of the airborne vehicle (in km)
+	 * @return height
 	 */
-	public double getHoveringElevation() {
-		return hoveringElevation;
+	public double getHoveringHeight() {
+		return hoveringHeight;
 	}
 
 	/**
-	 * Sets the hovering elevation of the vehicle (in km.)
+	 * Sets the hovering height of the vehicle above ground [in km].
 	 * 
-	 * @param elevation new elevation for airborne vehicle
+	 * @param height 
 	 */
-	public void setHoveringlevation(double elevation) {
-		this.hoveringElevation = elevation;
+	public void setHoveringHeight(double height) {
+		this.hoveringHeight = height;
 	}
 
 	/**
-	 * Returns the total elevation of the vehicle above the sea level in km.
+	 * Returns the elevation of the vehicle [in km].
 	 * 
-	 * @return elevation of the airborne vehicle (in km)
+	 * @return elevation
 	 */
 	public double getElevation() {
 		return elevation;
 	}
 
 	/**
-	 * Sets the elevation of the vehicle (in km.)
+	 * Sets the elevation of the vehicle [in km].
 	 * 
-	 * @param elevation new elevation for airborne vehicle
+	 * @param elevation
 	 */
 	public void setElevation(double elevation) {
 		this.elevation = elevation;

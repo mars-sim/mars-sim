@@ -553,7 +553,8 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * Settlement providing the resoruces for the load.
+	 * Returns the settlement providing the resources for the load.
+	 * 
 	 * @return
 	 */
 	public Settlement getSettlement() {
@@ -561,7 +562,8 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * Dump a description of the contents into a String representation.
+	 * Dumps a description of the contents into a String representation.
+	 * 
 	 * @return String description of contents.
 	 */
 	public String dumpContents() {

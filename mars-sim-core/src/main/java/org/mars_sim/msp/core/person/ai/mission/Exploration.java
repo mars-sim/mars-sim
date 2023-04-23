@@ -109,7 +109,7 @@ public class Exploration extends EVAMission
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
-					getTotalTripTimeLimit(getRover(), getMembers().size(), true),
+					getRover().getTotalTripTimeLimit(true),
 					NUM_SITES, skill);
 
 			if (explorationSites.isEmpty()) {
@@ -213,7 +213,7 @@ public class Exploration extends EVAMission
 		Map<String, Double> minerals = new HashMap<>();
 
 		double roverRange = rover.getRange(MISSION_TYPE);
-		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
 		if (tripRange < range)

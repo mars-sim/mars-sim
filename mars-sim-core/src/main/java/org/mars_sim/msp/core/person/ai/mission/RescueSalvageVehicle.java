@@ -616,7 +616,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	}
 
 	/**
-	 * Gets the mission qualification score
+	 * Gets the mission qualification score.
 	 * 
 	 * @param member
 	 * @return the score

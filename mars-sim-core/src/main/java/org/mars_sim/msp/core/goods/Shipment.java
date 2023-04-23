@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.goods;
 import java.util.Map;
 
 /**
- * Represents a shiping on Goods with an assoicated revenune value.
+ * Represents a shipment on Goods with an associated revenue value.
  */
 public class Shipment {
 

@@ -1,16 +1,16 @@
-# Contributing
+# $$\color{#D29922}\textsf{\Large\&#x26A0;\kern{0.2cm}\normalsize Contributing}$$ 
 
 We are very glad for your help and contributions to mars-sim.
 
 ## Overview
+### Table of contents 
+* [Discussions](#discussion)
+* [Issues and Bugs](#issue)
+* [Submission Guidelines](#submit)
+* [Code Development](#coding)
+* [Further Info](#info)
 
- - [Discussions](#discuss)
- - [Issues and Bugs](#issue)
- - [Submission Guidelines](#submit)
- - [Code Development](#coding)
- - [Further Info](#info)
-
-## <a name="discuss"></a> Open an Discussion Topic
+## <a name="discussion"></a> Open an Discussion Topic
 
 If you are interested in asking a question or providing a feedback regarding this project, 
 do not hesitate in opening up an discussion topic in the project's GitHub Repository. 

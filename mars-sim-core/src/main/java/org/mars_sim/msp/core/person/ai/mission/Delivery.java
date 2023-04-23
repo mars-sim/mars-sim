@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -478,6 +479,13 @@ public class Delivery extends DroneMission implements CommerceMission {
 	}
 
 	@Override
+	
+	/**
+	 * Compares the two given vehicles
+	 * 
+	 * @param firstVehicle
+	 * @param secondVehicle
+	 */
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 
@@ -600,6 +608,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 	/**
 	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
 	 * then it can be unloaded.
+	 * 
+	 * @param settlement
 	 */
 	@Override
 	public boolean isVehicleUnloadableHere(Settlement settlement) {

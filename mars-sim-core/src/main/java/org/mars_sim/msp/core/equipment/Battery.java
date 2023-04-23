@@ -1,16 +1,18 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2023-04-13
+ * @date 2023-04-19
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -21,15 +23,18 @@ public class Battery implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(Battery.class.getName());
-
-	/** The maximum power that can be safely drawn from this battery pack in kW. */
-    private static final double MAX_POWER_DRAW = 150.0;
+    
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
+	
+    /** The maximum current that can be safely drawn from this battery pack in Ampere. */
+    private static final double MAX_AMP_DRAW = 120;
+    
+    /** The standard voltage of this battery pack in kW. */
+    private static final double STANDARD_VOLTAGE = 600;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-    private static final int ENERGY_PER_MODULE = 15;
+    private static final double ENERGY_PER_MODULE = 15.0;
     
     // Data members
     /** Is the unit operational ? */
@@ -97,6 +102,16 @@ public class Battery implements Serializable {
     }
 
     /**
+     * Gets the maximum power [in kW] draw at this moment.
+     * 
+     * @return
+     */
+    private double getMaxPowerDraw() {
+    	return MAX_AMP_DRAW * currentEnergy / maxCapacity * STANDARD_VOLTAGE * ENERGY_PER_MODULE / 10_000;
+    }
+    
+    
+    /**
      * Requests to consume a given amount of energy within an interval of time.
      * 
      * @param amount amount of energy to consume [in kWh]
@@ -106,32 +121,39 @@ public class Battery implements Serializable {
     public double requestEnergy(double kWh, double time) {
     	if (!isLowPower) {
     		double powerRequest = kWh / time;
-    		double powerSupport = currentEnergy / maxCapacity * MAX_POWER_DRAW * 1.25;
-    		double powerAvailable = 0;
-    		if (powerRequest <= powerSupport)
-    			powerAvailable = powerRequest;
-    		else
-    			powerAvailable = powerSupport;
     		
+    		double powerMax = getMaxPowerDraw();
+    				
     		double energyToDeliver = 0;
-    		double energyAvailable = powerAvailable * time;
-	    	double energyMax = currentEnergy - maxCapacity * lowPowerPercent / 2 / 100;
-	    	if (energyMax <= 0)
+	    	double energyToSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
+	    	if (energyToSupply <= 0)
 	    		return 0;
 	    	
-	    	if (energyAvailable <= energyMax)
-	    		energyToDeliver = energyAvailable;
-    		else
-    			energyToDeliver = energyMax;
+//    		double powerAvailable = 0;
+//    		if (powerRequest <= powerMax)
+//    			powerAvailable = powerRequest;
+//    		else
+//    			powerAvailable = powerMax;
+	    	
+    		energyToDeliver = Math.min(currentEnergy, Math.min(energyToSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
-	    	if (energyToDeliver >= 0) {
-	    		currentEnergy -= energyToDeliver; 
-	    		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+          	logger.log(unit, Level.INFO, 0, 
+          			"[Battery Status]  "
+          	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + " kWh  "
+          			+ "energyToSupply: " + Math.round(energyToSupply * 1_000.0)/1_000.0 + " kWh  "
+                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + " kWh  "
+                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + " kWh  "
+                	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
+          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + " kW  "
+          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + " kW  "
+           	);
+           	
+	    	currentEnergy -= energyToDeliver; 
+	    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
-                updateLowPowerMode();
+            updateLowPowerMode();
                 
-                return energyToDeliver;
-	    	}
+            return energyToDeliver;
     	}
     	
 		return 0;

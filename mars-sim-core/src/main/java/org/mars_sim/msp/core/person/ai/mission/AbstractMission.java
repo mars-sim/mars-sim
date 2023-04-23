@@ -116,7 +116,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	/** The Name of this mission. */
 	private String missionName;
-	/** Unique identifer  */
+	/** Unique identifier  */
 	private int identifier;
 	/** The full mission designation. */
 	private String fullMissionDesignation = "";

@@ -97,10 +97,10 @@ public class ToggleResourceProcess extends Task {
 		if (!toBeToggledOn) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
-			logger.info(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it off.");
+			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it off.");
 		} else {
 			setDescription(TOGGLE_ON);
-			logger.info(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it on.");
+			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it on.");
 		}
 
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
@@ -200,10 +200,10 @@ public class ToggleResourceProcess extends Task {
 			}
 
 			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
-				logger.info(resourceProcessBuilding, process + " : " + worker
+				logger.fine(resourceProcessBuilding, process + " : " + worker
 						+ " just toggled it " + toggle + " manually.");
 			else
-				logger.info(resourceProcessBuilding, process + " : " + worker
+				logger.fine(resourceProcessBuilding, process + " : " + worker
 						+ " just toggled it " + toggle + " remotely.");
 
 			// Only need to run the finished phase once and for all

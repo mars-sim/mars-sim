@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Helper class that provides numerous assessment method for the state of various
@@ -104,7 +103,7 @@ public class MissionUtil {
 		if (settlement != null) {
 
 			String template = settlement.getTemplate();
-			// Override the mininum num req if the settlement is too small
+			// Override the minimum num req if the settlement is too small
 			if (template.toLowerCase().contains(PHASE_1)
 					|| template.toLowerCase().contains(MINING)
 					|| template.toLowerCase().contains(TRADING))
@@ -123,32 +122,6 @@ public class MissionUtil {
 
 		return result;
 	}
-
-    /**
-	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
-	 *
-	 * @param tripDistance   the distance (km) of the trip.
-	 * @param fuelEconomy the vehicle's instantaneous fuel economy (km/kg).
-	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
-	 * @return amount of fuel needed for trip (kg)
-     * 
-     * TODO This should be implemented on the Vehicle or VehicleSpec and be re-usable. Not in the Mission package
-	 */
-	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
-		double result = tripDistance / fuelEconomy;
-		double factor = 1;
-		if (useMargin) {
-			if (tripDistance < 200) {
-				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
-				// in case of getting stranded locally
-				factor = - tripDistance / 100.0 + 3 ;
-			}	
-			factor *= Vehicle.getFuelRangeErrorMargin();
-			result *= factor;
-		}
-		return result;
-	}
-
 
     public static void initializeInstances(UnitManager u, MissionManager m) {
         unitManager = u;

@@ -126,9 +126,6 @@ public abstract class Vehicle extends Unit
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
-
-	/** The factor for estimating the adjusted fuel economy. */
-	private static final double FE_FACTOR = 1.5;
 	
 	// Format for unit
 	private static final String KWH = " kWh   ";
@@ -170,6 +167,8 @@ public abstract class Vehicle extends Unit
 	
 	/** The Base Lifetime Wear in msols **/
 	private double baseWearLifetime;
+	/** Current accel of vehicle in m/s2. */
+	private double accel = 0;
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; //
 	/** Base speed of vehicle in kph (can be set in child class). */
@@ -421,8 +420,8 @@ public abstract class Vehicle extends Unit
 		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
-		// Assume the peak power is 4x the average power.
-		double peakPower = averagePower * 4.0;
+		// Assume the peak power is a multiple of the average power.
+		double peakPower = averagePower * 3.0;
 		
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
@@ -524,17 +523,17 @@ public abstract class Vehicle extends Unit
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
-		logger.log(this, Level.INFO, 0, 
+		logger.log(this, Level.INFO, 20_000,  
 				vehicleType.getName() + "   "
 				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
 				+ "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   " 
-	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
+	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
     	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
     	    	+ "energyCapacity: " + Math.round(methanolEnergyCapacity * 100.0)/100.0 + KWH 
     	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
 
-    	logger.log(this, Level.INFO, 0, 	     	    	
+    	logger.log(this, Level.INFO, 20_000,  	     	    	
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
@@ -542,7 +541,7 @@ public abstract class Vehicle extends Unit
     	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
 	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
-    	logger.log(this, Level.INFO, 0, 	 	
+    	logger.log(this, Level.INFO, 20_000,  	 	
 				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG 			
     		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + KG
     	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + KG
@@ -1021,7 +1020,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base speed of vehicle
 	 *
-	 * @return the vehicle's base speed (in km/hr)
+	 * @return the vehicle's base speed (in kph or km/hr)
 	 */
 	public double getBaseSpeed() {
 		return baseSpeed;
@@ -1121,7 +1120,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (fuelCumUsed == 0.0d)
+		if (fuelCumUsed == 0)
 			return 0;
 		return odometerMileage / fuelCumUsed;
 	}
@@ -1132,9 +1131,9 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0.0d)
+		if (odometerMileage == 0 || fuelCumUsed == 0)
 			return 0;
-		return METHANE_WH_PER_KG * fuelCumUsed / odometerMileage;
+		return METHANOL_WH_PER_KG * fuelCumUsed / odometerMileage;
 	}
 
 	/**
@@ -1231,7 +1230,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getConservativeFuelEconomy() {
-		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / FE_FACTOR;
+		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 	
 	/**
@@ -1339,11 +1338,39 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getAccel() {
-		if (speed <= 1)
-			return baseAccel;
-		return (baseAccel + Math.min(baseAccel, averagePower / getMass() / speed * 3600)) / 2.0;
+		return accel;
 	}
 
+	/**
+	 * Sets the acceleration in [m/s2].
+	 * 
+	 * @param accel
+	 */
+	public void setAccel(double accel) {
+		this.accel = accel;
+	}
+	
+	/**
+	 * Gets the allowable acceleration of the vehicle [m/s2].
+	 * 
+	 * @return
+	 */
+	public double getAllowedAccel() {
+		if (speed <= 1)
+			return baseAccel;
+		return baseAccel * beginningMass / getMass();
+//		return (baseAccel + Math.min(baseAccel, averagePower / getMass() / speed * 3600)) / 2.0;
+	}
+	
+	/**
+	 * Gets the base acceleration of the vehicle [m/s2].
+	 * 
+	 * @return
+	 */
+	public double getBaseAccel() {
+		return baseAccel;
+	}
+	
 	public abstract double getTerrainGrade();
 
 	public abstract double getElevation();
@@ -1605,7 +1632,7 @@ public abstract class Vehicle extends Unit
 	 * @return resource type
 	 */
 	public abstract int getFuelType();
-
+	
 	/**
 	 * Gets the estimated distance traveled in one sol.
 	 *
@@ -1680,11 +1707,11 @@ public abstract class Vehicle extends Unit
 		}
 	}
 
-	public static double getFuelRangeErrorMargin() {
+	public double getFuelRangeErrorMargin() {
 		return fuel_range_error_margin;
 	}
 
-	public static double getLifeSupportRangeErrorMargin() {
+	public double getLifeSupportRangeErrorMargin() {
 		return life_support_range_error_margin;
 	}
 
@@ -2293,6 +2320,18 @@ public abstract class Vehicle extends Unit
 		return transferred;
 	}
 
+    /**
+	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
+	 *
+	 * @param tripDistance   the distance (km) of the trip.
+	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
+	 * @return amount of fuel needed for trip (kg)
+	 */
+	public double getFuelNeededForTrip(double tripDistance, boolean useMargin) {
+		return vehicleController.getFuelNeededForTrip(this, tripDistance, 
+				getConservativeFuelEconomy(), useMargin);
+	}
+	
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
 	}

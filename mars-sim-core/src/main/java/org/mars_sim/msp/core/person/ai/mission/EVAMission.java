@@ -397,7 +397,7 @@ abstract class EVAMission extends RoverMission {
 		double explorationSitesTime = getEstimatedRemainingEVATime(useBuffer);
 		double timeSols = explorationSitesTime / 1000D;
 
-		// Add the maount for the site visits
+		// Add the amount for the site visits
 		addLifeSupportResources(result, getMembers().size(), timeSols, useBuffer);
 
 		return result;

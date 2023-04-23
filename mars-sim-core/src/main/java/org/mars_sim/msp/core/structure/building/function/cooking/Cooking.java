@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Cooking.java
- * @date 2022-08-30
+ * @date 2023-04-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -126,7 +126,8 @@ public class Cooking extends Function {
 
 		this.cookCapacity = spec.getCapacity();
 
-		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
+		// need this to pass maven test
+		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); 
 
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
 		waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
@@ -320,7 +321,7 @@ public class Cooking extends Function {
 		String sideDish = fav.getFavoriteSideDish();
 
 		for (CookedMeal m : cookedMeals) {
-			// TODO: define how a person will choose to eat a main dish and/or side dish
+			// Note: define how a person will choose to eat a main dish and/or side dish
 			String n = m.getName();
 			double q = m.getQuality();
 			if (n.equals(mainDish)) {
@@ -389,13 +390,18 @@ public class Cooking extends Function {
 		return bestQuality;
 	}
 
+	/**
+	 * Gets the best meal quality.
+	 * 
+	 * @return
+	 */
 	public double getBestMealQualityCache() {
 		getBestMealQuality();
 		return bestQualityCache;
 	}
 
 	/**
-	 * Finishes up cooking
+	 * Finishes up cooking.
 	 */
 	private void finishUp() {
 		cookingWorkTime = 0D;
@@ -403,7 +409,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Check if there should be no more cooking at this kitchen during this meal
+	 * Checks if there should be no more cooking at this kitchen during this meal
 	 * time.
 	 *
 	 * @return true if no more cooking.
@@ -491,7 +497,8 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Can this Kitchen cook any meals from the ingridents available?
+	 * Can this Kitchen cook any meals from available ingredients ?
+	 * 
 	 * @return
 	 */
 	public boolean canCookMeal() {
@@ -510,7 +517,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Test if at least one meal is cookable with the current ingredient store
+	 * Tests if at least one meal is cookable with the current ingredient store.
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
@@ -521,7 +528,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Checks if all ingredients are available for a particular meal
+	 * Checks if all ingredients are available for a particular meal.
 	 *
 	 * @param aMeal a hot meal
 	 * @return true or false
@@ -544,7 +551,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Cooks a hot meal by retrieving ingredients
+	 * Cooks a hot meal by retrieving ingredients.
 	 *
 	 * @param hotMeal the meal to cook.
 	 * @return name of meal
@@ -642,7 +649,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Retrieves one ingredient from the ingredient map
+	 * Retrieves one ingredient from the ingredient map.
 	 *
 	 * @param amount
 	 * @param resource
@@ -677,7 +684,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Replenishes the ingredient map
+	 * Replenishes the ingredient map.
 	 *
 	 * @param cacheAmount
 	 * @param amount
@@ -711,7 +718,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Consumes a certain amount of water for each meal
+	 * Consumes a certain amount of water for each meal.
 	 */
 	private void consumeWater() {
 		// TODO: need to move the hardcoded amount to a xml file
@@ -737,7 +744,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Consumes oil
+	 * Consumes oil.
 	 *
 	 * @param oilRequired
 	 * @return
@@ -759,7 +766,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Gets the quantity of one serving of meal
+	 * Gets the quantity of one serving of meal.
 	 *
 	 * @return quantity
 	 */
@@ -768,7 +775,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Gets a list of cooked meals
+	 * Gets a list of cooked meals.
 	 *
 	 * @return cookedMeals
 	 */
@@ -798,7 +805,7 @@ public class Cooking extends Function {
 				for (CookedMeal meal : cookedMeals) {
 					if (MarsClock.getTimeDiff(meal.getExpirationTime(), pulse.getMarsTime()) < 0D) {
 
-						// TODO: turn this into a task
+						// Note: turn this into a task
 						cookedMeals.remove(meal);
 
 						// Check if cooked meal has gone bad and has to be thrown out.
@@ -850,7 +857,7 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Checks in as the end of the day and empty map caches
+	 * Checks in as the end of the day and empty map caches.
 	 */
 	private void doEndOfDay() {
 		// Adjust the rate to go up automatically by default
@@ -901,10 +908,10 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Preserve the food with salts
+	 * Preserves the food with salts.
 	 */
 	public void preserveFood() {
-		// TODO: turn this into a task
+		// Note: turn this into a task
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
 			store(dryMassPerServing, ResourceUtil.foodID, "Cooking::preserveFood");

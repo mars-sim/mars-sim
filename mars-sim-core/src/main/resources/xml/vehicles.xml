@@ -140,10 +140,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methanol" value="200.0" />
+			<capacity resource="methanol" value="300.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="400.0" />
+			<capacity resource="oxygen" value="750.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="nitrogen" value="50.0" />
@@ -232,10 +232,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
 			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="800.0" />
+			<capacity resource="oxygen" value="1000.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
-			<capacity resource="water" value="500.0" />
+			<capacity resource="water" value="400.0" />
 			
 			<capacity resource="food" value="512.0" />
 			<!--<capacity resource="dessert" value="240.0" />-->
@@ -283,7 +283,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
 			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="700.0" />
+			<capacity resource="oxygen" value="1000.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
 			<capacity resource="water" value="300.0" />
@@ -353,9 +353,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<average-power value ="10" />		
 		<empty-mass value="100.0" />
 		<crew-size value="0" />
-		<cargo total-capacity="500.0">
-			<capacity resource="methanol" value="100.0" />
-			<capacity resource="oxygen" value="200.0" />
+		<cargo total-capacity="800.0">
+			<capacity resource="methanol" value="200.0" />
+			<capacity resource="oxygen" value="300.0" />
 		</cargo>
 	</vehicle>
 

@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -31,6 +30,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleController;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -50,9 +50,6 @@ public final class CommerceUtil {
 	 * must pay off credit to under limit to continue buying.
 	 */
 	private static final double SELL_CREDIT_LIMIT = 10_000_000D;
-
-	/** The factor for estimating the adjusted fuel economy. */
-	private static final double FE_FACTOR = 3.0;
 
 	private static MissionManager missionManager;
 	private static UnitManager unitManager;
@@ -449,8 +446,7 @@ public final class CommerceUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getGood(delivery.getFuelType());
-		neededResources.put(fuelGood, (int) MissionUtil.getFuelNeededForTrip(delivery, distance, 
-				delivery.getConservativeFuelEconomy(), false));
+		neededResources.put(fuelGood, (int) delivery.getFuelNeededForTrip(distance, false));
 
 		if (delivery instanceof Crewable) {
 			// Needs a crew
@@ -459,7 +455,7 @@ public final class CommerceUtil {
 			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
-			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
+			double lifeSupportMargin = delivery.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;

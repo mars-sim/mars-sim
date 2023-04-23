@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * A mission that is undertaking Commerce between 2 Settlemments
+ * A mission that is undertaking commerce between 2 settlements
  */
 public interface CommerceMission {
 

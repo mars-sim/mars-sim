@@ -56,6 +56,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleController;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -73,9 +74,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
-	/** The multiplication factor for the amount of oxygen needed with methanol fuel. */
-	private static final double FUEL_OXIDIZER_FACTOR = 1.5;
-	
 	/** Mission phases. */
 	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
@@ -90,7 +88,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.BATTERY_MODULE);
+//	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.BATTERY_MODULE);
 	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNamesToResourceIDs(
 															new String[] {
@@ -305,6 +303,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 	/**
 	 * Gets the current loading plan for this Mission phase.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -1044,15 +1043,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double amount = 0;
 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
-			amount = MissionUtil.getFuelNeededForTrip(vehicle, distance, 
-							vehicle.getConservativeFuelEconomy(), useMargin);
+			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
 			
 			// if useMargin is true, include more oxygen
-			double amountOxygen = FUEL_OXIDIZER_FACTOR * amount;
+			double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
 			
-			if (!useMargin)	amountOxygen = 1.2 * amount;
+			if (!useMargin)	amountOxygen = amount;
 
 			result.put(ResourceUtil.oxygenID, amountOxygen);
 		}
@@ -1108,7 +1106,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 					|| vehicle.getVehicleType() == VehicleType.TRANSPORT_ROVER) 
 				result.computeIfAbsent(wheelID, k -> 4);
 			
-			result.computeIfAbsent(batteryID, k -> 1);
+//			result.computeIfAbsent(batteryID, k -> 1);
 		}
 		
 		return result;
@@ -1117,7 +1115,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Checks if there are enough resources available in the vehicle for the
 	 * remaining mission. If there is not then the Mission is aborted and rerouted
-	 * to an Emergency settlement if possible. Otherwise a beacon is activiated.
+	 * to an Emergency settlement if possible. Otherwise a beacon is activated.
 
 	 * @return true if enough resources.
 	 */
@@ -1127,7 +1125,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			lastResourceCheck = currentMSols;
 			int missingResourceId = hasEnoughResources(getResourcesNeededForRemainingMission(false));
 			if (missingResourceId >= 0) {
-				// Create Missiion Flag
+				// Create Mission Flag
 				MissionStatus status = MissionStatus.createResourceStatus(missingResourceId);
 				abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
 			}
@@ -1284,7 +1282,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Ges to the nearest settlement and end collection phase if necessary.
+	 * Gets to the nearest settlement and end collection phase if necessary.
 	 */
 	public void goToNearestSettlement() {
 		Settlement nearestSettlement = MissionUtil.findClosestSettlement(getCurrentMissionLocation());

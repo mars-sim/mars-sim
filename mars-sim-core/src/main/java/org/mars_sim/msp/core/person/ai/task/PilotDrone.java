@@ -169,13 +169,7 @@ public class PilotDrone extends OperateVehicle {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
-//		if ((getVehicle().getSpeed() <= LOW_SPEED) 
-//				&& !AVOID_COLLISION.equals(getPhase())) {
-//			setPhase(AVOID_COLLISION);
-//			return (time);
-//		} else
-			return super.mobilizeVehicle(time);
+		return super.mobilizeVehicle(time);
 	}
 
 	/**
@@ -321,7 +315,7 @@ public class PilotDrone extends OperateVehicle {
 		if (!horizontalMovement)
 			mod = 4;
 			
-		double currentE = ((Flyer)getVehicle()).getHoveringElevation();
+		double currentE = ((Flyer)getVehicle()).getHoveringHeight();
 		double oldGroundE = ((Flyer)getVehicle()).getElevation();
 		double newGroundE = getGroundElevation();
 		
