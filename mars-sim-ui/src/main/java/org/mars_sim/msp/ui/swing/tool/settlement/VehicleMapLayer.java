@@ -176,8 +176,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 */
 	private void drawSVGRepairMaint(Graphics2D g2d, Vehicle vehicle) {
 		// Use SVG image for vehicle maintenance overlay if available.
-		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getVehicleTypeString());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleTypeString());
+		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getVehicleType().name());
+		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, maintOverlaySvg);
@@ -246,8 +246,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawSVGLoading(Graphics2D g2d, Vehicle vehicle) {
 
 		// Use SVG image for vehicle loading overlay if available.
-		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getVehicleTypeString());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleTypeString());
+		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getVehicleType().name());
+		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
 		if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, loadOverlaySvg);
@@ -366,7 +366,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			if (vehicle.getItemResourceStored(part.getID()) > 0) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
-				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleTypeString());
+				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
 				if ((partSvg != null) && (vehicleSvg != null)) {
 					drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 							vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, partSvg);
