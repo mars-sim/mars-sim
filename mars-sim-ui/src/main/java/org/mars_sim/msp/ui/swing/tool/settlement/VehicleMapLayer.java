@@ -118,7 +118,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawVehicle(Vehicle vehicle, Graphics2D g2d) {
 
 		// Use SVG image for vehicle if available.
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
+		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if (svg != null) {
 			// Draw base SVG image for vehicle.
 			drawSVGVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
@@ -176,8 +176,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 */
 	private void drawSVGRepairMaint(Graphics2D g2d, Vehicle vehicle) {
 		// Use SVG image for vehicle maintenance overlay if available.
-		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getVehicleType().name());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
+		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getBaseImage());
+		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, maintOverlaySvg);
@@ -246,8 +246,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawSVGLoading(Graphics2D g2d, Vehicle vehicle) {
 
 		// Use SVG image for vehicle loading overlay if available.
-		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getVehicleType().name());
-		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
+		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getBaseImage());
+		GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 		if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 					vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, loadOverlaySvg);
@@ -366,7 +366,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 			if (vehicle.getItemResourceStored(part.getID()) > 0) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
-				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleType().name());
+				GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
 				if ((partSvg != null) && (vehicleSvg != null)) {
 					drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
 							vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, partSvg);

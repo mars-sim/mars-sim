@@ -11,6 +11,8 @@
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
+	<!ATTLIST vehicle base-image CDATA #IMPLIED>
+
 	<!ELEMENT description (#PCDATA)>
 
 	<!ELEMENT battery-module EMPTY>
@@ -218,6 +220,55 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	</vehicle>
 
+	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long explorer">
+		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
+		<battery-module number="2" />
+		<fuel-cell-stack number="4" />
+		<drivetrain-efficiency value="1" />
+		<base-speed value="40.0" />
+		<average-power value="10" />
+		<empty-mass value="1500.0" />
+		<terrain-handling value="6.0"/>
+		<crew-size value="4" />
+		<cargo total-capacity="3000.0">
+			<capacity resource="methanol" value="400.0" />
+			<capacity resource="oxygen" value="900.0" />
+			<capacity resource="nitrogen" value="50.0" />
+			<capacity resource="carbon dioxide" value="10.0" />
+			<capacity resource="water" value="400.0" />
+			<capacity resource="food" value="256.0" />
+			<capacity resource="rock samples" value="400.0" />
+			<capacity resource="ice" value="400.0" />
+			<capacity resource="food waste" value="40.0" />
+			<capacity resource="solid waste" value="80.0" />
+			<capacity resource="toxic waste" value="40.0" />
+			<capacity resource="grey water" value="180.0" />
+			<capacity resource="black water" value="60.0" />
+		</cargo>
+
+		<sickbay tech-level="2" beds="1" />
+
+		<lab tech-level="1">
+			<!-- Science tech specialty -->
+			<tech-specialty value="Areology" />
+			<tech-specialty value="Biology" />
+		</lab>
+
+		<airlock xloc="-1.25" yloc="0.0">
+			<interior xloc="-0.75" yloc="0.0"/>
+			<exterior xloc="-2.75" yloc="0.0"/>
+	    </airlock>
+	    
+		<activity>
+			<activity-spot type="operator" xloc=".45" yloc="2.7" />
+			<activity-spot type="passenger" xloc="-.45" yloc="2.7" />
+			<activity-spot type="passenger" xloc=".45" yloc="1.7" />
+			<activity-spot type="passenger" xloc="-.45" yloc="1.7" />
+			<activity-spot type="sickbay" xloc="-.6" yloc="-.2" />
+			<activity-spot type="lab" xloc=".25" yloc=".3" />
+		</activity>
+	</vehicle>
+
 	<!-- Transport rover -->
 	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
@@ -358,47 +409,4 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="oxygen" value="300.0" />
 		</cargo>
 	</vehicle>
-
-	<!-- remote controlled prospecting rover
-	<vehicle type="remote controlled prospector" width="1.5" length="2.5">
-		<description>used for automatic mineral prospecting</description>
-		<drivetrain-efficiency value="1.0" />
-		<base-speed value="12.0" />
-		<empty-mass value="250.0" />
-		<crew-size value="0" />
-		<cargo total-capacity="500.0">
-			<capacity resource="methanol" value="100.0" />
-		</cargo>
-	</vehicle>-->
-<!--
-	<vehicle type="rc dirigible" width="5.0" length="15.0">
-		<description>
-			remote controlled lighter-than-air craft for use
-			in atmospheric research or as communications relay.
-			can only function in a certain range of temperature
-			and air pressure.
-		</description>
-	</vehicle>
--->
-	<!-- low mars orbit atmosphere space craft
-	<vehicle type="sounding rocket" width="0.5" length="3.0" >
-		<description>
-			a small rocket for atmospheric research
-			or for delivering payloads to surface
-			locations by hard landing
-		</description>
-		<drivetrain-efficiency value="1.0"/>
-		<base-speed value="10.0" />
-		<empty-mass value="200.0"/>
-		<crew-size value="0"/>
-		<cargo total-capacity="500.0">
-			<capacity resource="oxygen" value="150"/>
-			<capacity resource="hydrogen" value="150.0"/>
-		</cargo>
-		<part-attachment number-slots="1">
-			<part name="satellite dish"/>
-			<part name="algae tank"/>
-		</part-attachment>
-	</vehicle>
--->
 </vehicle-configuration>

@@ -37,6 +37,7 @@ public class VehicleConfig {
 	private static final String VEHICLE = "vehicle";
 	private static final String NAME = "name";
 	private static final String TYPE = "type";
+	private static final String BASE_IMAGE = "base-image";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String DESCRIPTION = "description";
@@ -104,6 +105,11 @@ public class VehicleConfig {
 			String name = vehicleElement.getAttributeValue(NAME);
 			VehicleType type = VehicleType.valueOf(ConfigHelper.convertToEnumName(vehicleElement.getAttributeValue(TYPE)));
 
+			String baseImage = vehicleElement.getAttributeValue(BASE_IMAGE);
+			if (baseImage == null) {
+				baseImage = type.name().toLowerCase().replace(" ", "_");
+			}
+
 			// vehicle description
 			double width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
 			double length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
@@ -122,7 +128,7 @@ public class VehicleConfig {
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(name, type, description, battery, fuelCell, 
+			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, battery, fuelCell, 
 					drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
 			
 			v.setWidth(width);

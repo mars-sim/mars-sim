@@ -67,7 +67,7 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all vehicle types are mapped to a SVG image.
         for(VehicleSpec vs :  SimulationConfig.instance().getVehicleConfiguration().getVehicleSpecs()) {
-            String vehicleType = vs.getType().name();
+            String vehicleType = vs.getBaseImage();
             GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicleType);
             assertNotNull(vehicleType + " is not mapped to a SVG image.", svg);
         }

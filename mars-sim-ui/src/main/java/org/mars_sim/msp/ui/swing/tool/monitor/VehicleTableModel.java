@@ -174,7 +174,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case TYPE : {
-				result = vehicle.getVehicleType().getName();
+				result = vehicle.getSpecName();
 			} break;
 
 			case LOCATION : {

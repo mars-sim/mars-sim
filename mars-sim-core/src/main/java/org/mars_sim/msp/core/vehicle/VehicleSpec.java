@@ -61,8 +61,10 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
+	private String baseImage;
 
-	public VehicleSpec(String name, VehicleType type, String description,
+
+	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			int batteryModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double averagePower,
@@ -77,6 +79,7 @@ public class VehicleSpec implements Serializable {
 		this.averagePower = averagePower;
 		this.emptyMass = emptyMass;
 		this.crewSize = crewSize;
+		this.baseImage = baseImage;
 	}
 
 	public final void setWidth(double width) {
@@ -306,4 +309,8 @@ public class VehicleSpec implements Serializable {
 	public double getTerrainHandling() {
 		return terrainHandling;
 	}
+
+    public String getBaseImage() {
+        return baseImage;
+    }
 }
