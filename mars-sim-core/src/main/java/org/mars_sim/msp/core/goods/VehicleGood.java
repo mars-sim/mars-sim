@@ -23,8 +23,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -64,9 +62,9 @@ class VehicleGood extends Good {
 	private transient Map<MissionType, Double> missionCapacities = new EnumMap<>(MissionType.class);
 
     public VehicleGood(VehicleSpec vs) {
-        super(vs.getName(), VehicleType.convertName2ID(vs.getName()));
+        super(vs.getName(), VehicleType.getVehicleID(vs.getType()));
 
-        this.vehicleType = VehicleType.convertNameToVehicleType(vs.getName());
+        this.vehicleType = vs.getType();
         switch(vehicleType) {
 		case DELIVERY_DRONE:
 		case LUV:
@@ -118,11 +116,10 @@ class VehicleGood extends Good {
 
     @Override
     public double getNumberForSettlement(Settlement settlement) {
-        final String vName = getName();
 		double number = settlement.getAllAssociatedVehicles().stream()
-			                    .filter(v -> vName.equalsIgnoreCase(v.getDescription()))
+			                    .filter(v -> vehicleType == v.getVehicleType())
                                 .count();
-
+ 
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
 		number += getManufacturingProcessOutput(settlement);
@@ -320,8 +317,7 @@ class VehicleGood extends Good {
 		// Add demand for mining missions by engineers.
 		demand += Math.min(8, JobUtil.numJobs(JobType.TRADER, settlement) * 1.2);
 
-		Good droneGood = GoodsUtil.getVehicleGood(Drone.NAME);
-		double supply = droneGood.getNumberForSettlement(settlement);
+		double supply = getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)
@@ -350,8 +346,7 @@ class VehicleGood extends Good {
 		// Add demand for mining missions by engineers.
 		demand += Math.min(6, JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1);
 
-		Good luvGood = GoodsUtil.getVehicleGood(LightUtilityVehicle.NAME);
-		double supply = luvGood.getNumberForSettlement(settlement);
+		double supply = getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)

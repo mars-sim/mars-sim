@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * VehicleConfig.java
- * @date 2023-04-14
- * @author Scott Davis
+ * @date 2023-04-17
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
 
@@ -35,7 +35,9 @@ public class VehicleConfig {
 	
 	// Element names
 	private static final String VEHICLE = "vehicle";
+	private static final String NAME = "name";
 	private static final String TYPE = "type";
+	private static final String BASE_IMAGE = "base-image";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String DESCRIPTION = "description";
@@ -58,7 +60,6 @@ public class VehicleConfig {
 	private static final String PART_ATTACHMENT = "part-attachment";
 	private static final String NUMBER_SLOTS = "number-slots";
 	private static final String PART = "part";
-	private static final String NAME = "name";
 	private static final String AIRLOCK = "airlock";
 	private static final String INTERIOR_LOCATION = "interior";
 	private static final String EXTERIOR_LOCATION = "exterior";
@@ -101,7 +102,13 @@ public class VehicleConfig {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		for (Element vehicleElement : vehicleNodes) {
-			String type = vehicleElement.getAttributeValue(TYPE);
+			String name = vehicleElement.getAttributeValue(NAME);
+			VehicleType type = VehicleType.valueOf(ConfigHelper.convertToEnumName(vehicleElement.getAttributeValue(TYPE)));
+
+			String baseImage = vehicleElement.getAttributeValue(BASE_IMAGE);
+			if (baseImage == null) {
+				baseImage = type.name().toLowerCase().replace(" ", "_");
+			}
 
 			// vehicle description
 			double width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
@@ -121,7 +128,7 @@ public class VehicleConfig {
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(type, description, battery, fuelCell, 
+			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, battery, fuelCell, 
 					drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
 			
 			v.setWidth(width);
@@ -233,7 +240,7 @@ public class VehicleConfig {
 			}
 
 			// Keep results for later use
-			newMap.put(type.toLowerCase(), v);
+			newMap.put(name.toLowerCase(), v);
 		}
 		
 		map = Collections.unmodifiableMap(newMap);

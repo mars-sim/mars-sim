@@ -16,8 +16,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -57,11 +57,7 @@ import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.msp.core.vehicle.VehicleFactory;
 
 /**
  * Resupply mission from Earth for a settlement.
@@ -440,19 +436,7 @@ public class Resupply implements Serializable, SettlementSupplies, Transportable
 		for( Entry<String, Integer> e : getVehicles().entrySet()) {
 			String vehicleType = e.getKey();
 			for( int i = 0; i < e.getValue(); i++){
-				Vehicle vehicle = null;
-				String name = Vehicle.generateName(vehicleType, sponsor);
-				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
-				} 
-				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-					vehicle = new Drone(name, vehicleType, settlement);
-				}
-				else {
-					vehicle = new Rover(name, vehicleType, settlement);
-				}
-				unitManager.addUnit(vehicle);
-				settlement.addOwnedVehicle(vehicle);
+				VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
 			}
 		}
 

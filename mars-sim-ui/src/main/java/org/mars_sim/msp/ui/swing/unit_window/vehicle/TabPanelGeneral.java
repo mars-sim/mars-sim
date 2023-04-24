@@ -56,7 +56,7 @@ public class TabPanelGeneral extends TabPanel {
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Add SVG Image loading for the building
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(v.getVehicleType().getName());
+		GraphicsNode svg = SVGMapUtil.getVehicleSVG(v.getBaseImage());
 		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 128, 64, true);
 		JLabel svgLabel = new JLabel(svgIcon);
 		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -64,10 +64,11 @@ public class TabPanelGeneral extends TabPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(5);
+		AttributePanel infoPanel = new AttributePanel(6);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
 		infoPanel.addTextField( "Type", v.getVehicleType().getName(), null);
+		infoPanel.addTextField( "Specification", v.getSpecName(), null);
 		infoPanel.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);
 		infoPanel.addTextField( "Fuel", ResourceUtil.findAmountResourceName(v.getFuelType()), null);
 		infoPanel.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);

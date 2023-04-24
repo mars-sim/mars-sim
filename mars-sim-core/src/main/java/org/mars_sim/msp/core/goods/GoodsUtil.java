@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.goods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -227,9 +229,14 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
+        Set<VehicleType> done = new HashSet<>();  // Only add one per Vehicle Type
         for(VehicleSpec vs : vehicleConfig.getVehicleSpecs()) {
-            Good newGood = new VehicleGood(vs);
-            newMap.put(newGood.getID(), newGood);
+            if (!done.contains(vs.getType())) {
+                Good newGood = new VehicleGood(vs);
+                newMap.put(newGood.getID(), newGood);
+
+                done.add(vs.getType());
+            }
         }
         return newMap;
     }

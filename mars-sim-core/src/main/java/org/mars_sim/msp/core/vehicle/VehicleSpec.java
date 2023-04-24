@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleSpec.java
- * @date 2023-04-14
+ * @date 2023-04-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
@@ -44,6 +44,7 @@ public class VehicleSpec implements Serializable {
 	private double totalCapacity = 0D;
 
 	private String name;
+	private VehicleType type;
 	private String description;
 	
 	private Map<Integer, Double> cargoCapacityMap;
@@ -60,20 +61,25 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
-	public VehicleSpec(String name, String description2,
+	private String baseImage;
+
+
+	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			int batteryModule, int fuelCellStack,
-			double drivetrainEff2, 
-			double baseSpeed2, double averagePower2,
-			double emptyMass2, int crewSize2) {
+			double drivetrainEff, 
+			double baseSpeed, double averagePower,
+			double emptyMass, int crewSize) {
 		this.name = name;
-		this.description = description2;
+		this.type = type;
+		this.description = description;
 		this.batteryModule = batteryModule;	
 		this.fuelCellStack = fuelCellStack;
-		this.drivetrainEff = drivetrainEff2;
-		this.baseSpeed = baseSpeed2;
-		this.averagePower = averagePower2;
-		this.emptyMass = emptyMass2;
-		this.crewSize = crewSize2;
+		this.drivetrainEff = drivetrainEff;
+		this.baseSpeed = baseSpeed;
+		this.averagePower = averagePower;
+		this.emptyMass = emptyMass;
+		this.crewSize = crewSize;
+		this.baseImage = baseImage;
 	}
 
 	public final void setWidth(double width) {
@@ -98,11 +104,22 @@ public class VehicleSpec implements Serializable {
 		return 0D;
 	}
 
+	/**
+	 * Get the name of the vehicle specification
+	 * @return
+	 */
 	public String getName() {
 		return name;
-
 	}
 	
+	/**
+	 * Get the type of the vehicle specification
+	 * @return
+	 */
+	public VehicleType getType() {
+		return type;
+	}
+
 	/** @return the description */
 	public final String getDescription() {
 		return description;
@@ -292,4 +309,8 @@ public class VehicleSpec implements Serializable {
 	public double getTerrainHandling() {
 		return terrainHandling;
 	}
+
+    public String getBaseImage() {
+        return baseImage;
+    }
 }

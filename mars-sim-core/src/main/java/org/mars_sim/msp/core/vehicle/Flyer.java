@@ -57,13 +57,13 @@ public abstract class Flyer extends Vehicle {
 	 * Constructs a {@link Flyer} object at a given settlement.
 	 * 
 	 * @param name                name of the airborne vehicle
-	 * @param description         the configuration description of the vehicle.
+	 * @param spec         the configuration description of the vehicle.
 	 * @param settlement          settlement the airborne vehicle is parked at
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	protected Flyer(String name, String description, Settlement settlement, double maintenanceWorkTime) {
+	protected Flyer(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// use Vehicle constructor
-		super(name, description, settlement, maintenanceWorkTime);
+		super(name, spec, settlement, maintenanceWorkTime);
 	}
 
 	/**

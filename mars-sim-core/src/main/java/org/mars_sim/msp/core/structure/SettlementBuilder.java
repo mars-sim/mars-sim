@@ -1,18 +1,17 @@
 /*
  * Mars Simulation Project
  * SettlementBuilder.java
- * @date 2022-06-11
+ * @date 2023-04-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -48,11 +47,7 @@ import org.mars_sim.msp.core.robot.RobotSpec;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
+import org.mars_sim.msp.core.vehicle.VehicleFactory;
 
 /**
  * This class will create new complete Settlements from a template.
@@ -202,34 +197,13 @@ public final class SettlementBuilder {
 	}
 
 	private void createVehicles(SettlementTemplate template, Settlement settlement) {
-		Map<String, Integer> vehicleMap = template.getVehicles();
-		Iterator<String> j = vehicleMap.keySet().iterator();
-		ReportingAuthority sponsor = settlement.getSponsor();
-		while (j.hasNext()) {
-			String vehicleType = j.next();
-			int number = vehicleMap.get(vehicleType);
-			vehicleType = vehicleType.toLowerCase();
-			for (int x = 0; x < number; x++) {
-				String name = Vehicle.generateName(vehicleType, sponsor);
-				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
-					unitManager.addUnit(luv);
-					settlement.addOwnedVehicle(luv);
-				}
-				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-					Drone drone = new Drone(name, vehicleType, settlement);
-					unitManager.addUnit(drone);
-					settlement.addOwnedVehicle(drone);
-				}
-				else {
-					Rover rover = new Rover(name, vehicleType, settlement);
-					unitManager.addUnit(rover);
-					settlement.addOwnedVehicle(rover);
-				}
+		for(Entry<String, Integer> v : template.getVehicles().entrySet()) {
+			String vehicleType = v.getKey();
+			for (int x = 0; x < v.getValue(); x++) {
+				VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
 			}
 		}
 	}
-
 
 	/**
 	 * Creates the initial equipment at a settlement.

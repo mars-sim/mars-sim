@@ -332,7 +332,7 @@
     <building type="Carbon Storage Bin" xloc="55.0" yloc="-10.0"
         facing="90.0" />
 
-    <vehicle type="Explorer Rover" number="3" />
+    <vehicle type="Long Range Explorer" number="3" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="3" />

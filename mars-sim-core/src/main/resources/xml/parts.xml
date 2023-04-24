@@ -353,8 +353,8 @@
 		643 km), this battery allows traveling a distance of 96.5 km on a single charge.
 		</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="2" max-number="1" />
-			<entity name="light utility vehicle" probability="2" max-number="1" />
+			<entity name="rover" probability="2" max-number="4" />
+			<entity name="luv" probability="2" max-number="1" />
 			<entity name="delivery drone" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -462,7 +462,7 @@
 	<part name="Motor - small" type="electrical" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="robot" probability="1" max-number="1" />
-			<entity name="light utility vehicle" probability="1" max-number="4" />
+			<entity name="luv" probability="1" max-number="4" />
 			<entity name="delivery drone" probability="1" max-number="4" />
 		</maintenance-entity-list>
 	</part>
@@ -471,13 +471,13 @@
 
 	<part name="Wheel - small" type="vehicle"  mass="4.45" >
 		<maintenance-entity-list>
-			<entity name="light utility vehicle" probability="5" max-number="2" />
+			<entity name="luv" probability="5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Utility Vehicle Control Panel" type="vehicle" mass="10" >
 		<maintenance-entity-list>
-			<entity name="light utility vehicle" probability="5" max-number="1" />
+			<entity name="luv" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -557,7 +557,7 @@
 
 	<part name="Drilling Rig" type="tool" mass="135.0">
 		<description>
-			An attachment for light utility vehicle. A motor platform for supporting drilling (used in conjunction with the crane boom)
+			An attachment for luv. A motor platform for supporting drilling (used in conjunction with the crane boom)
 		</description>
 	</part>
 

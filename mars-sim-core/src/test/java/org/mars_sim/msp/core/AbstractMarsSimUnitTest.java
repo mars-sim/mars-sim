@@ -77,7 +77,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
-	    Rover rover1 = new Rover(name, "Explorer Rover", settlement);
+	    Rover rover1 = new Rover(name, simConfig.getVehicleConfiguration().getVehicleSpec("explorer rover"),
+								settlement);
 		if (parked != null) {
 	    	rover1.setParkedLocation(parked, 0D);
 		}
@@ -95,6 +96,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    VehicleGarage garage = new VehicleGarage(building0,
 	            new LocalPosition[] { parkingLocation });
 	    building0.addFunction(garage);
+
+		buildingManager.addNewBuildingtoBFMap(building0);
 	    
 	    return garage;
 	}

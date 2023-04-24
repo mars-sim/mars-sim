@@ -56,13 +56,13 @@ public abstract class GroundVehicle extends Vehicle {
 	 * Constructs a {@link GroundVehicle} object at a given settlement.
 	 * 
 	 * @param name                name of the ground vehicle
-	 * @param description         the configuration description of the vehicle.
+	 * @param spec         the configuration description of the vehicle.
 	 * @param settlement          settlement the ground vehicle is parked at
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	public GroundVehicle(String name, String description, Settlement settlement, double maintenanceWorkTime) {
+	public GroundVehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// use Vehicle constructor
-		super(name, description, settlement, maintenanceWorkTime);
+		super(name, spec, settlement, maintenanceWorkTime);
 
 		// Add scope to malfunction manager.
 //		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");

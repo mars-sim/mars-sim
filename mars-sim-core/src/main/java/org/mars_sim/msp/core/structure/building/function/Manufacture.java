@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
@@ -45,10 +44,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleFactory;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -530,21 +527,12 @@ public class Manufacture extends Function {
 					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();
-						ReportingAuthority sponsor = settlement.getSponsor();
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
-							String name = Vehicle.generateName(vehicleType, sponsor);
-							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-							}
-							else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-								unitManager.addUnit(new Drone(name, vehicleType, settlement));
-							}
-							else {
-								unitManager.addUnit(new Rover(name, vehicleType, settlement));
-							}
+							Vehicle v = VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
+
 							// Add to the daily output
-							settlement.addOutput(VehicleType.convertName2ID(vehicleType), number, process.getTotalWorkTime());
+							settlement.addOutput(VehicleType.getVehicleID(v.getVehicleType()), number, process.getTotalWorkTime());
 						}
 					}
 
@@ -613,14 +601,8 @@ public class Manufacture extends Function {
 						// Produce vehicles.
 						String vehicleType = item.getName();
 						int number = (int) item.getAmount();
-						 ReportingAuthority sponsor = settlement.getSponsor();
 						for (int x = 0; x < number; x++) {
-							String name = Vehicle.generateName(vehicleType, sponsor);
-							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-							} else {
-								unitManager.addUnit(new Rover(name, vehicleType, settlement));
-							}
+							VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
 						}
 					}
 

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -54,7 +53,6 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -133,9 +131,6 @@ public abstract class Vehicle extends Unit
 	private static final String KWH = " kWh   ";
 	private static final String KG = " kg   ";
 	private static final String KM_KG = " km/kg   ";
-	
-	// Name format for numbers units
-	private static final String VEHICLE_TAG_NAME = "%s %03d";
 
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
@@ -229,8 +224,8 @@ public abstract class Vehicle extends Unit
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 
-	/** The vehicle type string. */
-	private String vehicleTypeString;
+	/** The vehicle specification */
+	private String specName;
 	
 	/** Parked position (meters) from center of settlement. */
 	private LocalPosition posParked;
@@ -266,6 +261,8 @@ public abstract class Vehicle extends Unit
 	/** The VehicleController instance. */
 	private VehicleController vehicleController;
 
+	private String baseImage;
+
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
@@ -280,13 +277,12 @@ public abstract class Vehicle extends Unit
 	 * @param settlement          the settlement the vehicle is parked at.
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	Vehicle(String name, String vehicleTypeString, Settlement settlement, double maintenanceWorkTime) {
+	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 
-		this.vehicleTypeString = vehicleTypeString;
-		
-		vehicleType = VehicleType.convertNameToVehicleType(vehicleTypeString);
+		this.specName = spec.getName();
+		this.vehicleType = spec.getType();
 
 		// Obtain the associated settlement ID
 		associatedSettlementID = settlement.getIdentifier();
@@ -319,7 +315,6 @@ public abstract class Vehicle extends Unit
 		
 		writeLog();
 
-		VehicleSpec spec = simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleTypeString);
 		// Set width and length of vehicle.
 		width = spec.getWidth();
 		length = spec.getLength();
@@ -364,17 +359,12 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the scope string.
 	 */
-	private void setupScopeString() {
+	protected void setupScopeString() {
 		// Add "vehicle" as scope
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 	
 		// Add its vehicle type as scope
-		malfunctionManager.addScopeString(vehicleTypeString);
-	
-		// Add "rover" as scope
-		if (vehicleTypeString.contains(SystemType.ROVER.getName())) {
-			malfunctionManager.addScopeString(SystemType.ROVER.getName());
-		}
+		malfunctionManager.addScopeString(vehicleType.name());
 	}
 	
 	/**
@@ -387,6 +377,8 @@ public abstract class Vehicle extends Unit
 		String description = spec.getDescription();
 		// Set the description
 		setDescription(description);
+		baseImage = spec.getBaseImage();
+		
 		// Get the crew capacity
 		int numCrew = spec.getCrewSize();
 		// Get estimated total crew weight
@@ -435,6 +427,7 @@ public abstract class Vehicle extends Unit
 		// Assume the peak power is a multiple of the average power.
 		double peakPower = averagePower * 3.0;
 		
+		//TODO these shoudl all come from the VehicleSpec
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 5.0;
@@ -562,85 +555,20 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle).
-	 *
-	 * @param name                the vehicle's name
-	 * @param vehicleType         the configuration description of the vehicle.
-	 * @param settlement          the settlement the vehicle is parked at.
-	 * @param baseSpeed           the base speed of the vehicle [kph]
-	 * @param baseMass            the base mass of the vehicle [kg]
-	 * @param fuelEconomy		  the fuel economy of the vehicle [km/kg]
-	 * @param maintenanceWorkTime the work time required for maintenance [millisols]
+	 * Get the base image for this Vehicle.
+	 * @todo This needs refactoring to avoid copying out VehicleSpec properties
+	 * @return Name of base image for this vehicle
 	 */
-	protected Vehicle(String name, String vehicleType, Settlement settlement, double baseSpeed, double baseMass,
-			double fuelEconomy, double maintenanceWorkTime) {
-
-		// Use Unit constructor
-		super(name, settlement.getCoordinates());
-
-		this.vehicleTypeString = vehicleType;
-
-		associatedSettlementID = settlement.getIdentifier();
-
-		setContainerID(associatedSettlementID);
-
-		direction = new Direction(0);
-		trail = new ArrayList<>();
-		statusTypes = new HashSet<>();
-
-		// Set description
-		setDescription(vehicleType);
-		// Set total distance traveled by vehicle [km]
-		odometerMileage = 0;
-		// Set distance traveled by vehicle since last maintenance [km]
-		distanceMaint = 0;
-		// Set the base fuel economy of the vehicle [km/kg]
-		baseFuelEconomy = fuelEconomy;
-		// Set base speed.
-		this.baseSpeed = baseSpeed;
-		// Set the empty mass of the vehicle.
-		setBaseMass(baseMass);
-
-		isReservedMission = false;
-		distanceMark = false;
-		reservedForMaintenance = false;
-		emergencyBeacon = false;
-
-		isSalvaged = false;
-		salvageInfo = null;
-		width = 0D;
-		length = 0D;
-		posParked = LocalPosition.DEFAULT_POSITION;
-		facingParked = 0D;
-
-		// Create microInventory instance for testing. 
-		// Set up a 2000 kg cargo cap
-		eqmInventory = new EquipmentInventory(this, 2_000D);
-
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
-
-		primaryStatus = StatusType.PARKED;
-		writeLog();
-
-		// Add to the settlement
-		settlement.addOwnedVehicle(this);
+	public String getBaseImage() {
+		return baseImage;
 	}
-
 	/**
-	 * Gets the vehicle description.
-	 * 
-	 * @param vehicleType
-	 * @return
+	 * Get the name of the vehicle specification
+	 * @see VehicleConfig#getVehicleSpec(String)
+	 * @return Name of the VehicleSpec
 	 */
-	public String getDescription(String vehicleType) {
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		return vehicleConfig.getVehicleSpec(vehicleType).getDescription();
-	}
-
-	public String getVehicleTypeString() {
-		return vehicleTypeString;
+	public String getSpecName() {
+		return specName;
 	}
 
 	public VehicleType getVehicleType() {
@@ -1923,45 +1851,7 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
-	/**
-	 * Generate a new name for the Vehicle; potentially this may be a preconfigured name
-	 * or an auto-generated one.
-	 * @param type
-	 * @param sponsor Sponsor.
-	 * @return
-	 */
-	public static String generateName(String type, ReportingAuthority sponsor) {
-		String result = null;
-		String baseName = type;
-
-		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
-			baseName = "LUV";
-		}
-		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
-			baseName = "Drone";
-		}
-		else {
-			List<String> possibleNames = sponsor.getVehicleNames();
-			if (!possibleNames.isEmpty()) {
-				List<String> availableNames = new ArrayList<>(possibleNames);
-				Collection<Vehicle> vehicles = unitManager.getVehicles();
-				List<String> usedNames = vehicles.stream()
-								.map(Vehicle::getName).collect(Collectors.toList());
-				availableNames.removeAll(usedNames);
-
-				if (!availableNames.isEmpty()) {
-					result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
-				}
-			}
-		}
-
-		if (result == null) {
-			int number = unitManager.incrementTypeCount(type);
-			result = String.format(VEHICLE_TAG_NAME, baseName, number);
-		}
-		return result;
-	}
-
+	
 	/**
 	 * Mass of Equipment is the stored mass plus the base mass.
 	 */

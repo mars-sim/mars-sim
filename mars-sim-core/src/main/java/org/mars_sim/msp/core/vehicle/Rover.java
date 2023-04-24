@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
@@ -155,18 +156,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * Constructs a Rover object at a given settlement
 	 *
 	 * @param name        the name of the rover
-	 * @param type the configuration type of the vehicle.
+	 * @param spec the configuration type of the vehicle.
 	 * @param settlement  the settlement the rover is parked at
 	 */
-	public Rover(String name, String type, Settlement settlement) {
+	public Rover(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor
-		super(name, type, settlement, MAINTENANCE_WORK_TIME);
+		super(name, spec, settlement, MAINTENANCE_WORK_TIME);
 
 		occupants = new UnitSet<>();
 		robotOccupants = new UnitSet<>();
 
 		// Set crew capacity
-		VehicleSpec spec = simulationConfig.getVehicleConfiguration().getVehicleSpec(type);
 		crewCapacity = spec.getCrewSize();
 		robotCrewCapacity = crewCapacity;
 
@@ -201,6 +201,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Create the rover's airlock.
 		airlock = new VehicleAirlock(this, 2, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
 										 spec.getAirlockExteriorLoc());
+	}
+
+	/**
+	 * Sets the scope string.
+	 */
+	@Override
+	protected void setupScopeString() {
+		super.setupScopeString();
+		
+		malfunctionManager.addScopeString(SystemType.ROVER.getName());
 	}
 
 	/**
