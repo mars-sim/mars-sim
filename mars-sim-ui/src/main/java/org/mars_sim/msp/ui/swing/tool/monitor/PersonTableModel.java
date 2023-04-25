@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -28,6 +27,8 @@ import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.ShiftSlot;
+import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
 /**
@@ -37,8 +38,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  */
 @SuppressWarnings("serial")
 public class PersonTableModel extends UnitTableModel<Person> {
-
-	 private static final Logger logger =  Logger.getLogger(PersonTableModel.class.getName());
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -137,8 +136,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
-
-	private boolean allAssociated;
 
 	/**
 	 * Constructs a PersonTableModel object that displays all people from the
@@ -397,7 +394,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else {
-					result = person.getShiftSlot().getShift().getName();
+					ShiftSlot shift = person.getShiftSlot();
+		
+					if (shift.getStatus() == WorkStatus.ON_CALL) {
+						result = "On Call";
+					}
+					else {
+						result = shift.getShift().getName();
+					}
 				}
 			}
 		}
@@ -439,14 +443,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 */
 		public void missionUpdate(MissionEvent event) {
 			Object target = event.getTarget();
-			if (target instanceof Person) {
+			if (target instanceof Person p) {
 				MissionEventType eventType = event.getType();
 
 				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					addEntity((Person) target);
+					addEntity(p);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					removeEntity((Person) target);
+					removeEntity(p);
 				}
 			}
 		}
@@ -472,15 +476,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			Object target = event.getTarget();
-			UnitEventType eventType = event.getType();
-			if (eventType == addEvent) {
-				if (target instanceof Person) {
-					addEntity((Person) target);
+			if (target instanceof Person p) {
+				UnitEventType eventType = event.getType();
+				if (eventType == addEvent) {
+					addEntity(p);
 				}
-			}
-			else if (eventType == removeEvent) {
-				if (target instanceof Person) {
-					removeEntity((Person) target);
+				else if (eventType == removeEvent) {
+					removeEntity(p);
 				}
 			}
 		}

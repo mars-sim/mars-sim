@@ -24,7 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -315,11 +314,11 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			Worker member = (Worker) event.getSource();
 			int index = members.indexOf(member);
 			if (type == UnitEventType.NAME_EVENT) {
-				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
+				fireTableCellUpdated(index, 0);
 			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
 					|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
 					|| (type == UnitEventType.TASK_NAME_EVENT)) {
-				SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
+				fireTableCellUpdated(index, 1);
 			}
 		}
 
@@ -352,13 +351,13 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 					for (int i : rows) {
 						// Update this row
-						SwingUtilities.invokeLater(new MemberTableUpdater(i));
+						fireTableRowsUpdated(i, i);
 					}
 				}
 			} else {
 				if (members.size() > 0) {
 					clearMembers();
-					SwingUtilities.invokeLater(new MemberTableUpdater());
+					fireTableDataChanged();
 				}
 			}
 		}
@@ -374,43 +373,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 					member.removeUnitListener(this);
 				}
 				members.clear();
-			}
-		}
-
-
-		/**
-		 * Inner class for updating member table.
-		 */
-		private class MemberTableUpdater implements Runnable {
-
-			private int row;
-			private int column;
-			private boolean entireData;
-
-			private MemberTableUpdater(int row, int column) {
-				this.row = row;
-				this.column = column;
-				entireData = false;
-			}
-
-			private MemberTableUpdater(int row) {
-				this.row = row;
-				this.column = -1;
-				entireData = false;
-			}
-
-			private MemberTableUpdater() {
-				entireData = true;
-			}
-
-			public void run() {
-				if (entireData) {
-					fireTableDataChanged();
-				} else if (column == -1) {
-					fireTableRowsUpdated(row, row);
-				} else {
-					fireTableCellUpdated(row, column);
-				}
 			}
 		}
 

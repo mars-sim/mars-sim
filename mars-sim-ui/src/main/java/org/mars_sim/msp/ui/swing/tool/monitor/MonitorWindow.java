@@ -288,9 +288,10 @@ public class MonitorWindow extends ToolWindow
 		if (index != -1)
 			tabsSection.setSelectedIndex(index);
 		else {
-			logger.severe(model + " not found.");
 			try {
-				addTab(new UnitTab(this, model, false,"usertab"));
+				UnitTab newTab = new UnitTab(this, model, false,"usertab");
+				addTab(newTab);
+				tabsSection.setSelectedComponent(newTab);
 			} catch (Exception e) {
 				logger.severe(model + " cannot be added.");
 			}

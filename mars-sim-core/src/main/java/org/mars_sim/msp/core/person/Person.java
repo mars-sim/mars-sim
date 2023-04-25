@@ -2094,8 +2094,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		if (transferred) {
 			// Check if the destination is a vehicle
 			if (destination.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)destination).getVehicleType() != VehicleType.DELIVERY_DRONE) {
-					transferred = ((Crewable)destination).addPerson(this);
+				if (destination instanceof Crewable cr) {
+					transferred = cr.addPerson(this);
 				}
 				else {
 					logger.warning(this + "Not possible to be stored into " + cu + ".");
@@ -2121,8 +2121,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				setContainerUnit(destination);
 				// Fire the unit event type
 				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, this);
-				// Fire the unit event type
-				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
+				// Fire the unit event type for old container
+				cu.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
 		else {
