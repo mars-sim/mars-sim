@@ -26,6 +26,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -56,7 +57,6 @@ public class TabPanelCooking extends TabPanel {
 	// private static final Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
 	private static final String COOKING_ICON = "cooking";
-	
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
@@ -71,30 +71,30 @@ public class TabPanelCooking extends TabPanel {
 
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
-	private int availableMealsCache = 0;
+	private int availableMealsCache = -1;
 	/** The number of meals cooked today. */
 	private JLabel mealsTodayLabel;
-	private int mealsTodayCache = 0;
+	private int mealsTodayCache = -1;
 
 	/** The number of available Desserts. */
 	private JLabel availableDessertsLabel;
-	private int availableDessertsCache = 0;
+	private int availableDessertsCache = -1;
 	/** The number of Desserts cooked today. */
 	private JLabel dessertsTodayLabel;
-	private int dessertsTodayCache = 0;
+	private int dessertsTodayCache = -1;
 
 	private JLabel mealsReplenishmentLabel;
-	private double mealsReplenishmentCache = 0;
+	private double mealsReplenishmentCache = -1;
 	private JLabel dessertsReplenishmentLabel;
-	private double dessertsReplenishmentCache = 0;
+	private double dessertsReplenishmentCache = -1;
 	
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
-	private int numCooksCache = 0;
+	private int numCooksCache = -1;
 
 	/** The cook capacity label. */
 	private JLabel cookCapacityLabel;
-	private int cookCapacityCache = 0;
+	private int cookCapacityCache = -1;
 
 	private Settlement settlement;
 
@@ -119,47 +119,30 @@ public class TabPanelCooking extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 		
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
-		while (i.hasNext()) {
-			// for each building's kitchen in the settlement
-			Cooking kitchen = i.next().getCooking();
-			availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();
-			mealsTodayCache += kitchen.getTotalNumberOfCookedMealsToday();
-			cookCapacityCache += kitchen.getCookCapacity();
-			numCooksCache += kitchen.getNumCooks();
-		}
-
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(PREPARING_DESSERT).iterator();
-		while (j.hasNext()) {
-			// for each building's kitchen in the settlement
-			PreparingDessert kitchen = j.next().getPreparingDessert();
-			availableDessertsCache += kitchen.getAvailableServingsDesserts();
-			dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
-		}
-		
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 			
 		AttributePanel topPanel = new AttributePanel(3, 2);
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
+		Coordinates location = settlement.getCoordinates();
 		topPanel.addTextField(Msg.getString("TabPanelCooking.breakfastTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), null);
+				CookMeal.getMealTimeString(location, 0), null);
 		
 		topPanel.addTextField(Msg.getString("TabPanelCooking.lunchTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), null);
+				CookMeal.getMealTimeString(location, 1), null);
 		
 		topPanel.addTextField(Msg.getString("TabPanelCooking.dinnerTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), null);
+				CookMeal.getMealTimeString(location, 2), null);
 		
 		topPanel.addTextField(Msg.getString("TabPanelCooking.midnightTime"), //$NON-NLS-1$
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), null);
+				CookMeal.getMealTimeString(location, 3), null);
 		
 		// Prepare cook number label
 		numCooksLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.numberOfCooks"),
-												Integer.toString(numCooksCache), null); //$NON-NLS-1$
+											  "", null); //$NON-NLS-1$
 		cookCapacityLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.cookCapacity"),
-												Integer.toString(cookCapacityCache), null); //$NON-NLS-1$
+													"", null); //$NON-NLS-1$
 		
 		// Prepare cooking label panel.
 		JPanel splitPanel = new JPanel(new GridLayout(1, 2, 0, 0));
@@ -168,25 +151,25 @@ public class TabPanelCooking extends TabPanel {
 		// Add TitledBorder
 		AttributePanel d = new AttributePanel(3);
 		d.setBorder(StyleManager.createLabelBorder("Desserts"));
-		availableDessertsLabel = d.addTextField(Msg.getString("TabPanelCooking.availableDesserts"), //$NON-NLS-1$
-												Integer.toString(availableDessertsCache), null);
-		dessertsTodayLabel = d.addTextField(Msg.getString("TabPanelCooking.dessertsToday"), //$NON-NLS-1$
-												Integer.toString(dessertsTodayCache), null);
-		dessertsReplenishmentLabel = d.addTextField(Msg.getString("TabPanelCooking.dessertsReplenishment"), //$NON-NLS-1$
-												Double.toString(dessertsReplenishmentCache), null); 
+		availableDessertsLabel = d.addTextField(Msg.getString("TabPanelCooking.available"), //$NON-NLS-1$
+												"", null);
+		dessertsTodayLabel = d.addTextField(Msg.getString("TabPanelCooking.madeToday"), //$NON-NLS-1$
+												"", null);
+		dessertsReplenishmentLabel = d.addTextField(Msg.getString("TabPanelCooking.replenishment"), //$NON-NLS-1$
+												"", null); 
 		splitPanel.add(d);
 
 		// Prepare available meals label
 		AttributePanel m = new AttributePanel(3);
 		m.setBorder(StyleManager.createLabelBorder("Meals"));
 
-		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.availableMeals"), //$NON-NLS-1$
-												Integer.toString(availableMealsCache), null);
-		mealsTodayLabel = m.addTextField(Msg.getString("TabPanelCooking.mealsToday"), //$NON-NLS-1$
-												Integer.toString(mealsTodayCache),null); 
+		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.available"), //$NON-NLS-1$
+												"", null);
+		mealsTodayLabel = m.addTextField(Msg.getString("TabPanelCooking.madeToday"), //$NON-NLS-1$
+												"",null); 
 		mealsReplenishmentLabel = m.addTextField(
-				Msg.getString("TabPanelCooking.mealsReplenishment"), //$NON-NLS-1$
-				Double.toString(mealsReplenishmentCache), null); 
+				Msg.getString("TabPanelCooking.replenishment"), //$NON-NLS-1$
+				"", null); 
 		splitPanel.add(m);
 
 		// Create scroll panel for the outer table panel.
@@ -245,7 +228,7 @@ public class TabPanelCooking extends TabPanel {
 
 		table.setAutoCreateRowSorter(true);
 
-		repaint();
+		update();
 	}
 
 	/**
@@ -263,49 +246,46 @@ public class TabPanelCooking extends TabPanel {
 		int cookCapacity = 0;
 		int availableMeals = 0;
 		int mealsToday = 0;
-		double mealsReplenishment = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
-		while (i.hasNext()) {
+		for(Building b : settlement.getBuildingManager().getBuildings(COOKING)) {
 			// for each building's kitchen in the settlement
-			Cooking kitchen = i.next().getCooking();
+			Cooking kitchen = b.getCooking();
 			availableMeals += kitchen.getNumberOfAvailableCookedMeals();
 			mealsToday += kitchen.getTotalNumberOfCookedMealsToday();
 			cookCapacity += kitchen.getCookCapacity();
 			numCooks += kitchen.getNumCooks();
-			mealsReplenishment = settlement.getMealsReplenishmentRate();
 		}
 
-		mealsReplenishment = Math.round(mealsReplenishment * 100.0) / 100.0;
+		double mealsReplenishment = Math.round(settlement.getMealsReplenishmentRate() * 100.0) / 100.0;
 
 		// Update # of meals replenishment rate
 		if (mealsReplenishmentCache != mealsReplenishment) {
 			mealsReplenishmentCache = mealsReplenishment;
-			mealsReplenishmentLabel
-					.setText(Msg.getString("TabPanelCooking.mealsReplenishment", mealsReplenishmentCache)); //$NON-NLS-1$
+			mealsReplenishmentLabel.setText(
+							StyleManager.DECIMAL_PLACES1.format(mealsReplenishmentCache)); 
 		}
 
 		// Update # of available meals
 		if (availableMealsCache != availableMeals) {
 			availableMealsCache = availableMeals;
-			availableMealsLabel.setText(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache)); //$NON-NLS-1$
+			availableMealsLabel.setText(Integer.toString(availableMealsCache)); //$NON-NLS-1$
 		}
 
 		// Update # of meals cooked today
 		if (mealsTodayCache != mealsToday) {
 			mealsTodayCache = mealsToday;
-			mealsTodayLabel.setText(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache)); //$NON-NLS-1$
+			mealsTodayLabel.setText(Integer.toString(mealsTodayCache)); //$NON-NLS-1$
 		}
 
 		// Update cook number
 		if (numCooksCache != numCooks) {
 			numCooksCache = numCooks;
-			numCooksLabel.setText(numCooksCache + ""); //$NON-NLS-1$
+			numCooksLabel.setText(Integer.toString(numCooksCache)); //$NON-NLS-1$
 		}
 
 		// Update cook capacity
 		if (cookCapacityCache != cookCapacity) {
 			cookCapacityCache = cookCapacity;
-			cookCapacityLabel.setText(cookCapacityCache + ""); //$NON-NLS-1$
+			cookCapacityLabel.setText(Integer.toString(cookCapacityCache)); //$NON-NLS-1$
 		}
 	}
 
@@ -313,25 +293,23 @@ public class TabPanelCooking extends TabPanel {
 
 		int availableDesserts = 0;
 		int dessertsToday = 0;
-		double dessertsReplenishment = 0;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARING_DESSERT).iterator();
-		while (i.hasNext()) {
-			PreparingDessert kitchen = i.next().getPreparingDessert();
+		for(Building b : settlement.getBuildingManager().getBuildings(PREPARING_DESSERT)) {
+			PreparingDessert kitchen = b.getPreparingDessert();
 			availableDesserts += kitchen.getAvailableServingsDesserts();
 			dessertsToday += kitchen.getTotalServingsOfDessertsToday();
-			dessertsReplenishment = settlement.getDessertsReplenishmentRate();
 		}
+		double dessertsReplenishment = settlement.getDessertsReplenishmentRate();
 
 		// Update # of available Desserts
 		if (availableDessertsCache != availableDesserts) {
 			availableDessertsCache = availableDesserts;
-			availableDessertsLabel.setText(Msg.getString("TabPanelCooking.availableDesserts", availableDesserts)); //$NON-NLS-1$
+			availableDessertsLabel.setText(Integer.toString(availableDesserts)); //$NON-NLS-1$
 		}
 
 		// Update # of Desserts cooked today
 		if (dessertsTodayCache != dessertsToday) {
 			dessertsTodayCache = dessertsToday;
-			dessertsTodayLabel.setText(Msg.getString("TabPanelCooking.dessertsToday", dessertsToday)); //$NON-NLS-1$
+			dessertsTodayLabel.setText(Integer.toString(dessertsToday)); //$NON-NLS-1$
 		}
 
 		dessertsReplenishment = Math.round(dessertsReplenishment * 100.0) / 100.0;
@@ -339,8 +317,8 @@ public class TabPanelCooking extends TabPanel {
 		// Update # of desserts replenishment rate
 		if (dessertsReplenishmentCache != dessertsReplenishment) {
 			dessertsReplenishmentCache = dessertsReplenishment;
-			dessertsReplenishmentLabel
-					.setText(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishment)); //$NON-NLS-1$
+			dessertsReplenishmentLabel.setText(
+					StyleManager.DECIMAL_PLACES1.format(dessertsReplenishment));
 		}
 	}
 
@@ -492,7 +470,6 @@ public class TabPanelCooking extends TabPanel {
 		// TODO: decide in what situation it needs update and at what time ?
 		// update every second or after each meal or once a day ?
 		public void update() {
-			// System.out.println("CookingTableModel : entering update()");
 			cleanUpTable();
 			getMultimap();
 			fireTableDataChanged();
