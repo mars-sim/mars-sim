@@ -12,10 +12,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -23,14 +21,17 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -43,13 +44,13 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.building.function.farming.PhaseType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 
 
 /**
@@ -57,8 +58,7 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
  * the crop farm of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFarming extends BuildingFunctionPanel
-implements MouseListener {
+public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 	private static final String PLANT_ICON = "plant";
 	private static final String G_M2_DAY = " g/m2/day";
@@ -92,8 +92,6 @@ implements MouseListener {
 	private int farmersCache;
 	/** The number of crops cache. */
 	private int cropsCache;
-	/** The index cache for the crop to be deleted. */
-	private int deletingCropIndex;
 	/** The cache for the amount of solar irradiance. */
 	private double radCache;
 	/** The cache value for the average water usage per sol per square meters. */
@@ -107,8 +105,7 @@ implements MouseListener {
 	/** The cache value for the work time done in this greenhouse. */
 	private double workTimeCache;
 
-	private DefaultComboBoxModel<String> comboBoxModel;
-	private JComboBoxMW<String> comboBox;
+	private JComboBox<CropSpec> comboBox;
 	private ListModel listModel;
 	/** Table model for crop info. */
 	private CropTableModel cropTableModel;
@@ -116,12 +113,8 @@ implements MouseListener {
 
 	/** The farming building. */
 	private Farming farm;
-	private String cropName;
-	private String deletingCropType;
 	private Coordinates location;
 
-	private ArrayList<String> tooltipArray;
-	private List<String> cropCache;
 	private JList<String> list;
 
 	private CropConfig cropConfig;
@@ -158,7 +151,7 @@ implements MouseListener {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		AttributePanel springPanel = new AttributePanel(8);
+		AttributePanel springPanel = new AttributePanel(4, 2);
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
@@ -222,32 +215,39 @@ implements MouseListener {
             public String getToolTipText(MouseEvent e) {
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
+				RowSorter<? extends TableModel> sorter = getRowSorter();
+				if (sorter != null) {
+					rowIndex = sorter.convertRowIndexToModel(rowIndex);
+				}	
+
+				CropTableModel model = (CropTableModel) getModel();
+				if ((rowIndex < 0) || (rowIndex >= model.getRowCount())) {
+					return "";
+				}
+
+				Crop crop = model.getCrop(rowIndex);
                 int colIndex = columnAtPoint(p);
-    			StringBuilder result = new StringBuilder("");
-
-                try {
-                		result.append(buildCropToolTip(rowIndex, colIndex, null));
-                	} catch (RuntimeException e1) {
-                		//catch null pointer exception if mouse is over an empty line
-                }
-    			return result.toString();
-
+				if (colIndex == 1) {
+					return generateCropSpecTip(crop.getCropSpec());
+				}
+				double sols = Math.round(crop.getGrowingTimeCompleted()/1_000.0 *10.0)/10.0;
+				return "# of Sols since planted: " + sols;
             }
         }; // end of WebTable
-
-		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
+		cropTable.setAutoCreateRowSorter(true);
 		TableColumnModel cropColumns = cropTable.getColumnModel();
-		cropColumns.getColumn(0).setPreferredWidth(5);
-		cropColumns.getColumn(1).setPreferredWidth(40);
-		cropColumns.getColumn(2).setPreferredWidth(40);
-		cropColumns.getColumn(3).setPreferredWidth(20);
-		cropColumns.getColumn(4).setPreferredWidth(30);
-		cropColumns.getColumn(5).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(5);
+		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(40);
+		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(40);
+		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(20);
+		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageCellRenderer(true));
+		cropColumns.getColumn(CropTableModel.CAT).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
+
 		// Note: Use of setAutoCreateRowSorter causes array error 
 		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
-				
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
-		cropTable.setRowSelectionAllowed(true);
 		
 		tableScrollPanel.setViewportView(cropTable);
 
@@ -262,9 +262,9 @@ implements MouseListener {
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		addButton.addActionListener(s -> {
-				cropName = (String) comboBox.getSelectedItem();
-				farm.addCropListInQueue(cropName);
-		        listUpdate();
+				CropSpec cs = (CropSpec) comboBox.getSelectedItem();
+				farm.addCropListInQueue(cs.getName());
+				listModel.update();
 				repaint();
 			});
 		buttonPanel.add(addButton, BorderLayout.NORTH);
@@ -275,40 +275,28 @@ implements MouseListener {
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 
 		delButton.addActionListener(s -> {
-			if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-	           	selectCrop();
+			if (!list.isSelectionEmpty()) {
+				String deletingCropType = list.getSelectedValue();
+				int deletingCropIndex = list.getSelectedIndex();
             	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
-            	listUpdate();
+				listModel.update();
             	repaint();
 			}
 		});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
-		List<String> nameList = cropConfig.getCropTypeNames();
-		cropCache = new ArrayList<>(nameList);
-		comboBoxModel = new DefaultComboBoxModel<>();
-
-		tooltipArray = new ArrayList<>();
-
-		Iterator<String> i = cropCache.iterator();
-		int j = 0;
-		while (i.hasNext()) {
-			String n = i.next();
-	    	comboBoxModel.addElement(n);
-	    	tooltipArray.add(buildCropToolTip(j, -1, n).toString());
-	    	j++;
+		DefaultComboBoxModel<CropSpec> comboBoxModel = new DefaultComboBoxModel<>();
+		for(CropSpec sp : cropConfig.getCropTypes()) {
+	    	comboBoxModel.addElement(sp);
 		}
 
 		// Create comboBox.
-		comboBox = new JComboBoxMW<>(comboBoxModel);
+		comboBox = new JComboBox<CropSpec>(comboBoxModel);
 
 		// Use tooltip to display the crop parameters for each crop in the combobox
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
 	    comboBox.setRenderer(toolTipRenderer);
-	    toolTipRenderer.setTooltips(tooltipArray);
-
-		comboBox.addActionListener(s -> cropName = (String) comboBox.getSelectedItem());
 		comboBox.setMaximumRowCount(10);
 	    selectPanel.add(comboBox);
 
@@ -331,117 +319,7 @@ implements MouseListener {
 		// Create list
 		list = new JList<>(listModel);
 		listScrollPanel.setViewportView(list);
-		list.addListSelectionListener(event -> {
-			if (!event.getValueIsAdjusting()){
-				selectCrop();
-			}
-		});
 		queueListPanel.add(listScrollPanel);
-	}
-
-	/*
-	 * Builds an tooltip for displaying the growth parameters of a crop
-	 */
-	private StringBuilder buildCropToolTip(int row, int col, String n) {
-
-		StringBuilder result = new StringBuilder("");
-		String cropName = "";
-		String cat = "";
-		double time = 0;
-		double mass0 = 0;
-		double mass1 = 0;
-		double water = 0;
-		double PAR = 0;
-		double sols = 0;
-		double health = 0;
-
-        if (n == null || n.equals("")) {
-    		List<Crop> crops = farm.getCrops();
-            Crop crop = crops.get(row);
-            CropSpec ct = crop.getCropSpec();
-        	cropName = crop.getCropName();
-            cat = ct.getCropCategory().getName();
-        	mass0 = ct.getEdibleBiomass();
-        	water = 100 * ct.getEdibleWaterContent();
-        	mass1 = ct.getInedibleBiomass();
-        	time = ct.getGrowingTime() /1000;
-        	PAR = ct.getDailyPAR();
-        	health =  Math.round(crop.getHealthCondition()*10.0 * 100.0)/10.0;
-        	sols = Math.round(crop.getGrowingTimeCompleted()/1_000.0 *10.0)/10.0;
-
-
-        	if (col == 0) {
-	        	result.append("Health: ").append(health).append(" %");
-        	}
-
-        	else if (col == 1) {
-	            result.append(HTML)
-	            .append(CROP_NAME).append(cropName);
-	        	result.append(CATEGORY).append(cat);
-	           	result.append(GROWING_DAYS).append(time);
-	        	result.append(EDIBLE_MASS).append(mass0).append(G_M2_DAY);
-	        	result.append(INEDIBLE_MASS).append(mass1).append(G_M2_DAY);
-	        	result.append(WATER_CONTENT).append(water).append(PERCENT);
-	        	result.append(PAR_REQUIRED).append(PAR)
-	        	.append(MOL_M2_DAY).append(END_HTML);
-        	}
-        	
-        	else {
-	        	result.append("# of Sols since planted: ").append(sols);
-        	}
-
-        }
-
-        if (col == -1) {
-        	cropName = n;
-        	CropSpec cType = cropConfig.getCropTypeByName(n);
-            cat = cType.getCropCategory().getName();
-        	mass0 = cType.getEdibleBiomass();
-        	water = 100 * cType.getEdibleWaterContent();
-        	mass1 = cType.getInedibleBiomass();
-        	time = cType.getGrowingTime() /1000;
-        	PAR = cType.getDailyPAR();
-
-            result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
-        	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
-           	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
-        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(G_M2_DAY);
-        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(G_M2_DAY);
-        	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
-        	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</p></html>");
-        }
-
-    	return result;
-	}
-
-	/**
-	 * Selects Crop.
-	 * 
-	 * @param table
-	 */
-	public void selectCrop() {
-
-		String n = list.getSelectedValue();
-		if (n != null) {
-			deletingCropType = n;
-			deletingCropIndex = list.getSelectedIndex();
-		}
-		else
-			listUpdate();
-	}
-
-	@SuppressWarnings("unchecked")
-	public void listUpdate() {
-
-		listModel.update();
- 		list.validate();
- 		list.revalidate();
- 		list.repaint();
- 		listScrollPanel.validate();
- 		listScrollPanel.revalidate();
- 		listScrollPanel.repaint();
-		comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
-		comboBox.setSelectedIndex(-1);
 	}
 
 	/**
@@ -449,34 +327,6 @@ implements MouseListener {
 	 * 
 	 * @param event the mouse event
 	 */
-	@Override
-	public void mouseClicked(MouseEvent event) {
-
-		// Note: If double-click, open tooltip for the selected crop?
-		if (event.getClickCount() >= 2) {
-			selectCrop();
-			if (deletingCropType != null) {
-            	// do something
-			}
-		}
-	}
-
-	@Override
-	public void mousePressed(MouseEvent event) {
-		// do nothing
-	}
-	@Override
-	public void mouseReleased(MouseEvent event) {
-		// do nothing
-	}
-	@Override
-	public void mouseEntered(MouseEvent event) {
-		// do nothing
-	}
-	@Override
-	public void mouseExited(MouseEvent event) {
-		// do nothing
-	}
 	
 	/**
 	 * Updates this panel.
@@ -543,14 +393,28 @@ implements MouseListener {
 
 		// Update list
 		listModel.update();
- 		list.validate();
- 		list.revalidate();
- 		list.repaint();
- 		listScrollPanel.validate();
- 		listScrollPanel.revalidate();
- 		listScrollPanel.repaint();
 	}
 
+	
+	/**
+	 * Generate a tool tip describing a Crop Spec
+	 * @param ct
+	 * @return
+	 */
+	private static String generateCropSpecTip(CropSpec ct) {
+		StringBuilder result = new StringBuilder();
+		result.append(HTML)
+			.append(CROP_NAME).append(ct.getName())
+			.append(CATEGORY).append(ct.getCropCategory().getName())
+			.append(GROWING_DAYS).append(ct.getGrowingTime() /1000)
+			.append(EDIBLE_MASS).append(ct.getEdibleBiomass()).append(G_M2_DAY)
+			.append(INEDIBLE_MASS).append(ct.getInedibleBiomass()).append(G_M2_DAY)
+			.append(WATER_CONTENT).append(100 * ct.getEdibleWaterContent()).append(PERCENT)
+			.append(PAR_REQUIRED).append(ct.getDailyPAR()).append(MOL_M2_DAY)
+			.append(END_HTML);
+		
+			return result.toString();
+	}
 
 	/**
 	 * List model for the crops in queue.
@@ -611,6 +475,13 @@ implements MouseListener {
 	 */
 	private static class CropTableModel extends AbstractTableModel {
 
+		private static final int HEALTH = 0;
+		private static final int NAME = 1;
+		private static final int PHASE = 2;
+		private static final int GROWTH = 3;
+		private static final int CAT = 4;
+		private static final int WORK = 5;
+
 		private Farming farm;
 		private List<Crop> crops;
 		private Icon redDot;
@@ -631,37 +502,40 @@ implements MouseListener {
 			greenHalfDot = ImageLoader.getIconByName("dot/green_half");
 		}
 
+		public Crop getCrop(int rowIndex) {
+			return crops.get(rowIndex);
+		}
+
 		public int getRowCount() {
 			return crops.size();
 		}
 
 		// Change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
-			return 6;
+			return WORK+1;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = Icon.class;
-			else if (columnIndex == 1) dataType = String.class;
-			else if (columnIndex == 2) dataType = String.class;
-			else if (columnIndex == 3) dataType = String.class;
-			else if (columnIndex == 4) dataType = String.class;
-			else if (columnIndex == 5) dataType = Double.class;
-			
-			return dataType;
+			return switch(columnIndex) {
+				case HEALTH -> Icon.class;
+				case NAME, PHASE, CAT -> String.class;
+				case GROWTH, WORK -> Double.class;
+				default -> null;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Health";
-			if (columnIndex == 1) return "Name";
-			if (columnIndex == 2) return "Phase";
-			if (columnIndex == 3) return "Growth";
-			if (columnIndex == 4) return "Category";
-			if (columnIndex == 5) return "Work";
-			return null;
+			return switch(columnIndex) {
+				case HEALTH -> "Health";
+				case NAME -> "Name";
+				case PHASE -> "Phase";
+				case GROWTH -> "Growth";
+				case CAT -> "Category";
+				case WORK -> "Work";
+				default -> null;
+			};
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -670,38 +544,38 @@ implements MouseListener {
 			PhaseType currentPhase = crop.getPhaseType();
 			String category = crop.getCropSpec().getCropCategory().getName();
 
-			if (column == 0) {
-				double condition = crop.getHealthCondition();
-				if (condition > .95) return greenDot;
-				else if (condition > .75) return greenHalfDot;
-				else if (condition > .55 ) return yellowDot;
-				else if (condition > .35 ) return yellowHalfDot;
-				else if (condition > .2 ) return redDot;
-				else return redHalfDot;
-			}
-			else if (column == 1) return crop.getCropName();
-			else if (column == 2) return currentPhase.getName();
-			else if (column == 3) {
-				double growth = crop.getPercentGrowth();
-				if (growth > 100)
-					growth = 100;
-				return String.valueOf(growth) + "%";
-			}
-			else if (column == 4) return category;
-			else if (column == 5) return crop.getCurrentWorkRequired();
-	
-			return null;
+			switch(column) {
+				case HEALTH:
+					double condition = crop.getHealthCondition();
+					if (condition > .95) return greenDot;
+					else if (condition > .75) return greenHalfDot;
+					else if (condition > .55 ) return yellowDot;
+					else if (condition > .35 ) return yellowHalfDot;
+					else if (condition > .2 ) return redDot;
+					else return redHalfDot;
+				case NAME:
+					return crop.getCropName();
+				case PHASE:
+					return currentPhase.getName();
+				case GROWTH: 
+					return crop.getPercentGrowth();
+				case CAT:
+					return category;
+				case WORK:
+					return crop.getCurrentWorkRequired();
+				default:
+					return null;
+				}
 		}
 
 		public void update() {
-			if (!crops.equals(farm.getCrops())) crops = farm.getCrops();
+			if (!crops.equals(farm.getCrops()))
+				crops = farm.getCrops();
 			fireTableDataChanged();
 		}
 	}
 
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
-	    private List<String> tooltips;
-
 	    @Override
 	    public Component getListCellRendererComponent(JList<?> list, Object value,
 	                        int index, boolean isSelected, boolean cellHasFocus) {
@@ -709,45 +583,12 @@ implements MouseListener {
 	    	JComponent comp = (JComponent) super.getListCellRendererComponent(list,
 	                value, index, isSelected, cellHasFocus);
 
-	        if (-1 < index && null != value && null != tooltipArray) {
-	        	list.setToolTipText(tooltipArray.get(index));
+	        if (value instanceof CropSpec cs) {
+
+	        	list.setToolTipText(generateCropSpecTip(cs));
 	        }
 	        return comp;
 	    }
-
-	    public void setTooltips(List<String> tooltipArray) {
-	        this.tooltips = tooltipArray;
-
-	    }
-	}
-
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private String prompt;
-
-		/*
-		 *  Set the text to display when no item has been selected.
-		 */
-		public PromptComboBoxRenderer(String prompt) {
-			this.prompt = prompt;
-		}
-
-		/*
-		 *  Custom rendering to display the prompt text when no item is selected
-		 */
-		// Add color rendering
-		public Component getListCellRendererComponent(
-				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null) {
-				setText(prompt);
-				return this;
-			}
-
-	        return c;
-		}
 	}
 
 	/**
@@ -757,21 +598,11 @@ implements MouseListener {
 	public void destroy() {
 		super.destroy();
 		
-		// take care to avoid null exceptions
-		if (cropCache != null) {
-			cropCache.clear();
-			cropCache = null;
-		}
-
 		farm = null;
-		tooltipArray = null;
-		comboBoxModel= null;
 		comboBox= null;
 		list= null;
 		listModel= null;
 		cropTableModel= null;
 		listScrollPanel= null;
-		cropName= null;
-		deletingCropType= null;
 	}
 }

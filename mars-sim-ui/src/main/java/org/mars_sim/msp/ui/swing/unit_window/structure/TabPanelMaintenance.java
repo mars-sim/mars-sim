@@ -65,10 +65,10 @@ public class TabPanelMaintenance extends TabPanel {
 		TableColumnModel tc = table.getColumnModel();
 		tc.getColumn(0).setPreferredWidth(120);
 		tc.getColumn(1).setPreferredWidth(60);
-		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer());
+		tc.getColumn(1).setCellRenderer(new PercentageCellRenderer(false));
 		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
 		tc.getColumn(2).setPreferredWidth(60);
-		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer());
+		tc.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
 		tc.getColumn(3).setPreferredWidth(60);
 		maintPane.setViewportView(table);
 	}

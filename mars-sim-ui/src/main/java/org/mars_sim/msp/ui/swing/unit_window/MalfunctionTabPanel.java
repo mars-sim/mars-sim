@@ -309,7 +309,7 @@ public class MalfunctionTabPanel extends TabPanel {
         columnModel.getColumn(EVA_WORK - offset).setMaxWidth(50);
         columnModel.getColumn(INSIDE_WORK- offset).setMaxWidth(50);
         columnModel.getColumn(COMPLETED- offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
-		columnModel.getColumn(COMPLETED- offset).setCellRenderer(new PercentageCellRenderer());
+		columnModel.getColumn(COMPLETED- offset).setCellRenderer(new PercentageCellRenderer(true));
 
 
         center.add(scrollPanel, BorderLayout.CENTER);

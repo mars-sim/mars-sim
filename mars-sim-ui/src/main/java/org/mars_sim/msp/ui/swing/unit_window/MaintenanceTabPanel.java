@@ -119,7 +119,7 @@ public class MaintenanceTabPanel extends TabPanel {
         columnModel.getColumn(2).setPreferredWidth(120);
 		columnModel.getColumn(2).setPreferredWidth(40);
 		columnModel.getColumn(3).setPreferredWidth(40);		
-		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer());
+		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
 
 		// Added sorting
 		table.setAutoCreateRowSorter(true);

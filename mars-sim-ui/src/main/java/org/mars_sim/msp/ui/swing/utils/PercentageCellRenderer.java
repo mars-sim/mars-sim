@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.utils;
 
 import java.awt.Component;
+import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -24,8 +25,21 @@ public class PercentageCellRenderer extends DefaultTableCellRenderer {
      */
     public static int DEFAULT_WIDTH = 40;
 
-    public PercentageCellRenderer() {
+    private DecimalFormat format;
+
+    /**
+     * Render a double as a percentage value.
+     * @param showDecimal Show decimal value
+     */
+    public PercentageCellRenderer(boolean showDecimal) {
         setHorizontalAlignment( JLabel.RIGHT );
+
+        if (showDecimal) {
+            format = StyleManager.DECIMAL_PERC2;
+        }
+        else {
+            format = StyleManager.DECIMAL_PERC;
+        }
     }
 
     @Override
@@ -34,7 +48,7 @@ public class PercentageCellRenderer extends DefaultTableCellRenderer {
         JLabel cell = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
                 column);
         
-        cell.setText(StyleManager.DECIMAL_PERC.format(value));
+        cell.setText(format.format(value));
 
         return cell;
     }

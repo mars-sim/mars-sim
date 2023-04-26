@@ -299,7 +299,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		else {
 			// This is a grown crop at the start of the sim,
 			// Set the percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .7);
+			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .99);
 
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 
@@ -1268,7 +1268,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	public double getPercentGrowth() {
-		return  Math.round(percentageGrowth * 10D)/10D;
+		return  percentageGrowth;
 	}
 
 	public int getIdentifier() {
