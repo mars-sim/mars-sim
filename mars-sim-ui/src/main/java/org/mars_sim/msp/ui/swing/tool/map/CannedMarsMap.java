@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.mapdata.MapData;
-import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 
@@ -112,7 +112,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 */
 	public void paintDoubleBuffer() {
 		if (mapImage == null) {
-			mapImage = createImage(MapDataUtil.MAP_BOX_WIDTH, MapDataUtil.MAP_BOX_HEIGHT);
+			mapImage = createImage(IntegerMapData.MAP_BOX_WIDTH, IntegerMapData.MAP_BOX_HEIGHT);
 			if (mapImage != null) {
 				Graphics dbg = mapImage.getGraphics();
 				Graphics2D g2d = (Graphics2D) dbg;

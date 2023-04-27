@@ -40,7 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -114,8 +114,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.GLOBE_BOX_HEIGHT; 
-	private static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;
+	private static final int GLOBAL_MAP_WIDTH = IntegerMapData.GLOBE_BOX_WIDTH;
 
 	private static final int HEIGHT_STATUS_BAR = 20;
 
@@ -195,19 +194,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		globePane.setOpaque(true);
 		globePane.add(globeNav);
-		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
+		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
 		mapPane.add(globePane);
 	
 		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		detailPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
+		detailPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 		mapPane.add(detailPane);
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
-		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
+		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
 		mapLayerPanel.setNavWin(this);
 		
 		mapLayerPanel.addMouseListener(new MouseListener());

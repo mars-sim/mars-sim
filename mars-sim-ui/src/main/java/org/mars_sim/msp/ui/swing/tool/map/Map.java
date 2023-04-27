@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Image;
 
-import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 
 /**
@@ -18,9 +18,9 @@ import org.mars_sim.msp.core.Coordinates;
 public interface Map {
 
 	/** The display box map height (for scrolling) */
-	public static final int DISPLAY_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
+	public static final int DISPLAY_HEIGHT = IntegerMapData.GLOBE_BOX_HEIGHT;
 	/** The display box map width (for scrolling) */
-	public static final int DISPLAY_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
+	public static final int DISPLAY_WIDTH = IntegerMapData.GLOBE_BOX_WIDTH;
 	/** Map display width in pixels. */
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
@@ -28,9 +28,9 @@ public interface Map {
 	/** this is a mysterious variable. */
 	public static final double HALF_MAP_ANGLE = 0.48587;
 
-	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE/4;
+	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
 	
-	public static final double PIXEL_RHO = MapDataUtil.MAP_HEIGHT / Math.PI;
+	public static final double PIXEL_RHO = IntegerMapData.RHO;
 	
 	public static final double TWO_PI = Math.PI * 2D;
 	

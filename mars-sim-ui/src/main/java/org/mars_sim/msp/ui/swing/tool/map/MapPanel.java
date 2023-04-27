@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -44,8 +45,8 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
-	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
+	public final static int MAP_BOX_HEIGHT = IntegerMapData.MAP_BOX_HEIGHT;
+	public final static int MAP_BOX_WIDTH = IntegerMapData.MAP_BOX_WIDTH;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;

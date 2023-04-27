@@ -27,7 +27,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -68,8 +68,8 @@ public class NavpointPanel
 extends JPanel
 implements MissionListener {
 
-	private static final int WIDTH = MapDataUtil.GLOBE_BOX_WIDTH / 2;
-	private static final int HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT / 2;
+	private static final int WIDTH = IntegerMapData.GLOBE_BOX_WIDTH / 2;
+	private static final int HEIGHT = IntegerMapData.GLOBE_BOX_HEIGHT / 2;
 	private static final int PADDING = 64;
 	private static final int TABLE_HEIGHT = 190;
 	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2022-08-02
+ * @date 2023-04-27
  * @author Scott Davis
  */
  package org.mars_sim.mapdata;
@@ -22,23 +22,34 @@ import javax.imageio.ImageIO;
  /**
   * A map that uses integer data stored in files to represent colors.
   */
- abstract class IntegerMapData implements MapData {
+ public abstract class IntegerMapData implements MapData {
 
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
-	protected static final String SURFACE_MAP_FILE = "/maps/surface2880x1440.jpg"; // 2880x1440, 5760x2880
+	protected static final String SURFACE_MAP_FILE = "/maps/surface2880x1440.jpg"; //"/maps/surface5760x1440.jpg"; // ; // 2880x1440, 5760x2880
 	protected static final String TOPO_MAP_FILE = "/maps/topo2880x1440.jpg";
 	protected static final String GEO_MAP_FILE = "/maps/geologyMOLA2880x1440.jpg";
 
- 	public static final int MAP_BOX_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
- 	public static final int MAP_BOX_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
+	/** Note: Make sure GLOBE_BOX_HEIGHT matches the number of vertical pixels of the globe surface map. */ 
+ 	public static final int GLOBE_BOX_HEIGHT = 300;
+ 	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
+ 	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
+ 	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
  	
- 	public static final int MAP_PIXEL_WIDTH = MapDataUtil.MAP_WIDTH; 
- 	public static final int MAP_PIXEL_HEIGHT = MapDataUtil.MAP_HEIGHT; 
- 	
- 	public static final double PIXEL_RHO = MAP_PIXEL_HEIGHT / Math.PI;
- 	private static final double TWO_PI = Math.PI * 2D;
+	/** Note: Make sure MAP_HEIGHT matches the number of vertical pixels of the surface map. */ 
+	public static final int MAP_PIXEL_HEIGHT = 1440; //1024; 1440; 2048; 2880 
+	/** Note: Make sure MAP_HEIGHT matches the number of horizontal pixels of the surface map. */ 
+	public static final int MAP_PIXEL_WIDTH = 2880; //2048; 2880; 4096; 5760
+	
+ 	// The diameter of Mars in pixels
+	public static final double RHO = MAP_PIXEL_HEIGHT / Math.PI;
+	// The half map's height in pixels
+ 	public static final int HALF_MAP = MAP_PIXEL_HEIGHT / 2;
+ 	// The lower edge of map in pixels
+ 	public static final int LOW_EDGE = HALF_MAP - MAP_BOX_HEIGHT / 2;
+ 
+ 	private static final double TWO_PI = Math.PI * 2;
  	private static final double HEIGHT_RATIO = 1.0 * MAP_BOX_HEIGHT / MAP_PIXEL_HEIGHT;
  	private static final double WIDTH_RATIO = 1.0 * MAP_BOX_WIDTH / MAP_PIXEL_WIDTH;
  	
@@ -69,8 +80,7 @@ import javax.imageio.ImageIO;
  	private static final double PI_RATIO = TWO_PI * WIDTH_RATIO;
  	
  	private static final double MIN_THETA_DISPLAY = PI_RATIO * MIN_THETA_PADDING;
-	
- 	
+
  	// Data members.
  	private int[][] pixels = null;
  	
@@ -90,6 +100,13 @@ import javax.imageio.ImageIO;
  		}
  	}
 
+ 	/**
+ 	 * Loads the whole map data set into an 2-D integer array.
+ 	 * 
+ 	 * @param imageURL
+ 	 * @return
+ 	 * @throws IOException
+ 	 */
  	private int[][] loadMapData(String imageURL) throws IOException {
 
  		URL imageMapURL = IntegerMapData.class.getResource(imageURL);
@@ -231,6 +248,12 @@ import javax.imageio.ImageIO;
 // 		return pixels;
 // 	}
 
+ 	/**
+ 	 * Gets the map image based on the center phi and theta coordinates given.
+ 	 * 
+ 	 * @param centerPhi
+ 	 * @param centerTheta
+ 	 */
  	@Override
  	public Image getMapImage(double centerPhi, double centerTheta) {
 
@@ -282,8 +305,7 @@ import javax.imageio.ImageIO;
  					yCorrected -= TWO_PI;
  				
  				// Determine the rectangular offset of the pixel in the image.
- 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, 1440 / Math.PI, 720,
- 						720 - 150);
+ 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected);
 
  				// Determine the display x and y coordinates for the pixel in the image.
  				int displayX = MAP_BOX_WIDTH - location.x;
@@ -372,19 +394,15 @@ import javax.imageio.ImageIO;
  	 *
  	 * @param newPhi   the new phi coordinate
  	 * @param newTheta the new theta coordinate
- 	 * @param rho      diameter of planet (in km)
- 	 * @param half_map half the map's width (in pixels)
- 	 * @param low_edge lower edge of map (in pixels)
  	 * @return pixel offset value for map
  	 */
- 	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, double rho,
- 			int half_map, int low_edge) {
+ 	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta) {
 
  		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
- 		final double temp_buff_x = rho * Math.sin(newPhi);
- 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
+ 		final double temp_buff_x = RHO * Math.sin(newPhi);
+ 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + HALF_MAP) - LOW_EDGE;
  		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + half_map) - low_edge;
+ 				+ (RHO * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + HALF_MAP) - LOW_EDGE;
  		return new Point(buff_x, buff_y);
  	}
  	
