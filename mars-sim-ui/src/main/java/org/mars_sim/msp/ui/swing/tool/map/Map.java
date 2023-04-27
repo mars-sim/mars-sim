@@ -28,6 +28,8 @@ public interface Map {
 	/** this is a mysterious variable. */
 	public static final double HALF_MAP_ANGLE = 0.48587;
 
+	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE/4;
+	
 	public static final double PIXEL_RHO = MapDataUtil.MAP_HEIGHT / Math.PI;
 	
 	public static final double TWO_PI = Math.PI * 2D;

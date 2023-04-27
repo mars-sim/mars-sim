@@ -36,6 +36,9 @@ public class Battery implements Serializable {
     /** The maximum energy capacity of a standard battery module in kWh. */
     private static final double ENERGY_PER_MODULE = 15.0;
     
+    private static final String KWH = " kWH  ";
+    private static final String KW = " kW  ";
+    
     // Data members
     /** Is the unit operational ? */
     private boolean operable;
@@ -137,15 +140,15 @@ public class Battery implements Serializable {
 	    	
     		energyToDeliver = Math.min(currentEnergy, Math.min(energyToSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
-          	logger.log(unit, Level.INFO, 0, 
+          	logger.log(unit, Level.INFO, 20_000, 
           			"[Battery Status]  "
-          	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + " kWh  "
-          			+ "energyToSupply: " + Math.round(energyToSupply * 1_000.0)/1_000.0 + " kWh  "
-                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + " kWh  "
-                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + " kWh  "
+          	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + KWH
+          			+ "energyToSupply: " + Math.round(energyToSupply * 1_000.0)/1_000.0 + KWH
+                	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
+                  	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
                 	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + " kW  "
-          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + " kW  "
+          			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW
+          			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW
            	);
            	
 	    	currentEnergy -= energyToDeliver; 

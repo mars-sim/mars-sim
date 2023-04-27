@@ -34,30 +34,42 @@ import javax.imageio.ImageIO;
  	public static final int MAP_BOX_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
  	public static final int MAP_BOX_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
  	
- 	public static final int MAP_WIDTH = MapDataUtil.MAP_WIDTH; 
- 	public static final int MAP_HEIGHT = MapDataUtil.MAP_HEIGHT; 
+ 	public static final int MAP_PIXEL_WIDTH = MapDataUtil.MAP_WIDTH; 
+ 	public static final int MAP_PIXEL_HEIGHT = MapDataUtil.MAP_HEIGHT; 
  	
- 	public static final double FACTOR = 1;
- 	
-// 	public static final double HALF_MAP_ANGLE = .48587D;
- 	public static final double PIXEL_RHO = MAP_HEIGHT / Math.PI;
+ 	public static final double PIXEL_RHO = MAP_PIXEL_HEIGHT / Math.PI;
  	private static final double TWO_PI = Math.PI * 2D;
+ 	private static final double HEIGHT_RATIO = 1.0 * MAP_BOX_HEIGHT / MAP_PIXEL_HEIGHT;
+ 	private static final double WIDTH_RATIO = 1.0 * MAP_BOX_WIDTH / MAP_PIXEL_WIDTH;
  	
- 	private static final double PHI_ITERATION_PADDING = 1.26 * MapDataUtil.RATIO; // Derived from testing.
- 	private static final double PHI_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.	
- 	private static final double PHI_ITERATION_ANGLE = Math.PI / (MAP_HEIGHT / FACTOR * PHI_ITERATION_PADDING);
- 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * MAP_BOX_HEIGHT / MAP_HEIGHT * FACTOR;
+ 	// The value of PHI_ITERATION_PADDING is derived from testing.
+ 	private static final double PHI_ITERATION_PADDING = 1.26;
+ 	// The value of PHI_PADDING is derived from testing.
+ 	private static final double PHI_PADDING = 1.46;
+ 	
+ 	private static final double PHI_ITERATION_FACTOR = MAP_PIXEL_HEIGHT * PHI_ITERATION_PADDING;
+ 	
+ 	private static final double PHI_ITERATION_ANGLE = Math.PI / PHI_ITERATION_FACTOR;
+ 	
+ 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * HEIGHT_RATIO;
+ 	// The value of THETA_ITERATION_PADDING is derived from testing.
+ 	private static final double THETA_ITERATION_PADDING = 1.46;
+ 	
+ 	private static final double THETA_ITERATION_FACTOR = MAP_PIXEL_WIDTH * THETA_ITERATION_PADDING;
+ 	// The value of MIN_THETA_PADDING is derived from testing.
+ 	private static final double MIN_THETA_PADDING = 1.02;
 
- 	private static final double THETA_ITERATION_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.
- 	private static final double MIN_THETA_PADDING = 1.02 * MapDataUtil.RATIO; // Theta padding, derived from testing.
+ 	// The value of POLAR_CAP_FACTOR is derived from testing.
+ 	private static final double POLAR_CAP_FACTOR = 6.54;
  	
- 	private static final double PI_RATIO = TWO_PI * MAP_BOX_WIDTH / MAP_WIDTH * FACTOR;
+ 	private static final double POLAR_CAP_PI_ANGLE = Math.PI / POLAR_CAP_FACTOR;
+ 	
+ 	private static final double POLAR_CAP_RANGE = Math.PI - POLAR_CAP_PI_ANGLE;
 	// Note : Polar cap phi values must display 2 PI theta range. 
- 	private static final double POLAR_CAP_RANGE_1 = Math.PI / 6.54D; // derived from testing
- 	private static final double POLAR_CAP_RANGE_2 = Math.PI - POLAR_CAP_RANGE_1;
+ 	private static final double PI_RATIO = TWO_PI * WIDTH_RATIO;
+ 	
  	private static final double MIN_THETA_DISPLAY = PI_RATIO * MIN_THETA_PADDING;
-		
- 	private static final double THETA_ITERATION_FACTOR = MAP_WIDTH / FACTOR * THETA_ITERATION_PADDING;
+	
  	
  	// Data members.
  	private int[][] pixels = null;
@@ -250,7 +262,7 @@ import javax.imageio.ImageIO;
 
  			double thetaRange = ((1 - Math.sin(x)) * TWO_PI) + MIN_THETA_DISPLAY;
  			
- 			if ((x < POLAR_CAP_RANGE_1) || (x > (POLAR_CAP_RANGE_2)))
+ 			if ((x < POLAR_CAP_PI_ANGLE) || (x > (POLAR_CAP_RANGE)))
  				thetaRange = TWO_PI;
  			if (thetaRange > TWO_PI)
  				thetaRange = TWO_PI;
@@ -341,7 +353,7 @@ import javax.imageio.ImageIO;
 // 		if (column == colorRow.length)
 // 			column--;
 
- 		int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
+ 		int row = (int) Math.round(phi * (MAP_PIXEL_HEIGHT / Math.PI));
  		if (row == pixels.length)
  			row--;
 

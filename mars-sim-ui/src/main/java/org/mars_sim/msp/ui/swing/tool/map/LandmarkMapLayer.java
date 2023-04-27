@@ -54,7 +54,7 @@ public class LandmarkMapLayer implements MapLayer {
 	
 	private static final List<Landmark> landmarks = Simulation.instance().getSurfaceFeatures().getLandmarks();
 
-	private double angle = Map.HALF_MAP_ANGLE;
+	private static final double HALF_MAP_ANGLE = Map.HALF_MAP_ANGLE;
 
 	/**
 	 * Displays the layer on the map image.
@@ -73,7 +73,7 @@ public class LandmarkMapLayer implements MapLayer {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
 		for (Landmark landmark : landmarks) {
-			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < angle)
+			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < HALF_MAP_ANGLE)
 				displayLandmark(landmark, mapCenter, mapType, g2d);
 		}
 	}

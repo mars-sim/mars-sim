@@ -120,7 +120,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="1500.0" />
 
-		<!-- How well does a Ground Vehicle handle terrain -->
+		<!-- How well does this vehicle handle terrain -->
 		<terrain-handling value="5.0"/>
 		
 		<!-- The crew size of an rover -->

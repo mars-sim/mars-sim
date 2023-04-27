@@ -142,7 +142,7 @@
 		 double fGravity = 0;      
 		 // Calculate the force on rolling resistance 
 		 double fRolling = 0;    
-		 // Calculate the road slope force 
+		 // Calculate the gradient resistance or road slope force 
 		 double fRoadSlope = 0;
 		 
 		 double angle = 0;

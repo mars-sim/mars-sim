@@ -31,12 +31,12 @@ public class Coordinates implements Serializable {
 
 	/** Mars average radius in km. */
 	public static final double MARS_RADIUS_KM = 3393D;
-	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
+	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2 * Math.PI;
 	
 	private static final double DEG_TO_RADIAN  = Math.PI / 180;
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
-	private static final double PI_HALF = Math.PI / 2.0;
-	private static final double TWO_PI = Math.PI * 2D;
+	private static final double PI_HALF = Math.PI / 2;
+	private static final double TWO_PI = Math.PI * 2;
 
 	// stored for efficiency but not serialized.
 	private static final transient String NORTH_SHORT = Msg.getString("direction.northShort");

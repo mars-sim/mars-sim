@@ -73,6 +73,8 @@ implements MissionListener {
 	private static final int PADDING = 64;
 	private static final int TABLE_HEIGHT = 190;
 	
+	private static final double TWO_PI = Math.PI * 2D;
+	
 	// Private members.
 	private Mission missionCache;
 	private MapPanel mapPanel;
@@ -148,7 +150,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi - Map.HALF_MAP_ANGLE/4;
+				phi = phi - Map.QUARTER_HALF_MAP_ANGLE;
 				if (phi < 0D) phi = 0D;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -163,8 +165,8 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta - Map.HALF_MAP_ANGLE/4;
-				if (theta < 0D) theta += (Math.PI * 2D);
+				theta = theta - Map.QUARTER_HALF_MAP_ANGLE;
+				if (theta < 0D) theta += (TWO_PI);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
 		});
@@ -178,8 +180,8 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta + Map.HALF_MAP_ANGLE/4;
-				if (theta < (Math.PI * 2D)) theta -= (Math.PI * 2D);
+				theta = theta + Map.QUARTER_HALF_MAP_ANGLE;
+				if (theta < (TWO_PI)) theta -= (TWO_PI);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
 		});
@@ -192,7 +194,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi + Map.HALF_MAP_ANGLE/4;
+				phi = phi + Map.QUARTER_HALF_MAP_ANGLE;
 				if (phi > Math.PI) phi = Math.PI;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -234,7 +236,8 @@ implements MissionListener {
 	}
 	
 	/**
-	 * Time has advanced
+	 * Time has advanced.
+	 * 
 	 * @param pulse The clock change
 	 */
 	public void update(ClockPulse pulse) {

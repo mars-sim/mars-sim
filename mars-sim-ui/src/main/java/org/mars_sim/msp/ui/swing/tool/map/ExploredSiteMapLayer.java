@@ -32,7 +32,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 
-	private double angle = Map.HALF_MAP_ANGLE;
+	private static final double HALF_MAP_ANGLE = Map.HALF_MAP_ANGLE;
 
 	/**
 	 * Constructor.
@@ -107,7 +107,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 */
 	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, String mapType, Graphics g) {
 
-		if (mapCenter.getAngle(site.getLocation()) < angle) {
+		if (mapCenter.getAngle(site.getLocation()) < HALF_MAP_ANGLE) {
 
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;

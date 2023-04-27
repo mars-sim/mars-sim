@@ -377,8 +377,8 @@ public abstract class Vehicle extends Unit
 		String description = spec.getDescription();
 		// Set the description
 		setDescription(description);
+		// Get the base image of this vehicle
 		baseImage = spec.getBaseImage();
-		
 		// Get the crew capacity
 		int numCrew = spec.getCrewSize();
 		// Get estimated total crew weight
@@ -427,7 +427,7 @@ public abstract class Vehicle extends Unit
 		// Assume the peak power is a multiple of the average power.
 		double peakPower = averagePower * 3.0;
 		
-		//TODO these shoudl all come from the VehicleSpec
+		//TODO these should all come from the VehicleSpec
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 5.0;

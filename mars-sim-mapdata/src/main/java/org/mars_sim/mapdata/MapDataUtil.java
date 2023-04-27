@@ -23,7 +23,7 @@
 	/** Note: Make sure MAP_HEIGHT matches the number of horizontal pixels of the surface source map. */ 
 	public static final int MAP_WIDTH = 2880; //2048; 2880; 4096; 5760
 	
- 	public static final double RATIO = 1.0 * GLOBE_BOX_HEIGHT / 300 * MAP_WIDTH / 2880;
+// 	public static final double MAP_WIDTH_TO_PIXEL_RATIO = 1.0 * GLOBE_BOX_HEIGHT / 300 * MAP_WIDTH / 2880;
  	
  	private static final int ELEVATION_MAP_HEIGHT = MEGDRMapReader.HEIGHT;
  	private static final int ELEVATION_MAP_WIDTH = MEGDRMapReader.WIDTH;
