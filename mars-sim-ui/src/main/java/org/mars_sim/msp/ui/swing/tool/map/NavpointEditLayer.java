@@ -155,10 +155,11 @@ public class NavpointEditLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

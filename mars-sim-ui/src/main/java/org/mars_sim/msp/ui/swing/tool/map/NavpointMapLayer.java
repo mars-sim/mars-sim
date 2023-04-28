@@ -82,20 +82,21 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param mapType   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		if (singleMission != null) {
 			if (singleMission instanceof VehicleMission)
-				displayMission((VehicleMission) singleMission, mapCenter, mapType, g);
+				displayMission((VehicleMission) singleMission, mapCenter, baseMap, g);
 		} else {
 			for (Mission mission : missionManager.getMissions()) {
 				if (mission instanceof VehicleMission)
-					displayMission((VehicleMission) mission, mapCenter, mapType, g);
+					displayMission((VehicleMission) mission, mapCenter, baseMap, g);
 			}
 		}
 
 		// Make sure selected navpoint is always on top.
 		if (selectedNavpoint != null)
-			displayNavpoint(selectedNavpoint, mapCenter, mapType, g);
+			displayNavpoint(selectedNavpoint, mapCenter, baseMap, g);
 	}
 
 	/**
@@ -103,12 +104,12 @@ public class NavpointMapLayer implements MapLayer {
 	 * 
 	 * @param mission   the travel mission to display.
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayMission(VehicleMission mission, Coordinates mapCenter, String mapType, Graphics g) {
+	private void displayMission(VehicleMission mission, Coordinates mapCenter, Map baseMap, Graphics g) {
 		for (int x = 0; x < mission.getNumberOfNavpoints(); x++) {
-			displayNavpoint(mission.getNavpoint(x), mapCenter, mapType, g);
+			displayNavpoint(mission.getNavpoint(x), mapCenter, baseMap, g);
 		}
 	}
 
@@ -117,10 +118,10 @@ public class NavpointMapLayer implements MapLayer {
 	 * 
 	 * @param navpoint  the navpoint to display.
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
+	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < Map.HALF_MAP_ANGLE) {
 
@@ -128,13 +129,13 @@ public class NavpointMapLayer implements MapLayer {
 			Icon navIcon = null;
 			if (navpoint == selectedNavpoint)
 				navIcon = navpointIconSelected;
-			else if (TopoMarsMap.TYPE.equals(mapType) || GeologyMarsMap.TYPE.equals(mapType))
+			else if (TopoMarsMap.TYPE.equals(baseMap) || GeologyMarsMap.TYPE.equals(baseMap))
 				navIcon = navpointIconWhite;
 			else
 				navIcon = navpointIconColor;
 
 			// Determine the draw location for the icon.
-			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, mapType);
+			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, baseMap);
 			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
 					(location.getiY()+MAP_Y_OFFSET - navIcon.getIconHeight()));
 

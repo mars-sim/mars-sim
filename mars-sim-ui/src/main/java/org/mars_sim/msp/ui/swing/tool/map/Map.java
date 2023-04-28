@@ -60,4 +60,16 @@ public interface Map {
 	 * @return constructed map image
 	 */
 	public Image getMapImage();
+
+	/**
+	 * Get the scale of pixel to Mars surface degree
+	 * @return
+	 */
+	public double getScale();
+
+	/**
+	 * Get the name type of this map
+	 * @return
+	 */
+	public String getType();
 }

@@ -53,10 +53,11 @@ abstract class UnitMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {		
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {		
 		Collection<Unit> units = null;
 				
 		if (unitsToDisplay != null) {
@@ -79,7 +80,7 @@ abstract class UnitMapLayer implements MapLayer {
 				double angle = Map.HALF_MAP_ANGLE;
 
 				if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
-					displayUnit(unit, mapCenter, mapType, g);
+					displayUnit(unit, mapCenter, baseMap, g);
 				}
 			}
 		}
@@ -97,8 +98,8 @@ abstract class UnitMapLayer implements MapLayer {
 	 * 
 	 * @param unit      the unit to display.
 	 * @param mapCenter the location center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected abstract void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g);
+	protected abstract void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g);
 }

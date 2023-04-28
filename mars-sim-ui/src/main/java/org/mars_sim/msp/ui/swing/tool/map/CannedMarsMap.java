@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -40,16 +39,25 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	private JComponent displayArea = null;
 
 	private Coordinates currentCenter = null;
+
+	private String type;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param displayArea the component display area.
+	 * @param type The type name
 	 * @param mapData     the map data.
 	 */
-	protected CannedMarsMap(JComponent displayArea, MapData mapData) {
+	protected CannedMarsMap(JComponent displayArea, String type, MapData mapData) {
 		this.mapData = mapData;
+		this.type = type;
 		this.displayArea = displayArea;
+	}
+
+	@Override
+	public String getType() {
+		return type;
 	}
 
 	/**
@@ -157,5 +165,14 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	@Override
 	public Image getMapImage() {
 		return mapImage;
+	}
+
+	/**
+	 * Get the scale of pixel to Mars surface degree
+	 * @return
+	 */
+	@Override
+	public double getScale() {
+		return mapData.getScale();
 	}
 }

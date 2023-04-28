@@ -31,10 +31,10 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 	 * 
 	 * @param unit      the unit to display.
 	 * @param mapCenter the location center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
+	protected void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -43,23 +43,26 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
-		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
+		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
 		IntPoint labelLocation = null;
 		
 		if (displayInfo != null) {
-			if (SurfMarsMap.TYPE.equals(mapType)) {
-				labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
-				g2d.setColor(displayInfo.getSurfMapLabelColor());
-			}
-			else if (TopoMarsMap.TYPE.equals(mapType)) {
-				labelLocation = getLabelLocation(location, displayInfo.getTopoMapIcon(unit));
-				g2d.setColor(displayInfo.getTopoMapLabelColor());
-			}
-			else if (GeologyMarsMap.TYPE.equals(mapType)) {
-				labelLocation = getLabelLocation(location, displayInfo.getGeologyMapIcon(unit));
-				g2d.setColor(displayInfo.getGeologyMapLabelColor());
+			switch(baseMap.getType()) {
+				case SurfMarsMap.TYPE: {
+					labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
+					g2d.setColor(displayInfo.getSurfMapLabelColor());
+				} break;
+				case TopoMarsMap.TYPE: {
+					labelLocation = getLabelLocation(location, displayInfo.getTopoMapIcon(unit));
+					g2d.setColor(displayInfo.getTopoMapLabelColor());
+				} break;
+				case GeologyMarsMap.TYPE: {
+					labelLocation = getLabelLocation(location, displayInfo.getGeologyMapIcon(unit));
+					g2d.setColor(displayInfo.getGeologyMapLabelColor());
+				} break;
+				default:
 			}
 
 			g2d.setFont(displayInfo.getMapLabelFont());

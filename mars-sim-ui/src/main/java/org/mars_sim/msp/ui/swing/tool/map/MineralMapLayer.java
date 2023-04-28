@@ -24,8 +24,6 @@ import java.util.logging.Logger;
  */
 public class MineralMapLayer implements MapLayer {
 
-//	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.map.MineralMapLayer";
-//	private static final Logger logger = Logger.getLogger(CLASS_NAME);
  	private static final Logger logger = Logger.getLogger(MineralMapLayer.class.getName());
 	
 	// Domain members
@@ -59,11 +57,12 @@ public class MineralMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		// the line below can create nullpointerexception if shutdown swiftly in eclipse
+		String mapType = baseMap.getType();
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
 			mapCenterCache = new Coordinates(mapCenter);
 			mapTypeCache = mapType;

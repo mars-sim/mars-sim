@@ -59,7 +59,6 @@ public class MapPanel extends JPanel {
 	private double rho = CannedMarsMap.PIXEL_RHO;
 
 	private String mapErrorMessage;
-	private String mapType;
 	private String oldMapType;
 
 	private List<MapLayer> mapLayers;
@@ -81,11 +80,9 @@ public class MapPanel extends JPanel {
 		executor = Executors.newSingleThreadExecutor();
 
 		// Initializes map instance as surf map
-		mapType = SurfMarsMap.TYPE;
-		surfMap = new SurfMarsMap(this);
-		map = surfMap;
+		setMapType(SurfMarsMap.TYPE);
 		
-		oldMapType = mapType;
+		oldMapType = map.getType();
 		
 		mapError = false;
 		wait = false;
@@ -249,14 +246,17 @@ public class MapPanel extends JPanel {
 	 * @return map type.
 	 */
 	public String getMapType() {
-		return mapType;
+		return map.getType();
+	}
+
+	public Map getMap() {
+		return map;
 	}
 
 	/**
 	 * Sets the map type.
 	 */
 	public void setMapType(String mapType) {
-		this.mapType = mapType;
 		
 		if (SurfMarsMap.TYPE.equals(mapType)) {
 			if (surfMap == null) surfMap = new SurfMarsMap(this);
@@ -289,10 +289,9 @@ public class MapPanel extends JPanel {
 				recreateMap = true;
 				centerCoords = newCenter;
 			} 
-//			else
-//				centerCoords = null;
 		}
 
+		String mapType = map.getType();
 		if (!mapType.equals(oldMapType)) {
 			recreateMap = true;
 			oldMapType = mapType;
@@ -374,7 +373,7 @@ public class MapPanel extends JPanel {
 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, map, g);
                 }
         	}
         }

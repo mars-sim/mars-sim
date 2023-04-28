@@ -33,6 +33,6 @@ public class SurfMarsMap extends CannedMarsMap {
 	public SurfMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, mapDataUtil.getSurfaceMapData());
+		super(displayArea, TYPE, mapDataUtil.getSurfaceMapData());
 	}
 }

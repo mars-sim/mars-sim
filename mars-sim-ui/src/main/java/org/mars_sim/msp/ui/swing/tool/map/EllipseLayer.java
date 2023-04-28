@@ -62,10 +62,11 @@ public class EllipseLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		// Display ellipse if flag is true.
 		if (displayEllipse) {

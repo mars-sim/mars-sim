@@ -27,11 +27,11 @@ public class MapUtils {
 	 * Gets a coordinate x, y position on the map image.
 	 * 
 	 * @param coords  location of unit
-	 * @param mapType the type of map.
+	 * @param baseMap the type of map.
 	 * @return display point on map
 	 */
-	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
-		return Coordinates.findRectPosition(coords, mapCenter, IntegerMapData.RHO, IntegerMapData.HALF_MAP, IntegerMapData.LOW_EDGE);
+	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, Map baseMap) {
+		return Coordinates.findRectPosition(coords, mapCenter, baseMap.getScale(), IntegerMapData.HALF_MAP, IntegerMapData.LOW_EDGE);
 	}
 
 	/**

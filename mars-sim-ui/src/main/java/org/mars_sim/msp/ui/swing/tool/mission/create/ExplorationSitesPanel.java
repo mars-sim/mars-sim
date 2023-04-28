@@ -173,7 +173,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
 				siteListPane.add(sitePane);
 				navLayer.addNavpointPosition(
-						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 				mapPane.repaint();
 				addButton.setEnabled(canAddMoreSites());
 				validate();
@@ -255,7 +255,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel startingSitePane = new SitePanel(0, startingSite);
 			siteListPane.add(startingSitePane);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 	//		mapPane.setCenterCoords(startingSite);
 			mapPane.showMap(startingSite);
 			addButton.setEnabled(canAddMoreSites());
@@ -409,7 +409,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
 			sitePane.setSiteNum(x);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 		}
 		mapPane.repaint();
 	}
@@ -563,9 +563,9 @@ class ExplorationSitesPanel extends WizardPanel {
 				navOffset = determineOffset(event.getX(), event.getY());
 
 				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(),
-						SurfMarsMap.TYPE);
+						mapPane.getMap());
 				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(),
-						SurfMarsMap.TYPE);
+						mapPane.getMap());
 				int radiusPixels = convertDistanceToMapPixels(getRadius());
 
 				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
