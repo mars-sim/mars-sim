@@ -20,9 +20,11 @@
       * 
       * @param centerPhi the phi center location of the map.
       * @param centerTheta the theta center location of the map.
+      * @param imageWidth The Width of the requested image
+	  * @param imageHieght The Height of the requested image
       * @return The map image.
       */
-     public Image getMapImage(double centerPhi, double centerTheta);
+     public Image getMapImage(double centerPhi, double centerTheta, int imageWidth, int imageHeight);
      
      /**
       * Gets the RGB map color at a given location.
@@ -33,12 +35,9 @@
       */
      public Color getRGBColor(double phi, double theta);
 
-//     /**
-//      * Gets the elevation [km] at a given location.
- //
-//      * @param phi the phi location.
-//      * @param theta the theta location.
-//      * @return the elevation [km].
-//      */
-// 	public int getElevationInt(double phi, double theta);
+    /**
+     * Get the scale of pixel to Mars surface degree
+     * @return
+     */
+    public double getScale();
  }

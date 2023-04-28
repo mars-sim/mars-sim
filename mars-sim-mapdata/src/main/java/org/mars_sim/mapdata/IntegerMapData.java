@@ -11,7 +11,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -46,39 +45,28 @@ import javax.imageio.ImageIO;
  	public static final int LOW_EDGE = HALF_MAP - MAP_BOX_HEIGHT / 2;
  
  	private static final double TWO_PI = Math.PI * 2;
- 	private static final double HEIGHT_RATIO = 1.0 * MAP_BOX_HEIGHT / MAP_PIXEL_HEIGHT;
- 	private static final double WIDTH_RATIO = 1.0 * MAP_BOX_WIDTH / MAP_PIXEL_WIDTH;
- 	
+
  	// The value of PHI_ITERATION_PADDING is derived from testing.
  	private static final double PHI_ITERATION_PADDING = 1.26;
  	// The value of PHI_PADDING is derived from testing.
- 	private static final double PHI_PADDING = 1.46;
+ 	private static final double PHI_PADDING = 1.46; 	 	
  	
- 	private static final double PHI_ITERATION_FACTOR = MAP_PIXEL_HEIGHT * PHI_ITERATION_PADDING;
- 	
- 	private static final double PHI_ITERATION_ANGLE = Math.PI / PHI_ITERATION_FACTOR;
- 	
- 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * HEIGHT_RATIO;
  	// The value of THETA_ITERATION_PADDING is derived from testing.
  	private static final double THETA_ITERATION_PADDING = 1.46;
  	
- 	private static final double THETA_ITERATION_FACTOR = MAP_PIXEL_WIDTH * THETA_ITERATION_PADDING;
  	// The value of MIN_THETA_PADDING is derived from testing.
  	private static final double MIN_THETA_PADDING = 1.02;
 
  	// The value of POLAR_CAP_FACTOR is derived from testing.
  	private static final double POLAR_CAP_FACTOR = 6.54;
- 	
  	private static final double POLAR_CAP_PI_ANGLE = Math.PI / POLAR_CAP_FACTOR;
- 	
  	private static final double POLAR_CAP_RANGE = Math.PI - POLAR_CAP_PI_ANGLE;
-	// Note : Polar cap phi values must display 2 PI theta range. 
- 	private static final double PI_RATIO = TWO_PI * WIDTH_RATIO;
- 	
- 	private static final double MIN_THETA_DISPLAY = PI_RATIO * MIN_THETA_PADDING;
-
+ 	 	
  	// Data members.
  	private int[][] pixels = null;
+	private int width;
+	private int height;
+	private double rho;
  	
  	/**
  	 * Constructor
@@ -90,11 +78,23 @@ import javax.imageio.ImageIO;
  		try {
  			// Load data files
  			pixels = loadMapData(mapFileName);
+
+			rho =  height / Math.PI;
+			logger.info("Loaded " + mapFileName + " with size " + width + "x" + height);
  			
  		} catch (IOException e) {
  			logger.log(Level.SEVERE, "Could not find the map file.", e);
  		}
  	}
+
+	/**
+	 * Get the scale of pixel to Mars surface degree
+	 * @return
+	 */
+	@Override
+	public double getScale() {
+		return rho;
+	}
 
  	/**
  	 * Loads the whole map data set into an 2-D integer array.
@@ -107,18 +107,12 @@ import javax.imageio.ImageIO;
 
  		URL imageMapURL = IntegerMapData.class.getResource(imageURL);
  		BufferedImage image = ImageIO.read(imageMapURL);
- 		
-// 		reproduceImage(image);
 
-// 		logger.log(Level.CONFIG, "Type : " + image.getType()); // TYPE_4BYTE_ABGR : 6  , // TYPE_3BYTE_BGR : 5
- 	
  		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
- 		final int width = image.getWidth();
- 		final int height = image.getHeight();
+ 		width = image.getWidth();
+ 		height = image.getHeight();
  		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
 
-// 		logger.log(Level.CONFIG, "hasAlphaChannel : " + hasAlphaChannel);
- 		
  		int[][] result = new int[height][width];
  		if (hasAlphaChannel) {
  			final int pixelLength = 4;
@@ -166,14 +160,21 @@ import javax.imageio.ImageIO;
  	/**
  	 * Gets the map image based on the center phi and theta coordinates given.
  	 * 
- 	 * @param centerPhi
+ 	 * @param centerPhi Center phi value on the image
  	 * @param centerTheta
+	 * @param imageWidth The Width of the requested image
+	 * @param imageHieght The Height of the requested image
  	 */
  	@Override
- 	public Image getMapImage(double centerPhi, double centerTheta) {
+ 	public Image getMapImage(double centerPhi, double centerTheta, int imageWidth, int imageHeight) {
+
+		double phiRange = Math.PI * PHI_PADDING * (1.0 * imageHeight / height);
+		double phiIterationAngle = Math.PI / (height * PHI_ITERATION_PADDING);
+		double thetaIterationFactor = width * THETA_ITERATION_PADDING;
+		double minThetaDisplay = TWO_PI * (1.0 * imageWidth / width) * MIN_THETA_PADDING;
 
  		// Create a new buffered image to draw the map on.
- 		BufferedImage result = new BufferedImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);//BufferedImage.TYPE_INT_ARGB);
+ 		BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
 
  		// The map data is PI offset from the center theta.
  		double correctedTheta = centerTheta - Math.PI;
@@ -183,22 +184,22 @@ import javax.imageio.ImageIO;
  			correctedTheta -= TWO_PI;
 
  		// Create an array of int RGB color values to create the map image from.
- 		int[] mapArray = new int[MAP_BOX_WIDTH * MAP_BOX_HEIGHT];
+ 		int[] mapArray = new int[imageWidth * imageHeight];
 
  		// Determine starting and ending phi values.
- 		double startPhi = centerPhi - (PHI_RANGE / 2);
+ 		double startPhi = centerPhi - (phiRange / 2);
  		if (startPhi < 0D)
  			startPhi = 0D;
- 		double endPhi = centerPhi + (PHI_RANGE / 2);
+ 		double endPhi = centerPhi + (phiRange / 2);
  		if (endPhi > Math.PI)
  			endPhi = Math.PI;
  		
  		// Loop through each phi value.
- 		for (double x = startPhi; x <= endPhi; x += PHI_ITERATION_ANGLE) {
+ 		for (double x = startPhi; x <= endPhi; x += phiIterationAngle) {
  			// Determine theta iteration angle.
- 			double thetaIterationAngle = TWO_PI / (THETA_ITERATION_FACTOR * Math.sin(x) + 1);
+ 			double thetaIterationAngle = TWO_PI / (thetaIterationFactor * Math.sin(x) + 1);
 
- 			double thetaRange = ((1 - Math.sin(x)) * TWO_PI) + MIN_THETA_DISPLAY;
+ 			double thetaRange = ((1 - Math.sin(x)) * TWO_PI) + minThetaDisplay;
  			
  			if ((x < POLAR_CAP_PI_ANGLE) || (x > (POLAR_CAP_RANGE)))
  				thetaRange = TWO_PI;
@@ -223,18 +224,18 @@ import javax.imageio.ImageIO;
  				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected);
 
  				// Determine the display x and y coordinates for the pixel in the image.
- 				int displayX = MAP_BOX_WIDTH - location.x;
- 				int displayY = MAP_BOX_HEIGHT - location.y;
+ 				int displayX = imageWidth - location.x;
+ 				int displayY = imageHeight - location.y;
 
  				// Check that the x and y coordinates are within the display area.
  				boolean leftBounds = displayX >= 0;
- 				boolean rightBounds = displayX < MAP_BOX_WIDTH;
+ 				boolean rightBounds = displayX < imageWidth;
  				boolean topBounds = displayY >= 0;
- 				boolean bottomBounds = displayY < MAP_BOX_HEIGHT;
+ 				boolean bottomBounds = displayY < imageHeight;
  				if (leftBounds && rightBounds && topBounds && bottomBounds) {
 
  					// Determine array index for the display location.
- 					int index = (MAP_BOX_WIDTH - displayX) + ((MAP_BOX_HEIGHT - displayY) * MAP_BOX_WIDTH);
+ 					int index = (imageWidth - displayX) + ((imageHeight - displayY) * imageWidth);
 
  					// Put color in array at index.
  					if ((index >= 0) && (index < mapArray.length))
@@ -244,7 +245,7 @@ import javax.imageio.ImageIO;
  		}
 
  		// Create new map image.
- 		result.setRGB(0, 0, MAP_BOX_WIDTH, MAP_BOX_HEIGHT, mapArray, 0, MAP_BOX_WIDTH);
+ 		result.setRGB(0, 0, imageWidth, imageHeight, mapArray, 0, imageWidth);
 
  		return result;
  	}
@@ -290,7 +291,7 @@ import javax.imageio.ImageIO;
 // 		if (column == colorRow.length)
 // 			column--;
 
- 		int row = (int) Math.round(phi * (MAP_PIXEL_HEIGHT / Math.PI));
+ 		int row = (int) Math.round(phi * (pixels.length / Math.PI));
  		if (row == pixels.length)
  			row--;
 
@@ -311,112 +312,13 @@ import javax.imageio.ImageIO;
  	 * @param newTheta the new theta coordinate
  	 * @return pixel offset value for map
  	 */
- 	public Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta) {
+ 	private Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta) {
 
  		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
- 		final double temp_buff_x = RHO * Math.sin(newPhi);
- 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + HALF_MAP) - LOW_EDGE;
+ 		final double temp_buff_x = rho * Math.sin(newPhi);
+ 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (height/2)) - LOW_EDGE;
  		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (RHO * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + HALF_MAP) - LOW_EDGE;
+ 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (height/2)) - LOW_EDGE;
  		return new Point(buff_x, buff_y);
- 	}
- 	
- 	public static void reproduceImage(BufferedImage image) {
- 		int pixels[][] = convertTo2DWithoutUsingGetRGB(image);//convertTo2DUsingFastRGB(image);//convertTo2DUsingGetRGB(image);//convertTo2DWithoutUsingGetRGB(image);
- 		 
- 		boolean withAlpha = false; // if you need the alpha channel change this to true
- 		
- 		logger.log(Level.CONFIG, "withAlpha : " + withAlpha);
- 		
- 		String imgFormat = "jpg";  // if you need the alpha channel change this to png
- 		String imgPath   = "testImage." + imgFormat;
- 		 
- 		BufferedImage newImg = getCustomImage(pixels, withAlpha);
- 		 
- 		File location = new File(System.getProperty("user.home") + "/.mars-sim/" + imgPath);
- 		
- 		try {
- 			ImageIO.write(newImg, imgFormat,location);
- 		} catch (IOException e) {
-			 System.out.println("Problems in reproduceImage's ImageIO.write: " + e.getMessage());
- 		}
- 	}
- 	
- 	private static int[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
-
- 		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
- 		final int width = image.getWidth();
- 		final int height = image.getHeight();
- 		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
-
- 		logger.log(Level.CONFIG, "hasAlphaChannel : " + hasAlphaChannel);
- 		
- 		int[][] result = new int[height][width];
- 		if (hasAlphaChannel) {
- 			final int pixelLength = 4;
- 			for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
- 				int argb = 0;
- 				argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
- 				argb += ((int) pixels[pixel + 1] & 0xff); // blue
- 				argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
- 				argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
- 				
-// 				The Red and Blue channel comments are flipped. 
-// 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
- 				
-// 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-// 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
-// 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
- 						
- 				result[row][col] = argb;
- 				col++;
- 				if (col == width) {
- 					col = 0;
- 					row++;
- 				}
- 			}
- 		} else {
- 			final int pixelLength = 3;
- 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
- 				int argb = 0;
- 				argb += -16777216; // 255 alpha
- 				argb += ((int) pixels[pixel] & 0xff); // blue
- 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
- 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
- 				result[row][col] = argb;
- 				col++;
- 				if (col == width) {
- 					col = 0;
- 					row++;
- 				}
- 			}
- 		}
-
- 		return result;
- 	}
- 	
- 	private static BufferedImage getCustomImage(int[][] pixels, final boolean withAlpha) {
- 	  // Assuming pixels was taken from convertTo2DWithoutUsingGetRGB
- 	  // i.e. img.length == pixels.length and img.width == pixels[x].length
- 	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-// 	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_BGR);
- 		
- 	  
- 	  for (int y = 0; y < pixels.length; y++) {
- 	     for (int x = 0; x < pixels[y].length; x++) {
- 	        if (withAlpha)
- 	           img.setRGB(x, y, pixels[y][x]);
- 	        else {
- 	           int pixel = pixels[y][x];
-// 	           int alpha = (pixel >> 24 & 0xff);
- 	           int red   = (pixel >> 16 & 0xff);
- 	           int green = (pixel >> 8 & 0xff);
- 	           int blue  = (pixel & 0xff);
- 	           int rgb = (red << 16) | (green << 8) | blue;
- 	           img.setRGB(x, y, rgb);
- 	        }
- 	     }
- 	  }
- 	  return img;
  	}
  }

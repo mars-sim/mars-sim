@@ -59,7 +59,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * @return the map image.
 	 */
 	private Image createMapImage(Coordinates center) {
-		return mapData.getMapImage(center.getPhi(), center.getTheta());
+		return mapData.getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 */
 	public void paintDoubleBuffer() {
 		if (mapImage == null) {
-			mapImage = createImage(IntegerMapData.MAP_BOX_WIDTH, IntegerMapData.MAP_BOX_HEIGHT);
+			mapImage = createImage(MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
 			if (mapImage != null) {
 				Graphics dbg = mapImage.getGraphics();
 				Graphics2D g2d = (Graphics2D) dbg;
