@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitLabelMapLayer.java
- * @date 2022-08-20
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -60,6 +60,14 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 			else if (GeologyMarsMap.TYPE.equals(mapType)) {
 				labelLocation = getLabelLocation(location, displayInfo.getGeologyMapIcon(unit));
 				g2d.setColor(displayInfo.getGeologyMapLabelColor());
+			}
+			else if (RegionMarsMap.TYPE.equals(mapType)) {
+				labelLocation = getLabelLocation(location, displayInfo.getRegionMapIcon(unit));
+				g2d.setColor(displayInfo.getRegionMapLabelColor());
+			}
+			else if (VikingMarsMap.TYPE.equals(mapType)) {
+				labelLocation = getLabelLocation(location, displayInfo.getVikingMapIcon(unit));
+				g2d.setColor(displayInfo.getVikingMapLabelColor());
 			}
 
 			g2d.setFont(displayInfo.getMapLabelFont());

@@ -24,8 +24,6 @@ import java.util.logging.Logger;
  */
 public class MineralMapLayer implements MapLayer {
 
-//	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.map.MineralMapLayer";
-//	private static final Logger logger = Logger.getLogger(CLASS_NAME);
  	private static final Logger logger = Logger.getLogger(MineralMapLayer.class.getName());
 	
 	// Domain members

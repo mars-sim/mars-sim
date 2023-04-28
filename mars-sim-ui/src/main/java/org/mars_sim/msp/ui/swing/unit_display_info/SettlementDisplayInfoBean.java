@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementDisplayInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -29,6 +29,9 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     private Icon surfMapIcon;
     private Icon topoMapIcon;
     private Icon geoMapIcon;
+    private Icon regionMapIcon;
+    private Icon vikingMapIcon;
+    
     private Icon buttonIcon;
     private Font mapLabelFont;
 
@@ -39,12 +42,15 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
         surfMapIcon = ImageLoader.getIconByName("map/settlement");
         topoMapIcon = ImageLoader.getIconByName("map/settlement_black");
         geoMapIcon = ImageLoader.getIconByName("map/settlement_black");
+        regionMapIcon = ImageLoader.getIconByName("map/settlement_black");
+        vikingMapIcon = ImageLoader.getIconByName("map/settlement");
         buttonIcon = ImageLoader.getIconByName("settlement");
         mapLabelFont = new Font("SansSerif", Font.BOLD, 12);
     }
 
     /**
      * Checks if unit is to be displayed on the navigator tool map.
+     * 
      * @param unit the unit to display
      * @return true if unit is to be displayed on navigator map.
      */
@@ -54,6 +60,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets display icon for the surface navigator map.
+     * 
      * @param unit the unit to display
      * @return icon
      */
@@ -63,6 +70,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets display icon for topo navigator map.
+     * 
      * @param unit the unit to display
      * @return icon
      */
@@ -72,6 +80,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Checks if the map icon should blink on and off.
+     * 
      * @param unit the unit to display
      * @return true if blink
      */
@@ -81,6 +90,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets the label color for surface navigator map.
+     * 
      * @return color
      */
     public Color getSurfMapLabelColor() {
@@ -89,6 +99,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets the label color for topo navigator map.
+     * 
      * @return color
      */
     public Color getTopoMapLabelColor() {
@@ -96,7 +107,38 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     }
 
     /**
+     * Gets display icon for geological navigator map.
+     * 
+     * @param unit the unit to display
+     * @return icon
+     */
+	public Color getGeologyMapLabelColor() {
+		return Color.black;
+	}
+
+    /**
+     * Gets display icon for regional navigator map.
+     * 
+     * @param unit the unit to display
+     * @return icon
+     */
+	public Color getRegionMapLabelColor() {
+		return Color.black;
+	}
+
+    /**
+     * Gets display icon for viking navigator map.
+     * 
+     * @param unit the unit to display
+     * @return icon
+     */
+	public Color getVikingMapLabelColor() {
+        return Color.green;
+	}
+	
+    /**
      * Gets the label font for navigator map.
+     * 
      * @return font
      */
     public Font getMapLabelFont() {
@@ -105,6 +147,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets the range (km) for clicking on unit on navigator map.
+     * 
      * @return clicking range
      */
     public double getMapClickRange() {
@@ -113,6 +156,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Checks if the unit is to be displayed on the navigator tool globe.
+     * 
      * @param unit the unit to display.
      * @return true if unit is to be displayed on globe
      */
@@ -122,6 +166,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets display color for surface globe.
+     * 
      * @return color
      */
     public Color getSurfGlobeColor() {
@@ -130,14 +175,43 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets display color for topo globe.
+     * 
      * @return color
      */
     public Color getTopoGlobeColor() {
         return Color.black;
     }
 
+	/**
+     * Gets display color for geological globe.
+     * 
+     * @return color
+     */
+	public Color getGeologyGlobeColor() {
+		return lightSlateGray;
+	}
+
+    /**
+     * Gets display color for regional globe.
+     * 
+     * @return color
+     */
+	public Color getRegionGlobeColor() {
+		return lightSlateGray;
+	}
+
+    /**
+     * Gets display color for viking globe.
+     * 
+     * @return color
+     */
+	public Color getVikingGlobeColor() {
+        return Color.green;
+	}
+
     /**
      * Gets icon for unit button.
+     * 
      * @return icon
      */
     public Icon getButtonIcon(Unit unit) {
@@ -146,6 +220,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets a sound appropriate for this unit.
+     * 
      * @param unit the unit to display.
      * @returns sound filepath for unit or empty string if none.
      */
@@ -153,18 +228,33 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     	return SoundConstants.SND_SETTLEMENT;
     }
 
-	@Override
+    /**
+     * Gets display icon for geological navigator map.
+     * 
+     * @param unit the unit to display
+     * @return icon
+     */
 	public Icon getGeologyMapIcon(Unit unit) {
 		return geoMapIcon;
 	}
 
-	@Override
-	public Color getGeologyMapLabelColor() {
-		return lightSlateGray;
+	/**
+	 * Gets display icon for regional navigator map.
+	 * 
+	 * @param unit the unit to display
+	 * @return icon
+	 */
+	public Icon getRegionMapIcon(Unit unit) {
+		return regionMapIcon;
 	}
-
-	@Override
-	public Color getGeologyGlobeColor() {
-		return lightSlateGray;
+	/**
+	 * Gets display icon for viking navigator map.
+	 * 
+	 * @param unit the unit to display
+	 * @return icon
+	 */
+	public Icon getVikingMapIcon(Unit unit) {
+		return vikingMapIcon;
 	}
+	
 }

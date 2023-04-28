@@ -128,7 +128,9 @@ public class NavpointMapLayer implements MapLayer {
 			Icon navIcon = null;
 			if (navpoint == selectedNavpoint)
 				navIcon = navpointIconSelected;
-			else if (TopoMarsMap.TYPE.equals(mapType) || GeologyMarsMap.TYPE.equals(mapType))
+			else if (TopoMarsMap.TYPE.equals(mapType) 
+					|| GeologyMarsMap.TYPE.equals(mapType)
+					|| RegionMarsMap.TYPE.equals(mapType))
 				navIcon = navpointIconWhite;
 			else
 				navIcon = navpointIconColor;

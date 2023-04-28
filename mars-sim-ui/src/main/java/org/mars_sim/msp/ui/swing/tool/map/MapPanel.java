@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapPanel.java
- * @date 2022-08-02
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -71,6 +71,8 @@ public class MapPanel extends JPanel {
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
 	private GeologyMarsMap geoMap;
+	private RegionMarsMap regionMap;
+	private VikingMarsMap vikingMap;
 
 	private MainDesktopPane desktop;
 
@@ -270,6 +272,15 @@ public class MapPanel extends JPanel {
 			if (geoMap == null) geoMap = new GeologyMarsMap(this);
 			map = geoMap;
 		}
+		else if (RegionMarsMap.TYPE.equals(mapType)) {
+			if (regionMap == null) regionMap = new RegionMarsMap(this);
+			map = regionMap;
+		}
+		else if (VikingMarsMap.TYPE.equals(mapType)) {
+			if (vikingMap == null) vikingMap = new VikingMarsMap(this);
+			map = vikingMap;
+		}
+			
 		showMap(centerCoords);
 	}
 
@@ -426,6 +437,8 @@ public class MapPanel extends JPanel {
 		surfMap = null;
 		topoMap = null;
 		geoMap = null;
+		regionMap = null;
+		vikingMap = null;
 		update = false;
 		mapImage = null;
 	}

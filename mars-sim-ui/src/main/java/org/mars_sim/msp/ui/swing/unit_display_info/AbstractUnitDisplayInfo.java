@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * AbstractUnitDisplayInfo.java
- * @date 19-02-2023
+ * @date 2023-04-28
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_display_info;
@@ -40,6 +40,16 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
     }
 
     @Override
+    public Icon getRegionMapIcon(Unit unit) {
+        return null;
+    }
+
+    @Override
+    public Icon getVikingMapIcon(Unit unit) {
+        return null;
+    }
+    
+    @Override
     public boolean isMapBlink(Unit unit) {
         return false;
     }
@@ -59,6 +69,16 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
         return null;
     }
 
+    @Override
+    public Color getRegionMapLabelColor() {
+        return null;
+    }
+
+    @Override
+    public Color getVikingMapLabelColor() {
+        return null;
+    }
+    
     @Override
     public Font getMapLabelFont() {
         return null;
@@ -89,6 +109,16 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
         return null;
     }
 
+    @Override
+    public Color getRegionGlobeColor() {
+        return null;
+    }
+    
+    @Override
+    public Color getVikingGlobeColor() {
+        return null;
+    }
+    
     @Override
     public Icon getButtonIcon(Unit unit) {
         return null;

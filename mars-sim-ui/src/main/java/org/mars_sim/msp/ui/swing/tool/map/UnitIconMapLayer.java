@@ -1,20 +1,22 @@
 /*
  * Mars Simulation Project
  * UnitIconMapLayer.java
- * @date 2022-08-28
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.map;
+
+import java.awt.Component;
+import java.awt.Graphics;
+
+import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * The UnitMapLayer is a graphics layer to display unit icons.
@@ -46,12 +48,17 @@ public class UnitIconMapLayer extends UnitMapLayer {
 
 		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
 			Icon displayIcon = null;
-			if (TopoMarsMap.TYPE.equals(mapType))
+			if (SurfMarsMap.TYPE.equals(mapType))
+				displayIcon = displayInfo.getSurfMapIcon(unit);
+			else if (TopoMarsMap.TYPE.equals(mapType))
 				displayIcon = displayInfo.getTopoMapIcon(unit);
 			else if (GeologyMarsMap.TYPE.equals(mapType))
 				displayIcon = displayInfo.getGeologyMapIcon(unit);
-			else
-				displayIcon = displayInfo.getSurfMapIcon(unit);
+			else if (RegionMarsMap.TYPE.equals(mapType))
+				displayIcon = displayInfo.getRegionMapIcon(unit);	
+			else if (VikingMarsMap.TYPE.equals(mapType))
+				displayIcon = displayInfo.getVikingMapIcon(unit);	
+	
 			if (g != null)
 				displayIcon.paintIcon(displayComponent, g, locX, locY);
 		}

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitDisplayInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -52,6 +52,22 @@ public interface UnitDisplayInfo {
 	public Icon getGeologyMapIcon(Unit unit);
 
 	/**
+	 * Gets display icon for regional navigator map.
+	 * 
+	 * @param unit the unit to display
+	 * @return icon
+	 */
+	public Icon getRegionMapIcon(Unit unit);
+	
+	/**
+	 * Gets display icon for viking navigator map.
+	 * 
+	 * @param unit the unit to display
+	 * @return icon
+	 */
+	public Icon getVikingMapIcon(Unit unit);
+	
+	/**
 	 * Checks if the map icon should blink on and off.
 	 * 
 	 * @param unit the unit to display
@@ -80,6 +96,20 @@ public interface UnitDisplayInfo {
 	 */
 	public Color getGeologyMapLabelColor();
 
+	/**
+	 * Gets the label color for regional navigator map.
+	 * 
+	 * @return color
+	 */
+    public Color getRegionMapLabelColor();
+
+	/**
+	 * Gets the label color for viking navigator map.
+	 * 
+	 * @return color
+	 */
+    public Color getVikingMapLabelColor();
+    
 	/**
 	 * Gets the label font for navigator map.
 	 * 
@@ -123,6 +153,20 @@ public interface UnitDisplayInfo {
 	 */
 	public Color getGeologyGlobeColor();
 
+	/**
+	 * Gets display color for regional globe.
+	 * 
+	 * @return color
+	 */
+	public Color getRegionGlobeColor();
+	
+	/**
+	 * Gets display color for viking globe.
+	 * 
+	 * @return color
+	 */
+	public Color getVikingGlobeColor();
+			
 	/**
 	 * Gets icon for unit button.
 	 * 

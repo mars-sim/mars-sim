@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GlobeDisplay.java
- * @date 2022-08-02
+ * @date 2023-04-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -61,7 +61,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private static int dyCache = 0;
 
 	// Data members
-	/** The Map type. 0 = surface, 1 = topo, 2 = geology. */
+	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
 	private int mapType;
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
@@ -76,7 +76,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private MarsMap topoSphere;
 	/** Geological sphere object. */
 	private MarsMap geoSphere;
+	/** Regional sphere object. */
 	private MarsMap regionSphere;
+	/** Viking sphere object. */
 	private MarsMap vikingSphere;
 	
 	
@@ -148,7 +150,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		setPreferredSize(new Dimension(globeBoxWidth, globeBoxHeight));
 		setMaximumSize(getPreferredSize());
 
-		// Construct sphere objects for surface, geo and topographical modes
+		// Construct sphere objects for various map types
 		marsSphere = new MarsMap(MarsMapType.SURFACE_MID, this);
 		topoSphere = new MarsMap(MarsMapType.TOPO_MID, this);
 		geoSphere = new MarsMap(MarsMapType.GEO_MID, this);
@@ -223,7 +225,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	}
 	
 	/**
-	 * Displays real surface globe, regenerating if necessary
+	 * Displays surface globe, regenerating if necessary.
 	 */
 	public void showSurf() {
 		if (mapType != 0) {
@@ -238,7 +240,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * Displays topographical globe, regenerating if necessary
+	 * Displays topographical globe, regenerating if necessary.
 	 */
 	public void showTopo() {
 		if (mapType != 1) {
@@ -250,7 +252,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 
 	/**
-	 * Displays geological globe, regenerating if necessary
+	 * Displays geological globe, regenerating if necessary.
 	 */
 	public void showGeo() {
 		if (mapType != 2) {
@@ -260,9 +262,30 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		showGlobe(centerCoords);
 	}
 	
+	/**
+	 * Displays regional globe, regenerating if necessary.
+	 */
+	public void showRegion() {
+		if (mapType != 3) {
+			recreate = true;
+		}
+		mapType = 3;
+		showGlobe(centerCoords);
+	}
 	
 	/**
-	 * Displays globe at given center regardless of mode, regenerating if necessary
+	 * Displays viking globe, regenerating if necessary.
+	 */
+	public void showViking() {
+		if (mapType != 4) {
+			recreate = true;
+		}
+		mapType = 4;
+		showGlobe(centerCoords);
+	}
+	
+	/**
+	 * Displays globe at given center regardless of mode, regenerating if necessary.
 	 *
 	 * @param newCenter the center location for the globe
 	 */
@@ -293,6 +316,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			topoSphere.drawSphere(centerCoords);
 		} else if (mapType == 2) {
 			geoSphere.drawSphere(centerCoords);
+		} else if (mapType == 3) {
+			regionSphere.drawSphere(centerCoords);
+		} else if (mapType == 4) {
+			vikingSphere.drawSphere(centerCoords);			
 		}
 		
 		paintDoubleBuffer();
@@ -301,7 +328,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	/*
 	 * Uses double buffering to draws into its own graphics object dbg before
-	 * calling paintComponent()
+	 * calling paintComponent().
 	 */
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
@@ -324,7 +351,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		// Image starfield = ImageLoader.getImage("starfield.gif");
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
-		// Draw real, topo or geo globe
+		// Draw the globe
 		MarsMap globe = null;
 		
 		if (mapType == 0) {
@@ -333,6 +360,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			globe = topoSphere;
 		} else if (mapType == 2) {
 			globe = geoSphere;
+		} else if (mapType == 3) {
+			globe = regionSphere;
+		} else if (mapType == 4) {
+			globe = vikingSphere;			
 		}
 		
 		if (globe == null)
@@ -364,7 +395,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 
 	/**
-	 * draw the dots on the globe that identify units
+	 * Draws the dots on the globe that identify units.
 	 * 
 	 * @param g graphics context
 	 */
@@ -392,6 +423,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 						g.setColor(displayInfo.getTopoGlobeColor());
 					} else if (mapType == 2) {
 						g.setColor(displayInfo.getGeologyGlobeColor());
+					} else if (mapType == 3) {
+						g.setColor(displayInfo.getRegionGlobeColor());
+					} else if (mapType == 4) {
+						g.setColor(displayInfo.getVikingGlobeColor());						
 					}
 					
 					IntPoint tempLocation = getUnitDrawLocation(unitCoords);
@@ -495,6 +530,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		marsSphere = null;
 		topoSphere = null;
+		geoSphere = null;
+		regionSphere = null;
+		vikingSphere = null;
+		
 		centerCoords = null;
 
 		dbg = null;

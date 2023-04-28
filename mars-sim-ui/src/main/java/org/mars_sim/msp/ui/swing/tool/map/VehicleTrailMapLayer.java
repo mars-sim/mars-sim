@@ -46,7 +46,8 @@ public class VehicleTrailMapLayer implements MapLayer {
 		// Set trail color
 		if (TopoMarsMap.TYPE.equals(mapType))
 			g.setColor(Color.black);
-		else if (GeologyMarsMap.TYPE.equals(mapType))
+		else if (GeologyMarsMap.TYPE.equals(mapType)
+				|| RegionMarsMap.TYPE.equals(mapType))
 			g.setColor(Color.black);
 		else
 			g.setColor(new Color(0, 96, 0));

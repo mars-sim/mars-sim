@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataUtil.java
- * @date 2023-04-26
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -123,5 +123,22 @@
      public MapData getGeologyMapData() {
          return mapDataFactory.getMapData(MapDataFactory.GEOLOGY_MAP_DATA);
      }
+       
+     /**
+      * Gets the region map data.
+      * 
+      * @return region map data.
+      */
+     public MapData getRegionMapData() {
+         return mapDataFactory.getMapData(MapDataFactory.REGION_MAP_DATA);
+     }
      
+     /**
+      * Gets the viking map data.
+      * 
+      * @return viking map data.
+      */
+     public MapData getVikingMapData() {
+         return mapDataFactory.getMapData(MapDataFactory.VIKING_MAP_DATA);
+     }
  }
