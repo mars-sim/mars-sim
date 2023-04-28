@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -45,8 +44,8 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public final static int MAP_BOX_HEIGHT = IntegerMapData.MAP_BOX_HEIGHT;
-	public final static int MAP_BOX_WIDTH = IntegerMapData.MAP_BOX_WIDTH;
+	public final static int MAP_BOX_HEIGHT = 300;
+	public final static int MAP_BOX_WIDTH = 300;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;
@@ -55,8 +54,6 @@ public class MapPanel extends JPanel {
 	private boolean mapError;
 	private boolean wait;
 	private boolean update;
-
-	private double rho = CannedMarsMap.PIXEL_RHO;
 
 	private String mapErrorMessage;
 	private String oldMapType;
@@ -117,7 +114,7 @@ public class MapPanel extends JPanel {
 
 				if ((dx != 0 || dy != 0) 
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
-					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, map.getScale());
 					map.drawMap(centerCoords);
 					repaint();
 				}
@@ -168,7 +165,7 @@ public class MapPanel extends JPanel {
 				if ((dx != 0 || dy != 0)
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 
-					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, map.getScale());
 					map.drawMap(centerCoords);
 					repaint();
 				}
@@ -428,4 +425,11 @@ public class MapPanel extends JPanel {
 		update = false;
 		mapImage = null;
 	}
+
+    public Coordinates getMouseCoordinates(int x, int y) {
+		double xMap = (double) (x - (Map.DISPLAY_WIDTH / 2D) - 1);
+		double yMap = (double) (y - (Map.DISPLAY_HEIGHT / 2D) - 1);
+		
+		return centerCoords.convertRectToSpherical(xMap, yMap, map.getScale());
+    }
 }

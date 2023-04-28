@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Image;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 
 /**
@@ -18,9 +17,9 @@ import org.mars_sim.msp.core.Coordinates;
 public interface Map {
 
 	/** The display box map height (for scrolling) */
-	public static final int DISPLAY_HEIGHT = IntegerMapData.GLOBE_BOX_HEIGHT;
+	public static final int DISPLAY_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 	/** The display box map width (for scrolling) */
-	public static final int DISPLAY_WIDTH = IntegerMapData.GLOBE_BOX_WIDTH;
+	public static final int DISPLAY_WIDTH = MapPanel.MAP_BOX_WIDTH;
 	/** Map display width in pixels. */
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
@@ -30,15 +29,8 @@ public interface Map {
 
 	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
 	
-	public static final double PIXEL_RHO = IntegerMapData.RHO;
-	
 	public static final double TWO_PI = Math.PI * 2D;
 	
-	/** how far off center in the surface map are things placed */
-//	public static final int SCREEN_OFFSET_X=300;
-	/** how far off center in the surface map are things placed */
-//	public static final int SCREEN_OFFSET_Y=300;
-
 	/**
 	 * Creates a 2D map at a given center point.
 	 * 
@@ -72,4 +64,16 @@ public interface Map {
 	 * @return
 	 */
 	public String getType();
+
+	/**
+	 * Get the height of this map in pixels
+	 * @return
+	 */
+    public int getPixelHeight();
+
+	/**
+	 * Get the width of this map in pixels
+	 * @return
+	 */
+    public int getPixelWidth();
 }

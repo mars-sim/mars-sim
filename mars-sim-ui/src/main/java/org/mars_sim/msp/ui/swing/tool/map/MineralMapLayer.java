@@ -74,7 +74,7 @@ public class MineralMapLayer implements MapLayer {
 			double centerX = 150;
 			double centerY = 150;
 
-			double rho = CannedMarsMap.PIXEL_RHO;
+			double rho = baseMap.getScale();
 
 			java.util.Map<String, Color> mineralColors = getMineralColors();
 			updateMineralsDisplayed();

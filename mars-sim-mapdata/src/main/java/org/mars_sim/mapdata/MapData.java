@@ -40,4 +40,16 @@
      * @return
      */
     public double getScale();
+
+    /**
+     * Get the number of pixels height
+     * @return
+     */
+    public int getHeight();
+
+    /**
+     * Get the number of pixels width
+     * @return
+     */
+    public int getWidth();
  }

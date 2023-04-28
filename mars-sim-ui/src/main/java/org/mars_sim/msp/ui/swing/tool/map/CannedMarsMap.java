@@ -175,4 +175,22 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	public double getScale() {
 		return mapData.getScale();
 	}
+
+	/**
+	 * Get the height of this map in pixels
+	 * @return
+	 */
+	@Override
+    public int getPixelHeight() {
+		return mapData.getHeight();
+	}
+
+	/**
+	 * Get the width of this map in pixels
+	 * @return
+	 */
+	@Override
+    public int getPixelWidth() {
+		return mapData.getWidth();
+	}
 }

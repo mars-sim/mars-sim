@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 
 /**
  * The MarsMap class generates the surface, the topographical and 
@@ -34,9 +34,9 @@ public class MarsMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	public static final int MAP_H = IntegerMapData.MAP_BOX_HEIGHT;
+	private static final int MAP_H = MapPanel.MAP_BOX_HEIGHT;
 	/** Width of map source image (pixels). */
-	public static final int MAP_W = MAP_H * 2;
+	private static final int MAP_W = MAP_H * 2;
 	private static final int HALF_MAP_HEIGHT = MAP_H / 2;
 	
 	private static final double PI_HALF = Math.PI / 2;

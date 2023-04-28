@@ -26,24 +26,6 @@ import javax.imageio.ImageIO;
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
- 	
-	/** Note: Make sure this param matches the number of vertical pixels of the surface map. */ 
-	public static final int MAP_PIXEL_HEIGHT = 4096; //1024; 1440; 2048; 2880; 4096
-	/** Note: Make sure this param matches the number of horizontal pixels of the surface map. */ 
-	public static final int MAP_PIXEL_WIDTH = 8192; //2048; 2880; 4096; 5760; 8192
-	
- 	public static final int GLOBE_BOX_HEIGHT = 300;
- 	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
- 	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
- 	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
- 	
- 	// The diameter of Mars in pixels
-	public static final double RHO = MAP_PIXEL_HEIGHT / Math.PI;
-	// The half map's height in pixels
- 	public static final int HALF_MAP = MAP_PIXEL_HEIGHT / 2;
- 	// The lower edge of map in pixels
- 	public static final int LOW_EDGE = HALF_MAP - MAP_BOX_HEIGHT / 2;
- 
  	private static final double TWO_PI = Math.PI * 2;
 
  	// The value of PHI_ITERATION_PADDING is derived from testing.
@@ -94,6 +76,24 @@ import javax.imageio.ImageIO;
 	@Override
 	public double getScale() {
 		return rho;
+	}
+
+	/**
+     * Get the number of pixels width
+     * @return
+     */
+	@Override
+    public int getWidth() {
+		return width;
+	}
+
+	/**
+     * Get the number of pixels height
+     * @return
+     */
+	@Override
+    public int getHeight() {
+		return height;
 	}
 
  	/**
@@ -172,6 +172,7 @@ import javax.imageio.ImageIO;
 		double phiIterationAngle = Math.PI / (height * PHI_ITERATION_PADDING);
 		double thetaIterationFactor = width * THETA_ITERATION_PADDING;
 		double minThetaDisplay = TWO_PI * (1.0 * imageWidth / width) * MIN_THETA_PADDING;
+		int lowEdge = (height/2) - (imageHeight / 2);
 
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
@@ -221,7 +222,7 @@ import javax.imageio.ImageIO;
  					yCorrected -= TWO_PI;
  				
  				// Determine the rectangular offset of the pixel in the image.
- 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected);
+ 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, lowEdge);
 
  				// Determine the display x and y coordinates for the pixel in the image.
  				int displayX = imageWidth - location.x;
@@ -312,13 +313,13 @@ import javax.imageio.ImageIO;
  	 * @param newTheta the new theta coordinate
  	 * @return pixel offset value for map
  	 */
- 	private Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta) {
+ 	private Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, int lowEdge) {
 
  		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
  		final double temp_buff_x = rho * Math.sin(newPhi);
- 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (height/2)) - LOW_EDGE;
+ 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (height/2)) - lowEdge;
  		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (height/2)) - LOW_EDGE;
+ 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (height/2)) - lowEdge;
  		return new Point(buff_x, buff_y);
  	}
  }

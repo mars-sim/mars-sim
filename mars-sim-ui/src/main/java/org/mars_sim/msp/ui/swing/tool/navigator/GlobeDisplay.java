@@ -21,7 +21,6 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
@@ -34,6 +33,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -44,11 +44,11 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
-	public static final int GLOBE_BOX_HEIGHT = IntegerMapData.MAP_BOX_WIDTH;
-	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
-	public static final int RATIO = GLOBE_BOX_HEIGHT / 300; 
+	private static final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
+	private static final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
+	private static final int RATIO = GLOBE_BOX_HEIGHT / 300; 
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
-	public static final int LIMIT = 60 * RATIO; 
+	private static final int LIMIT = 60 * RATIO; 
 
 	private static final double HALF_PI = Math.PI / 2;
 	private static final double TWO_PI = Math.PI * 2;

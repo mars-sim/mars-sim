@@ -22,11 +22,13 @@ import java.util.Map;
  	static final int REGION_MAP_DATA = 3; 		// "regional map data"
  	static final int VIKING_MAP_DATA = 4; 		// "viking map data"
 
-	private static final String SURFACE_MAP_FILE = "/maps/surface" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg";
-	private static final String TOPO_MAP_FILE = "/maps/topo" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg"; 
-	private static final String GEO_MAP_FILE = "/maps/geo" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg"; 
- 
+	private static final String SURFACE_MAP_FILE = "/maps/surface8192x4096.jpg";
+	private static final String TOPO_MAP_FILE = "/maps/topo8192x4096.jpg"; 
+	//private static final String GEO_MAP_FILE = "/maps/geo8192x4096.jpg"; 
+	private static final String GEO_MAP_FILE = "/maps/geo2880x1440.jpg"; 
+
 	private Map<Integer,MapData> mapdata = new HashMap<>();
+
  	/**
  	 * Constructor.
  	 */
