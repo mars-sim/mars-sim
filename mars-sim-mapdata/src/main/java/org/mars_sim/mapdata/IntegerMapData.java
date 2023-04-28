@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
  /**
   * A map that uses integer data stored in files to represent colors.
   */
- public abstract class IntegerMapData implements MapData {
+ public class IntegerMapData implements MapData {
 
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
@@ -38,10 +38,6 @@ import javax.imageio.ImageIO;
  	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
  	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
  	
-	protected static final String SURFACE_MAP_FILE = "/maps/surface" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg";
-	protected static final String TOPO_MAP_FILE = "/maps/topo" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg"; // "/maps/topo2880x1440.jpg";
-	protected static final String GEO_MAP_FILE = "/maps/geo" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg"; // "/maps/geologyMOLA2880x1440.jpg";
-
  	// The diameter of Mars in pixels
 	public static final double RHO = MAP_PIXEL_HEIGHT / Math.PI;
 	// The half map's height in pixels
@@ -167,87 +163,6 @@ import javax.imageio.ImageIO;
  		return result;
  	}
  	
-// 	/**
-// 	 * Loads the index data from a file.
-// 	 *
-// 	 * @param file name
-// 	 * @return array of index data
-// 	 * @throws IOException if file cannot be loaded.
-// 	 */
-// 	private int[] loadIndexData(String filename) throws IOException {
- //
-// 		// Load index data from map_data jar file.
-// 		ClassLoader loader = getClass().getClassLoader();
-// 		InputStream indexStream = loader.getResourceAsStream(filename);
-// 		if (indexStream == null)
-// 			throw new IOException("Can not load " + filename);
- //
-// 		// Read stream into an array.
-// 		BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
-// 		DataInputStream indexReader = new DataInputStream(indexBuff);
-// 		int index[] = new int[MAP_HEIGHT];
-// 		for (int x = 0; x < index.length; x++) {
-// 			index[x] = indexReader.readInt();
-// 		}
-// 		indexReader.close();
-// 		indexBuff.close();
- //
-// 		return index;
-// 	}
-
-// 	/**
-// 	 * Loads the map data from a file.
-// 	 *
-// 	 * @param filename the map data file
-// 	 * @param index    the index array
-// 	 * @return array list of map data
-// 	 * @throws IOException if map data cannot be loaded.
-// 	 */
-// 	private int[][] loadMapData(String filename, int[] index) throws IOException {
- //
-// 		// Load map data from map_data jar file.
-// 		ClassLoader loader = getClass().getClassLoader();
-// 		InputStream mapStream = loader.getResourceAsStream(filename);
-// 		if (mapStream == null)
-// 			throw new IOException("Can not load " + filename);
- //
-// 		// Decompress the xz file
-// 		// new DecompressXZ(filename);
- //
-// 		// Read stream into an array.
-// 		BufferedInputStream mapBuff = new BufferedInputStream(mapStream);
-// 		DataInputStream mapReader = new DataInputStream(mapBuff);
- //
-// 		// Create map colors array list.
-//// 		ArrayList<int[]> mapColors = new ArrayList<int[]>(MAP_HEIGHT);
-// 		
-// 		int[][] pixels = new int[MAP_HEIGHT][MAP_WIDTH];
- //
-// 		// Create an array of colors for each pixel in map height.
-// 		for (int i = 0; i < MAP_HEIGHT; i++) {
-// 			int[] colors = new int[index[i]];
-// 			
-// 			for (int j = 0; j < colors.length; j++) {
-// 				int red = mapReader.readByte();
-// 				red <<= 16;
-// 				red &= 0x00FF0000;
-// 				int green = mapReader.readByte();
-// 				green <<= 8;
-// 				green &= 0x0000FF00;
-// 				int blue = mapReader.readByte();
-// 				blue &= 0x000000FF;
-// 				int totalColor = 0xFF000000 | red | green | blue;
-// 				colors[j] = (new Color(totalColor)).getRGB();
-//// 				System.out.println("totalColor: " + totalColor + "  colors[y]: " + colors[y]);
-// 			}
- //
-// 			pixels[i] = colors;
-// 		
-// 		}
-// 		
-// 		return pixels;
-// 	}
-
  	/**
  	 * Gets the map image based on the center phi and theta coordinates given.
  	 * 
@@ -503,32 +418,5 @@ import javax.imageio.ImageIO;
  	     }
  	  }
  	  return img;
- 	}
- 	
- 	private static String toString(long nanoSecs) {
- 		int minutes = (int) (nanoSecs / 60000000000.0);
- 		int seconds = (int) (nanoSecs / 1000000000.0) - (minutes * 60);
- 		int millisecs = (int) (((nanoSecs / 1000000000.0) - (seconds + minutes * 60)) * 1000);
-
- 		if (minutes == 0 && seconds == 0)
- 			return millisecs + "ms";
- 		else if (minutes == 0 && millisecs == 0)
- 			return seconds + "s";
- 		else if (seconds == 0 && millisecs == 0)
- 			return minutes + "min";
- 		else if (minutes == 0)
- 			return seconds + "s " + millisecs + "ms";
- 		else if (seconds == 0)
- 			return minutes + "min " + millisecs + "ms";
- 		else if (millisecs == 0)
- 			return minutes + "min " + seconds + "s";
-
- 		return minutes + "min " + seconds + "s " + millisecs + "ms";
- 	}
- 	
- 	
- 	public void destroy() {
- 		pixels = null;
- 		logger = null;
  	}
  }

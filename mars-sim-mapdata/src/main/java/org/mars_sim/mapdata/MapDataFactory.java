@@ -7,6 +7,9 @@
 
  package org.mars_sim.mapdata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
   * A factory for map data.
   */
@@ -17,15 +20,13 @@
  	static final int TOPO_MAP_DATA = 1; 		// "topographical map data";
  	static final int GEOLOGY_MAP_DATA = 2; 		// "geological ages map data"
  	static final int REGION_MAP_DATA = 3; 		// "regional map data"
- 	static final int VIKING_MAP_DATA = 3; 		// "viking map data"
- 	
-// 	private boolean decompressed = false;s
+ 	static final int VIKING_MAP_DATA = 4; 		// "viking map data"
 
- 	// Data members.
- 	private MapData surfaceMapData;
- 	private MapData topoMapData;
- 	private MapData geologyMapData;
-
+	private static final String SURFACE_MAP_FILE = "/maps/surface" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg";
+	private static final String TOPO_MAP_FILE = "/maps/topo" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg"; 
+	private static final String GEO_MAP_FILE = "/maps/geo" + IntegerMapData.MAP_PIXEL_WIDTH + "x" + IntegerMapData.MAP_PIXEL_HEIGHT + ".jpg"; 
+ 
+	private Map<Integer,MapData> mapdata = new HashMap<>();
  	/**
  	 * Constructor.
  	 */
@@ -41,65 +42,17 @@
  	 */
  	MapData getMapData(int mapType) {
 
- 		// Decompress the dat maps
-// 		if (!decompressed) {
-// 			new DecompressXZ();
-// 			// Only need to do it once
-// 			decompressed = true;
-// 		}
- 		
- 		MapData result = null;
- 		
- 		if (mapType == SURFACE_MAP_DATA) {
- 			result = getSurfaceMapData();
- 		} else if (mapType == TOPO_MAP_DATA) {
- 			result = getTopoMapData();
- 		} else if (mapType == GEOLOGY_MAP_DATA) {
- 			result = getGeologyMapData();
- 		} else {
- 			throw new IllegalArgumentException("mapType: " + mapType + " not a valid type.");
- 		}
- 		
+		MapData result = mapdata.get(mapType);
+		if (result == null) {
+			String filename = switch (mapType) {
+				case SURFACE_MAP_DATA -> SURFACE_MAP_FILE;
+				case GEOLOGY_MAP_DATA -> GEO_MAP_FILE;
+				case TOPO_MAP_DATA -> TOPO_MAP_FILE;
+				default -> throw new IllegalArgumentException("No map data for type" + mapType);
+			};
+			result = new IntegerMapData(filename);
+			mapdata.put(mapType, result);
+		}
  		return result;
  	}
-
- 	/**
- 	 * Gets the surface map data.
- 	 * 
- 	 * @return surface map data.
- 	 */
- 	private MapData getSurfaceMapData() {
- 		// Create surface map data if it doesn't exist.
- 		if (surfaceMapData == null) {
- 			surfaceMapData = new SurfaceMapData();
- 		}
- 		return surfaceMapData;
- 	}
-
- 	/**
- 	 * Gets the topographical map data.
- 	 * 
- 	 * @return topographical map data.
- 	 */
- 	private MapData getTopoMapData() {
- 		// Create topo map data if it doesn't exist.
- 		if (topoMapData == null) {
- 			topoMapData = new TopoMapData();
- 		}
- 		return topoMapData;
- 	}
-
- 	/**
- 	 * Gets the geological map data.
- 	 * 
- 	 * @return geological map data.
- 	 */
- 	private MapData getGeologyMapData() {
- 		// Create geology map data if it doesn't exist.
- 		if (geologyMapData == null) {
- 			geologyMapData = new GeologyMapData();
- 		}
- 		return geologyMapData;
- 	}
-
  }
