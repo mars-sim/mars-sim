@@ -27,21 +27,21 @@ import javax.imageio.ImageIO;
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
-	protected static final String SURFACE_MAP_FILE = "/maps/surface2880x1440.jpg"; //"/maps/surface5760x1440.jpg"; // ; // 2880x1440, 5760x2880
-	protected static final String TOPO_MAP_FILE = "/maps/topo2880x1440.jpg";
-	protected static final String GEO_MAP_FILE = "/maps/geologyMOLA2880x1440.jpg";
-
-	/** Note: Make sure GLOBE_BOX_HEIGHT matches the number of vertical pixels of the globe surface map. */ 
+ 	
+	/** Note: Make sure this param matches the number of vertical pixels of the surface map. */ 
+	public static final int MAP_PIXEL_HEIGHT = 4096; //1024; 1440; 2048; 2880; 4096
+	/** Note: Make sure this param matches the number of horizontal pixels of the surface map. */ 
+	public static final int MAP_PIXEL_WIDTH = 8192; //2048; 2880; 4096; 5760; 8192
+	
  	public static final int GLOBE_BOX_HEIGHT = 300;
  	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
  	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
  	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
  	
-	/** Note: Make sure MAP_HEIGHT matches the number of vertical pixels of the surface map. */ 
-	public static final int MAP_PIXEL_HEIGHT = 1440; //1024; 1440; 2048; 2880 
-	/** Note: Make sure MAP_HEIGHT matches the number of horizontal pixels of the surface map. */ 
-	public static final int MAP_PIXEL_WIDTH = 2880; //2048; 2880; 4096; 5760
-	
+	protected static final String SURFACE_MAP_FILE = "/maps/surface" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg";
+	protected static final String TOPO_MAP_FILE = "/maps/topo" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg"; // "/maps/topo2880x1440.jpg";
+	protected static final String GEO_MAP_FILE = "/maps/geo" + MAP_PIXEL_WIDTH + "x" + MAP_PIXEL_HEIGHT + ".jpg"; // "/maps/geologyMOLA2880x1440.jpg";
+
  	// The diameter of Mars in pixels
 	public static final double RHO = MAP_PIXEL_HEIGHT / Math.PI;
 	// The half map's height in pixels

@@ -16,7 +16,9 @@
  	static final int SURFACE_MAP_DATA = 0; 		// "surface map data";
  	static final int TOPO_MAP_DATA = 1; 		// "topographical map data";
  	static final int GEOLOGY_MAP_DATA = 2; 		// "geological ages map data"
-
+ 	static final int REGION_MAP_DATA = 3; 		// "regional map data"
+ 	static final int VIKING_MAP_DATA = 3; 		// "viking map data"
+ 	
 // 	private boolean decompressed = false;s
 
  	// Data members.

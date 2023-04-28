@@ -8,9 +8,12 @@ package org.mars_sim.msp.ui.swing.tool.navigator;
 
 public enum MarsMapType {
 
-	SURFACE_MID 	("map/mars_surfaceMid"),
-	TOPO_MID 		("map/mars_topoMid"),
-	GEO_MID 		("map/mars_geoMid"); 
+	SURFACE_MID 	("map/surface600"),
+	TOPO_MID 		("map/topo600"),
+	GEO_MID 		("map/geo600"),
+	REGION_MID		("map/region600"),
+	VIKING_MID		("map/viking600")
+	; 
 
 	private String path;
 

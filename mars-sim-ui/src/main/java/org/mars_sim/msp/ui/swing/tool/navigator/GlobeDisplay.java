@@ -76,6 +76,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private MarsMap topoSphere;
 	/** Geological sphere object. */
 	private MarsMap geoSphere;
+	private MarsMap regionSphere;
+	private MarsMap vikingSphere;
+	
+	
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
 	/** A mouse adapter class. */
@@ -148,7 +152,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		marsSphere = new MarsMap(MarsMapType.SURFACE_MID, this);
 		topoSphere = new MarsMap(MarsMapType.TOPO_MID, this);
 		geoSphere = new MarsMap(MarsMapType.GEO_MID, this);
-
+		regionSphere = new MarsMap(MarsMapType.REGION_MID, this);
+		vikingSphere = new MarsMap(MarsMapType.VIKING_MID, this);
+		
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
 		mapType = 0;
