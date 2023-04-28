@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2021-12-22
+ * @date 2023-04-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -62,12 +62,14 @@ import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.RegionMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.VikingMarsMap;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -92,9 +94,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
-	/**
-	 *
-	 */
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
@@ -128,7 +127,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 
-	private static final String[] SUPPORTED_MAPTYPES = {SurfMarsMap.TYPE, TopoMarsMap.TYPE, GeologyMarsMap.TYPE};
+	private static final String[] SUPPORTED_MAPTYPES = {
+			SurfMarsMap.TYPE, 
+			TopoMarsMap.TYPE, 
+			GeologyMarsMap.TYPE,
+			RegionMarsMap.TYPE, 
+			VikingMarsMap.TYPE
+	};
 
 
 	// Data member
@@ -155,7 +160,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel rgbLabel;
 	
 	private MineralMapLayer mineralLayer;
-	private java.util.Map<String,MapOrder> mapLayers = new HashMap<>();
+	private java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private List<Landmark> landmarks;
 	private UnitManager unitManager;
@@ -264,7 +269,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);
 		coordPane.add(longLabel);
 
-		// Switch to using ComboBoxMW for longtitude
+		// Switch to using ComboBoxMW for longitude
 		longCB = new JComboBoxMW<Integer>(lon_degrees);
 		longCB.setSelectedItem(0);
 		coordPane.add(longCB);
@@ -361,7 +366,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			// Type of Map
 			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SurfMarsMap.TYPE));
 
-			for(Object key : userSettings.keySet()) {
+			for (Object key : userSettings.keySet()) {
 				String prop = (String) key;
 				String propValue = userSettings.getProperty(prop);
 
@@ -427,8 +432,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
-	 * Update coordinates in map, buttons, and globe Redraw map and globe if
-	 * necessary
+	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
+	 * necessary.
 	 * 
 	 * @param newCoords the new center location
 	 */
@@ -499,11 +504,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Change the MapType
+	 * Changes the MapType.
+	 * 
 	 * @param newMapType New map Type
 	 */
 	private void setMapType(String newMapType) {
 		switch(newMapType) {
+
+			case SurfMarsMap.TYPE: {
+				// show surface map
+				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
+				globeNav.showSurf();
+			} break;
+		
 			case TopoMarsMap.TYPE: {
 				// show topo map
 				mapLayerPanel.setMapType(TopoMarsMap.TYPE);
@@ -514,12 +527,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				// turn off mineral layer
 				setMapLayer(false, MINERAL_LAYER);
 				mineralsButton.setEnabled(false);
-			} break;
-
-			case SurfMarsMap.TYPE: {
-				// show surface map
-				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
-				globeNav.showSurf();
 			} break;
 
 			case GeologyMarsMap.TYPE: {
@@ -533,6 +540,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				mineralsButton.setEnabled(false);
 			} break;
 		
+			case RegionMarsMap.TYPE: {
+				// show regional map
+				mapLayerPanel.setMapType(RegionMarsMap.TYPE);
+				globeNav.showRegion();
+			} break;
+			
+			case VikingMarsMap.TYPE: {
+				// show viking map
+				mapLayerPanel.setMapType(VikingMarsMap.TYPE);
+				globeNav.showViking();
+			} break;
+			
 			default: 
 				logger.warning("Can not understand map type:" + newMapType);
 		}
@@ -561,7 +580,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPopupMenu optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 
-		// Create topographical map menu item.
+		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
 		for(String mapType : SUPPORTED_MAPTYPES) {
 			JCheckBoxMenuItem mapItem = createSelectable(MAPTYPE_ACTION, mapType, mapType.equals(mapLayerPanel.getMapType()));
@@ -607,7 +626,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
 
-			// TODO Resuse existing Action lsitener with a prefix pattern
+			// TODO Re-use existing Action listener with a prefix pattern
 			mineralItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					SwingUtilities.invokeLater(() -> {
@@ -786,7 +805,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Time has changed
+	 * Updates the layers with time pulse.
+	 * 
 	 * @param pulse The Change to the clock
 	 */
 	@Override

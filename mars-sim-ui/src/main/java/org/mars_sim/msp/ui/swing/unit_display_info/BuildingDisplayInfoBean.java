@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * BuildingDisplayInfoBean.java
+ * @date 2023-04-28
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import javax.swing.Icon;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsMap.java
- * @date 2021-12-22
+ * @date 2023-04-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -61,9 +61,9 @@ public class MarsMap {
 	private JComponent displayArea;
 
 	/**
-	 * Constructs a MarsMap object
+	 * Constructs a MarsMap object.
 	 * 
-	 * @param globeType   the type of globe: surface, topo or geo
+	 * @param globeType   the type of globe
 	 * @param displayArea the display component for the map
 	 */
 	public MarsMap(MarsMapType globeType, JComponent displayArea) {
@@ -83,7 +83,7 @@ public class MarsMap {
 	}
 
 	/**
-	 * Creates a Sphere Image at given center point
+	 * Creates a Sphere Image at given center point.
 	 * 
 	 * @param newCenter new center location
 	 */
@@ -234,7 +234,7 @@ public class MarsMap {
 	}
 
 	/**
-	 * Returns globe image
+	 * Returns globe image.
 	 * 
 	 * @return globe image
 	 */
@@ -242,7 +242,9 @@ public class MarsMap {
 		return globeImage;
 	}
 
-	/** Sets up Points and Colors for Sphere */
+	/** 
+	 * Sets up Points and Colors for Sphere. 
+	 * */
 	private void setupSphere() {
 
 		// Initialize variables
@@ -300,7 +302,7 @@ public class MarsMap {
 	}
 
 	/**
-	 * determines if a requested sphere is complete
+	 * Determines if a requested sphere is complete.
 	 * 
 	 * @return true if image is done
 	 */
@@ -309,7 +311,7 @@ public class MarsMap {
 	}
 
 	/**
-	 * Prepare globe for deletion.
+	 * Prepares globe for deletion.
 	 */
 	public void destroy() {
 		centerCoords = null;

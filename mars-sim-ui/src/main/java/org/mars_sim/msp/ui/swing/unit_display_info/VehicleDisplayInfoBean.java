@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleDisplayInfoBean.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -30,6 +30,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     private Icon surfMapIcon;
     private Icon topoMapIcon;
     private Icon geoMapIcon;
+    private Icon regionMapIcon;
+    private Icon vikingMapIcon;
     private Font mapLabelFont;
     
     /**
@@ -39,11 +41,14 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         surfMapIcon = ImageLoader.getIconByName("map/vehicle");
         topoMapIcon = ImageLoader.getIconByName("map/vehicle_black");
         geoMapIcon = ImageLoader.getIconByName("map/vehicle_black");
+        regionMapIcon = ImageLoader.getIconByName("map/vehicle_black");
+        vikingMapIcon = ImageLoader.getIconByName("map/vehicle");
         mapLabelFont = new Font("Helvetica", Font.PLAIN, 10);
     }
     
     /** 
      * Checks if unit is to be displayed on the navigator tool map.
+     * 
      * @param unit the unit to display
      * @return true if unit is to be displayed on navigator map.
      */
@@ -67,6 +72,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display icon for the surface navigator map.
+     * 
      * @param unit the unit to display 
      * @return icon
      */
@@ -75,7 +81,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
-     * Gets display icon for topo navigator map. 
+     * Gets display icon for topo navigator map.
+     * 
      * @param unit the unit to display 
      * @return icon
      */
@@ -84,7 +91,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
 
     /** 
-     * Gets display icon for geo navigator map. 
+     * Gets display icon for geo navigator map.
+     * 
      * @param unit the unit to display 
      * @return icon
      */
@@ -92,8 +100,30 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     	return geoMapIcon;
     }
     
+    /** 
+     * Gets display icon for regional navigator map.
+     * 
+     * @param unit the unit to display 
+     * @return icon
+     */
+    public Icon getRegionMapIcon(Unit unit) {
+    	return regionMapIcon;
+    }
+
+    /** 
+     * Gets display icon for viking navigator map.
+     * 
+     * @param unit the unit to display 
+     * @return icon
+     */
+    public Icon getVikingMapIcon(Unit unit) {
+    	return vikingMapIcon;
+    }
+    
+    
     /**
      * Checks if the map icon should blink on and off.
+     * 
      * @param unit the unit to display
      * @return true if blink
      */
@@ -102,7 +132,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
-     * Gets the label color for surface navigator map. 
+     * Gets the label color for surface navigator map.
+     * 
      * @return color
      */
     public Color getSurfMapLabelColor() {
@@ -110,7 +141,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
-     * Gets the label color for topo navigator map. 
+     * Gets the label color for topo navigator map.
+     * 
      * @return color
      */
     public Color getTopoMapLabelColor() {
@@ -118,15 +150,35 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
 
     /** 
-     * Gets the label color for geo navigator map. 
+     * Gets the label color for geo navigator map.
+     *  
      * @return color
      */
     public Color getGeologyMapLabelColor() {
         return Color.black;
     }
+  
+    /** 
+     * Gets the label color for regional navigator map.
+     * 
+     * @return color
+     */
+    public Color getRegionMapLabelColor() {
+        return Color.black;
+    }
+
+    /** 
+     * Gets the label color for viking navigator map.
+     *  
+     * @return color
+     */
+    public Color getVikingMapLabelColor() {
+        return Color.white;
+    }
     
     /** 
-     * Gets the label font for navigator map. 
+     * Gets the label font for navigator map.
+     *  
      * @return font
      */
     public Font getMapLabelFont() {
@@ -134,7 +186,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
 
     /** 
-     * Gets the range (km) for clicking on unit on navigator map. 
+     * Gets the range (km) for clicking on unit on navigator map.
+     *  
      * @return clicking range
      */
     public double getMapClickRange() {
@@ -143,6 +196,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Checks if the unit is to be displayed on the navigator tool globe.
+     * 
      * @param unit the unit to display.
      * @return true if unit is to be displayed on globe
      */
@@ -163,7 +217,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
-     * Gets display color for surface globe. 
+     * Gets display color for surface globe.
+     * 
      * @return color
      */
     public Color getSurfGlobeColor() {
@@ -172,6 +227,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display color for topo globe.
+     * 
      * @return color
      */
     public Color getTopoGlobeColor() {
@@ -180,6 +236,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
 
     /** 
      * Gets display color for geo globe.
+     * 
      * @return color
      */
     public Color getGeologyGlobeColor() {
@@ -187,8 +244,26 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
+     * Gets display color for regional globe.
+     * 
+     * @return color
+     */
+    public Color getRegionGlobeColor() {
+        return Color.black;
+    }
+
+    /** 
+     * Gets display color for viking globe.
+     * 
+     * @return color
+     */
+    public Color getVikingGlobeColor() {
+        return Color.white;
+    }
+    
+    /** 
      * Gets icon for unit button.
-     * To be overrided by sub-class
+     * To be overridden by sub-class.
      * 
      * @return icon
      */

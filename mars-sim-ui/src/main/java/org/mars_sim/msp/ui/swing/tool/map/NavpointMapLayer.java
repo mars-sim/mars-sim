@@ -124,12 +124,15 @@ public class NavpointMapLayer implements MapLayer {
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < Map.HALF_MAP_ANGLE) {
-
+			String mapType = baseMap.getType();
+			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;
 			if (navpoint == selectedNavpoint)
 				navIcon = navpointIconSelected;
-			else if (TopoMarsMap.TYPE.equals(baseMap) || GeologyMarsMap.TYPE.equals(baseMap))
+			else if (TopoMarsMap.TYPE.equals(mapType) 
+					|| GeologyMarsMap.TYPE.equals(mapType)
+					|| RegionMarsMap.TYPE.equals(mapType))
 				navIcon = navpointIconWhite;
 			else
 				navIcon = navpointIconColor;

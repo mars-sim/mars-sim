@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataFactory.java
- * @date 2022-07-15
+ * @date 2023-04-28
  * @author Scott Davis
  */
 
@@ -26,8 +26,10 @@ import java.util.Map;
 	private static final String TOPO_MAP_FILE = "/maps/topo8192x4096.jpg"; 
 	//private static final String GEO_MAP_FILE = "/maps/geo8192x4096.jpg"; 
 	private static final String GEO_MAP_FILE = "/maps/geo2880x1440.jpg"; 
-
-	private Map<Integer,MapData> mapdata = new HashMap<>();
+	private static final String REGION_MAP_FILE = "/maps/region8192x4096.jpg"; 
+	private static final String VIKING_MAP_FILE = "/maps/viking8192x4096.jpg"; 
+		
+private Map<Integer,MapData> mapdata = new HashMap<>();
 
  	/**
  	 * Constructor.
@@ -50,6 +52,8 @@ import java.util.Map;
 				case SURFACE_MAP_DATA -> SURFACE_MAP_FILE;
 				case GEOLOGY_MAP_DATA -> GEO_MAP_FILE;
 				case TOPO_MAP_DATA -> TOPO_MAP_FILE;
+				case REGION_MAP_DATA -> REGION_MAP_FILE; 
+				case VIKING_MAP_DATA -> VIKING_MAP_FILE;
 				default -> throw new IllegalArgumentException("No map data for type" + mapType);
 			};
 			result = new IntegerMapData(filename);
