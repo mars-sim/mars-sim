@@ -1,0 +1,7 @@
+(topo)AA_CTX_Human_EZ_sites_max.jpg has a resolution of 2888 x 1440.
+
+The Context Camera (CTX) is an instrument on the Mars Reconnaissance Orbiter (MRO).
+
+This is a composite image of 39 regional semi-controlled CTX mosaics at 5m/pixel for the 2015 proposed Mars Human Exploration zones. 
+
+See https://astrogeology.usgs.gov/search/map/Mars/MarsReconnaissanceOrbiter/CTX/HumanExplorationZones/CTX_Human_EZ_sites_Oct2015

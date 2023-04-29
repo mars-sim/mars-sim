@@ -1,0 +1,2 @@
+(geo)Mars_Global_Geology_Mariner9_12ppd.jpg has a resolution of 4320 x 2160 
+See https://astrogeology.usgs.gov/search/map/Mars/Geology/Mars_SIM-1083_Mariner_9_GIS

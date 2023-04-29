@@ -511,6 +511,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void setMapType(String newMapType) {
 		switch(newMapType) {
 
+		
+			case VikingMarsMap.TYPE: {
+				// show viking map
+				mapLayerPanel.setMapType(VikingMarsMap.TYPE);
+				globeNav.showViking();
+			} break;
+		
 			case SurfMarsMap.TYPE: {
 				// show surface map
 				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
@@ -544,12 +551,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				// show regional map
 				mapLayerPanel.setMapType(RegionMarsMap.TYPE);
 				globeNav.showRegion();
-			} break;
-			
-			case VikingMarsMap.TYPE: {
-				// show viking map
-				mapLayerPanel.setMapType(VikingMarsMap.TYPE);
-				globeNav.showViking();
+				// turn off day night layer
+				setMapLayer(false, DAYLIGHT_LAYER);
+				// turn off mineral layer
+				setMapLayer(false, MINERAL_LAYER);
+				mineralsButton.setEnabled(false);
 			} break;
 			
 			default: 
@@ -582,14 +588,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
-		for(String mapType : SUPPORTED_MAPTYPES) {
+		for (String mapType : SUPPORTED_MAPTYPES) {
 			JCheckBoxMenuItem mapItem = createSelectable(MAPTYPE_ACTION, mapType, mapType.equals(mapLayerPanel.getMapType()));
 			optionsMenu.add(mapItem);
 			group.add(mapItem);
 		}
 		optionsMenu.addSeparator();
 
-		for( Entry<String, MapOrder> e : mapLayers.entrySet()) {
+		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 			optionsMenu.add(createSelectable(LAYER_ACTION, e.getKey(),
 							mapLayerPanel.hasMapLayer(e.getValue().layer)));
 

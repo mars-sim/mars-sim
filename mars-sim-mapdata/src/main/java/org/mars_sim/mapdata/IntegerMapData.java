@@ -62,7 +62,7 @@ import javax.imageio.ImageIO;
  			pixels = loadMapData(mapFileName);
 
 			rho =  height / Math.PI;
-			logger.info("Loaded " + mapFileName + " with size " + width + "x" + height);
+			logger.info("Loaded " + mapFileName + " with pixels " + width + "x" + height + ".");
  			
  		} catch (IOException e) {
  			logger.log(Level.SEVERE, "Could not find the map file.", e);

@@ -23,10 +23,9 @@ import java.util.Map;
  	static final int VIKING_MAP_DATA = 4; 		// "viking map data"
 
 	private static final String SURFACE_MAP_FILE = "/maps/surface8192x4096.jpg";
-	private static final String TOPO_MAP_FILE = "/maps/topo8192x4096.jpg"; 
-	//private static final String GEO_MAP_FILE = "/maps/geo8192x4096.jpg"; 
-	private static final String GEO_MAP_FILE = "/maps/geo2880x1440.jpg"; 
-	private static final String REGION_MAP_FILE = "/maps/region8192x4096.jpg"; 
+	private static final String TOPO_MAP_FILE = "/maps/(topo)AA_CTX_Human_EZ_sites_max.jpg"; // "/maps/topo2880x1440.jpg"; // "/maps/topo8192x4096.jpg";
+	private static final String GEO_MAP_FILE = "/maps/(geo)Mars_Global_Geology_Mariner9_12ppd.jpg"; // "/maps/geo2880x1440.jpg"; 
+	private static final String REGION_MAP_FILE = "/maps/(region)Mars_Geographic_Regions_Map_v0_1.jpg" ; // "region8192x4096.jpg"; 
 	private static final String VIKING_MAP_FILE = "/maps/viking8192x4096.jpg"; 
 		
 private Map<Integer,MapData> mapdata = new HashMap<>();
