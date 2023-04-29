@@ -22,11 +22,11 @@ import java.util.Map;
  	static final int REGION_MAP_DATA = 3; 		// "regional map data"
  	static final int VIKING_MAP_DATA = 4; 		// "viking map data"
 
-	private static final String SURFACE_MAP_FILE = "/maps/surface8192x4096.jpg";
-	private static final String TOPO_MAP_FILE = "/maps/(topo)AA_CTX_Human_EZ_sites_max.jpg"; // "/maps/topo2880x1440.jpg"; // "/maps/topo8192x4096.jpg";
+	private static final String SURFACE_MAP_FILE = "/maps/(surf)Orange_blended_surface_height_region_names_5760.jpg"; //"/maps/surface8192x4096.jpg";
+	private static final String TOPO_MAP_FILE = "/maps/(topo)MRO_CTX_EZ_Human_Landing_Sites.jpg"; // "/maps/topo2880x1440.jpg"; // "/maps/topo8192x4096.jpg";
 	private static final String GEO_MAP_FILE = "/maps/(geo)Mars_Global_Geology_Mariner9_12ppd.jpg"; // "/maps/geo2880x1440.jpg"; 
-	private static final String REGION_MAP_FILE = "/maps/(region)Mars_Geographic_Regions_Map_v0_1.jpg" ; // "region8192x4096.jpg"; 
-	private static final String VIKING_MAP_FILE = "/maps/viking8192x4096.jpg"; 
+	private static final String REGION_MAP_FILE = "/maps/(region)Colorized_topo_region_names_5760.jpg" ; // "region8192x4096.jpg"; 
+	private static final String VIKING_MAP_FILE = "/maps/(viking)Orange_MDIM2.1_8192x4096.jpg"; 
 		
 private Map<Integer,MapData> mapdata = new HashMap<>();
 

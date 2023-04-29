@@ -1,4 +1,4 @@
-(topo)AA_CTX_Human_EZ_sites_max.jpg has a resolution of 2888 x 1440.
+(topo)MRO_CTX_EZ_Human_Landing_Sites.jpg has a resolution of 2888 x 1440.
 
 The Context Camera (CTX) is an instrument on the Mars Reconnaissance Orbiter (MRO).
 

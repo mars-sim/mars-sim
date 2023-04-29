@@ -1,3 +1,6 @@
-(region)Mars_Geographic_Regions_Map_v0_1.jpg has a resolution of 5760 x 2880
+(region)Colorized_topo_region_names_5760.jpg has a resolution of 5760 x 2880
+
+It shows the names of Terrae, Planitiae, and Plana.
+The base image came from a USGS colorized topographic height map.
 
 See https://www.deviantart.com/etohautakuva/art/Mars-Geographic-Regions-Map-v0-1-917110370

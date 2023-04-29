@@ -1,0 +1,7 @@
+(surf)Orange_blended_surface_height_region_names_5760.jpg has a resolution of 5760 x 2880.
+
+It shows the names of Valles, Terrae, Planitia, Plana, etc.
+Boundaries are colorized into Red, Cyan, Green and Yellow lines so that their overlapping territories are more apparent.
+The base image came from a USGS orange viking map.
+
+See https://www.deviantart.com/etohautakuva/art/Mars-Geographic-Regions-Map-v0-2-920489067
