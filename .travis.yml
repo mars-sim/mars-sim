@@ -4,11 +4,11 @@ script:
 - mvn test -DskipTests=true -Dmaven.javadoc.skip=true
 export TRAVIS_WORKER_MAX_LOG_LENGTH = 10000000
 jdk:
-  - oraclejdk14
+  - oraclejdk20
 addons:
 apt:
 packages:
-  - oracle-java14-installer
+  - oracle-java20-installer
 cache:
 directories:
 - $HOME/.m2
