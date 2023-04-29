@@ -70,7 +70,8 @@ import javax.imageio.ImageIO;
  	}
 
 	/**
-	 * Get the scale of pixel to Mars surface degree
+	 * Gets the scale of pixel to Mars surface degree.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -79,7 +80,8 @@ import javax.imageio.ImageIO;
 	}
 
 	/**
-     * Get the number of pixels width
+     * Gets the number of pixels width.
+     * 
      * @return
      */
 	@Override
@@ -88,7 +90,8 @@ import javax.imageio.ImageIO;
 	}
 
 	/**
-     * Get the number of pixels height
+     * Gets the number of pixels height.
+     * 
      * @return
      */
 	@Override

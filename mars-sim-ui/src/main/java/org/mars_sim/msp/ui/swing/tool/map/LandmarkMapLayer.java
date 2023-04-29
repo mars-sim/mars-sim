@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LandmarkMapLayer.java
- * @date 2022-07-31
+ * @date 2023-04-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -106,7 +106,7 @@ public class LandmarkMapLayer implements MapLayer {
 			// Set the label font.
 			g2d.setFont(AO_LABEL_FONT);
 			// Set the label color.
-			if (TopoMarsMap.TYPE.equals(baseMap))
+			if (TopoMarsMap.TYPE.equals(baseMap.getType()))
 				g2d.setColor(AO_TOPO_COLOR);
 			else
 				g2d.setColor(AO_SURFACE_COLOR);
@@ -126,7 +126,7 @@ public class LandmarkMapLayer implements MapLayer {
 			// Set the label font.
 			g2d.setFont(MAP_LABEL_FONT);
 			// Set the label color.
-			if (TopoMarsMap.TYPE.equals(baseMap))
+			if (TopoMarsMap.TYPE.equals(baseMap.getType()))
 				g2d.setColor(TOPO_COLOR);
 			else
 				g2d.setColor(SURFACE_COLOR);

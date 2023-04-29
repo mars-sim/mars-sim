@@ -1,9 +1,10 @@
 /*
  * Mars Simulation Project
  * UnitMapLayer.java
- * @date 2022-07-31
+ * @date 2023-04-29
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Graphics;
@@ -67,21 +68,15 @@ abstract class UnitMapLayer implements MapLayer {
 		}
 
 		for (Unit unit : units) {
-			if (unit.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Proceed to below to set cursor;
-				}
-				else 
+			if (unit.getUnitType() == UnitType.VEHICLE
+				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
 					continue;
 			}
 			
 			UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (i != null && i.isMapDisplayed(unit)) {
-				double angle = Map.HALF_MAP_ANGLE;
-
-				if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
+			if (i != null && i.isMapDisplayed(unit)
+				&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < Map.HALF_MAP_ANGLE) {
 					displayUnit(unit, mapCenter, baseMap, g);
-				}
 			}
 		}
 

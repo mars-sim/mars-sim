@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CannedMarsMap.java
- * @date 2022-07-31
+ * @date 2023-04-29
  * @author Greg Whelan
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -116,7 +116,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 
 	/*
 	 * Uses double buffering to draws into its own graphics object dbg before
-	 * calling paintComponent()
+	 * calling paintComponent().
 	 */
 	public void paintDoubleBuffer() {
 		if (mapImage == null) {
@@ -168,7 +168,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
-	 * Get the scale of pixel to Mars surface degree
+	 * Gets the scale of pixel to Mars surface degree.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -177,7 +178,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
-	 * Get the height of this map in pixels
+	 * Gets the height of this map in pixels.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -186,7 +188,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
-	 * Get the width of this map in pixels
+	 * Gets the width of this map in pixels.
+	 * 
 	 * @return
 	 */
 	@Override
