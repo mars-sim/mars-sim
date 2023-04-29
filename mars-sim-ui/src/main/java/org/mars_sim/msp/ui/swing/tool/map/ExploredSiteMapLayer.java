@@ -82,10 +82,11 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
             if (site.isMined() && !displayMined)
@@ -93,7 +94,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 			if (!site.isExplored())
 				displaySite = false;
 			if (displaySite)
-				displayExploredSite(site, mapCenter, mapType, g);
+				displayExploredSite(site, mapCenter, baseMap, g);
 		}
 	}
 
@@ -102,10 +103,10 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 * 
 	 * @param navpoint  the navpoint to display.
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, String mapType, Graphics g) {
+	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		if (mapCenter.getAngle(site.getLocation()) < HALF_MAP_ANGLE) {
 
@@ -119,7 +120,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 				navIcon = navpointIconExplored;
 
 			// Determine the draw location for the icon.
-			IntPoint location = MapUtils.getRectPosition(site.getLocation(), mapCenter, mapType);
+			IntPoint location = MapUtils.getRectPosition(site.getLocation(), mapCenter, baseMap);
 			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
 
 			// Draw the navpoint icon.

@@ -34,12 +34,12 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	 * 
 	 * @param unit      the unit to display.
 	 * @param mapCenter the location center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
+	protected void displayUnit(Unit unit, Coordinates mapCenter, Map baseMap, Graphics g) {
 
-		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
+		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
 		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getSurfMapIcon(unit));
@@ -47,6 +47,7 @@ public class UnitIconMapLayer extends UnitMapLayer {
 		int locY = imageLocation.getiY();
 
 		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
+			String mapType = baseMap.getType();
 			Icon displayIcon = null;
 			if (SurfMarsMap.TYPE.equals(mapType))
 				displayIcon = displayInfo.getSurfMapIcon(unit);

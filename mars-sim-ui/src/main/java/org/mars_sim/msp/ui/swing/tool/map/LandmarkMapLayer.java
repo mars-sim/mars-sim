@@ -60,10 +60,11 @@ public class LandmarkMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 *
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -74,7 +75,7 @@ public class LandmarkMapLayer implements MapLayer {
 
 		for (Landmark landmark : landmarks) {
 			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < HALF_MAP_ANGLE)
-				displayLandmark(landmark, mapCenter, mapType, g2d);
+				displayLandmark(landmark, mapCenter, baseMap, g2d);
 		}
 	}
 
@@ -83,13 +84,13 @@ public class LandmarkMapLayer implements MapLayer {
 	 * 
 	 * @param landmark  {@link Landmark} the landmark to be displayed.
 	 * @param mapCenter {@link Coordinates} the location of the center of the map.
-	 * @param mapType   {@LINK String} type of map.
+	 * @param baseMap   {@LINK String} type of map.
 	 * @param g         {@link Graphics} the graphics context.
 	 */
-	private void displayLandmark(Landmark landmark, Coordinates mapCenter, String mapType, Graphics2D g2d) {
+	private void displayLandmark(Landmark landmark, Coordinates mapCenter, Map baseMap, Graphics2D g2d) {
 
 		// Determine display location of landmark.
-		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkCoord(), mapCenter, mapType);
+		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkCoord(), mapCenter, baseMap);
 
 		// Determine circle location.
 		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
@@ -105,7 +106,7 @@ public class LandmarkMapLayer implements MapLayer {
 			// Set the label font.
 			g2d.setFont(AO_LABEL_FONT);
 			// Set the label color.
-			if (TopoMarsMap.TYPE.equals(mapType))
+			if (TopoMarsMap.TYPE.equals(baseMap))
 				g2d.setColor(AO_TOPO_COLOR);
 			else
 				g2d.setColor(AO_SURFACE_COLOR);
@@ -125,7 +126,7 @@ public class LandmarkMapLayer implements MapLayer {
 			// Set the label font.
 			g2d.setFont(MAP_LABEL_FONT);
 			// Set the label color.
-			if (TopoMarsMap.TYPE.equals(mapType))
+			if (TopoMarsMap.TYPE.equals(baseMap))
 				g2d.setColor(TOPO_COLOR);
 			else
 				g2d.setColor(SURFACE_COLOR);

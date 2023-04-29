@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -40,16 +39,25 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	private JComponent displayArea = null;
 
 	private Coordinates currentCenter = null;
+
+	private String type;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param displayArea the component display area.
+	 * @param type The type name
 	 * @param mapData     the map data.
 	 */
-	protected CannedMarsMap(JComponent displayArea, MapData mapData) {
+	protected CannedMarsMap(JComponent displayArea, String type, MapData mapData) {
 		this.mapData = mapData;
+		this.type = type;
 		this.displayArea = displayArea;
+	}
+
+	@Override
+	public String getType() {
+		return type;
 	}
 
 	/**
@@ -59,7 +67,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * @return the map image.
 	 */
 	private Image createMapImage(Coordinates center) {
-		return mapData.getMapImage(center.getPhi(), center.getTheta());
+		return mapData.getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
 	}
 	
 	/**
@@ -112,7 +120,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 */
 	public void paintDoubleBuffer() {
 		if (mapImage == null) {
-			mapImage = createImage(IntegerMapData.MAP_BOX_WIDTH, IntegerMapData.MAP_BOX_HEIGHT);
+			mapImage = createImage(MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
 			if (mapImage != null) {
 				Graphics dbg = mapImage.getGraphics();
 				Graphics2D g2d = (Graphics2D) dbg;
@@ -157,5 +165,32 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	@Override
 	public Image getMapImage() {
 		return mapImage;
+	}
+
+	/**
+	 * Get the scale of pixel to Mars surface degree
+	 * @return
+	 */
+	@Override
+	public double getScale() {
+		return mapData.getScale();
+	}
+
+	/**
+	 * Get the height of this map in pixels
+	 * @return
+	 */
+	@Override
+    public int getPixelHeight() {
+		return mapData.getHeight();
+	}
+
+	/**
+	 * Get the width of this map in pixels
+	 * @return
+	 */
+	@Override
+    public int getPixelWidth() {
+		return mapData.getWidth();
 	}
 }

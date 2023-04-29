@@ -39,13 +39,11 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointEditLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 
@@ -173,7 +171,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
 				siteListPane.add(sitePane);
 				navLayer.addNavpointPosition(
-						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+						MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 				mapPane.repaint();
 				addButton.setEnabled(canAddMoreSites());
 				validate();
@@ -255,7 +253,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel startingSitePane = new SitePanel(0, startingSite);
 			siteListPane.add(startingSitePane);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+					MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 	//		mapPane.setCenterCoords(startingSite);
 			mapPane.showMap(startingSite);
 			addButton.setEnabled(canAddMoreSites());
@@ -409,7 +407,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
 			sitePane.setSiteNum(x);
 			navLayer.addNavpointPosition(
-					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+					MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), mapPane.getMap()));
 		}
 		mapPane.repaint();
 	}
@@ -563,9 +561,9 @@ class ExplorationSitesPanel extends WizardPanel {
 				navOffset = determineOffset(event.getX(), event.getY());
 
 				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(),
-						SurfMarsMap.TYPE);
+						mapPane.getMap());
 				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(),
-						SurfMarsMap.TYPE);
+						mapPane.getMap());
 				int radiusPixels = convertDistanceToMapPixels(getRadius());
 
 				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
@@ -610,7 +608,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * @return pixel range.
 		 */
 		private int convertDistanceToMapPixels(double distance) {
-			return MapUtils.getPixelDistance(distance, SurfMarsMap.TYPE);
+			return MapUtils.getPixelDistance(distance, mapPane.getMap());
 		}
 
 		/**
@@ -644,7 +642,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150D, displayPos.getiY() - 150D,
-						CannedMarsMap.PIXEL_RHO);
+								mapPane.getMap().getScale());
 
 				// Only drag navpoint flag if within ellipse range bounds.
 				if (withinBounds(displayPos, navpoint)) {

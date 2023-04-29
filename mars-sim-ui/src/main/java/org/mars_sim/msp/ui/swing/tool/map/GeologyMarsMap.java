@@ -33,6 +33,6 @@ public class GeologyMarsMap extends CannedMarsMap {
 	public GeologyMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, mapDataUtil.getGeologyMapData());
+		super(displayArea, TYPE, mapDataUtil.getGeologyMapData());
 	}
 }

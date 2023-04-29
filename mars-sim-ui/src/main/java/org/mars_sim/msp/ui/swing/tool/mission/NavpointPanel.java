@@ -27,7 +27,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -67,9 +66,8 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 public class NavpointPanel
 extends JPanel
 implements MissionListener {
-
-	private static final int WIDTH = IntegerMapData.GLOBE_BOX_WIDTH / 2;
-	private static final int HEIGHT = IntegerMapData.GLOBE_BOX_HEIGHT / 2;
+	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH / 2;
+	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT / 2;
 	private static final int PADDING = 64;
 	private static final int TABLE_HEIGHT = 190;
 	
@@ -85,19 +83,19 @@ implements MissionListener {
 	private JTable navpointTable;
 
 	private Coordinates coordCache = new Coordinates(0, 0);
-	private MissionWindow missionWindow;
 	
-	private static Simulation sim = Simulation.instance();
-
-	private static UnitManager unitManager = sim.getUnitManager();
-	private static List<Landmark> landmarks = sim.getSurfaceFeatures().getLandmarks();
+	private UnitManager unitManager;
+	private List<Landmark> landmarks;
 
 	/**
 	 * Constructor.
 	 */
 	protected NavpointPanel(MissionWindow missionWindow) {
-		this.missionWindow = missionWindow;
-		
+		Simulation sim = missionWindow.getDesktop().getSimulation();
+
+		unitManager = sim.getUnitManager();
+		landmarks = sim.getSurfaceFeatures().getLandmarks();
+
 		// Set the layout.
 		setLayout(new BorderLayout());
 		
@@ -306,10 +304,7 @@ implements MissionListener {
 	 * @param event
 	 */
 	public void displayUnits(MouseEvent event) {
-		double x = (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
-		double y = (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-
-		Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, Map.PIXEL_RHO);
+		Coordinates clickedPosition = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 
 		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
@@ -346,12 +341,7 @@ implements MissionListener {
 
 		Coordinates mapCenter = mapPanel.getCenterLocation();
 		if (mapCenter != null) {
-			double rho = Map.PIXEL_RHO;
-
-			double x = (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
-			double y = (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-
-			Coordinates mousePos = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			Coordinates mousePos = mapPanel.getMouseCoordinates(event.getX(), event.getY());
 			boolean onTarget = false;
 
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();

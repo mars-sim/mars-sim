@@ -30,6 +30,6 @@ public class TopoMarsMap extends CannedMarsMap {
 	 * @param displayArea the display component
 	 */
 	public TopoMarsMap(JComponent displayArea) {
-		super(displayArea, mapDataUtil.getTopoMapData());
+		super(displayArea, TYPE, mapDataUtil.getTopoMapData());
 	}
 }

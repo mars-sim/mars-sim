@@ -57,11 +57,12 @@ public class MineralMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		// the line below can create nullpointerexception if shutdown swiftly in eclipse
+		String mapType = baseMap.getType();
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
 			mapCenterCache = new Coordinates(mapCenter);
 			mapTypeCache = mapType;
@@ -73,7 +74,7 @@ public class MineralMapLayer implements MapLayer {
 			double centerX = 150;
 			double centerY = 150;
 
-			double rho = CannedMarsMap.PIXEL_RHO;
+			double rho = baseMap.getScale();
 
 			java.util.Map<String, Color> mineralColors = getMineralColors();
 			updateMineralsDisplayed();

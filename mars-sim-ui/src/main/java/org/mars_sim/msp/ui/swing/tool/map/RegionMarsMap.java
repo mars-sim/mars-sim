@@ -32,6 +32,6 @@ public class RegionMarsMap extends CannedMarsMap {
 	public RegionMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, mapDataUtil.getRegionMapData());
+		super(displayArea, TYPE, mapDataUtil.getRegionMapData());
 	}
 }

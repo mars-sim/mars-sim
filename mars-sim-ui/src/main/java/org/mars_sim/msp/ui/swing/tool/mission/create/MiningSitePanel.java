@@ -41,14 +41,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 
@@ -364,7 +362,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * @return pixel radius.
 	 */
 	private int convertRadiusToMapPixels(double radius) {
-		return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
+		return MapUtils.getPixelDistance(radius, mapPane.getMap());
 	}
 
 	/**
@@ -380,7 +378,7 @@ public class MiningSitePanel extends WizardPanel {
 			int xValue = xLoc - (Map.MAP_VIS_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
 			int yValue = yLoc - (Map.MAP_VIS_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
 			Coordinates clickedPosition = center.convertRectToSpherical((double) xValue, (double) yValue,
-					CannedMarsMap.PIXEL_RHO);
+								mapPane.getMap().getScale());
 
 			ExploredLocation closestSite = null;
 			double closestRange = Double.MAX_VALUE;

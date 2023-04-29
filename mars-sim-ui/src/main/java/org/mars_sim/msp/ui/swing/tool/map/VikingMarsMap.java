@@ -32,6 +32,6 @@ public class VikingMarsMap extends CannedMarsMap {
 	public VikingMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, mapDataUtil.getVikingMapData());
+		super(displayArea, TYPE, mapDataUtil.getVikingMapData());
 	}
 }

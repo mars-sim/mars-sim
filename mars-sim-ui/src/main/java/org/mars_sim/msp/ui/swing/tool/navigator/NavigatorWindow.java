@@ -40,7 +40,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -56,11 +55,9 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.GeologyMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
@@ -113,7 +110,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	private static final int GLOBAL_MAP_WIDTH = IntegerMapData.GLOBE_BOX_WIDTH;
+	private static final int GLOBAL_MAP_WIDTH = MapPanel.MAP_BOX_WIDTH;
 
 	private static final int HEIGHT_STATUS_BAR = 20;
 
@@ -685,12 +682,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public void checkClick(MouseEvent event) {
 
 		if (mapLayerPanel.getCenterLocation() != null) {
-			double rho = CannedMarsMap.PIXEL_RHO;
-
-			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
-			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-
-			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			Coordinates clickedPosition = mapLayerPanel.getMouseCoordinates(event.getX(), event.getY());
 
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
@@ -730,13 +722,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		Coordinates mapCenter = mapLayerPanel.getCenterLocation();
 		if (mapCenter != null) {
-			double rho = CannedMarsMap.PIXEL_RHO;
+			Coordinates pos = mapLayerPanel.getMouseCoordinates(event.getX(), event.getY());
 
-			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
-			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-			
-			Coordinates pos = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
-			
 			StringBuilder coordSB = new StringBuilder();			
 			StringBuilder rgbSB = new StringBuilder();
 			StringBuilder elevSB = new StringBuilder();

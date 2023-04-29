@@ -104,7 +104,7 @@ public class FieldSitePanel extends WizardPanel {
     boolean commitChanges() {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
         Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150D, 
-                navpointPixel.getiY() - 150D, CannedMarsMap.PIXEL_RHO);
+                navpointPixel.getiY() - 150D, mapPane.getMap().getScale());
         getWizard().getMissionData().setFieldSite(navpoint);
         return true;
     }
@@ -124,7 +124,7 @@ public class FieldSitePanel extends WizardPanel {
             navLayer.addNavpointPosition(initialNavpointPos);
             
             Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
-                    CannedMarsMap.PIXEL_RHO);
+                                        mapPane.getMap().getScale());
             locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
             mapPane.showMap(initialNavpoint);
         }
@@ -151,7 +151,7 @@ public class FieldSitePanel extends WizardPanel {
      * @return pixel radius.
      */
     private int convertRadiusToMapPixels(double radius) {
-        return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
+        return MapUtils.getPixelDistance(radius, mapPane.getMap());
     }
     
 	/**
@@ -230,7 +230,7 @@ public class FieldSitePanel extends WizardPanel {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
                     Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150D, 
-                            displayPos.getiY() - 150D, CannedMarsMap.PIXEL_RHO);
+                            displayPos.getiY() - 150D, mapPane.getMap().getScale());
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();

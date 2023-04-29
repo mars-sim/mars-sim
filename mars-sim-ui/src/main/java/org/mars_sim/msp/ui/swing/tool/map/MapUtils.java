@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 
@@ -27,11 +26,13 @@ public class MapUtils {
 	 * Gets a coordinate x, y position on the map image.
 	 * 
 	 * @param coords  location of unit
-	 * @param mapType the type of map.
+	 * @param baseMap the type of map.
 	 * @return display point on map
 	 */
-	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
-		return Coordinates.findRectPosition(coords, mapCenter, IntegerMapData.RHO, IntegerMapData.HALF_MAP, IntegerMapData.LOW_EDGE);
+	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, Map baseMap) {
+		int halfMap = baseMap.getPixelHeight()/2;
+		return Coordinates.findRectPosition(coords, mapCenter, baseMap.getScale(),
+											halfMap, halfMap - (300/2));
 	}
 
 	/**
@@ -41,7 +42,7 @@ public class MapUtils {
 	 * @param mapType
 	 * @return
 	 */
-	public static int getPixelDistance(double distance, String mapType) {
-		return (int) Math.round(distance / Coordinates.MARS_CIRCUMFERENCE * IntegerMapData.MAP_PIXEL_WIDTH);
+	public static int getPixelDistance(double distance, Map baseMap) {
+		return (int) Math.round(distance / Coordinates.MARS_CIRCUMFERENCE * baseMap.getPixelWidth());
 	}
 }

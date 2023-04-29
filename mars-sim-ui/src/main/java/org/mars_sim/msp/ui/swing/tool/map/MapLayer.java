@@ -29,8 +29,8 @@ public interface MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the base map controlling coordinate frame
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g);
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g);
 }

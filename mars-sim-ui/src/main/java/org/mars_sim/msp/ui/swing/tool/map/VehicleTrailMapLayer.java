@@ -38,27 +38,27 @@ public class VehicleTrailMapLayer implements MapLayer {
 	 * Displays the layer on the map image.
 	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+	@Override
+	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Set trail color
-		if (TopoMarsMap.TYPE.equals(mapType))
-			g.setColor(Color.black);
-		else if (GeologyMarsMap.TYPE.equals(mapType)
-				|| RegionMarsMap.TYPE.equals(mapType))
-			g.setColor(Color.black);
-		else
-			g.setColor(new Color(0, 96, 0));
+		Color c = switch (baseMap.getType()) {
+			case TopoMarsMap.TYPE -> Color.BLACK;
+			case RegionMarsMap.TYPE, GeologyMarsMap.TYPE -> Color.BLACK;
+			default -> new Color(0, 96, 0);
+		};
+		g.setColor(c);
 
 		// Draw trail
 		if (singleVehicle != null)
-			displayTrail(singleVehicle, mapCenter, mapType, g);
+			displayTrail(singleVehicle, mapCenter, baseMap, g);
 		else {
 			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext())
-				displayTrail(i.next(), mapCenter, mapType, g);
+				displayTrail(i.next(), mapCenter, baseMap, g);
 		}
 	}
 
@@ -67,10 +67,10 @@ public class VehicleTrailMapLayer implements MapLayer {
 	 * 
 	 * @param vehicle   the vehicle to display.
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType   the type of map.
+	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, String mapType, Graphics g) {
+	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Get map angle.
 		double angle = Map.HALF_MAP_ANGLE;
@@ -82,7 +82,7 @@ public class VehicleTrailMapLayer implements MapLayer {
 			Coordinates trailSpot = j.next();
 			if (trailSpot != null) {
 				if (mapCenter.getAngle(trailSpot) < angle) {
-					IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, mapType);
+					IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, baseMap);
 					if ((oldSpot == null))
 						g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
 					else if (!spotLocation.equals(oldSpot))

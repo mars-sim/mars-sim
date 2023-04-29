@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -45,8 +44,8 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public final static int MAP_BOX_HEIGHT = IntegerMapData.MAP_BOX_HEIGHT;
-	public final static int MAP_BOX_WIDTH = IntegerMapData.MAP_BOX_WIDTH;
+	public final static int MAP_BOX_HEIGHT = 300;
+	public final static int MAP_BOX_WIDTH = 300;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;
@@ -56,10 +55,7 @@ public class MapPanel extends JPanel {
 	private boolean wait;
 	private boolean update;
 
-	private double rho = CannedMarsMap.PIXEL_RHO;
-
 	private String mapErrorMessage;
-	private String mapType;
 	private String oldMapType;
 
 	private List<MapLayer> mapLayers;
@@ -83,11 +79,9 @@ public class MapPanel extends JPanel {
 		executor = Executors.newSingleThreadExecutor();
 
 		// Initializes map instance as surf map
-		mapType = SurfMarsMap.TYPE;
-		surfMap = new SurfMarsMap(this);
-		map = surfMap;
+		setMapType(SurfMarsMap.TYPE);
 		
-		oldMapType = mapType;
+		oldMapType = map.getType();
 		
 		mapError = false;
 		wait = false;
@@ -122,7 +116,7 @@ public class MapPanel extends JPanel {
 
 				if ((dx != 0 || dy != 0) 
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
-					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, map.getScale());
 					map.drawMap(centerCoords);
 					repaint();
 				}
@@ -173,7 +167,7 @@ public class MapPanel extends JPanel {
 				if ((dx != 0 || dy != 0)
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 
-					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, map.getScale());
 					map.drawMap(centerCoords);
 					repaint();
 				}
@@ -251,14 +245,17 @@ public class MapPanel extends JPanel {
 	 * @return map type.
 	 */
 	public String getMapType() {
-		return mapType;
+		return map.getType();
+	}
+
+	public Map getMap() {
+		return map;
 	}
 
 	/**
 	 * Sets the map type.
 	 */
 	public void setMapType(String mapType) {
-		this.mapType = mapType;
 		
 		if (SurfMarsMap.TYPE.equals(mapType)) {
 			if (surfMap == null) surfMap = new SurfMarsMap(this);
@@ -300,10 +297,9 @@ public class MapPanel extends JPanel {
 				recreateMap = true;
 				centerCoords = newCenter;
 			} 
-//			else
-//				centerCoords = null;
 		}
 
+		String mapType = map.getType();
 		if (!mapType.equals(oldMapType)) {
 			recreateMap = true;
 			oldMapType = mapType;
@@ -385,7 +381,7 @@ public class MapPanel extends JPanel {
 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, map, g);
                 }
         	}
         }
@@ -442,4 +438,11 @@ public class MapPanel extends JPanel {
 		update = false;
 		mapImage = null;
 	}
+
+    public Coordinates getMouseCoordinates(int x, int y) {
+		double xMap = (double) (x - (Map.DISPLAY_WIDTH / 2D) - 1);
+		double yMap = (double) (y - (Map.DISPLAY_HEIGHT / 2D) - 1);
+		
+		return centerCoords.convertRectToSpherical(xMap, yMap, map.getScale());
+    }
 }
