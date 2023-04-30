@@ -789,7 +789,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Produce petri dish" tech="2" skill="2" work-time="50" process-time="40"
 			power-required=".1">
 		<inputs>
-			<resource name="polystyrene" amount="1.5" />
+			<resource name="polystyrene" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="petri dish" number="50" />
@@ -1582,6 +1582,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="0.5" />
+			<part name="aerogel tile" number="4" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
@@ -1612,7 +1613,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
-			<resource name="polystyrene" amount="5" />			
+			<resource name="polystyrene" amount="5" />	
+			<part name="aerogel tile" number="4" />						
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="utility vehicle control panel" number="1" />			
@@ -1643,7 +1645,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="4.0">
 		<inputs>
 			<resource name="acetylene" amount="2.0" />		
-			<resource name="polystyrene" amount="15" />				
+			<resource name="polystyrene" amount="15" />			
+			<part name="aerogel tile" number="8" />					
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />			
@@ -1682,7 +1685,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="5.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />		
-			<resource name="polystyrene" amount="20" />				
+			<resource name="polystyrene" amount="20" />	
+			<part name="aerogel tile" number="12" />							
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />			
@@ -1721,7 +1725,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="6.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />
-			<resource name="polystyrene" amount="30" />				
+			<resource name="polystyrene" amount="30" />	
+			<part name="aerogel tile" number="12" />							
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />
@@ -3089,6 +3094,16 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Manufacture insulation board" tech="2" skill="1" work-time="50" process-time="40"
+			power-required=".1">
+		<inputs>
+			<resource name="polystyrene" amount="9" />
+			<resource name="aluminium" amount="1" />			
+		</inputs>
+		<outputs>
+			<part name="insulation board" number="10" />
+		</outputs>
+	</process>
 
 	<!-- To be added :
 
@@ -3097,6 +3112,11 @@ Note: 1 kg of H2 is 14.13 liter
 	3. kitchen knives set
 	4. water heater, from heating elements
 	5. laser headlights, laser diodes
+	6. foam polystyrene - commodity packaging...
+	   In recent years the expanded polystyrene composites with 
+	   cellulose[39][40] and starch[41] have also been produced. 
+	 - Foaming Of polystyrene thermoplastic starch blends
+	8. thermal blanket
 
 	-->
 

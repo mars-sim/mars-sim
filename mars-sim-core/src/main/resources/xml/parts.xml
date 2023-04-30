@@ -983,7 +983,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Petri dish" type="container" mass="0.03">
+	<part name="Petri dish" type="container" mass="0.02">
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
 	</part>
 
@@ -1002,14 +1002,22 @@
 	</part>
 
 	<part name="Aerogel tile" type="construction" mass="0.5">
-		<description>A silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
+		<description>Excellent for transparent insulation, a silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
 		contain over 97% air by volume and have some of the lowest measured thermal conductivities of 
 		any known material (of 0.02 W/m/K at 1 bar pressure or 0.01 W/m/K at Martian atmospheric 
-		pressure). It was already routinely employed in many engineering applications, including 
-		in NASA’s Mars Exploration Rovers where thin aerogel layers provided night-time thermal 
+		pressure). Routinely employed in many engineering applications, including 
+		NASA’s Mars Exploration Rovers where thin aerogel layers provided night-time thermal 
 		insulation. A 3 cm layer of silica aerogel can increase the temperature of the underlying 
 		surface by 45 K when it receives a flux of 150 W/m2. </description>
 	</part>
+	
+	<part name="Insulation board" type="construction" mass="1">
+		<description>Extruded polystyrene (XPS) and expanded polystyrene insulation (EPS) contain millions of 
+		air pockets trapped within the foam. Because the polystyrene itself is also highly resistant to heat, 
+		the result is a great thermal insulator which can give excellent R-ratings. In addition to this, 
+		XPS is often lined with aluminium foil </description>
+	</part>
+
 	
 <!-- Future:
 	1. work glove

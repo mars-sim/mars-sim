@@ -292,12 +292,10 @@
 	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
 		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
 	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
-		Synthetic styrene, which is chemically
-		identical to naturally occurring styrene, is manufactured as a chemical building block for
+		Synthetic styrene, which is chemically identical to naturally occurring styrene, is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
 	<resource name="Polystyrene" type="chemical" phase="solid" demand="2.5">
-		When styrene molecules are linked
-		together into a polymer, polystyrene is created. Polystyrene is an inert plastic that can
+		When styrene molecules are linked together into a polymer, polystyrene (C8H8)n is created. Polystyrene is an inert plastic that can
 		be used to make many products, such as disposable plates, cups and other foodservice
 		packaging products. </resource>
 	<resource name="Bisphenol-a" type="chemical" phase="solid"> 

@@ -223,6 +223,8 @@
 		 double aForcesAgainst = totalForce / mass;
 		 // Gets the acceleration of the motor
 		 double aMotor = accelTarget - aForcesAgainst;
+		  
+		 double fuelNeeded = 0;
 		 
 		 if (aMotor >= 0) {
 			 // Case 1: acceleration is needed to either maintain the speed or to go up to the top speed
@@ -258,8 +260,6 @@
 			 double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000.0, hrsTime) * 1000.0;
 			 // Get energy from the fuel
 			 double energyByFuel = totalEnergyNeeded - energyByBattery;
-			 
-			 double fuelNeeded = 0;
 			 
 			 // Case A : Battery has enough juice for the acceleration
 			  if (totalEnergyNeeded == energyByBattery) {
@@ -334,14 +334,6 @@
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 						 );
 			  }
-						
-			 // Adjust the speed
-			 vehicle.setSpeed(vKPH);
-			 // Add distance traveled to vehicle's odometer.
-			 vehicle.addOdometerMileage(distanceTravelled, fuelNeeded);
-			 // Track maintenance due to distance traveled.
-			 vehicle.addDistanceLastMaintenance(distanceTravelled);
-			 // Derive the instantaneous fuel economy [in km/kg]
 			 
 			 double iFE = 0;
 			 
@@ -379,7 +371,7 @@
 					  + "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
 					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					  + "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
-					 + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
+					 + "time: "				+ Math.round(secs * 10.0)/10.0 + " secs  "
 					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
 					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH      	        
 					 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
@@ -436,13 +428,13 @@
 			 double iPower = - aRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
 			 
 			 logger.log(vehicle, Level.INFO, 20_000,  "Need to decelerate and reduce the speed from " 
-					 +  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
-					 + "to " + Math.round(vKPH * 1_000.0)/1_000.0
-					 + " kph.  "
+					 +  Math.round(uKPH * 10.0)/10.0 + KPH
+					 + "to " + Math.round(vKPH * 10.0)/10.0
+					 + KPH
 					 + "regen decel: " + Math.round(aRegen * 1_000.0)/1_000.0 
 					 + " m/s2.  "
 					 + "target decel: " + Math.round(accelTarget * 1_000.0)/1_000.0 
-					 + " m/s2. "			
+					 + " m/s2."			
 			 );
 			 
 			 // Convert the energyNeeded energy from J to Wh
@@ -488,7 +480,12 @@
 		 vehicle.setSpeed(vKPH);
 		 // Determine new position
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled));       
- 
+		 // Add distance traveled to vehicle's odometer.
+		 vehicle.addOdometerMileage(distanceTravelled, fuelNeeded);
+		 // Track maintenance due to distance traveled.
+		 vehicle.addDistanceLastMaintenance(distanceTravelled);
+		 // Derive the instantaneous fuel economy [in km/kg]
+		 
 		 return remainingHrs;   
 	 }
  

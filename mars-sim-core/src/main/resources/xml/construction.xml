@@ -199,6 +199,7 @@
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 5m x 5m" >
 			<resource name="acetylene" amount="1.0" />
 			<resource name="concrete" amount="25.0" />
+			<part name="insulation board" number="4" />				
 			<part name="steel truss" number="20" />
 			<part name="steel cable" number="6" />
 			<vehicle type="light utility vehicle" >
@@ -210,6 +211,7 @@
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="surface foundation 5m x 5m" >
 			<resource name="acetylene" amount="1.0" />
 			<resource name="concrete" amount="25.0" />
+			<part name="insulation board" number="4" />			
 			<part name="steel truss" number="10" />
 			<part name="steel sheet" number="5" />
 			<vehicle type="light utility vehicle" >
@@ -221,6 +223,7 @@
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 10m x 5m" >
 			<resource name="acetylene" amount="1.5" />
 			<resource name="concrete" amount="50.0" />
+			<part name="insulation board" number="6" />				
 			<part name="steel truss" number="20" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
@@ -251,6 +254,7 @@
 		 	<resource name="concrete" amount="81.0" />
 			<resource name="acetylene" amount="2.0" />		 	
 			<part name="aluminum sheet" number="10" />
+			<part name="insulation board" number="10" />			
 			<part name="steel truss" number="20" />
 			<part name="steel post" number="8" />			
 			<part name="steel sheet" number="10" />	
@@ -271,6 +275,7 @@
 		 	<resource name="concrete" amount="54.0" />
 			<resource name="acetylene" amount="1.25" />		 	
 			<part name="aluminum sheet" number="10" />
+			<part name="insulation board" number="10" />			
 			<part name="steel truss" number="20" />
 			<part name="steel post" number="5" />			
 			<part name="steel sheet" number="10" />	
@@ -309,6 +314,7 @@
 		 	<resource name="concrete" amount="63.0" />
 			<resource name="acetylene" amount="1.0" />		 	
 			<part name="aluminum sheet" number="8" />
+			<part name="insulation board" number="8" />			
 			<part name="steel truss" number="16" />
 			<part name="steel post" number="6" />			
 			<part name="steel sheet" number="8" />
@@ -327,6 +333,7 @@
 		 	<resource name="concrete" amount="216.0" />
 			<resource name="acetylene" amount="2.5" />		 	
 			<part name="aluminum sheet" number="20" />
+			<part name="insulation board" number="20" />			
 			<part name="steel truss" number="30" />
 			<part name="steel post" number="12" />			
 			<part name="steel sheet" number="20" />
@@ -346,6 +353,7 @@
 		 	<resource name="concrete" amount="192.0" />
 			<resource name="acetylene" amount="2.5" />			 	
 			<part name="aluminum sheet" number="20" />
+			<part name="insulation board" number="20" />			
 			<part name="steel truss" number="30" />
 			<part name="steel post" number="12" />			
 			<part name="steel sheet" number="20" />
@@ -395,6 +403,7 @@
 			<resource name="acetylene" amount="2.5" />				
 			<part name="brick" number="3600" />
 			<part name="aluminum sheet" number="50" />
+			<part name="insulation board" number="50" />			
 			<part name="steel truss" number="30" />
 			<part name="steel post" number="12" />			
 			<part name="steel sheet" number="50" />
@@ -416,6 +425,7 @@
 			<resource name="acetylene" amount="0.5" />				
 			<part name="brick" number="700" />
 			<part name="aluminum sheet" number="10" />
+			<part name="insulation board" number="10" />			
 			<part name="steel truss" number="8" />
 			<part name="steel post" number="4" />						
 			<part name="glass sheet" number="10" />
@@ -434,14 +444,15 @@
 		<frame name="hallway frame" width="2.0" length="-1.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.1" skill-required="1" foundation="surface foundation variable size" >
 			<resource name="concrete" amount="2.0" />
-			<resource name="acetylene" amount="0.25" />				
+			<resource name="acetylene" amount="0.25" />	
+			<part name="insulation board" number="4" />						
 			<part name="steel post" number="3" />
 		</frame>
 
 		<!-- Note brick tunnel frame length is variable. -->
 		<frame name="brick tunnel frame" width="3.0" length="-1.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="0.2" skill-required="1" foundation="subsurface foundation variable size" >
-			<resource name="concrete" amount="3.0" />
+			<resource name="concrete" amount="3.0" />			
 			<part name="brick" number="90" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
@@ -572,7 +583,8 @@
 
 		<building name="bunkhouse" width="5.0" length="5.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="small brick shed frame" >
-			<resource name="concrete" amount="75.0" />
+		 	<resource name="cement" amount="75.0" />
+		 	<resource name="concrete" amount="57.0" />				
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="4" />
 			<part name="valve" number="5" />
@@ -621,6 +633,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -641,6 +654,7 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="polyethylene" amount="20.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="20" />
 			<part name="aluminum sheet" number="15" />
 			<part name="plastic sheet" number="20" />
@@ -659,6 +673,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -676,6 +691,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
@@ -727,6 +743,7 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
+			<part name="aerogel tile" number="20" />			
 			<part name="aluminum sheet" number="3" />
 			<part name="plastic sheet" number="10" />
 			<part name="fiberglass" number="5" />
@@ -758,6 +775,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -775,6 +793,7 @@
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="5.0" />
 			<resource name="polyethylene" amount="10.0" />
+			<part name="aerogel tile" number="6" />
 			<part name="steel sheet" number="2" />
 			<part name="aluminum sheet" number="2" />
 			<part name="fiberglass" number="5" />
@@ -806,6 +825,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -823,6 +843,7 @@
 			<resource name="polyester resin" amount="15.0" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="polyethylene" amount="30.0" />
+			<part name="aerogel tile" number="40" />			
 			<part name="aluminum sheet" number="9" />
 			<part name="plastic sheet" number="30" />
 			<part name="fiberglass" number="15" />
@@ -875,6 +896,7 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="10" />			
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="fiberglass" number="5" />
@@ -963,7 +985,9 @@
 
 		<building name="outpost hub" width="10.0" length="10.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="3" frame="round vaulted brick frame" >
-		 	<resource name="cement" amount="200.0" />
+		 	<resource name="cement" amount="150.0" />
+		 	<resource name="concrete" amount="150.0" />		 	
+			<part name="aerogel tile" number="10" />		 	
 			<part name="steel pipe" number="6" />
 			<part name="plastic pipe" number="8" />
 			<part name="valve" number="10" />
@@ -1001,9 +1025,11 @@
 
 		<building name="loading dock garage" width="15.0" length="18.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="4" frame="large garage brick frame" >
+		 	<resource name="cement" amount="100.0" />
+		 	<resource name="concrete" amount="100.0" />	
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
-			<resource name="polyethylene" amount="50.0" />
+			<resource name="polyethylene" amount="50.0" />		
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
@@ -1021,6 +1047,7 @@
 		<building name="mining lab" width="5.0" length="5.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="small brick shed frame" >
 		 	<resource name="cement" amount="50.0" />
+		 	<resource name="concrete" amount="50.0" />		 	
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />
 			<part name="valve" number="10" />
@@ -1043,7 +1070,9 @@
 		 	<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
-			<part name="aluminum sheet" number="3" />
+			<part name="aerogel tile" number="15" />				
+			<part name="aluminum sheet" number="5" />
+			<part name="insulation board" number="5" />			
 			<part name="plastic sheet" number="10" />
 			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="5" />
