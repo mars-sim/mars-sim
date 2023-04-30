@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MEGDRMapReader.java
- * @date 2022-07-15
+ * @date 2023-04-28
  * @author Manny Kung
  */
 
@@ -35,29 +35,28 @@ import me.lemire.integercompression.VariableByte;
  */
 public class MEGDRMapReader {
 
-	public static final int HEIGHT = 720; //2880;
-	public static final int WIDTH = 1440; //5760;
-
+	// HEIGHT = 720
+	// WIDTH = 1440
 	// megt90n000cb.img has a resolution of 4 pixels per degree (or 0.25 by 0.25 degrees)
 	// map scale : 14.818 km per pixel
-	private static final String PATH = "/maps/";
-	static final String IMG_FILE = "megt90n000cb.img";
-	static final String FILE = PATH + IMG_FILE;
-	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
+
+//	private static final String IMG_FILE = "megt90n000cb.img";
+//	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 
+	// HEIGHT = 2880
+	// WIDTH = 5760
 	// megt90n000eb.img has a resolution of 16 pixels per degree (or 0.0625 by 0.0625 degrees)
 	// map scale : 3.705 km per pixel
-//	private static final String FILE = "/maps/megt90n000eb.img";
-//	private static final String COMPRESSED = "2880x5760_JavaFastPFOR_compressed";
+	private static final String IMG_FILE = "megt90n000eb.img";
+	private static final String COMPRESSED = "2880x5760_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "2880x5760_uncompressed";
 	
-//	public static final int HEIGHT = 2880;
-//	public static final int WIDTH = 5760;
+	private static final String PATH = "/maps/";
+	static final String FILE = PATH + IMG_FILE;
 	
 	// Each number occupies 2 bytes
 	private static final int BUFFER_SIZE = 2;
-//	private static final byte[] buffer = new byte[BUFFER_SIZE]; 
 	
 	// Each number occupies ? bytes
 	private static final int COMPRESSED_BUFFER_SIZE = 4;
@@ -66,18 +65,22 @@ public class MEGDRMapReader {
 	private static int COMPRESSED_N;
 	
 	// Future: switch to using JavaFastPFOR to save memory.
-	private int[] elevation = new int[HEIGHT*WIDTH]; // has 1036800 values ; OR [720*2880] = 2073600 values
+	private int[] elevation;
+	
+	private static int height;
+	private static int width;
 	
 	public static void main(String[] args) throws IOException {
 		new MEGDRMapReader().loadElevation();
 	}
 	
 	/**
-	 * THis class loads NASA's MEGDR elevation dataset 
+	 * This class loads NASA's MEGDR elevation dataset. 
 	 * 
-	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">GitHub Discussion #225</a>
+	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">mars-sim Issue #225</a>
 	 */
 	public MEGDRMapReader() {
+		loadElevation();
 	}
 	
 	private int convert2ByteToInt(byte[] data) {
@@ -98,13 +101,14 @@ public class MEGDRMapReader {
 	 */
 	public int[] convertByteArrayToIntArray(byte[] data) {
         if (data == null || data.length % 2 != 0) return null;
-        // ----------
+ 
         int[] ints = new int[data.length / 2];
-        for (int i = 0; i < ints.length; i++)
-            ints[i] = ( convert2ByteToInt(new byte[] {
-                    data[(i*2)],
-                    data[(i*2)+1],
-            } ));
+        for (int i = 0; i < ints.length; i++) {
+            ints[i] = (convert2ByteToInt(new byte[] {
+	                    data[(i*2)],
+	                    data[(i*2)+1]
+	            	}));
+        }
         return ints;
     }
 	
@@ -114,71 +118,38 @@ public class MEGDRMapReader {
 	 * @return
 	 */
 	public int[] loadElevation() {	 
-		InputStream inputStream = null; //MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
-//		BufferedInputStream bis = null;
+		InputStream inputStream = null;
 		
 	    try {
 	    	// open input stream test.txt for reading purpose.
 	    	inputStream = MEGDRMapReader.class.getResourceAsStream(FILE);
-			// input stream is converted to buffered input stream
-//			bis = new BufferedInputStream(inputStream);
-			// read number of bytes available
-//			int numByte = bis.available();
-			// byte array declared
-//			byte[] bytes = new byte[numByte];
+
 			// Use ByteStreams to convert to byte array
 			byte[] bytes = ByteStreams.toByteArray(inputStream);
 			
 //			System.out.println("# of bytes: " + bytes.length);
-			// It has a total of 2073600 bytes.
+			// megt90n000cb has a total of 2073600 bytes.
 			
 			elevation = convertByteArrayToIntArray(bytes);
+			
+//			System.out.println("# of ints: " + elevation.length);
+			// megt90n000cb has a total of 1036800 ints.
+			
+			height = (int) Math.sqrt(elevation.length / 2);
+			width = height * 2;
+			
+//			System.out.println("height: " + height
+//							+ "  width: " + width);
 
-//			int size = elevation.length;
-//			for (int j=0; j<size; j++) {
-//				if (j % WIDTH == 0) System.out.println();
-//				System.out.print(elevation[j] + " ");
-//			}
-			
-//		    int i = 0;  
-//			while (inputStream.read(buffer) != -1) {
-//				// Combine the 2 bytes into a 16-bit number
-//				//				elevation[i] =  (0xff & buffer[0] << 8) | (0xff & buffer[1]);
-//				elevation[i] = (buffer[0] << 8 ) | (buffer[1] & 0xff);
-//				if (i % WIDTH == 0) System.out.println();
-//				System.out.print(elevation[i] + " ");// + buffer[0] + " " + buffer[1]);
-//				i++;
-//			}
-			
         if (inputStream != null)
 	        inputStream.close();
-	        
-//        if (bis != null)
-//        	bis.close();
-        
+	            
 		} catch (Exception e) {
 			 System.out.println("Problems in inputStream: " + e.getMessage());
 
 		}
 	    
         return elevation;
-        
-//        try {
-//			write(OUTPUT, elevation);
-//		} catch (IOException e) {
-//		}
-//        
-//        write2ByteArray(UNCOMPRESSED, elevation);
-//        
-//        int[] uncompressed = read2ByteArray(UNCOMPRESSED);
-//        
-//        if(Arrays.equals(elevation, uncompressed)) {
-//            System.out.println("Uncompressed elevation data is recovered from file without loss");
-//        }
-//        else
-//            throw new RuntimeException("bug"); // could use assert
-        		
-//        useJavaFastPFOR();
 	}
 	
 
@@ -208,7 +179,7 @@ public class MEGDRMapReader {
 		return elevation;
 	}
 	
-	   /**
+	/**
      * This method returns the byte array that represent the contents of 
      * {@code file}.
      * 
@@ -543,6 +514,14 @@ public class MEGDRMapReader {
         
         return compressed;
     }
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
     
 //    static IntegratedIntCompressor iic = new IntegratedIntCompressor(
 //            new SkippableIntegratedComposition(

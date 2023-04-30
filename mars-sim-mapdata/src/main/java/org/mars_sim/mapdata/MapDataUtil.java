@@ -12,18 +12,18 @@
   */
  public final class MapDataUtil {
  	
- 	private static final int ELEVATION_MAP_HEIGHT = MEGDRMapReader.HEIGHT;
- 	private static final int ELEVATION_MAP_WIDTH = MEGDRMapReader.WIDTH;
- 	
- 	private static final double PI = Math.PI;
+	private static final double PI = Math.PI;
  	private static final double TWO_PI = Math.PI * 2D;
 
-     // Singleton instance.
-     private static MapDataUtil instance;
-     private static MapDataFactory mapDataFactory;
-     private static MEGDRMapReader reader;
+	// Singleton instance.
+	private static MapDataUtil instance;
+	private static MapDataFactory mapDataFactory;
+	private static MEGDRMapReader reader;
 
  	private static int[] elevationArray;
+ 	
+ 	private static int height;
+ 	private static int width;
  	
      /**
       * Private constructor for static utility class.
@@ -31,16 +31,20 @@
      private MapDataUtil() {
          mapDataFactory = new MapDataFactory();
          reader = new MEGDRMapReader();
+         
+         height = reader.getHeight();
+         width = reader.getWidth();
      }
      
      public int[] getElevationArray() {
+    	 
      	if (elevationArray == null)	
      		elevationArray = reader.loadElevation();
   
  		return elevationArray;
  	}
  	
-     /**
+    /**
  	 * Gets the elevation as an integer at a given location.
  	 * 
  	 * @param phi   the phi location.
@@ -48,6 +52,10 @@
  	 * @return the elevation as an integer.
  	 */
  	public int getElevationInt(double phi, double theta) {
+	
+//		System.out.println("0. height: " + height
+//				+ "  0. width: " + width);
+		
 // 		// Make sure phi is between 0 and PI.
 // 		while (phi > PI)
 // 			phi -= PI;
@@ -67,20 +75,20 @@
 // 		while (theta < 0)
 // 			theta += TWO_PI;
 
- 		int row = (int) Math.round(phi * ELEVATION_MAP_HEIGHT / PI);
+ 		int row = (int) Math.round(phi * height / PI);
  		
- 		if (row == ELEVATION_MAP_HEIGHT) 
+ 		if (row == height) 
  			row--;
  		
- 		int column = ELEVATION_MAP_WIDTH /2 + (int) Math.round(theta * ELEVATION_MAP_WIDTH / TWO_PI);
+ 		int column = width / 2 + (int) Math.round(theta * width / TWO_PI);
 
- 		if (column == ELEVATION_MAP_WIDTH)
+ 		if (column == width)
  			column--;
 
- 		int index = row * ELEVATION_MAP_WIDTH + column;
+ 		int index = row * width + column;
  		
- 		if (index > ELEVATION_MAP_HEIGHT * ELEVATION_MAP_WIDTH)
- 			index = ELEVATION_MAP_HEIGHT * ELEVATION_MAP_WIDTH - 1;
+ 		if (index > height * width)
+ 			index = height * width - 1;
  		
  		return getElevationArray()[index];
  	}
