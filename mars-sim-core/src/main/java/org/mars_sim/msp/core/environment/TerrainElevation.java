@@ -325,8 +325,9 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getMOLAElevation(double phi, double theta) {
-		return mapDataUtil.getElevationInt(phi, theta)/1000.0;
+		return mapDataUtil.getElevation(phi, theta)/1000.0;
 	}
+	
 	/**
 	 * Returns the patched elevation in km at the given location.
 	 *

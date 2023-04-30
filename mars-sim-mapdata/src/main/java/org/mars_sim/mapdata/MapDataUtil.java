@@ -20,10 +20,10 @@
 	private static MapDataFactory mapDataFactory;
 	private static MEGDRMapReader reader;
 
- 	private static int[] elevationArray;
+ 	private static short[] elevationArray;
  	
- 	private static int height;
- 	private static int width;
+ 	private static short height;
+ 	private static short width;
  	
      /**
       * Private constructor for static utility class.
@@ -36,7 +36,7 @@
          width = reader.getWidth();
      }
      
-     public int[] getElevationArray() {
+     public short[] getElevationArray() {
     	 
      	if (elevationArray == null)	
      		elevationArray = reader.loadElevation();
@@ -45,42 +45,20 @@
  	}
  	
     /**
- 	 * Gets the elevation as an integer at a given location.
+ 	 * Gets the elevation as an short integer at a given location.
  	 * 
  	 * @param phi   the phi location.
  	 * @param theta the theta location.
  	 * @return the elevation as an integer.
  	 */
- 	public int getElevationInt(double phi, double theta) {
+ 	public short getElevation(double phi, double theta) {
 	
-//		System.out.println("0. height: " + height
-//				+ "  0. width: " + width);
-		
-// 		// Make sure phi is between 0 and PI.
-// 		while (phi > PI)
-// 			phi -= PI;
-// 		while (phi < 0)
-// 			phi += PI;
-//
-// 		// Adjust theta with PI for the map offset.
-// 		// Note: the center of the map is when theta = 0
-// 		if (theta > PI)
-// 			theta -= PI;
-// 		else
-// 			theta += PI;
-// 		
-// 		// Make sure theta is between 0 and 2 PI.
-// 		while (theta > TWO_PI)
-// 			theta -= TWO_PI;
-// 		while (theta < 0)
-// 			theta += TWO_PI;
-
- 		int row = (int) Math.round(phi * height / PI);
+ 		short row = (short) Math.round(phi * height / PI);
  		
  		if (row == height) 
  			row--;
  		
- 		int column = width / 2 + (int) Math.round(theta * width / TWO_PI);
+ 		short column = (short) (width / 2 + Math.round(theta * width / TWO_PI));
 
  		if (column == width)
  			column--;
