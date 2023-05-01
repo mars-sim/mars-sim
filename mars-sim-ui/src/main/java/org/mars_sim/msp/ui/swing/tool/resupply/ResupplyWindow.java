@@ -356,7 +356,7 @@ public class ResupplyWindow extends ToolWindow
 				// Build a name
 				StringBuilder name = new StringBuilder();
 				if (t instanceof Resupply r) {
-					name.append(r.getTemplate().getName());
+					name.append(r.getName());
 				}
 				else if (t instanceof ArrivingSettlement a) {
 					name.append(a.getTemplate());

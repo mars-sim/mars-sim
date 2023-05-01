@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -125,8 +126,8 @@ public class ResupplyDetailPanel extends JPanel {
 	 * Updates the resupply info with the current resupply mission.
 	 */
 	private void updateResupplyInfo() {
-
-		templateLabel.setText(resupply.getTemplate().getName());
+		ResupplyMissionTemplate schedule = resupply.getTemplate();
+		templateLabel.setText((schedule != null ? schedule.getName() : ""));
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(resupply.getTransitState().getName());
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());

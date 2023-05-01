@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -114,24 +115,45 @@ public class Resupply implements Serializable, SettlementSupplies, Transportable
 
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
+
+	private String name;
 	
 	/**
-	 * Constructor.
+	 * Constructor based of a Supply schedule.
 	 * 
+	 * @param template The schedule of the resupply
 	 * @param arrivalDate the arrival date of the supplies.
 	 * @param settlement  the settlement receiving the supplies.
 	 */
 	public Resupply(ResupplyMissionTemplate template, MarsClock arrivalDate, Settlement settlement) {
+		this(template.getName(), arrivalDate, settlement);
+
 		// Initialize data members.
-		this.arrivalDate = arrivalDate;
 		this.template = template;
-		
+
+		// Load up the respplut according to the manifest
+		SupplyManifest manifest = template.getManifest();
+		setBuildings(manifest.buildings());
+		setVehicles(manifest.vehicles());
+		setEquipment(manifest.equipment());
+		setNewImmigrantNum(manifest.people());
+		setResources(manifest.resources());
+		setParts(manifest.parts());
+	}
+
+	/**
+	 * Bespoke resupply mission.
+	 */
+	public Resupply(String name, MarsClock arrivalDate, Settlement destination) {
+		this.arrivalDate = arrivalDate;
+			
         // Determine launch date.
         launchDate = new MarsClock(arrivalDate);
         launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
  
-		this.settlement = settlement;
-		settlementID = settlement.getIdentifier();
+		this.settlement = destination;
+		this.name = name;
+		settlementID = destination.getIdentifier();
 	}
 
 	public ResupplyMissionTemplate getTemplate() {
@@ -1232,7 +1254,7 @@ public class Resupply implements Serializable, SettlementSupplies, Transportable
 
 	@Override
 	public String getName() {
-		return getSettlement().getName();
+		return name;
 	}
 
 	@Override

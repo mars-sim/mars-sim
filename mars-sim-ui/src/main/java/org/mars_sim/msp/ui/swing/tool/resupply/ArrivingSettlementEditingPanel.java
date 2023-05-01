@@ -15,10 +15,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
@@ -43,7 +41,9 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
+import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -94,9 +94,13 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private JComboBoxMW<String> sponsorCB;
 
 	private ModifyTransportItemDialog modifyTransportItemDialog;
-	private ResupplyWindow resupplyWindow;
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
+
+	private MarsClock marsClock;
+
+	private TransportManager transportManager;
+	private UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -109,13 +113,15 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 */
 	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow,
 			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
-		// User TransportItemEditingPanel constructor
 		super(settlement);
 		this.modifyTransportItemDialog = modifyTransportItemDialog;
-		this.resupplyWindow = resupplyWindow;
 		this.newTransportItemDialog = newTransportItemDialog;
 		// Initialize data members.
 		this.settlement = settlement;
+		Simulation sim = resupplyWindow.getDesktop().getSimulation();
+		this.marsClock = sim.getMasterClock().getMarsClock();
+		this.transportManager = sim.getTransportManager();
+		this.unitManager = sim.getUnitManager();
 
 		setBorder(new MarsPanelBorder());
 		setLayout(new BorderLayout(0, 0));
@@ -271,7 +277,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 
 		// Get default arriving settlement Martian time.
-		MarsClock arrivingTime = Simulation.instance().getMasterClock().getMarsClock();
+		MarsClock arrivingTime = marsClock;
 		if (settlement != null) {
 			arrivingTime = settlement.getArrivalDate();
 		}
@@ -729,27 +735,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				break;
 			}
 		}
-		
-//		for (int x = 0; x < size; x++) {
-//
-////			String latStr = ((String) (settlementTableModel.getValueAt(x, LAT))).trim().toUpperCase();
-////			String longStr = ((String) (settlementTableModel.getValueAt(x, LON))).trim().toUpperCase();				
-//			
-//			if (latStr == null || latStr.length() < 2) {
-//				return Msg.getString("Coodinates.error.latitudeMissing"); //$NON-NLS-1$
-//			}
-//
-//			if (longStr == null || longStr.length() < 2) {
-//				return Msg.getString("Coodinates.error.longitudeMissing"); //$NON-NLS-1$
-//			}
-//
-//			Coordinates c = new Coordinates(latStr, longStr);
-//			if (!coordinatesSet.add(c)) {
-//				System.out.println(c);
-//				repeated = true;
-//				break;
-//			}
-//		}
 
 		if (repeated) {
 			return Msg.getString("Coodinates.error.latitudeLongitudeRepeating"); //$NON-NLS-1$
@@ -769,15 +754,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		try {
 
-			List<Integer> sols = new ArrayList<>();
 			if (timeArrivalString.equals("-"))
 				timeArrivalString = "-1";
 			double timeArrival = Double.parseDouble(timeArrivalString);
-			// int inputSols = Integer.parseInt(solsTF.getText());
 			if (timeArrival < 0D) {
 				validation_result = false;
 				enableButton(false);
-//				System.out.println("Invalid entry! Sol must be greater than zero.");
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
 				errorLabel.setText(errorString);
 			} else {
@@ -925,7 +907,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			String template = (String) templateCB.getSelectedItem();
 			int popNum = Integer.parseInt(populationTF.getText());
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
-//			MarsClock arrivalDate = getArrivalDate();
 			int arrivalSols = 1;
 			Coordinates landingLoc = getLandingLocation();
 			String sponsor = (String) sponsorCB.getSelectedItem();
@@ -934,7 +915,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 							arrivalSols, landingLoc,
 							popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
-			Simulation.instance().getTransportManager().addNewTransportItem(newArrivingSettlement);
+			transportManager.addNewTransportItem(newArrivingSettlement);
 			return true;
 		} else {
 			return false;
@@ -1044,13 +1025,5 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				+ ((String)longitudeDirectionCB.getSelectedItem()).substring(1, 2);
 		// System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
-	}
-
-	/**
-	 * Prepare this window for deletion.
-	 */
-	public void destroy() {
-		modifyTransportItemDialog = null;
-		newTransportItemDialog = null;
 	}
 }

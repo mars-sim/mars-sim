@@ -21,7 +21,9 @@ import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -114,6 +116,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private Map<String,ShiftPattern> shiftDefinitions = new HashMap<>();
 	private String defaultShift;
 
+	private ResupplyConfig resupplyConfig;
+
 	/**
 	 * Constructor.
 	 *
@@ -121,11 +125,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
+	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig,
+							ResupplyConfig resupplyConfig) {
 		super("settlement");
 		setXSDName("settlement.xsd");
 
 		this.partPackageConfig = partPackageConfig;
+		this.resupplyConfig = resupplyConfig;
 		Element root = settlementDoc.getRootElement();
 		loadMissionControl(root.getChild(MISSION_CONTROL));
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
@@ -476,9 +482,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
 			for (Element resupplyMissionElement : resupplyNodes) {
 				String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
+				SupplyManifest manifest = resupplyConfig.getSupplyManifest(resupplyName);
 				double arrivalTime = Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
 				ResupplyMissionTemplate resupplyMissionTemplate = new ResupplyMissionTemplate(resupplyName,
-						arrivalTime);
+						arrivalTime, manifest);
 				template.addResupplyMissionTemplate(resupplyMissionTemplate);
 			}
 		}

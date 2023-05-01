@@ -31,7 +31,6 @@ public final class ResupplyUtil {
 
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-	private static ResupplyConfig resupplyConfig = simulationConfig.getResupplyConfiguration();
 	
     // Average transit time for resupply missions from Earth to Mars [in sols]
     private static int averageTransitTime = simulationConfig.getAverageTransitTime();
@@ -103,20 +102,6 @@ public final class ResupplyUtil {
 	                    }
 	                }
 	                resupply.setTransitState(state);
-
-	                String resupplyName = template.getName();
-	                // Get new building types.
-	                resupply.setBuildings(resupplyConfig.getResupplyBuildings(resupplyName));
-	                // Get new vehicle types.
-	                resupply.setVehicles(resupplyConfig.getResupplyVehicleTypes(resupplyName));
-	                // Get new equipment types.
-	                resupply.setEquipment(resupplyConfig.getResupplyEquipment(resupplyName));
-	                // Get number of new immigrants.
-	                resupply.setNewImmigrantNum(resupplyConfig.getNumberOfResupplyImmigrants(resupplyName));
-	                // Get new resources map.
-	                resupply.setResources(resupplyConfig.getResupplyResources(resupplyName));
-	                // Get new parts map.
-	                resupply.setParts(resupplyConfig.getResupplyParts(resupplyName));
 
 	                resupplies.add(resupply);
 

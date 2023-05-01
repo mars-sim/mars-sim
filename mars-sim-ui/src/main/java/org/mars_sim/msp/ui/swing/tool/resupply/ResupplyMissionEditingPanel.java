@@ -22,7 +22,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,7 +60,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -120,12 +118,10 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private Resupply resupply;
 	private NewTransportItemDialog newTransportItemDialog = null;
 	private ModifyTransportItemDialog modifyTransportItemDialog = null;
-	private ResupplyWindow resupplyWindow;
 
 	private MarsClock marsCurrentTime;
 
-	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+    private MarsClock marsClock;
 
 	/** constructor. */
 	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow,
@@ -137,7 +133,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		this.resupply = resupply;
 		this.newTransportItemDialog = newTransportItemDialog;
 		this.modifyTransportItemDialog = modifyTransportItemDialog;
-		this.resupplyWindow = resupplyWindow;
+		this.marsClock = resupplyWindow.getDesktop().getSimulation().getMasterClock().getMarsClock();
 
 		setBorder(new MarsPanelBorder());
 		setLayout(new BorderLayout(0, 0));
@@ -155,6 +151,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination combo box.
+		UnitManager unitManager = resupplyWindow.getDesktop().getSimulation().getUnitManager();
 		Vector<Settlement> settlements = new Vector<>(
 				unitManager.getSettlements());
 		Collections.sort(settlements);
@@ -716,7 +713,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		else if (arrivalDate != null) {
 			String name = "Template " + num++;
-			Resupply newResupply = new Resupply(new ResupplyMissionTemplate(name, arrivalDate.getTotalMillisols()/1000), arrivalDate, destination);
+			Resupply newResupply = new Resupply(name, arrivalDate, destination);
 			modifyResupplyMission(newResupply, arrivalDate);
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
 			return true;
@@ -875,18 +872,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setParts(newParts);
 
 		// return true;
-	}
-
-	/**
-	 * Maps a number to an alphabet.
-	 *
-	 * @param a number
-	 * @return a String
-	 */
-	private String getCharForNumber(int i) {
-		// Do note delete. Will use it
-		// NOTE: i must be > 1, if i = 0, return null
-		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
 	}
 
 	/**
@@ -1180,42 +1165,4 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		if (d != null)
 			d.addDocumentListener(dl);
 	}
-
-	/**
-	 * Prepares this window for deletion.
-	 */
-	public void destroy() {
-
-		Arrays.fill(solsUntil, null);
-		solsUntil = null;
-		Arrays.fill(quantity, null);
-		quantity = null;
-		Arrays.fill(immigrants, null);
-		immigrants = null;
-		destinationCB = null;
-		arrivalDateRB = null;
-		arrivalDateTitleLabel = null;
-		solsUntilArrivalRB = null;
-		solsUntilArrivalLabel = null;
-		martianSolCBModel = null;
-		solLabel = null;
-		solCB = null;
-		solsUntilCB = null;
-		immigrantsCB = null;
-		monthLabel = null;
-		monthCB = null;
-		orbitLabel = null;
-		orbitCB = null;
-		solInfoLabel = null;
-		supplyTableModel = null;
-		supplyTable = null;
-		removeSupplyButton = null;
-		errorLabel = null;
-		resupply = null;
-		newTransportItemDialog = null;
-		modifyTransportItemDialog = null;
-		resupplyWindow = null;
-		marsCurrentTime = null;
-	}
-
 }

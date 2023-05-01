@@ -51,7 +51,7 @@ public class ResupplyConfig implements Serializable {
     private static final String AMOUNT = "amount";
 
     // Data members
-    private Collection<ResupplyTemplate> resupplyTemplates;
+    private Collection<SupplyManifest> resupplyTemplates;
 
     /**
      * Constructor
@@ -82,64 +82,50 @@ public class ResupplyConfig implements Serializable {
 	        Element root = resupplyDoc.getRootElement();
 	        List<Element> resupplyNodes = root.getChildren(RESUPPLY);
 	        for (Element resupplyElement : resupplyNodes) {
-	            ResupplyTemplate template = new ResupplyTemplate();
-	            resupplyTemplates.add(template);
 	
-	            template.name = resupplyElement.getAttributeValue(NAME);
-
-				// Get the zone
-	            int zone = 0;
-	            
-	            String zoneString = resupplyElement.getAttributeValue(ZONE);
-	            
-	            if (zoneString != null) {
-	            	zone = Integer.parseInt(zoneString);
-	            	template.zone = zone;
-	            }
+	            String name = resupplyElement.getAttributeValue(NAME);
+                int people = ConfigHelper.getOptionalAttributeInt(resupplyElement, PERSON, 0);
+                int zone = ConfigHelper.getOptionalAttributeInt(resupplyElement, ZONE, 0);
 	            	
 	            // Load buildings
+                List<BuildingTemplate> buildings = new ArrayList<>();
 	            List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
 	            for (Element buildingElement : buildingNodes) {
 	                String buildingType = buildingElement.getAttributeValue(TYPE);
 	                BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 	
-	                template.buildings.add(new BuildingTemplate(0, zone, buildingType,
+	                buildings.add(new BuildingTemplate(0, zone, buildingType,
 	                        buildingType, bounds));
 	
 	            }
 	
 	            // Load vehicles
+                Map<String,Integer> vehicles = new HashMap<>();
 	            List<Element> vehicleNodes = resupplyElement.getChildren(VEHICLE);
 	            for (Element vehicleElement : vehicleNodes) {
 	                String vehicleType = vehicleElement.getAttributeValue(TYPE);
 	                int vehicleNumber = Integer.parseInt(vehicleElement
 	                        .getAttributeValue(NUMBER));
-	                if (template.vehicles.containsKey(vehicleType))
-	                    vehicleNumber += template.vehicles.get(vehicleType);
-	                template.vehicles.put(vehicleType, vehicleNumber);
+	                if (vehicles.containsKey(vehicleType))
+	                    vehicleNumber += vehicles.get(vehicleType);
+	                vehicles.put(vehicleType, vehicleNumber);
 	            }
 	
 	            // Load equipment
+                Map<String,Integer> equipment = new HashMap<>();
 	            List<Element> equipmentNodes = resupplyElement
 	                    .getChildren(EQUIPMENT);
 	            for (Element equipmentElement : equipmentNodes) {
 	                String equipmentType = equipmentElement.getAttributeValue(TYPE);
 	                int equipmentNumber = Integer.parseInt(equipmentElement
 	                        .getAttributeValue(NUMBER));
-	                if (template.equipment.containsKey(equipmentType))
-	                    equipmentNumber += template.equipment.get(equipmentType);
-	                template.equipment.put(equipmentType, equipmentNumber);
+	                if (equipment.containsKey(equipmentType))
+	                    equipmentNumber += equipment.get(equipmentType);
+	                equipment.put(equipmentType, equipmentNumber);
 	            }
-	
-	            // Load people
-	            List<Element> personNodes = resupplyElement.getChildren(PERSON);
-	            for (Element personElement : personNodes) {
-	                int personNumber = Integer.parseInt(personElement
-	                        .getAttributeValue(NUMBER));
-	                template.people += personNumber;
-	            }
-	
+
 	            // Load resources
+                Map<AmountResource, Double> resources = new HashMap<>();
 	            List<Element> resourceNodes = resupplyElement.getChildren(RESOURCE);
 	            for (Element resourceElement : resourceNodes) {
 	                String resourceName = resourceElement.getAttributeValue(NAME);
@@ -153,22 +139,23 @@ public class ResupplyConfig implements Serializable {
 	                double resourceAmount = Double.parseDouble(resourceElement
 	                        .getAttributeValue(AMOUNT));
 	                
-	                if (template.resources.containsKey(resource))
-	                    resourceAmount += template.resources.get(resource);
+	                if (resources.containsKey(resource))
+	                    resourceAmount += resources.get(resource);
 	                
-	                template.resources.put(resource, resourceAmount);
+	                resources.put(resource, resourceAmount);
 	            }
 	
 	            // Load parts
+                Map<Part,Integer> parts = new HashMap<>();
 	            List<Element> partNodes = resupplyElement.getChildren(PART);
 	            for (Element partElement : partNodes) {
 	                String partType = partElement.getAttributeValue(TYPE);
 	                Part part = (Part) (ItemResourceUtil.findItemResource(partType));
 	                int partNumber = Integer.parseInt(partElement
 	                        .getAttributeValue(NUMBER));
-	                if (template.parts.containsKey(part))
-	                    partNumber += template.parts.get(part);
-	                template.parts.put(part, partNumber);
+	                if (parts.containsKey(part))
+	                    partNumber += parts.get(part);
+	                parts.put(part, partNumber);
 	            }
 	
 	            // Load part packages
@@ -187,13 +174,22 @@ public class ResupplyConfig implements Serializable {
 	                        while (i.hasNext()) {
 	                            Part part = i.next();
 	                            int partNumber = partPackage.get(part);
-	                            if (template.parts.containsKey(part))
-	                                partNumber += template.parts.get(part);
-	                            template.parts.put(part, partNumber);
+	                            if (parts.containsKey(part))
+	                                partNumber += parts.get(part);
+	                            parts.put(part, partNumber);
 	                        }
 	                    }
 	                }
 	            }
+
+                // Build the 
+                SupplyManifest template = new SupplyManifest(name, people,
+                                            Collections.unmodifiableList(buildings),
+                                            Collections.unmodifiableMap(vehicles),
+                                            Collections.unmodifiableMap(equipment),
+                                            Collections.unmodifiableMap(resources),
+                                            Collections.unmodifiableMap(parts) );
+	            resupplyTemplates.add(template);
 	        }
     	}
     }
@@ -203,88 +199,18 @@ public class ResupplyConfig implements Serializable {
      * @param resupplyName the resupply mission name.
      * @return the resupply template.
      */
-    private ResupplyTemplate getResupplyTemplate(String resupplyName) {
+    public SupplyManifest getSupplyManifest(String resupplyName) {
 
-        ResupplyTemplate result = null;
-
-        Iterator<ResupplyTemplate> i = resupplyTemplates.iterator();
+        Iterator<SupplyManifest> i = resupplyTemplates.iterator();
         while (i.hasNext()) {
-            ResupplyTemplate template = i.next();
+            SupplyManifest template = i.next();
             if (template.name.equals(resupplyName)) {
-                result = template;
+                return template;
             }
         }
 
-        if (result == null)
-            throw new IllegalArgumentException("resupplyName: " + resupplyName
+        throw new IllegalArgumentException("resupplyName: " + resupplyName
                     + " not found.");
-
-        return result;
-    }
-
-    /**
-     * Gets a list of all building templates in the resupply mission.
-     * @param resupplyName the resupply mission name.
-     * @return list of building templates.
-     */
-    public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
-
-        List<BuildingTemplate> result = new ArrayList<>();
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        if (foundTemplate != null) {
-            result = new ArrayList<>(foundTemplate.buildings);
-        }
-        return result;
-    }
-
-    /**
-     * Gets a list of vehicle types in the resupply mission.
-     * @param resupplyName name of the resupply mission.
-     * @return list of vehicle types as strings.
-     */
-    public Map<String, Integer> getResupplyVehicleTypes(String resupplyName) {
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return Collections.unmodifiableMap(foundTemplate.vehicles);
-    }
-
-    /**
-     * Gets the equipment types in a resupply mission.
-     * @param resupplyName the name of the resupply mission.
-     * @return map of equipment types and number.
-     */
-    public Map<String, Integer> getResupplyEquipment(String resupplyName) {
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return Collections.unmodifiableMap(foundTemplate.equipment);
-    }
-
-    /**
-     * Gets the number of immigrants in a resupply mission.
-     * @param resupplyName name of the resupply mission.
-     * @return number of immigrants
-     */
-    public int getNumberOfResupplyImmigrants(String resupplyName) {
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return foundTemplate.people;
-    }
-
-    /**
-     * Gets a map of parts and their number in a resupply mission.
-     * @param resupplyName the name of the resupply mission.
-     * @return map of parts and their numbers.
-     */
-    public Map<Part, Integer> getResupplyParts(String resupplyName) {
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return Collections.unmodifiableMap(foundTemplate.parts);
-    }
-
-    /**
-     * Gets a map of resources and their amounts in a resupply mission.
-     * @param resupplyName the name of the resupply mission.
-     * @return map of resources and their amounts (Double).
-     */
-    public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
-        ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return Collections.unmodifiableMap(foundTemplate.resources);
     }
 
     /**
@@ -292,51 +218,17 @@ public class ResupplyConfig implements Serializable {
      */
     public void destroy() {
 
-        Iterator<ResupplyTemplate> i = resupplyTemplates.iterator();
-        while (i.hasNext()) {
-            ResupplyTemplate template = i.next();
-            template.name = null;
-            template.buildings.clear();
-            template.buildings = null;
-            template.vehicles.clear();
-            template.vehicles = null;
-            template.equipment.clear();
-            template.equipment = null;
-            template.resources.clear();
-            template.resources = null;
-            template.parts.clear();
-            template.parts = null;
-        }
         resupplyTemplates.clear();
         resupplyTemplates = null;
     }
 
     /**
-     * Private inner class for resupply template.
+     * Definition of a Supply Manifest used in a resupply mission
      */
-    private static class ResupplyTemplate implements Serializable {
-
-        /** default serial id. */
-        private static final long serialVersionUID = 1L;
-
-        int zone = 0;
-        private int people;
-        
-        private String name;
-        
-        private List<BuildingTemplate> buildings;
-        
-        private Map<String, Integer> vehicles;
-        private Map<String, Integer> equipment;
-        private Map<AmountResource, Double> resources;
-        private Map<Part, Integer> parts;
-
-        private ResupplyTemplate() {
-            buildings = new ArrayList<>();
-            vehicles = new HashMap<>();
-            equipment = new HashMap<>();
-            resources = new HashMap<>();
-            parts = new HashMap<>();
-        }
-    }
+    public static record SupplyManifest(String name, int people, List<BuildingTemplate> buildings,
+                                            Map<String, Integer> vehicles,
+                                            Map<String, Integer> equipment,
+                                            Map<AmountResource, Double> resources,
+                                            Map<Part, Integer> parts)
+                        implements Serializable {};
 }

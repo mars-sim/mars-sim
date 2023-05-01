@@ -1,8 +1,9 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE resupply-list [
 	<!ELEMENT resupply-list (resupply*)>
-	<!ELEMENT resupply (building*, vehicle*, equipment*, person?, resource*, part*, part-package*)>
+	<!ELEMENT resupply (building*, vehicle*, equipment*, resource*, part*, part-package*)>
 	<!ATTLIST resupply name CDATA #REQUIRED>
+	<!ATTLIST resupply person CDATA #IMPLIED>
 	<!ELEMENT building EMPTY>
 	<!ATTLIST building zone CDATA #IMPLIED>	
 	<!ATTLIST building type CDATA #REQUIRED>
@@ -17,8 +18,6 @@
 	<!ELEMENT equipment EMPTY>
 	<!ATTLIST equipment type CDATA #REQUIRED>
 	<!ATTLIST equipment number CDATA #REQUIRED>
-	<!ELEMENT person EMPTY>
-	<!ATTLIST person number CDATA #REQUIRED>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource amount CDATA #REQUIRED>
@@ -162,7 +161,7 @@
 	
 	<!-- Resupply mission from Earth. -->
 	<!-- name: the unique name of the resupply mission. -->
-	<resupply name="Resupply for Phase 1">
+	<resupply name="Resupply for Phase 1" person="4">
 
 		<!-- A new building for the settlement. -->
 		<!-- type: the type of building (see buildings.xml) -->
@@ -200,10 +199,7 @@
 		<equipment type="specimen box" number="80" />
     	<equipment type="thermal bottle" number="4" />			
    	    <equipment type="wheelbarrow" number="4" />
-   	      
-		<!-- New immigrants from Earth. -->
-		<!-- number: the number of immigrants. -->
-		<person number="4" />
+   	    
 
 		<!-- Resource provided in this resupply. -->
 		<!-- type: the type of resource (see resources.txt) -->
@@ -216,7 +212,7 @@
 
 	</resupply>
 
-	<resupply name="Resupply for Phase 2">
+	<resupply name="Resupply for Phase 2" person="4">
 		<building type="Lander Hab" xloc="0.0" yloc="26.0" facing="0.0" />
 		<building type="Inflatable Greenhouse" xloc="-12.0" yloc="26.0" facing="270.0" />
 	
@@ -249,8 +245,7 @@
 		<equipment type="specimen box" number="80" />
     	<equipment type="thermal bottle" number="4" />	
  	    <equipment type="wheelbarrow" number="2" />
- 	    	    		
-		<person number="4" />
+
 		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="1657.0" />
@@ -259,7 +254,7 @@
 		
 	</resupply>
 
-	<resupply name="Resupply for Phase 3">
+	<resupply name="Resupply for Phase 3" person="4">
 
 		<building zone ="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
 		
@@ -319,8 +314,6 @@
 		<equipment type="specimen box" number="80" />
     	<equipment type="thermal bottle" number="12" />	
  	    <equipment type="wheelbarrow" number="12" />
-		
-		<person number="12" />
 		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="4970.0" />
