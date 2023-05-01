@@ -756,21 +756,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		resupplyMission.setArrivalDate(arrivalDate);
 
-		// Determine launch date.
-		MarsClock launchDate = new MarsClock(arrivalDate);
-		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
-		resupplyMission.setLaunchDate(launchDate);
-
-		// Set resupply state based on launch and arrival time.
-		TransitState state = TransitState.PLANNED;
-		if (MarsClock.getTimeDiff(marsClock, launchDate) > 0D) {
-			state = TransitState.IN_TRANSIT;
-			if (MarsClock.getTimeDiff(marsClock, arrivalDate) > 0D) {
-				state = TransitState.ARRIVED;
-			}
-		}
-		resupplyMission.setTransitState(state);
-
 		// Set immigrant num.
 		int immigrantNum = (Integer) immigrantsCB.getSelectedItem();
 		if (immigrantNum < 0)

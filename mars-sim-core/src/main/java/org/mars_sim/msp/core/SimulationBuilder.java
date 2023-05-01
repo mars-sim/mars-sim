@@ -314,12 +314,12 @@ public class SimulationBuilder {
 			}
 		}
 
-		sim.startClock(false);
-		
 		if (!loaded) {
 			// initialize getTransportManager	
 			sim.getTransportManager().init();
 		}
+
+		sim.startClock(false);
 		
 		return sim;
 	}

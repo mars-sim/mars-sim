@@ -42,9 +42,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -939,21 +937,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Populate arrival date.
 		MarsClock arrivalDate = getArrivalDate();
 		settlement.setArrivalDate(arrivalDate);
-
-		// Populate launch date.
-		MarsClock launchDate = new MarsClock(arrivalDate);
-		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
-		settlement.setLaunchDate(launchDate);
-
-		// Set transit state based on launch and arrival time.
-		TransitState state = TransitState.PLANNED;
-		if (MarsClock.getTimeDiff(marsClock, launchDate) > 0D) {
-			state = TransitState.IN_TRANSIT;
-			if (MarsClock.getTimeDiff(marsClock, arrivalDate) > 0D) {
-				state = TransitState.ARRIVED;
-			}
-		}
-		settlement.setTransitState(state);
 
 		// Set population number.
 		int popNum = Integer.parseInt(populationTF.getText());
