@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Resupply.java
- * @date 2022-07-19
+ * @date 2023-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -123,7 +123,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		this.template = template;
 		this.cycle = cycle;
 
-		// Load up the respplut according to the manifest
+		// Load up the respply according to the manifest
 		SupplyManifest manifest = template.getManifest();
 		setBuildings(manifest.buildings());
 		setVehicles(manifest.vehicles());
@@ -147,7 +147,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	}
 
 	/**
-	 * The parent settlemetn is controloing the events for the resupply mission.
+	 * The parent settlement is controlling the events for the resupply mission.
+	 * 
 	 * @return Settlement's scheduled events
 	 */
 	@Override
@@ -156,7 +157,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	}
 
 	/**
-	 * Get the schedule that defines this resupply.
+	 * Gets the schedule that defines this resupply.
+	 * 
 	 * @return Potentially can return null.
 	 */
 	public ResupplySchedule getTemplate() {
@@ -186,7 +188,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		if (template.getFrequency() > 0) {
 			// Scheduled the follow on
 			MarsClock newArrival = new MarsClock(getArrivalDate());
-			newArrival.addTime(template.getActiveMissions() * template.getFrequency() * 1000);
+			newArrival.addTime(template.getActiveMissions() * template.getFrequency() * 1000.0);
 			Resupply followOn = new Resupply(this.getTemplate(), cycle + template.getActiveMissions(),
 												newArrival, settlement);
 			tm.addNewTransportItem(followOn);
@@ -397,6 +399,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
 	 * mission.
+	 * 
 	 * @param unitManager 
 	 * @param personConfig 
 	 */
@@ -519,6 +522,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Orders the new buildings with non-connector buildings first and connector
 	 * buildings last.
+	 * 
 	 * @param buildingConfig 
 	 * 
 	 * @return list of new buildings.

@@ -35,10 +35,8 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
+@SuppressWarnings("serial")
 public class MapPanel extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	
@@ -55,9 +53,6 @@ public class MapPanel extends JPanel {
 	private boolean wait;
 	private boolean update;
 
-	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
-	private int mapType = -1;
-	
 	private String mapErrorMessage;
 	private String oldMapStringType;
 
@@ -67,7 +62,7 @@ public class MapPanel extends JPanel {
 
 	private Image mapImage;
 
-	private Map marsMap;
+	private transient Map marsMap;
 	
 	private MainDesktopPane desktop;
 
@@ -255,34 +250,22 @@ public class MapPanel extends JPanel {
 	 */
 	public void setMapType(String mapStringType) {
 		
-		if (SurfMarsMap.TYPE.equals(mapStringType)) {
-			if (mapType != 0) {
+		if (!mapStringType.equals(oldMapStringType)) {
+			
+			if (SurfMarsMap.TYPE.equals(mapStringType)) {
 				marsMap = new SurfMarsMap(this);
-				mapType = 0;
 			}
-		}
-		else if (TopoMarsMap.TYPE.equals(mapStringType)) {
-			if (mapType != 1) {
+			else if (TopoMarsMap.TYPE.equals(mapStringType)) {
 				marsMap = new TopoMarsMap(this);
-				mapType = 1;
 			}
-		}
-		else if (GeologyMarsMap.TYPE.equals(mapStringType)) {
-			if (mapType != 2) {
+			else if (GeologyMarsMap.TYPE.equals(mapStringType)) {
 				marsMap = new GeologyMarsMap(this);
-				mapType = 2;
 			}
-		}
-		else if (RegionMarsMap.TYPE.equals(mapStringType)) {
-			if (mapType != 3) {
+			else if (RegionMarsMap.TYPE.equals(mapStringType)) {
 				marsMap = new RegionMarsMap(this);
-				mapType = 3;
 			}
-		}
-		else if (VikingMarsMap.TYPE.equals(mapStringType)) {
-			if (mapType != 4) {
+			else if (VikingMarsMap.TYPE.equals(mapStringType)) {
 				marsMap = new VikingMarsMap(this);
-				mapType = 4;
 			}
 		}
 			

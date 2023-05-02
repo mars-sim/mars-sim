@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -160,7 +161,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel rgbLabel;
 	
 	private MineralMapLayer mineralLayer;
-	private java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
+	private Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private List<Landmark> landmarks;
 	private UnitManager unitManager;
@@ -511,7 +512,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private void setMapType(String newMapType) {
 		switch(newMapType) {
 
-		
 			case VikingMarsMap.TYPE: {
 				// show viking map
 				mapLayerPanel.setMapType(VikingMarsMap.TYPE);

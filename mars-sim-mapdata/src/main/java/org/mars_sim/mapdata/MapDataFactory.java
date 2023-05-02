@@ -1,16 +1,13 @@
 /*
  * Mars Simulation Project
  * MapDataFactory.java
- * @date 2023-04-28
+ * @date 2023-05-02
  * @author Scott Davis
  */
 
  package org.mars_sim.mapdata;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
+/**	
   * A factory for map data.
   */
  class MapDataFactory {
@@ -27,8 +24,6 @@ import java.util.Map;
 	private static final String GEO_MAP_FILE = "/maps/(geo)Mars_Global_Geology_Mariner9_12ppd.jpg"; // "/maps/geo2880x1440.jpg"; 
 	private static final String REGION_MAP_FILE = "/maps/(region)Colorized_topo_region_names_5760.jpg" ; // "region8192x4096.jpg"; 
 	private static final String VIKING_MAP_FILE = "/maps/(viking)Orange_MDIM2.1_8192x4096.jpg"; 
-		
-private Map<Integer,MapData> mapdata = new HashMap<>();
 
  	/**
  	 * Constructor.
@@ -45,19 +40,15 @@ private Map<Integer,MapData> mapdata = new HashMap<>();
  	 */
  	MapData getMapData(int mapType) {
 
-		MapData result = mapdata.get(mapType);
-		if (result == null) {
-			String filename = switch (mapType) {
-				case SURFACE_MAP_DATA -> SURFACE_MAP_FILE;
-				case GEOLOGY_MAP_DATA -> GEO_MAP_FILE;
-				case TOPO_MAP_DATA -> TOPO_MAP_FILE;
-				case REGION_MAP_DATA -> REGION_MAP_FILE; 
-				case VIKING_MAP_DATA -> VIKING_MAP_FILE;
-				default -> throw new IllegalArgumentException("No map data for type" + mapType);
-			};
-			result = new IntegerMapData(filename);
-			mapdata.put(mapType, result);
-		}
- 		return result;
+ 		String filename = switch (mapType) {
+			case SURFACE_MAP_DATA -> SURFACE_MAP_FILE;
+			case GEOLOGY_MAP_DATA -> GEO_MAP_FILE;
+			case TOPO_MAP_DATA -> TOPO_MAP_FILE;
+			case REGION_MAP_DATA -> REGION_MAP_FILE; 
+			case VIKING_MAP_DATA -> VIKING_MAP_FILE;
+			default -> throw new IllegalArgumentException("No map data for type" + mapType);
+		};
+		
+ 		return new IntegerMapData(filename);
  	}
  }
