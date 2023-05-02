@@ -49,7 +49,7 @@ public class Coordinates implements Serializable {
 	private static final transient String LAT_BEGIN_WITH = Msg.getString("Coordinates.error.latitudeBeginWith");
 
 	// Data members
-	/** Phi value of coordinates PHI is latitude in 0-PI radians. */
+	/** Phi value of coordinates PHI is latitude in 0-PI radians.*/
 	private double phi;
 	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
 	private double theta;
@@ -71,6 +71,7 @@ public class Coordinates implements Serializable {
 
 		// Set Coordinates
 		// Make sure phi is between 0 and PI.
+		// Not between -90 (-pi/2 radians) and 90 degrees (pi/2 radians).
 		this.phi = phi;
 		while (this.phi > Math.PI)
 			this.phi -= Math.PI;
@@ -78,6 +79,7 @@ public class Coordinates implements Serializable {
 			this.phi += Math.PI;
 
 		// Make sure theta is between 0 and 2 PI.
+		// Not between 0 (-pi radians) and 90 degrees (pi radians).
 		this.theta = theta;
 		while (this.theta < 0D)
 			this.theta += TWO_PI;

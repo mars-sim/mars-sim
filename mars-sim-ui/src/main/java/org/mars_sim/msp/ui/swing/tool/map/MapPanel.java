@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapPanel.java
- * @date 2023-04-28
+ * @date 2023-05-02
  * @author Scott Davis
  */
 
@@ -55,21 +55,20 @@ public class MapPanel extends JPanel {
 	private boolean wait;
 	private boolean update;
 
+	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
+	private int mapType = -1;
+	
 	private String mapErrorMessage;
-	private String oldMapType;
+	private String oldMapStringType;
 
 	private List<MapLayer> mapLayers;
-	private Map map;
 
 	private Coordinates centerCoords;
 
 	private Image mapImage;
-	private SurfMarsMap surfMap;
-	private TopoMarsMap topoMap;
-	private GeologyMarsMap geoMap;
-	private RegionMarsMap regionMap;
-	private VikingMarsMap vikingMap;
 
+	private Map marsMap;
+	
 	private MainDesktopPane desktop;
 
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
@@ -77,11 +76,10 @@ public class MapPanel extends JPanel {
 		this.desktop = desktop;
 
 		executor = Executors.newSingleThreadExecutor();
-
+		
 		// Initializes map instance as surf map
 		setMapType(SurfMarsMap.TYPE);
-		
-		oldMapType = map.getType();
+		oldMapStringType = marsMap.getType();
 		
 		mapError = false;
 		wait = false;
@@ -116,8 +114,8 @@ public class MapPanel extends JPanel {
 
 				if ((dx != 0 || dy != 0) 
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
-					centerCoords = centerCoords.convertRectToSpherical(dx, dy, map.getScale());
-					map.drawMap(centerCoords);
+					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
+					marsMap.drawMap(centerCoords);
 					repaint();
 				}
 
@@ -167,8 +165,8 @@ public class MapPanel extends JPanel {
 				if ((dx != 0 || dy != 0)
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 
-					centerCoords = centerCoords.convertRectToSpherical(dx, dy, map.getScale());
-					map.drawMap(centerCoords);
+					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
+					marsMap.drawMap(centerCoords);
 					repaint();
 				}
 
@@ -245,37 +243,47 @@ public class MapPanel extends JPanel {
 	 * @return map type.
 	 */
 	public String getMapType() {
-		return map.getType();
+		return marsMap.getType();
 	}
 
 	public Map getMap() {
-		return map;
+		return marsMap;
 	}
 
 	/**
 	 * Sets the map type.
 	 */
-	public void setMapType(String mapType) {
+	public void setMapType(String mapStringType) {
 		
-		if (SurfMarsMap.TYPE.equals(mapType)) {
-			if (surfMap == null) surfMap = new SurfMarsMap(this);
-			map = surfMap;
+		if (SurfMarsMap.TYPE.equals(mapStringType)) {
+			if (mapType != 0) {
+				marsMap = new SurfMarsMap(this);
+				mapType = 0;
+			}
 		}
-		else if (TopoMarsMap.TYPE.equals(mapType)) {
-			if (topoMap == null) topoMap = new TopoMarsMap(this);
-			map = topoMap;
+		else if (TopoMarsMap.TYPE.equals(mapStringType)) {
+			if (mapType != 1) {
+				marsMap = new TopoMarsMap(this);
+				mapType = 1;
+			}
 		}
-		else if (GeologyMarsMap.TYPE.equals(mapType)) {
-			if (geoMap == null) geoMap = new GeologyMarsMap(this);
-			map = geoMap;
+		else if (GeologyMarsMap.TYPE.equals(mapStringType)) {
+			if (mapType != 2) {
+				marsMap = new GeologyMarsMap(this);
+				mapType = 2;
+			}
 		}
-		else if (RegionMarsMap.TYPE.equals(mapType)) {
-			if (regionMap == null) regionMap = new RegionMarsMap(this);
-			map = regionMap;
+		else if (RegionMarsMap.TYPE.equals(mapStringType)) {
+			if (mapType != 3) {
+				marsMap = new RegionMarsMap(this);
+				mapType = 3;
+			}
 		}
-		else if (VikingMarsMap.TYPE.equals(mapType)) {
-			if (vikingMap == null) vikingMap = new VikingMarsMap(this);
-			map = vikingMap;
+		else if (VikingMarsMap.TYPE.equals(mapStringType)) {
+			if (mapType != 4) {
+				marsMap = new VikingMarsMap(this);
+				mapType = 4;
+			}
 		}
 			
 		showMap(centerCoords);
@@ -299,10 +307,10 @@ public class MapPanel extends JPanel {
 			} 
 		}
 
-		String mapType = map.getType();
-		if (!mapType.equals(oldMapType)) {
+		String mapStringType = marsMap.getType();
+		if (!mapStringType.equals(oldMapStringType)) {
 			recreateMap = true;
-			oldMapType = mapType;
+			oldMapStringType = mapStringType;
 		}
 
 		if (recreateMap) {
@@ -326,7 +334,7 @@ public class MapPanel extends JPanel {
 					centerCoords = new Coordinates("0.0", "0.0");
 				}
 				
-				map.drawMap(centerCoords);
+				marsMap.drawMap(centerCoords);
 				wait = false;
 				repaint();
 				
@@ -374,14 +382,14 @@ public class MapPanel extends JPanel {
                 g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
                 if (centerCoords != null) {
-                	if (map != null && map.isImageDone()) {
-                		mapImage = map.getMapImage();
+                	if (marsMap != null && marsMap.isImageDone()) {
+                		mapImage = marsMap.getMapImage();
                 		g.drawImage(mapImage, 0, 0, this);
                 	}
 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, map, g);
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
                 }
         	}
         }
@@ -430,11 +438,7 @@ public class MapPanel extends JPanel {
 			executor.shutdownNow();
 		}
 		executor = null;
-		surfMap = null;
-		topoMap = null;
-		geoMap = null;
-		regionMap = null;
-		vikingMap = null;
+		marsMap = null;
 		update = false;
 		mapImage = null;
 	}
@@ -443,6 +447,6 @@ public class MapPanel extends JPanel {
 		double xMap = x - (Map.DISPLAY_WIDTH / 2D) - 1;
 		double yMap = y - (Map.DISPLAY_HEIGHT / 2D) - 1;
 		
-		return centerCoords.convertRectToSpherical(xMap, yMap, map.getScale());
+		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
     }
 }

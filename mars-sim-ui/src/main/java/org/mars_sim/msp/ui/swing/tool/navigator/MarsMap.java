@@ -24,8 +24,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 
 /**
- * The MarsMap class generates the surface, the topographical and 
- * the geological map for GlobeDisplay.
+ * The MarsMap class generates a mars map.
  */
 public class MarsMap {
 
