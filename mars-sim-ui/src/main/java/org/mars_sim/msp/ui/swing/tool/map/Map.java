@@ -54,25 +54,30 @@ public interface Map {
 	public Image getMapImage();
 
 	/**
-	 * Get the scale of pixel to Mars surface degree
+	 * Gets the scale of pixel to Mars surface degree (height pixels divided by pi).
+	
+	 * 
 	 * @return
 	 */
 	public double getScale();
 
 	/**
-	 * Get the name type of this map
+	 * Gets the name type of this map.
+	 * 
 	 * @return
 	 */
 	public String getType();
 
 	/**
-	 * Get the height of this map in pixels
+	 * Gets the height of this map in pixels.
+	 * 
 	 * @return
 	 */
     public int getPixelHeight();
 
 	/**
-	 * Get the width of this map in pixels
+	 * Gets the width of this map in pixels.
+	 * 
 	 * @return
 	 */
     public int getPixelWidth();

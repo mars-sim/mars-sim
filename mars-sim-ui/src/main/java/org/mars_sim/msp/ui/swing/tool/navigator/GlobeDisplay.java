@@ -44,43 +44,35 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
-	private static final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
-	private static final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
-	private static final int RATIO = GLOBE_BOX_HEIGHT / 300; 
+	private final int MAP_HEIGHT = 300;
+//	private final int MAP_WIDTH = MAP_HEIGHT * 2;
+	private final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
+	private final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
+	private final int RATIO = GLOBE_BOX_HEIGHT / MAP_HEIGHT; 
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
-	private static final int LIMIT = 60 * RATIO; 
+	private final int LIMIT = 60 * RATIO; 
+	// Half of the map pixel height / 2 
+	private final int halfMap = MAP_HEIGHT / 2;
+	// lower edge = pixel height / 2 - map box height / 2
+	private final int lowEdge = halfMap - MAP_HEIGHT / 2;	
 
-	private static final double HALF_PI = Math.PI / 2;
-	private static final double TWO_PI = Math.PI * 2;
-	private static final int lowEdge = 0;
+	private final double HALF_PI = Math.PI / 2;
+
+	private int dragx;
+	private int dragy;
+	private int dxCache = 0;
+	private int dyCache = 0;
 	
-	private static int halfMap;
-	private static int dragx;
-	private static int dragy;
-	private static int dxCache = 0;
-	private static int dyCache = 0;
-
 	// Data members
-	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
-	private int mapType;
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
-	/** width of the globe display component. */
-	private int globeBoxWidth;
-	/** height of the globe display component. */
-	private int globeBoxHeight;
+	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
+	private int mapType;
 
-	/** Real surface sphere object. */
-	private MarsMap marsSphere;
-	/** Topographical sphere object. */
-	private MarsMap topoSphere;
-	/** Geological sphere object. */
-	private MarsMap geoSphere;
-	/** Regional sphere object. */
-	private MarsMap regionSphere;
-	/** Viking sphere object. */
-	private MarsMap vikingSphere;
+	// height pixels divided by pi
+	private double rho = GLOBE_BOX_HEIGHT / Math.PI;
 	
+	private MarsMap marsMap;
 	
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
@@ -99,9 +91,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	/** measures the pixels needed to display text. */
 	private FontMetrics positionMetrics = getFontMetrics(positionFont);
 
-	private double globeCircumference;
-	private double rho;
-	
+
 	/**
 	 * stores the internationalized string for reuse in
 	 * {@link #drawCrossHair(Graphics)}.
@@ -136,32 +126,17 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public GlobeDisplay(final NavigatorWindow navwin) {
 		this.desktop = navwin.getDesktop();
 
-		// Initialize data members
-		globeBoxWidth = GLOBE_BOX_WIDTH;
-		globeBoxHeight = GLOBE_BOX_HEIGHT;
-
-		globeCircumference = globeBoxHeight * 2D;
-		rho = globeCircumference / TWO_PI;
-		halfMap = globeBoxWidth / 2;
-
 		starfield = ImageLoader.getImage("map/starfield");
-	
+		marsMap = new MarsMap(MarsMapType.SURFACE_MID, this);
+		
 		// Set component size
-		setPreferredSize(new Dimension(globeBoxWidth, globeBoxHeight));
+		setPreferredSize(new Dimension(GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
-
-		// Construct sphere objects for various map types
-		marsSphere = new MarsMap(MarsMapType.SURFACE_MID, this);
-		topoSphere = new MarsMap(MarsMapType.TOPO_MID, this);
-		geoSphere = new MarsMap(MarsMapType.GEO_MID, this);
-		regionSphere = new MarsMap(MarsMapType.REGION_MID, this);
-		vikingSphere = new MarsMap(MarsMapType.VIKING_MID, this);
 		
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
 		mapType = 0;
 		recreate = true;
-
 
 		addMouseListener(new MouseAdapter() {
 			// Note: must use MouseAdapter's mousePressed separately from Dragger
@@ -229,6 +204,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void showSurf() {
 		if (mapType != 0) {
+			marsMap = new MarsMap(MarsMapType.SURFACE_MID, this);
 			recreate = true;
 		}
 		mapType = 0;
@@ -244,6 +220,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void showTopo() {
 		if (mapType != 1) {
+			marsMap = new MarsMap(MarsMapType.TOPO_MID, this);
 			recreate = true;
 		}
 		mapType = 1;
@@ -256,6 +233,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void showGeo() {
 		if (mapType != 2) {
+			marsMap = new MarsMap(MarsMapType.GEO_MID, this);
 			recreate = true;
 		}
 		mapType = 2;
@@ -267,6 +245,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void showRegion() {
 		if (mapType != 3) {
+			marsMap = new MarsMap(MarsMapType.REGION_MID, this);
 			recreate = true;
 		}
 		mapType = 3;
@@ -278,6 +257,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void showViking() {
 		if (mapType != 4) {
+			marsMap = new MarsMap(MarsMapType.VIKING_MID, this);
 			recreate = true;
 		}
 		mapType = 4;
@@ -301,27 +281,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * Draws the sphere.
 	 */
 	public void updateDisplay() {
-		if (recreate)
+		if (recreate) {
 			recreate = false;
-		
+		}
+	
 		// Regenerate globe
 		drawSphere();
 	}
 
 	public void drawSphere() {
-
-		if (mapType == 0) {
-			marsSphere.drawSphere(centerCoords);
-		} else if (mapType == 1) {
-			topoSphere.drawSphere(centerCoords);
-		} else if (mapType == 2) {
-			geoSphere.drawSphere(centerCoords);
-		} else if (mapType == 3) {
-			regionSphere.drawSphere(centerCoords);
-		} else if (mapType == 4) {
-			vikingSphere.drawSphere(centerCoords);			
-		}
-		
+		marsMap.drawSphere(centerCoords);
 		paintDoubleBuffer();
 		repaint();
 	}
@@ -332,7 +301,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
-			dbImage = createImage(globeBoxWidth, globeBoxHeight);
+			dbImage = createImage(GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT);
 			if (dbImage == null) {
 				return;
 			} else
@@ -347,31 +316,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		g2d.setColor(Color.black);
 		// dbg.fillRect(0, 0, 150, 150);
-		g2d.fillRect(0, 0, globeBoxWidth, globeBoxHeight);
+		g2d.fillRect(0, 0, GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT);
 		// Image starfield = ImageLoader.getImage("starfield.gif");
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
-
-		// Draw the globe
-		MarsMap globe = null;
 		
-		if (mapType == 0) {
-			globe = marsSphere;
-		} else if (mapType == 1) {
-			globe = topoSphere;
-		} else if (mapType == 2) {
-			globe = geoSphere;
-		} else if (mapType == 3) {
-			globe = regionSphere;
-		} else if (mapType == 4) {
-			globe = vikingSphere;			
-		}
-		
-		if (globe == null)
+		if (marsMap == null)
 			return;
 		
-		Image image = globe.getGlobeImage();
+		Image image = marsMap.getGlobeImage();
 		if (image != null) {
-			if (globe.isImageDone()) {
+			if (marsMap.isImageDone()) {
 				g2d.drawImage(image, 0, 0, this);
 			} else {
 				return;
@@ -482,7 +436,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * @param unitCoords the unit's location
 	 * @return x, y position on globe panel
 	 */
-	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
+	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {	
 		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, halfMap, lowEdge);
 	}
 
@@ -528,11 +482,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		dragger = null;
 		desktop  = null;
 
-		marsSphere = null;
-		topoSphere = null;
-		geoSphere = null;
-		regionSphere = null;
-		vikingSphere = null;
+		marsMap = null;
 		
 		centerCoords = null;
 

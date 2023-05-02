@@ -46,8 +46,11 @@ import javax.imageio.ImageIO;
  	 	
  	// Data members.
  	private int[][] pixels = null;
-	private int width;
-	private int height;
+ 	// # of pixels in the width of the map image
+	private int pixelWidth;
+ 	// # of pixels in the height of the map image
+	private int pixelHeight;
+	// height pixels divided by pi
 	private double rho;
  	
  	/**
@@ -60,9 +63,8 @@ import javax.imageio.ImageIO;
  		try {
  			// Load data files
  			pixels = loadMapData(mapFileName);
-
-			rho =  height / Math.PI;
-			logger.info("Loaded " + mapFileName + " with pixels " + width + "x" + height + ".");
+			rho =  pixelHeight / Math.PI;
+			logger.info("Loaded " + mapFileName + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  			
  		} catch (IOException e) {
  			logger.log(Level.SEVERE, "Could not find the map file.", e);
@@ -86,7 +88,7 @@ import javax.imageio.ImageIO;
      */
 	@Override
     public int getWidth() {
-		return width;
+		return pixelWidth;
 	}
 
 	/**
@@ -96,7 +98,7 @@ import javax.imageio.ImageIO;
      */
 	@Override
     public int getHeight() {
-		return height;
+		return pixelHeight;
 	}
 
  	/**
@@ -112,11 +114,11 @@ import javax.imageio.ImageIO;
  		BufferedImage image = ImageIO.read(imageMapURL);
 
  		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
- 		width = image.getWidth();
- 		height = image.getHeight();
+ 		pixelWidth = image.getWidth();
+ 		pixelHeight = image.getHeight();
  		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
 
- 		int[][] result = new int[height][width];
+ 		int[][] result = new int[pixelHeight][pixelWidth];
  		if (hasAlphaChannel) {
  			final int pixelLength = 4;
  			for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
@@ -135,7 +137,7 @@ import javax.imageio.ImageIO;
  						
  				result[row][col] = argb;
  				col++;
- 				if (col == width) {
+ 				if (col == pixelWidth) {
  					col = 0;
  					row++;
  				}
@@ -150,7 +152,7 @@ import javax.imageio.ImageIO;
  				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
  				result[row][col] = argb;
  				col++;
- 				if (col == width) {
+ 				if (col == pixelWidth) {
  					col = 0;
  					row++;
  				}
@@ -165,20 +167,21 @@ import javax.imageio.ImageIO;
  	 * 
  	 * @param centerPhi Center phi value on the image
  	 * @param centerTheta
-	 * @param imageWidth The Width of the requested image
-	 * @param imageHieght The Height of the requested image
+	 * @param mapBoxWidth The Width of the requested image
+	 * @param mapBoxHeight The Height of the requested image
  	 */
  	@Override
- 	public Image getMapImage(double centerPhi, double centerTheta, int imageWidth, int imageHeight) {
+ 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight) {
 
-		double phiRange = Math.PI * PHI_PADDING * (1.0 * imageHeight / height);
-		double phiIterationAngle = Math.PI / (height * PHI_ITERATION_PADDING);
-		double thetaIterationFactor = width * THETA_ITERATION_PADDING;
-		double minThetaDisplay = TWO_PI * (1.0 * imageWidth / width) * MIN_THETA_PADDING;
-		int lowEdge = (height/2) - (imageHeight / 2);
+		double phiRange = Math.PI * PHI_PADDING * (1.0 * mapBoxHeight / pixelHeight);
+		double phiIterationAngle = Math.PI / (pixelHeight * PHI_ITERATION_PADDING);
+		double thetaIterationFactor = pixelWidth * THETA_ITERATION_PADDING;
+		double minThetaDisplay = TWO_PI * (1.0 * mapBoxWidth / pixelWidth) * MIN_THETA_PADDING;
+		// lower edge = pixel height / 2 - map box height / 2
+		int lowEdge = (pixelHeight/2) - (mapBoxHeight / 2);
 
  		// Create a new buffered image to draw the map on.
- 		BufferedImage result = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+ 		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_4BYTE_ABGR);
 
  		// The map data is PI offset from the center theta.
  		double correctedTheta = centerTheta - Math.PI;
@@ -188,7 +191,7 @@ import javax.imageio.ImageIO;
  			correctedTheta -= TWO_PI;
 
  		// Create an array of int RGB color values to create the map image from.
- 		int[] mapArray = new int[imageWidth * imageHeight];
+ 		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
  		// Determine starting and ending phi values.
  		double startPhi = centerPhi - (phiRange / 2);
@@ -228,18 +231,18 @@ import javax.imageio.ImageIO;
  				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, lowEdge);
 
  				// Determine the display x and y coordinates for the pixel in the image.
- 				int displayX = imageWidth - location.x;
- 				int displayY = imageHeight - location.y;
+ 				int displayX = mapBoxWidth - location.x;
+ 				int displayY = mapBoxHeight - location.y;
 
  				// Check that the x and y coordinates are within the display area.
  				boolean leftBounds = displayX >= 0;
- 				boolean rightBounds = displayX < imageWidth;
+ 				boolean rightBounds = displayX < mapBoxWidth;
  				boolean topBounds = displayY >= 0;
- 				boolean bottomBounds = displayY < imageHeight;
+ 				boolean bottomBounds = displayY < mapBoxHeight;
  				if (leftBounds && rightBounds && topBounds && bottomBounds) {
 
  					// Determine array index for the display location.
- 					int index = (imageWidth - displayX) + ((imageHeight - displayY) * imageWidth);
+ 					int index = (mapBoxWidth - displayX) + ((mapBoxHeight - displayY) * mapBoxWidth);
 
  					// Put color in array at index.
  					if ((index >= 0) && (index < mapArray.length))
@@ -249,7 +252,7 @@ import javax.imageio.ImageIO;
  		}
 
  		// Create new map image.
- 		result.setRGB(0, 0, imageWidth, imageHeight, mapArray, 0, imageWidth);
+ 		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 
  		return result;
  	}
@@ -320,9 +323,9 @@ import javax.imageio.ImageIO;
 
  		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
  		final double temp_buff_x = rho * Math.sin(newPhi);
- 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (height/2)) - lowEdge;
+ 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (pixelHeight/2)) - lowEdge;
  		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (height/2)) - lowEdge;
+ 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (pixelHeight/2)) - lowEdge;
  		return new Point(buff_x, buff_y);
  	}
  }

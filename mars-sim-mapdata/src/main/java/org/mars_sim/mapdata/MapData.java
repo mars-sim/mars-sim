@@ -18,13 +18,13 @@
      /**
       * Generates and returns a map image with the given parameters.
       * 
-      * @param centerPhi the phi center location of the map.
-      * @param centerTheta the theta center location of the map.
-      * @param imageWidth The Width of the requested image
-	  * @param imageHieght The Height of the requested image
+      * @param centerPhi the phi center location of the map
+      * @param centerTheta the theta center location of the map
+      * @param mapBoxWidth The width of the map box
+	  * @param mapBoxHieght The height of the map box
       * @return The map image.
       */
-     public Image getMapImage(double centerPhi, double centerTheta, int imageWidth, int imageHeight);
+     public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight);
      
      /**
       * Gets the RGB map color at a given location.

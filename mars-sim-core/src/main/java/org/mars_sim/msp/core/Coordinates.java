@@ -430,8 +430,8 @@ public class Coordinates implements Serializable {
 	 *
 	 * @param newCoords    the offset location
 	 * @param centerCoords location of the center of the map
-	 * @param rho          radius of planet (in km)
-	 * @param halfMap     half the map's width (in pixels)
+	 * @param rho          height pixels divided by pi
+	 * @param halfMap     half the map's height (in pixels)
 	 * @param lowEdge     lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
@@ -484,7 +484,7 @@ public class Coordinates implements Serializable {
 	 *
 	 * @param x              change in x value (in km)
 	 * @param y              change in y value (in km)
-	 * @param rho            rho value of map used (in km)
+	 * @param rho            rho height pixels divided by pi
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
 
