@@ -106,13 +106,10 @@
     <part-package name="package 1" number="1" />
 
     <resupply>
-    	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.1" />    
-        <resupply-mission name="Resupply for Phase 1"
-            arrival-time="668.0" />
-        <resupply-mission name="Resupply for Phase 2"
-            arrival-time="1336.0" />
-        <resupply-mission name="Resupply for Phase 3"
-            arrival-time="2004.0" />
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
+            first-arrival-time="1"
+            frequency-sols="80" /> 
+        <resupply-mission nae="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
+            first-arrival-time="668"/>
     </resupply>
 </template>

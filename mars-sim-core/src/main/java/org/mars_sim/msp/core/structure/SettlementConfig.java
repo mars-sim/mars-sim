@@ -21,7 +21,9 @@ import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplySchedule;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -79,7 +81,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
 	private static final String RESUPPLY_MISSION = "resupply-mission";
-	private static final String ARRIVAL_TIME = "arrival-time";
+	private static final String FIRST_ARRIVAL_TIME = "first-arrival-time";
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String PART = "part";
@@ -101,10 +103,12 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String MODEL = "model";
 	private static final String ROBOT = "robot";
 
-	/** Thrse must be present in the settlements.xml */
+	/** These must be present in the settlements.xml */
 	public static final String DEFAULT_3SHIFT = "Standard 3 Shift";
 	public static final String DEFAULT_2SHIFT = "Standard 2 Shift";
 
+	private static final String FREQUENCY = "frequency-sols";
+	private static final String MANIFEST_NAME = "manifest-name";
 
 	private double[] rover_values = new double[] { 0, 0 };
 	private double[][] life_support_values = new double[2][7];
@@ -114,6 +118,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private Map<String,ShiftPattern> shiftDefinitions = new HashMap<>();
 	private String defaultShift;
 
+	private ResupplyConfig resupplyConfig;
+
 	/**
 	 * Constructor.
 	 *
@@ -121,11 +127,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
+	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig,
+							ResupplyConfig resupplyConfig) {
 		super("settlement");
 		setXSDName("settlement.xsd");
 
 		this.partPackageConfig = partPackageConfig;
+		this.resupplyConfig = resupplyConfig;
 		Element root = settlementDoc.getRootElement();
 		loadMissionControl(root.getChild(MISSION_CONTROL));
 		loadLifeSupportRequirements(root.getChild(LIFE_SUPPORT_REQUIREMENTS));
@@ -476,9 +484,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
 			for (Element resupplyMissionElement : resupplyNodes) {
 				String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
-				double arrivalTime = Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
-				ResupplyMissionTemplate resupplyMissionTemplate = new ResupplyMissionTemplate(resupplyName,
-						arrivalTime);
+				String manifestName = resupplyMissionElement.getAttributeValue(MANIFEST_NAME);
+				SupplyManifest manifest = resupplyConfig.getSupplyManifest(manifestName);
+				double arrivalTime = ConfigHelper.getOptionalAttributeDouble(resupplyMissionElement, FIRST_ARRIVAL_TIME, 0.1);
+				int frequency = ConfigHelper.getOptionalAttributeInt(resupplyMissionElement,
+												FREQUENCY, -1);			
+				ResupplySchedule resupplyMissionTemplate = new ResupplySchedule(resupplyName,
+						arrivalTime, manifest, frequency);
 				template.addResupplyMissionTemplate(resupplyMissionTemplate);
 			}
 		}

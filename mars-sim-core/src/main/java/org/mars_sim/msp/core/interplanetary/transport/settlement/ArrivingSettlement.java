@@ -1,18 +1,16 @@
 /*
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @date 2022-10-11
+ * @date 2023-05-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
-
-import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.interplanetary.transport.TransitState;
+import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -23,7 +21,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * A new arriving settlement from Earth.
  */
-public class ArrivingSettlement implements Transportable, Serializable {
+public class ArrivingSettlement extends Transportable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -33,14 +31,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private int numOfRobots;
 	private int templateID;
 	
-	private String name;
 	private String template;
 	
-	private TransitState transitState = TransitState.PLANNED;
-	private MarsClock launchDate;
-	private MarsClock arrivalDate;
-	private Coordinates landingLocation;
-
 	private String sponsorCode;
 
 	private int arrivalSols;
@@ -60,19 +52,21 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	public ArrivingSettlement(String name, String template, String sponsorCode,
 			int arrivalSols, Coordinates landingLocation,
 			int populationNum, int numOfRobots) {
-		this.name = name;
+		super(name, landingLocation);
 		this.template = template;
 		this.sponsorCode = sponsorCode;
 		this.arrivalSols = arrivalSols;
-		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
 		this.numOfRobots = numOfRobots;
-		
-//		arrivalDate = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
-//		arrivalDate.addTime(
-//			(arrivalSols - 1) * 1000D
-//			+ 100 
-//			+ RandomUtil.getRandomDouble(890));
+	}
+
+	/**
+	 * The shared Transport manager handles arriving settlements
+	 * @return Settlement's scheduled events
+	 */
+	@Override
+	protected ScheduledEventManager getOwningManager() {
+		return tm.getFutureEvents();
 	}
 
 	/**
@@ -91,24 +85,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	public void setTemplateID(int id) {
 		templateID = id;
-	}
-
-	/**
-	 * Gets the name of the arriving settlement.
-	 * 
-	 * @return settlement name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the name of the arriving settlement.
-	 * 
-	 * @param name settlement name.
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -145,43 +121,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	public void setSponsorCode(String sponsor) {
 		this.sponsorCode = sponsor;
 	}
-	
-	/**
-	 * Gets the transit state of the settlement.
-	 * 
-	 * @return transit state string.
-	 */
-	@Override
-	public TransitState getTransitState() {
-		return transitState;
-	}
-
-	/**
-	 * Sets the transit state of the settlement.
-	 * 
-	 * @param transitState {@link TransitState} the transit state
-	 */
-	public void setTransitState(TransitState transitState) {
-		this.transitState = transitState;
-	}
-
-	/**
-	 * Gets the launch date of the settlement.
-	 * 
-	 * @return the launch date.
-	 */
-	public MarsClock getLaunchDate() {
-		return launchDate;
-	}
-
-	/**
-	 * Sets the launch date of the settlement.
-	 * 
-	 * @param launchDate the launch date.
-	 */
-	public void setLaunchDate(MarsClock launchDate) {
-		this.launchDate = launchDate;
-	}
 
 	/**
 	 * The original arrival delay
@@ -190,43 +129,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	public int getArrivalSols() {
 		return arrivalSols;
 	}
-	
-	/**
-	 * Gets the arrival date of the settlement.
-	 * 
-	 * @return the arrival date.
-	 */
-	public MarsClock getArrivalDate() {
-		return arrivalDate;
-	}
 
-	/**
-	 * Sets the arrival date of the settlement.
-	 * 
-	 * @param arrivalDate the arrival date.
-	 */
-	public void setArrivalDate(MarsClock arrivalDate) {
-		this.arrivalDate = arrivalDate;
-	}
-
-	/**
-	 * Gets the landing location for the arriving settlement.
-	 * 
-	 * @return landing location coordinates.
-	 */
-	@Override
-	public Coordinates getLandingLocation() {
-		return landingLocation;
-	}
-
-	/**
-	 * Sets the landing location for the arriving settlement.
-	 * 
-	 * @param landingLocation the landing location coordinates.
-	 */
-	public void setLandingLocation(Coordinates landingLocation) {
-		this.landingLocation = landingLocation;
-	}
 
 	/**
 	 * Gets the population of the arriving settlement.
@@ -266,7 +169,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 	@Override
 	public String getSettlementName() {
-		return name;
+		return getName();
 	}
 
 	@Override
@@ -279,99 +182,36 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	}
 
 	@Override
-	public int compareTo(Transportable o) {
-		int result = 0;
-
-		double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
-		if (arrivalTimeDiff < 0D) {
-			result = -1;
-		} else if (arrivalTimeDiff > 0D) {
-			result = 1;
-		} else {
-			// If arrival time is the same, compare by settlement name alphabetically.
-			result = name.compareTo(o.getName());
-		}
-
-		return result;
-	}
-
-	@Override
-	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
+	protected synchronized void performArrival(SimulationConfig sc, Simulation sim) {
 		SettlementBuilder build = new SettlementBuilder(sim, sc);
-		InitialSettlement spec = new InitialSettlement(name, sponsorCode,
+		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
 													   template, populationNum, numOfRobots,
-													   landingLocation, null);
+													   getLandingLocation(), null);
 		Settlement newSettlement = build.createFullSettlement(spec);
 		
 		// Sim is already running so add to the active queue
-//		sim.getUnitManager().addUnit(newSettlement);
 		sim.getUnitManager().activateSettlement(newSettlement);
 	}
 
 	/**
 	 * Schedule the launch for a future date.
 	 */
-	public void scheduleLaunch(MarsClock currentTime, int transitSols) {
+	public void scheduleLaunch(ScheduledEventManager futures) {
 		// Determine the arrival date
-		if (arrivalDate ==  null) {
-			arrivalDate = new MarsClock(currentTime);
-			arrivalDate.addTime(
+		MarsClock proposedArrival = new MarsClock(now);
+		proposedArrival.addTime(
 					(arrivalSols - 1) * 1000D
 					+ 100 
 					+ RandomUtil.getRandomDouble(890));
-		}
-		
-		// Determine launch date.
-		launchDate = new MarsClock(arrivalDate);
-		launchDate.addTime(-1D * transitSols * 1000D);
-		
-		if (landingLocation == null) {
-			// Create a new random location
-			double lat = Coordinates.getRandomLatitude();
-			double lon = Coordinates.getRandomLongitude();
-			landingLocation = new Coordinates(lat, lon);
-		}
-		if (arrivalSols < transitSols) {
-			transitState = TransitState.IN_TRANSIT;
-		}
+		setArrivalDate(proposedArrival);
 	}
 	
-	@Override
-	public void destroy() {
-		name = null;
-		template = null;
-		transitState = null;
-		launchDate = null;
-		arrivalDate = null;
-		landingLocation = null;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ArrivingSettlement other = (ArrivingSettlement) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
-
+	
 	@Override
 	public void reinit(UnitManager um) {
 	}
+
+    public void setLandingLocation(Coordinates landingLocation) {
+		updateLandingLocation(landingLocation);
+    }
 }

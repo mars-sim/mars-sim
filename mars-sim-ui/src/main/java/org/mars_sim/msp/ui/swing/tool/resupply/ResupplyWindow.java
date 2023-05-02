@@ -172,11 +172,8 @@ public class ResupplyWindow extends ToolWindow
 		// Load it
 		Simulation sim = desktop.getSimulation();
 		TransportManager manager = sim.getTransportManager();
-		for(Transportable in : manager.getIncomingTransportItems()) {
+		for(Transportable in : manager.getTransportItems()) {
 			addTreeNode(in);
-		}
-		for(Transportable at : manager.getArrivedTransportItems()) {
-			addTreeNode(at);
 		}
 		sim.getEventManager().addListener(this);
 	}
@@ -309,8 +306,7 @@ public class ResupplyWindow extends ToolWindow
 			// "Yes" button clicked and go ahead with discarding this mission
 			Transportable transportItem = getSelectedNode();
 			if (transportItem != null) {
-				// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
-				desktop.getSimulation().getTransportManager().cancelTransportItem(transportItem);
+				transportItem.cancel();
 				detailPane.setTransportable(transportItem);
 			}
 		} else if (response == JOptionPane.CLOSED_OPTION) {
@@ -356,7 +352,7 @@ public class ResupplyWindow extends ToolWindow
 				// Build a name
 				StringBuilder name = new StringBuilder();
 				if (t instanceof Resupply r) {
-					name.append(r.getTemplate().getName());
+					name.append(r.getName());
 				}
 				else if (t instanceof ArrivingSettlement a) {
 					name.append(a.getTemplate());

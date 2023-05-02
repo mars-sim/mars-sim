@@ -431,7 +431,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 
-		transportManager = new TransportManager(simulationConfig, this);
+		transportManager = new TransportManager(this);
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -686,7 +686,7 @@ public class Simulation implements ClockListener, Serializable {
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
 
-		transportManager.initalizeInstances(simulationConfig, this);
+		transportManager.initalizeInstances(this);
 
 		Relation.initializeInstances(unitManager);
 		CreditManager.initializeInstances(unitManager);

@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplySchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -75,7 +76,7 @@ public class ResupplyDetailPanel extends JPanel {
 		AttributePanel detailsPane = new AttributePanel(7);
 		infoPane.add(detailsPane, BorderLayout.NORTH);
 
-		templateLabel = detailsPane.addTextField("Template", "", null);
+		templateLabel = detailsPane.addTextField("Schedule", "", null);
 		destinationValueLabel = detailsPane.addTextField("Destination", "", null);
 		stateValueLabel = detailsPane.addTextField("State", "", null);
 		launchDateValueLabel = detailsPane.addTextField("Launch Date", "", null);
@@ -125,8 +126,9 @@ public class ResupplyDetailPanel extends JPanel {
 	 * Updates the resupply info with the current resupply mission.
 	 */
 	private void updateResupplyInfo() {
-
-		templateLabel.setText(resupply.getTemplate().getName());
+		ResupplySchedule schedule = resupply.getTemplate();
+		templateLabel.setText((schedule != null ? schedule.getName()
+											+ " (every " + schedule.getFrequency() + " sols)" : ""));
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(resupply.getTransitState().getName());
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());

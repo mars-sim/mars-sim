@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure;
 
 import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Represents a Slot on a specific Shift for work.
@@ -92,8 +93,12 @@ public class ShiftSlot implements ScheduledEventHandler {
         return "Leave end for " + worker.getName();
     }
 
+    /**
+     * Time on leave comes to an end
+     * @param now Current time not used
+     */
     @Override
-    public int execute() {
+    public int execute(MarsClock now) {
         onLeave = false;
         return 0;
     }

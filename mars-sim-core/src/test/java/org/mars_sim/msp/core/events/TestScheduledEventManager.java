@@ -27,7 +27,7 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		}
 
 		@Override
-		public int execute() {
+		public int execute(MarsClock now) {
 			counter++;
 			return repeatDuration;
 		}

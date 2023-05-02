@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -43,8 +44,12 @@ public class GoodsManager implements Serializable {
 			return "Refresh Buy/Sell list";
 		}
 
+		/**
+		 * Time to updated lists
+		 * @param now Cuurrent time not used.
+		 */
 		@Override
-		public int execute() {
+		public int execute(MarsClock now) {
 			calculateBuyList();
 			calculateSellList();
 			return LIST_VALIDITY;

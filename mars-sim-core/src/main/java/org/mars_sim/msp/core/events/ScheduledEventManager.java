@@ -98,10 +98,24 @@ public class ScheduledEventManager implements Serializable, Temporal {
         MarsClock when = new MarsClock(marsClock);
         when.addTime(duration);
 
+        return addEvent(when, handler);
+    }
+
+    /**
+     * Add an event to be executed in the future at a specific time
+     * @param when Time on Mars this event will happen
+     * @param handler Handler when the event expires
+     */
+    public ScheduledEvent addEvent(MarsClock when, ScheduledEventHandler handler) {
+        if (MarsClock.getTimeDiff(when, marsClock) < 0) {
+            // Event time has already past so set it to now
+            when = new MarsClock(marsClock);
+        }
         ScheduledEvent result = new ScheduledEvent(when, handler);
         addEvent(result);
         return result;
     }
+
 
     private void addEvent(ScheduledEvent newEvent) {
         synchronized(eventQueue) {
@@ -109,6 +123,22 @@ public class ScheduledEventManager implements Serializable, Temporal {
             Collections.sort(eventQueue);
         }
     }
+
+    /**
+     * Remove a previously registered event against a handler
+     * @param handler Handler to be removed
+     */
+    public void removeEvent(ScheduledEventHandler handler) {
+        synchronized(eventQueue) {
+            for(ScheduledEvent event : eventQueue) {
+                if (event.handler.equals(handler)) {
+                    eventQueue.remove(event);
+                    return;
+                }
+            }
+        }
+    }
+
     /**
      * What events are scheduled for the futureS
      * @return
@@ -131,7 +161,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
                 // Keep executing events that have past
                 while((next != null) && next.when.getTotalMillisols() <= currentTime.getTotalMillisols()) {
                     eventQueue.remove(next);
-                    int repeatInterval = next.handler.execute();
+                    int repeatInterval = next.handler.execute(currentTime);
                     if (repeatInterval > 0) {
                         // Update the when and add back intot he queue
                         next.when.addTime(repeatInterval);

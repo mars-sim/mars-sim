@@ -220,11 +220,11 @@
     <part-package name="package 2" number="1" />
     
     <resupply>
-       	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.1" />       
-        <resupply-mission name="Resupply for Phase 2"
-            arrival-time="669.0" />
-        <resupply-mission name="Resupply for Phase 3"
-            arrival-time="1337.0" />
+       	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1"
+            first-arrival-time="6"
+            frequency-sols="60" /> 
+        <resupply-mission name="Annual Delivery" manifest-name="Resupply for Phase 2"
+                        first-arrival-time="668"/>
+
     </resupply>
 </template>

@@ -126,17 +126,10 @@
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>
-        <!-- Resupply mission from Earth. -->
-        <!-- name: the resupply mission's name -->
-        <!-- arrival-time: arrival time (in Sols) since the settlement is founded. -->
-        <!-- (668 Sols = 1 Martian orbit) -->
-     	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.1" />       
-        <resupply-mission name="Resupply for Phase 1"
-            arrival-time="668.0" />
-        <resupply-mission name="Resupply for Phase 2"
-            arrival-time="1336.0" />
-        <resupply-mission name="Resupply for Phase 3"
-            arrival-time="2004.0" />
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
+            first-arrival-time="2"
+            frequency-sols="80" /> 
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
+            first-arrival-time="668"/>
     </resupply>
 </template>
