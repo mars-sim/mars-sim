@@ -58,7 +58,6 @@ import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -118,9 +117,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private Resupply resupply;
 	private NewTransportItemDialog newTransportItemDialog = null;
 	private ModifyTransportItemDialog modifyTransportItemDialog = null;
-
-	private MarsClock marsCurrentTime;
-
     private MarsClock marsClock;
 
 	/** constructor. */
@@ -200,11 +196,10 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			resupplyTime = new MarsClock(marsClock);
 			resupplyTime.addTime(ResupplyUtil.getAverageTransitTime() * 1000D);
 		}
-
+		
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
-		JPanel comboBoxPane = new JPanel(new GridLayout(1, 6, 1, 1));
-		comboBoxPane.setSize(150, 20);
+		JPanel comboBoxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		arrivalDateSelectionPane.add(comboBoxPane);
 		
 		// Create orbit label.
@@ -702,11 +697,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	public boolean createTransportItem() {
 		// Create new resupply mission.
 		Settlement destination = (Settlement) destinationCB.getSelectedItem();
-		MarsClock arrivalDate = null;
-		if (marsCurrentTime == null)
-			arrivalDate = getArrivalDate();
-		else
-			arrivalDate = marsCurrentTime;
+		MarsClock arrivalDate = getArrivalDate();
 
 		if (!validation_result)
 			return false;
@@ -732,11 +723,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		Settlement destination = (Settlement) destinationCB.getSelectedItem();
 		resupplyMission.setSettlement(destination);
 		// Set arrival date.
-		MarsClock arrivalDate = null;
-		if (marsCurrentTime == null)
-			arrivalDate = getArrivalDate();
-		else
-			arrivalDate = marsCurrentTime;
+		MarsClock arrivalDate = getArrivalDate();
 
 		if (!validation_result) {
 			return false;
@@ -855,8 +842,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			}
 		}
 		resupplyMission.setParts(newParts);
-
-		// return true;
 	}
 
 	/**
@@ -867,7 +852,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	 */
 	private void modifyNewBuildings(Resupply resupplyMission, List<SupplyItem> supplyItems) {
 
-		List<BuildingTemplate> newBuildings = resupplyMission.getBuildings();
+		List<BuildingTemplate> newBuildings = new ArrayList<>(resupplyMission.getBuildings());
 
 		// Create map of resupply mission's buildings and numbers.
 		Map<String, Integer> oldBuildings = new HashMap<>();
@@ -960,6 +945,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				}
 			}
 		}
+		resupplyMission.setBuildings(newBuildings);
 	}
 
 	/**
@@ -969,9 +955,9 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	 */
 	private MarsClock getArrivalDate() {
 		errorString = null;
+		MarsClock arrivalTime = null;
 
 		if (arrivalDateRB.isSelected()) {
-			marsCurrentTime = new MarsClock(marsClock);
 
 			// Determine arrival date from arrival date combo boxes.
 			try {
@@ -980,36 +966,33 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				int orbit = Integer.parseInt((String) orbitCB.getSelectedItem());
 
 				// Set millisols to current time plus the delay if resupply is current date, otherwise 0.
-				double millisols = 0D;
+				double millisols = marsClock.getMillisol();
+				arrivalTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
 				
-				if (sol < marsClock.getMissionSol()) {
+				if (MarsClock.getTimeDiff(arrivalTime, marsClock) < 0) {
 					// if the player selects a sol before today
-					marsCurrentTime = null;
+					arrivalTime = null;
 					// Remove error string
-					errorString = "Cannot pick a sol that's in the past. Try again !";
+					errorString = "Cannot pick a date that's in the past. Try again !";
 					errorLabel.setText(errorString);
 					logger.severe(errorString);
 					enableButton(false);
 					validation_result = false;
 				}
-				else if ((sol == marsClock.getMissionSol()) 
-						&& (month == marsClock.getMonth())
-						&& (orbit == marsClock.getOrbit())) {
-					millisols = marsClock.getMillisol() + MILLISOLS_DELAY;
-
-					marsCurrentTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
-				}
-
 			} catch (NumberFormatException e) {
-				logger.severe("Can't create marsCurrentTime: " + e.getMessage());
+				String msg = "Can't create marsCurrentTime: " + e.getMessage(); 
+				logger.severe(msg);
+				errorLabel.setText(msg);
+				enableButton(false);
+				validation_result = false;
 			}
 		}
 
 		else if (solsUntilArrivalRB.isSelected()) {
-			marsCurrentTime = validateSolsUntilArrival();
+			arrivalTime = validateSolsUntilArrival();
 		}
 
-		return marsCurrentTime;
+		return arrivalTime;
 	}
 
 	/**
@@ -1026,6 +1009,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			solsUntilCB.setSelectedIndex(0);
 		}
 
+		MarsClock arrivalTime = null;
 		try {
 			boolean good = true;
 
@@ -1039,11 +1023,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				
 				validation_result = true;
 
-				marsCurrentTime = new MarsClock(marsClock);
+				arrivalTime = new MarsClock(marsClock);
 				if (inputSol == 0)
-					marsCurrentTime.addTime(marsCurrentTime.getMillisol());
+					arrivalTime.addTime(arrivalTime.getMillisol());
 				else
-					marsCurrentTime.addTime(inputSol * 1000D);
+					arrivalTime.addTime(inputSol * 1000D);
 			}
 
 		} catch (NumberFormatException e) {
@@ -1054,40 +1038,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			logger.severe("Invalid entry for Sols: " + e.getMessage());
 		}
 
-		return marsCurrentTime;
+		return arrivalTime;
 	}
-
-//	public List<Integer> getMissionSols() {
-//		List<Integer> solsList = new ArrayList<>();
-//		// Check if this particular sol has already been chosen for a resupply
-//		// mission
-//		JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
-//		ListModel<?> model = jList.getModel();
-//
-//		for (int i = 0; i < model.getSize(); i++) {
-//			Transportable transportItem = (Transportable) model.getElementAt(i);
-//
-//			if ((transportItem != null)) {
-//				if (transportItem instanceof Resupply) {
-//					// Create modify resupply mission dialog.
-//					Resupply newR = (Resupply) transportItem;
-//					if (!newR.equals(resupply)) {
-//						MarsClock arrivingTime = newR.getArrivalDate();
-//						int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-//						solsList.add(solsDiff);
-//					}
-//				} else if (transportItem instanceof ArrivingSettlement) {
-//					// Create modify arriving settlement dialog.
-//					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
-//					MarsClock arrivingTime = settlement.getArrivalDate();
-//					int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-//					solsList.add(solsDiff);
-//				}
-//			}
-//		}
-//
-//		return solsList;
-//	}
 
 	public void enableButton(boolean value) {
 		if (modifyTransportItemDialog != null)

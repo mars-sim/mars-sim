@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.configuration.UserConfigurable;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplySchedule;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 
@@ -35,7 +35,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	private String sponsor;
 	
 	private List<BuildingTemplate> buildings;
-	private List<ResupplyMissionTemplate> resupplies;
+	private List<ResupplySchedule> resupplies;
 	
 	private Map<String, Integer> vehicles;
 	private Map<String, Integer> equipment;
@@ -266,7 +266,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	 * 
 	 * @param resupplyMissionTemplate the resupply mission template.
 	 */
-	void addResupplyMissionTemplate(ResupplyMissionTemplate resupplyMissionTemplate) {
+	void addResupplyMissionTemplate(ResupplySchedule resupplyMissionTemplate) {
 		resupplies.add(resupplyMissionTemplate);
 	}
 
@@ -275,7 +275,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	 * 
 	 * @return list of resupply mission templates.
 	 */
-	public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {
+	public List<ResupplySchedule> getResupplyMissionTemplates() {
 		return Collections.unmodifiableList(resupplies);
 	}
 }

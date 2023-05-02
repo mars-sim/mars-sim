@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -24,8 +24,6 @@ public final class ResupplyUtil {
 
 
     public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
-
-    public static List<Resupply> resupplies;
 
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -54,22 +52,25 @@ public final class ResupplyUtil {
 	 * Creates the initial resupply missions from the configuration XML files.
 	 */
 	public static List<Resupply> loadInitialResupplyMissions() {
-		
-		if (resupplies == null)  {
-			resupplies = new CopyOnWriteArrayList<>();
+		List<Resupply> resupplies = new ArrayList<>();
 			
-	        for(Settlement settlement : unitManager.getSettlements()) {
-	            String templateName = settlement.getTemplate();
- 
-	            for(ResupplyMissionTemplate template : settlementConfig.getItem(templateName).getResupplyMissionTemplates()) {
-	                MarsClock arrivalDate = new MarsClock(currentTime);
-	                arrivalDate.addTime(template.getArrivalTime() * 1000D);
-	               
-	                Resupply resupply = new Resupply(template, arrivalDate, settlement);
-	                resupplies.add(resupply);
+		for(Settlement settlement : unitManager.getSettlements()) {
+			String templateName = settlement.getTemplate();
 
-	            }
-	        }
+			// For each Settlement get the resupply scheduled defined by the SettlementTemplate
+			for(ResupplySchedule template : settlementConfig.getItem(templateName).getResupplyMissionTemplates()) {
+				MarsClock arrivalDate = new MarsClock(currentTime);
+				arrivalDate.addTime(template.getFirstArrival() * 1000D);
+
+				// If the frequency is less than transport time also add the next ones
+				for(int cycle = 0; cycle < template.getActiveMissions(); cycle++) {
+					Resupply resupply = new Resupply(template, cycle+1, arrivalDate, settlement);
+					resupplies.add(resupply);
+
+					arrivalDate = new MarsClock(arrivalDate);
+					arrivalDate.addTime(template.getFrequency() * 1000D);
+				}
+			}
 		}
 
         return resupplies;

@@ -221,7 +221,8 @@
     <part-package name="package 1" number="1" />
     
     <resupply>
-       	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.1" /> 
+       	<resupply-mission name="Quarterly Delivery" manifest-name=="Standard Resupply 1"
+            first-arrival-time="0.1"
+            frequency-sols="150" /> 
     </resupply> 
 </template>

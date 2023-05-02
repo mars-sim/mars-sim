@@ -274,9 +274,10 @@
     <part-package name="package 3" number="1" />
     
     <resupply>
-       	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.1" /> 
-        <resupply-mission name="Resupply for Phase 3"
-            arrival-time="670.0" />
+       	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1"
+            first-arrival-time="1"
+            frequency-sols="60" /> 
+        <resupply-mission name="Annual Delivery" manifest-name="Resupply for Phase 3"
+            first-arrival-time="668" /> 
     </resupply>
 </template>

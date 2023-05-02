@@ -99,7 +99,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private int settlementID;
 	private transient Settlement settlement;
 	
-	private ResupplyMissionTemplate template;
+	private ResupplySchedule template;
 	
 	private List<BuildingTemplate> newBuildings;
 	private Map<String, Integer> newVehicles;
@@ -107,6 +107,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
+	private int cycle;
+	
 	/**
 	 * Constructor based of a Supply schedule.
 	 * 
@@ -114,11 +116,12 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param arrivalDate the arrival date of the supplies.
 	 * @param settlement  the settlement receiving the supplies.
 	 */
-	public Resupply(ResupplyMissionTemplate template, MarsClock arrivalDate, Settlement settlement) {
-		this(template.getName(), arrivalDate, settlement);
+	public Resupply(ResupplySchedule template, int cycle, MarsClock arrivalDate, Settlement settlement) {
+		this(template.getName() + " #" + cycle, arrivalDate, settlement);
 
 		// Initialize data members.
 		this.template = template;
+		this.cycle = cycle;
 
 		// Load up the respplut according to the manifest
 		SupplyManifest manifest = template.getManifest();
@@ -152,7 +155,11 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		return settlement.getFutureManager();
 	}
 
-	public ResupplyMissionTemplate getTemplate() {
+	/**
+	 * Get the schedule that defines this resupply.
+	 * @return Potentially can return null.
+	 */
+	public ResupplySchedule getTemplate() {
 		return template;
 	}
 
@@ -174,6 +181,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		
 		// Deliver the rest of the supplies and add people.
 		deliverOthers(sim.getUnitManager(), sc.getPersonConfig(), sc.getRobotConfiguration());
+
+		// If a schedule then create the next one
+		if (template.getFrequency() > 0) {
+			// Scheduled the follow on
+			MarsClock newArrival = new MarsClock(getArrivalDate());
+			newArrival.addTime(template.getActiveMissions() * template.getFrequency() * 1000);
+			Resupply followOn = new Resupply(this.getTemplate(), cycle + template.getActiveMissions(),
+												newArrival, settlement);
+			tm.addNewTransportItem(followOn);
+		}
 	}
 
 	/**
@@ -292,10 +309,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				noImmovable = isCollisionFreeImmovable(bt);
 			}
 
-			if (noImmovable) {
-				noConflictResupply = isCollisionFreeResupplyBuildings(bt, buildingManager);
-			}
-
 			if (noConflictResupply) {
 				inZone = isWithinZone(spec, bt, buildingManager);
 			}
@@ -310,40 +323,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 
 		return bt;
-	}
-
-	/**
-	 * Checks if the building template collides with any planned resupply buildings.
-	 * 
-	 * @param bt  a building template
-	 * @param mgr BuildingManager
-	 * @return true if the location is clear of collision
-	 */
-	public static boolean isCollisionFreeResupplyBuildings(BuildingTemplate bt, BuildingManager mgr) {
-
-		BoundedObject b0 = bt.getBounds();
-
-		List<Resupply> resupplies = ResupplyUtil.loadInitialResupplyMissions();
-
-		Iterator<Resupply> i = resupplies.iterator();
-		while (i.hasNext()) {
-			Resupply r = i.next();
-			if (r.getSettlement().equals(mgr.getSettlement()) || r.getSettlement() == mgr.getSettlement()) {
-
-				List<BuildingTemplate> templates = r.getBuildings();
-				Iterator<BuildingTemplate> j = templates.iterator();
-				while (j.hasNext()) {
-					BuildingTemplate t = j.next();
-					BoundedObject b1 = t.getBounds();
-
-					if (LocalAreaUtil.isTwoBoundedOjectsIntersected(b0, b1))
-						return false;
-				}
-			}
-		}
-
-		return true;
-
 	}
 
 	/**

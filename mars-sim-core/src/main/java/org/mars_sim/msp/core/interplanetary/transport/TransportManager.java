@@ -39,7 +39,6 @@ public class TransportManager implements Serializable, Temporal {
 	private List<Transportable> transportItems;
 
 	private transient HistoricalEventManager eventManager;
-	//private transient Simulation sim;
 
 	private ScheduledEventManager futures;
 

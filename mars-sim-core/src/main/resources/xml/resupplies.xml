@@ -159,6 +159,112 @@
 	        	
 	</resupply>
 	
+	<resupply name="Food Resupply 1">
+	
+		<!-- Crop related -->
+	    <resource name="fertilizer" amount="50.0" />
+	
+	    <!-- Crop tissues -->
+	    <resource name="blueberry tissue" amount="1.0" />
+	    <resource name="cabbage tissue" amount="1.0" />
+	    <resource name="carrot tissue" amount="1.0" />
+	    <resource name="celery tissue" amount="1.0" />
+	    <resource name="corn tissue" amount="1.0" />
+	
+	    <resource name="cranberry tissue" amount="1.0" />
+	    <resource name="cucumber tissue" amount="1.0" />
+	    <resource name="garlic tissue" amount="1.0" />
+	    <resource name="ginger tissue" amount="1.0" />
+	    <resource name="green bell pepper tissue" amount="1.0" />
+	
+	    <resource name="kidney bean tissue" amount="1.0" />
+	    <resource name="lettuce tissue" amount="1.0" />
+	    <resource name="morel mushroom tissue" amount="1.0" />
+	    <resource name="peanut tissue" amount="1.0" />
+	    <resource name="peas tissue" amount="1.0" />
+	    
+	    <resource name="potato tissue" amount="1.0" />
+	    <resource name="quinoa tissue" amount="1.0" />
+	    <resource name="radish tissue" amount="1.0" />	    
+	    <resource name="red beet tissue" amount="1.0" />
+	    <resource name="rice tissue" amount="1.0" />
+	    
+	    <resource name="sesame tissue" amount="1.0" />	    
+	    <resource name="soybean tissue" amount="1.0" />
+	   	<resource name="spring onion tissue" amount="1.0" />
+	    <resource name="strawberry tissue" amount="1.0" />
+	    <resource name="sugarcane tissue" amount="1.0" />
+	    
+	   	<resource name="sweet potato tissue" amount="1.0" />
+	    <resource name="swiss chard tissue" amount="1.0" />
+	    <resource name="taro tissue" amount="1.0" />
+	    <resource name="tomato tissue" amount="1.0" />
+	    <resource name="wheat tissue" amount="1.0" />
+	    
+	    <resource name="white mustard tissue" amount="1.0" />
+	    <resource name="white onion tissue" amount="1.0" />
+	    <resource name="yam tissue" amount="1.0" />
+	    
+	    <!-- Seeds -->
+	    <resource name="mustard seed" amount="50.0" />
+	    <resource name="sesame seed" amount="50.0" />
+	
+	    <!-- Food Derived Items -->
+	    <resource name="mustard" amount="50.0" />
+	
+	    <!-- Kitchen Resources -->
+	    <resource name="chlorine" amount="50.0" />
+	    <resource name="Sodium Hypochlorite" amount="20.0" />
+	    <resource name="Acetic Acid Bacteria" amount="20.0" />
+	    <resource name="Nitrosomonas spp" amount="20.0" />
+	    <resource name="Nitrospira spp" amount="20.0" />
+	    
+	    <resource name="Rhizobia" amount="20.0" />
+	    <resource name="bisphenol-A" amount="100.0" />
+	    <resource name="toilet tissue" amount="100.0" />
+	    <resource name="paper" amount="100.0" />
+	    <resource name="napkin" amount="100.0" />
+	    
+	    <resource name="bleaching chemical" amount="50.0" />
+	    <resource name="Baking Powder" amount="100.0" />
+	    <resource name="pulp" amount="100.0" />
+	    <resource name="Honey" amount="100.0" />
+	    <resource name="Yeast" amount="50.0" />
+	    
+	    <resource name="Epsom Salt" amount="50.0" />
+	    <resource name="Table Salt" amount="50.0" />
+	    <resource name="Sugar" amount="50.0" />	    
+	
+	    <!-- Food Derived Items -->
+	    <resource name="mustard" amount="50.0" />
+	    <resource name="Tofu" amount="50.0" />
+	    <resource name="Roasted Peanut" amount="50.0" />
+	    <resource name="White Bread" amount="50.0" />
+	    <resource name="White Bun" amount="50.0" />
+	    
+	    <resource name="Veggie Patty" amount="50.0" />
+	    <resource name="Wheat Bread" amount="50" />
+	    <resource name="Wheat Bun" amount="50" />
+	    <resource name="Soy Protein" amount="50.0" />
+	    <resource name="Peanut Butter" amount="50.0" />
+	    
+	    <resource name="Soy Sprout" amount="50.0" />
+	    <resource name="Soybean Oil" amount="50.0" />
+	    <resource name="Peanut Oil" amount="50.0" />
+	    <resource name="Garlic Oil" amount="50.0" />
+	    <resource name="Sesame Oil" amount="50.0" />
+	    
+	    <resource name="Cane Fiber" amount="100.0" />
+	    <resource name="Rice Vinegar" amount="50.0" />
+	    <resource name="Soy Sauce" amount="50.0" />
+	    <resource name="Soymilk" amount="50.0" />
+	    <resource name="Soy Flour" amount="50.0" />
+	    
+	    <resource name="Wheat Flour" amount="50.0" />
+	    <resource name="Granola Bar" amount="10.0" />
+
+	</resupply>
+
 	<!-- Resupply mission from Earth. -->
 	<!-- name: the unique name of the resupply mission. -->
 	<resupply name="Resupply for Phase 1" person="4">
