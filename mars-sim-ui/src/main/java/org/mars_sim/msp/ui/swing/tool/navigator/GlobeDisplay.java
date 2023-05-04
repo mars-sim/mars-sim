@@ -46,17 +46,18 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
+	private final int STANDARD_MAP_HEIGHT = 1440;
+	private final int STANDARD_MAP_WIDTH = 2880;
 	private final int MAP_HEIGHT = 300;
 //	private final int MAP_WIDTH = MAP_HEIGHT * 2;
 	private final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 	private final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private final int RATIO = GLOBE_BOX_HEIGHT / MAP_HEIGHT; 
 	
-	private final int X_PADDING_ZOOM_BOX = 118 * RATIO;
-	private final int Y_PADDING_ZOOM_BOX = 118 * RATIO;
-	private final int WIDTH_ZOOM_BOX = 66 * RATIO;
-	private final int HEIGHT_ZOOM_BOX = 66 * RATIO;
-	
+	private final int X_PADDING_ZOOM_BOX = 116 * RATIO;
+	private final int Y_PADDING_ZOOM_BOX = 116 * RATIO;
+	private final int WIDTH_ZOOM_BOX = 70 * RATIO;
+	private final int HEIGHT_ZOOM_BOX = 70 * RATIO;
 	
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
 	private final int LIMIT = 60 * RATIO; 
@@ -317,8 +318,8 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			int width = navwin.getMapPanel().getMap().getPixelWidth();
 			int height = navwin.getMapPanel().getMap().getPixelHeight();
 			
-			widthZoomBox = WIDTH_ZOOM_BOX * 2888 / width;
-			heightZoomBox = HEIGHT_ZOOM_BOX * 1400 / height;
+			widthZoomBox = WIDTH_ZOOM_BOX * STANDARD_MAP_WIDTH / width;
+			heightZoomBox = HEIGHT_ZOOM_BOX * STANDARD_MAP_HEIGHT / height;
 			xPaddingZoomBox = X_PADDING_ZOOM_BOX + (WIDTH_ZOOM_BOX - widthZoomBox) / 2; 
 			yPaddingZoomBox = Y_PADDING_ZOOM_BOX + (HEIGHT_ZOOM_BOX - heightZoomBox) / 2; 
 		}
@@ -439,16 +440,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 //		// Draw left horizontal line
 //		g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
-		drawDashedLine(g, 15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
+//		drawDashedLine(g, 15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
 //		// Draw right horizontal line
 //		g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
-		drawDashedLine(g, 184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
+//		drawDashedLine(g, 184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
 //		// Draw top vertical line
 //		g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
-		drawDashedLine(g, 150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);		
+//		drawDashedLine(g, 150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);		
 //		// Draw bottom vertical line
 //		g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
-		drawDashedLine(g, 150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);		
+//		drawDashedLine(g, 150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);		
 
 		// use prepared font
 		g.setFont(positionFont);
@@ -472,6 +473,15 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 //		g.setColor(Color.black);
 		
 		g.drawRect(xPaddingZoomBox, yPaddingZoomBox, widthZoomBox,  heightZoomBox);
+		
+		// Draw diagonal line to top right of the left panel	
+		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox, 300 * RATIO, 0);
+		// Draw diagonal line to top right of the left panel	
+		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox, 600 * RATIO, 0);
+		// Draw diagonal line to bottom right of the left panel	
+		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox + heightZoomBox, 300 * RATIO, 300 * RATIO);
+		// Draw diagonal line to bottom right of the left panel	
+		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox + heightZoomBox, 600 * RATIO, 300 * RATIO);
 
 	}
 
@@ -481,8 +491,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		  Graphics2D g2d = (Graphics2D) g.create();
 
 		  // Set the stroke of the copy, not the original 
-		  Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-		                                  0, new float[]{9}, 0);
+		  Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 		  g2d.setStroke(dashed);
 
 		  // Draw to the copy
