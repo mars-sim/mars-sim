@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapData.java
- * @date 2022-07-15
+ * @date 2023-05-04
  * @author Scott Davis
  */
 
@@ -36,19 +36,22 @@
      public Color getRGBColor(double phi, double theta);
 
     /**
-     * Get the scale of pixel to Mars surface degree
+     * Gets the scale of pixel to Mars surface degree.
+     * 
      * @return
      */
     public double getScale();
 
     /**
-     * Get the number of pixels height
+     * Gets the number of pixels height.
+     * 
      * @return
      */
     public int getHeight();
 
     /**
-     * Get the number of pixels width
+     * Gets the number of pixels width.
+     * 
      * @return
      */
     public int getWidth();

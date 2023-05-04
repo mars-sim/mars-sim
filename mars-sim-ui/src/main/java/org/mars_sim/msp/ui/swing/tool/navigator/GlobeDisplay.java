@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Stroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -49,6 +51,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 	private final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private final int RATIO = GLOBE_BOX_HEIGHT / MAP_HEIGHT; 
+	
+	private final int X_PADDING_ZOOM_BOX = 118 * RATIO;
+	private final int Y_PADDING_ZOOM_BOX = 118 * RATIO;
+	private final int WIDTH_ZOOM_BOX = 66 * RATIO;
+	private final int HEIGHT_ZOOM_BOX = 66 * RATIO;
+	
+	
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
 	private final int LIMIT = 60 * RATIO; 
 	// Half of the map pixel height / 2 
@@ -62,6 +71,11 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private int dragy;
 	private int dxCache = 0;
 	private int dyCache = 0;
+	private int xPaddingZoomBox = X_PADDING_ZOOM_BOX;
+	private int yPaddingZoomBox = Y_PADDING_ZOOM_BOX;	
+	private int widthZoomBox = WIDTH_ZOOM_BOX;
+	private int heightZoomBox = HEIGHT_ZOOM_BOX;
+	
 	
 	// Data members
 	/** <code>true</code> if globe needs to be regenerated */
@@ -93,26 +107,28 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 
 	/**
-	 * stores the internationalized string for reuse in
+	 * Stores the internationalized string for reuse in
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
 	private String longitude = Msg.getString("direction.longitude"); //$NON-NLS-1$
 	/**
-	 * stores the internationalized string for reuse in
+	 * Stores the internationalized string for reuse in
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
 	private String latitude = Msg.getString("direction.latitude"); //$NON-NLS-1$
 
 	/**
-	 * stores the position for drawing lon/lat strings in
+	 * Stores the position for drawing lon/lat strings in
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
 	private int leftWidth = positionMetrics.stringWidth(latitude);
 	/**
-	 * stores the position for drawing lon/lat strings in
+	 * Stores the position for drawing lon/lat strings in
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
 	private int rightWidth = positionMetrics.stringWidth(longitude);
+	
+	private NavigatorWindow navwin;
 	
 	private MainDesktopPane desktop;
 
@@ -124,6 +140,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * @param globeBoxHeight the height of the globe display
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {
+		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
 
 		starfield = ImageLoader.getImage("map/starfield");
@@ -285,10 +302,28 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			recreate = false;
 		}
 	
+		// Updates the position of the zoom box
+		updateZoomBox();
+		
 		// Regenerate globe
 		drawSphere();
 	}
 
+	/**
+	 * Updates the position of the zoom box.
+	 */
+	public void updateZoomBox() {
+		if (navwin.getMapPanel() != null) {
+			int width = navwin.getMapPanel().getMap().getPixelWidth();
+			int height = navwin.getMapPanel().getMap().getPixelHeight();
+			
+			widthZoomBox = WIDTH_ZOOM_BOX * 2888 / width;
+			heightZoomBox = HEIGHT_ZOOM_BOX * 1400 / height;
+			xPaddingZoomBox = X_PADDING_ZOOM_BOX + (WIDTH_ZOOM_BOX - widthZoomBox) / 2; 
+			yPaddingZoomBox = Y_PADDING_ZOOM_BOX + (HEIGHT_ZOOM_BOX - heightZoomBox) / 2; 
+		}
+	}
+	
 	public void drawSphere() {
 		marsMap.drawSphere(centerCoords);
 		paintDoubleBuffer();
@@ -345,6 +380,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		if (dbImage != null)
 			g2d.drawImage(dbImage, 0, 0, this);
+		
+		// Get rid of the copy
+		g2d.dispose();
 	}
 
 
@@ -391,23 +429,26 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * Draw green rectangles and lines (cross-hair type thingy), and write the
+	 * Draws green rectangles and lines (cross-hair type thingy), and write the
 	 * latitude and longitude of the center point of the current globe view.
 	 * 
 	 * @param g graphics context
 	 */
 	protected void drawCrossHair(Graphics2D g) {
-		g.setColor(Color.orange);
+		g.setColor(Color.orange.brighter());
 
-		g.drawRect(118 * RATIO, 118 * RATIO,  66 * RATIO,  66 * RATIO);
-		// Draw left horizontal line
-		g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
-		// Draw right horizontal line
-		g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
-		// Draw top vertical line
-		g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
-		// Draw bottom vertical line
-		g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
+//		// Draw left horizontal line
+//		g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
+		drawDashedLine(g, 15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
+//		// Draw right horizontal line
+//		g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
+		drawDashedLine(g, 184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
+//		// Draw top vertical line
+//		g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
+		drawDashedLine(g, 150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);		
+//		// Draw bottom vertical line
+//		g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
+		drawDashedLine(g, 150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);		
 
 		// use prepared font
 		g.setFont(positionFont);
@@ -427,9 +468,30 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		g.drawString(latString, latPosition, 50 * RATIO);
 		g.drawString(longString, longPosition, 50 * RATIO);
+		
+//		g.setColor(Color.black);
+		
+		g.drawRect(xPaddingZoomBox, yPaddingZoomBox, widthZoomBox,  heightZoomBox);
 
 	}
 
+	public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2){
+
+		  // Create a copy of the Graphics instance
+		  Graphics2D g2d = (Graphics2D) g.create();
+
+		  // Set the stroke of the copy, not the original 
+		  Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+		                                  0, new float[]{9}, 0);
+		  g2d.setStroke(dashed);
+
+		  // Draw to the copy
+		  g2d.drawLine(x1, y1, x2, y2);
+
+		  // Get rid of the copy
+		  g2d.dispose();
+	}
+	
 	/**
 	 * Returns unit x, y position on globe panel
 	 * 

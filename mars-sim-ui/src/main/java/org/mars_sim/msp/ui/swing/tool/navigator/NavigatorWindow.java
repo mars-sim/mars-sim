@@ -822,6 +822,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
+	 	
+	/** 
+	 * Gets the map panel class.
+	 */
+	public MapPanel getMapPanel() {
+		return mapLayerPanel;
+	}
+	
+	
 	@Override
 	public void destroy() {
 		if (mapLayerPanel != null)
