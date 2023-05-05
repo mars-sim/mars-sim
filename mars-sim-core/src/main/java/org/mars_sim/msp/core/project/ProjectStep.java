@@ -15,19 +15,29 @@ public abstract class ProjectStep {
 
     private Project parent;
     private Stage stage;
+    private String description;
 
-    protected ProjectStep(Stage stage) {
-        if ((stage == Stage.WAITING) || (stage == Stage.DONE)) {
+    protected ProjectStep(Stage stage, String description) {
+        if ((stage == Stage.WAITING) || (stage == Stage.DONE) || (stage == Stage.ABORTED)) {
             throw new IllegalArgumentException("The step can used the internal Stage " + stage);
         }
 
         this.stage = stage;
+        this.description = description;
     }
 
     void setParent(Project parent) {
         this.parent = parent;
     }
 
+    /**
+     * The descriptin of this step
+     * @return
+     */
+    public String getDescription() {
+        return description;
+    }
+    
     /**
      * The stage that this step represents
      * @return
@@ -51,7 +61,7 @@ public abstract class ProjectStep {
      * This step has just become the active step and is starting
      * @param worker Triggered the start
      */
-    void start(Worker worker) {
+    void start() {
         // Default requires no special start
     }
 
@@ -59,7 +69,7 @@ public abstract class ProjectStep {
      * This step has just completed and is stopping
      * @param worker Triggered the stop
      */
-    void complete(Worker worker) {
-        parent.completeCurrentStep(worker);
+    void complete() {
+        parent.completeCurrentStep();
     }
 }

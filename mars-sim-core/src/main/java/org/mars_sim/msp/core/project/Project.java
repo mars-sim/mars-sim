@@ -19,6 +19,7 @@ public class Project {
     private List<ProjectStep> steps = new ArrayList<>();
     private ProjectStep currentStep = null;
     private boolean isDone = false;
+    private boolean isAborted = false;
 
     public Project(String name) {
         this.name = name;
@@ -37,8 +38,17 @@ public class Project {
      * @return
      */
     public Stage getStage() {
-        return (isDone ? Stage.DONE :
-                (currentStep == null ? Stage.WAITING : currentStep.getStage()));
+        Stage stage = Stage.WAITING;
+        if (isDone) {
+            stage = Stage.DONE;
+        }
+        else if (isAborted) {
+            stage = Stage.ABORTED;
+        }
+        else if (currentStep != null) {
+            stage = currentStep.getStage();
+        }
+        return stage;
     }
 
     /**
@@ -48,7 +58,7 @@ public class Project {
     public void execute(Worker worker) {
         if (currentStep == null) {
             currentStep = steps.get(0);
-            currentStep.start(worker);
+            currentStep.start();
         }
         currentStep.execute(worker);
     }
@@ -57,20 +67,33 @@ public class Project {
      * The current step is completed
      * @param worker
      */
-    void completeCurrentStep(Worker worker) {        
-        int idx = steps.indexOf(currentStep);
-        idx++;
+    void completeCurrentStep() {   
+        if (!isAborted) {  
+            int idx = steps.indexOf(currentStep);
+            idx++;
 
-        if (idx >= steps.size()) {
-            isDone = true;
-        }
-        else {
-            currentStep = steps.get(idx);
-            currentStep.start(worker);
+            if (idx >= steps.size()) {
+                isDone = true;
+            }
+            else {
+                currentStep = steps.get(idx);
+                currentStep.start();
+            }
         }
     }
 
     /**
+     * Abort the project
+     */
+    public void abort(String reason) {
+        isAborted = true;
+
+        if (currentStep != null) {
+            currentStep.complete();
+        }
+    }
+
+    /** 
      * Add a step to this project
      * @param step
      * @see ProjectStep#setParent(Project)
@@ -103,5 +126,17 @@ public class Project {
         }
 
         return steps.remove(oldStep);
+    }
+
+    /**
+     * Get the description of the current project step
+     * @return
+     */
+    public String getStepName() {
+        return (currentStep != null ? currentStep.getDescription() : null);
+    }
+
+    public boolean isFinished() {
+        return (isDone || isAborted);
     }
 }

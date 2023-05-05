@@ -14,8 +14,8 @@ public class ProjectTest extends TestCase {
         int startCount = 0;
         int endCount = 0;
 
-        TestStep(Stage stage, int expectedCount) {
-            super(stage);
+        TestStep(Stage stage, int expectedCount, String name) {
+            super(stage, name);
             this.expectedCount = expectedCount;
         }
         
@@ -24,20 +24,20 @@ public class ProjectTest extends TestCase {
             expectedCount--;
 
             if (expectedCount <= 0) {
-                complete(worker);
+                complete();
             }
         }
 
         @Override
-        void start(Worker worker) {
+        void start() {
             startCount++;
-            super.start(worker);
+            super.start();
         }
 
         @Override
-        void complete(Worker worker) {
+        void complete() {
             endCount++;
-            super.complete(worker);
+            super.complete();
         }
     }
 
@@ -46,7 +46,7 @@ public class ProjectTest extends TestCase {
 
         assertEquals("Waiting with no steps", Stage.WAITING, p.getStage());
 
-        TestStep step1 = new TestStep(Stage.ACTIVE, 2);
+        TestStep step1 = new TestStep(Stage.ACTIVE, 2, "Step 1");
         p.addStep(step1);
         assertEquals("Waiting before execution", Stage.WAITING, p.getStage());
 
@@ -57,7 +57,7 @@ public class ProjectTest extends TestCase {
 
         // Xecute second time
         p.execute(worker);
-        assertEquals("Stage is Done", Stage.DONE, p.getStage());
+        assertEquals("Stage is DONE", Stage.DONE, p.getStage());
         assertEquals("Step started once", 1, step1.startCount);
         assertEquals("Step ended once", 1, step1.endCount);
         assertEquals("Step fully expected", 0, step1.expectedCount);
@@ -69,8 +69,8 @@ public class ProjectTest extends TestCase {
 
         assertEquals("Waiting with no steps", Stage.WAITING, p.getStage());
 
-        TestStep step1 = new TestStep(Stage.ACTIVE, 2);
-        TestStep step2 = new TestStep(Stage.CLOSEDOWN, 3);
+        TestStep step1 = new TestStep(Stage.ACTIVE, 2, "Step 1");
+        TestStep step2 = new TestStep(Stage.CLOSEDOWN, 3, "Step 2");
 
         p.addStep(step1);
         p.addStep(step2);
@@ -81,10 +81,13 @@ public class ProjectTest extends TestCase {
         Worker worker = null;
         p.execute(worker);
         assertEquals("Stage is Active", Stage.ACTIVE, p.getStage());
+        assertEquals("Project 1st step", "Step 1", p.getStepName());
+
 
         // Xecute second time
         p.execute(worker);
-        assertEquals("Step1 stage is Done", Stage.CLOSEDOWN, p.getStage());
+        assertEquals("Step1 stage is DONE", Stage.CLOSEDOWN, p.getStage());
+        assertEquals("Project 2nd step", "Step 2", p.getStepName());
         assertEquals("Step1 started once", 1, step1.startCount);
         assertEquals("Step1 ended once", 1, step1.endCount);
         assertEquals("Step1 fully expected", 0, step1.expectedCount);
@@ -99,18 +102,47 @@ public class ProjectTest extends TestCase {
 
         // Xecute second time
         p.execute(worker);
-        assertEquals("Step2 stage is Done", Stage.DONE, p.getStage());
+        assertEquals("Step2 stage is DONE", Stage.DONE, p.getStage());
         assertEquals("Step2 started once", 1, step1.startCount);
         assertEquals("Step2 ended once", 1, step1.endCount);
         assertEquals("Step2 fully expected", 0, step1.expectedCount);
     }
 
+    public void testAbort() {
+        Project p = new Project("Test");
+
+        TestStep step1 = new TestStep(Stage.ACTIVE, 2, "Step 1");
+        TestStep step2 = new TestStep(Stage.CLOSEDOWN, 1, "Step 2");
+
+        p.addStep(step1);
+        p.addStep(step2);
+
+        Worker worker = null;
+        // Execute Step 1
+        p.execute(worker);
+        p.abort("Test");
+
+        assertEquals("Stage is aborted", Stage.ABORTED, p.getStage());
+        assertTrue("Project is done", p.isFinished());
+
+        // Step 1 only executed one
+        assertEquals("Step1 started once", 1, step1.startCount);
+        assertEquals("Step1 ended once", 1, step1.endCount);
+        assertEquals("Step1 execution 1 short", 1, step1.expectedCount);
+
+        // Step 2 never used
+        assertEquals("Step2 never started", 0, step2.startCount);
+        assertEquals("Step2 never ended", 0, step2.endCount);
+        assertEquals("Step2 fully expected", 1, step2.expectedCount);
+    }
+
+
     public void testRemoveStep() {
         Project p = new Project("Test");
 
-        TestStep step1 = new TestStep(Stage.PREPARATION, 2);
-        TestStep step2 = new TestStep(Stage.ACTIVE, 1);
-        TestStep step3 = new TestStep(Stage.CLOSEDOWN, 1);
+        TestStep step1 = new TestStep(Stage.PREPARATION, 2, "Step 1");
+        TestStep step2 = new TestStep(Stage.ACTIVE, 1, "Old Step");
+        TestStep step3 = new TestStep(Stage.CLOSEDOWN, 1, "New Step");
 
 
         p.addStep(step1);
@@ -120,6 +152,8 @@ public class ProjectTest extends TestCase {
         Worker worker = null;
         p.execute(worker);
         assertEquals("Stage is Active", Stage.PREPARATION, p.getStage());
+        assertEquals("Project step", "Step 1", p.getStepName());
+
 
         // Swap last step
         p.removeStep(step2);
@@ -128,6 +162,7 @@ public class ProjectTest extends TestCase {
         // Xecute end of first step, stage is new last step
         p.execute(worker);
         assertEquals("Process stage is Closedown", Stage.CLOSEDOWN, p.getStage());
+        assertEquals("Project step", "New Step", p.getStepName());
 
         // Last step executed
         p.execute(worker);
@@ -136,7 +171,7 @@ public class ProjectTest extends TestCase {
         assertEquals("Remove step not executed", 1, step2.expectedCount);
 
         // Xecute second time
-        assertEquals("Step3 stage is Done", Stage.DONE, p.getStage());
+        assertEquals("Step3 stage is DONE", Stage.DONE, p.getStage());
         assertEquals("Step3 started once", 1, step3.startCount);
         assertEquals("Step3 ended once", 1, step3.endCount);
         assertEquals("Step3 fully expected", 0, step3.expectedCount);
@@ -148,25 +183,25 @@ public class ProjectTest extends TestCase {
 
         // Add a step with Active stage
         assertThrows("Create illegal WAITING step", IllegalArgumentException.class, () ->  {
-                        new TestStep(Stage.WAITING, 0);
+                        new TestStep(Stage.WAITING, 0, null);
                     });
         
         assertThrows("Create illegal DONE step", IllegalArgumentException.class, () ->  {
-                        new TestStep(Stage.DONE, 0);
+                        new TestStep(Stage.DONE, 0, null);
                     });
     }
 
     public void testAddingBadStage() {
         Project p = new Project("Bad");
-        p.addStep(new TestStep(Stage.CLOSEDOWN, 0));
+        p.addStep(new TestStep(Stage.CLOSEDOWN, 0, null));
 
         // Add a step with Active stage
         assertThrows("Add illegal ACTIVE step", IllegalArgumentException.class, () ->  {
-                        p.addStep(new TestStep(Stage.ACTIVE, 0));
+                        p.addStep(new TestStep(Stage.ACTIVE, 0, null));
                     });
         
         assertThrows("Add illegal PREPARATION step", IllegalArgumentException.class, () ->  {
-                        p.addStep(new TestStep(Stage.PREPARATION, 0));
+                        p.addStep(new TestStep(Stage.PREPARATION, 0, null));
                     });
     }
 }
