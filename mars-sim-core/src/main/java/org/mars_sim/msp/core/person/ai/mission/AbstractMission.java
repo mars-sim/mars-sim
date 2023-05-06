@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -329,8 +330,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		String hometown = null;
 		String coordinates = null;
 		if (member.isInSettlement()) {
-			container = member.getBuildingLocation().getNickName();
 			hometown = member.getAssociatedSettlement().getName();
+			Building workPlace = member.getBuildingLocation();
+			if (workPlace != null) {
+				container = workPlace.getName();
+			}
+			else {
+				container = hometown;
+			}
 			coordinates = member.getAssociatedSettlement().getCoordinates().getCoordinateString();
 		} else if (member.isInVehicle()) {
 			container = member.getVehicle().getName();
