@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.project;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,10 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 /**
  * Represents a project that has a number of steps
  */
-public class Project {
+public class Project implements Serializable {
     private String name;
     private List<ProjectStep> steps = new ArrayList<>();
+    private int currentStepIdx = -1; // Hold the index to make it easier
     private ProjectStep currentStep = null;
     private boolean isDone = false;
     private boolean isAborted = false;
@@ -31,6 +33,15 @@ public class Project {
      */
     public String getName() {
         return name;
+    }
+
+    
+    /**
+     * Chnage the name of the project
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -54,32 +65,43 @@ public class Project {
     /**
      * A worker executes the project
      * @param worker
+     * @return 
      */
-    public void execute(Worker worker) {
+    public boolean execute(Worker worker) {
         if (currentStep == null) {
-            currentStep = steps.get(0);
-            currentStep.start();
+            advanceStep();
         }
-        currentStep.execute(worker);
+        return currentStep.execute(worker);
     }
 
     /**
-     * The current step is completed
-     * @param worker
+     * Move on the the next step
      */
-    void completeCurrentStep() {   
-        if (!isAborted) {  
-            int idx = steps.indexOf(currentStep);
-            idx++;
-
-            if (idx >= steps.size()) {
-                isDone = true;
-            }
-            else {
-                currentStep = steps.get(idx);
-                currentStep.start();
-            }
+    void advanceStep() {
+        currentStepIdx++;
+        
+        if (currentStepIdx >= steps.size()) {
+            isDone = true;
         }
+        else {
+            currentStep = steps.get(currentStepIdx);
+            currentStep.start();
+            stepStarted(currentStep);
+        }
+    }
+
+    /**
+     * Notification that a step has been started. This can be override for notification
+     * @param activeStep Step started
+     */
+    protected void stepStarted(ProjectStep activeStep) {
+    }
+
+    /**
+     * Notification that a step has been completed. This can be override for notification
+     * @param completedStep Step completed
+     */
+    protected void stepCompleted(ProjectStep completedStep) {
     }
 
     /**
@@ -136,7 +158,33 @@ public class Project {
         return (currentStep != null ? currentStep.getDescription() : null);
     }
 
+    /**
+     * Is the project finoshed; either completed ot aborted
+     * @return Finsihed
+     */
     public boolean isFinished() {
         return (isDone || isAborted);
+    }
+
+    /**
+     * Get the remaining steps of the project
+     * @return
+     */
+    public List<ProjectStep> getRemainingSteps() {
+        int start = (currentStepIdx < 0 ? 0 : currentStepIdx);
+        return steps.subList(start, steps.size());
+    }
+
+    /**
+     * A step has completed
+     * @param completedStep
+     */
+    void completeStep(ProjectStep completedStep) {
+        stepCompleted(completedStep); // Notify
+
+        // Check not abnormal shutdown of the project
+        if (!isAborted) {
+            advanceStep();
+        }
     }
 }

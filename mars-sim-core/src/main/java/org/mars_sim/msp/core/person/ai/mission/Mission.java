@@ -24,8 +24,9 @@ public interface Mission extends Serializable {
 
 	/**
 	 * Aborts the mission by the user. Will stop current phase.
+	 * @param reason Reason to abort
 	 */
-	void abortMission();
+	void abortMission(String reason);
 
 	/**
 	 * Aborts just the current phase, the next phase will be started.

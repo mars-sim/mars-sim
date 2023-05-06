@@ -147,7 +147,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 */
 	private void returnHome() {
 		if (mission != null) {
-			mission.abortMission();
+			mission.abortMission("Return home");
 		}
 	}
 	

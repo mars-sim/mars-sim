@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -398,17 +399,20 @@ public class MissionTableModel extends AbstractTableModel
 				switch (columnIndex) {
 
 				case DATE_FILED: {
-					result = mission.getLog().getDateCreated();
+					result = mission.getLog().getDateCreated().getDisplayTruncatedTimeStamp();
 				}
 					break;
 
 				case DATE_EMBARKED: {
-					result = mission.getLog().getDateStarted();
+					MarsClock embarked = mission.getLog().getDateStarted();
+					result = (embarked == null ? null : embarked.getDisplayTruncatedTimeStamp());
 				}
 					break;
 
 				case DATE_RETURNED : {
-					result = mission.getLog().getDateFinished();
+					MarsClock finished = mission.getLog().getDateFinished();
+					result = (finished == null ? null : finished.getDisplayTruncatedTimeStamp());
+
 				}
 					break;
 

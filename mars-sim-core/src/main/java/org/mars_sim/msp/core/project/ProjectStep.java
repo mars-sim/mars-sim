@@ -6,12 +6,14 @@
  */
 package org.mars_sim.msp.core.project;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * This represents a step in a project. The execute method is overriden by the implementing class.
  */
-public abstract class ProjectStep {
+public abstract class ProjectStep implements Serializable {
 
     private Project parent;
     private Stage stage;
@@ -53,8 +55,9 @@ public abstract class ProjectStep {
     /**
      * A worker performs the current step
      * @param worker
+     * @return 
      */
-    abstract void execute(Worker worker);
+    protected abstract boolean execute(Worker worker);
 
 
     /**
@@ -70,6 +73,6 @@ public abstract class ProjectStep {
      * @param worker Triggered the stop
      */
     void complete() {
-        parent.completeCurrentStep();
+        parent.completeStep(this);
     }
 }

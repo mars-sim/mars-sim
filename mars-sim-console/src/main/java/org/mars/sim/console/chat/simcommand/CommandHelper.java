@@ -355,7 +355,7 @@ public class CommandHelper {
 		response.appendText("Log:");
 		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
 		for (MissionLog.MissionLogEntry entry : mission.getLog().getEntries()) {
-			response.appendTableRow(entry.getTime(), entry.getEntry());
+			response.appendTableRow(MarsClockFormat.getTruncatedDateTimeStamp(entry.getTime()), entry.getEntry());
 		}
 	}
 

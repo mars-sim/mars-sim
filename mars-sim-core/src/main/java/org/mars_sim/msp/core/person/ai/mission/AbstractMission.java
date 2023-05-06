@@ -644,9 +644,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	/**
 	 * Abort the mission by the user. Will stop currnet phase.
+	 * @param reason Cause for abort
 	 */
 	@Override
-	public final void abortMission() {
+	public final void abortMission(String reason) {
 		abortMission(MISSION_ABORTED, null);
 	}
 

@@ -26,16 +26,16 @@ public class MissionLog implements Serializable  {
     	
         private static final long serialVersionUID = 1L;
         
-        private String time;
+        private MarsClock time;
         private String entry;
         
-        private MissionLogEntry(String time, String entry) {
+        private MissionLogEntry(MarsClock time, String entry) {
             super();
             this.time = time;
             this.entry = entry;
         }
     
-        public String getTime() {
+        public MarsClock getTime() {
             return time;
         }
     
@@ -50,13 +50,12 @@ public class MissionLog implements Serializable  {
     }
 
     private List<MissionLogEntry> log = new ArrayList<>();
-    private String startDate;
+    private MarsClock startDate;
     private boolean done = false;
     protected static MarsClock marsClock;
 
-    void addEntry(String entry) {
-		String time = marsClock.getTrucatedDateTimeStamp();
-		log.add(new MissionLogEntry(time, entry));
+    public void addEntry(String entry) {
+		log.add(new MissionLogEntry(new MarsClock(marsClock), entry));
     }
 
     /**
@@ -64,11 +63,11 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public String getDateCreated() {
+	public MarsClock getDateCreated() {
 		if (!log.isEmpty()) {
 			return log.get(0).getTime();
 		}
-		return "";
+		return null;
 	}
 
     
@@ -77,7 +76,7 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public String getDateStarted() {
+	public MarsClock getDateStarted() {
 		return startDate;
 	}
 
@@ -86,13 +85,13 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public String getDateFinished() {
+	public MarsClock getDateFinished() {
 		if (done && !log.isEmpty()) {
             // TODO SHould this be when teh mission returned to the Settlement? 
 			return log.get(log.size()-1).getTime();
 		}
 
-		return "";
+		return null;
 	}
 
     void setDone() {
@@ -101,7 +100,7 @@ public class MissionLog implements Serializable  {
 
     void setStarted() {
         if (startDate == null) {
-            startDate = marsClock.getTrucatedDateTimeStamp();
+            startDate = new MarsClock(marsClock);
         }
     }
 
@@ -111,5 +110,12 @@ public class MissionLog implements Serializable  {
 
     public static void initialise(MarsClock mc) {
         marsClock = mc;
+    }
+
+    public MissionLogEntry getLastEntry() {
+        if (log.isEmpty()) {
+            return null;
+        }
+        return log.get(log.size()-1);
     }
 }

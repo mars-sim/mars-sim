@@ -20,12 +20,14 @@ public class ProjectTest extends TestCase {
         }
         
         @Override
-        void execute(Worker worker) {
+        protected boolean execute(Worker worker) {
             expectedCount--;
 
             if (expectedCount <= 0) {
                 complete();
             }
+
+            return true;
         }
 
         @Override
@@ -76,12 +78,15 @@ public class ProjectTest extends TestCase {
         p.addStep(step2);
 
         assertEquals("Waiting before execution", Stage.WAITING, p.getStage());
+        assertEquals("Number of step before starting", 2, p.getRemainingSteps().size());
+
 
         // Execute once
         Worker worker = null;
         p.execute(worker);
         assertEquals("Stage is Active", Stage.ACTIVE, p.getStage());
         assertEquals("Project 1st step", "Step 1", p.getStepName());
+        assertEquals("Number of step after starting", 2, p.getRemainingSteps().size());
 
 
         // Xecute second time
@@ -91,6 +96,8 @@ public class ProjectTest extends TestCase {
         assertEquals("Step1 started once", 1, step1.startCount);
         assertEquals("Step1 ended once", 1, step1.endCount);
         assertEquals("Step1 fully expected", 0, step1.expectedCount);
+        assertEquals("Number of step after 1st step", 1, p.getRemainingSteps().size());
+
 
         // Step 2, execute 1
         p.execute(worker);
@@ -106,6 +113,8 @@ public class ProjectTest extends TestCase {
         assertEquals("Step2 started once", 1, step1.startCount);
         assertEquals("Step2 ended once", 1, step1.endCount);
         assertEquals("Step2 fully expected", 0, step1.expectedCount);
+        assertEquals("Number of step after all steps", 0, p.getRemainingSteps().size());
+
     }
 
     public void testAbort() {
