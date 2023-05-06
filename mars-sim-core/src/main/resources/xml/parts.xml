@@ -360,7 +360,13 @@
 	</part>
 
 	<part name="Rover Wheel" type="vehicle" mass="8.9">
-		<description>Rover wheels are made of steel and steel wire.</description>
+		<description>Rover wheels are made of durable steel wires and Nickel-titanium alloy wires.
+			See 'kinky' wire wheel at https://www.youtube.com/watch?v=vSNtifE0Z2Q
+			Read Martensite at https://www.tf.uni-kiel.de/matwis/amat/iss/kap_8/backbone/r8_4_1.html
+		    Shape memory alloys (SMAs) https://onlinelibrary.wiley.com/doi/10.1111/j.1747-1567.2008.00410.x
+		    Nickel-titanium alloy https://www.space.com/39305-metal-tires-for-mars-rovers.html
+		    Nitinol wire https://space.stackexchange.com/questions/23758/are-these-experimental-stoichiometric-niti-wire-mesh-wheels-made-from-memory-al
+		</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 		</maintenance-entity-list>

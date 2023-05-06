@@ -30,7 +30,7 @@
    * [Work Shift](#work-shift)
    * [Mission](#mission)
    * [Weather](#weather)
-   * [Maintenance and Malfunction](#maintenance-and-reliability)
+   * [Maintenance and Malfunction](#maintenance-and-malfunction)
 * [Settlement Development](#settlement-development)
    * [Economics](#economics)
 * [Summary](#summary)
@@ -54,8 +54,8 @@
 
 # Introduction
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
-simulates daily activities of the first generation of settlers on Mars with a higher fidelity of
-modeling and simulation details than a typical PC strategy game.
+simulates mission operations and activities of initial settlers on Mars with a higher fidelity of 
+modeling and simulation details than a classic PC game of its genre.
 
 ## Simulation
 mars-sim is designed to be a **general purpose** simulator depicting the early development of human settlements on Mars.
@@ -210,9 +210,10 @@ in mars-sim.
 The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions)
 that can occur at a given moment. 
 
-There are 3 metrics for tracking how reliable a part is. The [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
-is shown in terms of Percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
-that occur during the simulation. Besides malfunction, workshops and machinery factories are to produce parts for
+There are 3 metrics for tracking how reliable a Part is. The [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
+is shown in terms of Percentage, Failure Rate, Mean Time Between Failure (MTBF), which are 
+dynamically updated in light of any incidents that occur during the simulation. Besides 
+malfunction, workshops and machinery factories are to produce parts for
 replenishing parts to be used during regular [maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
 ---

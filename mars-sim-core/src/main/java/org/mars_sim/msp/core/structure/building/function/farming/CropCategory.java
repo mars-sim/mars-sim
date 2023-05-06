@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CropCategory.java
- * @date 2023-04-18
+ * @date 2023-05-06
  * @author Manny Kung
  */
 
@@ -13,18 +13,17 @@ public enum CropCategory {
 	CORMS("Corms"),
 	FLOWERS("Flowers"),
 	FRUITS("Fruits"),
-	
 	FUNGI("Fungi"),
+	
 	GRAINS("Grains"),
 	GRASSES("Grasses"),
 	HERBS("Herbs"),	
 	LEAVES("Leaves"),
-	
 	LEGUMES("Legumes"),
+	
 	ROOTS("Roots"),
 	SEEDS("Seeds"),
 	//SPICES("spices"),
-	
 	STEMS("Stems"),
 	TUBERS("Tubers");
 	

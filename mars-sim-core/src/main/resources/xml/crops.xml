@@ -24,7 +24,29 @@
 
 ]>
 
-<!-- Read References 1 to 25 at the bottom -->
+<!-- 
+
+	Please read References 1 to 25 at the bottom 
+	
+	In mars-sim, there are 14 crop-categories:
+
+	roots
+	tubers
+	corms
+	stems
+	leaves
+	bulbs
+	herbs
+	fruits
+	flowers
+	seeds
+	legumes (peanut, peas, soybean, kidney bean)
+	grains ( rice, quinoa, wheat)
+	grasses
+	fungi
+	(may be in future : spices)
+
+-->
 
 <crop-configuration>
 
@@ -855,23 +877,6 @@
 
 	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
 
-	In mars-sim, we have 13 categories:
-
-	roots
-	tubers
-	corms
-	stems
-	leaves
-	bulbs
-	fruits
-	flowers
-	seeds
-	legumes (peanut, peas, soybean, kidney bean)
-	grains ( rice, quinoa, wheat)
-	grasses
-	fungi
-	(may be in future : spices / herbs)
-
 16. Tissue Culture – Technology Harnessed for Potato Seed Production
 	http://keaneanjournalofscience.in/?p=131
 
@@ -886,8 +891,8 @@
 	Only the dormant seed bridges the gap between one generation and the next.
 
 	Annuals: amaranth, bean, broccoli*, corn, cowpea, cucumber, eggplant, fava, gourd, ground cherry,
-	 lettuce, lima, melon, mustard, okra, pea, peanut, pepper, poppy, potato, radish (non-daikon),
-	  runner bean, sorghum, spinach, squash, sunflower, tomatillo, tomato, watermelon
+	lettuce, lima, melon, mustard, okra, pea, peanut, pepper, poppy, potato, radish (non-daikon),
+	runner bean, sorghum, spinach, squash, sunflower, tomatillo, tomato, watermelon, cilantro
 
 	Perennials - Plants that persist for many growing seasons. Generally the top portion of
 	the plant dies back each winter and regrows the following spring from the same root system
@@ -972,7 +977,6 @@
 	3. Presence of nodes and internodes
 	4. On exposure to sunlight, stem tubers may develop chlorophyll
 	5. Scaly leaves and auxiliary buds are present.
-
 
 22. For a variety of vegetable crop fact sheets,
 	see http://aggie-horticulture.tamu.edu/vegetable/easy-gardening-series/
@@ -1063,6 +1067,28 @@
 
 32. ISS EDEN Greenhouse. "Glance into the Future: Research Steps on a Path to a COntinuous Human
      Presence on Moon, Mars and Beyond", German Aerospace Center DLR.
+
+33. The Federal Biological Research Centre for Agriculture and Forestry (BBA) published 
+	from 1979 until 1988 the leaflet series 27 (MEIER, 1985) (Fig. 1). The structure of
+	the individual scales was in general based on the publication of ZADOKS et al. (1974). 
+	The BBCH coding system is an advancement of the Zadoks coding system, because it
+	includes mono- and dikotyledoneous plants. The need for a common understanding of 
+	terminology is also important for the description of the phenological growth stages 
+	of plants. The BBCH scheme is a good basis to satisfy this scientific demand.
+	
+	Principal growth stages
+
+	0 Germination / sprouting / bud development
+	1 Leaf development (main shoot)
+	2 Formation of side shoots / tillering
+	3 Stem elongation or rosette growth / shoot development (main shoot)
+	4 Development of harvestable vegetative plant parts or vegetatively propagated organs / booting (main shoot)
+	5 Inflorescence emergence (main shoot) / heading
+	6 Flowering (main shoot)
+	7 Development of fruit
+	8 Ripening or maturity of fruit and seed
+	9 Senescence, beginning of dormancy
+
 
 -->
 

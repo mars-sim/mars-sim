@@ -1228,9 +1228,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Rover tires are made with steel and steel wire. -->
 	<process name="Make rover wheels" tech="2" skill="2" work-time="200" process-time="400"
 			power-required="0.5">
-		<inputs>
+		<inputs>	
 			<part name="steel sheet" number="2" />
-			<part name="steel wire" number="40" />
+			<part name="steel wire" number="40" />						
 		</inputs>
 		<outputs>
 			<part name="rover wheel" number="4" />

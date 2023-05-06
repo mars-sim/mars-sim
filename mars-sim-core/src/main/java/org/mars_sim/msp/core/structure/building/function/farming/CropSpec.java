@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CropSpec.java
- * @date 2021-11-10
+ * @date 2023-05-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -104,7 +104,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Get the Resource ID assigned to this crop.
+	 * Gets the Resource ID assigned to this crop.
+	 * 
 	 * @return
 	 */
 	public int getCropID() {
@@ -112,7 +113,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Get the Resource ID assigned to the seed of the crop..
+	 * Gets the Resource ID assigned to the seed of the crop.
+	 * 
 	 * @return
 	 */
 	public int getSeedID() {
@@ -120,7 +122,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Does this crop only produce a the seed.
+	 * Does this crop only produce a the seed ?
 	 */
 	public boolean isSeedPlant() {
 		return seedOnly;
@@ -161,7 +163,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the edible biomass
+	 * Gets the edible biomass.
 	 *
 	 * @return crop's edible biomass (grams per m^2 per day)
 	 */
@@ -170,7 +172,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the edible water content
+	 * Gets the edible water content.
 	 *
 	 * @return crop's edible water content (grams per m^2 per day)
 	 */
@@ -179,7 +181,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the inedible biomass
+	 * Gets the inedible biomass.
 	 *
 	 * @return crop's inedible biomass (grams per m^2 per day)
 	 */
@@ -189,7 +191,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Gets the daily PAR, the average amount of light needed per day in terms of
-	 * daily Photosynthetically active radiation (PAR)
+	 * daily Photosynthetically active radiation (PAR).
 	 *
 	 * @return crop's daily PAR
 	 */
@@ -202,7 +204,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Get the next phase in the growing sequence
+	 * Gets the next phase in the growing sequence.
+	 * 
 	 * @param phaseType
 	 * @return
 	 */
@@ -220,7 +223,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 	
 	/**
-	 * Get the next phase in the growing sequence
+	 * Gets the next phase in the growing sequence.
+	 * 
 	 * @param phaseType
 	 * @return
 	 */
@@ -237,7 +241,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Get the Phase for a specific PhaseType
+	 * Gets the Phase for a specific PhaseType.
+	 * 
 	 * @param phaseType
 	 * @return
 	 */
@@ -252,7 +257,8 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * What percentage complete has to be completed for the specified phase
-	 * to advance to the next one
+	 * to advance to the next one ?
+	 * 
 	 * @param phaseType
 	 * @return
 	 */
@@ -268,6 +274,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 
 	/**
 	 * Does this crop need light ?
+	 * 
 	 * @return
 	 */
 	public boolean needsLight() {

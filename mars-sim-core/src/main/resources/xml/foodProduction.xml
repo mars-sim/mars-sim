@@ -270,7 +270,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Make French Fries from potatoes"
+	<process name="Make French Fries from Potatoes"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="50"
@@ -285,7 +285,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Make French Fries from potatoes"
+	<process name="Make French Fries from Potatoes"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="50"
@@ -368,7 +368,7 @@
 		</outputs>
 	</process>
 
-	<process name="Make sesame milk from soymilk"
+	<process name="Make Sesame Milk from Soymilk"
 		tech="1" skill="1" work-time="20" process-time="20"
 			power-required="1.0">
 
