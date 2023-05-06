@@ -248,6 +248,18 @@ public class CropConfig {
 				phases.add(new Phase(PhaseType.FINISHED, 0.5, 0));
 				break;
 				
+			case HERBS:
+				phases.add(new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
+				phases.add(new Phase(PhaseType.PLANTING, 0.5D, 1D));
+				phases.add(new Phase(PhaseType.GERMINATION, 1D, 9D));
+				phases.add(new Phase(PhaseType.FOLIAGE, 1D, 50D));
+				phases.add(new Phase(PhaseType.FLOWERING, 1D, 20D));
+				phases.add(new Phase(PhaseType.SEED_FILL, 1D, 5D));
+				phases.add(new Phase(PhaseType.POD_MATURING, 1D, 10D));				
+				phases.add(new Phase(PhaseType.HARVESTING, 0.5, 5D));
+				phases.add(new Phase(PhaseType.FINISHED, 0.5, 0));
+				break;
+				
 			case LEAVES:
 				phases.add(new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 				phases.add(new Phase(PhaseType.PLANTING, 0.5D, 1D));

@@ -17,6 +17,7 @@ public enum CropCategory {
 	FUNGI("Fungi"),
 	GRAINS("Grains"),
 	GRASSES("Grasses"),
+	HERBS("Herbs"),	
 	LEAVES("Leaves"),
 	
 	LEGUMES("Legumes"),

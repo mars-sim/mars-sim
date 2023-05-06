@@ -77,6 +77,17 @@ public enum PhaseType {
 	//HARVESTING("Harvesting"),
 	//FINISHED("Finished"),
 
+	/* For Herbs */
+	//INCUBATION
+	//PLANTING
+	//GERMINATION
+	FOLIAGE ("Foliage"),
+	//FLOWERING
+	//SEED_FILL
+	//POD_MATURING			
+	//HARVESTING
+	//FINISHED
+	
 	/* For Leaves */
 	//INCUBATION("Incubation"),
 	//PLANTING("Planting"),
