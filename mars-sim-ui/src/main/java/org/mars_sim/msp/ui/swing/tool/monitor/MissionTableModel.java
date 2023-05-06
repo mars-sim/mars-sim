@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.StyleManager;
 
 /**
  * This class model how mission data is organized and displayed
@@ -94,11 +93,11 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
-		columnTypes[DATE_FILED] = String.class;
+		columnTypes[DATE_FILED] = MarsClock.class;
 		columnNames[DATE_EMBARKED] = Msg.getString("MissionTableModel.column.embarked"); //$NON-NLS-1$
-		columnTypes[DATE_EMBARKED] = String.class;
+		columnTypes[DATE_EMBARKED] = MarsClock.class;
 		columnNames[DATE_RETURNED] = Msg.getString("MissionTableModel.column.returned"); //$NON-NLS-1$
-		columnTypes[DATE_RETURNED] = String.class;
+		columnTypes[DATE_RETURNED] = MarsClock.class;
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[TYPE_ID] = Msg.getString("MissionTableModel.column.typeID"); //$NON-NLS-1$
@@ -399,19 +398,17 @@ public class MissionTableModel extends AbstractTableModel
 				switch (columnIndex) {
 
 				case DATE_FILED: {
-					result = mission.getLog().getDateCreated().getDisplayTruncatedTimeStamp();
+					result = mission.getLog().getDateCreated();
 				}
 					break;
 
 				case DATE_EMBARKED: {
-					MarsClock embarked = mission.getLog().getDateStarted();
-					result = (embarked == null ? null : embarked.getDisplayTruncatedTimeStamp());
+					result = mission.getLog().getDateStarted();
 				}
 					break;
 
 				case DATE_RETURNED : {
-					MarsClock finished = mission.getLog().getDateFinished();
-					result = (finished == null ? null : finished.getDisplayTruncatedTimeStamp());
+					result = mission.getLog().getDateFinished();
 
 				}
 					break;
@@ -482,31 +479,24 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case NAVPOINT_NUM: {
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						result = vehicleMission.getNumberOfNavpoints();
+					if (mission instanceof VehicleMission vm) {
+						result = vm.getNumberOfNavpoints();
 					} else
 						result = 0;
 				}
 					break;
 
 				case TRAVELLED_DISTANCE: {
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getTotalDistanceTravelled());
+					if (mission instanceof VehicleMission vm) {
+						result = vm.getTotalDistanceTravelled();
 					} else
 						result = 0;
 				}
 					break;
 
 				case TOTAL_REMAINING_DISTANCE: {
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						try {
-							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getTotalDistanceRemaining());
-						} catch (Exception e) {
-							result = 0;
-						}
+					if (mission instanceof VehicleMission vm) {
+						result = vm.getTotalDistanceRemaining();
 					} else
 						result = 0;
 				}
@@ -514,13 +504,8 @@ public class MissionTableModel extends AbstractTableModel
 				break;
 
 				case REMAINING_DISTANCE_TO_NEXT_NAVPOINT: {
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						try {
-							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getDistanceCurrentLegRemaining());
-						} catch (Exception e) {
-							result = 0;
-						}
+					if (mission instanceof VehicleMission vm) {
+						result = vm.getDistanceCurrentLegRemaining();
 					} else
 						result = 0;
 				}
@@ -528,13 +513,8 @@ public class MissionTableModel extends AbstractTableModel
 				break;
 				
 				case PROPOSED_ROUTE_DISTANCE: {
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						try {
-							result = StyleManager.DECIMAL_PLACES1.format(vehicleMission.getDistanceProposed());
-						} catch (Exception e) {
-							result = 0;
-						}
+					if (mission instanceof VehicleMission vm) {
+						result = vm.getDistanceProposed();
 					} else
 						result = 0;
 				}

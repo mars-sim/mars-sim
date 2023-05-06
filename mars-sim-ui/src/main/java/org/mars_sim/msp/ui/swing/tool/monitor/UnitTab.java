@@ -8,9 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.List;
 
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -31,19 +28,6 @@ extends TableTab {
 		// Use TableTab constructor
 		super(window, model, mandatory, false, icon);
 
-		// Generic renderer
-		TableColumnModel m = table.getColumnModel();
-		for(int i = 0; i < m.getColumnCount(); i++) {
-			TableColumn tc = m.getColumn(i);
-			Class<?> columnClass = model.getColumnClass(tc.getModelIndex());
-			if (columnClass.equals(Double.class)) {
-				tc.setCellRenderer(DIGIT2_RENDERER);
-			}
-			else if (columnClass.equals(Number.class)) {
-				tc.setCellRenderer(DIGIT2_RENDERER);
-			}			
-		}
-		
 		super.adjustColumnWidth(table);
 
 		setEntityDriven(true);

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelFavorite.java
+ * TabPanelSchedule.java
  * @date 2022-07-09
  * @author Manny Kung
  */
@@ -27,7 +27,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -42,7 +41,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -241,29 +240,10 @@ public class TabPanelSchedule extends TabPanel {
 		table.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
 		table.setRowSelectionAllowed(true);
-		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-
-		// Apply sorting for multiple columns
-//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		
 		scrollPanel.setViewportView(table);
-
-		// Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(0).setCellRenderer(new NumberCellRenderer(2));
 		
-		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
-		renderer1.setHorizontalAlignment(SwingConstants.LEFT);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer1);
-		table.getColumnModel().getColumn(2).setCellRenderer(renderer1);
-		table.getColumnModel().getColumn(3).setCellRenderer(renderer1);
-
-		// SwingUtilities.invokeLater(() ->
-		// ColumnResizer.adjustColumnPreferredWidths(table));
-
-		// Added sorting
-//		table.setAutoCreateRowSorter(true);
 
 		update();
 		
@@ -455,7 +435,7 @@ public class TabPanelSchedule extends TabPanel {
 		public Object getValueAt(int row, int column) {
 			OneActivity activity = activities.get(row);
 			if (column == 0)
-				return StyleManager.DECIMAL_PLACES2.format(activity.getStartTime());
+				return activity.getStartTime();
 			else if (column == 1)
 				return activity.getDescription();
 			else if (column == 2)

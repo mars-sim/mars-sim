@@ -24,9 +24,11 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.utils.MarsTimeCellRenderer;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -36,8 +38,10 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 @SuppressWarnings("serial")
 abstract class TableTab extends MonitorTab {
 
+	protected static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0, true);
 	protected static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
 	protected static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
+	protected static final MarsTimeCellRenderer TIME_RENDERER = new MarsTimeCellRenderer();
 
 	private TableProperties propsWindow;
 
@@ -58,6 +62,12 @@ abstract class TableTab extends MonitorTab {
 
 		// Simple WebTable
 		this.table = new JTable(model);
+
+		// Set default renderers
+		this.table.setDefaultRenderer(Double.class, DIGIT2_RENDERER);
+		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
+		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
+		this.table.setDefaultRenderer(MarsClock.class, TIME_RENDERER);
 
 		// call it a click to display details button when user double clicks the table
 		table.addMouseListener(new MouseAdapter() {
