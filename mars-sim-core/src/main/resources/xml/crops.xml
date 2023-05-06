@@ -65,9 +65,15 @@
 
 		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale -->
 
-	   	<crop name="Blueberry" growing-time="600" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="14" edible-water-content=".87" inedible-biomass="5" daily-PAR="25.92" />
-	    	<!-- http://www.nasa.gov/pdf/190544main_SFN_Appendices.pdf
+
+
+	   	<crop name="Blueberry" growing-time="200" crop-category="fruits" life-cycle="perennial"
+	    	edible-biomass="14" edible-water-content=".87" inedible-biomass="200" daily-PAR="25.92" />
+	    	
+	    <!-- 
+	    	Assume this blueberry variant takes half the time (600 days -> 200 days)
+	    	
+	    	http://www.nasa.gov/pdf/190544main_SFN_Appendices.pdf
 	    	http://blueberries.ces.ncsu.edu/wp-content/uploads/2012/10/evaluating-the-profitability-of-blueberry-production.pdf
 	    	http://homeguides.sfgate.com/long-blueberry-plants-produce-60750.html
 	    	A blueberry bush is at least 2 or 3 years old before it is mature and established enough to bear fruit.
@@ -82,10 +88,7 @@
 	    	For blueberries to thrive, three conditions must be met: adequate water, weather that is not blazingly hot,
 	    	and the right soil. You may have heard that blueberries require acidic soil, and this is not an exaggeration.
 	    	They thrive in a pH around four.
-
-	    	-->
-
-
+	    -->
 
 
 		<crop name="Cabbage" growing-time="85.0" crop-category="leaves"  life-cycle="annual"
@@ -117,7 +120,13 @@
 
 	    <!-- Celery Sampling & Growth Stages at http://agvita.com.au/pdf/sampling/Celery_GS_V2.pdf -->
 
-	  <crop name="Corn" growing-time="65" crop-category="grains" life-cycle="annual"
+		<crop name="Cilantro" growing-time="30.0" crop-category="herbs" life-cycle="annual"
+	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="1.0" daily-PAR="34.56" 
+	    	seed-name="Coriander" />
+	    <!-- https://rennieorchards.com/is-cilantro-perennial/
+		-->
+
+		<crop name="Corn" growing-time="65" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="37.0" daily-PAR="34.56" />
 
 		<!--
@@ -154,9 +163,12 @@
 
  		-->
 
-	   	<crop name="Cranberry" growing-time="300" crop-category="fruits" life-cycle="perennial"
-	    	edible-biomass="11" edible-water-content=".87" inedible-biomass="5" daily-PAR="25.92" />
-	    	<!-- http://www.umass.edu/cranberry/downloads/Homeowner's%20fact%20sheet%202010.pdf
+	   	<crop name="Cranberry" growing-time="150" crop-category="fruits" life-cycle="perennial"
+	    	edible-biomass="11" edible-water-content=".87" inedible-biomass="100" daily-PAR="25.92" />
+	    	<!-- 
+	    	Assume this cranberry variant takes half the time (300 days -> 150 days)
+	    	
+	    	http://www.umass.edu/cranberry/downloads/Homeowner's%20fact%20sheet%202010.pdf
 	    	http://www.ecologynorth.ca/wp-content/uploads/2012/03/Stimulating-Commercial-Berry-Production-FINAL-FEB-2012.pdf
 	    	Production from mature plants is about 11 tonnes per hectare.
 	    	Well-managed bogs should produce 100 to 200 barrels of cranberries per acre,
@@ -194,9 +206,13 @@
 	    		-->
 
 
-	     <crop name="Ginger" growing-time="180" crop-category="roots" life-cycle="annual"
+	     <crop name="Ginger" growing-time="90" crop-category="roots" life-cycle="annual"
 	    	edible-biomass="18" edible-water-content=".12" inedible-biomass="2" daily-PAR="17.28" />
-	    	<!-- http://faostat.fao.org/site/339/default.aspx
+	   
+	    <!--     	
+	    	Assume this ginger variant takes half the time (180 days -> 90 days)
+	    	
+	    	http://faostat.fao.org/site/339/default.aspx
 	    	http://agritech.tnau.ac.in/org_farm/orgfarm_ginger.html
 	    	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
 	   		1. Average yields in central Jamaica are 13-18 tonnes/ hectare
@@ -245,11 +261,14 @@
 	   		-->
 
 
-	    <crop name="Kidney bean" growing-time="85.0" crop-category="legumes" life-cycle="annual"
+	    <crop name="Kidney bean" growing-time="43.0" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="11.11" edible-water-content=".10" inedible-biomass="150.0" daily-PAR="25.92" />
 
-			<!--
+		<!--
+			Assume this kidney bean variant takes half the time (85 days -> 43 days)
+			
 			https://interiordr.com/kidney-bean/
+
 
 			The kidney bean is an annual plant with a well-developed root system of rapid growth.
 			The fruit is located inside flat and fleshy double ending pods, where seeds are found in rows,
@@ -257,6 +276,7 @@
 
 	    <crop name="Lettuce" growing-time="28.0" crop-category="leaves" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".95" inedible-biomass="5" daily-PAR="17.28" />
+	    	
 	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
 	    	10 kg / week yield for greenhouse
@@ -267,6 +287,7 @@
 
 		<crop name="Morel Mushroom" growing-time="15.0" crop-category="fungi" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".35" inedible-biomass="2" daily-PAR="5" />
+	    	
 	    	<!-- Mushrooms provide essential nutrients, including vitamin D and vitamin B-6.
 	    	Morel Mushroom is also called MORCHELLA.
 	    	https://www.sciencenews.org/article/morel-mushroom-may-grow-crop-its-own?mode=magazine&context=189396
@@ -277,11 +298,14 @@
 	    	https://www.youtube.com/watch?v=z41Wy5ZF4O8
 	      	-->
 
-	  <crop name="White Mustard" growing-time="82.5" crop-category="leaves" life-cycle="annual"
+	  <crop name="White Mustard" growing-time="41" crop-category="leaves" life-cycle="annual"
 	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56"
 	    	seed-name="Mustard Seed" />
 
-		<!-- ~82.5 day from https://www.hort.purdue.edu/newcrop/afcm/mustard.html
+		<!--
+			Assume this white mustard variant takes half the time (82.5 days -> 41 days)
+		
+			~82.5 day from https://www.hort.purdue.edu/newcrop/afcm/mustard.html
 			Varieties of yellow mustard usually mature in 80 to 85 days whereas brown and oriental types require 90 to 95 days.
 
 			Yellow mustard does not shatter readily and can be straight combined if the crop has matured uniformly (10% moisture)
@@ -321,10 +345,13 @@
 
 		 -->
 
-	    <crop name="Peanut" growing-time="104.0" crop-category="legumes" life-cycle="annual"
-	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" />
+	    <crop name="Peanut" growing-time="52.0" crop-category="legumes" life-cycle="annual"
+	    	edible-biomass="6" edible-water-content=".056" inedible-biomass="18" daily-PAR="32.4" 
+	    	seed-name="Peanut" seed-plant="true" />
 
 	    	<!--
+	    	Assume this peanut variant takes half the time (104 days -> 52 days)
+	    	
 	    	For high yields and superior quality, peanuts require a moderate growing period (110 to 120 days) with a steady,
 	    	rather high temperature and a moderate, uniformly distributed supply of moisture. The growing season should be long,
 	    	warm and moist, and the harvest season should be dry.
@@ -349,10 +376,13 @@
 	    	edible-biomass="12.20" edible-water-content=".79" inedible-biomass="161.00" daily-PAR="25.92" />
 			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
 
-	    <crop name="Potato" growing-time="100.0" crop-category="tubers" life-cycle="annual"
+	    <crop name="Potato" growing-time="75.0" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="35" edible-water-content=".79" inedible-biomass="15" daily-PAR="34.56" />
 
-	    	<!-- A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
+	    	<!-- 
+	    	Assume this potato variant takes 3/4 of the time (100 days -> 75 days)
+	    	
+	    	A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
 
 			White Sweet Potato tubers contains root cells and grow on rhizomes, Potato, Solanum tuberosum,
 			are in the Solanaceae or nightshade Family, is not related to the sweet potato,
@@ -372,6 +402,7 @@
 
 	     <crop name="Quinoa" growing-time="90.0" crop-category="grains" life-cycle="annual"
 	    	edible-biomass="5" edible-water-content=".12" inedible-biomass="38" daily-PAR="69.12" />
+	    	
 	    	<!-- http://en.wiki2.org/wiki/Quinoa
 	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
 	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
@@ -419,11 +450,14 @@
 
 		-->
 
-
-	    <crop name="Sesame" growing-time="100" crop-category="flowers" life-cycle="annual"
+	    <crop name="Sesame" growing-time="50" crop-category="flowers" life-cycle="annual"
 	    	edible-biomass="7.2" edible-water-content=".4" inedible-biomass="15.0" daily-PAR="17.28"
 	    	seed-name="Sesame Seed" seed-plant="true"/>
-	    	<!--http://en.wiki2.org/wiki/Sesame
+	    	<!--
+	    	
+	    	Assume this sesame variant takes half the time (100 days -> 50 days)
+	    		    	
+	    	http://en.wiki2.org/wiki/Sesame
 	    	~50 to 80 seeds per capsule
 	    	7.2 Metric Ton/hectare
 
@@ -442,11 +476,17 @@
 	    	-->
 
 
-	    <crop name="Soybean" growing-time="93" crop-category="legumes" life-cycle="annual"
+	    <crop name="Soybean" growing-time="47" crop-category="legumes" life-cycle="annual"
 	    	edible-biomass="10" edible-water-content=".10" inedible-biomass="13" daily-PAR="34.56" />
+
+	    	<!--
+	    	Assume this Soybean variant takes half the time (93 days -> 47 days)
+	    	-->
+
 
 	   	<crop name="Strawberry" growing-time="45" crop-category="fruits" life-cycle="annual"
 	    	edible-biomass="60" edible-water-content=".92" inedible-biomass="20" daily-PAR="25.92" />
+	    	
 	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
 	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
 	    	TODO:
@@ -471,6 +511,7 @@
 
 	   <crop name="Sugarcane" growing-time="180" crop-category="grasses" life-cycle="perennial"
 	    	edible-biomass="73.67" edible-water-content=".75" inedible-biomass="20" daily-PAR="34.56" />
+	    	
 	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
 	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants.
 	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
@@ -499,10 +540,13 @@
 	    	-->
 
 
-	    <crop name="Sweet Potato" growing-time="120.0" crop-category="tubers" life-cycle="annual"
+	    <crop name="Sweet Potato" growing-time="90" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="25" edible-water-content=".79" inedible-biomass="10" daily-PAR="34.56" />
 
-		<!-- A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf
+		<!-- 
+			Assume this sweet potato variant takes 3/4 of the time (120 days -> 90 days)
+			
+			A Model to Simulate Sweet Potato Growth at http://www.idosi.org/wasj/wasj4(4)/14.pdf
 
 			https://ask.extension.org/questions/216966
 			Sweet Potato tubers only contain root cells and grow on rhizomes.
@@ -542,10 +586,13 @@
 
 		-->
 
-	    <crop name="Taro" growing-time="200.0" crop-category="corms" life-cycle="perennial"
+	    <crop name="Taro" growing-time="100" crop-category="corms" life-cycle="perennial"
 	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
 
-		<!--  Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
+		<!--  
+			Assume this taro variant takes half the time (200 days -> 100 days)
+		
+			Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
 			http://www.harvesttotable.com/2010/03/taro/
 			Taro is a perennial herbaceous plant that grows from 3 to 6 feet tall. Its leaves are light green,
 			elongated, and heart shaped similar to an elephant’s ear. Tubers are spherical and about the size
@@ -588,9 +635,13 @@
 			<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
-	    <crop name="White Onion" growing-time="150.0" crop-category="bulbs" life-cycle="biennial"
+	    <crop name="White Onion" growing-time="75" crop-category="bulbs" life-cycle="biennial"
 	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28" />
-	    	<!-- 1. Onions are a cold-season crop
+	    	
+	    	<!-- 
+	    		Assume this White Onion variant takes half the time (150 days -> 75 days)
+	    	
+	    	 1. Onions are a cold-season crop
 		    	ref : http://www.almanac.com/plant/onions
 	    	 2. 170 days :
 	    	 	ref : http://alliumnet.com/images/onion%20growth%20stages.pdf
@@ -601,10 +652,13 @@
 			 	25-30 T/ha, 2750/150 g/m2/day = 18.33. see https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
 			-->
 
-	    <crop name="Yam" growing-time="200.0" crop-category="tubers" life-cycle="annual"
+	    <crop name="Yam" growing-time="100.0" crop-category="tubers" life-cycle="annual"
 	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
 
-			<!-- https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
+			<!-- 
+				Assume this Yam variant takes half the time (200 days -> 100 days)
+			
+				https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
 			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
 
 			Yams (Dioscorea spp.) are annual or perennial vines and climbers with annual or perennial underground tubers.
@@ -855,6 +909,12 @@
 	Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic
 	and geographic growing conditions. In the southern portion of the United States, these plants
 	tend to grow much quicker than in the north due to the warmer weather and extended growing season.
+
+    Is cilantro a perennial? Cilantro is an annual herb. After the flowers fade and the seeds mature 
+    and dry, the plant will die. You can always start a new plant in the early spring and enjoy the 
+    fresh leaves. 
+    
+    The seeds, otherwise known as coriander, have many culinary uses and a long shelf life.
 
 	For example: a Black-Eyed Susan would behave as an annual if grown in Louisiana; whereas,
 	if grown in Ohio, a Black-Eyed Susan would behave as a perennial.

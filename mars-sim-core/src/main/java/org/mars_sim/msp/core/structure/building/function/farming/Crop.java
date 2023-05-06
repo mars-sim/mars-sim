@@ -311,6 +311,9 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 			currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired();
 					
+			// TODO: how to allow crops such as cilantro to be harvested early to collect leaves, 
+			// instead of waiting for seeds (coriander) to be matured ?
+			
 			// Set the daily harvest
 			dailyHarvest = dailyMaxHarvest;
 			// Set the remaining harvest based on percentageGrowth
@@ -729,14 +732,18 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		int seedID = cropSpec.getSeedID();
 		int cropID = cropSpec.getCropID();
 		String source = "Crop::collectProduce";
-
+		
 		if (isSeedPlant) {
 			// Extract Sesame Seed.
 			// Note the purpose for this plant is primarily the seeds
+			// TODO: how best to handle Peanut ?
+			// Is peanut considered a seed plant ?			
 			store(harvestMass, seedID, source);
 		}
 		else if ((seedID > 0) && harvestMass * massRatio > 0) {
-			// White Mustard has leaves as food. Also extract Mustard Seed
+			// Cilantro & White Mustard has leaves as food. 
+			// White Mustard makes mustard seed
+			// Cilantro makes coriander seed
 			store(harvestMass * massRatio, seedID, source);
 			store(harvestMass, cropID, source);
 		}
@@ -1281,7 +1288,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 *
 	 * @param amount
 	 * @param gasCache Any gas cached from the last call
-	 * @param gasId Resourceid
+	 * @param gasId resource id
 	 * @return
 	 */
 	private double retrieveGas(double amount, double gasCache, int gasId) {

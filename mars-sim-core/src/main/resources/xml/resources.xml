@@ -86,6 +86,7 @@
 	<resource name="Cabbage" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Carrot" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Celery" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Cilantro" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Corn" type="crop" phase="solid" edible="true"></resource>
 	
 	<resource name="Cranberry" type="crop" phase="solid" edible="true"></resource>
@@ -135,6 +136,8 @@
 		Seeds from white mustard plant</resource>
 	<resource name="Sesame seed" type="derived" phase="solid" edible="true">
 		Seeds from sesame plant.</resource>
+	<resource name="Coriander" type="derived" phase="solid" edible="true">
+		Seeds from cilantro.</resource>
 
 <!-- Soybean-derived food resources -->
 	<resource name="Miso" type="soy-based" phase="solid" edible="true">Paste made from fermented soybeans and rice</resource>
@@ -193,6 +196,13 @@
 	<resource name="Soybean oil" type="oil" phase="liquid" edible="true">
 		Oil derived from soybean.</resource>
 	
+<!-- Imported food resources-->	
+	<resource name="Olive" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Apple" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Orange" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Lemon" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Cinnamon" type="crop" phase="solid" edible="true"></resource>
+				
 <!-- Food resources derived from Bio-organism -->
 	<resource name="Aspergillus mix" type="organism" phase="solid" edible="true">
 		A mix of the fungi Aspergillus oryzae and 
