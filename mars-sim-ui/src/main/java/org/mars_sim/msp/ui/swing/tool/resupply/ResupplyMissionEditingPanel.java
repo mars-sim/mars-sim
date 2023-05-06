@@ -87,7 +87,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private static final int MAX_FUTURE_ORBITS = 10;
 	private static final int MAX_IMMIGRANTS = 48;
 	private static final int MAX_BOTS = 48;
-	private static final int MILLISOLS_DELAY = 10;
 
 	// Data members
 	private int num = 0;
@@ -787,60 +786,57 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Set new vehicles.
 		Map<String, Integer> newVehicles = new HashMap<>();
+		Map<String, Integer> newEquipment = new HashMap<>();
+		Map<Part, Integer> newParts = new HashMap<>();
+		Map<AmountResource, Double> newResources = new HashMap<>();
+
 		for(SupplyItem item : supplyItems) {
-			if (SupplyTableModel.VEHICLE.equals(item.category.trim())) {
-				String type = item.type.trim();
-				int num = item.number.intValue();
-				if (newVehicles.containsKey(type)) {
-					num += newVehicles.get(type);
-				}
-				newVehicles.put(type, num);
+			String cat = item.category.trim();
+			switch (cat) {
+				case SupplyTableModel.VEHICLE: {
+					String type = item.type.trim();
+					int num = item.number.intValue();
+					if (newVehicles.containsKey(type)) {
+						num += newVehicles.get(type);
+					}
+					newVehicles.put(type, num);
+				} break;
+				
+				case SupplyTableModel.EQUIPMENT: {
+						String type = item.type.trim();
+						int num = item.number.intValue();
+						if (newEquipment.containsKey(type)) {
+							num += newEquipment.get(type);
+						}
+						newEquipment.put(type, num);
+					} break;
+
+				case SupplyTableModel.RESOURCE: {
+						String type = item.type.trim();
+						AmountResource resource = ResourceUtil.findAmountResource(type);
+						double amount = item.number.doubleValue();
+						if (newResources.containsKey(resource)) {
+							amount += newResources.get(resource);
+						}
+						newResources.put(resource, amount);
+					} break;
+
+				case SupplyTableModel.PART: {
+						String type = item.type.trim();
+						Part part = (Part) ItemResourceUtil.findItemResource(type);
+						int num = item.number.intValue();
+						if (newParts.containsKey(part)) {
+							num += newParts.get(part);
+						}
+						newParts.put(part, num);
+					} break;
+				
+				default:
 			}
 		}
 		resupplyMission.setVehicles(newVehicles);
-
-		// Set new equipment.
-		Map<String, Integer> newEquipment = new HashMap<>();
-		for(SupplyItem item : supplyItems) {
-			if (SupplyTableModel.EQUIPMENT.equals(item.category.trim())) {
-				String type = item.type.trim();
-				int num = item.number.intValue();
-				if (newEquipment.containsKey(type)) {
-					num += newEquipment.get(type);
-				}
-				newEquipment.put(type, num);
-			}
-		}
 		resupplyMission.setEquipment(newEquipment);
-
-		// Set new resources.
-		Map<AmountResource, Double> newResources = new HashMap<>();
-		for(SupplyItem item : supplyItems) {
-			if (SupplyTableModel.RESOURCE.equals(item.category.trim())) {
-				String type = item.type.trim();
-				AmountResource resource = ResourceUtil.findAmountResource(type);
-				double amount = item.number.doubleValue();
-				if (newResources.containsKey(resource)) {
-					amount += newResources.get(resource);
-				}
-				newResources.put(resource, amount);
-			}
-		}
 		resupplyMission.setResources(newResources);
-
-		// Set new parts.
-		Map<Part, Integer> newParts = new HashMap<>();
-		for(SupplyItem item : supplyItems) {
-			if (SupplyTableModel.PART.equals(item.category.trim())) {
-				String type = item.type.trim();
-				Part part = (Part) ItemResourceUtil.findItemResource(type);
-				int num = item.number.intValue();
-				if (newParts.containsKey(part)) {
-					num += newParts.get(part);
-				}
-				newParts.put(part, num);
-			}
-		}
 		resupplyMission.setParts(newParts);
 	}
 

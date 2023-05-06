@@ -97,14 +97,12 @@ public class ResupplyDetailPanel extends JPanel {
 	 * @param resupply the resupply mission.
 	 */
 	public void setResupply(Resupply resupply) {
-		if (this.resupply != resupply) {
-			this.resupply = resupply;
-			if (resupply == null) {
-				clearInfo();
-			}
-			else {
-				updateResupplyInfo();
-			}
+		this.resupply = resupply;
+		if (resupply == null) {
+			clearInfo();
+		}
+		else {
+			updateResupplyInfo();
 		}
 	}
 

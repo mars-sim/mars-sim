@@ -8,14 +8,11 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -26,27 +23,15 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig.SupplyManifest;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
-import org.mars_sim.msp.core.robot.RobotDemand;
-import org.mars_sim.msp.core.robot.RobotSpec;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementSupplies;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -56,7 +41,6 @@ import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.VehicleFactory;
 
 /**
  * Resupply mission from Earth for a settlement.
@@ -182,7 +166,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 		
 		// Deliver the rest of the supplies and add people.
-		deliverOthers(sim.getUnitManager(), sc.getPersonConfig(), sc.getRobotConfiguration());
+		deliverOthers(sim, sc);
 
 		// If a schedule then create the next one
 		if (template.getFrequency() > 0) {
@@ -399,124 +383,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
 	 * mission.
-	 * 
-	 * @param unitManager 
-	 * @param personConfig 
+	 * @param timings 
 	 */
-	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig, RobotConfig robotConfig) {
-		ReportingAuthority sponsor = settlement.getSponsor();
-		for( Entry<String, Integer> e : getVehicles().entrySet()) {
-			String vehicleType = e.getKey();
-			for( int i = 0; i < e.getValue(); i++){
-				VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
-			}
-		}
-
-		// Deliver equipment.
-		for(Entry<String, Integer> eq : getEquipment().entrySet()) {
-			String equipmentType = eq.getKey();
-			for (int x = 0; x < eq.getValue(); x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement);
-				unitManager.addUnit(equipment);
-				// Place this equipment within a settlement
-				settlement.addEquipment(equipment);
-				// Set the container unit
-				equipment.setContainerUnit(settlement);
-			}
-		}
-
-		// Deliver resources.
-		for(Entry<AmountResource, Double> er : getResources().entrySet()) {
-			AmountResource resource = er.getKey();
-			int id = resource.getID();
-			double amount = er.getValue();
-			double capacity = settlement.getAmountResourceRemainingCapacity(id);
-			if (amount > capacity)
-				amount = capacity;
-			settlement.storeAmountResource(id, amount);
-		}
-
-		// Deliver parts.
-		for(Entry<Part,Integer> ep : getParts().entrySet()) {
-			settlement.storeItemResource(ep.getKey().getID(), ep.getValue());
-		}
-
-		// Deliver Robots.
-		RobotDemand demand = new RobotDemand(settlement);
-		for (int x = 0; x < getNewBotNum(); x++) {
-			// Get a robotType randomly
-			RobotType robotType = demand.getBestNewRobot();
-			// Adopt Static Factory Method and Factory Builder Pattern
-			String newName = Robot.generateName(robotType);
-			
-			// Find the spec for this robot, take any model
-			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
-
-			Robot robot = new Robot(newName, settlement, spec);
-			robot.initialize();
-
-
-			RobotJob robotJob = JobUtil.getRobotJob(robotType);
-			robot.getBotMind().setRobotJob(robotJob, true);
-
-			unitManager.addUnit(robot);
-
-			settlement.addOwnedRobot(robot);
-			// Set the container unit
-			robot.setContainerUnit(settlement);
-
-			logger.config(robot, "Arrived on Mars.");
-
-			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, robot);
-		}
-
+	private void deliverOthers(Simulation sim, SimulationConfig sc) {
+		SettlementBuilder builder = new SettlementBuilder(sim, sc);
 		
-		// Deliver immigrants.
-		// Future: add a crew editor for user to define what team and who to send
-		Collection<Person> immigrants = new ArrayList<>();
-		for (int x = 0; x < getNewImmigrantNum(); x++) {
-			GenderType gender = GenderType.FEMALE;
-			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
-				gender = GenderType.MALE;
-			}
+		builder.createSupplies(this, settlement);
 
-			String country = sponsor.getDefaultCountry();
-			String immigrantName = Person.generateName(country, gender);
-			// Use Builder Pattern for creating an instance of Person
-			Person immigrant = Person.create(immigrantName, settlement)
-					.setGender(gender)
-					.setCountry(country)
-					.setSponsor(sponsor)
-					.setSkill(null)
-					.setPersonality(null, null)
-					.setAttribute(null)
-					.build();
-			immigrant.initialize();
-			// Assign a job 
-			immigrant.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-
-			// Add preference
-			immigrant.getPreference().initializePreference();
-
-			unitManager.addUnit(immigrant);
-			
-			settlement.addACitizen(immigrant);
-			// Set the container unit
-			immigrant.setContainerUnit(settlement);
-			
-			immigrants.add(immigrant);
-
-			logger.config(immigrant, "Arrived on Mars");
-			// Add fireUnitUpdate()
-			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
-		}
-
-		// Update command/governance and work shift schedules at settlement with new
-		// immigrants.
-		if (!immigrants.isEmpty()) {
-			// Reset command/government system at settlement.
-			settlement.getChainOfCommand().establishSettlementGovernance();
-		}
+		builder.createRobots(settlement, settlement.getRobots().size() + getNewBotNum());
+		
+		builder.createPeople(settlement, settlement.getNumCitizens() + getNewImmigrantNum());
 	}
 
 	/**

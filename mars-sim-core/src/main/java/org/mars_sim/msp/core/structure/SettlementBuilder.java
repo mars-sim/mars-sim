@@ -107,17 +107,9 @@ public final class SettlementBuilder {
 		Settlement settlement = createSettlement(template, spec);
 		outputTimecheck(settlement, watch, "Create Settlement");
 
-		createVehicles(template, settlement);
-		outputTimecheck(settlement, watch, "Create Vehicles");
-
-		createEquipment(template, settlement);
-		outputTimecheck(settlement, watch, "Create Equipment");
-
-		createResources(template, settlement);
-		outputTimecheck(settlement, watch, "Create Resources");
-
-		createParts(template, settlement);
-		outputTimecheck(settlement, watch, "Create Parts");
+		// Deliver the supplies
+		createSupplies(template, settlement);
+		outputTimecheck(settlement, watch, "Create Supplies");
 
 		// TOCO get off the Initial Settlement
 		String crew = spec.getCrew();
@@ -127,7 +119,10 @@ public final class SettlementBuilder {
 			createPreconfiguredPeople(settlement, crew);
 			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
-		createPeople(settlement);
+		createPeople(settlement, settlement.getInitialPopulation());
+		
+		// Establish a system of governance at a settlement.
+		settlement.getChainOfCommand().establishSettlementGovernance();
 		outputTimecheck(settlement, watch, "Create People");
 		
 		// Manually add job positions
@@ -139,7 +134,7 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create Preconfigured Robots");
 
 		// Create more robots to fill the settlement(s)
-		createRobots(settlement);
+		createRobots(settlement, settlement.getInitialNumOfRobots());
 		outputTimecheck(settlement, watch, "Create Robots");
 
 		watch.stop();
@@ -150,6 +145,20 @@ public final class SettlementBuilder {
 		return settlement;
 	}
 
+	/**
+	 * Create the supplies in  Settlement
+	 * @param settlement Target settlement
+	 * @param supplies The defintion of the Supplies
+	 */
+	public void createSupplies(SettlementSupplies supplies, Settlement settlement) {
+		createVehicles(supplies, settlement);
+
+		createEquipment(supplies, settlement);
+
+		createResources(supplies, settlement);
+
+		createParts(supplies, settlement);
+	}
 
 	private static void outputTimecheck(Settlement settlement, StopWatch watch, String phase) {
 		if (MEASURE_PHASES) {
@@ -196,7 +205,7 @@ public final class SettlementBuilder {
 		return settlement;
 	}
 
-	private void createVehicles(SettlementTemplate template, Settlement settlement) {
+	private void createVehicles(SettlementSupplies template, Settlement settlement) {
 		for(Entry<String, Integer> v : template.getVehicles().entrySet()) {
 			String vehicleType = v.getKey();
 			for (int x = 0; x < v.getValue(); x++) {
@@ -210,7 +219,7 @@ public final class SettlementBuilder {
 	 *
 	 * @throws Exception if error constructing equipment.
 	 */
-	private void createEquipment(SettlementTemplate template, Settlement settlement) {
+	private void createEquipment(SettlementSupplies template, Settlement settlement) {
 		Map<String, Integer> equipmentMap = template.getEquipment();
 		for (String type : equipmentMap.keySet()) {
 			int number = equipmentMap.get(type);
@@ -229,13 +238,12 @@ public final class SettlementBuilder {
 	 *
 	 * @throws Exception if Robots can not be constructed.
 	 */
-	private void createRobots(Settlement settlement) {
+	public void createRobots(Settlement settlement, int target) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
-		int initial = settlement.getInitialNumOfRobots();
 		RobotDemand demand = new RobotDemand(settlement);
 
 		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-		while (settlement.getIndoorRobotsCount() < initial) {
+		while (settlement.getIndoorRobotsCount() < target) {
 			// Get a robotType randomly
 			RobotType robotType = demand.getBestNewRobot();
 
@@ -275,7 +283,7 @@ public final class SettlementBuilder {
 	 *
 	 * @throws Exception if error storing resources.
 	 */
-	private void createResources(SettlementTemplate template, Settlement settlement) {
+	private void createResources(SettlementSupplies template, Settlement settlement) {
 
 		Map<AmountResource, Double> resourceMap = template.getResources();
 		for (Entry<AmountResource, Double> value : resourceMap.entrySet()) {
@@ -293,7 +301,7 @@ public final class SettlementBuilder {
 	 *
 	 * @throws Exception if error creating parts.
 	 */
-	private void createParts(SettlementTemplate template, Settlement settlement) {
+	private void createParts(SettlementSupplies template, Settlement settlement) {
 
 		Map<Part, Integer> partMap = template.getParts();
 		for (Entry<Part, Integer> item : partMap.entrySet()) {
@@ -306,15 +314,16 @@ public final class SettlementBuilder {
 	/**
 	 * Creates initial people based on available capacity at settlements.
 	 *
+	 * @param settlement Hosting settlement
+	 * @param targetPopulation Population goal
 	 * @throws Exception if people can not be constructed.
 	 */
-	private void createPeople(Settlement settlement) {
+	public void createPeople(Settlement settlement, int targetPopulation) {
 
-		int initPop = settlement.getInitialPopulation();
 		ReportingAuthority sponsor = settlement.getSponsor();
 
 		// Fill up the settlement by creating more people
-		while (settlement.getIndoorPeopleCount() < initPop) {
+		while (settlement.getIndoorPeopleCount() < targetPopulation) {
 
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
@@ -350,9 +359,6 @@ public final class SettlementBuilder {
 			// Assign a job
 			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
 		}
-
-		// Establish a system of governance at a settlement.
-		settlement.getChainOfCommand().establishSettlementGovernance();
 	}
 
 	/**

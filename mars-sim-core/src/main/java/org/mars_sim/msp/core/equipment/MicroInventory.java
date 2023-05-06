@@ -124,7 +124,7 @@ public class MicroInventory implements Serializable {
 		if (s != null) {
 			return s.capacity;
 		}
-		return 0;
+		return sharedCapacity;
     }
 
 	/**
@@ -183,7 +183,6 @@ public class MicroInventory implements Serializable {
 	 */
 	public double getStoredMass() {
 		return amountTotalMass + itemTotalMass;
-		// TODO: should it also add generalTotalMass;
 	}
 
 	/**

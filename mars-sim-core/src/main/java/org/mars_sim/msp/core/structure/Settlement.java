@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalPosition;
@@ -440,9 +439,6 @@ public class Settlement extends Structure implements Temporal,
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
-		// Initialize the MapDataUtil that will initialize the elevation data set
-//		MapDataUtil.instance();
- 		
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = TerrainElevation.getTerrainProfile(location);
 

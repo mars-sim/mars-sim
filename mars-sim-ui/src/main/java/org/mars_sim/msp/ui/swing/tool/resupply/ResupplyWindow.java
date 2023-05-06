@@ -290,6 +290,14 @@ public class ResupplyWindow extends ToolWindow
 		}
 	}
 
+	
+	/**
+	 * Refresh the display because the contents has changed
+	 */
+	void refreshMission() {
+		detailPane.setTransportable(getSelectedNode());
+	}
+	
 	/**
 	 * Cancels the currently selected transport item.
 	 */

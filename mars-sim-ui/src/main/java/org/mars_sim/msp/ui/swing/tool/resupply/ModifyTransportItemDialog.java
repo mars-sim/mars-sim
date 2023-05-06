@@ -124,6 +124,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private void modifyTransportItem() {
 		if ((editingPanel != null) && editingPanel.modifyTransportItem()) {
 			dispose();
+			resupplyWindow.refreshMission();
 		}
 	}
 	
