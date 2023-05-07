@@ -17,16 +17,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 import com.google.common.io.ByteStreams;
-
-import me.lemire.integercompression.Composition;
-import me.lemire.integercompression.FastPFOR;
-import me.lemire.integercompression.IntWrapper;
-import me.lemire.integercompression.IntegerCODEC;
-import me.lemire.integercompression.VariableByte;
 
 /**
  * This class reads the topographical or elevation data of MOLA Mission Experiment 

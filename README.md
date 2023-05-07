@@ -332,20 +332,32 @@ Choose MSI version that will automatically set up the environment path correctly
 
 However, there are cases that the `path` variable and `JAVE_HOME` variable are not being configured properly.
 
+See this [page](https://www.baeldung.com/java-home-vs-path-env-var) for explanation.
+
 In the command prompt, try `java -version` to see what version of Java is first being found in your specific cases. 
 
-IN case java cannot be found or is erroneous, then follow the steps below :
+Follow the steps below : 
 
-1. Locate the Java installation.
+1. Locate the folder with Java installation. For instance, "C:\Program Files\Java\jdk-17" may be your JDK's location.
 
-2. Start a command prompt and type this `set JAVA_HOME="<java home>\bin"`.
+2. Under System variable, ensure `JAVA_HOME` has been added and set up correct as follows:
 
-3. Set the `PATH` variable to include the Java installation `set PATH="%JAVA_HOME%\bin";%PATH%`.
+> set JAVA_HOME=C:\Program Files\Java\jdk-17
+
+2a. Alternatively, one may start a command prompt and type this `set JAVA_HOME="C:\Program Files\Java\jdk-17"` 
+
+3. Under both User and the System variable, set the `PATH` variable to include the JDK folder. For instance,
+
+> set PATH=C:\Program Files\Java\jdk-17\bin
+
+or 
+
+> set PATH="%JAVA_HOME%\bin";%PATH%
 
 > Note 2 : The order of precedence inside `PATH` variable is crucial. The first available folder having Java
 executable inside will be the one to be loaded by Windows OS.
 
-> Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
+> Note 2a : The `\bin` may be crucial. When running `java -jar xxxx.jar`, mars-sim will look for the
 presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable,
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
