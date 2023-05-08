@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.person.ai.training.TrainingUtils;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The RoleUtil class determines the roles of the settlers in a simulation.
@@ -101,10 +102,12 @@ public class RoleUtil implements Serializable {
 				roles.add(rt);
 			}
 		}
-		// Remove that role
-		roles.remove(leastFilledRole);
-		// Add that role back to the first position
-		roles.add(0, leastFilledRole);
+
+		// Move the least polluted role to the front
+		if (leastFilledRole != null) {
+			roles.remove(leastFilledRole);
+			roles.add(0, leastFilledRole);
+		}
 
 		for (RoleType rt : roles) {
 			boolean isRoleAvailable = chain.isRoleAvailable(rt);
@@ -122,6 +125,11 @@ public class RoleUtil implements Serializable {
 			}
 		}
 
+		// No role ????
+		if (selectedRole == null) {
+			int idx = RandomUtil.getRandomInt(roles.size() - 1);
+			selectedRole = roles.get(idx);
+		}
 		return selectedRole;
 	}
 

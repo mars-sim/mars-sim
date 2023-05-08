@@ -75,6 +75,10 @@ public class Role implements Serializable {
 	public void changeRoleType(RoleType newType) {
 		RoleType oldType = roleType;
 
+		if (newType == null) {
+			throw new IllegalArgumentException("New roletype cannot be null.");
+		}
+
 		if (newType != oldType) {
 			// Note : if this is a leadership role, only one person should occupy this position 
 			List<Person> predecessors = null;
@@ -87,14 +91,14 @@ public class Role implements Serializable {
 				}
 			}
 			
+			// Turn in the old role
+			relinquishOldRoleType();
+
 			// Set the role type of this person to the new role type
 			roleType = newType;
 			
 			// Save the role in the settlement Registry
-			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
-
-			// Turn in the old role
-			relinquishOldRoleType();
+			person.getAssociatedSettlement().getChainOfCommand().registerRole(roleType);
 
 			// Records the role change and fire unit update
 			RoleUtil.recordNewRole(person, roleType);

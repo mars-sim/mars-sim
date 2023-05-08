@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -119,7 +121,7 @@ public final class SettlementBuilder {
 			createPreconfiguredPeople(settlement, crew);
 			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
-		createPeople(settlement, settlement.getInitialPopulation());
+		createPeople(settlement, settlement.getInitialPopulation(), false);
 		
 		// Establish a system of governance at a settlement.
 		settlement.getChainOfCommand().establishSettlementGovernance();
@@ -316,14 +318,14 @@ public final class SettlementBuilder {
 	 *
 	 * @param settlement Hosting settlement
 	 * @param targetPopulation Population goal
-	 * @throws Exception if people can not be constructed.
+	 * @param assignRoles Should roles be assigned to the new people?
 	 */
-	public void createPeople(Settlement settlement, int targetPopulation) {
+	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
 		ReportingAuthority sponsor = settlement.getSponsor();
 
 		// Fill up the settlement by creating more people
-		while (settlement.getIndoorPeopleCount() < targetPopulation) {
+		while (settlement.getNumCitizens() < targetPopulation) {
 
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
@@ -358,6 +360,11 @@ public final class SettlementBuilder {
 			person.getPreference().initializePreference();
 			// Assign a job
 			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
+
+			if (assignRoles) {
+				RoleType choosen = RoleUtil.findBestRole(person);
+				person.setRole(choosen);
+			}
 		}
 	}
 
