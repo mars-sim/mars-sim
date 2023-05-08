@@ -477,7 +477,11 @@
 	 sequences of basaltic rocks were metamorphosed by moderate heat and pressure and then
 	 partially melted. Observed the craters' central peaks, they must have been dredged up from
 	 depths by the force of the crater-making impact. http://themis.asu.edu/node/5395.</resource>
-	<resource name="Mudstone" type="rock" phase="solid">.</resource>
+	<resource name="Mudstone" type="rock" phase="solid">
+  	 A rock succession on the lower slopes of Mount Sharp that comprises thinly laminated mudstones. 
+  	 These rock outcrops are very fine-grained sedimentary rocks that we interpret as having formed 
+  	 from particles suspended in water, which slowly settled. 
+	</resource>
 	<resource name="Sandstone" type="rock" phase="solid">.</resource>
 	<resource name="Shale" type="rock" phase="solid">.</resource>
 	<resource name="Conglomerate" type="rock" phase="solid">.</resource>

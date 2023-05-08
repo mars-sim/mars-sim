@@ -296,13 +296,23 @@
 	</process>
 				
 	<process name="Extract nitrogen compounds from regolith" power-required="0.01" >
-		<input resource="regolith" rate="5.0"  />
+		<description> 
+			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
+			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
+			
+			According to https://marspedia.org/Nitrogen, 
+			Nitrates with a concentration of ~100 ppm have been found in typical Martian soils.
+			Curiosity found Nitrate deposits in Gale Crater from ~110 to ~300 ppm. In Mudstone deposits, 
+			this value ranged from 300 to 1,100 ppm. They speculate that these compounds were formed from thermal shock from impacts, or from lightning.
+		</description> 
+		<input resource="regolith" rate="100.0"  />
 		
-		<output resource="nitrate" rate="1.0"  />
-		<output resource="nitrite" rate="0.2"  />
-		<output resource="nitrogen" rate="1.0"  />
-		<output resource="ammonia" rate="1.0"  />
+		<output resource="nitrate" rate="0.1"  />
+		<output resource="nitrite" rate="0.1"  />
+		<output resource="nitrogen" rate="0.1"  />
+		<output resource="ammonia" rate="0.1"  />
 		<output resource="argon" rate="0.1"  />
+		<output resource="regolith" rate="99.5"  />		
 	</process>
 
 
@@ -310,6 +320,7 @@
 		power-required="0.03" >
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+
 			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
 					40% gypsum;
 					3% allophane;
@@ -317,6 +328,7 @@
 					3% smectite;
 		</description>
 			<input resource="regolith-B" rate="50.0"  />
+			
 			<output resource="gypsum" rate="20.0"  />
 			<output resource="allophane" rate="1.5"  />
 			<output resource="akaganeite" rate="1.5"  />
@@ -326,7 +338,6 @@
 
 	<process name="Process Regolith-C rich in phyllo-silicate" power-required="0.03" >
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
 					40% smectite;
 					3% allophane;
@@ -334,6 +345,7 @@
 					3% bassanite;
 		</description>
 			<input resource="regolith-C" rate="50.0"  />
+			
 			<output resource="smectite" rate="20.0"  />
 			<output resource="allophane" rate="1.5"  />
 			<output resource="akaganeite" rate="1.5"  />
@@ -344,7 +356,6 @@
 
 	<process name="Process Regolith-D rich in basaltic" power-required="0.03" >
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
 					23.5% basaltic;
 					3% allophane;
@@ -353,6 +364,7 @@
 					3% smectite;
 		</description>
 			<input resource="regolith-D" rate ="50.0"  />
+			
 			<output resource="basaltic" rate="11.75"  />
 			<output resource="smectite" rate="1.5"  />
 			<output resource="allophane" rate="1.5"  />
@@ -380,9 +392,10 @@
 			<input resource="magnetite" rate="25.0"  />
 			<input resource="carbon monoxide" rate=".5"  />
 			<output resource="iron powder" rate="1.0"  />
-			<output resource="iron oxide" rate="21.0"  />									
+			<output resource="iron oxide" rate="20.0"  />									
 			<output resource="carbon dioxide" rate=".5"  />
-			<output resource="oxygen" rate="2.0"  />						
+			<output resource="oxygen" rate="2.0"  />
+			<output resource="titanium" rate="1.0"  />				
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
@@ -447,6 +460,9 @@
 	</process>
 
 	<process name="Extract minerals from basaltic deposits" power-required="0.1" >
+		<description>
+			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
+		</description>
 			<input resource="basaltic" rate="50.0"  />
 			<output resource="aluminum oxide" rate="8.0"  />
 			<output resource="magnesium" rate="6.0"  />
