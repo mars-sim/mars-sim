@@ -1414,6 +1414,18 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Manufacture propeller" tech="2" skill="3" work-time="80" process-time="120"
+			power-required=".3">
+		<inputs>
+			<resource name="polycarbonate resin" amount="1.5" />
+			<resource name="titanium" amount=".25" />
+			<resource name="iron" amount=".25" />			
+		</inputs>
+		<outputs>
+			<part name="propeller" number="1" />
+		</outputs>
+	</process>
+
 	<process name="Manufacture rover control panel" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
@@ -1603,6 +1615,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="optical cable" number="4" />
 			<part name="fuel tank" number="1" />
 			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />			
 		</inputs>
 		<outputs>
 			<vehicle name="delivery drone" number="1" />
