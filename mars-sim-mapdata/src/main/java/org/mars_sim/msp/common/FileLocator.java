@@ -23,13 +23,13 @@ public final class FileLocator {
     private static final String DOWNLOAD_DIR = "/downloads";
     private static File localBase = new File(System.getProperty("user.home")
                                                 +  "/.mars-sim" + DOWNLOAD_DIR);
-    private static String baseURL = "https://raw.githubusercontent.com/mars-sim/mars-sim/master/content";
+    private static String contentURL = "https://raw.githubusercontent.com/mars-sim/mars-sim/master/content";
 
     private  FileLocator() {
     }
     
     /**
-     * Set teh base directory where files are cached
+     * Set the base directory where files are cached
      * @param newBase Folder to cache downloaded files
      * 
      */
@@ -37,9 +37,13 @@ public final class FileLocator {
         localBase = new File(newBase, DOWNLOAD_DIR);
     }
 
-    public static void setBaseURL(String newBaseURL) {
-        logger.info("Content URL changed to " + newBaseURL);
-        baseURL = newBaseURL;
+    /**
+     * Set the URL of the remote content store.
+     * @param newURL
+     */
+    public static void setContentURL(String newURL) {
+        logger.info("Content URL changed to " + newURL);
+        contentURL = newURL;
     }
 
     /**
@@ -55,7 +59,7 @@ public final class FileLocator {
             folder.mkdirs();
 
             // Attempt to find the file to download
-            String fileURL = baseURL + name;
+            String fileURL = contentURL + name;
             downloadFile(fileURL, localFile);
         }
 

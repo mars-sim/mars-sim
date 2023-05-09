@@ -245,7 +245,7 @@ public class SimulationConfig implements Serializable {
 		Element root = simulationDoc.getRootElement();
 		String contentURL = root.getAttributeValue(CONTENT_URL);
 		if (contentURL != null) {
-			FileLocator.setBaseURL(contentURL);
+			FileLocator.setContentURL(contentURL);
 		}
 		// Load time configurations
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
