@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Equipment.java
- * @date 2021-10-10
+ * @date 2023-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -348,7 +348,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+//			setCoordinates(newContainer.getCoordinates());
+			setNullCoordinates();
 			// 2. Set LocationStateType
 			updateEquipmentState(newContainer);
 			// 3. Set containerID

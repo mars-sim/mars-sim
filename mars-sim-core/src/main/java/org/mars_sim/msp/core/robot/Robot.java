@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2022-07-23
+ * @date 2023-05-09
  * @author Manny Kung
  */
 
@@ -779,7 +779,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
+//			e.setCoordinates(getCoordinates());
+			e.setNullCoordinates();
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -1239,11 +1240,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 
-		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-			for (Equipment e: getEquipmentSet()) {
-				e.setCoordinates(newLocation);
-			}
-		}
+//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+//			for (Equipment e: getEquipmentSet()) {
+//				e.setCoordinates(newLocation);
+//			}
+//		}
 	}
 	
 	/** 

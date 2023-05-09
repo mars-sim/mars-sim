@@ -122,10 +122,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Constructor wher ethe identifer is predefined
+	 * Constructor 1: the name and identifier are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
-	 * @param id Unit identifer
+	 * @param id Unit identifier
 	 * @param containerId Identifier of the container
 	 */
 	protected Unit(String name, int id, int containerId) {
@@ -139,7 +139,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor 2: where the name and location are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
 	 * @param location {@link Coordinates} the unit's location
@@ -204,6 +204,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			setCoordinates(location);
 		}
 		else
+			// Set to (0, 0) when still initializing Settlement instance
 			this.location = new Coordinates(0D, 0D);
 
 		if (diagnosticFile != null) {
@@ -245,7 +246,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Change the unit's name
+	 * Changes the unit's name.
 	 *
 	 * @param newName new name
 	 */
@@ -255,7 +256,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's name
+	 * Gets the unit's name.
 	 *
 	 * @return the unit's name
 	 */
@@ -264,7 +265,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's nickname
+	 * Gets the unit's nickname.
 	 *
 	 * @return the unit's nickname
 	 */
@@ -273,7 +274,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's shortened name
+	 * Gets the unit's shortened name.
 	 *
 	 * @return the unit's shortened name
 	 */
@@ -311,7 +312,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Sets the unit's name
+	 * Sets the unit's name.
 	 *
 	 * @param name new name
 	 */
@@ -321,7 +322,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's description
+	 * Gets the unit's description.
 	 *
 	 * @return description
 	 */
@@ -364,7 +365,15 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
-		return location;
+		if (LocationStateType.MARS_SURFACE == currentStateType) {	
+			return location;
+		}
+		else if (getUnitType() == UnitType.SETTLEMENT) {	
+			return location;
+		}
+		else {
+			return getTopContainerUnit().getCoordinates();
+		}
 	}
 
 	/**
@@ -377,6 +386,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 
+	/**
+	 * Sets unit's location coordinates to null.
+	 */
+	public void setNullCoordinates() {
+		location = null;
+		// fireUnitUpdate(UnitEventType.LOCATION_EVENT, getTopContainerUnit().getCoordinates());
+	}
+	
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
@@ -445,13 +462,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 
 		// 1. Set Coordinates
-		if (newContainer == null) {
+//		if (newContainer == null) {
 			// e.g. for MarsSurface and for a deceased person
 			// Set back to its previous container unit's coordinates
-		} else {
+//		} 
+//		else {
 			// Slave the coordinates to that of the newContainer
-			setCoordinates(newContainer.getCoordinates());
-		}
+//			setCoordinates(newContainer.getCoordinates());
+//		}
 
 		// 2. Set LocationStateType
 		if (getUnitType() == UnitType.PLANET) {

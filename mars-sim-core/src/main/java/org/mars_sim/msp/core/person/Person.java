@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2022-07-19
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -1735,7 +1735,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
+//			e.setCoordinates(getCoordinates());
+			e.setNullCoordinates();
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -2156,11 +2157,11 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 
-		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-			for (Equipment e: getEquipmentSet()) {
-				e.setCoordinates(newLocation);
-			}
-		}
+//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+//			for (Equipment e: getEquipmentSet()) {
+//				e.setCoordinates(newLocation);
+//			}
+//		}
 	}
 
 	/**

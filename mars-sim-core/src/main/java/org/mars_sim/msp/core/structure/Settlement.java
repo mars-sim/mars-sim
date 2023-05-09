@@ -2196,7 +2196,8 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
+//			e.setCoordinates(getCoordinates());
+			e.setNullCoordinates();
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -3389,30 +3390,30 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory;
 	}
 
-	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 */
-	@Override
-	public void setContainerUnit(Unit newContainer) {
-		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
-				return;
-			}
-			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
-			// 2. Set LocationStateType
-			currentStateType = LocationStateType.MARS_SURFACE;
-			// 3. Set containerID
-			setContainerID(newContainer.getIdentifier());
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-		}
-		else {
-			setContainerID(MARS_SURFACE_UNIT_ID);
-		}
-	}
+//	/**
+//	 * Sets the unit's container unit.
+//	 *
+//	 * @param newContainer the unit to contain this unit.
+//	 */
+//	@Override
+//	public void setContainerUnit(Unit newContainer) {
+//		if (newContainer != null) {
+//			if (newContainer.equals(getContainerUnit())) {
+//				return;
+//			}
+//			// 1. Set Coordinates
+//			setCoordinates(newContainer.getCoordinates());
+//			// 2. Set LocationStateType
+//			currentStateType = LocationStateType.MARS_SURFACE;
+//			// 3. Set containerID
+//			setContainerID(newContainer.getIdentifier());
+//			// 4. Fire the container unit event
+//			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+//		}
+//		else {
+//			setContainerID(MARS_SURFACE_UNIT_ID);
+//		}
+//	}
 
 	
     public SettlementTaskManager getTaskManager() {

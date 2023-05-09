@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -922,23 +921,23 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 
-		if (occupants != null && !occupants.isEmpty()) {
-			for (Person p: occupants) {
-				p.setCoordinates(newLocation);
-			}
-		}
-
-		if (robotOccupants != null && !robotOccupants.isEmpty()) {
-			for (Robot r: robotOccupants) {
-				r.setCoordinates(newLocation);
-			}
-		}
-
-		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-			for (Equipment e: getEquipmentSet()) {
-				e.setCoordinates(newLocation);
-			}
-		}
+//		if (occupants != null && !occupants.isEmpty()) {
+//			for (Person p: occupants) {
+//				p.setCoordinates(newLocation);
+//			}
+//		}
+//
+//		if (robotOccupants != null && !robotOccupants.isEmpty()) {
+//			for (Robot r: robotOccupants) {
+//				r.setCoordinates(newLocation);
+//			}
+//		}
+//
+//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+//			for (Equipment e: getEquipmentSet()) {
+//				e.setCoordinates(newLocation);
+//			}
+//		}
 
 		// Set towed vehicle (if any) to new location.
 		if (towedVehicle != null)

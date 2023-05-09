@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2023-04-14
+ * @date 2023-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -1931,7 +1931,8 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
+//			e.setCoordinates(getCoordinates());
+			e.setNullCoordinates();
 //			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
