@@ -348,8 +348,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				return;
 			}
 			// 1. Set Coordinates
-//			setCoordinates(newContainer.getCoordinates());
-			setNullCoordinates();
+			if (newContainer.getUnitType() == UnitType.PLANET) {
+				// Since it's on the surface of Mars,
+				// First set its initial location to its old parent's location as it's leaving its parent.
+				// Later it may move around and updates its coordinates by itself
+				setCoordinates(getContainerUnit().getCoordinates());
+			}
+			else {
+				// Null its coordinates since it's now slaved after its parent
+				setNullCoordinates();
+			}
 			// 2. Set LocationStateType
 			updateEquipmentState(newContainer);
 			// 3. Set containerID

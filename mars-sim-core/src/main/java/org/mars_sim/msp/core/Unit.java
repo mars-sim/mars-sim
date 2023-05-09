@@ -462,15 +462,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 
 		// 1. Set Coordinates
-//		if (newContainer == null) {
-			// e.g. for MarsSurface and for a deceased person
-			// Set back to its previous container unit's coordinates
-//		} 
-//		else {
-			// Slave the coordinates to that of the newContainer
-//			setCoordinates(newContainer.getCoordinates());
-//		}
-
+		if (newContainer == null || newContainer.getUnitType() == UnitType.PLANET) {
+			// Since it's on the surface of Mars,
+			// First set its initial location to its old parent's location as it's leaving its parent.
+			// Later it will move around and updates its coordinates by itself
+			setCoordinates(getContainerUnit().getCoordinates());
+		}
+		else {
+			// Null its coordinates since it's now slaved after its parent
+			setNullCoordinates();
+		}
+		
 		// 2. Set LocationStateType
 		if (getUnitType() == UnitType.PLANET) {
 			currentStateType = LocationStateType.OUTER_SPACE;

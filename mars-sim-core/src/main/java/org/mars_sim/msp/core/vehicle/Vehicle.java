@@ -1931,9 +1931,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-//			e.setCoordinates(getCoordinates());
-			e.setNullCoordinates();
-//			e.setContainerUnit(this);
+			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2178,11 +2176,17 @@ public abstract class Vehicle extends Unit
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() != UnitType.PLANET) {
-				// Do not inherit the location of a Planet.
-				setCoordinates(newContainer.getCoordinates());
+			if (newContainer.getUnitType() == UnitType.PLANET) {
+				// Since it's on the surface of Mars,
+				// First set its initial location to its old parent's location as it's leaving its parent.
+				// Later it may move around and updates its coordinates by itself
+				setCoordinates(getContainerUnit().getCoordinates());
 			}
-			// 2. Set LocationStateType
+			else {
+				// Null its coordinates since it's now slaved after its parent
+				setNullCoordinates();
+			}
+			// 2. Set new LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID
 			setContainerID(newContainer.getIdentifier());
@@ -2295,6 +2299,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public boolean transfer(Unit destination) {
 		boolean transferred = false;
+		// Set the old container unit
 		Unit cu = getContainerUnit();
 
 		if (cu.getUnitType() == UnitType.PLANET) {

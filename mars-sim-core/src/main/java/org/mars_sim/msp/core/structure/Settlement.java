@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2022-09-12
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -2189,15 +2189,14 @@ public class Settlement extends Structure implements Temporal,
 	
 	
 	/**
-	 * Adds an equipment to be owned by the settlement
+	 * Adds an equipment to be owned by the settlement.
 	 *
 	 * @param e the equipment
+	 * @return true if this settlement can carry it
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-//			e.setCoordinates(getCoordinates());
-			e.setNullCoordinates();
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;

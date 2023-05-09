@@ -36,6 +36,8 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final double STEP_KM = 2;
+	
 	private static final double DEG_TO_RAD = Math.PI/180;
 
 	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.267990;
@@ -75,7 +77,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns terrain steepness angle from location by sampling 11.1 km in given
+	 * Returns terrain steepness angle from location by sampling a step distance in given
 	 * direction.
 	 *
 	 * @param currentLocation  the coordinates of the current location
@@ -83,15 +85,11 @@ public class TerrainElevation implements Serializable {
 	 * @return terrain steepness angle (in radians)
 	 */
 	public static double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
-		double newY = -1.5D * currentDirection.getCosDirection();
-		double newX = 1.5D * currentDirection.getSinDirection();
-		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getMOLAElevation(sampleLocation) - getMOLAElevation(currentLocation);
-		return Math.atan(elevationChange / 11.1D);
+		return determineTerrainSteepness(currentLocation, getMOLAElevation(currentLocation), currentDirection);
 	}
 
 	/**
-	 * Determines the terrain steepness angle from location by sampling 11.1 km in given
+	 * Determines the terrain steepness angle from location by sampling a step distance in given
 	 * direction and elevation.
 	 *
 	 * @param currentLocation
@@ -104,11 +102,11 @@ public class TerrainElevation implements Serializable {
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
-		return Math.atan(elevationChange / 11.1D);
+		return Math.atan(elevationChange / STEP_KM);
 	}
 
 	/**
-	 * Determines the terrain steepness angle from location by sampling a random coordinate set and 11.1 km in given
+	 * Determines the terrain steepness angle from location by sampling a random coordinate set and a step distance in given
 	 * direction and elevation.
 	 *
 	 * @param currentLocation
@@ -121,7 +119,7 @@ public class TerrainElevation implements Serializable {
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
-		return Math.atan(elevationChange / 11.1D);
+		return Math.atan(elevationChange / STEP_KM);
 	}
 
 	/**
