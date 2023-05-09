@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TerrainElevation.java
- * @date 2022-07-29
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 // within the Utopia Planitia plains, as estimated by SHARAD, an subsurface
 // sounding radar ice that penetrate below the surface. SHARAD was mounted
 // on the Mars Reconnaissance Orbiter.
-//
+
 // See https://www.jpl.nasa.gov/news/news.php?feature=6680
 
 /**
@@ -330,6 +330,7 @@ public class TerrainElevation implements Serializable {
 	
 	/**
 	 * Returns the patched elevation in km at the given location.
+	 * Note: currently not in use due to .
 	 *
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
@@ -341,6 +342,7 @@ public class TerrainElevation implements Serializable {
 
 	/**
 	 * Returns the raw elevation in km at the given location.
+	 * Note: currently not in use due to .
 	 *
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
@@ -394,6 +396,7 @@ public class TerrainElevation implements Serializable {
 
 	/**
 	 * Patches elevation errors around mountain tops.
+	 * Note: currently not in use due to .
 	 *
 	 * @param elevation the original elevation for the location.
 	 * @param location  the coordinates

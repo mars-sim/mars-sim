@@ -737,14 +737,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			double phi = pos.getPhi();
 			double theta = pos.getTheta();			
 			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-			double h1 = TerrainElevation.getPatchedElevation(pos);
+//			double h1 = TerrainElevation.getPatchedElevation(pos);
 			
 			phi = Math.round(phi*1000.0)/1000.0;
 			theta = Math.round(theta*1000.0)/1000.0;
 
 			elevSB.append(ELEVATION)
 				.append(Math.round(h0*1000.0)/1000.0)
-				.append(" / " + Math.round(h1*1000.0)/1000.0)
+//				.append(" / " + Math.round(h1*1000.0)/1000.0)
 				.append(KM);
 			
 			if (TopoMarsMap.TYPE.equals(mapLayerPanel.getMapType())) {

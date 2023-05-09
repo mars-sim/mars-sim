@@ -53,8 +53,8 @@ public class ElevationCommand extends ChatCommand {
 		elevationMOLA = TerrainElevation.getMOLAElevation(location);
 		context.println("MOLA Elevation: " + Math.round(elevationMOLA * 1000.0)/1000.0 + " km.");
 
-		elevationColor = TerrainElevation.getPatchedElevation(location);
-		context.println("Color Elevation: " + Math.round(elevationColor * 1000.0)/1000.0 + " km.");
+//		elevationColor = TerrainElevation.getPatchedElevation(location);
+//		context.println("Color Elevation: " + Math.round(elevationColor * 1000.0)/1000.0 + " km.");
 
 		return result;
 	}
