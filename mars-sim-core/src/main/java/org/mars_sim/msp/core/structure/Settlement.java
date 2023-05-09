@@ -434,7 +434,6 @@ public class Settlement extends Structure implements Temporal,
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
-
 	/**
 	 * Initialize field data, class and maps
 	 */
@@ -533,7 +532,25 @@ public class Settlement extends Structure implements Temporal,
 		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
 	}
 
-	/*
+	/**
+	 * Gets the terrain elevation.
+	 * 
+	 * @return
+	 */
+	public double getElevation() {
+		return terrainProfile[0];
+	}
+
+	/**
+	 * Gets the terrain gradient.
+	 * 
+	 * @return
+	 */
+	public double getGradient() {
+		return terrainProfile[1];
+	}
+	
+	/**
 	 * Gets sponsoring agency for the person.
 	 */
 	public ReportingAuthority getSponsor() {

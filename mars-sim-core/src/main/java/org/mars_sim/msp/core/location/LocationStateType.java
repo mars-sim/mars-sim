@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.location;
 import org.mars_sim.msp.core.Msg;
 
 /**
- * The LocationStateType enum class keeps track of the location state of a unit
+ * The LocationStateType enum class keeps track of the location of a unit
  * 
  * @apiNote (1) : WITHIN_SETTLEMENT_VICINITY should be an intermediate state between being INSIDE_SETTLEMENT and OUTSIDE/MARS_SURFACE 
  *                but has NEVER been used this way. 

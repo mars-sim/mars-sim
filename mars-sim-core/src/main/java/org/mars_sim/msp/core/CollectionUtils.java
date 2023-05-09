@@ -127,6 +127,25 @@ public class CollectionUtils {
 	}
 
 	/**
+	 * Is this a settlement's coordinates.
+	 *
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public static boolean isSettlement(Coordinates c) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
+				return true;
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Finds a nearby vehicle based on its coordinates.
 	 *
 	 * @param c {@link Coordinates}
@@ -152,8 +171,7 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static String getNearbyObjectName(Coordinates c) {
-		Settlement settlement = findSettlement(c);
-		if (settlement == null) {
+		if (isSettlement(c)) {
 			Vehicle vehicle = CollectionUtils.findVehicle(c);
 			if (vehicle != null) {
 				return vehicle.getName();

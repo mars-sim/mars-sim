@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Unit.java
- * @date 2021-10-20
+ * @date 2023-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The Unit class is the abstract parent class to all units in the Simulation.
+ * The Unit class is the abstract parent class to all units in the simulation.
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
@@ -49,28 +49,24 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	// Unique Unit identifier
 	private int identifer;
-
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-
+	/** The last pulse applied. */
+	private long lastPulse = 0;
+	
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** Commander's notes on this unit. */
 	private String notes = "";
-
 	/** The unit's location tag. */
 	private LocationTag tag;
-
-	/** The last pulse applied */
-	private long lastPulse = 0;
-
-	/** Unit location coordinates. */
+	/** The unit's coordinates. */
 	private Coordinates location;
 
+	/** The unit's current location state. */
 	protected LocationStateType currentStateType;
-
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
@@ -363,7 +359,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's location
+	 * Gets the unit's location.
 	 *
 	 * @return the unit's location
 	 */
@@ -372,7 +368,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Sets unit's location coordinates
+	 * Sets unit's location coordinates.
 	 *
 	 * @param newLocation the new location of the unit
 	 */

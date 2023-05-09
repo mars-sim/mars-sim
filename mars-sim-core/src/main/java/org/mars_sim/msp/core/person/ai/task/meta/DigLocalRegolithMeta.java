@@ -37,8 +37,12 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
 
     @Override
     public double getProbability(Person person) {
+    	if (!CollectionUtils.isSettlement(person.getCoordinates())) {
+    		return 0;
+    	}
+    	
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-    	if ((settlement == null) || (settlement.getRegolithCollectionRate() <= 0D)) {
+    	if (settlement.getRegolithCollectionRate() <= 0D) {
     		return 0D;
     	}
     	

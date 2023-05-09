@@ -14,8 +14,10 @@ import java.util.Set;
 
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 // Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg
@@ -314,7 +316,13 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getMOLAElevation(Coordinates location) {
-		return getMOLAElevation(location.getPhi(), location.getTheta());
+		// Check if this location is a settlement
+		Settlement s = CollectionUtils.findSettlement(location);
+		if (s != null) {
+			return s.getElevation();
+		}
+		else
+			return getMOLAElevation(location.getPhi(), location.getTheta());
 	}
 
 	/**
