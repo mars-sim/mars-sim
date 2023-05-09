@@ -11,12 +11,14 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+
+import org.mars_sim.msp.common.FileLocator;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -104,14 +106,14 @@ import javax.imageio.ImageIO;
  	/**
  	 * Loads the whole map data set into an 2-D integer array.
  	 * 
- 	 * @param imageURL
+ 	 * @param imageName
  	 * @return
  	 * @throws IOException
  	 */
- 	private int[][] loadMapData(String imageURL) throws IOException {
+ 	private int[][] loadMapData(String imageName) throws IOException {
 
- 		URL imageMapURL = IntegerMapData.class.getResource(imageURL);
- 		BufferedImage image = ImageIO.read(imageMapURL);
+ 		File imageFile = FileLocator.locateFile(imageName);
+ 		BufferedImage image = ImageIO.read(imageFile);
 
  		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
  		pixelWidth = image.getWidth();

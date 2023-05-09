@@ -10,6 +10,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.mars_sim.msp.common.FileLocator;
+
 /**
  * A singleton that controls where the simulation files reside on the file system.
  */
@@ -22,8 +24,12 @@ public class SimulationFiles {
 	private static final String AUTOSAVE_DIR = "autosave";
 	private static final String LOG_DIR = "logs";
 	
-	private static String dataDir = System.getProperty("user.home") + //$NON-NLS-1$
-					File.separator + HOME_DIR;
+	private static String dataDir = null;
+
+	static {
+		setDataDir(System.getProperty("user.home") + File.separator + HOME_DIR);
+	};
+
 	/**
 	 * Private constructor prevents instantiation.
 	 */
@@ -32,6 +38,7 @@ public class SimulationFiles {
 	
 	public static void setDataDir(String newDir) {
 		dataDir = newDir;
+		FileLocator.setBaseDir(newDir);
 	}
 	
 	public static String getDataDir() {

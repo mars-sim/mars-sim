@@ -4,6 +4,7 @@
 	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse,
 	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, autosave-number, average-transit-time,
 	unused-cores)>
+	<!ATTLIST simulation-configuration content-url CDATA #IMPLIED>
 	<!ELEMENT base-time-ratio EMPTY>
 	<!ATTLIST base-time-ratio value CDATA #REQUIRED>
 	<!ELEMENT min-simulated-pulse EMPTY>
@@ -34,7 +35,8 @@
 	<!ATTLIST mission-type boost CDATA #REQUIRED>
 ]>
 
-<simulation-configuration>
+<simulation-configuration
+		content-url="https://raw.githubusercontent.com/mars-sim/mars-sim/download_issue867/content">
 
 	<!-- Time related configuration -->
 	<time-configuration>

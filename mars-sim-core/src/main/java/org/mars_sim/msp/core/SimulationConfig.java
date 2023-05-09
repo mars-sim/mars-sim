@@ -37,6 +37,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.mars_sim.msp.common.FileLocator;
 import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.food.FoodProductionConfig;
@@ -130,7 +131,7 @@ public class SimulationConfig implements Serializable {
 	private static final String BOOST = "boost";
 	private static final String NAME = "name";
 	private static final String EVA_LIGHT = "min-eva-light";
-
+	private static final String CONTENT_URL = "content-url";
 
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
@@ -240,8 +241,13 @@ public class SimulationConfig implements Serializable {
 		// Load simulation document
 		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 
-		// Load time configurations
+		// Load key attributes
 		Element root = simulationDoc.getRootElement();
+		String contentURL = root.getAttributeValue(CONTENT_URL);
+		if (contentURL != null) {
+			FileLocator.setBaseURL(contentURL);
+		}
+		// Load time configurations
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		earthStartDate = loadValue(timeConfig, EARTH_START_DATE_TIME);	
 		marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
