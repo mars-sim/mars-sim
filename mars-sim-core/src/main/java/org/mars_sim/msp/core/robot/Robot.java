@@ -630,9 +630,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	public Settlement findSettlementVicinity() {
-		return getLocationTag().findSettlementVicinity();
+		if (isRightOutsideSettlement())
+			return getLocationTag().findSettlementVicinity();
+		else
+			return null;
 	}
-
 	/**
 	 * Returns a reference to the robot's skill manager
 	 *

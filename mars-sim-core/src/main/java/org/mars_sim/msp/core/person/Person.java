@@ -1288,7 +1288,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	public Settlement findSettlementVicinity() {
-		return getLocationTag().findSettlementVicinity();
+		if (isRightOutsideSettlement())
+			return getLocationTag().findSettlementVicinity();
+		else
+			return null;
 	}
 
 	@Override
