@@ -12,6 +12,7 @@ import java.awt.Font;
 
 import javax.swing.Icon;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Unit;
 
 /**
@@ -28,44 +29,13 @@ public interface UnitDisplayInfo {
 	public boolean isMapDisplayed(Unit unit);
 
 	/**
-	 * Gets display icon for the surface navigator map.
+	 * Gets display icon for the map
 	 * 
 	 * @param unit the unit to display
+	 * @param type Meta data about base Map
 	 * @return icon
 	 */
-	public Icon getSurfMapIcon(Unit unit);
-
-	/**
-	 * Gets display icon for topo navigator map.
-	 * 
-	 * @param unit the unit to display
-	 * @return icon
-	 */
-	public Icon getTopoMapIcon(Unit unit);
-
-	/**
-	 * Gets display icon for geology navigator map.
-	 * 
-	 * @param unit the unit to display
-	 * @return icon
-	 */
-	public Icon getGeologyMapIcon(Unit unit);
-
-	/**
-	 * Gets display icon for regional navigator map.
-	 * 
-	 * @param unit the unit to display
-	 * @return icon
-	 */
-	public Icon getRegionMapIcon(Unit unit);
-	
-	/**
-	 * Gets display icon for viking navigator map.
-	 * 
-	 * @param unit the unit to display
-	 * @return icon
-	 */
-	public Icon getVikingMapIcon(Unit unit);
+	public Icon getMapIcon(Unit unit, MapMetaData type);
 	
 	/**
 	 * Checks if the map icon should blink on and off.
@@ -76,40 +46,12 @@ public interface UnitDisplayInfo {
 	public boolean isMapBlink(Unit unit);
 
 	/**
-	 * Gets the label color for surface navigator map.
-	 * 
+	 * Gets the label color for navigator map.
+	 * @param type Meta data about base Map
 	 * @return color
 	 */
-	public Color getSurfMapLabelColor();
+	public Color getMapLabelColor(MapMetaData type);
 
-	/**
-	 * Gets the label color for topo navigator map.
-	 * 
-	 * @return color
-	 */
-	public Color getTopoMapLabelColor();
-
-	/**
-	 * Gets the label color for geo navigator map.
-	 * 
-	 * @return color
-	 */
-	public Color getGeologyMapLabelColor();
-
-	/**
-	 * Gets the label color for regional navigator map.
-	 * 
-	 * @return color
-	 */
-    public Color getRegionMapLabelColor();
-
-	/**
-	 * Gets the label color for viking navigator map.
-	 * 
-	 * @return color
-	 */
-    public Color getVikingMapLabelColor();
-    
 	/**
 	 * Gets the label font for navigator map.
 	 * 
@@ -133,40 +75,12 @@ public interface UnitDisplayInfo {
 	public boolean isGlobeDisplayed(Unit unit);
 
 	/**
-	 * Gets display color for surface globe.
-	 * 
+	 * Gets display color for globe.
+	 * @param type Meta data about base Map
 	 * @return color
 	 */
-	public Color getSurfGlobeColor();
+	public Color getGlobeColor(MapMetaData type);
 
-	/**
-	 * Gets display color for topo globe.
-	 * 
-	 * @return color
-	 */
-	public Color getTopoGlobeColor();
-
-	/**
-	 * Gets display color for geology globe.
-	 * 
-	 * @return color
-	 */
-	public Color getGeologyGlobeColor();
-
-	/**
-	 * Gets display color for regional globe.
-	 * 
-	 * @return color
-	 */
-	public Color getRegionGlobeColor();
-	
-	/**
-	 * Gets display color for viking globe.
-	 * 
-	 * @return color
-	 */
-	public Color getVikingGlobeColor();
-			
 	/**
 	 * Gets icon for unit button.
 	 * 

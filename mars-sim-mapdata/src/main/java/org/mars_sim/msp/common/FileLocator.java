@@ -10,6 +10,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +48,29 @@ public final class FileLocator {
     }
 
     /**
+     * Is this file locally available and does not need a download?
+     * @param name
+     * @return
+     */
+    public static boolean isLocallyAvailable(String name) {
+        File localFile = new File(localBase, name);
+        boolean result = localFile.exists();
+        if (!result) {
+            // Check the resource
+            InputStream stream = FileLocator.class.getResourceAsStream(name);
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    logger.warning("Problem closing search stream");
+                }
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    /**
      * Locate an external file used in the configuration.
      * @param name Name will be a partial path
      * @return
@@ -58,9 +82,34 @@ public final class FileLocator {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
-            // Attempt to find the file to download
-            String fileURL = contentURL + name;
-            downloadFile(fileURL, localFile);
+            // Attempt to find the file in the resoruces
+            InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
+            if (resourceStream != null) {
+                try {
+                    logger.info("Extracting from resources " + name + " -> " + localFile);
+                    copyFile(resourceStream, localFile);
+                } catch (IOException ioe) {
+                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
+                }
+                finally {
+                    try {
+                        resourceStream.close();
+                    } catch (IOException e) {
+                        logger.warning("Problem closing stream");
+                    }
+                }
+            }
+            else {
+                // Attempt to find the file to download
+                String fileURL = contentURL + name;
+                logger.info("Downloading " + fileURL + " -> " + localFile);
+                try (InputStream source = new URL(fileURL).openStream()) {
+                    copyFile(source, localFile);
+                }
+                catch (IOException ioe) {
+                    logger.log(Level.SEVERE, "Problem downloading file", ioe);
+                }
+            }
         }
 
         return localFile;
@@ -70,19 +119,17 @@ public final class FileLocator {
      * Download a file from the remote repository
      * @param url
      * @param dest
+     * @throws IOException
      */
-    private static void downloadFile(String url, File dest) {
-        logger.info("Downloading " + url + " -> " + dest);
+    private static void copyFile(InputStream source, File dest) throws IOException {
 
-        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+        try (BufferedInputStream in = new BufferedInputStream(source);
             FileOutputStream fileOutputStream = new FileOutputStream(dest)) {
                 byte dataBuffer[] = new byte[1024];
                 int bytesRead;
                 while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                     fileOutputStream.write(dataBuffer, 0, bytesRead);
                 }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Problem downloading " + url, e);
         }
     }
 }

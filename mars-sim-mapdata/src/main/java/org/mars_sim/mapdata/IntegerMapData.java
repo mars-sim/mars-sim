@@ -54,25 +54,38 @@ import org.mars_sim.msp.common.FileLocator;
 	private int pixelHeight;
 	// height pixels divided by pi
 	private double rho;
+	// Name of the map
+	private MapMetaData meta;
  	
  	/**
  	 * Constructor
  	 * 
- 	 * @param mapFileName   the map data file name.
+	 * @param name   the name/description of the data
+ 	 * @param filename   the map data file name.
  	 */
- 	public IntegerMapData(String mapFileName) {
+ 	IntegerMapData(MapMetaData meta) {
  	
  		try {
  			// Load data files
- 			pixels = loadMapData(mapFileName);
+ 			pixels = loadMapData(meta.getHiResFile());
 			rho =  pixelHeight / Math.PI;
-			logger.info("Loaded " + mapFileName + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
+			this.meta = meta;
+			logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  			
  		} catch (IOException e) {
  			logger.log(Level.SEVERE, "Could not find the map file.", e);
  		}
  	}
 
+	/**
+	 * The name of the map
+	 * @return
+	 */
+	@Override
+	public MapMetaData getMetaData() {
+		return meta;
+	}
+	
 	/**
 	 * Gets the scale of pixel to Mars surface degree.
 	 * 

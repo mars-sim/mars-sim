@@ -49,31 +49,8 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 		IntPoint labelLocation = null;
 		
 		if (displayInfo != null) {
-			switch(baseMap.getType()) {
-				case SurfMarsMap.TYPE: {
-					labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
-					g2d.setColor(displayInfo.getSurfMapLabelColor());
-				} break;
-				case TopoMarsMap.TYPE: {
-					labelLocation = getLabelLocation(location, displayInfo.getTopoMapIcon(unit));
-					g2d.setColor(displayInfo.getTopoMapLabelColor());
-				} break;
-				case GeologyMarsMap.TYPE: {
-					labelLocation = getLabelLocation(location, displayInfo.getGeologyMapIcon(unit));
-					g2d.setColor(displayInfo.getGeologyMapLabelColor());
-				} break;
-				case RegionMarsMap.TYPE: {
-					labelLocation = getLabelLocation(location, displayInfo.getRegionMapIcon(unit));
-					g2d.setColor(displayInfo.getRegionMapLabelColor());
-				} break;
-				case VikingMarsMap.TYPE: {
-					labelLocation = getLabelLocation(location, displayInfo.getVikingMapIcon(unit));
-					g2d.setColor(displayInfo.getVikingMapLabelColor());
-				} break;
-				default:
-			}
-
-
+			labelLocation = getLabelLocation(location, displayInfo.getMapIcon(unit, baseMap.getType()));
+			g2d.setColor(displayInfo.getMapLabelColor(baseMap.getType()));
 			g2d.setFont(displayInfo.getMapLabelFont());
 
 			if (labelLocation != null && unit != null

@@ -280,17 +280,17 @@ public class TerrainElevation implements Serializable {
 		return site.getRegolithCollectionRate();
 	}
 
-	public static int[] getRGB(Coordinates location) {
-		// Find hue and saturation color components at location.
-		if (mapdata == null)
-			mapdata = mapDataUtil.getTopoMapData();
-		Color color = mapdata.getRGBColor(location.getPhi(), location.getTheta());
-		int red = color.getRed();
-		int green = color.getGreen();
-		int blue = color.getBlue();
+	// public static int[] getRGB(Coordinates location) {
+	// 	// Find hue and saturation color components at location.
+	// 	if (mapdata == null)
+	// 		mapdata = mapDataUtil.getTopoMapData();
+	// 	Color color = mapdata.getRGBColor(location.getPhi(), location.getTheta());
+	// 	int red = color.getRed();
+	// 	int green = color.getGreen();
+	// 	int blue = color.getBlue();
 
-		return new int[] {red, green, blue};
-	}
+	// 	return new int[] {red, green, blue};
+	// }
 
 	public static float[] getHSB(int[] rgb) {
 		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
@@ -334,10 +334,10 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getPatchedElevation(Coordinates location) {
-		// Patch elevation problems at certain locations.
-		return patchElevation(getRawElevation(location), location);
-	}
+	// public static double getPatchedElevation(Coordinates location) {
+	// 	// Patch elevation problems at certain locations.
+	// 	return patchElevation(getRawElevation(location), location);
+	// }
 
 	/**
 	 * Returns the raw elevation in km at the given location.
@@ -345,52 +345,52 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getRawElevation(Coordinates location) {
-		// Find hue and saturation color components at location.
-		int rgb[] = getRGB(location);
-//		int red = rgb[0];
-		int green = rgb[1];
-		int blue = rgb[2];
+// 	public static double getRawElevation(Coordinates location) {
+// 		// Find hue and saturation color components at location.
+// 		int rgb[] = getRGB(location);
+// //		int red = rgb[0];
+// 		int green = rgb[1];
+// 		int blue = rgb[2];
 
-		float[] hsb = getHSB(rgb);
-		float hue = hsb[0];
-		float saturation = hsb[1];
-		float brightness = hsb[2];
+// 		float[] hsb = getHSB(rgb);
+// 		float hue = hsb[0];
+// 		float saturation = hsb[1];
+// 		float brightness = hsb[2];
 
-		// Determine elevation in meters.
-		// NOTE: This code (calculate terrain elevation) needs updating.
-		double elevation = 0;
+// 		// Determine elevation in meters.
+// 		// NOTE: This code (calculate terrain elevation) needs updating.
+// 		double elevation = 0;
 
-		// The minimum and maximum topography observations for the entire data set are -8068 and 21134 meters.
+// 		// The minimum and maximum topography observations for the entire data set are -8068 and 21134 meters.
 
-//		Note 1: Color Legends at https://astropedia.astrogeology.usgs.gov/download/Mars/GlobalSurveyor/MOLA/ancillary/colorhillshade_mola_lut.gif
-//		Note 2: Lookup Table at https://user-images.githubusercontent.com/1168584/65486713-0c855b80-de5a-11e9-9777-1ed3943c433b.gif
+// //		Note 1: Color Legends at https://astropedia.astrogeology.usgs.gov/download/Mars/GlobalSurveyor/MOLA/ancillary/colorhillshade_mola_lut.gif
+// //		Note 2: Lookup Table at https://user-images.githubusercontent.com/1168584/65486713-0c855b80-de5a-11e9-9777-1ed3943c433b.gif
 
-//		if (red == 255 && green == 255 & blue == 255) {
-//			// Note: at Color.white, it's still not the highest point but very close.
-//			return 19;
-//		}
+// //		if (red == 255 && green == 255 & blue == 255) {
+// //			// Note: at Color.white, it's still not the highest point but very close.
+// //			return 19;
+// //		}
 
-		// Determine elevation in kilometers.
+// 		// Determine elevation in kilometers.
 
-		// Between 19 km to 22+ km
-		if (saturation >= 0 && saturation <= 0.4326
-				&& brightness >= .9921 && brightness <= 1
-				&& green >= 249
-				&& blue >= 253)
-			elevation = saturation * .1422 + 1.0204;
+// 		// Between 19 km to 22+ km
+// 		if (saturation >= 0 && saturation <= 0.4326
+// 				&& brightness >= .9921 && brightness <= 1
+// 				&& green >= 249
+// 				&& blue >= 253)
+// 			elevation = saturation * .1422 + 1.0204;
 
-		// Between -9 km to 0 km
-		else if ((hue < 1) && (hue >= 0.1752))
-			elevation = -13.6219 * hue + 2.3866;
+// 		// Between -9 km to 0 km
+// 		else if ((hue < 1) && (hue >= 0.1752))
+// 			elevation = -13.6219 * hue + 2.3866;
 
-		// Between 0 km to 19 km
-		else if ((saturation <= .8504) && (saturation >= 0))
-			elevation = saturation * -22.3424 + 19;
+// 		// Between 0 km to 19 km
+// 		else if ((saturation <= .8504) && (saturation >= 0))
+// 			elevation = saturation * -22.3424 + 19;
 
 
-		return elevation;
-	}
+// 		return elevation;
+// 	}
 
 	/**
 	 * Patches elevation errors around mountain tops.

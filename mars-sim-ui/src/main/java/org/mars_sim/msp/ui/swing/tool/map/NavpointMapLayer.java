@@ -11,6 +11,7 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -124,15 +125,13 @@ public class NavpointMapLayer implements MapLayer {
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < Map.HALF_MAP_ANGLE) {
-			String mapType = baseMap.getType();
+			MapMetaData mapType = baseMap.getType();
 			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;
 			if (navpoint == selectedNavpoint)
 				navIcon = navpointIconSelected;
-			else if (TopoMarsMap.TYPE.equals(mapType) 
-					|| GeologyMarsMap.TYPE.equals(mapType)
-					|| RegionMarsMap.TYPE.equals(mapType))
+			else if (mapType.isColourful())
 				navIcon = navpointIconWhite;
 			else
 				navIcon = navpointIconColor;

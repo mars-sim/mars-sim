@@ -36,11 +36,15 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -57,20 +61,15 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.GeologyMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.RegionMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.VikingMarsMap;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -96,6 +95,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String MAPTYPE_ACTION = "mapType";
+	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
 	private static final String MINERAL_ACTION = "mineralLayer";
@@ -128,13 +128,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 
-	private static final String[] SUPPORTED_MAPTYPES = {
-			SurfMarsMap.TYPE, 
-			TopoMarsMap.TYPE, 
-			GeologyMarsMap.TYPE,
-			RegionMarsMap.TYPE, 
-			VikingMarsMap.TYPE
-	};
+	private static final String SURFACE_MAP = "surface";
 
 
 	// Data member
@@ -191,22 +185,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		JPanel mapPane = new JPanel(new GridLayout(1, 2));
 		wholePane.add(mapPane, BorderLayout.CENTER);
-
-		// Prepare globe display
-		globeNav = new GlobeDisplay(this);
-		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setOpaque(true);
-		globePane.add(globeNav);
-		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
-		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
-		mapPane.add(globePane);
 	
+		// Build teh Map panel first as the globe is a slave
 		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		detailPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
-		mapPane.add(detailPane);
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
 		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
@@ -229,6 +213,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		detailPane.add(mapLayerPanel);
 		
+		// Prepare globe display
+		globeNav = new GlobeDisplay(this);
+		globeNav.setMapType(mapLayerPanel.getMapType());
+		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		globePane.setOpaque(true);
+		globePane.add(globeNav);
+		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
+		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
+
+		mapPane.add(globePane);
+		mapPane.add(detailPane);
 		///////////////////////////////////////////////////////////////////////////
 		JPanel controlPane = new JPanel();
 		wholePane.add(controlPane, BorderLayout.SOUTH);
@@ -365,7 +361,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
 			// Type of Map
-			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SurfMarsMap.TYPE));
+			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP));
 
 			for (Object key : userSettings.keySet()) {
 				String prop = (String) key;
@@ -493,6 +489,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						setMapType(newMapType);
 					}
 				}
+				else if (command.startsWith(MAPTYPE_UNLOAD_ACTION)) {
+					if (((JCheckBoxMenuItem) source).isSelected()) {
+						String newMapType = command.substring(MAPTYPE_UNLOAD_ACTION.length());
+						selectUnloadedMap(newMapType);
+					}
+				}
 				else if (command.startsWith(LAYER_ACTION)) {
 					String selectedLayer = command.substring(LAYER_ACTION.length());
 					boolean selected = ((JCheckBoxMenuItem) source).isSelected();
@@ -505,61 +507,36 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
+	 * Select an unloaded map as the new choice but prompt user first
+	 * @param newMapType
+	 */
+	private void selectUnloadedMap(String newMapType) {
+		int reply = JOptionPane.showConfirmDialog(null,
+								"Download the map data?", "Download map",
+								JOptionPane.YES_NO_OPTION);
+		if (reply == JOptionPane.YES_OPTION) {
+			// This method will take a few seconds
+			setMapType(newMapType);
+		}
+	}
+
+	/**
 	 * Changes the MapType.
 	 * 
 	 * @param newMapType New map Type
 	 */
 	private void setMapType(String newMapType) {
-		switch(newMapType) {
+		mapLayerPanel.setMapType(newMapType);
 
-			case VikingMarsMap.TYPE: {
-				// show viking map
-				mapLayerPanel.setMapType(VikingMarsMap.TYPE);
-				globeNav.showViking();
-			} break;
-		
-			case SurfMarsMap.TYPE: {
-				// show surface map
-				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
-				globeNav.showSurf();
-			} break;
-		
-			case TopoMarsMap.TYPE: {
-				// show topo map
-				mapLayerPanel.setMapType(TopoMarsMap.TYPE);
-				globeNav.showTopo();
-				// turn off day night layer
-				setMapLayer(false, DAYLIGHT_LAYER);
-	//				globeNav.setDayNightTracking(false);
-				// turn off mineral layer
-				setMapLayer(false, MINERAL_LAYER);
-				mineralsButton.setEnabled(false);
-			} break;
+		MapMetaData metaType = mapLayerPanel.getMapType();
+		globeNav.setMapType(metaType);
 
-			case GeologyMarsMap.TYPE: {
-				// show geology map
-				mapLayerPanel.setMapType(GeologyMarsMap.TYPE);
-				globeNav.showGeo();
-				// turn off day night layer
-				setMapLayer(false, DAYLIGHT_LAYER);
-				// turn off mineral layer
-				setMapLayer(false, MINERAL_LAYER);
-				mineralsButton.setEnabled(false);
-			} break;
-		
-			case RegionMarsMap.TYPE: {
-				// show regional map
-				mapLayerPanel.setMapType(RegionMarsMap.TYPE);
-				globeNav.showRegion();
-				// turn off day night layer
-				setMapLayer(false, DAYLIGHT_LAYER);
-				// turn off mineral layer
-				setMapLayer(false, MINERAL_LAYER);
-				mineralsButton.setEnabled(false);
-			} break;
-			
-			default: 
-				logger.warning("Can not understand map type:" + newMapType);
+		if (metaType.isColourful()) {
+			// turn off day night layer
+			setMapLayer(false, DAYLIGHT_LAYER);
+			// turn off mineral layer
+			setMapLayer(false, MINERAL_LAYER);
+			mineralsButton.setEnabled(false);
 		}
 	}
 
@@ -588,8 +565,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
-		for (String mapType : SUPPORTED_MAPTYPES) {
-			JCheckBoxMenuItem mapItem = createSelectable(MAPTYPE_ACTION, mapType, mapType.equals(mapLayerPanel.getMapType()));
+		for (MapMetaData mapType : MapDataUtil.instance().getMapTypes()) {
+			boolean loaded = mapType.isLocallyAvailable();
+			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(mapType.getName()
+															+ (!loaded ? " (not loaded)" : ""),
+															mapType.equals(mapLayerPanel.getMapType()));
+			// Different actino for unloaded maps
+			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_UNLOAD_ACTION)
+										+ mapType.getId());
+			mapItem.addActionListener(this);
 			optionsMenu.add(mapItem);
 			group.add(mapItem);
 		}
@@ -737,23 +721,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			double phi = pos.getPhi();
 			double theta = pos.getTheta();			
 			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-			double h1 = TerrainElevation.getPatchedElevation(pos);
+			//double h1 = TerrainElevation.getPatchedElevation(pos);
 			
 			phi = Math.round(phi*1000.0)/1000.0;
 			theta = Math.round(theta*1000.0)/1000.0;
 
 			elevSB.append(ELEVATION)
 				.append(Math.round(h0*1000.0)/1000.0)
-				.append(" / " + Math.round(h1*1000.0)/1000.0)
+				//.append(" / " + Math.round(h1*1000.0)/1000.0)
 				.append(KM);
-			
-			if (TopoMarsMap.TYPE.equals(mapLayerPanel.getMapType())) {
-				int[] rgb = TerrainElevation.getRGB(pos);
-				
-				rgbSB.append(RGB).append(rgb[0]).append(COMMA)
-				.append(rgb[1]).append(COMMA)
-				.append(rgb[2]).append(CLOSE_P);
-			}
 			
 			coordSB.append(pos.getCoordinateString());
 			
@@ -852,7 +828,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties results = new Properties();
 
 		// Type of Map
-		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapType());
+		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapType().getId());
 		Coordinates center = globeNav.getCoordinates();
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
 		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());

@@ -11,16 +11,20 @@ import java.awt.MediaTracker;
 import java.awt.image.ImageObserver;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
+import org.mars_sim.mapdata.MapMetaData;
+import org.mars_sim.msp.common.FileLocator;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.tool.MoreMath;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 
 /**
@@ -62,21 +66,22 @@ public class MarsMap {
 	/**
 	 * Constructs a MarsMap object.
 	 * 
-	 * @param globeType   the type of globe
+	 * @param mapType   the type of globe
 	 * @param displayArea the display component for the map
 	 */
-	public MarsMap(MarsMapType globeType, JComponent displayArea) {
+	public MarsMap(MapMetaData mapType, JComponent displayArea) {
 
 		// Initialize Variables
-		// this.globeType = globeType;
 		this.displayArea = displayArea;
 		centerCoords = new Coordinates(PI_HALF, PI_HALF);
 
-		// Load Surface Map Image, which is now part of the globe enum
-		String imageName = globeType.getPath();
-
-		marsMap = ImageLoader.getImage(imageName);
-
+		// LOcate teh image file which may be downloaded from a remote site
+		File imageFile = FileLocator.locateFile(mapType.getLoResFile());
+		try {
+			marsMap = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			logger.severe("Can't read image file ");
+		}
 		// Prepare Sphere
 		setupSphere();
 	}

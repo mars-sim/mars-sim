@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
@@ -82,7 +83,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
 	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
-	private int mapType;
+	private MapMetaData mapType;
 
 	// height pixels divided by pi
 	private double rho = GLOBE_BOX_HEIGHT / Math.PI;
@@ -145,7 +146,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		this.desktop = navwin.getDesktop();
 
 		starfield = ImageLoader.getImage("map/starfield");
-		marsMap = new MarsMap(MarsMapType.SURFACE_MID, this);
+		//marsMap = new MarsMap(mapType, this);
 		
 		// Set component size
 		setPreferredSize(new Dimension(GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT));
@@ -153,7 +154,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
-		mapType = 0;
 		recreate = true;
 
 		addMouseListener(new MouseAdapter() {
@@ -171,9 +171,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		
 		addMouseMotionListener(dragger);
 
-		// Initially show real surface globe
-		showSurf();
-		
+
 		// Add listener once fully constructed
 		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 	}
@@ -216,69 +214,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			e.consume();
 		}
 	}
-	
-	/**
-	 * Displays surface globe, regenerating if necessary.
-	 */
-	public void showSurf() {
-		if (mapType != 0) {
-			marsMap = new MarsMap(MarsMapType.SURFACE_MID, this);
-			recreate = true;
-		}
-		mapType = 0;
-		showGlobe(centerCoords);
-	}
-
-	public int getMapType() {
-		return mapType;
-	}
 
 	/**
 	 * Displays topographical globe, regenerating if necessary.
 	 */
-	public void showTopo() {
-		if (mapType != 1) {
-			marsMap = new MarsMap(MarsMapType.TOPO_MID, this);
+	public void setMapType(MapMetaData newMapType) {
+		if (!newMapType.equals(mapType)) {
+			marsMap = new MarsMap(newMapType, this);
 			recreate = true;
 		}
-		mapType = 1;
-		showGlobe(centerCoords);
-	}
-
-
-	/**
-	 * Displays geological globe, regenerating if necessary.
-	 */
-	public void showGeo() {
-		if (mapType != 2) {
-			marsMap = new MarsMap(MarsMapType.GEO_MID, this);
-			recreate = true;
-		}
-		mapType = 2;
-		showGlobe(centerCoords);
-	}
-	
-	/**
-	 * Displays regional globe, regenerating if necessary.
-	 */
-	public void showRegion() {
-		if (mapType != 3) {
-			marsMap = new MarsMap(MarsMapType.REGION_MID, this);
-			recreate = true;
-		}
-		mapType = 3;
-		showGlobe(centerCoords);
-	}
-	
-	/**
-	 * Displays viking globe, regenerating if necessary.
-	 */
-	public void showViking() {
-		if (mapType != 4) {
-			marsMap = new MarsMap(MarsMapType.VIKING_MID, this);
-			recreate = true;
-		}
-		mapType = 4;
+		mapType = newMapType;
 		showGlobe(centerCoords);
 	}
 	
@@ -299,15 +244,17 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * Draws the sphere.
 	 */
 	public void updateDisplay() {
-		if (recreate) {
-			recreate = false;
-		}
-	
-		// Updates the position of the zoom box
-		updateZoomBox();
+		if (marsMap != null) {
+			if (recreate) {
+				recreate = false;
+			}
 		
-		// Regenerate globe
-		drawSphere();
+			// Updates the position of the zoom box
+			updateZoomBox();
+			
+			// Regenerate globe
+			drawSphere();
+		}
 	}
 
 	/**
@@ -410,17 +357,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			if (displayInfo != null && displayInfo.isGlobeDisplayed(unit)) {
 				Coordinates unitCoords = unit.getCoordinates();
 				if (centerCoords.getAngle(unitCoords) < HALF_PI) {
-					if (mapType == 0) {
-						g.setColor(displayInfo.getSurfGlobeColor());
-					} else if (mapType == 1) {
-						g.setColor(displayInfo.getTopoGlobeColor());
-					} else if (mapType == 2) {
-						g.setColor(displayInfo.getGeologyGlobeColor());
-					} else if (mapType == 3) {
-						g.setColor(displayInfo.getRegionGlobeColor());
-					} else if (mapType == 4) {
-						g.setColor(displayInfo.getVikingGlobeColor());						
-					}
+					g.setColor(displayInfo.getGlobeColor(mapType));
 					
 					IntPoint tempLocation = getUnitDrawLocation(unitCoords);
 					g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 3, 3);

@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import org.mars_sim.mapdata.MapData;
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 
@@ -25,7 +26,7 @@ import org.mars_sim.msp.core.Msg;
  * order to generate a map image.
  */
 @SuppressWarnings("serial")
-public abstract class CannedMarsMap extends JComponent implements Map {
+public class CannedMarsMap extends JComponent implements Map {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(CannedMarsMap.class.getName());
@@ -39,8 +40,6 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	private JComponent displayArea = null;
 
 	private Coordinates currentCenter = null;
-
-	private String type;
 	
 	/**
 	 * Constructor.
@@ -49,15 +48,17 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * @param type The type name
 	 * @param mapData     the map data.
 	 */
-	protected CannedMarsMap(JComponent displayArea, String type, MapData mapData) {
+	protected CannedMarsMap(JComponent displayArea, MapData mapData) {
 		this.mapData = mapData;
-		this.type = type;
 		this.displayArea = displayArea;
 	}
 
+	/** 
+	 * Get meta details of the underlying map
+	 */
 	@Override
-	public String getType() {
-		return type;
+	public MapMetaData getType() {
+		return mapData.getMetaData();
 	}
 
 	/**

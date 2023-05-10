@@ -7,29 +7,54 @@
 
  package org.mars_sim.mapdata;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.mars_sim.msp.common.FileLocator;
+
 /**	
   * A factory for map data.
   */
  class MapDataFactory {
 
- 	// Static members.
- 	static final int SURFACE_MAP_DATA = 0; 		// "surface map data";
- 	static final int TOPO_MAP_DATA = 1; 		// "topographical map data";
- 	static final int GEOLOGY_MAP_DATA = 2; 		// "geological ages map data"
- 	static final int REGION_MAP_DATA = 3; 		// "regional map data"
- 	static final int VIKING_MAP_DATA = 4; 		// "viking map data"
 
-	private static final String SURFACE_MAP_FILE = "/maps/Orange_blended_surface_height_region_names_5760.jpg"; //"/maps/surface8192x4096.jpg";
-	private static final String TOPO_MAP_FILE = "/maps/MRO_CTX_EZ_Human_Landing_Sites.jpg"; // "/maps/topo2880x1440.jpg"; // "/maps/topo8192x4096.jpg";
-	private static final String GEO_MAP_FILE = "/maps/Mars_Global_Geology_Mariner9_12ppd.jpg"; // "/maps/geo2880x1440.jpg"; 
-	private static final String REGION_MAP_FILE = "/maps/Colorized_topo_region_names_5760.jpg" ; // "region8192x4096.jpg"; 
-	private static final String VIKING_MAP_FILE = "/maps/Orange_MDIM2.1_8192x4096.jpg"; 
+	// The map properties MUST contain at least this map
+	private static final String SURF_MAP = "surface";
+	private static final String MAP_PROPERTIES = "/mapdata.properties";
+
+	private Map<String,MapMetaData> metaData = new HashMap<>();
 
  	/**
  	 * Constructor.
  	 */
  	MapDataFactory() {
- 		// nothing
+ 		Properties mapProps = new Properties();
+		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
+			mapProps.load(propsStream);
+
+			for(String id : mapProps.stringPropertyNames()) {
+				// Split the details into the parts
+				String[] value = mapProps.getProperty(id).split(",");
+				boolean isColour = Boolean.parseBoolean(value[1]);
+				String hiRes = value[2];
+				String loRes = value[3];
+
+				// Locally avialable is based on hires image which will be bigger
+				boolean isLocal = FileLocator.isLocallyAvailable(hiRes);
+				metaData.put(id, new MapMetaData(id, value[0], isLocal, isColour, hiRes, loRes));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (!metaData.containsKey(SURF_MAP)) {
+			throw new IllegalStateException("There is no map data for '" + SURF_MAP + "' defined");
+		}
  	}
 
  	/**
@@ -38,17 +63,23 @@
  	 * @param mapType the map type.
  	 * @return the map data.
  	 */
- 	MapData getMapData(int mapType) {
+ 	MapData getMapData(String mapType) {
 
- 		String filename = switch (mapType) {
-			case SURFACE_MAP_DATA -> SURFACE_MAP_FILE;
-			case GEOLOGY_MAP_DATA -> GEO_MAP_FILE;
-			case TOPO_MAP_DATA -> TOPO_MAP_FILE;
-			case REGION_MAP_DATA -> REGION_MAP_FILE; 
-			case VIKING_MAP_DATA -> VIKING_MAP_FILE;
-			default -> throw new IllegalArgumentException("No map data for type" + mapType);
+		MapMetaData mt = metaData.get(mapType);
+ 		if (mt == null) {
+			throw new IllegalArgumentException("No map data for type" + mapType);
 		};
 		
- 		return new IntegerMapData(filename);
+		// Patch the metadata to be locally available
+		mt.setLocallyAvailable(true);
+ 		return new IntegerMapData(mt);
  	}
+
+	/**
+	 * Get the available map types
+	 * @return
+	 */
+	public Collection<MapMetaData> getLoadedTypes() {
+		return metaData.values();
+	}
  }

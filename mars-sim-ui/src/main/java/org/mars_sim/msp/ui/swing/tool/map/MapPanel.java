@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -37,6 +39,11 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel {
+
+	/**
+	 *
+	 */
+	public static final String DEFAULT_MAPTYPE = "surface";
 
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	
@@ -54,7 +61,6 @@ public class MapPanel extends JPanel {
 	private boolean update;
 
 	private String mapErrorMessage;
-	private String oldMapStringType;
 
 	private List<MapLayer> mapLayers;
 
@@ -66,6 +72,9 @@ public class MapPanel extends JPanel {
 	
 	private MainDesktopPane desktop;
 
+	private boolean recreateMap = false;
+	private static final MapDataUtil mapUtil = MapDataUtil.instance();
+
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
 		this.desktop = desktop;
@@ -73,8 +82,7 @@ public class MapPanel extends JPanel {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map instance as surf map
-		setMapType(SurfMarsMap.TYPE);
-		oldMapStringType = marsMap.getType();
+		setMapType(DEFAULT_MAPTYPE);
 		
 		mapError = false;
 		wait = false;
@@ -92,10 +100,6 @@ public class MapPanel extends JPanel {
 	 * Sets up the mouse dragging capability
 	 */
 	public void setNavWin(NavigatorWindow navwin) {
-		// showMap(centerCoords);
-		setMapType(getMapType());
-		
-//		if (map != null) map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
@@ -141,10 +145,6 @@ public class MapPanel extends JPanel {
 	 * Sets up the mouse dragging capability
 	 */
 	public void setNavpointPanel(NavpointPanel panel) {
-		// showMap(centerCoords);
-		setMapType(getMapType());
-		
-//		if (map != null) map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
@@ -237,7 +237,7 @@ public class MapPanel extends JPanel {
 	 * 
 	 * @return map type.
 	 */
-	public String getMapType() {
+	public MapMetaData getMapType() {
 		return marsMap.getType();
 	}
 
@@ -250,23 +250,9 @@ public class MapPanel extends JPanel {
 	 */
 	public void setMapType(String mapStringType) {
 		
-		if (!mapStringType.equals(oldMapStringType)) {
-			
-			if (SurfMarsMap.TYPE.equals(mapStringType)) {
-				marsMap = new SurfMarsMap(this);
-			}
-			else if (TopoMarsMap.TYPE.equals(mapStringType)) {
-				marsMap = new TopoMarsMap(this);
-			}
-			else if (GeologyMarsMap.TYPE.equals(mapStringType)) {
-				marsMap = new GeologyMarsMap(this);
-			}
-			else if (RegionMarsMap.TYPE.equals(mapStringType)) {
-				marsMap = new RegionMarsMap(this);
-			}
-			else if (VikingMarsMap.TYPE.equals(mapStringType)) {
-				marsMap = new VikingMarsMap(this);
-			}
+		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
+			marsMap = new CannedMarsMap(this, mapUtil.getMapData(mapStringType));
+			recreateMap = true;
 		}
 			
 		showMap(centerCoords);
@@ -277,7 +263,6 @@ public class MapPanel extends JPanel {
 	}
 
 	public void showMap(Coordinates newCenter) {
-		boolean recreateMap = false;
 		if (centerCoords == null) {
 			if (newCenter != null) {
 				recreateMap = true;
@@ -290,15 +275,10 @@ public class MapPanel extends JPanel {
 			} 
 		}
 
-		String mapStringType = marsMap.getType();
-		if (!mapStringType.equals(oldMapStringType)) {
-			recreateMap = true;
-			oldMapStringType = mapStringType;
-		}
-
 		if (recreateMap) {
 			wait = true;
 			updateDisplay();
+			recreateMap = false;
 		}
 	}
 
