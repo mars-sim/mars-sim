@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
@@ -247,15 +248,22 @@ public class MapPanel extends JPanel {
 
 	/**
 	 * Sets the map type.
+	 * @return map type set successfully
 	 */
-	public void setMapType(String mapStringType) {
+	public boolean setMapType(String mapStringType) {
 		
 		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
+			MapData data = mapUtil.getMapData(mapStringType);
+			if (data == null) {
+				logger.warning("Map type cannot be loaded " + mapStringType);
+				return false;
+			}
 			marsMap = new CannedMarsMap(this, mapUtil.getMapData(mapStringType));
 			recreateMap = true;
 		}
 			
 		showMap(centerCoords);
+		return true;
 	}
 
 	public Coordinates getCenterLocation() {

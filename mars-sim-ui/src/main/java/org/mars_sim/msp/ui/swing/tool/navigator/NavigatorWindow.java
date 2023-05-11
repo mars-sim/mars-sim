@@ -513,17 +513,24 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newMapType New map Type
 	 */
 	private void setMapType(String newMapType) {
-		mapLayerPanel.setMapType(newMapType);
+		if (mapLayerPanel.setMapType(newMapType)) {
+			// Update dependent panels
+			MapMetaData metaType = mapLayerPanel.getMapType();
+			globeNav.setMapType(metaType);
 
-		MapMetaData metaType = mapLayerPanel.getMapType();
-		globeNav.setMapType(metaType);
-
-		if (metaType.isColourful()) {
-			// turn off day night layer
-			setMapLayer(false, DAYLIGHT_LAYER);
-			// turn off mineral layer
-			setMapLayer(false, MINERAL_LAYER);
-			mineralsButton.setEnabled(false);
+			if (metaType.isColourful()) {
+				// turn off day night layer
+				setMapLayer(false, DAYLIGHT_LAYER);
+				// turn off mineral layer
+				setMapLayer(false, MINERAL_LAYER);
+				mineralsButton.setEnabled(false);
+			}
+		}
+		else {
+			// Inform user
+			JOptionPane.showMessageDialog(getFocusOwner(), "There was a problem loading the map data",
+													"Problem loading Map",
+													JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

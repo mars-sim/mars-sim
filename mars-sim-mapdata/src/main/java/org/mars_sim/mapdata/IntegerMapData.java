@@ -13,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -62,19 +61,15 @@ import org.mars_sim.msp.common.FileLocator;
  	 * 
 	 * @param name   the name/description of the data
  	 * @param filename   the map data file name.
+ 	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData meta) {
+ 	IntegerMapData(MapMetaData meta) throws IOException {
  	
- 		try {
- 			// Load data files
- 			pixels = loadMapData(meta.getHiResFile());
-			rho =  pixelHeight / Math.PI;
-			this.meta = meta;
-			logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
- 			
- 		} catch (IOException e) {
- 			logger.log(Level.SEVERE, "Could not find the map file.", e);
- 		}
+		// Load data files
+		pixels = loadMapData(meta.getHiResFile());
+		rho =  pixelHeight / Math.PI;
+		this.meta = meta;
+		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
 	/**

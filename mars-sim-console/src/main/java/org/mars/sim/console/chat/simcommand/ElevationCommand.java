@@ -30,7 +30,6 @@ public class ElevationCommand extends ChatCommand {
 	public boolean execute(Conversation context, String input) {
 		Coordinates location = null;
 		double elevationMOLA = 0;
-		double elevationColor = 0;
 		boolean result = false;
 		
 		// If a Unit then that is the start location

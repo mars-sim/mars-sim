@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.common.FileLocator;
 
@@ -21,6 +23,7 @@ import org.mars_sim.msp.common.FileLocator;
   */
  class MapDataFactory {
 
+	private static Logger logger = Logger.getLogger(MapDataFactory.class.getName());
 
 	// The map properties MUST contain at least this map
 	private static final String SURF_MAP = "surface";
@@ -48,8 +51,7 @@ import org.mars_sim.msp.common.FileLocator;
 				metaData.put(id, new MapMetaData(id, value[0], isLocal, isColour, hiRes, loRes));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IllegalStateException("Cannot load " + MAP_PROPERTIES, e);
 		}
 
 		if (!metaData.containsKey(SURF_MAP)) {
@@ -61,18 +63,27 @@ import org.mars_sim.msp.common.FileLocator;
  	 * Gets map data of the requested type.
  	 * 
  	 * @param mapType the map type.
- 	 * @return the map data.
+ 	 * @return the map data. Maybe null if problems
  	 */
  	MapData getMapData(String mapType) {
 
 		MapMetaData mt = metaData.get(mapType);
  		if (mt == null) {
-			throw new IllegalArgumentException("No map data for type" + mapType);
+			logger.warning("Map type " + mapType + " unknown.");
+			return null;
 		};
 		
-		// Patch the metadata to be locally available
-		mt.setLocallyAvailable(true);
- 		return new IntegerMapData(mt);
+
+ 		MapData result = null;
+		try {
+			result = new IntegerMapData(mt);
+			
+			// Patch the metadata to be locally available
+			mt.setLocallyAvailable(true);
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Could not find the map file.", e);
+		}
+		return result;
  	}
 
 	/**
