@@ -35,8 +35,7 @@
 	<!ATTLIST mission-type boost CDATA #REQUIRED>
 ]>
 
-<simulation-configuration
-		content-url="https://raw.githubusercontent.com/mars-sim/mars-sim/download_issue867/content">
+<simulation-configuration>
 
 	<!-- Time related configuration -->
 	<time-configuration>
