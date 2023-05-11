@@ -12,6 +12,7 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
@@ -42,24 +43,13 @@ public class UnitIconMapLayer extends UnitMapLayer {
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getSurfMapIcon(unit));
+		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getMapIcon(unit, baseMap.getType()));
 		int locX = imageLocation.getiX();
 		int locY = imageLocation.getiY();
 
 		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
-			String mapType = baseMap.getType();
-			Icon displayIcon = null;
-			if (SurfMarsMap.TYPE.equals(mapType))
-				displayIcon = displayInfo.getSurfMapIcon(unit);
-			else if (TopoMarsMap.TYPE.equals(mapType))
-				displayIcon = displayInfo.getTopoMapIcon(unit);
-			else if (GeologyMarsMap.TYPE.equals(mapType))
-				displayIcon = displayInfo.getGeologyMapIcon(unit);
-			else if (RegionMarsMap.TYPE.equals(mapType))
-				displayIcon = displayInfo.getRegionMapIcon(unit);	
-			else if (VikingMarsMap.TYPE.equals(mapType))
-				displayIcon = displayInfo.getVikingMapIcon(unit);	
-	
+			MapMetaData mapType = baseMap.getType();
+			Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
 			if (g != null)
 				displayIcon.paintIcon(displayComponent, g, locX, locY);
 		}

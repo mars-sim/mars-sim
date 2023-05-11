@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Image;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 
 /**
@@ -66,7 +67,7 @@ public interface Map {
 	 * 
 	 * @return
 	 */
-	public String getType();
+	public MapMetaData getType();
 
 	/**
 	 * Gets the height of this map in pixels.

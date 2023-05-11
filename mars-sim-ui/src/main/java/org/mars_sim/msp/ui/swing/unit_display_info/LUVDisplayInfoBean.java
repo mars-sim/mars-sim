@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
-import java.awt.Color;
-
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Unit;
@@ -59,24 +57,6 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
     	else return "";
 	}
 
-
-	@Override
-	public Icon getGeologyMapIcon(Unit unit) {
-		return null;
-	}
-
-
-	@Override
-	public Color getGeologyMapLabelColor() {
-		return null;
-	}
-
-
-	@Override
-	public Color getGeologyGlobeColor() {
-		return null;
-	}
-	
 	@Override
 	public boolean isMapDisplayed(Unit unit) {
         return false;

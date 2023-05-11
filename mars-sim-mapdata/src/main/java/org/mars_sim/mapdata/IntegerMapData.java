@@ -11,12 +11,13 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+
+import org.mars_sim.msp.common.FileLocator;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -52,25 +53,34 @@ import javax.imageio.ImageIO;
 	private int pixelHeight;
 	// height pixels divided by pi
 	private double rho;
+	// Name of the map
+	private MapMetaData meta;
  	
  	/**
  	 * Constructor
  	 * 
- 	 * @param mapFileName   the map data file name.
+	 * @param name   the name/description of the data
+ 	 * @param filename   the map data file name.
+ 	 * @throws IOException Problem loading map data
  	 */
- 	public IntegerMapData(String mapFileName) {
+ 	IntegerMapData(MapMetaData meta) throws IOException {
  	
- 		try {
- 			// Load data files
- 			pixels = loadMapData(mapFileName);
-			rho =  pixelHeight / Math.PI;
-			logger.info("Loaded " + mapFileName + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
- 			
- 		} catch (IOException e) {
- 			logger.log(Level.SEVERE, "Could not find the map file.", e);
- 		}
+		// Load data files
+		pixels = loadMapData(meta.getHiResFile());
+		rho =  pixelHeight / Math.PI;
+		this.meta = meta;
+		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
+	/**
+	 * The name of the map
+	 * @return
+	 */
+	@Override
+	public MapMetaData getMetaData() {
+		return meta;
+	}
+	
 	/**
 	 * Gets the scale of pixel to Mars surface degree.
 	 * 
@@ -104,14 +114,14 @@ import javax.imageio.ImageIO;
  	/**
  	 * Loads the whole map data set into an 2-D integer array.
  	 * 
- 	 * @param imageURL
+ 	 * @param imageName
  	 * @return
  	 * @throws IOException
  	 */
- 	private int[][] loadMapData(String imageURL) throws IOException {
+ 	private int[][] loadMapData(String imageName) throws IOException {
 
- 		URL imageMapURL = IntegerMapData.class.getResource(imageURL);
- 		BufferedImage image = ImageIO.read(imageMapURL);
+ 		File imageFile = FileLocator.locateFile(imageName);
+ 		BufferedImage image = ImageIO.read(imageFile);
 
  		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
  		pixelWidth = image.getWidth();

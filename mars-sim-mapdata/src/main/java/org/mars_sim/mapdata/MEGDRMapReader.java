@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import org.mars_sim.msp.common.FileLocator;
+
 import com.google.common.io.ByteStreams;
 
 /**
@@ -113,37 +115,21 @@ public class MEGDRMapReader {
 	 * @return
 	 */
 	public short[] loadElevation() {	 
-		InputStream inputStream = null;
 		
-	    try {
-	    	// open input stream test.txt for reading purpose.
-	    	inputStream = MEGDRMapReader.class.getResourceAsStream(FILE);
+	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(FILE))) {
 
 			// Use ByteStreams to convert to byte array
 			byte[] bytes = ByteStreams.toByteArray(inputStream);
 			
-//			System.out.println("# of bytes: " + bytes.length);
-			// megt90n000cb has a total of 2,073,600 bytes.
-			// megt90n000cb has a total of 33,177,600 bytes.
-			
 			elevation = convertByteArrayToShortIntArray(bytes);
-			
-//			System.out.println("# of short ints: " + elevation.length);
-			// megt90n000cb has a total of 1,036,800 short ints.
-			// megt90n000eb has a total of 16,588,800 short ints.
+
 			
 			height = (short) Math.sqrt(elevation.length / 2);
 			width = (short) (height * 2);
 			
-//			System.out.println("height: " + height
-//							+ "  width: " + width);
-
-        if (inputStream != null)
-	        inputStream.close();
 	            
 		} catch (Exception e) {
 			 System.out.println("Problems in inputStream: " + e.getMessage());
-
 		}
 	    
         return elevation;

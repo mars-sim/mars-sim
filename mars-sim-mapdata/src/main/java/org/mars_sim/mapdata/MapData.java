@@ -55,4 +55,10 @@
      * @return
      */
     public int getWidth();
+
+    /**
+     * Get the Meta data of the map
+     * @return
+     */
+    public MapMetaData getMetaData();
  }

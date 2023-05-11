@@ -45,11 +45,7 @@ public class VehicleTrailMapLayer implements MapLayer {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Set trail color
-		Color c = switch (baseMap.getType()) {
-			case TopoMarsMap.TYPE -> Color.BLACK;
-			case RegionMarsMap.TYPE, GeologyMarsMap.TYPE -> Color.BLACK;
-			default -> new Color(0, 96, 0);
-		};
+		Color c = (baseMap.getType().isColourful() ? Color.BLACK : new Color(0, 96, 0));
 		g.setColor(c);
 
 		// Draw trail

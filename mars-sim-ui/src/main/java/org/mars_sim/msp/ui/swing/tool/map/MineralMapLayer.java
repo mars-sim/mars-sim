@@ -61,8 +61,7 @@ public class MineralMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
-		// the line below can create nullpointerexception if shutdown swiftly in eclipse
-		String mapType = baseMap.getType();
+		String mapType = baseMap.getType().getId();
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
 			mapCenterCache = new Coordinates(mapCenter);
 			mapTypeCache = mapType;

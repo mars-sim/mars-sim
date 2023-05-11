@@ -7,6 +7,8 @@
 
  package org.mars_sim.mapdata;
 
+import java.util.Collection;
+
 /**
   * Static utility class for accessing Mars map data.
   */
@@ -68,7 +70,14 @@
  		if (index > height * width)
  			index = height * width - 1;
  		
- 		return getElevationArray()[index];
+
+ 		short []data = getElevationArray();
+        short result = 0;
+        if (data != null) {
+            result = data[index];
+        }
+
+        return result;
  	}
  	
      /**
@@ -88,43 +97,15 @@
       * 
       * @return surface map data.
       */
-     public MapData getSurfaceMapData() {
-         return mapDataFactory.getMapData(MapDataFactory.SURFACE_MAP_DATA);
+     public MapData getMapData(String mapType) {
+         return mapDataFactory.getMapData(mapType);
      }
-     
+
      /**
-      * Gets the topographical map data.
-      * 
-      * @return topographical map data.
+      * Get the map types available
+      * @return
       */
-     public MapData getTopoMapData() {
-         return mapDataFactory.getMapData(MapDataFactory.TOPO_MAP_DATA);
-     }
-     
-     /**
-      * Gets the geology map data.
-      * 
-      * @return geology map data.
-      */
-     public MapData getGeologyMapData() {
-         return mapDataFactory.getMapData(MapDataFactory.GEOLOGY_MAP_DATA);
-     }
-       
-     /**
-      * Gets the region map data.
-      * 
-      * @return region map data.
-      */
-     public MapData getRegionMapData() {
-         return mapDataFactory.getMapData(MapDataFactory.REGION_MAP_DATA);
-     }
-     
-     /**
-      * Gets the viking map data.
-      * 
-      * @return viking map data.
-      */
-     public MapData getVikingMapData() {
-         return mapDataFactory.getMapData(MapDataFactory.VIKING_MAP_DATA);
-     }
+    public Collection<MapMetaData> getMapTypes() {
+        return mapDataFactory.getLoadedTypes();
+    }
  }

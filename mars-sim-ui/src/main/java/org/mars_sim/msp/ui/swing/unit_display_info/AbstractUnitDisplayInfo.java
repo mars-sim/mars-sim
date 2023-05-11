@@ -11,6 +11,7 @@ import java.awt.Font;
 
 import javax.swing.Icon;
 
+import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Unit;
 
 /**
@@ -25,27 +26,7 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
     }
 
     @Override
-    public Icon getSurfMapIcon(Unit unit) {
-        return null;
-    }
-
-    @Override
-    public Icon getTopoMapIcon(Unit unit) {
-        return null;
-    }
-
-    @Override
-    public Icon getGeologyMapIcon(Unit unit) {
-        return null;
-    }
-
-    @Override
-    public Icon getRegionMapIcon(Unit unit) {
-        return null;
-    }
-
-    @Override
-    public Icon getVikingMapIcon(Unit unit) {
+    public Icon getMapIcon(Unit unit, MapMetaData type) {
         return null;
     }
     
@@ -55,29 +36,10 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
     }
 
     @Override
-    public Color getSurfMapLabelColor() {
+    public Color getMapLabelColor(MapMetaData type) {
         return null;
     }
 
-    @Override
-    public Color getTopoMapLabelColor() {
-        return null;
-    }
-
-    @Override
-    public Color getGeologyMapLabelColor() {
-        return null;
-    }
-
-    @Override
-    public Color getRegionMapLabelColor() {
-        return null;
-    }
-
-    @Override
-    public Color getVikingMapLabelColor() {
-        return null;
-    }
     
     @Override
     public Font getMapLabelFont() {
@@ -95,27 +57,7 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
     }
 
     @Override
-    public Color getSurfGlobeColor() {
-        return null;
-    }
-
-    @Override
-    public Color getTopoGlobeColor() {
-        return null;
-    }
-
-    @Override
-    public Color getGeologyGlobeColor() {
-        return null;
-    }
-
-    @Override
-    public Color getRegionGlobeColor() {
-        return null;
-    }
-    
-    @Override
-    public Color getVikingGlobeColor() {
+    public Color getGlobeColor(MapMetaData type) {
         return null;
     }
     
