@@ -1436,7 +1436,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+//			setCoordinates(newContainer.getCoordinates());
+			setNullCoordinates();
 			// 2. Set LocationStateType
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// 3. Set containerID

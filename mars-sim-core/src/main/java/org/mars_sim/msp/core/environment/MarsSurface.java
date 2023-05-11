@@ -112,7 +112,7 @@ public class MarsSurface extends Unit {
 	 */
 	public boolean addVehicle(Vehicle vehicle) {
 		synchronized (vehicleList) {
-			// There is a bug somewhere because Drones in Delivery remianing on the Surface
+			// There is a bug somewhere because Drones in delivery remains on the Surface
 			if (vehicleList.contains(vehicle)) {
 				return true;
 			}

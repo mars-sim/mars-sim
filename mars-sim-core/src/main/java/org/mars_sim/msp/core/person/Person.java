@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2022-07-19
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -1288,7 +1288,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	public Settlement findSettlementVicinity() {
-		return getLocationTag().findSettlementVicinity();
+		if (isRightOutsideSettlement())
+			return getLocationTag().findSettlementVicinity();
+		else
+			return null;
 	}
 
 	@Override
@@ -1735,7 +1738,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -1975,15 +1977,20 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				return;
 			}
 			// 1. Set Coordinates
-			Coordinates newCoords = newContainer.getCoordinates();
-			if (newCoords != null) {
-				// A surface has no coords
-				setCoordinates(newCoords);
+			if (newContainer.getUnitType() == UnitType.PLANET) {
+				// Since it's on the surface of Mars,
+				// First set its initial location to its old parent's location as it's leaving its parent.
+				// Later it may move around and updates its coordinates by itself
+				setCoordinates(getContainerUnit().getCoordinates());
 			}
-			// 2. Set LocationStateType
+			else {
+				// Null its coordinates since it's now slaved after its parent
+				setNullCoordinates();
+			}
+			// 2. Set new LocationStateType
 			updatePersonState(newContainer);
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
+			// TODO: what to set for a deceased person ?
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -2156,11 +2163,11 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 
-		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-			for (Equipment e: getEquipmentSet()) {
-				e.setCoordinates(newLocation);
-			}
-		}
+//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+//			for (Equipment e: getEquipmentSet()) {
+//				e.setCoordinates(newLocation);
+//			}
+//		}
 	}
 
 	/**

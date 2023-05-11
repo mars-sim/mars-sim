@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SearchWindow.java
- * @date 2021-08-28
+ * @date 2023-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
@@ -19,7 +19,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -57,9 +56,7 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 @SuppressWarnings("serial")
 public class SearchWindow
 extends ToolWindow {
-	
-	private static final Logger logger = Logger.getLogger(SearchWindow.class.getName());
-	
+
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "action/find";

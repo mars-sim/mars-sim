@@ -473,6 +473,15 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Propeller" type="vehicle" mass="2.0" >
+		<description>polycarbonate propeller for drones</description>
+		<maintenance-entity-list>
+			<entity name="delivery drone" probability="5" max-number="4" />
+		</maintenance-entity-list>
+	</part>
+
+
+
 	<part name="Vehicle Frame - small" type="vehicle" mass="75.0" />
 
 	<part name="Wheel - small" type="vehicle"  mass="4.45" >

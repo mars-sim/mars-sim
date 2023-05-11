@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2022-09-12
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -434,7 +434,6 @@ public class Settlement extends Structure implements Temporal,
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
-
 	/**
 	 * Initialize field data, class and maps
 	 */
@@ -533,7 +532,25 @@ public class Settlement extends Structure implements Temporal,
 		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
 	}
 
-	/*
+	/**
+	 * Gets the terrain elevation.
+	 * 
+	 * @return
+	 */
+	public double getElevation() {
+		return terrainProfile[0];
+	}
+
+	/**
+	 * Gets the terrain gradient.
+	 * 
+	 * @return
+	 */
+	public double getGradient() {
+		return terrainProfile[1];
+	}
+	
+	/**
 	 * Gets sponsoring agency for the person.
 	 */
 	public ReportingAuthority getSponsor() {
@@ -2172,14 +2189,14 @@ public class Settlement extends Structure implements Temporal,
 	
 	
 	/**
-	 * Adds an equipment to be owned by the settlement
+	 * Adds an equipment to be owned by the settlement.
 	 *
 	 * @param e the equipment
+	 * @return true if this settlement can carry it
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -3372,30 +3389,30 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory;
 	}
 
-	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 */
-	@Override
-	public void setContainerUnit(Unit newContainer) {
-		if (newContainer != null) {
-			if (newContainer.equals(getContainerUnit())) {
-				return;
-			}
-			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
-			// 2. Set LocationStateType
-			currentStateType = LocationStateType.MARS_SURFACE;
-			// 3. Set containerID
-			setContainerID(newContainer.getIdentifier());
-			// 4. Fire the container unit event
-			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-		}
-		else {
-			setContainerID(MARS_SURFACE_UNIT_ID);
-		}
-	}
+//	/**
+//	 * Sets the unit's container unit.
+//	 *
+//	 * @param newContainer the unit to contain this unit.
+//	 */
+//	@Override
+//	public void setContainerUnit(Unit newContainer) {
+//		if (newContainer != null) {
+//			if (newContainer.equals(getContainerUnit())) {
+//				return;
+//			}
+//			// 1. Set Coordinates
+//			setCoordinates(newContainer.getCoordinates());
+//			// 2. Set LocationStateType
+//			currentStateType = LocationStateType.MARS_SURFACE;
+//			// 3. Set containerID
+//			setContainerID(newContainer.getIdentifier());
+//			// 4. Fire the container unit event
+//			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+//		}
+//		else {
+//			setContainerID(MARS_SURFACE_UNIT_ID);
+//		}
+//	}
 
 	
     public SettlementTaskManager getTaskManager() {

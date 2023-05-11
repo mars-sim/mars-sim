@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Robot.java
- * @date 2022-07-23
+ * @date 2023-05-09
  * @author Manny Kung
  */
 
@@ -630,9 +630,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	public Settlement findSettlementVicinity() {
-		return getLocationTag().findSettlementVicinity();
+		if (isRightOutsideSettlement())
+			return getLocationTag().findSettlementVicinity();
+		else
+			return null;
 	}
-
 	/**
 	 * Returns a reference to the robot's skill manager
 	 *
@@ -771,15 +773,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Adds an equipment to this person
+	 * Adds an equipment to this robot.
 	 *
 	 * @param equipment
-	 * @return true if this person can carry it
+	 * @return true if this robot can carry it
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setCoordinates(getCoordinates());
 			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
@@ -1011,11 +1012,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				return;
 			}
 			// 1. Set Coordinates
-			setCoordinates(newContainer.getCoordinates());
+			if (newContainer.getUnitType() == UnitType.PLANET) {
+				// Since it's on the surface of Mars,
+				// First set its initial location to its old parent's location as it's leaving its parent.
+				// Later it may move around and updates its coordinates by itself
+				setCoordinates(getContainerUnit().getCoordinates());
+			}
+			else {
+				// Null its coordinates since it's now slaved after its parent
+				setNullCoordinates();
+			}
 			// 2. Set LocationStateType
 			updateRobotState(newContainer);
 			// 3. Set containerID
-			// Q: what to set for a deceased person ?
+			// TODO: what to set for a decommissioned robot ?
 			setContainerID(newContainer.getIdentifier());
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -1239,11 +1249,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 
-		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-			for (Equipment e: getEquipmentSet()) {
-				e.setCoordinates(newLocation);
-			}
-		}
+//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
+//			for (Equipment e: getEquipmentSet()) {
+//				e.setCoordinates(newLocation);
+//			}
+//		}
 	}
 	
 	/** 

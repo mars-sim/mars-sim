@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Unit.java
- * @date 2021-10-20
+ * @date 2023-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The Unit class is the abstract parent class to all units in the Simulation.
+ * The Unit class is the abstract parent class to all units in the simulation.
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
@@ -49,28 +49,24 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	// Unique Unit identifier
 	private int identifer;
-
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-
+	/** The last pulse applied. */
+	private long lastPulse = 0;
+	
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** Commander's notes on this unit. */
 	private String notes = "";
-
 	/** The unit's location tag. */
 	private LocationTag tag;
-
-	/** The last pulse applied */
-	private long lastPulse = 0;
-
-	/** Unit location coordinates. */
+	/** The unit's coordinates. */
 	private Coordinates location;
 
+	/** The unit's current location state. */
 	protected LocationStateType currentStateType;
-
 	/** Unit listeners. */
 	private transient Set<UnitListener> listeners;
 
@@ -126,10 +122,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Constructor wher ethe identifer is predefined
+	 * Constructor 1: the name and identifier are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
-	 * @param id Unit identifer
+	 * @param id Unit identifier
 	 * @param containerId Identifier of the container
 	 */
 	protected Unit(String name, int id, int containerId) {
@@ -143,7 +139,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor 2: where the name and location are defined.
 	 *
 	 * @param name     {@link String} the name of the unit
 	 * @param location {@link Coordinates} the unit's location
@@ -208,6 +204,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			setCoordinates(location);
 		}
 		else
+			// Set to (0, 0) when still initializing Settlement instance
 			this.location = new Coordinates(0D, 0D);
 
 		if (diagnosticFile != null) {
@@ -249,7 +246,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Change the unit's name
+	 * Changes the unit's name.
 	 *
 	 * @param newName new name
 	 */
@@ -259,7 +256,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's name
+	 * Gets the unit's name.
 	 *
 	 * @return the unit's name
 	 */
@@ -268,7 +265,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's nickname
+	 * Gets the unit's nickname.
 	 *
 	 * @return the unit's nickname
 	 */
@@ -277,7 +274,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's shortened name
+	 * Gets the unit's shortened name.
 	 *
 	 * @return the unit's shortened name
 	 */
@@ -315,7 +312,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Sets the unit's name
+	 * Sets the unit's name.
 	 *
 	 * @param name new name
 	 */
@@ -325,7 +322,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's description
+	 * Gets the unit's description.
 	 *
 	 * @return description
 	 */
@@ -363,16 +360,24 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the unit's location
+	 * Gets the unit's location.
 	 *
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
-		return location;
+		if (LocationStateType.MARS_SURFACE == currentStateType) {	
+			return location;
+		}
+		else if (getUnitType() == UnitType.SETTLEMENT) {	
+			return location;
+		}
+		else {
+			return getTopContainerUnit().getCoordinates();
+		}
 	}
 
 	/**
-	 * Sets unit's location coordinates
+	 * Sets unit's location coordinates.
 	 *
 	 * @param newLocation the new location of the unit
 	 */
@@ -381,6 +386,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 
+	/**
+	 * Sets unit's location coordinates to null.
+	 */
+	public void setNullCoordinates() {
+		location = null;
+		// fireUnitUpdate(UnitEventType.LOCATION_EVENT, getTopContainerUnit().getCoordinates());
+	}
+	
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
@@ -449,14 +462,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 
 		// 1. Set Coordinates
-		if (newContainer == null) {
-			// e.g. for MarsSurface and for a deceased person
-			// Set back to its previous container unit's coordinates
-		} else {
-			// Slave the coordinates to that of the newContainer
-			setCoordinates(newContainer.getCoordinates());
+		if (newContainer == null || newContainer.getUnitType() == UnitType.PLANET) {
+			// Since it's on the surface of Mars,
+			// First set its initial location to its old parent's location as it's leaving its parent.
+			// Later it will move around and updates its coordinates by itself
+			setCoordinates(getContainerUnit().getCoordinates());
 		}
-
+		else {
+			// Null its coordinates since it's now slaved after its parent
+			setNullCoordinates();
+		}
+		
 		// 2. Set LocationStateType
 		if (getUnitType() == UnitType.PLANET) {
 			currentStateType = LocationStateType.OUTER_SPACE;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Structure.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-05-09
  * @author Scott Davis
  */
 
@@ -12,13 +12,8 @@ import org.mars_sim.msp.core.Unit;
 
 /**
  * The Structure class is an abstract class that represents a
- * man-made structure such as a settlement, a building, a transponder or
- * a supply cache.
+ * man-made structure such as a settlement, a building, or a construction site.
  */
-//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-//@JsonSubTypes({ @Type(value = Settlement.class, name = "settlement"),
-//				@Type(value = Building.class, name = "building"),
-//				@Type(value = ConstructionSite.class, name = "constructionSite")})
 public abstract class Structure extends Unit {
 
 	/** default serial id. */
@@ -26,6 +21,7 @@ public abstract class Structure extends Unit {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param name the name of the unit
 	 * @param location the unit's location
 	 */

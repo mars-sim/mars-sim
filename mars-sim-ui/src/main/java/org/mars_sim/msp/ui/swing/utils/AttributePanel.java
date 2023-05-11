@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AttributePanel.java
- * @date 2023-03-03
+ * @date 2023-05-09
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.utils;
@@ -28,7 +28,7 @@ public class AttributePanel extends JPanel {
     }
 
     public AttributePanel(int rows, int cols) {
-        super(new GridLayout(rows, 2*cols, 5, 3));
+        super(new GridLayout(rows, 2*cols, 3, 3));
     }
 
 	/**
@@ -51,7 +51,8 @@ public class AttributePanel extends JPanel {
 	}
 	
 	/**
-	 * Add a labelled content to the TabPanel. This ensures the styling is common.
+	 * Adds a labelled content to the TabPanel. This ensures the styling is common.
+	 * 
 	 * @param label Label to add
 	 * @param content Content showing the value
 	 */

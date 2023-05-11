@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -544,7 +543,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-        return CollectionUtils.findSettlement(destination) instanceof Settlement;
+        return CollectionUtils.isSettlement(destination);
     }
 	
 	/**

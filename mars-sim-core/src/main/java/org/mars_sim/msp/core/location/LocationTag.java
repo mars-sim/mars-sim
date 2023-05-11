@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationTag.java
- * @date 2021-09-20
+ * @date 2023-05-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -65,42 +65,7 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/**
-	 * Gets the name of the settlement the unit is at
-	 *
-	 * @return
-	 */
-	public String getSettlementName() {
-		if (p != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
-				return p.getSettlement().getName();
-			else
-				return p.getCoordinates().getFormattedString();
-		} else if (e != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == e.getLocationStateType())
-				return e.getSettlement().getName();
-			else
-				return e.getCoordinates().getFormattedString();
-		} else if (r != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
-				return r.getSettlement().getName();
-			else
-				return r.getCoordinates().getFormattedString();
-		} else if (b != null) {
-			return b.getSettlement().getName();
-		} else if (v != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
-				return v.getSettlement().getName();
-			else
-				return v.getCoordinates().getFormattedString();
-		}
-		return UNKNOWN;
-	}
-
-	/**
-	 * Prints the quick location name of the unit
-	 *
-	 * @apiNote e.g. settlement, buried settlement, building,
-	 * vehicle or coordinates
+	 * Prints the quick location name of the unit.
 	 *
 	 * @return the name string of the quick location
 	 */
@@ -128,53 +93,11 @@ public class LocationTag implements LocationState, Serializable {
 			return p.getCoordinates().getFormattedString();
 		}
 
-		else if (r != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType()) {
-				if (r.getBuildingLocation() != null) {
-					return r.getBuildingLocation().getNickName();
-				}
-			}
-
-			else if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType())
-				return r.getVehicle().getName();
-
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == r.getLocationStateType())
-				return findSettlementVicinity().getName() + VICINITY;
-
-			return r.getCoordinates().getFormattedString();
-		}
-
-		else if (e != null) {
-			if (e.getContainerID() != 0)
-				return e.getContainerUnit().getName();
-			else if (e.getTopContainerID() != 0)
-				return e.getTopContainerUnit().getName();
-
-			return e.getCoordinates().getFormattedString();
-		}
-
-		else if (b != null) {
-			return b.getSettlement().getName();
-		}
-
-		else if (v != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
-				return v.getBuildingLocation().getNickName();
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
-				return findSettlementVicinity().getName();
-			else
-				return v.getCoordinates().getFormattedString();
-		}
-
-		else if (s != null) {
-			return MARS_SURFACE;
-		}
-
 		return UNKNOWN;
 	}
 
 	/**
-	 * Prints the locale (settlement, vehicle or coordinates) of the unit
+	 * Prints the locale (settlement, vehicle or coordinates) of the unit.
 	 *
 	 * @return the general (nearby) location
 	 */
@@ -267,7 +190,7 @@ public class LocationTag implements LocationState, Serializable {
 
 
 	/**
-	 * Prints the immediate location of the unit
+	 * Prints the immediate location of the unit.
 	 *
 	 * @apiNote
 	 * (e.g. in a container, building, vehicle, settlement vicinity or on surface of Mars)
@@ -293,8 +216,7 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getVehicle().getNickName();
 			}
 
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType()
-					|| p.isRightOutsideSettlement())
+			if (p.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 
 			return MARS_SURFACE;
@@ -312,8 +234,7 @@ public class LocationTag implements LocationState, Serializable {
 				return r.getVehicle().getNickName();
 			}
 
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == r.getLocationStateType()
-					|| r.isRightOutsideSettlement())
+			if (r.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 
 			return MARS_SURFACE;
@@ -322,7 +243,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (e != null) {
 			if (LocationStateType.ON_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == e.getLocationStateType() || e.isRightOutsideSettlement())
+			if (e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			if (e.isInside())
 				return e.getContainerUnit().getName();
@@ -342,7 +263,7 @@ public class LocationTag implements LocationState, Serializable {
 
 				return UNKNOWN;
 			}
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
+			if (v.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 
 			return MARS_SURFACE;
@@ -355,20 +276,9 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 
-	/**
-	 * Prints the modified immediate location
-	 *
-	 * @return the name string of the location the unit is at
-	 */
-	public String getModifiedLoc() {
-		String loc = getImmediateLocation();
-		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-		return loc;
-	}
 
 	/**
-	 * Finds the settlement that a person/robot is in its vicinity
+	 * Finds the settlement in the vicinity of a person/robot.
 	 *
 	 * @return {@link Settlement}
 	 */

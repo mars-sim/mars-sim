@@ -109,6 +109,7 @@
 		<part type="motor - small" number="2" />
 		<part type="motor - large" number="4" />
 		<part type="stepper motor - small" number="4"/>
+		<part type="propeller" number="4"/>
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -225,6 +226,7 @@
 		<part type="motor - small" number="2" />
 		<part type="motor - large" number="4" />
 		<part type="stepper motor - small" number="4"/>
+		<part type="propeller" number="4"/>		
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -343,6 +345,7 @@
 		<part type="motor - small" number="3" />
 		<part type="motor - large" number="6" />
 		<part type="stepper motor - small" number="6"/>
+		<part type="propeller" number="6"/>			
 		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
@@ -461,6 +464,7 @@
 		<part type="motor - small" number="6" />
 		<part type="motor - large" number="12" />
 		<part type="stepper motor - small" number="12"/>
+		<part type="propeller" number="12"/>			
 		<part type="rover chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />

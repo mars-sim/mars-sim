@@ -104,7 +104,7 @@ public class TabPanelEVA extends TabPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
         content.add(topPanel, BorderLayout.CENTER);
 
-		AttributePanel labelGrid = new AttributePanel(6,2);
+		AttributePanel labelGrid = new AttributePanel(6, 2);
 		topPanel.add(labelGrid, BorderLayout.NORTH);
 		
 		// Create innerDoorLabel
