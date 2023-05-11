@@ -70,7 +70,14 @@ import java.util.Collection;
  		if (index > height * width)
  			index = height * width - 1;
  		
- 		return getElevationArray()[index];
+
+ 		short []data = getElevationArray();
+        short result = 0;
+        if (data != null) {
+            result = data[index];
+        }
+
+        return result;
  	}
  	
      /**
