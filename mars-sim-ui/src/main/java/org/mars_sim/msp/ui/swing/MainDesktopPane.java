@@ -724,9 +724,6 @@ public class MainDesktopPane extends JDesktopPane
 						if (u != null) {
 							openUnitWindow(u, w);
 						}
-						else {
-							logger.warning("Perserved Unit cannot be found");
-						}
 					break;
 				}
  			}

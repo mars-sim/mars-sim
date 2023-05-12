@@ -159,9 +159,13 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 	 * @return Entity matching row
 	 */
 	protected T getEntity(int index) {
-		if (index > (getRowCount() - 1))
-			throw new IllegalStateException("Invalid index " + index + " for " + getRowCount() + " rows");
-		return entities.get(index);
+		try {
+            return entities.get(index);
+        }
+        catch (IndexOutOfBoundsException ioe) {
+            // Entity list is refreshing
+            return null;
+        }
 	}
 
 	/**
@@ -251,7 +255,10 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         T entity = getEntity(rowIndex);
-
+        if (entity == null) {
+            return null;
+        }
+        
         // Pick a value out of the cache if suitable
         boolean useCache = cachedColumns.contains(columnIndex);
         if (useCache) {
