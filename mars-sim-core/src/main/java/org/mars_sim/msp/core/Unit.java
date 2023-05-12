@@ -628,7 +628,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		final UnitEvent ue = new UnitEvent(this, updateType, target);
 		synchronized (listeners) {
 			for(UnitListener i : listeners) {
-				i.unitUpdate(ue);
+				try {
+					// Stop listeners breaking th update thread
+					i.unitUpdate(ue);
+				}
+				catch(RuntimeException rte) {
+					logger.warning(this, "Problem executing listener " + i + " for event " + ue
+									+ " due to " + rte.getMessage());
+				}
 			}
 		}
 	}

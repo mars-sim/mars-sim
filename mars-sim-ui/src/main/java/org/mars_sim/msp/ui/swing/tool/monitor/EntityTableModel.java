@@ -93,14 +93,13 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 			for(T old : oldUnits) {
 				removeEntity(old);
 			}
-			fireTableRowsDeleted(0, oldUnits.size()-1);
 		}
 
 		for(T newUnit : newEntities) {
 			addEntity(newUnit);
 		}
-		fireTableRowsInserted(0, getRowCount()-1);
-
+        fireTableDataChanged();
+        
 		// Just fire one table event for teh whole table
 		fireEnabled = true;
     }
