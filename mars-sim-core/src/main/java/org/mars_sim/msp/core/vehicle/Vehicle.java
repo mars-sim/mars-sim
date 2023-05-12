@@ -41,9 +41,8 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -1771,19 +1770,12 @@ public abstract class Vehicle extends Unit
 						return mission;
 					}
 					
-				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+				} else if (mission instanceof ConstructionMission construction) {
 					if (!construction.getConstructionVehicles().isEmpty() 
 						&& construction.getConstructionVehicles().contains(this)) {
 						return mission;
 					}
 
-				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (!salvage.getConstructionVehicles().isEmpty() 
-						&& salvage.getConstructionVehicles().contains(this)) {
-						return mission;
-					}
 				}
 			}
 		}

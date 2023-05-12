@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -105,6 +107,32 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public final Rover getRover() {
 		return (Rover) getVehicle();
+	}
+
+	/**
+	 * Gets a collection of available Rovers at a settlement that are usable for
+	 * this mission.
+	 *
+	 * @param settlement the settlement to find vehicles.
+	 * @return list of available vehicles.
+	 * @throws MissionException if problem determining if vehicles are usable.
+	 */
+	@Override
+	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
+		Collection<Vehicle> result = new ArrayList<>();
+		Collection<Vehicle> list = settlement.getParkedVehicles();
+		if (list.isEmpty())
+			return result;
+		for (Vehicle v : list) {
+			if (VehicleType.isRover(v.getVehicleType())
+					&& !v.haveStatusType(StatusType.MAINTENANCE)
+					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& isUsableVehicle(v)
+					&& !v.isReserved()) {
+				result.add(v);
+			}
+		}
+		return result;
 	}
 
 	/**

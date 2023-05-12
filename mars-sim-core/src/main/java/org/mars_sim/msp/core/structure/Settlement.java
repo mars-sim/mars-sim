@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.StorableItem;
@@ -2286,9 +2287,7 @@ public class Settlement extends Structure implements Temporal,
 	public Collection<Vehicle> getMissionVehicles() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
-					&& (v.getSettlement() == null
-					|| v.getMission().getMissionType() == MissionType.BUILDING_CONSTRUCTION
-					|| v.getMission().getMissionType() == MissionType.BUILDING_SALVAGE))
+					&& (v.getMission().getStage() == Stage.ACTIVE))
 				.collect(Collectors.toList());
 	}
 

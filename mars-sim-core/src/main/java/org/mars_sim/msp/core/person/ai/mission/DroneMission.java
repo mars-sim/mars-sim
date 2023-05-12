@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -57,6 +59,30 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		return (Drone) getVehicle();
 	}
 
+	/**
+	 * Gets a collection of available Drones at a settlement that are usable for
+	 * this mission.
+	 *
+	 * @param settlement the settlement to find vehicles.
+	 * @return list of available vehicles.
+	 */
+	@Override
+	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
+		Collection<Vehicle> result = new ArrayList<>();
+		Collection<Drone> list = settlement.getParkedDrones();
+		if (list.isEmpty())
+			return result;
+		for (Drone v : list) {
+			if (!v.haveStatusType(StatusType.MAINTENANCE)
+					&& !v.getMalfunctionManager().hasMalfunction()
+					&& isUsableVehicle(v)
+					&& !v.isReserved()) {
+				result.add(v);
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
 	 *

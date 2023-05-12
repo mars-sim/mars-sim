@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -339,19 +340,12 @@ public class MissionManager implements Serializable {
 				if (mission instanceof VehicleMission
 					&& ((VehicleMission) mission).getVehicle() == vehicle) {
 					result = mission;
-				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+				} else if (mission instanceof ConstructionMission construction) {
 					if (!construction.getConstructionVehicles().isEmpty()
 						&& construction.getConstructionVehicles().contains(vehicle)) {
 							result = mission;
 					}
-				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (!salvage.getConstructionVehicles().isEmpty()
-						&& salvage.getConstructionVehicles().contains(vehicle)) {
-							result = mission;
-					}
-				}
+				} 
 			}
 		}
 

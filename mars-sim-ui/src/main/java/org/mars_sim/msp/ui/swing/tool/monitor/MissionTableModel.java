@@ -16,8 +16,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -326,7 +324,7 @@ public class MissionTableModel extends AbstractTableModel
 			if (column0 > -1)
 				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column0));
 
-			if (MissionType.isVehicleMission(((Mission)event.getSource()).getMissionType())) {
+			if (event.getSource() instanceof VehicleMission) {
 
 				int column1 = -1;
 				int column2 = -1;
@@ -447,17 +445,10 @@ public class MissionTableModel extends AbstractTableModel
 				case VEHICLE: {
 					result = "";
 					Vehicle reserved = null;
-					if (mission instanceof VehicleMission) {
-						reserved = ((VehicleMission)mission).getVehicle();
-					} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-						BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
+					if (mission instanceof VehicleMission vm) {
+						reserved = vm.getVehicle();
+					} else if (mission instanceof ConstructionMission constructionMission) {
 						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-						if (!constVehicles.isEmpty()) {
-							reserved = constVehicles.get(0);
-						}
-					} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-						BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
-						List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
 						if (!constVehicles.isEmpty()) {
 							reserved = constVehicles.get(0);
 						}

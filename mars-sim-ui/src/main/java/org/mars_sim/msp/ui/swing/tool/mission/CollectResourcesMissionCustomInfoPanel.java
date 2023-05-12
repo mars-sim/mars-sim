@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -67,16 +66,15 @@ implements UnitListener {
 
 
 	@Override
-	public void updateMission(Mission mission) {
-		if (mission.getMissionType() == MissionType.COLLECT_ICE
-				|| mission.getMissionType() == MissionType.COLLECT_REGOLITH) {
+	public void updateMission(Mission newMission) {
+		if (newMission instanceof CollectResourcesMission crMission) {
 			// Remove as unit listener to any existing rovers.
 			if (missionRover != null) {
 				missionRover.removeUnitListener(this);
 			}
 
 			// Set the mission and mission rover.
-			this.mission = (CollectResourcesMission) mission;
+			this.mission = crMission;
 			if (this.mission.getRover() != null) {
 				missionRover = this.mission.getRover();
 				// Register as unit listener for mission rover.
