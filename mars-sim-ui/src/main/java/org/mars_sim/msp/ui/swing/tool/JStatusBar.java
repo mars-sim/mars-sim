@@ -57,23 +57,27 @@ public class JStatusBar extends TexturedPanel {
     
         leftPanel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 3, 0));
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(leftPanel, BorderLayout.WEST);
         
         centerPanel = new JPanel(new FlowLayout(
                 FlowLayout.CENTER, 3, 0));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(centerPanel, BorderLayout.CENTER);
         
         rightPanel = new JPanel(new FlowLayout(
                 FlowLayout.TRAILING, 3, 0));
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(rightPanel, BorderLayout.EAST);
     }
     
     public void addLeftComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, leftPadding));
-        addBorder(panel);
-        if (separator) 
+        if (separator) {
+            addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        }
         panel.add(component);
         leftPanel.add(panel);
     }
@@ -81,10 +85,10 @@ public class JStatusBar extends TexturedPanel {
     public void addCenterComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, leftPadding));
-        addBorder(panel);
-
-        if (separator) 
+        if (separator) {
+            addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        }
         panel.add(component);
         centerPanel.add(panel);
     }
@@ -93,10 +97,10 @@ public class JStatusBar extends TexturedPanel {
     public void addRightComponent(JComponent component, boolean separator) {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, rightPadding));
-        addBorder(panel);
-
-        if (separator) 
+        if (separator) {
+            addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        }
         panel.add(component);
         rightPanel.add(panel);
     }

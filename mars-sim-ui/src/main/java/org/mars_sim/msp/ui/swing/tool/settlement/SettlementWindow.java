@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
@@ -43,7 +44,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	// default logger.
 	// private static final Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 
-	/** Tool name. */
+	private static final int HORIZONTAL = 800;
+	private static final int VERTICAL = 800;
+	
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "settlement_map";
 
@@ -53,9 +56,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final String WITHIN_BLDG = "  Building : (";
 	private static final String SETTLEMENT_MAP = "  Map : (";
 	private static final String PIXEL_MAP = "  Window : (";
-
-	private static final int HORIZONTAL = 800;
-	private static final int VERTICAL = 800;
 
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
@@ -88,30 +88,34 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new JStatusBar(1, 1, 20);
+        statusBar = new JStatusBar(0, 0, 16);
+        statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
+        popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         popLabel.setFont(sansSerif13Bold);
         popLabel.setForeground(Color.DARK_GRAY);
+        
 	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setFont(sansSerif12Plain);
+	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    buildingXYLabel.setFont(sansSerif13Bold);
 	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
+	    
 	    mapXYLabel = new JLabel();
-	    mapXYLabel.setFont(sansSerif12Plain);
+	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    mapXYLabel.setFont(sansSerif13Bold);
 	    mapXYLabel.setForeground(Color.ORANGE.darker());
+	    
 	    pixelXYLabel = new JLabel();
-	    pixelXYLabel.setFont(sansSerif12Plain);
+	    pixelXYLabel.setFont(sansSerif13Bold);
 	    pixelXYLabel.setForeground(Color.GRAY);
 
-	    JPanel rightPanel = new JPanel();
-		rightPanel.add(buildingXYLabel);
-	    rightPanel.add(mapXYLabel);
-
-        statusBar.addLeftComponent(pixelXYLabel, true);
-        statusBar.addCenterComponent(popLabel, true);
-        statusBar.addRightComponent(rightPanel, true);
-
+        statusBar.addLeftComponent(popLabel, false);
+        statusBar.addCenterComponent(buildingXYLabel, false);
+        statusBar.addRightComponent(pixelXYLabel, false);
+        statusBar.addRightComponent(mapXYLabel, false);
+        
         // Create subPanel for housing the settlement map
 		subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
