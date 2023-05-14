@@ -39,10 +39,10 @@ public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
 		assertEquals(14, inputList.size());
     }
     
-    public void testEVASuit() {
+    public void testEVASuitProcess() {
     	   
 		List<ManufactureProcessInfo> list = ManufactureUtil.getManufactureProcessesWithGivenOutput(EVA_SUIT);
-		assertEquals(ASSEMBLE_EVA_SUIT, list.get(0));
+		assertEquals(ASSEMBLE_EVA_SUIT, list.get(0).getName());
 //		System.out.println(list);
     }
 }
