@@ -343,7 +343,7 @@
 		Smectite is the name used for a group of phyllo-silicate mineral species.
 		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C. </resource>
 	<resource name="Allophane" type="ore" phase="solid"> 
-		Allophane is an amorphous to poorly crystalline hydrous aluminium
+		Allophane is an amorphous to poorly crystalline hydrous aluminum
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
 	<resource name="Akaganeite" type="ore" phase="solid"> 
 		Akaganeite is an iron oxide-hydroxide / chloride mineral with

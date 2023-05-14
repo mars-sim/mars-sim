@@ -874,7 +874,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="0.05">
 		<description>
 		 Biaxially oriented PET film is metallized by vapor deposition of a thin film of 
-		 evaporated aluminium, gold, or other metal onto it.
+		 evaporated aluminum, gold, or other metal onto it.
 		</description>
 		<inputs>
 			<resource name="mylar" amount="2.0" />
@@ -1184,14 +1184,17 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="helmet visor" number="1" />
 			<part name="pressure suit" number="1" />
 			<part name="coveralls" number="1" />
+			
 			<part name="eva gloves" number="1" />
 			<part name="eva boots" number="1" />
 			<part name="eva pads" number="1" />
 			<part name="eva backpack" number="1" />
+			
 			<part name="eva antenna" number="1" />
 			<part name="eva radio" number="1" />
 			<part name="eva battery" number="1" />
 			<part name="suit heating unit" number="1" />
+			
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="10" />
 		</inputs>
@@ -3111,7 +3114,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="polystyrene" amount="9" />
-			<resource name="aluminium" amount="1" />			
+			<resource name="aluminum" amount=".5" />			
 		</inputs>
 		<outputs>
 			<part name="insulation board" number="10" />
