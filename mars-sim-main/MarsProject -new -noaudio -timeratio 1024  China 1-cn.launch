@@ -11,7 +11,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.mars_sim.main.MarsProject"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="mars-sim-main"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-new -timeratio 256 -template &quot;Phase 2-EU&quot; -lat 20.0N -lon 50.0W -sponsor ESA"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-new -noaudio -timeratio 1024 -template &quot;Phase 1-CN&quot; -lat 22.67N -lon 134.67E -sponsor CNSA"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="mars-sim-main"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1536m"/>

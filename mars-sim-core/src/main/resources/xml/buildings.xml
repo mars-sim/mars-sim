@@ -1020,7 +1020,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		generating power via mechanical movement of pistons inside as passive sodium
 		heat pipes transport thermal energy between the core containment can (hot end)
 		and the vacuum chambers (cold end). A circular radiator panel is mounted on
-		top for heat dissipation. </description>
+		top for heat dissipation. It includes a 40 kW backup power battery.</description>
 
 		<!--	Nuclear Systems Kilopower Project
 				http://hdl.handle.net/2060/20160012354
@@ -1028,7 +1028,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				https://ntrs.nasa.gov/search.jsp?R=20150011642&hterms=Kilopower&qs=N%3D0%26Ntk%3DAll%26Ntt%3DKilopower%26Ntx%3Dmode%2520matchallpartial
 		-->
 
-		<power-required base-power="0.3" base-power-down-power="0.03" />
+		<power-required base-power="0.25" base-power-down-power="0.025" />
 
 		<functions>
 			<power-generation>
@@ -1046,18 +1046,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="5000">
 		<description>
 			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 100kW
-			nuclear fission power plant. It contains components of a heat source,
-			power conversion, heat rejection, power conditioning and
-			distribution system.
+			nuclear fission power plant. It provides a consistent power source.
+			It includes a 100 kW backup power battery.
 		</description>
-		<power-required base-power="0.5" base-power-down-power="0.05"/>
+		<power-required base-power="1" base-power-down-power="0.1"/>
 
 		<functions>
 			<power-generation>
 				<power-source type="Standard Power Source" power="100.0" />
 			</power-generation>
 
-			<power-storage capacity="100"  discharge-rate="1.25"/>
+			<power-storage capacity="80"  discharge-rate="1.25"/>
 
 			<!--thermal-generation>
 				<heat-source type="Electric Heating" capacity="80.0" />
@@ -1786,7 +1785,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</description>
 		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
 
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.05" />
 
 		<functions>
 			<power-generation>
@@ -1802,7 +1801,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		that generates electricity from Martian sunlight. It is an essential part of
 		a modular distributed renewable energy generation system for the power grid.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.05" />
 
 		<functions>
 			<power-generation>
@@ -1819,13 +1818,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			reflectors that concentrates sunlight for heating up molten materials
 			that move mechanical turbines generating power.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.05" />
 
 		<functions>
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="20.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.75"/>
+			<power-storage capacity="40"  discharge-rate="1.75"/>
 		</functions>
 	</building>
 

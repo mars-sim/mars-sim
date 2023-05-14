@@ -112,14 +112,25 @@
         </connection-list>
     </building>
 
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
+    <building type="MD1 Nuclear Reactor" xloc="100.0"
         yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
+    <building type="MD1 Nuclear Reactor" xloc="100.0"
         yloc="-80.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
+    <building type="MD1 Nuclear Reactor" xloc="100.0"
+        yloc="-100.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="100.0"
+        yloc="-120.0" facing="0.0" />
+
+
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-50.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-70.0" facing="0.0" />
+     <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-80.0" facing="0.0" />
+        
 
     <building type="ERV-A" xloc="80.0" yloc="-15.0"
         facing="0.0" />
@@ -136,10 +147,11 @@
     <building type="ERV-C" xloc="120.0" yloc="65.0"
         facing="0.0" />	
 
+    <building type="Atmospheric Processor" xloc="20"
+        yloc="-50.0" facing="90.0" />
+        
     <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-70.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-80.0" facing="90.0" />
+        yloc="-50.0" facing="90.0" />
 
     <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
         facing="90.0" />
