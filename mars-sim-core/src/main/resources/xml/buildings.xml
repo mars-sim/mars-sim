@@ -932,7 +932,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="reduce gypsum to calcium carbonate with carbon" number-modules="3"/>
 				<process-engine name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="3"/>
 				<process-engine name="reduce gypsum to calcium carbonate with hydrogen" number-modules="3"/>
-							
+				<process-engine name="Make gypsum plaster via calcination" number-modules="3"/>							
 			</resource-processing>
 
 			<storage capacity="300000">
