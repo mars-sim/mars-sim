@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -52,6 +54,8 @@ public class TravelToSettlement extends RoverMission {
 	private static final double SCIENCE_MODIFIER = 1D;
 
 	private static final double RANGE_BUFFER = .8D;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRANSPORTATION_HUB, ObjectiveType.TOURISM);
 
 	// Data members
 	private Settlement destinationSettlement;
@@ -412,5 +416,10 @@ public class TravelToSettlement extends RoverMission {
 		}
 
 		return result;
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

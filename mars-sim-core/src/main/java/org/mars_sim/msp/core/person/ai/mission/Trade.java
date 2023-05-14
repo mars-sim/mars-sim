@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -29,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -58,6 +60,8 @@ public class Trade extends RoverMission implements CommerceMission {
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
 	public static final int MAX_MEMBERS = 2;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
 
 
@@ -837,5 +841,10 @@ public class Trade extends RoverMission implements CommerceMission {
 			return true;
 		}
 		return super.isVehicleUnloadableHere(settlement);
+	}
+	
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

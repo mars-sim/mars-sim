@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -73,6 +74,8 @@ public class Mining extends EVAMission
 	 * exploration site for it to be considered mature enough to mine.
 	 */
 	public static final int MATURE_ESTIMATE_NUM = 10;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
 
 	
 	private ExploredLocation miningSite;
@@ -663,6 +666,11 @@ public class Mining extends EVAMission
 		return PREFERRED_JOBS;
 	}
 
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
+	}
+	
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
 		return getMiningSiteValue(miningSite, reviewerSettlement);

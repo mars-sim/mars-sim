@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.environment.TerrainElevation;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -33,6 +35,8 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
 
 
 	/**
@@ -104,5 +108,10 @@ public class CollectRegolith extends CollectResourcesMission {
 			setResourceID(getCollectibleResources()[rand]);
 
 		return scoreLocation(worker.getCoordinates());
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

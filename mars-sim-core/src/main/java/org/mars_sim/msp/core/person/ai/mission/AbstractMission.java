@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -1082,6 +1083,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return Collections.emptySet();
 	}
 
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return Collections.emptySet();
+	}
 	/**
 	 * Checks if the current phase has ended or not.
 	 *

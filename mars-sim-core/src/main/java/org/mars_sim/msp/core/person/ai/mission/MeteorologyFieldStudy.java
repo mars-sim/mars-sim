@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -32,6 +34,8 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 
 	/** How many specimen boxes per mission member */
 	private static final int SPECIMEN_BOX_MEMBER = 3;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM);
 
 	/**
 	 * Constructor.
@@ -69,5 +73,10 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
 		return new MeteorologyStudyFieldWork(person, leadResearcher, study, vehicle);
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

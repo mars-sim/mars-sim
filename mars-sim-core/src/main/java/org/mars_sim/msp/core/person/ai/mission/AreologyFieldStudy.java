@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
@@ -15,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -28,6 +30,8 @@ public class AreologyFieldStudy extends FieldStudyMission {
 
 	/** Amount of time to field a site. */
 	private static final double FIELD_SITE_TIME = 1000D;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM);
 
 	/**
 	 * Constructor.
@@ -63,5 +67,10 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
 		return new AreologyStudyFieldWork(person, leadResearcher, study, vehicle);
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

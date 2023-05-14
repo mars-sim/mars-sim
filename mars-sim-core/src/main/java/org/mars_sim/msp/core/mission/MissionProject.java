@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.mission;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Project;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -145,6 +147,11 @@ public abstract class MissionProject implements Mission {
     @Override
     public double getMissionQualification(Worker member) {
         return 1.0;
+    }
+
+    @Override
+    public Set<ObjectiveType> getObjectiveSatisified() {
+        return Collections.emptySet();
     }
 
     @Override
