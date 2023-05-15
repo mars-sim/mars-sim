@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JStatusBar.java
- * @date 2022-06-30
+ * @date 2023-05-14
  * Modified by Manny Kung
  */
 
@@ -56,24 +56,24 @@ public class JStatusBar extends TexturedPanel {
         setPreferredSize(new Dimension(getWidth(), barHeight + (2 * (MARGIN + 2))));
     
         leftPanel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 3, 0));
+                FlowLayout.CENTER, 3, 1));
         leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(leftPanel, BorderLayout.WEST);
         
         centerPanel = new JPanel(new FlowLayout(
-                FlowLayout.CENTER, 3, 0));
+                FlowLayout.CENTER, 3, 1));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(centerPanel, BorderLayout.CENTER);
         
         rightPanel = new JPanel(new FlowLayout(
-                FlowLayout.TRAILING, 3, 0));
+                FlowLayout.CENTER, 3, 1));
         rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         add(rightPanel, BorderLayout.EAST);
     }
     
     public void addLeftComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 0, leftPadding));
+                FlowLayout.LEFT, 0, leftPadding));
         if (separator) {
             addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -84,7 +84,7 @@ public class JStatusBar extends TexturedPanel {
     
     public void addCenterComponent(JComponent component, boolean separator) {
     	JPanel panel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 0, leftPadding));
+                FlowLayout.CENTER, 0, leftPadding));
         if (separator) {
             addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -96,7 +96,7 @@ public class JStatusBar extends TexturedPanel {
     
     public void addRightComponent(JComponent component, boolean separator) {
         JPanel panel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 0, rightPadding));
+                FlowLayout.RIGHT, 0, rightPadding));
         if (separator) {
             addBorder(panel);
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
@@ -115,7 +115,7 @@ public class JStatusBar extends TexturedPanel {
                 FlowLayout.TRAILING, 0, 0));
         JLabel label = new JLabel(new AngledLinesWindowsCornerIcon());
         panel.setAlignmentX(1F);
-        panel.setAlignmentY(1F);
+        panel.setAlignmentY(0);
         label.setHorizontalAlignment(JLabel.RIGHT);
         label.setVerticalAlignment(JLabel.BOTTOM);
         panel.add(label);

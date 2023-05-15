@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementWindow.java
- * @date 2021-12-06
+ * @date 2023-05-14
  * @author Lars Naesbye Christensen
  */
 
@@ -46,6 +46,8 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	private static final int HORIZONTAL = 800;
 	private static final int VERTICAL = 800;
+	private static final int HEIGHT_STATUS_BAR = 16;
+	private static final int LABEL_WIDTH = 220;
 	
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "settlement_map";
@@ -68,8 +70,8 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-	private Font sansSerif12Plain = new Font("SansSerif", Font.PLAIN, 12);
-	private Font sansSerif13Bold = new Font("SansSerif", Font.BOLD, 13);
+	private Font font0 = new Font("Times New Roman", Font.PLAIN, 12);
+	private Font font1= new Font("Times New Roman", Font.BOLD, 13);
 	
 	/**
 	 * Constructor.
@@ -88,29 +90,34 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new JStatusBar(0, 0, 16);
+        statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
         statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
         popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-        popLabel.setFont(sansSerif13Bold);
+        popLabel.setFont(font1);
         popLabel.setForeground(Color.DARK_GRAY);
+        popLabel.setPreferredSize(new Dimension(160, HEIGHT_STATUS_BAR));
         
 	    buildingXYLabel = new JLabel();
 	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-	    buildingXYLabel.setFont(sansSerif13Bold);
+	    buildingXYLabel.setFont(font0);
 	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
+	    buildingXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
+      	    
+	    pixelXYLabel = new JLabel();
+	    pixelXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    pixelXYLabel.setFont(font0);
+	    pixelXYLabel.setForeground(Color.GRAY);
+	    pixelXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
 	    
 	    mapXYLabel = new JLabel();
 	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-	    mapXYLabel.setFont(sansSerif13Bold);
-	    mapXYLabel.setForeground(Color.ORANGE.darker());
+	    mapXYLabel.setFont(font0);
+	    mapXYLabel.setForeground(Color.ORANGE.darker().darker());
+	    mapXYLabel.setPreferredSize(new Dimension(145, HEIGHT_STATUS_BAR));
 	    
-	    pixelXYLabel = new JLabel();
-	    pixelXYLabel.setFont(sansSerif13Bold);
-	    pixelXYLabel.setForeground(Color.GRAY);
-
         statusBar.addLeftComponent(popLabel, false);
         statusBar.addCenterComponent(buildingXYLabel, false);
         statusBar.addRightComponent(pixelXYLabel, false);

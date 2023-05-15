@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JMemoryMeter.java
- * @date 2023-01-31
+ * @date 2023-05-14
  * @author Barry EVans
  */
 package org.mars_sim.msp.ui.swing.utils;
@@ -12,8 +12,9 @@ import javax.swing.JProgressBar;
 import javax.swing.event.MouseInputAdapter;
 
 /**
- * Creates a progress bar that displays the Java memmory details
+ * Creates a progress bar that displays Java memory details.
  */
+@SuppressWarnings("serial")
 public class JMemoryMeter extends JProgressBar {
 
     private final static long MEGA = (1024L*1024L);
@@ -42,7 +43,7 @@ public class JMemoryMeter extends JProgressBar {
     }
 
     /**
-     * Refresh the memeory stats
+     * Refreshes the memory statistics.
      */
     public void refresh() {
         Runtime rt = Runtime.getRuntime();
