@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -156,7 +157,7 @@ public class GoodsManager implements Serializable {
 	 */
 	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
 		this.settlement = settlement;
-
+		
 		// Schedule an event to recalculate shopping lists just after sunrise
 		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
 		populateGoodsValues();

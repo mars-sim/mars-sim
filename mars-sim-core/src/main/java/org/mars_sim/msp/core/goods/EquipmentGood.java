@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentGood.java
- * @date 2022-10-04
+ * @date 2023-05-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
@@ -54,7 +54,7 @@ public class EquipmentGood extends Good {
     private EquipmentType equipmentType;
 
     EquipmentGood(EquipmentType type) {
-        super( type.getName(), EquipmentType.getResourceID(type));
+        super(type.getName(), EquipmentType.getResourceID(type));
         this.equipmentType = type;
     }
 
@@ -205,13 +205,11 @@ public class EquipmentGood extends Good {
 		double totalPhaseOverfill = 0D;
 
 		// Scan resources that can be held in this Container
-		// TODO This can be pre-calculated in the constructor as a one off for a list of Goods
 		for(AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == equipmentType) {
 				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
 
-				Good content = GoodsUtil.getGood(resource.getID());
-				double resourceDemand = owner.getDemandValue(content);
+				double resourceDemand = owner.getAmountDemandValue(resource.getID());
 
 				if (resourceDemand > settlementCapacity) {
 					double resourceOverfill = resourceDemand - settlementCapacity;
@@ -290,9 +288,13 @@ public class EquipmentGood extends Good {
 	 */
 	private static double getWholeEVASuitDemand(GoodsManager owner) {
 		double demand = 0;
-		// TODO Pre-build in constructor to avoid getGood lookup
-		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
-			demand += owner.getDemandValue(GoodsUtil.getGood(id));
+		
+		ItemResourceUtil.initEVASuit();
+		
+		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
+			for (int id : ItemResourceUtil.evaSuitPartIDs) {
+				demand += owner.getAmountDemandValue(id);
+			}
 		}
 		return demand;
 	}

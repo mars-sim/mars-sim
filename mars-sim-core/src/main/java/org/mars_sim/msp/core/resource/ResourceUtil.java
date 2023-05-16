@@ -258,7 +258,7 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Default Constructor for ResoureUtil
+	 * Default Constructor for ResoureUtil.
 	 */
 	private ResourceUtil() {
 		resources = SimulationConfig.instance().getResourceConfiguration().getAmountResources();
@@ -269,7 +269,7 @@ public class ResourceUtil implements Serializable {
 
 
 	/**
-	 * Create a set of life support resources.
+	 * Creates a set of life support resources.
 	 */
 	private static void createLifeSupportResources() {
 		lifeSupportResources = new HashSet<>();

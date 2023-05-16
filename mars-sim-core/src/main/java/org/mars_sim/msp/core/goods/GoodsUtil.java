@@ -158,7 +158,7 @@ public class GoodsUtil {
             // Another thread has created the lists
             return;
         }
-
+        
         // Only updated here so don't need to be thread safe
         Map<Integer, Good> newMap = new HashMap<>();
 

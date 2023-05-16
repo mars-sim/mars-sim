@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2022-12-31
+ * @date 2023-05-16
  * @author Manny Kung
  */
 
@@ -17,7 +17,10 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.goods.GoodType;
+import org.mars_sim.msp.core.manufacture.ManufactureConfig;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -35,20 +38,22 @@ public class ItemResourceUtil implements Serializable {
 	private static final String BACKHOE = "backhoe";
 	private static final String PNEUMATIC_DRILL = "pneumatic drill";
 
-	// Tools
-	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+	/** String name of the manufacturing process of producing an EVA suit. */	
+	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
 	/** 
 	 * Parts for creating an EVA Suit. 
 	 */
-	private static final String[] EVASUIT_PARTS = {
-			"eva helmet",			"helmet visor",
-			PRESSURE_SUIT,			"coveralls",
-			"suit heating unit",	"eva gloves",
-			"eva boots",			"eva pads",
-			"eva backpack",			"eva antenna",
-			"eva battery",			"eva radio",
-	};
+	private static List<String> evaSuitParts;
+//			"eva helmet",			"helmet visor",
+//			PRESSURE_SUIT,			"coveralls",
+//			"suit heating unit",	"eva gloves",
+//			"eva boots",			"eva pads",
+//			"eva backpack",			"eva antenna",
+//			"eva battery",			"eva radio",
+	
+	// 3-D printer
+	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 
 	public static int garmentID;
 	public static int pressureSuitID;
@@ -62,17 +67,50 @@ public class ItemResourceUtil implements Serializable {
 	private static List<Part> sortedParts;
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+	private static ManufactureConfig manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 	
-	//TODO These should be configurable
-	public static Set<Integer> EVASUIT_PARTS_ID;
+	public static Set<Integer> evaSuitPartIDs;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public ItemResourceUtil() {
 		partSet = getItemResources();
 		createMaps();
 		createIDs();
+	}
+	
+	public static void initEVASuit() {
+
+		if (evaSuitPartIDs == null || evaSuitPartIDs.isEmpty()) {
+
+			ManufactureProcessInfo manufactureProcessInfo = null;
+			
+			if (manufactureConfig == null)
+				manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+			
+			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
+				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
+		        		manufactureProcessInfo = info;
+				}
+			}
+			
+			evaSuitParts = manufactureProcessInfo.getInputNames();
+		
+			ItemResourceUtil.createEvaSuitPartIDs(evaSuitParts);
+			
+			EVASuit.init();
+		}
+	}
+	
+	/**
+	 * Creates a set of part ids for an EVA Suit.
+	 * 
+	 * @param parts
+	 */
+	public static void createEvaSuitPartIDs(List<String> parts) {
+		evaSuitPartIDs = convertNamesToResourceIDs(parts.stream()
+		        .toArray(String[]::new));
 	}
 	
 	/**
@@ -105,8 +143,6 @@ public class ItemResourceUtil implements Serializable {
 		backhoeID = findIDbyItemResourceName(BACKHOE);
 
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
-		
-		EVASUIT_PARTS_ID = convertNamesToResourceIDs(EVASUIT_PARTS);
 	}
 
 	/**

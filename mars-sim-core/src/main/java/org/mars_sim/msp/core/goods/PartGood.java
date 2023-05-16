@@ -102,14 +102,14 @@ class PartGood extends Good {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", "drilling rig",
 																		"pneumatic drill", "soil compactor"});
-
+	
 	private double flattenDemand;
 	private double flattenRawDemand;
 	private double costModifier;
 
     public PartGood(Part p) {
         super(p.getName(), p.getID());
-
+		
 		// Pre-calculate the fixed values
 		flattenDemand = calculateFlattenPartDemand(p);
 		flattenRawDemand = calculateFlattenRawPartDemand(p);
@@ -476,7 +476,9 @@ class PartGood extends Good {
 	 * @return demand
 	 */
 	private double getEVASuitPartsDemand(GoodsManager owner) {
-		if (ItemResourceUtil.EVASUIT_PARTS_ID.contains(getID())) {
+		ItemResourceUtil.initEVASuit();
+			
+		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
 			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this);
 		}
 		return 0;

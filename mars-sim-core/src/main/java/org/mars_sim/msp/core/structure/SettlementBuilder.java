@@ -78,7 +78,7 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Create all the initial Settlements
+	 * Creates all the initial Settlements.
 	 */
 	public void createInitialSettlements(Scenario bootstrap) {
 		logger.config(bootstrap.getName() + " scenario loading...");
@@ -93,9 +93,11 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * This create a single fully populated Settlement according to the
-	 * specification. This includes all sub-units, e.g. Vehicles & Persons
+	 * This creates a single fully populated Settlement according to the
+	 * specification. 
+	 * Note: it includes all sub-units, e.g. Vehicles & Persons
 	 * along with any initial Parts & Resources.
+	 * 
 	 * @param spec
 	 * @return
 	 */
@@ -148,9 +150,10 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Create the supplies in  Settlement
+	 * Creates the supplies in a settlement.
+	 * 
 	 * @param settlement Target settlement
-	 * @param supplies The defintion of the Supplies
+	 * @param supplies The definition of the Supplies
 	 */
 	public void createSupplies(SettlementSupplies supplies, Settlement settlement) {
 		createVehicles(supplies, settlement);
