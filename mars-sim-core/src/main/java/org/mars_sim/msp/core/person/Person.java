@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+import java.util.Iterator;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -2217,29 +2218,28 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 	
 	/**
-	 * Assigns standard living necessity.
+	 * Assigns a thermal bottle as a standard living necessity.
 	 */
 	public Container assignThermalBottle() {
+		Equipment bottle = null;
+		
 		if (!hasThermalBottle() && isInside()) {
-			Equipment bottle = null;
-			
-			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
-				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {	
-					bottle = e;
+
+			Iterator<Equipment> i = ((EquipmentOwner)getContainerUnit()).getEquipmentSet().iterator();
+			while (i.hasNext()){
+				bottle = i.next();
+				if (bottle.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
+					i.remove();
+
+					addEquipment(bottle);
+					// Register the person as the owner of this bottle
+					bottle.setLastOwner(this);
 					break;
 				}
 			}
-					
-			if (bottle != null) {
-				((EquipmentOwner)getContainerUnit()).removeEquipment(bottle);
-				addEquipment(bottle);
-				// Register the person as the owner of this bottle
-				bottle.setLastOwner(this);
-				return (Container)bottle;
-			}
 		}
 		
-		return null;
+		return (Container)bottle;
 	}
 	
 	/**

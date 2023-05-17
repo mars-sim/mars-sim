@@ -97,9 +97,10 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-//		if (equipmentSet == null)
-//			equipmentSet = new UnitSet<>();
-		return Collections.unmodifiableSet(equipmentSet);
+		if (equipmentSet == null)
+			equipmentSet = new UnitSet<>();
+		return equipmentSet;
+//		return Collections.unmodifiableSet(equipmentSet);
 	}
 
 	/**

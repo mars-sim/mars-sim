@@ -75,9 +75,9 @@ public enum NaturalAttributeType {
 	}
 
 	/**
-	 * gets an array of internationalized attribute
-	 * names for display in user interface. the
-	 * array is in alphabetical order.
+	 * Gets an array of internationalized attribute
+	 * names for display in user interface. 
+	 * Note: the array will be in alphabetical order.
 	 */
 	public static String[] getNames() {
 		List<String> list = new ArrayList<String>();

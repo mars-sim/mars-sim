@@ -2205,7 +2205,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes an equipment from being owned by the settlement
+	 * Removes an equipment from being owned by the settlement.
 	 *
 	 * @param e the equipment
 	 */
