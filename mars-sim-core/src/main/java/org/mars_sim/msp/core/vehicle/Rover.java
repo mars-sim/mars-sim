@@ -897,22 +897,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fueln
+	 * Gets the resource type id that this vehicle uses as fuel.
 	 *
 	 * @return resource type id
 	 */
 	public int getFuelType() {
 		return METHANOL_ID;
 	}
-
-//	/**
-//	 * Gets the amount resource type that this vehicle uses as fueln
-//	 *
-//	 * @return amount resource
-//	 */
-//	public AmountResource getFuelTypeAR() {
-//		return METHANOL_AR;
-//	}
 
 	/**
 	 * Sets unit's location coordinates
@@ -921,24 +912,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
-
-//		if (occupants != null && !occupants.isEmpty()) {
-//			for (Person p: occupants) {
-//				p.setCoordinates(newLocation);
-//			}
-//		}
-//
-//		if (robotOccupants != null && !robotOccupants.isEmpty()) {
-//			for (Robot r: robotOccupants) {
-//				r.setCoordinates(newLocation);
-//			}
-//		}
-//
-//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-//			for (Equipment e: getEquipmentSet()) {
-//				e.setCoordinates(newLocation);
-//			}
-//		}
 
 		// Set towed vehicle (if any) to new location.
 		if (towedVehicle != null)
