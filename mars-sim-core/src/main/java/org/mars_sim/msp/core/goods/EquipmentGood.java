@@ -209,7 +209,7 @@ public class EquipmentGood extends Good {
 			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == equipmentType) {
 				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
 
-				double resourceDemand = owner.getAmountDemandValue(resource.getID());
+				double resourceDemand = owner.getDemandValueWithID(resource.getID());
 
 				if (resourceDemand > settlementCapacity) {
 					double resourceOverfill = resourceDemand - settlementCapacity;
@@ -293,7 +293,7 @@ public class EquipmentGood extends Good {
 		
 		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
 			for (int id : ItemResourceUtil.evaSuitPartIDs) {
-				demand += owner.getAmountDemandValue(id);
+				demand += owner.getDemandValueWithID(id);
 			}
 		}
 		return demand;

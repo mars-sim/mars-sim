@@ -168,7 +168,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
     	// Gets the rate [kg/Sol]
         double massPerSol = fuelSource.getFuelConsumptionRate();
         // Gets the demand for this fuel
-        double value = settlement.getGoodsManager().getAmountDemandValue(resource);
+        double value = settlement.getGoodsManager().getDemandValueWithID(resource);
         return value * massPerSol;
     }
 

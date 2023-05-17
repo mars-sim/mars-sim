@@ -200,6 +200,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Create the rover's airlock.
 		airlock = new VehicleAirlock(this, 2, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
 										 spec.getAirlockExteriorLoc());
+		
 	}
 
 	/**

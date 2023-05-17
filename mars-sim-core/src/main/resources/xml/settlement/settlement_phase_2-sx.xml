@@ -226,7 +226,7 @@
         facing="90.0" />
 
     <vehicle type="Explorer Rover" number="2" />
-    <vehicle type="Explorer Rover" number="1" />
+    <vehicle type="Long Range Explorer" number="1" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
 

@@ -50,7 +50,7 @@ public final class VehicleFactory {
 			case DELIVERY_DRONE:
            		vehicle = new Drone(name, spec, owner);
 				break;
-			case EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER:
+			case EXPLORER_ROVER, LONG_RANGE_EXPLORER, TRANSPORT_ROVER, CARGO_ROVER:
             	vehicle = new Rover(name, spec, owner);
 				break;
         }

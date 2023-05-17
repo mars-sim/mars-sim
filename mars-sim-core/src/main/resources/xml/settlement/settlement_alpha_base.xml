@@ -358,8 +358,6 @@
     <equipment type="thermal bottle" number="24" />	
  	<equipment type="wheelbarrow" number="24" />
 
-
-
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4320" />
 	<resource type="water" amount="21600" />

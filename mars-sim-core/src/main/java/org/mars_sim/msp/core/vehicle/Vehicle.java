@@ -231,7 +231,7 @@ public abstract class Vehicle extends Unit
 	private LocalPosition posParked;
 	
 	/** The vehicle type. */
-	private VehicleType vehicleType;
+	protected VehicleType vehicleType;
 
 	/** A collection of locations that make up the vehicle's trail. */
 	private List<Coordinates> trail;
@@ -345,7 +345,8 @@ public abstract class Vehicle extends Unit
 		else if (vehicleType == VehicleType.LUV) {
 			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
 		}
-		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
+		else if (vehicleType == VehicleType.EXPLORER_ROVER
+				|| vehicleType == VehicleType.LONG_RANGE_EXPLORER) {
 			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
 		}
 		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
@@ -466,7 +467,8 @@ public abstract class Vehicle extends Unit
 			endMass = getBaseMass() + estimatedTotalCrewWeight;			
 		}
 		
-		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
+		else if (vehicleType == VehicleType.EXPLORER_ROVER
+				|| vehicleType == VehicleType.LONG_RANGE_EXPLORER) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 15.0;
 			// Gets the estimated energy available for drivetrain [in kWh]

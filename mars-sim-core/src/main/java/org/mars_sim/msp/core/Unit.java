@@ -546,7 +546,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 *
 	 * @param base mass (kg)
 	 */
-	protected final void setBaseMass(double baseMass) {
+	public final void setBaseMass(double baseMass) {
 		this.baseMass = baseMass;
 		fireUnitUpdate(UnitEventType.MASS_EVENT);
 	}

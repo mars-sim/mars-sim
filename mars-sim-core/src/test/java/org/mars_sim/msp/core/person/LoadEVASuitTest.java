@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -86,6 +87,7 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.waterID, 4D);
 		
 		EVASuit suit0 = new EVASuit("EVA Suit 001", settlement);
+		
 		settlement.addEquipment(suit0);
 		
 		EquipmentOwner housing = (EquipmentOwner)settlement;
@@ -93,7 +95,7 @@ extends TestCase {
 		assertEquals("Wrong EVA suit name.", suit0.getName(), suit.getName());
 		double mass = ((int)(suit.getBaseMass() * 100D))/100D;
 		System.out.println("EVA suit's empty mass: " + mass + " kg");
-		assertEquals("EVA suit's empty mass is NOT correct.", 12.85, mass);
+		assertEquals("EVA suit's empty mass is NOT correct.", 13.0, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suit.transfer(person);

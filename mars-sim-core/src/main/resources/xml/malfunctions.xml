@@ -343,7 +343,8 @@
 		<probability value="5.0" />
 		<repair-eva time="50.0" />
 		<system-list>
-			<system name="explorer rover" />
+			<system name="explorer rover" />	
+			<system name="long range explorer" />				
 		</system-list>
 		<repair-parts-list>
 			<part name="rover wheel" number="1" probability="20" />
@@ -381,7 +382,7 @@
 		<probability value="3.0" />
 		<repair-eva time="60.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 			<system name="fuel heating source" />
 			<system name="fuel power source" />
 		</system-list>

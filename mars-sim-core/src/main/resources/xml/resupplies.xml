@@ -405,7 +405,7 @@
 		<building type="Large Sabatier Processor" xloc="0.0" yloc="-60.0" facing="90.0" />
 		<building type="Large Sabatier Processor" xloc="0.0" yloc="-65.0" facing="90.0" />	
 			
-		<vehicle type="Explorer Rover" number="2" />
+		<vehicle type="Long Range Explorer" number="2" />
 		<vehicle type="Transport Rover" number="2" />
 		<vehicle type="Light Utility Vehicle" number="1" />
 		<vehicle type="Delivery Drone" number="1" />

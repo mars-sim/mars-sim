@@ -113,7 +113,7 @@ public class GoodsUtil {
     public static String getVehicleCategory(VehicleType vehicleType) {
         if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
             return HEAVY;
-        else if (vehicleType == VehicleType.EXPLORER_ROVER)
+        else if (vehicleType == VehicleType.EXPLORER_ROVER || vehicleType == VehicleType.LONG_RANGE_EXPLORER)
             return MEDIUM;
         else if (vehicleType == VehicleType.LUV || vehicleType == VehicleType.DELIVERY_DRONE)
             return SMALL;

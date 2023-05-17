@@ -94,11 +94,11 @@ class PartGood extends Good {
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
-	private static Set<Integer> kithenWare = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+	private static Set<Integer> kithenWare = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
 																		"autoclave", "blender", "microwave",
 																		"oven", "refrigerator", "stove"});
 
-	private static Set<Integer> attachments = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+	private static Set<Integer> attachments = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", "drilling rig",
 																		"pneumatic drill", "soil compactor"});

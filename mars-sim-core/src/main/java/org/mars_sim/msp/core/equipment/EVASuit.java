@@ -83,7 +83,6 @@ public class EVASuit extends Equipment
 	/** String name of an EVA suit. */	
 	public static final String TYPE = SystemType.EVA_SUIT.getName();
 
-	
 	public static final String DASHES = " -----------------------------------------------------------------------";
 	
 	/** Total gas tank volume of EVA suit (Liter). */
@@ -145,22 +144,17 @@ public class EVASuit extends Equipment
 		// Create MicroInventory instance
 		microInventory = new MicroInventory(this, CAPACITY + emptyMass);
 
-		// Set the empty mass of the EVA suit in kg.
-		setBaseMass(emptyMass);
-
 		// Set capacity for each resource
 		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
 		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
-	}
 
-	
-	public static void init() {
-
-		for (int i : ItemResourceUtil.evaSuitPartIDs) {
-			emptyMass += ItemResourceUtil.findItemResource(i).getMassPerItem();
-		}
-
+		// Calculate the empty mass
+		emptyMass = ItemResourceUtil.initEVASuit();
+		
+		// Set the base mass of the EVA suit as empty mass
+		setBaseMass(emptyMass);
+		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		
 		double o2Consumed = personConfig.getHighO2ConsumptionRate();

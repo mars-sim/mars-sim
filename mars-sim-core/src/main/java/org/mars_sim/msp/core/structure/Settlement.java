@@ -2363,9 +2363,7 @@ public class Settlement extends Structure implements Temporal,
 	public int findNumParkedRovers() {
 		return Math.toIntExact(ownedVehicles
 					.stream()
-					.filter(v -> v.getVehicleType() == VehicleType.CARGO_ROVER
-					|| v.getVehicleType() == VehicleType.EXPLORER_ROVER
-					|| v.getVehicleType() == VehicleType.TRANSPORT_ROVER)
+					.filter(v -> VehicleType.isRover(v.getVehicleType()))
 					.filter(v -> this.equals(v.getSettlement()))
 					.collect(Collectors.counting()));
 	}
@@ -2702,13 +2700,13 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-		double regolithDemand = goodsManager.getAmountDemandValue(REGOLITH_ID);
+		double regolithDemand = goodsManager.getDemandValueWithID(REGOLITH_ID);
 		if (regolithDemand > REGOLITH_MAX)
 			regolithDemand = REGOLITH_MAX;
 		else if (regolithDemand < 1)
 			regolithDemand = 1;
 
-		double sandDemand = goodsManager.getAmountDemandValue(SAND_ID);
+		double sandDemand = goodsManager.getDemandValueWithID(SAND_ID);
 		if (sandDemand > REGOLITH_MAX)
 			sandDemand = REGOLITH_MAX;
 		else if (sandDemand < 1)
@@ -2752,13 +2750,13 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-		double iceDemand = goodsManager.getAmountDemandValue(ICE_ID);
+		double iceDemand = goodsManager.getDemandValueWithID(ICE_ID);
 		if (iceDemand > ICE_MAX)
 			iceDemand = ICE_MAX;
 		if (iceDemand < 1)
 			iceDemand = 1;
 		
-		double waterDemand = goodsManager.getAmountDemandValue(WATER_ID);
+		double waterDemand = goodsManager.getDemandValueWithID(WATER_ID);
 		waterDemand = waterDemand * waterRationLevel / 10;
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;

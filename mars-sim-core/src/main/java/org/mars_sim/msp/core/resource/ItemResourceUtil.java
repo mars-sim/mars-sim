@@ -41,6 +41,13 @@ public class ItemResourceUtil implements Serializable {
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
+	private static final String[] ASSEMBLE_ROVER = {"Assemble explorer rover",
+	                                                "Assemble long range explorer",
+	                                                "Assemble cargo rover",
+	                                                "Assemble transport rover",
+	                                                "Assemble light utility vehicle",
+	                                                "Assemble delivery drone"};
+	
 	/** 
 	 * Parts for creating an EVA Suit. 
 	 */
@@ -51,6 +58,8 @@ public class ItemResourceUtil implements Serializable {
 //			"eva boots",			"eva pads",
 //			"eva backpack",			"eva antenna",
 //			"eva battery",			"eva radio",
+	
+
 	
 	// 3-D printer
 	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
@@ -70,7 +79,17 @@ public class ItemResourceUtil implements Serializable {
 	private static ManufactureConfig manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 	
 	public static Set<Integer> evaSuitPartIDs;
+	
+	public static Map<Integer, Set<Integer>> vehiclePartIDs = new HashMap<>();
+	// 0 : Explorer Rover
+	// 1 : Long Range Explorer 
+	// 2 : transport rover
+	// 3 : cargo rover
+	// 4 : luv
+	// 5 : delivery drone
 
+	private static Map<Integer, List<String>> vehicleParts = new HashMap<>();
+	
 	/**
 	 * Constructor.
 	 */
@@ -80,8 +99,10 @@ public class ItemResourceUtil implements Serializable {
 		createIDs();
 	}
 	
-	public static void initEVASuit() {
+	public static double initEVASuit() {
 
+		double calculatedEmptyMass = 0;
+		
 		if (evaSuitPartIDs == null || evaSuitPartIDs.isEmpty()) {
 
 			ManufactureProcessInfo manufactureProcessInfo = null;
@@ -94,23 +115,49 @@ public class ItemResourceUtil implements Serializable {
 		        		manufactureProcessInfo = info;
 				}
 			}
-			
+
 			evaSuitParts = manufactureProcessInfo.getInputNames();
 		
-			ItemResourceUtil.createEvaSuitPartIDs(evaSuitParts);
-			
-			EVASuit.init();
+			evaSuitPartIDs = convertNameListToResourceIDs(evaSuitParts);
+
+			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
+			calculatedEmptyMass = manufactureProcessInfo.calculateTotalInputMass();
 		}
+		
+		return calculatedEmptyMass;
 	}
 	
-	/**
-	 * Creates a set of part ids for an EVA Suit.
-	 * 
-	 * @param parts
-	 */
-	public static void createEvaSuitPartIDs(List<String> parts) {
-		evaSuitPartIDs = convertNamesToResourceIDs(parts.stream()
-		        .toArray(String[]::new));
+	public static double initVehicle(int type) {
+
+		double calculatedEmptyMass = 0;
+		
+		if (vehiclePartIDs.isEmpty()|| vehiclePartIDs.get(type) == null) {
+
+			ManufactureProcessInfo manufactureProcessInfo = null;
+			
+			if (manufactureConfig == null)
+				manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+			
+			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
+				if (info.getName().equals(ASSEMBLE_ROVER[type])) {
+		        		manufactureProcessInfo = info;
+				}
+			}
+			
+			List<String> names = manufactureProcessInfo.getInputNames();
+			
+			
+			vehicleParts.put(type, names);
+		
+			Set<Integer> ids = convertNameListToResourceIDs(names);
+			
+			vehiclePartIDs.put(type, ids);
+			
+			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
+			calculatedEmptyMass = manufactureProcessInfo.calculateTotalInputMass();
+		}
+		
+		return calculatedEmptyMass;
 	}
 	
 	/**
@@ -145,18 +192,37 @@ public class ItemResourceUtil implements Serializable {
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
 	}
 
+	
 	/**
-	 * Converts a array of ItemResources into their equivalent ID.
+	 * Convert a list of string into their equivalent IDs.
 	 * 
-	 * @param names
-	 * @return
+	 * @param string list
+	 * @return a set of ids
 	 */
-	public static Set<Integer> convertNamesToResourceIDs(String [] names) {
+	public static Set<Integer> convertNameListToResourceIDs(List<String> strings) {
+		return convertNameArray2ResourceIDs(strings.stream()
+		        .toArray(String[]::new));
+	}
+	
+	/**
+	 * Converts a array of string names into their equivalent IDs.
+	 * 
+	 * @param name array
+	 * @return a set of ids
+	 */
+	public static Set<Integer> convertNameArray2ResourceIDs(String [] names) {
 		Set<Integer> ids = new HashSet<>();
 		for (String n : names) {
-			ItemResource item = findItemResource(n);
-			if (item != null) {
-				ids.add(item.getID());
+			
+			AmountResource ar = ResourceUtil.findAmountResource(n);
+			if (ar != null) {
+//				ids.add(ar.getID());
+			}		
+			else {
+				ItemResource item = findItemResource(n);
+				if (item != null) {
+					ids.add(item.getID());
+				}
 			}
 		}
 		return ids;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleSpec.java
- * @date 2023-04-17
+ * @date 2023-05-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 
@@ -23,6 +25,11 @@ public class VehicleSpec implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(VehicleSpec.class.getName());
+	
+	public static final String DASHES = " -----------------------------------------------------------------------";
+	
 	// Data members
 	private boolean hasLab = false;
 	private boolean hasPartAttachments = false;
@@ -35,12 +42,15 @@ public class VehicleSpec implements Serializable {
 	private int attachmentSlots;
 	private int batteryModule;	
 	private int fuelCellStack;
+	private int typeID;
 	
 	private double width, length;
 	private double drivetrainEff;
 	private double baseSpeed;
 	private double averagePower;
 	private double emptyMass;
+	
+	private double calculatedEmptyMass;
 	private double totalCapacity = 0D;
 
 	private String name;
@@ -63,7 +73,6 @@ public class VehicleSpec implements Serializable {
 
 	private String baseImage;
 
-
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			int batteryModule, int fuelCellStack,
 			double drivetrainEff, 
@@ -80,8 +89,39 @@ public class VehicleSpec implements Serializable {
 		this.emptyMass = emptyMass;
 		this.crewSize = crewSize;
 		this.baseImage = baseImage;
+		
+		typeID = -1;
+		if (type == VehicleType.EXPLORER_ROVER) {
+			typeID = 0;
+		}
+		else if (type == VehicleType.LONG_RANGE_EXPLORER) {
+			typeID = 1;
+		}
+		else if (type == VehicleType.CARGO_ROVER) {
+			typeID = 2;
+		}
+		else if (type == VehicleType.TRANSPORT_ROVER) {
+			typeID = 3;
+		}
+		else if (type == VehicleType.LUV) {
+			typeID = 4;
+		}
+		else if (type == VehicleType.DELIVERY_DRONE) {
+			typeID = 5;
+		}
+		calculateEmptyMass(typeID);
 	}
 
+	public void calculateEmptyMass(int typeID) {
+		
+		calculatedEmptyMass = ItemResourceUtil.initVehicle(typeID);
+		
+		logger.config(DASHES);
+		logger.config(" Rover spec name : " + name);
+		logger.config(" Cal. Empty Mass : " + Math.round(calculatedEmptyMass * 100.0)/100.0 + "kg");
+		logger.config(DASHES);
+	}
+	
 	public final void setWidth(double width) {
 		this.width = width;
 	}
@@ -91,7 +131,7 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * get <code>0.0d</code> or capacity for given cargo.
+	 * Gets <code>0.0d</code> or capacity for given cargo.
 	 * 
 	 * @param cargo {@link String}
 	 * @return {@link Double}
@@ -105,7 +145,8 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
-	 * Get the name of the vehicle specification
+	 * Gets the name of the vehicle specification.
+	 * 
 	 * @return
 	 */
 	public String getName() {
@@ -113,28 +154,51 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Get the type of the vehicle specification
+	 * Gets the type of the vehicle specification.
+	 * 
 	 * @return
 	 */
 	public VehicleType getType() {
 		return type;
 	}
-
-	/** @return the description */
+	
+	/**
+	 * Gets the type id of the vehicle specification.
+	 * 
+	 * @return
+	 */
+	public int getTypeID() {
+		return typeID;
+	}
+	
+	/**
+	 * Gets the description of the vehicle.
+	 * 
+	 * @return the description 
+	 */
 	public final String getDescription() {
 		return description;
 	}
 
-	/** @return the width */
+	/**
+	 * Gets the width of the vehicle.
+	 * 
+	 * @return the width 
+	 */
 	public final double getWidth() {
 		return width;
 	}
 
-	/** @return the length */
+	/**
+	 * Gets the length of the vehicle.
+	 * 
+	 * @return the length 
+	 */
 	public final double getLength() {
 		return length;
 	}
 
+	
 	/** @return the batteryModule */
 	public int getBatteryModule() {
 		return batteryModule;
@@ -162,7 +226,7 @@ public class VehicleSpec implements Serializable {
 
 	/** @return the emptyMass */
 	public final double getEmptyMass() {
-		return emptyMass;
+		return calculatedEmptyMass;
 	}
 
 	/** @return the crewSize */
