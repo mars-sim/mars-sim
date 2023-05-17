@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Part.java
- * @date 2021-11-16
+ * @date 2023-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -58,7 +58,7 @@ public class Part extends ItemResource {
 	}
 
 	/**
-	 * Compute the reliability
+	 * Computes the reliability.
 	 */
 	public void computeReliability(int missionSol) {
 
@@ -69,11 +69,10 @@ public class Part extends ItemResource {
 		else {
 			numSols = Math.max(1, numSols);
 			mtbf = computeMTBF(numSols);
-//			System.out.println(getName() + "'s MTBF: " + mtbf);
 		}
 
 		if (mtbf == 0) {
-			percentReliability = MAX_RELIABILITY;
+			percentReliability = 0;
 		}
 		else {
 			percentReliability = Math.min(MAX_RELIABILITY, Math.exp(-numSols / mtbf) * 100);
@@ -81,7 +80,7 @@ public class Part extends ItemResource {
 	}
 
 	/**
-	 * Computes the MTBF
+	 * Computes the MTBF.
 	 *
 	 * @param numSols
 	 * @return
@@ -91,7 +90,7 @@ public class Part extends ItemResource {
 		int numItem = CollectionUtils.getTotalNumPart(getID());
 
 		// Take the average between the factory mtbf and the field measured mtbf
-		return (numItem * numSols / numFailures + MAX_MTBF) / 2D;
+		return Math.min(MAX_MTBF, (numItem * numSols / numFailures + MAX_MTBF) / 2D);
 	}
 
 	public double getReliability() {

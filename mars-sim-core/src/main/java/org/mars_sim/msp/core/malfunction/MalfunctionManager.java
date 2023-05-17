@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2022-09-24
+ * @date 2023-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -316,7 +316,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Select a malfunction randomly to the unit, based on the affected scope.
+	 * Selects a malfunction randomly to the unit, based on the affected scope.
 	 *
 	 * @param actor
 	 */
@@ -351,9 +351,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 			registerAMalfunction(malfunction, actor);
 		}
 
-		if (malfunction.getRepairParts().isEmpty())
-			logger.info("'" + malfunction.getName() + "' needs no repair parts.");
-			
+		if (malfunction.getRepairParts().isEmpty() || m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
+			logger.info("'" + malfunction.getName() + "' needs no repair parts.");	
+		}
+		
+		else {
+			calculateNewReliability(malfunction);
+		}
+
+		if (!malfunction.getTraumatized().equalsIgnoreCase("None"))
+			issueMedicalComplaints(malfunction);
+
+		return malfunction;
+	}
+
+	/**
+	 * Computes the new reliability statistics.
+	 * 
+	 * @param malfunction
+	 */
+	public void calculateNewReliability(Malfunction malfunction) {
 		// Register the failure of the Parts involved
 		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {
 			int num = p.getValue();
@@ -389,12 +406,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Modify the probability of failure for this particular malfunction
 			malfunction.setProbability(newMalProbFailure);
 		}
-
-		issueMedicalComplaints(malfunction);
-
-		return malfunction;
 	}
-
+	
 	/**
 	 * Gets the probability of a repair part for a malfunction.
 	 *
