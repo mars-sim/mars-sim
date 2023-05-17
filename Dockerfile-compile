@@ -1,6 +1,6 @@
 # Build stage
 # the Maven project
-FROM maven:3.9.1-amazoncorretto-17 AS build
+FROM maven:3.9.2-amazoncorretto-17 AS build
 WORKDIR /app/src
 
 # Ideally the source code shouo dbe under a src subdirectory in GitHub repo
