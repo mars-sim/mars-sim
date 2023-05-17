@@ -149,11 +149,14 @@ public class EVASuit extends Equipment
 		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
 
-		// Calculate the empty mass
-		emptyMass = ItemResourceUtil.initEVASuit();
-		
 		// Set the base mass of the EVA suit as empty mass
 		setBaseMass(emptyMass);
+	}
+	
+	static {
+
+		// Calculate the empty mass
+		emptyMass = ItemResourceUtil.initEVASuit();
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		

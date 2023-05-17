@@ -288,9 +288,7 @@ public class EquipmentGood extends Good {
 	 */
 	private static double getWholeEVASuitDemand(GoodsManager owner) {
 		double demand = 0;
-		
-		ItemResourceUtil.initEVASuit();
-		
+	
 		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
 			for (int id : ItemResourceUtil.evaSuitPartIDs) {
 				demand += owner.getDemandValueWithID(id);

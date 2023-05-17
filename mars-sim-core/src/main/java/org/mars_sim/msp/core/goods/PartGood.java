@@ -475,9 +475,7 @@ class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getEVASuitPartsDemand(GoodsManager owner) {
-		ItemResourceUtil.initEVASuit();
-			
+	private double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
 			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this);
 		}
