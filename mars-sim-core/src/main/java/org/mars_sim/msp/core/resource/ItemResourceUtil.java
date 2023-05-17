@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;

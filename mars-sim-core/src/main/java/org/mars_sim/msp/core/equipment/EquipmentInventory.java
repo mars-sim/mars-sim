@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -110,7 +111,7 @@ public class EquipmentInventory
 	public Collection<Container> findAllContainers() {
 		Collection<Container> result = new HashSet<>();
 		for (Equipment e : equipmentSet) {
-			if (e != null && e instanceof Container) {
+			if (e != null && e.getUnitType() == UnitType.CONTAINER) {
 				result.add((Container)e);
 			}
 		}

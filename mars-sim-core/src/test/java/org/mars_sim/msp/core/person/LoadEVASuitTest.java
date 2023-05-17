@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * LoadEVASuitTest.java
- * @date 2022-09-01
- * @author Manny Kung
+ * @date 2023-05-01
+ * @auto7r Manny Kung
  */
 
 package org.mars_sim.msp.core.person;
@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -86,15 +85,20 @@ extends TestCase {
 		requiredResourcesMap.put(ResourceUtil.oxygenID, 1D);
 		requiredResourcesMap.put(ResourceUtil.waterID, 4D);
 		
-		EVASuit suit0 = new EVASuit("EVA Suit 001", settlement);
+		EVASuit suit001 = new EVASuit("EVA Suit 001", settlement);
 		
-		settlement.addEquipment(suit0);
+		settlement.addEquipment(suit001);
 		
 		EquipmentOwner housing = (EquipmentOwner)settlement;
+		
 		EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-		assertEquals("Wrong EVA suit name.", suit0.getName(), suit.getName());
+		
+		assertEquals("Wrong EVA suit name.", suit001.getName(), suit.getName());
+		
 		double mass = ((int)(suit.getBaseMass() * 100D))/100D;
+		
 		System.out.println("EVA suit's empty mass: " + mass + " kg");
+		
 		assertEquals("EVA suit's empty mass is NOT correct.", 13.0, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person

@@ -96,6 +96,10 @@ public class Preference implements Serializable {
 
 		// Computes the adjustment from a person's natural attributes
 		double aa = naturalAttributeManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE) / 50D * 1.5;
+		
+		double discipline = naturalAttributeManager.getAttribute(NaturalAttributeType.DISCIPLINE) / 50D * 1.5;
+		double org = naturalAttributeManager.getAttribute(NaturalAttributeType.ORGANIZATION) / 50D * 1.5;
+		
 		double t = naturalAttributeManager.getAttribute(NaturalAttributeType.TEACHING) / 50D * 1.5;
 		double l = naturalAttributeManager.getAttribute(NaturalAttributeType.LEADERSHIP) / 50D * 1.5;
 		double es = (naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE)
@@ -155,12 +159,15 @@ public class Preference implements Serializable {
 				case ACADEMIC:
 					rand += aa + .5;
 					break;
-				case TEACHING:
-					rand += .7 * t + .3 * aa;
+				case AGILITY:
+					rand += ag;
 					break;
-				case STRENGTH:
-					rand += .7 * es + .3 * cou;
+				case ARTISTIC:
+					rand += art;
 					break;
+				case DISCIPLINE:
+					rand += discipline;
+					break;					
 				case LEADERSHIP:
 					rand += l;
 					break;
@@ -168,19 +175,11 @@ public class Preference implements Serializable {
 					// need patience and stability to administer healing
 					rand += (se + ss) / 2D;
 					break;
-				case TREATMENT:
-					// if a person is stress-resilient and relatively emotional stable,
-					// he will more likely endure pain and less likely ask to be medicated.
-					rand -= se;
+				case ORGANIZATION:
+					rand += org;
 					break;
 				case PEOPLE:
 					rand += ca;
-					break;
-				case ARTISTIC:
-					rand += art;
-					break;
-				case AGILITY:
-					rand += ag;
 					break;
 				case RELAXATION:
 					// if a person has high spirituality score and has alternative ways to deal with
@@ -188,6 +187,17 @@ public class Preference implements Serializable {
 					// he will less likely require extra time to relax/sleep/workout/do yoga.
 					rand -= ss;
 					break;
+				case STRENGTH:
+					rand += .7 * es + .3 * cou;
+					break;
+				case TEACHING:
+					rand += .7 * t + .3 * aa;
+					break;						
+				case TREATMENT:
+					// if a person is stress-resilient and relatively emotional stable,
+					// he will more likely endure pain and less likely ask to be medicated.
+					rand -= se;
+					break;					
 				default:
 					break;
 				}

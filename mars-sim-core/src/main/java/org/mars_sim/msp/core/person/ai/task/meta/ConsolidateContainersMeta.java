@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConsolidateContainersMeta.java
- * @date 2021-12-22
+ * @date 2023-05-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -29,7 +29,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
-		setTrait(TaskTrait.STRENGTH);
+		setTrait(TaskTrait.STRENGTH, TaskTrait.ORGANIZATION, TaskTrait.DISCIPLINE);
 
         addPreferredRobot(RobotType.DELIVERYBOT);
 	}

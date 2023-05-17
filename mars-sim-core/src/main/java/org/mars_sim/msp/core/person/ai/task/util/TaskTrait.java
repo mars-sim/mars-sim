@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TaskTrait.java
- * @date 2022-07-24
+ * @date 2023-05-01
  * @author Barry Evans
  */
 
@@ -11,8 +11,10 @@ public enum TaskTrait {
 	ACADEMIC,
 	AGILITY,
 	ARTISTIC,
+	DISCIPLINE,
 	LEADERSHIP,
 	MEDICAL,
+	ORGANIZATION,
 	PEOPLE,
 	RELAXATION,
 	STRENGTH,

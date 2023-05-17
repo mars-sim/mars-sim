@@ -30,14 +30,14 @@ import org.mars_sim.msp.core.time.MarsClock;
 public abstract class MetaTask {
 	
 	/**
-	 *  Defines the type of Worker support by this Task
+	 *  Defines the type of Worker support by this Task.
 	 */
 	protected enum WorkerType {
 		PERSON, ROBOT, BOTH;
 	}
 	
 	/**
-	 *  Defines the scope of this Task
+	 *  Defines the scope of this Task.
 	 */
 	protected enum TaskScope {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
@@ -53,17 +53,18 @@ public abstract class MetaTask {
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
-
-	/** The static instance of the mars clock */
+	/** The static instance of the mars clock. */
 	protected static MarsClock marsClock;
 	protected static SurfaceFeatures surfaceFeatures;
 	
+	private boolean effortDriven = true;
 	private String name;
+	
 	private WorkerType workerType;
 	private TaskScope scope;
+	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private boolean effortDriven = true;
 	private Set<JobType> preferredJobs = new HashSet<>();
 	private Set<RobotType> preferredRobots = new HashSet<>();
 	
@@ -165,7 +166,7 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Gets the Person Favourites that are suited to this Task
+	 * Gets the Person favourites that are suited to this Task.
 	 * 
 	 * @return
 	 */
@@ -217,7 +218,7 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Apply a modified based on the Job. Rules are:
+	 * Applies a modified based on the Job. Rules are:
 	 * 1. Person must have a Job
 	 * 2. Task must have Preferred Jobs
 	 * 3. If the Person's job is not in the Preferred list then a penalty is applied.
@@ -240,8 +241,9 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Get the modifier value for a Task score based on the Radiation events occuring
-	 * at a Settlement. Events will scale down teh modifier towards zero.
+	 * Gets the modifier value for a Task score based on the Radiation events occurring
+	 * at a Settlement. Events will scale down the modifier towards zero.
+	 * 
 	 * @param settlement
 	 * @return
 	 */
@@ -268,7 +270,9 @@ public abstract class MetaTask {
     }
 
 	/**
-	 * Get the modifier for a Person doing an EVA Operation
+	 * Gets the modifier for a Person doing an EVA Operation.
+	 * 
+	 * @param person 
 	 */
 	protected static double getEVAModifier(Person person) {
 		// Check if an airlock is available
@@ -292,8 +296,9 @@ public abstract class MetaTask {
 
 	
 	/**
-	 * Get the modifier for a Person using a Building.
-	 * @param building Bulding the Person is entering
+	 * Gets the modifier for a Person using a building.
+	 * 
+	 * @param building Building the Person is entering
 	 * @param person Person working
 	 */
 	protected static double getBuildingModifier(Building building, Person person) {
@@ -306,7 +311,9 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Attached to the common controllign classes.
+	 * Attaches to the common controlling classes.
+	 * 
+	 * @param sim
 	 */
 	static void initialiseInstances(Simulation sim) {
 		marsClock = sim.getMasterClock().getMarsClock();
