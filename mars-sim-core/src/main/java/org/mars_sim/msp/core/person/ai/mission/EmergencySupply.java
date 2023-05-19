@@ -93,7 +93,8 @@ public class EmergencySupply extends RoverMission {
 	public EmergencySupply(Person startingPerson, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(MissionType.EMERGENCY_SUPPLY, startingPerson, null);
-
+		setPriority(5);
+		
 		if (isDone()) {
 			return;
 		}

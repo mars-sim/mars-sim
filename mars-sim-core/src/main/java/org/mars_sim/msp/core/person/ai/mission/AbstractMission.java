@@ -1295,6 +1295,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return priority;
 	}
 
+	protected void setPriority(int newPriority) {
+		priority = newPriority;
+	}
+	
 	/**
 	 * Checks if this worker can participate.
 	 * 

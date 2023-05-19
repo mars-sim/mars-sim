@@ -86,6 +86,8 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Use RoverMission constructor
 		super(MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
 
+		setPriority(5);
+		
 		if (!isDone()) {			
 			if (vehicleTarget == null)
 				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
