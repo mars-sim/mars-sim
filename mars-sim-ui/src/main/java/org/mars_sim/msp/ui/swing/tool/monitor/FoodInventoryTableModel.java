@@ -117,7 +117,7 @@ implements UnitListener {
 				return selectedFood.getType();
 			
 			case DEMAND_COL:
-				return selectedSettlement.getGoodsManager().getAmountDemandValue(selectedFood.getID());
+				return selectedSettlement.getGoodsManager().getDemandValueWithID(selectedFood.getID());
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyValue(selectedFood.getID());
 			case MASS_COL:

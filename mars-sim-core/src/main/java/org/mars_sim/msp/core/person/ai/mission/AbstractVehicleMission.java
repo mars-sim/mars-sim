@@ -89,7 +89,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	// Static members
 //	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.BATTERY_MODULE);
 	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
-	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNamesToResourceIDs(
+	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {
 																	ItemResourceUtil.FIBERGLASS});
 																	
@@ -1045,7 +1045,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// since the automated process is not reliable
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
 
-			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
+			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER || 
+				vehicle.getVehicleType() == VehicleType.LONG_RANGE_EXPLORER) 
 				result.computeIfAbsent(wheelID, k -> 2);
 			else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER
 					|| vehicle.getVehicleType() == VehicleType.TRANSPORT_ROVER) 

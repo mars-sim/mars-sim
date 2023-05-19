@@ -156,7 +156,7 @@ public class GoodsManager implements Serializable {
 	 */
 	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
 		this.settlement = settlement;
-
+		
 		// Schedule an event to recalculate shopping lists just after sunrise
 		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
 		populateGoodsValues();
@@ -617,17 +617,16 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the demand value of an amount resource.
+	 * Gets the demand value from an resource id.
 	 *
 	 * @param good's id.
 	 * @return demand value
 	 */
-	public double getAmountDemandValue(int id) {
+	public double getDemandValueWithID(int id) {
 		if (demandCache.containsKey(id))
 			return demandCache.get(id);
 		else
-			logger.severe(settlement,
-					" - Amount resource " + ResourceUtil.findAmountResourceName(id) + "(" + id + ")" + " not valid.");
+			logger.severe(settlement, "id: " + id + " not valid.");
 		return 1;
 	}
 

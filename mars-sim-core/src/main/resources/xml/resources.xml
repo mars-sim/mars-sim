@@ -343,7 +343,7 @@
 		Smectite is the name used for a group of phyllo-silicate mineral species.
 		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C. </resource>
 	<resource name="Allophane" type="ore" phase="solid"> 
-		Allophane is an amorphous to poorly crystalline hydrous aluminium
+		Allophane is an amorphous to poorly crystalline hydrous aluminum
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
 	<resource name="Akaganeite" type="ore" phase="solid"> 
 		Akaganeite is an iron oxide-hydroxide / chloride mineral with
@@ -358,7 +358,41 @@
 	<resource name="Aluminum oxide" type="compound" phase="solid" demand=".05" />
 	<resource name="Ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="Calcium carbonate" type="compound" phase="solid" demand=".1" />
-	<resource name="Calcium sulfate" type="compound" phase="solid" />
+	<resource name="Calcium sulfate" type="compound" phase="solid">
+		Mineral salt occurs naturally in the form of gypsum, and may be used as a sequestrant in food 
+		as well as a buffer and firming agent. Artificial sweetener base, bleaching agent for bread rolls, 
+		flour, tinned tomatoes, soy tofu, dried egg, cheese products, tooth paste. Used in mortar, 
+		cement and plaster of Paris. Derived from limestone. No known adverse effects.
+		
+		Crystalline phases of CaSO4 
+		(1). Anhydrite. CaSO4.
+		(2). Dihydrate. CaSO4·2H2O. Called gypsum, as a bleaching agent for crude soya bean vegetable oil
+	 	(3). Hemihydrate. CaSO4.1⁄2H2O). bassanite. Also called plaster of Paris.
+	 	
+	 	Calcium sulfate, 516 or E516, a common laboratory and industrial chemical. 
+	 	Also used as a coagulant in products like tofu.
+	 	
+	 	Specifically, it's used in cooking as a 
+		a. Firming agent - Helps maintain firmness of fruits and vegetables or interacts with 
+		   gelling agents to strengthen food structure. 
+		b. Flour treatment agent - A substance that improves baking quality or colour of flour. 
+		c. Sequestrant - A substance which controls the availability of a cation. 
+		d. Stabiliser - A substance that maintains the uniform dispersal of substances in a food. 
+	</resource>
+	<resource name="Gypsum plaster" type="compound" phase="solid"> 
+	   See https://civiconcepts.com/blog/gypsum-plaster
+	   A white cementing building material made by partial or complete dehydration of the mineral gypsum, commonly 
+	   with special retarders or hardeners added.
+	   
+	   Uses of gypsum plaster includes : 
+		(1). Medical : an orthopedic cast for the hand made out of plaster. 
+		(2). Dental : make denture and implantation in infected cavities. 
+		(3). Art : as a agent for decorative architecture, making surfaces like the walls of a house smooth before. 
+		     painting them and for making ornamental designs on the ceilings of houses and other buildings. 
+		(4). Utility : make toys, decorative materials, cheap ornaments, cosmetics, black-board, chalk and casts for statue. 
+		(5). Fire protection : as a fire-proofing material, hard wall plaster provides passive fire protection 
+		     for interior surfaces. 
+	</resource>
 	<resource name="Iron oxide" type="compound" phase="solid"> oxide mineral such as Fe2O3</resource>
 	<resource name="Iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with

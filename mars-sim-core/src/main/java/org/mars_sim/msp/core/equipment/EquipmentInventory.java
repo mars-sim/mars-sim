@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -96,9 +96,10 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-//		if (equipmentSet == null)
-//			equipmentSet = new UnitSet<>();
-		return Collections.unmodifiableSet(equipmentSet);
+		if (equipmentSet == null)
+			equipmentSet = new UnitSet<>();
+		return equipmentSet;
+//		return Collections.unmodifiableSet(equipmentSet);
 	}
 
 	/**
@@ -110,7 +111,7 @@ public class EquipmentInventory
 	public Collection<Container> findAllContainers() {
 		Collection<Container> result = new HashSet<>();
 		for (Equipment e : equipmentSet) {
-			if (e != null && e instanceof Container) {
+			if (e != null && e.getUnitType() == UnitType.CONTAINER) {
 				result.add((Container)e);
 			}
 		}

@@ -131,7 +131,9 @@ public class MarsProject {
 					SwingUtilities.invokeLater(MainWindow::startSplash);
 				}
 				
-				// Use opengl. This is very fragile logic
+				// Use opengl. 
+				
+				// This is very fragile logic
 				String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 				if (!os.contains("linux")) {
 					System.setProperty("sun.java2d.ddforcevram", "true");

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-04-28
+ * @date 2023-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -112,7 +112,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final int GLOBAL_MAP_WIDTH = MapPanel.MAP_BOX_WIDTH;
 
-	private static final int HEIGHT_STATUS_BAR = 20;
+	private static final int HEIGHT_STATUS_BAR = 16;
 
 	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
@@ -318,32 +318,32 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		optionsPane.add(mineralsButton);
 
 		// Create the status bar
-		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR+2);
+		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
 		Font font = StyleManager.getSmallFont();
 		
-		coordLabel = new JLabel();
-		coordLabel.setFont(font);
-		coordLabel.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
 
 		phiLabel = new JLabel();
+		phiLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 		phiLabel.setFont(font);
-		phiLabel.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
+		phiLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
 
 		thetaLabel = new JLabel();
 		thetaLabel.setFont(font);
-		thetaLabel.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
+		thetaLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
 
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
 	    
+		coordLabel = new JLabel();
+		coordLabel.setFont(font);
+		coordLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
+		
 		statusBar.addLeftComponent(phiLabel, false);
 		statusBar.addLeftComponent(thetaLabel, false);
-		
 		statusBar.addCenterComponent(heightLabel, false);
-
 		statusBar.addRightComponent(coordLabel, false);
 		
 		// Apply user choice

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleConfig.java
- * @date 2023-04-17
+ * @date 2023-05-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
@@ -134,7 +134,7 @@ public class VehicleConfig {
 			v.setWidth(width);
 			v.setLength(length);
 			
-			// Ground vehicle details
+			// Ground vehicle terrain handling ability
 			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
 				v.setTerrainHandling(Double.parseDouble(vehicleElement.getChild(TERRAIN_HANDLING).getAttributeValue(VALUE)));
 			}
@@ -156,13 +156,17 @@ public class VehicleConfig {
 						logger.severe(
 								resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
 					else
-						cargoCapacityMap.put(ar.getID(), resourceCapacity);
+						cargoCapacityMap.put(ar.getID(), resourceCapacity);		
+					
 				}
-
+				
 				double totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
 				v.setCargoCapacity(totalCapacity, cargoCapacityMap);
-			} 
+			}
 
+			// Call init() to use the cargo capacity for performance analysis
+			v.init();
+			
 			// sickbay
 			if (!vehicleElement.getChildren(SICKBAY).isEmpty()) {
 				Element sickbayElement = vehicleElement.getChild(SICKBAY);

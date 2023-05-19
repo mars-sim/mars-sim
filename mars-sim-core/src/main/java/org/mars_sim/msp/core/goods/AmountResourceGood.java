@@ -1298,37 +1298,37 @@ class AmountResourceGood extends Good {
 			// TODO Should be based on growing area
 			return demand * settlement.getTotalCropArea() * SOIL_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.cementID) {
-			double cementDemand = owner.getAmountDemandValue(ResourceUtil.cementID);
-			double concreteDemand = owner.getAmountDemandValue(ResourceUtil.concreteID);
-			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
-			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			double cementDemand = owner.getDemandValueWithID(ResourceUtil.cementID);
+			double concreteDemand = owner.getDemandValueWithID(ResourceUtil.concreteID);
+			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
+			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
 			return demand * (.5 * cementDemand + .2 * regolithDemand + .2 * sandDemand + .1 * concreteDemand) 
 					/ (1 + cementDemand) * CEMENT_VALUE_MODIFIER;
 		}
 		else if (resource == ResourceUtil.concreteID) {
-			double concreteDemand = owner.getAmountDemandValue(ResourceUtil.concreteID);
-			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
-			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			double concreteDemand = owner.getDemandValueWithID(ResourceUtil.concreteID);
+			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
+			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 5% by default
 			return demand * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
 						/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
 		}
 		else if (resource == ResourceUtil.sandID) {
-			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
-			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
+			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 10% by default
 			return demand * (.2 * regolithDemand + .7 * sandDemand) 
 						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
 		}
         else {
-			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
-			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			double regolithDemand = owner.getDemandValueWithID(ResourceUtil.regolithID);
+			double sandDemand = owner.getDemandValueWithID(ResourceUtil.sandID);
 
 			for (int id : ResourceUtil.rockIDs) {
 				if (resource == id) {
-					double rockDemand = owner.getAmountDemandValue(id);
+					double rockDemand = owner.getDemandValueWithID(id);
 					return demand * (.2 * regolithDemand + .9 * rockDemand) 
 							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 				}
@@ -1336,7 +1336,7 @@ class AmountResourceGood extends Good {
 
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
-					double mineralDemand = owner.getAmountDemandValue(id);
+					double mineralDemand = owner.getDemandValueWithID(id);
 					return demand * (.2 * regolithDemand + .9 * mineralDemand) 
 							/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
 				}
@@ -1344,7 +1344,7 @@ class AmountResourceGood extends Good {
 
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
-					double oreDemand = owner.getAmountDemandValue(id);
+					double oreDemand = owner.getDemandValueWithID(id);
 					// loses 10% by default
 					return demand * (.3 * regolithDemand + .6 * oreDemand) 
 							/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
@@ -1375,7 +1375,7 @@ class AmountResourceGood extends Good {
 			// Checks if this resource is a ROCK type
 			GoodType type = getGoodType();
 			if (type != null && type == GoodType.ROCK) {
-				double rockDemand = owner.getAmountDemandValue(resource);
+				double rockDemand = owner.getDemandValueWithID(resource);
 
 				if (resource == METEORITE_ID)
 					return demand * (.4 * regolithDemand + .5 * rockDemand) 
@@ -1470,8 +1470,8 @@ class AmountResourceGood extends Good {
 	private double computeIceProjectedDemand(GoodsManager owner, Settlement settlement) {
         int resource = getID();
 		if (resource == ResourceUtil.iceID) {
-			double ice = 1 + owner.getAmountDemandValue(resource);
-			double water = 1 + owner.getAmountDemandValue(ResourceUtil.waterID);
+			double ice = 1 + owner.getDemandValueWithID(resource);
+			double water = 1 + owner.getDemandValueWithID(ResourceUtil.waterID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return  (.5 * water + .5 * ice) / ice
 					* ICE_VALUE_MODIFIER;
@@ -1495,15 +1495,15 @@ class AmountResourceGood extends Good {
 			|| (resource ==  ResourceUtil.regolithCID)
 			|| (resource ==  ResourceUtil.regolithDID)) {
 
-			double sand = owner.getAmountDemandValue(ResourceUtil.sandID);
-			double concrete = owner.getAmountDemandValue(ResourceUtil.concreteID);
-			double cement = owner.getAmountDemandValue(ResourceUtil.cementID);
+			double sand = owner.getDemandValueWithID(ResourceUtil.sandID);
+			double concrete = owner.getDemandValueWithID(ResourceUtil.concreteID);
+			double cement = owner.getDemandValueWithID(ResourceUtil.cementID);
 
-			double targetRegolith = owner.getAmountDemandValue(resource);
-			double regolith = owner.getAmountDemandValue(ResourceUtil.regolithID);
-			double regolithB = owner.getAmountDemandValue(ResourceUtil.regolithBID);
-			double regolithC = owner.getAmountDemandValue(ResourceUtil.regolithCID);
-			double regolithD = owner.getAmountDemandValue(ResourceUtil.regolithDID);
+			double targetRegolith = owner.getDemandValueWithID(resource);
+			double regolith = owner.getDemandValueWithID(ResourceUtil.regolithID);
+			double regolithB = owner.getDemandValueWithID(ResourceUtil.regolithBID);
+			double regolithC = owner.getDemandValueWithID(ResourceUtil.regolithCID);
+			double regolithD = owner.getDemandValueWithID(ResourceUtil.regolithDID);
 			
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			

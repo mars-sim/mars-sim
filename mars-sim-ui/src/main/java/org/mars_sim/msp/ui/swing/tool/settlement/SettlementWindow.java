@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementWindow.java
- * @date 2021-12-06
+ * @date 2023-05-14
  * @author Lars Naesbye Christensen
  */
 
@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
@@ -43,7 +44,11 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	// default logger.
 	// private static final Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 
-	/** Tool name. */
+	private static final int HORIZONTAL = 800;
+	private static final int VERTICAL = 800;
+	private static final int HEIGHT_STATUS_BAR = 16;
+	private static final int LABEL_WIDTH = 220;
+	
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "settlement_map";
 
@@ -53,9 +58,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final String WITHIN_BLDG = "  Building : (";
 	private static final String SETTLEMENT_MAP = "  Map : (";
 	private static final String PIXEL_MAP = "  Window : (";
-
-	private static final int HORIZONTAL = 800;
-	private static final int VERTICAL = 800;
 
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
@@ -68,8 +70,8 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-	private Font sansSerif12Plain = new Font("SansSerif", Font.PLAIN, 12);
-	private Font sansSerif13Bold = new Font("SansSerif", Font.BOLD, 13);
+	private Font font0 = new Font("Times New Roman", Font.PLAIN, 12);
+	private Font font1= new Font("Times New Roman", Font.BOLD, 13);
 	
 	/**
 	 * Constructor.
@@ -88,30 +90,39 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new JStatusBar(1, 1, 20);
+        statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
+        statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         popLabel = new JLabel();
-        popLabel.setFont(sansSerif13Bold);
+        popLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+        popLabel.setFont(font1);
         popLabel.setForeground(Color.DARK_GRAY);
+        popLabel.setPreferredSize(new Dimension(160, HEIGHT_STATUS_BAR));
+        
 	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setFont(sansSerif12Plain);
+	    buildingXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    buildingXYLabel.setFont(font0);
 	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
-	    mapXYLabel = new JLabel();
-	    mapXYLabel.setFont(sansSerif12Plain);
-	    mapXYLabel.setForeground(Color.ORANGE.darker());
+	    buildingXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
+      	    
 	    pixelXYLabel = new JLabel();
-	    pixelXYLabel.setFont(sansSerif12Plain);
+	    pixelXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    pixelXYLabel.setFont(font0);
 	    pixelXYLabel.setForeground(Color.GRAY);
-
-	    JPanel rightPanel = new JPanel();
-		rightPanel.add(buildingXYLabel);
-	    rightPanel.add(mapXYLabel);
-
-        statusBar.addLeftComponent(pixelXYLabel, true);
-        statusBar.addCenterComponent(popLabel, true);
-        statusBar.addRightComponent(rightPanel, true);
-
+	    pixelXYLabel.setPreferredSize(new Dimension(LABEL_WIDTH, HEIGHT_STATUS_BAR));
+	    
+	    mapXYLabel = new JLabel();
+	    mapXYLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+	    mapXYLabel.setFont(font0);
+	    mapXYLabel.setForeground(Color.ORANGE.darker().darker());
+	    mapXYLabel.setPreferredSize(new Dimension(145, HEIGHT_STATUS_BAR));
+	    
+        statusBar.addLeftComponent(popLabel, false);
+        statusBar.addCenterComponent(buildingXYLabel, false);
+        statusBar.addRightComponent(pixelXYLabel, false);
+        statusBar.addRightComponent(mapXYLabel, false);
+        
         // Create subPanel for housing the settlement map
 		subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);

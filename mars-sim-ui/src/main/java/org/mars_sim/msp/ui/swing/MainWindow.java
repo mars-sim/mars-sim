@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2023-03-30
+ * @date 2023-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -27,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -65,6 +67,8 @@ public class MainWindow
 
 	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
 
+	public static final int HEIGHT_STATUS_BAR = 20;
+	
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "landerhab16.png";
 
@@ -390,12 +394,13 @@ public class MainWindow
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
 		frame.setJMenuBar(mainWindowMenu);
-
+		
 		// Close the unit bar when starting up
 		unitToolbar.setVisible(false);
 
 		// Create the status bar
-		JStatusBar statusBar = new JStatusBar(1, 1, 28);
+		JStatusBar statusBar = new JStatusBar(1, 1, HEIGHT_STATUS_BAR);
+		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
 		// Create speed buttons
 		createSpeedButtons(statusBar);
@@ -406,13 +411,14 @@ public class MainWindow
 
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
-		statusBar.addRightComponent(memoryBar, true);
+		memoryBar.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+		memoryBar.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
+		statusBar.addRightComponent(memoryBar, false);
 
-		statusBar.addRightCorner();
+//		statusBar.addRightCorner();
 
-		bottomPane.add(statusBar, BorderLayout.SOUTH);
-
-		// Blocking image tht should be displayed in the overlap
+		// Blocking image that should be displayed in the overlap
 		// Icon pauseIcon = getIcon("pause_orange");
 		// blockingImage = new JLabel(
 		// pauseIcon,
@@ -718,7 +724,8 @@ public class MainWindow
 	}
 
 	/**
-	 * Change the pause status. Called by Masterclock's firePauseChange() since
+	 * Changes the pause status. 
+	 * Note: called by Masterclock's firePauseChange() since
 	 * TimeWindow is on clocklistener.
 	 *
 	 * @param isPaused true if set to pause

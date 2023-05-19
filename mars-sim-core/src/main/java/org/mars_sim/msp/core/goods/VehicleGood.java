@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleGood.java
- * @date 2022-06-26
+ * @date 2023-05-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -54,29 +56,32 @@ class VehicleGood extends Good {
 
 	private double theoreticalRange;
 
+	private VehicleSpec vs;
+	
     private GoodType goodType;
     
     private VehicleType vehicleType;
 
+    private List<ManufactureProcessInfo> manufactureProcessInfos;
+    
 	// Suitability of this vehicle type for different Missions
 	private transient Map<MissionType, Double> missionCapacities = new EnumMap<>(MissionType.class);
 
     public VehicleGood(VehicleSpec vs) {
         super(vs.getName(), VehicleType.getVehicleID(vs.getType()));
 
+        this.vs = vs;
         this.vehicleType = vs.getType();
         switch(vehicleType) {
-		case DELIVERY_DRONE:
-		case LUV:
+		case DELIVERY_DRONE, LUV:
 			goodType = GoodType.VEHICLE_SMALL;
             break;
 
-		case EXPLORER_ROVER:
+		case EXPLORER_ROVER, LONG_RANGE_EXPLORER:
             goodType = GoodType.VEHICLE_MEDIUM;
             break;
 
-		case TRANSPORT_ROVER:
-		case CARGO_ROVER:
+		case TRANSPORT_ROVER, CARGO_ROVER:
             goodType = GoodType.VEHICLE_HEAVY;
             break;
 
@@ -85,6 +90,20 @@ class VehicleGood extends Good {
         }
 
 		this.theoreticalRange = getVehicleRange(vs);
+
+        // Pre-calculate manufactureProcessInfos
+		List<ManufactureProcessInfo> infos = new ArrayList<>();
+		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessInfo process = i.next();
+			for (String n : process.getOutputNames()) {
+				if (getName().equalsIgnoreCase(n)) {
+					infos.add(process);
+				}
+			}
+		}
+		
+		manufactureProcessInfos = infos;
     }
 
     @Override
@@ -187,20 +206,7 @@ class VehicleGood extends Good {
 	 */
 	private double computeVehiclePartsCost(GoodsManager owner) {
 		double result = 0;
-		String name = getName();
-
-        // TODO THis list can be pre-calculated
-		List<ManufactureProcessInfo> manufactureProcessInfos = new ArrayList<>();
-		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			for (String n : process.getOutputNames()) {
-				if (name.equalsIgnoreCase(n)) {
-					manufactureProcessInfos.add(process);
-				}
-			}
-		}
-
+	
 		Iterator<ManufactureProcessInfo> ii = manufactureProcessInfos.iterator();
 		while (ii.hasNext()) {
 			ManufactureProcessInfo process = ii.next();
@@ -271,8 +277,7 @@ class VehicleGood extends Good {
             case TRANSPORT_ROVER:
 			    demand *= (.5 + transportationFactor) * TRANSPORT_VEHICLE_FACTOR;
                 break;
-
-		    case EXPLORER_ROVER:
+            case LONG_RANGE_EXPLORER, EXPLORER_ROVER:
 			    demand *= (.5 + transportationFactor) * EXPLORER_VEHICLE_FACTOR;
                 break;
 
@@ -368,6 +373,17 @@ class VehicleGood extends Good {
 
 		double demand = determineMissionJob(owner, settlement, missionType);
 
+		int typeID = vs.getTypeID();
+		
+		double partDemand = 0;
+		
+		Set<Integer> setIDs = ItemResourceUtil.vehiclePartIDs.get(typeID);
+		if (setIDs != null && !setIDs.isEmpty()) {
+			for (int id : setIDs) {
+				partDemand += owner.getDemandValueWithID(id);
+			}
+		}
+		
 		int potentialVehicle = 0;
 		boolean soldFlag = false;
 		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
@@ -381,7 +397,7 @@ class VehicleGood extends Good {
 
 		double vehicleCapacity = determineMissionVehicleCapacity(missionType);
 
-		double baseValue = (demand / ((potentialVehicle * vehicleCapacity) + 1D)) * vehicleCapacity;
+		double baseValue = ((demand + partDemand)/ ((potentialVehicle * vehicleCapacity) + 1D)) * vehicleCapacity;
 
 		return baseValue;
 	}
@@ -608,11 +624,7 @@ class VehicleGood extends Good {
 	 * @return range (km)
 	 */
 	private static double getVehicleRange(VehicleSpec v) {
-		double range = 0D;
-
-		double fuelCapacity = v.getCargoCapacity(ResourceUtil.methanolID);
-		double fuelEfficiency = v.getDriveTrainEff();
-		range = fuelCapacity * fuelEfficiency * Vehicle.RMFC_CONVERSION_EFFICIENCY;
+		double range = v.getBaseRange();
 
         int crewSize = v.getCrewSize();
         if (crewSize > 0) {

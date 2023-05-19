@@ -94,22 +94,22 @@ class PartGood extends Good {
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
-	private static Set<Integer> kithenWare = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+	private static Set<Integer> kithenWare = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
 																		"autoclave", "blender", "microwave",
 																		"oven", "refrigerator", "stove"});
 
-	private static Set<Integer> attachments = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+	private static Set<Integer> attachments = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", "drilling rig",
 																		"pneumatic drill", "soil compactor"});
-
+	
 	private double flattenDemand;
 	private double flattenRawDemand;
 	private double costModifier;
 
     public PartGood(Part p) {
         super(p.getName(), p.getID());
-
+		
 		// Pre-calculate the fixed values
 		flattenDemand = calculateFlattenPartDemand(p);
 		flattenRawDemand = calculateFlattenRawPartDemand(p);
@@ -475,8 +475,8 @@ class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getEVASuitPartsDemand(GoodsManager owner) {
-		if (ItemResourceUtil.EVASUIT_PARTS_ID.contains(getID())) {
+	private double getEVASuitPartsDemand(GoodsManager owner) {		
+		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
 			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandValue(this);
 		}
 		return 0;

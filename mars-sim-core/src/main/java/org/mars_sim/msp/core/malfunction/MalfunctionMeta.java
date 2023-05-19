@@ -60,7 +60,7 @@ public class MalfunctionMeta implements Serializable {
 	private Map<MalfunctionRepairWork, EffortSpec> repairEffort;
 
 	/**
-	 * Constructs a Malfunction object
+	 * Constructs a Malfunction object.
 	 *
 	 * @param name name of the malfunction
 	 */

@@ -540,7 +540,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="Reduce gypsum to calcium carbonate with carbon" power-required=".03" >
+	<process name="Reduce gypsum to calcium carbonate with carbon" power-required="0.3" >
 		<description>
 			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -556,7 +556,7 @@
 		<output resource="grey water" rate="5.2"  />
 	</process>
 
-	<process name="Reduce gypsum to calcium carbonate with carbon monoxide" power-required=".1" >
+	<process name="Reduce gypsum to calcium carbonate with carbon monoxide" power-required="0.3" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
 			Wrapping two processes:
@@ -574,7 +574,7 @@
 	</process>
 
 
-	<process name="Reduce gypsum to calcium carbonate with hydrogen" power-required=".03" >
+	<process name="Reduce gypsum to calcium carbonate with hydrogen" power-required="0.3" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using hydrogen.
 			Wrapping two processes:
@@ -590,7 +590,19 @@
 		<output resource="calcium carbonate" rate="27.0"  />
 		<output resource="grey water" rate="26.0"  />
 	</process>
-				
+			
+	<process name="Make gypsum plaster via calcination" power-required="0.02" >
+		<description>
+			Calcination is a controlled heating process for making gypsum plaster.
+			The core ingredient of gypsum plaster is gypsum rock–hydrous calcium sulfate, 
+			which has a water content of about 20% in chemical combination.
+		</description>					
+		<input resource="gypsum" rate="5.0"  />
+
+		<output resource="gypsum plaster" rate="4.0"  />
+		<output resource="grey water" rate="1.0"  />
+	</process>
+					
 	<process name="Make quartz from silica" power-required="0.5" >
 		<input resource="silica" rate="45.0"  />
 		<input resource="calcium carbonate" rate="1.0"  />

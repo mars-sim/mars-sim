@@ -332,11 +332,17 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Vehicle Frame - large" type="vehicle" mass="250.0">
+
+	<part name="Vehicle Frame - small" type="vehicle" mass="15.0" >
+		<description>Small steel frame</description>
+	</part>
+		
+	<part name="Vehicle Frame - large" type="vehicle" mass="50.0">
 		<description>Heavy steel frame</description>
 	</part>
 
-	<part name="Rover Chassis Panel" type="vehicle" mass="100.0" >
+	
+	<part name="Rover Chassis Panel" type="vehicle" mass="20.0" >
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="10" />
@@ -372,33 +378,33 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover Windshield" type="vehicle" mass="100.0" >
+	<part name="Rover Windshield" type="vehicle" mass="50.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover Window" type="vehicle" mass="50.0" >
+	<part name="Rover Window" type="vehicle" mass="25.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover Generator" type="vehicle" mass="500.0" >
+	<part name="Rover Generator" type="vehicle" mass="80.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="fuel power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor - Large" type="vehicle" mass="100.0" >
+	<part name="Motor - Large" type="vehicle" mass="40.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 			<entity name="wind power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover Control Panel" type="vehicle" mass="100.0" >
+	<part name="Rover Control Panel" type="vehicle" mass="30.0" >
 		<description>Made from polyethylene and reinforced fiberglass.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
@@ -406,7 +412,7 @@
 	</part>
 
 
-	<part name="Gas Tank" type="utility" mass="20.0" >
+	<part name="Gas Tank" type="utility" mass="10.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="life support" probability="1" max-number="1" />
@@ -416,7 +422,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Water Tank" type="utility" mass="20.0" >
+	<part name="Water Tank" type="utility" mass="2.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="life support" probability="1" max-number="1" />
@@ -426,7 +432,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Fuel Tank" type="utility" mass="50.0" >
+	<part name="Fuel Tank" type="utility" mass="10.0" >
 	<description>for storing methane</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
@@ -479,10 +485,6 @@
 			<entity name="delivery drone" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-
-
-
-	<part name="Vehicle Frame - small" type="vehicle" mass="75.0" />
 
 	<part name="Wheel - small" type="vehicle"  mass="4.45" >
 		<maintenance-entity-list>
@@ -786,13 +788,13 @@
 		</description>
 	</part>
 
-	<part name="Methane Fuel cell stack" type="electronic" mass="60">
+	<part name="Methane Fuel cell stack" type="electronic" mass="15">
 		<description>A 15 kW Solid Oxide Fuel Cell (SOFC) stack comprises 
 		    75 fuel cells, furnished with valves, coolant and pump, filter, sensors,
 		    cold plate and heat pipes. 
 		</description>
 	    <maintenance-entity-list>
-			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="methane power generator" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -803,13 +805,12 @@
 		</description>
 	</part>
 	
-	<part name="Methanol Fuel cell stack" type="electronic" mass="80">
+	<part name="Methanol Fuel cell stack" type="electronic" mass="15">
 		<description>A 15 kW Reformed Methanol Fuel Cell (RMFC) stack comprises 
 		   75 fuel cells and heat exchanger, radiator and supporting structure.
 		</description>		
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="fuel power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 

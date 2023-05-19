@@ -789,7 +789,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Remove an equipment
+	 * Removes an equipment.
 	 *
 	 * @param equipment
 	 */
@@ -799,7 +799,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param resource the item resource
 	 * @param quantity

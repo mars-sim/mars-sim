@@ -874,7 +874,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="0.05">
 		<description>
 		 Biaxially oriented PET film is metallized by vapor deposition of a thin film of 
-		 evaporated aluminium, gold, or other metal onto it.
+		 evaporated aluminum, gold, or other metal onto it.
 		</description>
 		<inputs>
 			<resource name="mylar" amount="2.0" />
@@ -1184,14 +1184,17 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="helmet visor" number="1" />
 			<part name="pressure suit" number="1" />
 			<part name="coveralls" number="1" />
+			
 			<part name="eva gloves" number="1" />
 			<part name="eva boots" number="1" />
 			<part name="eva pads" number="1" />
 			<part name="eva backpack" number="1" />
+			
 			<part name="eva antenna" number="1" />
 			<part name="eva radio" number="1" />
 			<part name="eva battery" number="1" />
 			<part name="suit heating unit" number="1" />
+			
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="10" />
 		</inputs>
@@ -1241,54 +1244,54 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="3.0">
 		<inputs>
 			<resource name="acetylene" amount="0.5" />		
-			<part name="steel ingot" number="15" />
+			<part name="steel ingot" number="3" />
 		</inputs>
 		<outputs>
 			<part name="vehicle frame - small" number="1" />
 		</outputs>
 	</process>
 
-	<process name="Make large vehicle frame" tech="2" skill="2" work-time="700" process-time="700"
+	<process name="Make large vehicle frame" tech="2" skill="2" work-time="300" process-time="300"
 			power-required="5.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />	
-			<part name="steel ingot" number="50" />
+			<part name="steel ingot" number="10" />
 		</inputs>
 		<outputs>
 			<part name="vehicle frame - large" number="1" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture rover chassis panel" tech="3" skill="3" work-time="200" process-time="400"
+	<process name="Manufacture rover chassis panel" tech="2" skill="3" work-time="200" process-time="200"
 			power-required=".1">
 		<inputs>
-			<resource name="polyester resin" amount="25.0" />
-			<resource name="polystyrene" amount="10" />
-			<resource name="styrene" amount="25.0" />
-			<part name="fiberglass" number="40" />
+			<resource name="polyester resin" amount="5.0" />
+			<resource name="polystyrene" amount="5" />
+			<resource name="styrene" amount="5.0" />
+			<part name="fiberglass" number="5" />
 		</inputs>
 		<outputs>
 			<part name="rover chassis panel" number="1" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="400" process-time="600"
+	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="50" process-time="300"
 			power-required=".1">
 		<inputs>
-			<part name="glass sheet" number="4" />
+			<part name="glass sheet" number="2" />
 		</inputs>
 		<outputs>
 			<part name="rover windshield" number="1" />
 		</outputs>
 	</process>
 
-	<process name="Manufacture rover window" tech="3" skill="2" work-time="400" process-time="600"
+	<process name="Manufacture rover window" tech="3" skill="2" work-time="100" process-time="150"
 			power-required=".1">
 		<inputs>
 			<part name="glass sheet" number="2" />
 		</inputs>
 		<outputs>
-			<part name="rover window" number="1" />
+			<part name="rover window" number="2" />
 		</outputs>
 	</process>
 
@@ -1430,10 +1433,10 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount="3.0" />
-			<resource name="polyester resin" amount="20.0" />
-			<resource name="polystyrene" amount="10" />			
-			<resource name="styrene" amount="10.0" />
-			<part name="fiberglass" number="40" />
+			<resource name="polyester resin" amount="5.0" />
+			<resource name="polystyrene" amount="10.0" />			
+			<resource name="styrene" amount="2.0" />
+			<part name="fiberglass" number="5" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="electrical wire" number="4" />
@@ -1593,27 +1596,25 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
-			<resource name="acetylene" amount="0.5" />
-			<part name="aerogel tile" number="4" />				
+			<resource name="acetylene" amount="2.0" />
+			<part name="aerogel tile" number="2" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
 			<part name="vehicle frame - small" number="1" />
-			<part name="aluminum sheet" number="5" />
-			<part name="rover chassis panel" number="2" />
+			<part name="aluminum sheet" number="1" />
+			<part name="rover chassis panel" number="1" />
 			<part name="motor - small" number="4" />
-			<part name="methane fuel cell stack" number="2" />
+			<part name="methanol fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="2" />
 			<part name="plastic pipe" number="1" />
-			<part name="plastic bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="wheel - small" number="8" />
 			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="4" />
+			<part name="optical cable" number="2" />
 			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
 			<part name="propeller" number="4" />			
 		</inputs>
@@ -1635,7 +1636,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover chassis panel" number="3" />
 			<part name="aluminum sheet" number="5" />			
 			<part name="motor - small" number="4" />
-			<part name="methane fuel cell stack" number="1" />
+			<part name="methanol fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -1643,11 +1644,14 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic pipe" number="2" />
 			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="wheel - small" number="8" />
+			<part name="wheel - small" number="4" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
+			<part name="gas tank" number="1" />	
 			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
+			<part name="oxygen pump" number="1" />			
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />
@@ -1663,29 +1667,29 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame - large" number="2" />
-			<part name="rover chassis panel" number="6" />
-			<part name="rover windshield" number="1" />
-			<part name="rover window" number="5" />
+			<part name="vehicle frame - large" number="3" />
+			<part name="rover chassis panel" number="4" />
+			<part name="rover windshield" number="2" />
+			<part name="rover window" number="4" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="3" />			
 			<part name="methane fuel cell stack" number="4" />
 			<part name="battery module" number="2" />
-			<part name="fuel tank" number="1" />
-			<part name="gas tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />
+			<part name="gas tank" number="2" />	
+			<part name="fuel tank" number="2" />
+			<part name="water tank" number="2" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
-			<part name="plastic tubing" number="5" />
-			<part name="plastic pipe" number="2" />
-			<part name="steel pipe" number="2" />
-			<part name="plastic bottle" number="5" />
-			<part name="lubricant bottle" number="2" />
+			<part name="plastic tubing" number="3" />
+			<part name="plastic pipe" number="3" />
+			<part name="steel pipe" number="3" />
+			<part name="plastic bottle" number="3" />
+			<part name="lubricant bottle" number="3" />
 			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />
 		</inputs>
@@ -1694,6 +1698,46 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Assemble long range explorer" tech="3" skill="4" work-time="2400" process-time="1200"
+			power-required="4.5">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />		
+			<resource name="polystyrene" amount="15" />			
+			<part name="aerogel tile" number="8" />					
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="rover control panel" number="1" />			
+			<part name="vehicle frame - large" number="4" />
+			<part name="rover chassis panel" number="4" />
+			<part name="rover windshield" number="2" />
+			<part name="rover window" number="4" />
+			<part name="winch" number="1" />
+			<part name="rover generator" number="1" />
+			<part name="motor - large" number="3" />			
+			<part name="methane fuel cell stack" number="4" />
+			<part name="battery module" number="3" />
+			<part name="gas tank" number="3" />
+			<part name="fuel tank" number="3" />
+			<part name="water tank" number="3" />
+			<part name="fuel pump" number="3" />
+			<part name="oxygen pump" number="3" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="plastic tubing" number="4" />
+			<part name="plastic pipe" number="4" />
+			<part name="steel pipe" number="4" />
+			<part name="plastic bottle" number="4" />
+			<part name="lubricant bottle" number="4" />
+			<part name="rover wheel" number="12" />
+			<part name="optical cable" number="6" />
+		</inputs>
+		<outputs>
+			<vehicle name="long range explorer" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="Assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">
 		<inputs>
@@ -1703,29 +1747,29 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame - large" number="3" />
+			<part name="vehicle frame - large" number="5" />
 			<part name="rover chassis panel" number="10" />
-			<part name="rover windshield" number="1" />
-			<part name="rover window" number="7" />
+			<part name="rover windshield" number="3" />
+			<part name="rover window" number="8" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="4" />			
 			<part name="methane fuel cell stack" number="5" />
-			<part name="battery module" number="3" />
-			<part name="fuel tank" number="1" />
-			<part name="gas tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />
+			<part name="battery module" number="4" />
+			<part name="gas tank" number="4" />
+			<part name="fuel tank" number="4" />
+			<part name="water tank" number="4" />
+			<part name="fuel pump" number="4" />
+			<part name="oxygen pump" number="4" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 			<part name="plastic tubing" number="5" />
-			<part name="plastic pipe" number="2" />
-			<part name="steel pipe" number="2" />
+			<part name="plastic pipe" number="5" />
+			<part name="steel pipe" number="5" />
 			<part name="plastic bottle" number="5" />
-			<part name="lubricant bottle" number="2" />
+			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="8" />
 		</inputs>
@@ -1743,29 +1787,29 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="rover control panel" number="1" />
-			<part name="vehicle frame - large" number="3" />
-			<part name="rover chassis panel" number="10" />
-			<part name="rover windshield" number="1" />
-			<part name="rover window" number="7" />
+			<part name="vehicle frame - large" number="5" />
+			<part name="rover chassis panel" number="12" />
+			<part name="rover windshield" number="3" />
+			<part name="rover window" number="8" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="5" />			
 			<part name="methane fuel cell stack" number="6" />
-			<part name="battery module" number="4" />
-			<part name="fuel tank" number="1" />
-			<part name="gas tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />
+			<part name="battery module" number="5" />
+			<part name="gas tank" number="4" />
+			<part name="fuel tank" number="4" />
+			<part name="water tank" number="4" />
+			<part name="fuel pump" number="4" />
+			<part name="oxygen pump" number="3" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 			<part name="plastic tubing" number="5" />
-			<part name="plastic pipe" number="2" />
-			<part name="steel pipe" number="2" />
+			<part name="plastic pipe" number="5" />
+			<part name="steel pipe" number="5" />
 			<part name="plastic bottle" number="5" />
-			<part name="lubricant bottle" number="2" />
+			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="10" />
 		</inputs>
@@ -3111,7 +3155,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="polystyrene" amount="9" />
-			<resource name="aluminium" amount="1" />			
+			<resource name="aluminum" amount=".5" />			
 		</inputs>
 		<outputs>
 			<part name="insulation board" number="10" />

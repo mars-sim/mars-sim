@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2022-07-27
+ * @date 2023-05-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -80,8 +80,11 @@ public class EVASuit extends Equipment
 	private static final SimLogger logger = SimLogger.getLogger(EVASuit.class.getName());
 
 	// Static members
-	public static String TYPE = SystemType.EVA_SUIT.getName();
+	/** String name of an EVA suit. */	
+	public static final String TYPE = SystemType.EVA_SUIT.getName();
 
+	public static final String DASHES = " -----------------------------------------------------------------------";
+	
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
@@ -101,64 +104,26 @@ public class EVASuit extends Equipment
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
 	/** The ratio of CO2 expelled to O2 breathed in. */
-	private static final double GAS_RATIO;
+	private static double GAS_RATIO;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
-	private static final double MIN_O2_PRESSURE;
+	private static double MIN_O2_PRESSURE;
 	/** The full O2 partial pressure if at full tank. */
-	private static final double FULL_O2_PARTIAL_PRESSURE;
+	private static double FULL_O2_PARTIAL_PRESSURE;
 	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
-	private static final double MASS_O2_NOMINAL_LIMIT;
+	private static double MASS_O2_NOMINAL_LIMIT;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
-	private static final double MASS_O2_MINIMUM_LIMIT;
-	
+	private static double MASS_O2_MINIMUM_LIMIT;
+
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
 
-	public static final String DASHES = " -----------------------------------------------------------------------";
-	
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 
-	private static final PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-
-	static {
-
-		 for (int id: ItemResourceUtil.EVASUIT_PARTS_ID) {
-			 emptyMass += ItemResourceUtil.findItemResource(id).getMassPerItem();
-		 }
-
-		 double o2Consumed = personConfig.getHighO2ConsumptionRate();
-		 double co2Expelled = personConfig.getCO2ExpelledRate();
-		 GAS_RATIO = co2Expelled / o2Consumed;
-
-		 MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
-
-		 FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
-
-		 MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
-
-		 MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
-
-		 logger.config(DASHES);
-		 logger.config(" Suit's Unloaded Weight : " + Math.round(emptyMass * 1_000.0)/1_000.0 + " kg");
-		 logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
-		 logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
-				 + " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
-		 logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-				 + Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
-		 logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
-				 + Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
-		 logger.config(DASHES);
-			
-			// 66.61 kPa -> 1      kg (full tank O2 pressure)
-			// 20.7  kPa -> 0.3107 kg
-			// 17    kPa -> 0.2552 kg (target O2 pressure)
-			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
-	}
-
+	
 	/**
 	 * Constructor.
 	 * @param name
@@ -179,15 +144,51 @@ public class EVASuit extends Equipment
 		// Create MicroInventory instance
 		microInventory = new MicroInventory(this, CAPACITY + emptyMass);
 
-		// Set the empty mass of the EVA suit in kg.
-		setBaseMass(emptyMass);
-
 		// Set capacity for each resource
 		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
 		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
-	}
 
+		// Set the base mass of the EVA suit as empty mass
+		setBaseMass(emptyMass);
+	}
+	
+	static {
+
+		// Calculate the empty mass
+		emptyMass = ItemResourceUtil.initEVASuit();
+		
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		
+		double o2Consumed = personConfig.getHighO2ConsumptionRate();
+		double co2Expelled = personConfig.getCO2ExpelledRate();
+		GAS_RATIO = co2Expelled / o2Consumed;
+				
+		MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
+		
+		FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
+		
+		MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
+		
+		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
+		
+		logger.config(DASHES);
+		logger.config(" Suit's Unloaded Weight : " + Math.round(emptyMass * 1_000.0)/1_000.0 + " kg");
+		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
+		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
+					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
+		logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
+					+ Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
+		logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
+					+ Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
+		logger.config(DASHES);
+			
+			// 66.61 kPa -> 1      kg (full tank O2 pressure)
+			// 20.7  kPa -> 0.3107 kg
+			// 17    kPa -> 0.2552 kg (target O2 pressure)
+			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
+	}
+	
 	/**
      * Gets the total capacity of resource that this container can hold.
      * @return total capacity (kg).

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentOwner.java
- * @date 2021-10-21
+ * @date 2023-05-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
@@ -33,14 +33,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	public Collection<Container> findContainersOfType(EquipmentType type);
 	
 	/**
-	 * Get the equipment list
+	 * Gets the equipment set.
 	 * 
 	 * @return
 	 */
 	Set<Equipment> getEquipmentSet();
 	
 	/**
-	 * Does this person possess an equipment of this equipment type
+	 * Does this person possess an equipment of this type ?
 	 * 
 	 * @param typeID
 	 * @return
@@ -48,7 +48,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public boolean containsEquipment(EquipmentType type);
 	
 	/**
-	 * Adds an equipment to this person
+	 * Adds an equipment to this person.
 	 * 
 	 * @param equipment
 	 * @return true if this person can carry it
@@ -56,14 +56,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	public boolean addEquipment(Equipment equipment);
 	
 	/**
-	 * Remove an equipment 
+	 * Removes an equipment.
 	 * 
 	 * @param equipment
 	 */
 	public boolean removeEquipment(Equipment equipment);
 	
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 * 
 	 * @param resource the item resource
 	 * @param quantity
@@ -72,7 +72,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public int storeItemResource(int resource, int quantity);
 	
 	/**
-	 * Retrieves the item resource 
+	 * Retrieves the item resource.
 	 * 
 	 * @param resource
 	 * @param quantity
@@ -81,7 +81,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public int retrieveItemResource(int resource, int quantity);
 	
 	/**
-	 * Gets the item resource stored
+	 * Gets the item resource stored.
 	 * 
 	 * @param resource
 	 * @return quantity
@@ -89,7 +89,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public int getItemResourceStored(int resource);
 	
 	/**
-	 * Gets all stored item resources
+	 * Gets all stored item resources.
 	 * 
 	 * @return all stored item resources.
 	 */
@@ -106,7 +106,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
 	
 	/**
-	 * Finds the number of containers of a particular type
+	 * Finds the number of containers of a particular type.
 	 * 
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
@@ -124,7 +124,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource);
 	
 	/**
-	 * Obtains the remaining general storage space 
+	 * Obtains the remaining general storage space.
 	 * 
 	 * @return quantity
 	 */

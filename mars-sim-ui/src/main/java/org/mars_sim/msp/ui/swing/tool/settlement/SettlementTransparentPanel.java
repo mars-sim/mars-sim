@@ -104,7 +104,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private static final String ZENITH_ANGLE 	= "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH 	= "   Optical Depth: ";
 
-	
 	private static final String PROJECTED_SUNRISE	= " Projected Sunrise: ";
 	private static final String PROJECTED_SUNSET	= "  Projected Sunset: ";
 	private static final String SUNRISE				= " Yestersol Sunrise: ";
@@ -120,6 +119,8 @@ public class SettlementTransparentPanel extends JComponent {
 
 	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
+
+	
 	private double temperatureCache;
 	private double opticalDepthCache;
 	private double windSpeedCache;
@@ -130,6 +131,9 @@ public class SettlementTransparentPanel extends JComponent {
 	private String zaString;
 	private String odString;
 
+	private ImageIcon emptyIcon = new ImageIcon();
+	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	
 	private Map<Settlement, String> resourceCache = new HashMap<>();
 
 	private GameMode mode;
@@ -139,8 +143,6 @@ public class SettlementTransparentPanel extends JComponent {
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
 
-	private static final ImageIcon emptyIcon = new ImageIcon();
-    
 	/** label for projected sunrise time. */
 	private JLabel projectSunriseLabel;
 	/** label for projected sunset time. */
@@ -182,8 +184,7 @@ public class SettlementTransparentPanel extends JComponent {
 	private OrbitInfo orbitInfo;
 	private UnitManager unitManager;
 
-	private final static Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-	
+
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
         this.desktop = desktop;

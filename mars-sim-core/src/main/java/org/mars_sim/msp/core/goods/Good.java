@@ -89,7 +89,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * Constructor with object.
 	 *
 	 * @param name     the name of the good.
-	 * @param object   the good's object if any.
+	 * @param id   the good's id.
 	 */
 	protected Good (String name, int id) {
 		this.name = name;

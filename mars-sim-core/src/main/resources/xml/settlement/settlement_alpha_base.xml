@@ -291,10 +291,14 @@
     <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-80.0" facing="0.0" />
         
-    <building type="Solar Thermal Array" xloc="40.0"
-        yloc="-90.0" facing="0.0" />
+        
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-90.0" facing="0.0" /> 
+                
     <building type="Solar Thermal Array" xloc="40.0"
         yloc="-100.0" facing="0.0" />
+    <building type="Solar Thermal Array" xloc="40.0"
+        yloc="-110.0" facing="0.0" />
         
        
         
@@ -353,8 +357,6 @@
 	<equipment type="specimen box" number="120" />
     <equipment type="thermal bottle" number="24" />	
  	<equipment type="wheelbarrow" number="24" />
-
-
 
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4320" />

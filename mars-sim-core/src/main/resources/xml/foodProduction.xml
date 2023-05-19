@@ -497,6 +497,26 @@
 		</outputs>
 	</process>
 
+	<process name="Make Tofu from Soymilk and Calcium Sulfate"
+		tech="1" skill="1" work-time="25" process-time="50"
+			power-required="1.0">
+
+		<description> Boil up soymilk, add calcium sulfate as coagulant,
+			gently stir and heat, and the curds will separate.</description>
+
+		<inputs>
+			<part name="stove" number="1" />
+			<resource name="Soymilk" amount="2.5" />
+			<resource name="calcium sulfate" amount="0.03" />
+		</inputs>
+		<outputs>
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="2.1" />
+			<!-- Grey Water is (edible) tofu whey -->
+			<resource name="Grey Water" amount="0.4" />
+		</outputs>
+	</process>
+	
 	<process name="Make Tofu from Soymilk and Epsom Salt"
 		tech="1" skill="1" work-time="25" process-time="50"
 			power-required="1.0">
@@ -517,7 +537,6 @@
 		</outputs>
 	</process>
 
-	<!-- 7.37 g/kg soymilk to 15.47 g/kg soymilk is ideal according to https://www.instructables.com/Homemade-Tofu/ ...TODO: add gypsum later? -->
 	<process name="Make Tofu from Soymilk and Vinegar"
 		tech="1" skill="1" work-time="25" process-time="50"
 			power-required="1.0">
@@ -827,7 +846,7 @@
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
 			<resource name="Water" amount="3.0" />
-
+			<resource name="calcium sulfate" amount="3.0" />
 		</inputs>
 		<outputs>
 			<resource name="Water" amount="2.9" />
@@ -902,7 +921,11 @@
 		</outputs>
 	</process>
 	
-	<!-- https://umanitoba.ca/faculties/engineering/departments/ce2p2e/alternative_village/media/19_Physical_Chemical_surface_properties_wheat_husk_rye_husk_soft_wood_Bledzki.pdf says 15-20 % husk for wheat; https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions saysfor Buckwheat cultivar Siva, it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a assumes waste is linear from grain to wholegrain to white   -->
+	<!-- https://umanitoba.ca/faculties/engineering/departments/ce2p2e/alternative_village/media/19_Physical_Chemical_surface_properties_wheat_husk_rye_husk_soft_wood_Bledzki.pdf 
+	    says 15-20 % husk for wheat; 
+	    https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions says for Buckwheat cultivar Siva, 
+	    it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a 
+	    assumes waste is linear from grain to wholegrain to white   -->
 	<process name= "Process Wheat into Wheat Flour"
 		tech="1" skill="2" work-time="50" process-time="400"
 			power-required="5.0">

@@ -7,7 +7,7 @@
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
 	<!-- These are aligned with VehicleType enum-->
-	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|LONG_RANGE_EXPLORER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
@@ -114,11 +114,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<average-power value="15" />
+		<average-power value="15.0" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
-		<empty-mass value="1500.0" />
+		<empty-mass value="1100.0" />
 
 		<!-- How well does this vehicle handle terrain -->
 		<terrain-handling value="5.0"/>
@@ -220,17 +220,17 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	</vehicle>
 
-	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long explorer">
+	<vehicle name="Long Range Explorer" type="LONG_RANGE_EXPLORER" width="3.5" length="8.0" base-image="long range explorer">
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
-		<battery-module number="2" />
+		<battery-module number="3" />
 		<fuel-cell-stack number="4" />
-		<drivetrain-efficiency value="1" />
+		<drivetrain-efficiency value=".9" />
 		<base-speed value="40.0" />
 		<average-power value="10" />
-		<empty-mass value="1500.0" />
+		<empty-mass value="1200.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
-		<cargo total-capacity="3000.0">
+		<cargo total-capacity="2500.0">
 			<capacity resource="methanol" value="400.0" />
 			<capacity resource="oxygen" value="900.0" />
 			<capacity resource="nitrogen" value="50.0" />
@@ -273,12 +273,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
-		<battery-module number="3" />
+		<battery-module number="4" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".75" />
 		<base-speed value="25.0" />
 		<average-power value="20" />
-		<empty-mass value="2000.0" />
+		<empty-mass value="1700.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
@@ -324,12 +324,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Cargo Rover" type="CARGO_ROVER" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
-		<battery-module number="4" />
+		<battery-module number="5" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".75" />
 		<base-speed value="25.0" />
 		<average-power value="25" />		
-		<empty-mass value="2500.0" />
+		<empty-mass value="2000.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
@@ -374,8 +374,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="20.0" />
 		<average-power value="10" />		
-		<empty-mass value="500.0" />
-		<terrain-handling value="1.0"/>
+		<empty-mass value="270.0" />
+		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
 			<capacity resource="methanol" value="15.0" />
@@ -402,7 +402,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="100.0" />
 		<average-power value ="10" />		
-		<empty-mass value="100.0" />
+		<empty-mass value="160.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="800.0">
 			<capacity resource="methanol" value="200.0" />

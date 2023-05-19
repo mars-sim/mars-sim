@@ -210,11 +210,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				boolean ogs = name.equalsIgnoreCase(ResourceProcessing.OGS);
 
 				if (reg) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored);
+					score *= goodsManager.getDemandValueWithID(ResourceUtil.regolithID) * (1 + regStored);
 				}
 
 				else if (ice) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored);
+					score *= goodsManager.getDemandValueWithID(ResourceUtil.iceID) * (1 + iceStored);
 				}
 
 				else if (ppa) {
@@ -234,8 +234,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 				
 				else if (olefin) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.ethyleneID) 
-							* goodsManager.getAmountDemandValue(ResourceUtil.prophyleneID) / methanolVP;
+					score *= goodsManager.getDemandValueWithID(ResourceUtil.ethyleneID) 
+							* goodsManager.getDemandValueWithID(ResourceUtil.prophyleneID) / methanolVP;
 				}
 				
 				else if (ogs) {
