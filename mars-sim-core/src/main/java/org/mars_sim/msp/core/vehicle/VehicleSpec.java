@@ -252,131 +252,90 @@ public class VehicleSpec implements Serializable {
 	 * @param spec
 	 */
 	private void defineVehiclePerformance() {
-
-		// Define percent of other energy usage (other than for drivetrain)
-		double otherEnergyUsage = 0;
-		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		double peakPower = averagePower * Math.min(1, Math.log(1.0 + Math.min(1, numBatteryModule) * Math.min(1, numFuelCellStack)));
-	
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = getCargoCapacity(getFuelType());
-		// Gets the energy capacity [kWh] based on a full tank of methane
-//		methaneEnergyCapacity = fuelCapacity / METHANE_KG_PER_KWH;
 		// Gets the energy capacity [kWh] based on a full tank of methanol
 		methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 		// Gets the conversion factor for a specific vehicle [Wh/kg]
 		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
 		
+		// Define percent of other energy usage (other than for drivetrain)
+		double otherEnergyUsage = 0;
+		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+		double peakPower = averagePower * Math.min(1, Math.log(1.0 + Math.min(1, numBatteryModule) * Math.min(1, numFuelCellStack)));
+		// Define the estimated additional beginning mass for each type of vehicle
+		double additionalBeginningMass = 0;
+		// Define the estimated additional end mass for each type of vehicle
+		double additionalEndMass = 0;		
+
 		if (type == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 5.0;
-			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
-			// Gets the maximum total # of hours the vehicle is capable of operating
-			totalHours = drivetrainEnergy / averagePower;
-			// Gets the base range [in km] of the vehicle
-			baseRange = baseSpeed * totalHours;
-
-			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / (1 + fuelCapacity);
-			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
-			
 			// Accounts for the fuel (methanol and oxygen) and the traded goods
-			beginningMass = calculatedEmptyMass + 500;
+			additionalBeginningMass = 500;
 			// Accounts for water and the traded goods
-			endMass = calculatedEmptyMass + 450;			
+			additionalEndMass = 400;		
 		}
-		
+
 		else if (type == VehicleType.LUV) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 3.0;
-			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
-			// Gets the maximum total # of hours the vehicle is capable of operating
-			totalHours = drivetrainEnergy / averagePower;
-			// Gets the base range [in km] of the vehicle
-			baseRange = baseSpeed * totalHours;
-			
-			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / (1 + fuelCapacity);
-			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
-			
 			// Accounts for the occupant weight
-			beginningMass = calculatedEmptyMass + estimatedTotalCrewWeight;
+			additionalBeginningMass = estimatedTotalCrewWeight;
 			// Accounts for the occupant weight
-			endMass = calculatedEmptyMass + estimatedTotalCrewWeight;			
+			additionalEndMass = estimatedTotalCrewWeight;			
 		}
-		
+
 		else if (type == VehicleType.EXPLORER_ROVER
 				|| type == VehicleType.LONG_RANGE_EXPLORER) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 7.5;
-			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
-			// Gets the maximum total # of hours the vehicle is capable of operating
-			totalHours = drivetrainEnergy / averagePower;
-			// Gets the base range [in km] of the vehicle
-			baseRange = baseSpeed * totalHours;
-			
-			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / (1 + fuelCapacity);
-			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
-			
-			// Accounts for the occupant consumables
-			beginningMass = calculatedEmptyMass + estimatedTotalCrewWeight + 4 * 50;
-			// Accounts for the rock sample, ice or regolith collected
-			endMass = calculatedEmptyMass + estimatedTotalCrewWeight + 800;	
+			// Accounts for the occupants and their consumables
+			additionalBeginningMass = estimatedTotalCrewWeight + 4 * 50;
+			// Accounts for the occupant and rock sample, ice or regolith collected
+			additionalEndMass = estimatedTotalCrewWeight + 800;	
 		}
-		
+
 		else if (type == VehicleType.CARGO_ROVER) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 10.0;
-			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;		
-			// Gets the maximum total # of hours the vehicle is capable of operating
-			totalHours = drivetrainEnergy / averagePower;
-			// Gets the base range [in km] of the vehicle
-			baseRange = baseSpeed * totalHours;
-			
-			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / (1 + fuelCapacity);
-			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
-			
-			// Accounts for the occupant consumables and traded goods 
-			beginningMass = calculatedEmptyMass + estimatedTotalCrewWeight + 2 * 50 + 1500;
-			// Accounts for the occupant consumables and traded goods
-			endMass = calculatedEmptyMass + estimatedTotalCrewWeight + 1500;				
+			// Accounts for the occupants and their consumables and traded goods 
+			additionalBeginningMass = estimatedTotalCrewWeight + 2 * 50 + 1500;
+			// Accounts for the occupants and traded goods
+			additionalEndMass = estimatedTotalCrewWeight + 1500;				
 		}
-		
+
 		else if (type == VehicleType.TRANSPORT_ROVER) {
 			// Hard-code percent energy usage for this vehicle.
 			otherEnergyUsage = 15.0;
-			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
-			// Gets the maximum total # of hours the vehicle is capable of operating
-			totalHours = drivetrainEnergy / averagePower;
-			// Gets the base range [in km] of the vehicle
-			baseRange = baseSpeed * totalHours;
-			
-			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / (1 + fuelCapacity);
-			// Gets the base fuel consumption [in Wh/km] of this vehicle
-			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
-			
-			// Accounts for the occupant consumables and personal possession
-			beginningMass = calculatedEmptyMass + estimatedTotalCrewWeight + 8 * (50 + 100);
-			// Accounts for the reduced occupant consumables
-			endMass = calculatedEmptyMass + estimatedTotalCrewWeight + 8 * 100;				
+			// Accounts for the occupants and their consumables and personal possession
+			additionalBeginningMass = estimatedTotalCrewWeight + 8 * (50 + 100);
+			// Accounts for the occupants and their personal possession
+			additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
 		}
 
+		// Gets the estimated energy available for drivetrain [in kWh]
+		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+		// Gets the maximum total # of hours the vehicle is capable of operating
+		totalHours = drivetrainEnergy / (1 + averagePower);
+		// Gets the base range [in km] of the vehicle
+		baseRange = baseSpeed * totalHours;
+
+		// Gets the base fuel economy [in km/kg] of this vehicle
+		baseFuelEconomy = baseRange / (1 + fuelCapacity);
+		// Gets the base fuel consumption [in Wh/km] of this vehicle
+		baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / (1 + baseRange);
+		
+		// Accounts for the estimated additional beginning mass
+		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		// Accounts for the estimated additional end mass
+		endMass = calculatedEmptyMass + additionalEndMass;
+		
 		// Gets the estimated average fuel economy for a trip [km/kg]
-		estimatedFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
+		estimatedFuelEconomy = baseFuelEconomy * beginningMass / (1 + endMass) * .75;
 		// Gets the base acceleration [m/s2]
-		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
+		baseAccel = peakPower / (1 + beginningMass) / (1 + baseSpeed) * 1000 * 3.6;
+		
 
 		logger.log(null, Level.CONFIG, 0, "                  " + type.getName());
 		logger.log(null, Level.CONFIG, 0, "      drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0); 
