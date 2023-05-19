@@ -1795,7 +1795,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity

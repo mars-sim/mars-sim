@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -76,9 +75,6 @@ public class VehicleSpec implements Serializable {
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methanol. */	
 	public static final double METHANOL_WH_PER_KG = 1000.0 / METHANOL_KG_PER_KWH; 
 
-	
-	//	/** Lifetime Wear in millisols **/
-//	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 	
@@ -103,39 +99,33 @@ public class VehicleSpec implements Serializable {
 	private int numBatteryModule;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
-	
-	private double width, length;
-	private double baseSpeed;
-	private double averagePower;
-	
-	private double calculatedEmptyMass;
-	private double totalCapacity = 0D;
-
-	
-	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
-
-	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
-	// Toyota Mirai Fuel cell - 90 kW
 
 
 	/** Base speed of vehicle in kph (can be set in child class). */
-//	private double baseSpeed = 0; //
+	private double baseSpeed = 0;
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
 	private double baseRange = 0;
-	
 	/** The efficiency of the vehicle's drivetrain. [dimension-less] */
 	private double drivetrainEfficiency;
 	/** The conversion fuel-to-drive energy factor for a specific vehicle type [Wh/kg] */
 	private double conversionFuel2DriveEnergy;
+	/** The base acceleration of the vehicle [m/s2]. */
+	private double baseAccel = 0;
+	
+
+	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
+	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
+	// Toyota Mirai Fuel cell - 90 kW
+	
 	/** The average power output of the vehicle. (kW). */
-//	private double averagePower = 0;
+	private double averagePower = 0;
+	
 	/** The total number of hours the vehicle is capable of operating [hr]. */
 	private double totalHours;
-
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
-	/** The total energy of the vehicle in full tank of methane [kWh]. */
-//	private double methaneEnergyCapacity;
+	/** The maximum cargo capacity of the vehicle [kg] */	
+	private double totalCapacity = 0D;
 	/** The total energy of the vehicle in full tank of methanol [kWh]. */
 	private double methanolEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
@@ -144,21 +134,24 @@ public class VehicleSpec implements Serializable {
 	private double baseFuelEconomy;
 	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
 	private double estimatedFuelEconomy;
-
 	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
 	private double baseFuelConsumption;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
-	/** The base acceleration of the vehicle [m/s2]. */
-	private double baseAccel = 0;
+	/** The calculated empty mass of the vehicle, based on its parts [km/kg]. */
+	private double calculatedEmptyMass;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
 	private double endMass;
 	/** Width of vehicle (meters). */
-//	private double width;
+	private double width;
 	/** Length of vehicle (meters). */
-//	private double length;
-	// Get estimated total crew weight
+	private double length;
+	/** Get estimated total crew weight. */
 	private double estimatedTotalCrewWeight;
+	/** The terrain handling of vehicle. */
+	private double terrainHandling;
+
+	private String baseImage;
 	
 	private String name;
 
@@ -178,9 +171,6 @@ public class VehicleSpec implements Serializable {
 	private LocalPosition airlockInteriorLoc;
 	private LocalPosition airlockExteriorLoc;
 
-	private double terrainHandling;
-
-	private String baseImage;
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			int batteryModule, int fuelCellStack,
@@ -266,7 +256,7 @@ public class VehicleSpec implements Serializable {
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		double peakPower = averagePower * Math.min(1, Math.log(1 + Math.min(1, numBatteryModule) * Math.min(1, numFuelCellStack)));
+		double peakPower = averagePower * Math.min(1, Math.log(1.0 + Math.min(1, numBatteryModule) * Math.min(1, numFuelCellStack)));
 	
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = getCargoCapacity(getFuelType());
@@ -288,7 +278,7 @@ public class VehicleSpec implements Serializable {
 			baseRange = baseSpeed * totalHours;
 
 			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / fuelCapacity;
+			baseFuelEconomy = baseRange / (1 + fuelCapacity);
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			
@@ -309,7 +299,7 @@ public class VehicleSpec implements Serializable {
 			baseRange = baseSpeed * totalHours;
 			
 			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / fuelCapacity;
+			baseFuelEconomy = baseRange / (1 + fuelCapacity);
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			
@@ -331,7 +321,7 @@ public class VehicleSpec implements Serializable {
 			baseRange = baseSpeed * totalHours;
 			
 			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / fuelCapacity;
+			baseFuelEconomy = baseRange / (1 + fuelCapacity);
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			
@@ -352,7 +342,7 @@ public class VehicleSpec implements Serializable {
 			baseRange = baseSpeed * totalHours;
 			
 			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / fuelCapacity;
+			baseFuelEconomy = baseRange / (1 + fuelCapacity);
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			
@@ -373,7 +363,7 @@ public class VehicleSpec implements Serializable {
 			baseRange = baseSpeed * totalHours;
 			
 			// Gets the base fuel economy [in km/kg] of this vehicle
-			baseFuelEconomy = baseRange / fuelCapacity;
+			baseFuelEconomy = baseRange / (1 + fuelCapacity);
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / baseRange;
 			

@@ -134,7 +134,7 @@ public class VehicleConfig {
 			v.setWidth(width);
 			v.setLength(length);
 			
-			// Ground vehicle details
+			// Ground vehicle terrain handling ability
 			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
 				v.setTerrainHandling(Double.parseDouble(vehicleElement.getChild(TERRAIN_HANDLING).getAttributeValue(VALUE)));
 			}
@@ -158,11 +158,8 @@ public class VehicleConfig {
 					else
 						cargoCapacityMap.put(ar.getID(), resourceCapacity);		
 					
-//					System.out.println(resource + " " + ar.getID() + " : " + resourceCapacity + " kg");
 				}
 				
-//				System.out.println(cargoCapacityMap);
-
 				double totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
 				v.setCargoCapacity(totalCapacity, cargoCapacityMap);
 			}
