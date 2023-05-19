@@ -89,22 +89,18 @@ public class TradeCommand extends AbstractSettlementCommand {
 	private void outputDeals(Conversation context, Settlement settlement, StructuredResponse response) {
 
 		// Find some example vehicles
-		response.appendLabeledString("Delivery Mission Range", String.format(CommandHelper.KM_FORMAT,
-									 (double) settlement.getMissionRadius(MissionType.DELIVERY)));
-		Drone drone = DroneMission.getDroneWithGreatestRange(MissionType.DELIVERY, settlement, true);
+		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, true);
 		if (drone != null) {
 			response.appendLabeledString("Drone Range", String.format(CommandHelper.KM_FORMAT,
-										drone.getRange(MissionType.DELIVERY)));
+										drone.getRange()));
 			response.appendLabeledString("Drone Base Range", String.format(CommandHelper.KM_FORMAT,
 										drone.getBaseRange()));
 		}
 
-		response.appendLabeledString("Trade Mission Range", String.format(CommandHelper.KM_FORMAT,
-									(double) settlement.getMissionRadius(MissionType.TRADE)));
-		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.TRADE, settlement, true);
+		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, true);
 		if (rover != null) {
 			response.appendLabeledString("Rover Range", String.format(CommandHelper.KM_FORMAT,
-										rover.getRange(MissionType.TRADE)));
+										rover.getRange()));
 			response.appendLabeledString("Rover Base Range", String.format(CommandHelper.KM_FORMAT,
 										rover.getBaseRange()));
 		}

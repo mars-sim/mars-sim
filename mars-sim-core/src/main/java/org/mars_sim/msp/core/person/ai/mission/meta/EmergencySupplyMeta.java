@@ -49,7 +49,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	        // Check if person is in a settlement.
 	        if (jobModifier > 0D) {
 
-	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.EMERGENCY_SUPPLY, settlement, false);
+	            Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 	            if (rover != null) {
 	                Settlement targetSettlement = EmergencySupply.findSettlementNeedingEmergencySupplies(
 	                        settlement, rover);

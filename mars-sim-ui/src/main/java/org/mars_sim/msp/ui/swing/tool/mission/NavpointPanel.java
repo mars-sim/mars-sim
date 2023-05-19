@@ -429,25 +429,22 @@ implements MissionListener {
 		// Updates coordinates in map
 		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		
-		if (!missionCache.getMembers().isEmpty()) {
-			if (missionCache instanceof VehicleMission) {
-				trailLayer.setSingleVehicle(((VehicleMission) missionCache).getVehicle());
-            }
-            
-			navpointLayer.setSingleMission(missionCache);
-			navpointLayer.setSelectedNavpoint(null);
-			navpointTableModel.updateNavpoints();
-            
-            if ((missionCache instanceof Exploration) || (missionCache instanceof Mining)) {
-                if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
-            }
-            else {
-                if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
-            }
-            
-            mapPanel.showMap(missionCache.getCurrentMissionLocation());
+		if (missionCache instanceof VehicleMission) {
+			trailLayer.setSingleVehicle(((VehicleMission) missionCache).getVehicle());
 		}
 		
+		navpointLayer.setSingleMission(missionCache);
+		navpointLayer.setSelectedNavpoint(null);
+		navpointTableModel.updateNavpoints();
+		
+		if ((missionCache instanceof Exploration) || (missionCache instanceof Mining)) {
+			if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
+		}
+		else {
+			if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
+		}
+		
+		mapPanel.showMap(missionCache.getCurrentMissionLocation());		
 	}
 	
 	/**

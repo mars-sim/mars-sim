@@ -97,7 +97,7 @@ public final class CommerceUtil {
 	 */
 	public static Deal getPotentialDeal(Settlement startingSettlement, MissionType commerceType, Settlement tradingSettlement,
 										Vehicle delivery) {
-		double possibleRange = delivery.getRange(commerceType) * .8D;
+		double possibleRange = delivery.getRange() * .8D;
 
 		if (!startingSettlement.equals(tradingSettlement) && tradingSettlement.isMissionEnable(commerceType)) {
 

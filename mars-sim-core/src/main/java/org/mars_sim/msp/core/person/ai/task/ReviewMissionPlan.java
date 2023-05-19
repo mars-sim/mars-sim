@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.SiteMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -217,7 +216,6 @@ public class ReviewMissionPlan extends Task {
 	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
 	    
 		Person leader = m.getStartingPerson();
-    	//MissionType mt = m.getMissionType();
     	
 		List<JobAssignment> list = leader.getJobHistory().getJobAssignmentList();
 		int last = list.size() - 1;
@@ -290,8 +288,7 @@ public class ReviewMissionPlan extends Task {
 		// 7. proposed route distance (note that a negative score represents a penalty)
 		int dist = 0;
 		if (m instanceof VehicleMission vm) {
-			//int range = m.getAssociatedSettlement().getMissionRadius(mt);
-			double range = vm.getVehicle().getRange(m.getMissionType());
+			double range = vm.getVehicle().getRange();
 			double proposed = vm.getDistanceProposed();
 			
 			// Scoring rule:
@@ -300,7 +297,7 @@ public class ReviewMissionPlan extends Task {
 			// At full range, the score is -200
 			
 			// Calculate the dist score
-			dist = (int)(- 200.0 / range * proposed);
+			dist = (int)(- (200.0 * proposed)/ range);
 		}
 		
 		// 8. Leadership and Charisma

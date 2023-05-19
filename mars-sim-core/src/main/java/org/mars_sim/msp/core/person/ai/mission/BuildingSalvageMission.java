@@ -673,9 +673,9 @@ public class BuildingSalvageMission extends AbstractMission
 		// Cancel construction mission if there are any beacon vehicles within range
 		// that need help.
 		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(missionType, settlement, true);
+		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
 		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(missionType));
+			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
 			if (vehicleTarget != null) {
 				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
 					result = true;

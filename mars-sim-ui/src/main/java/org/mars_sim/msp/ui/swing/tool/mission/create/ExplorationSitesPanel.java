@@ -310,7 +310,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getRange() {
 		// Use range modifier.
-		double range = getWizard().getMissionData().getRover().getRange(Exploration.MISSION_TYPE) * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
 		return range;
 	}
 

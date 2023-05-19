@@ -310,7 +310,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     				Vehicle missionVehicle = getWizard().getMissionData().getRover();
     				Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
     				double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates()) * 2D;
-    				if (distance > missionVehicle.getRange(wizard.getMissionBean().getMissionType())) result = true;
+    				if (distance > missionVehicle.getRange()) result = true;
     			}
     			catch (Exception e) {}
     		}

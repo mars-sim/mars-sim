@@ -107,9 +107,9 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
-	public static final int MAX_RANGE = 4000;
-	public static final int HALF_RANGE = MAX_RANGE / 2;
-	public static final int QUARTER_RANGE = MAX_RANGE / 4;
+	// public static final int MAX_RANGE = 4000;
+	// public static final int HALF_RANGE = MAX_RANGE / 2;
+	// public static final int QUARTER_RANGE = MAX_RANGE / 4;
 	
 	private static final int MAX = 3000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
@@ -295,8 +295,6 @@ public class Settlement extends Structure implements Temporal,
 	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
-	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
@@ -517,20 +515,6 @@ public class Settlement extends Structure implements Temporal,
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-
-		// Set default mission radius
-		missionRange.put(MissionType.AREOLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.BIOLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.COLLECT_ICE, QUARTER_RANGE);
-		missionRange.put(MissionType.COLLECT_REGOLITH, QUARTER_RANGE);
-		missionRange.put(MissionType.DELIVERY, MAX_RANGE);
-		missionRange.put(MissionType.EMERGENCY_SUPPLY, HALF_RANGE);
-		missionRange.put(MissionType.EXPLORATION, QUARTER_RANGE);
-		missionRange.put(MissionType.METEOROLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.MINING, QUARTER_RANGE);
-		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, QUARTER_RANGE);
-		missionRange.put(MissionType.TRADE, MAX_RANGE);
-		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
 	}
 
 	/**
@@ -2871,14 +2855,6 @@ public class Settlement extends Structure implements Temporal,
 
 	public void setDustStorm(DustStorm storm) {
 		this.storm = storm;
-	}
-
-	public int getMissionRadius(MissionType missionType) {
-		return missionRange.getOrDefault(missionType, 1000);
-	}
-
-	public void setMissionRadius(MissionType missionType, int newRange) {
-		missionRange.put(missionType, newRange);
 	}
 
 	public boolean hasDesignatedCommander() {

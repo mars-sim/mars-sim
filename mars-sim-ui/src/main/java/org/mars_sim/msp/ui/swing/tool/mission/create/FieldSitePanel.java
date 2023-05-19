@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
@@ -32,7 +31,6 @@ public class FieldSitePanel extends WizardPanel {
     
     // Range modifier.
     private static final double RANGE_MODIFIER = .95D;
-	private static final double MAX_RANGE = Settlement.MAX_RANGE;
     
     // Data members.
     private MapPanel mapPane;
@@ -117,7 +115,7 @@ public class FieldSitePanel extends WizardPanel {
     @Override
     void updatePanel() {
         try {
-            double range = (getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER) / 2D;
+            double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
             pixelRange = convertRadiusToMapPixels(range);
             ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
             IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
@@ -161,9 +159,7 @@ public class FieldSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER;
-		if (range > MAX_RANGE)
-			range = MAX_RANGE;
+		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 	

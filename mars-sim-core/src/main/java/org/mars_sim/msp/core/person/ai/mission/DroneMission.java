@@ -91,7 +91,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	public static Drone getDroneWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
+	public static Drone getDroneWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
 		Drone bestDrone = null;
 		double bestRange = 0D;
 
@@ -103,7 +103,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			usable = usable && (drone.getStoredMass() == 0);
 
 			if (usable) {
-				double range = drone.getRange(missionType);
+				double range = drone.getRange();
 				if ((bestDrone == null) || (bestRange > range)) {
 					bestDrone = drone;
 					bestRange = range;

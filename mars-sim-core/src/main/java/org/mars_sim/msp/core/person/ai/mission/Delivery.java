@@ -504,8 +504,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange(MissionType.DELIVERY);
-				double secondRange = secondVehicle.getRange(MissionType.DELIVERY);
+				double firstRange = firstVehicle.getRange();
+				double secondRange = secondVehicle.getRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange < secondRange) {

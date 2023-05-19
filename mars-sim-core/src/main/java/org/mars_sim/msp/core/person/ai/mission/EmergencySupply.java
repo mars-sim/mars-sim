@@ -520,7 +520,7 @@ public class EmergencySupply extends RoverMission {
 
 				// Check if settlement is within rover range.
 				double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
-				if (settlementRange <= (rover.getRange(MissionType.EMERGENCY_SUPPLY) * .8D)) {
+				if (settlementRange <= (rover.getRange() * .8D)) {
 
 					// Find what emergency supplies are needed at settlement.
 					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -890,8 +890,8 @@ public class EmergencySupply extends RoverMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY);
-				double secondRange = secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY);
+				double firstRange = firstVehicle.getRange();
+				double secondRange = secondVehicle.getRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange < secondRange) {

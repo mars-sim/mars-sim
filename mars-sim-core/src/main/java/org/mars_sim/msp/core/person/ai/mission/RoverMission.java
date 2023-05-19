@@ -143,8 +143,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	public static Vehicle getVehicleWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
-		Vehicle result = null;
+	public static Rover getVehicleWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
+		Rover result = null;
 
 		for(Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 
@@ -156,15 +156,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			usable = usable && (vehicle.getStoredMass() <= 0D);
 
-			usable = usable && (vehicle instanceof Rover);
-
-			if (usable) {
+			if (usable && (vehicle instanceof Rover rover)) {
 				if (result == null)
 					// so far, this is the first vehicle being picked
-					result = vehicle;
-				else if (vehicle.getRange(missionType) > result.getRange(missionType))
+					result = rover;
+				else if (vehicle.getRange() > result.getRange())
 					// This vehicle has a better range than the previously selected vehicle
-					result = vehicle;
+					result = rover;
 			}
 		}
 

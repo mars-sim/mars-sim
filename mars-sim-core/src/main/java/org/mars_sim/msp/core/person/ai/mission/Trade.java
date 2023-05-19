@@ -702,8 +702,8 @@ public class Trade extends RoverMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange(MissionType.TRADE);
-				double secondRange = secondVehicle.getRange(MissionType.TRADE);
+				double firstRange = firstVehicle.getRange();
+				double secondRange = secondVehicle.getRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange <secondRange) {

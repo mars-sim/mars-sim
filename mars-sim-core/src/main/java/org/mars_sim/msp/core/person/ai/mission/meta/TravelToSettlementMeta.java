@@ -82,10 +82,10 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
-        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(MissionType.TRAVEL_TO_SETTLEMENT, settlement, false);
+        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
         if (vehicle != null) {
         	Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
-                    member, settlement, vehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT));
+                    member, settlement, vehicle.getRange());
 
             if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
             	return 0;

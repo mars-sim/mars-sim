@@ -44,7 +44,6 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
@@ -1042,12 +1041,10 @@ public abstract class Vehicle extends Unit
 	 * Gets the current fuel range of the vehicle.
 	 * Note : this method will be overridden by Rover's getRange().
 	 *
-	 * @param missionType the type of mission (needed in vehicle's getRange())
 	 * @return the current fuel range of the vehicle (in km)
 	 */
-	public double getRange(MissionType missionType) {
+	public double getRange() {
 
-		int radius = getAssociatedSettlement().getMissionRadius(missionType);
 		double range = 0;
 		Mission mission = getMission();
 
@@ -1067,7 +1064,7 @@ public abstract class Vehicle extends Unit
     		range = estimatedFuelEconomy * amountOfFuel * getBaseMass() / getMass();
         }
 
-        return Math.min(radius, (int)range);
+        return (int)range;
 	}
 
 	/**
@@ -1781,15 +1778,6 @@ public abstract class Vehicle extends Unit
 		}
 
 		return null;
-	}
-
-	/**
-	 * Returns the mission range prescribed by its home settlement.
-	 *
-	 * @return true if yes
-	 */
-	public double getMissionRange(MissionType missiontype) {
-		return getAssociatedSettlement().getMissionRadius(missiontype);
 	}
 
 	/**

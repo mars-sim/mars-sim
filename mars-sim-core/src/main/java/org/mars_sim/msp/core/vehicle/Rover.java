@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
@@ -950,12 +949,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
-	public double getRange(MissionType missionType) {
+	@Override
+	public double getRange() {
 		// Note: multiply by 0.95 would account for the extra distance travelled in between sites
-		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;
-		// Obtains the max mission range [in km] based on the type of mission
-		// Note: total route ~= mission radius * 2
-		double missionRange = super.getMissionRange(missionType) * MISSION_RANGE_FACTOR;
+		double fuelRange = super.getRange() * FUEL_RANGE_FACTOR;
 
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
@@ -982,15 +979,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double oxygenCapacity = getAmountResourceCapacity(OXYGEN_ID);
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
-//    	if (oxygenRange < fuelRange) fuelRange = oxygenRange;
 
-		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(missionRange, fuelRange))));
-
-//		String s0 = this + " - " + missionName + " \n";
-//		String s1 = String.format(" Radius : %5.0f km   Fuel : %5.0f km   Dist/sol : %5.0f km   Max : %5.0f km",
-//				missionRange, fuelRange, distancePerSol, max);
-//		System.out.print(s0);
-//		System.out.println(s1);
+		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, fuelRange)));
 
 		return max;
 	}
@@ -1046,11 +1036,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 */
 	public double getTotalTripTimeLimit(int member, boolean useBuffer) {
 		return RoverMission.getTotalTripTimeLimit(this, member, useBuffer);
-	}
-	
-	@Override
-	public String getNickName() {
-		return getName();
 	}
 
 	public boolean setLUV(LightUtilityVehicle luv) {

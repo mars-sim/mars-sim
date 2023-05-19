@@ -88,7 +88,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		if (!isDone()) {			
 			if (vehicleTarget == null)
-				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MissionType.RESCUE_SALVAGE_VEHICLE));
+				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
 			if (vehicleTarget != null) {
 				rescue = true;
@@ -665,7 +665,7 @@ public class RescueSalvageVehicle extends RoverMission {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange(MissionType.RESCUE_SALVAGE_VEHICLE) >= (settlementDistance * 2D)) {
+								if (vehicle.getRange() >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}
