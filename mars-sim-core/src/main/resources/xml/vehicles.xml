@@ -114,7 +114,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<average-power value="15" />
+		<average-power value="15.0" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
@@ -224,13 +224,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
 		<battery-module number="3" />
 		<fuel-cell-stack number="4" />
-		<drivetrain-efficiency value="1" />
+		<drivetrain-efficiency value=".9" />
 		<base-speed value="40.0" />
 		<average-power value="10" />
 		<empty-mass value="1200.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
-		<cargo total-capacity="3000.0">
+		<cargo total-capacity="2500.0">
 			<capacity resource="methanol" value="400.0" />
 			<capacity resource="oxygen" value="900.0" />
 			<capacity resource="nitrogen" value="50.0" />

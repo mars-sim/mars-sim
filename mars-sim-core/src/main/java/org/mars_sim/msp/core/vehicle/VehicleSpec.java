@@ -120,7 +120,7 @@ public class VehicleSpec implements Serializable {
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
 	
-	/** The total number of hours the vehicle is capable of operating [hr]. */
+	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
 	private double totalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
@@ -262,7 +262,7 @@ public class VehicleSpec implements Serializable {
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsage = 0;
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		double peakPower = averagePower * Math.min(1, Math.log(1.0 + Math.min(1, numBatteryModule) * Math.min(1, numFuelCellStack)));
+		double peakPower = averagePower * Math.log(2 + (1 + numBatteryModule) * (1 + numFuelCellStack));
 		// Define the estimated additional beginning mass for each type of vehicle
 		double additionalBeginningMass = 0;
 		// Define the estimated additional end mass for each type of vehicle
@@ -724,5 +724,14 @@ public class VehicleSpec implements Serializable {
 	 */
 	public double getBaseAccel() {
 		return baseAccel;
+	}
+	
+	/**
+	 * Gets the estimated total hours the vehicle can operate.
+	 * 
+	 * @return
+	 */
+	public double getTotalHours() {
+		return totalHours;
 	}
 }
