@@ -992,15 +992,7 @@ public class EatDrink extends Task {
 			
 			// Get the bottle the person is carrying
 			Container bottle = person.lookForThermalBottle();
-					
-			if (bottle == null && person.isInside()) {
-				// Assign the person a thermal bottle
-				bottle = person.assignThermalBottle();
-				logger.fine(person, 4_000L, "Assigned a thermal bottle.");
-			}
-
 			if (bottle != null)  {
-				
 				availableAmount = bottle.getAmountResourceStored(WATER_ID);
 		
 				// Case 1: See if there's enough water in the bottle

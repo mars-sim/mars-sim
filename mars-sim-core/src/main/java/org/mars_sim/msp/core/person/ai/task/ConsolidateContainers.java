@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
@@ -19,7 +17,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
-import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -126,54 +123,6 @@ extends Task {
         addPhase(CONSOLIDATING);
         setPhase(CONSOLIDATING);
     }    
-    
-    /**
-     * Checks if containers need resource consolidation at the worker's location.
-     * 
-     * @param worker the worker.
-     * @return true if containers need resource consolidation.
-     */
-    public static boolean needResourceConsolidation(Worker worker) {
-        return needsConsolidation(worker.getTopContainerUnit());
-    }
-    
-    /**
-     * Consolidates the container's resources.
-     * 
-     * @param inv
-     * @return
-     */
-    private static boolean needsConsolidation(Unit topContainer) {   	        
-        int partialContainers = 0;
-        
-        boolean useTopInventory = topContainer.getUnitType() == UnitType.SETTLEMENT;
-        
-        // Note: if in a vehicle, do not use main store. keep resources in containers
-        for (Container e: ((EquipmentOwner)topContainer).findAllContainers()) {
-        	
-            if (e.getStoredMass() > 0D) {
-                // Only check one type of amount resource for container.
-                int resource = e.getResource();
-                // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
-                if (useTopInventory && (resource > 0) 
-                		&& ((EquipmentOwner)topContainer).hasAmountResourceRemainingCapacity(resource)) {
-                	return true;
-                }
-
-                // Check if container is only partially full of resource.
-                if (e.hasAmountResourceRemainingCapacity(resource)) {
-                    // If another container is also partially full of resource, they can be consolidated.
-                	partialContainers++;
-                    if (partialContainers > 2) {
-                    	// Need at least 3 containers
-                        return true;
-                    }
-                }
-            }
-        }
-    	
-    	return false;
-    }
     
     @Override
     protected double performMappedPhase(double time) {
