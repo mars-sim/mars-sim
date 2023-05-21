@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.StorableItem;
@@ -106,9 +107,9 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
-	public static final int MAX_RANGE = 4000;
-	public static final int HALF_RANGE = MAX_RANGE / 2;
-	public static final int QUARTER_RANGE = MAX_RANGE / 4;
+	// public static final int MAX_RANGE = 4000;
+	// public static final int HALF_RANGE = MAX_RANGE / 2;
+	// public static final int QUARTER_RANGE = MAX_RANGE / 4;
 	
 	private static final int MAX = 3000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
@@ -167,7 +168,7 @@ public class Settlement extends Structure implements Temporal,
 	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 	/** Initial mission passing score. */
-	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
+	private static final double INITIAL_MISSION_PASSING_SCORE = 500D;
 	/** The Maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;
 
@@ -294,8 +295,6 @@ public class Settlement extends Structure implements Temporal,
 	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
-	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
-	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
@@ -516,20 +515,6 @@ public class Settlement extends Structure implements Temporal,
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-
-		// Set default mission radius
-		missionRange.put(MissionType.AREOLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.BIOLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.COLLECT_ICE, QUARTER_RANGE);
-		missionRange.put(MissionType.COLLECT_REGOLITH, QUARTER_RANGE);
-		missionRange.put(MissionType.DELIVERY, MAX_RANGE);
-		missionRange.put(MissionType.EMERGENCY_SUPPLY, HALF_RANGE);
-		missionRange.put(MissionType.EXPLORATION, QUARTER_RANGE);
-		missionRange.put(MissionType.METEOROLOGY, QUARTER_RANGE);
-		missionRange.put(MissionType.MINING, QUARTER_RANGE);
-		missionRange.put(MissionType.RESCUE_SALVAGE_VEHICLE, QUARTER_RANGE);
-		missionRange.put(MissionType.TRADE, MAX_RANGE);
-		missionRange.put(MissionType.TRAVEL_TO_SETTLEMENT, MAX_RANGE);
 	}
 
 	/**
@@ -2286,9 +2271,7 @@ public class Settlement extends Structure implements Temporal,
 	public Collection<Vehicle> getMissionVehicles() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
-					&& (v.getSettlement() == null
-					|| v.getMission().getMissionType() == MissionType.BUILDING_CONSTRUCTION
-					|| v.getMission().getMissionType() == MissionType.BUILDING_SALVAGE))
+					&& (v.getMission().getStage() == Stage.ACTIVE))
 				.collect(Collectors.toList());
 	}
 
@@ -2870,14 +2853,6 @@ public class Settlement extends Structure implements Temporal,
 
 	public void setDustStorm(DustStorm storm) {
 		this.storm = storm;
-	}
-
-	public int getMissionRadius(MissionType missionType) {
-		return missionRange.getOrDefault(missionType, 1000);
-	}
-
-	public void setMissionRadius(MissionType missionType, int newRange) {
-		missionRange.put(missionType, newRange);
 	}
 
 	public boolean hasDesignatedCommander() {

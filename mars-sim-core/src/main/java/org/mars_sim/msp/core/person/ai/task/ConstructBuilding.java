@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -187,8 +186,8 @@ public class ConstructBuilding extends EVAOperation {
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
-			if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-				result.add((BuildingConstructionMission) mission);
+			if (mission instanceof BuildingConstructionMission bcMission) {
+				result.add(bcMission);
 			}
 		}
 

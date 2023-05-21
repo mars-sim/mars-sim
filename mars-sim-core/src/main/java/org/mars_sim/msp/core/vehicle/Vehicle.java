@@ -41,11 +41,9 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
@@ -191,6 +189,7 @@ public abstract class Vehicle extends Unit
 		this.spec = spec;
 		this.specName = spec.getName();
 		this.vehicleType = spec.getType();
+		setBaseMass(spec.getEmptyMass());
 		
 		// Get the description
 		String description = spec.getDescription();
@@ -780,24 +779,16 @@ public abstract class Vehicle extends Unit
 	 * Gets the current fuel range of the vehicle.
 	 * Note : this method will be overridden by Rover's getRange().
 	 *
-	 * @param missionType the type of mission (needed in vehicle's getRange())
 	 * @return the current fuel range of the vehicle (in km)
 	 */
-	public double getRange(MissionType missionType) {
+	public double getRange() {
 
-		int radius = getAssociatedSettlement().getMissionRadius(missionType);
 		double range = 0;
 		Mission mission = getMission();
 
-        if (mission == null) {
+        if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
         	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
-        }
-		// TODO Fix this; is this clause every triggered
-        else if (mission.getStage() == Stage.PREPARATION) {
-        	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
-        	// So the range would be based on vehicle's capacity
-        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
@@ -805,7 +796,7 @@ public abstract class Vehicle extends Unit
     		range = getEstimatedFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
         }
 
-        return Math.min(radius, (int)range);
+        return (int)range;
 	}
 
 	/**
@@ -1515,33 +1506,17 @@ public abstract class Vehicle extends Unit
 						return mission;
 					}
 					
-				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+				} else if (mission instanceof ConstructionMission construction) {
 					if (!construction.getConstructionVehicles().isEmpty() 
 						&& construction.getConstructionVehicles().contains(this)) {
 						return mission;
 					}
 
-				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (!salvage.getConstructionVehicles().isEmpty() 
-						&& salvage.getConstructionVehicles().contains(this)) {
-						return mission;
-					}
 				}
 			}
 		}
 
 		return null;
-	}
-
-	/**
-	 * Returns the mission range prescribed by its home settlement.
-	 *
-	 * @return true if yes
-	 */
-	public double getMissionRange(MissionType missiontype) {
-		return getAssociatedSettlement().getMissionRadius(missiontype);
 	}
 
 	/**

@@ -254,7 +254,7 @@ class DestinationSettlementPanel extends WizardPanel {
     				if (v == null) {
     					v = data.getDrone();
     				}
-    				double vRange = v.getRange(wizard.getMissionBean().getMissionType());
+    				double vRange = v.getRange();
     				if (vRange < distance) result = true;
     			}
     			catch (Exception e) {}

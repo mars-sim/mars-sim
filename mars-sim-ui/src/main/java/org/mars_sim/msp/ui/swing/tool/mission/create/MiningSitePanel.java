@@ -36,8 +36,6 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -63,7 +61,6 @@ public class MiningSitePanel extends WizardPanel {
 
 	/** Range modifier. */
 	private static final double RANGE_MODIFIER = .95D;
-	private static final double MAX_RANGE = Settlement.MAX_RANGE;
 
 	/** Click range. */
 	private static final double CLICK_RANGE = 50D;
@@ -340,9 +337,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * @throws Exception if error getting mission rover.
 	 */
 	private double getRoverRange() {
-		double range = getWizard().getMissionData().getRover().getRange(MissionType.MINING) * RANGE_MODIFIER;
-		if (range > MAX_RANGE)
-			range = MAX_RANGE;
+		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
 		return range / 2D;
 	}
 

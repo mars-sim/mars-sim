@@ -10,7 +10,6 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -124,13 +123,8 @@ public class Drone extends Flyer {
 	 * @throws Exception if error getting range.
 	 */
 	@Override
-	public double getRange(MissionType missionType) {
+	public double getRange() {
 		// Note: multiply by 0.9 would account for the extra distance travelled in between sites
-		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;
-		// Obtains the max mission range [in km] based on the type of mission
-		// Note: total route ~= mission radius * 2
-		double missionRange = super.getMissionRange(missionType) * MISSION_RANGE_FACTOR;
-
-		return Math.min(missionRange, fuelRange);
+		return super.getRange() * FUEL_RANGE_FACTOR;
 	}
 }

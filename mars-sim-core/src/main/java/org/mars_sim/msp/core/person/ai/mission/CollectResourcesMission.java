@@ -125,7 +125,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			if (hasVehicle()) {
 				// Get the current location.
 				Coordinates startingLocation = s.getCoordinates();
-				double range = getVehicle().getRange(missionType);
+				double range = getVehicle().getRange();
 				double timeLimit = getRover().getTotalTripTimeLimit(true);
 
 				// Determining the actual traveling range.
@@ -429,7 +429,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				}
 
 				totalSiteScore += bestScore;
-				logger.log(Level.INFO, getMissionType().getName() + " totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0
+				logger.log(Level.INFO, getName() + " totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0
 						+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
 				unorderedSites.add(bestLocation);
 				currentLocation = bestLocation;

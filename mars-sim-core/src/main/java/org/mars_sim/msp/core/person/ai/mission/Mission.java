@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -88,6 +89,12 @@ public interface Mission extends Serializable {
 	 * @return
 	 */
 	MissionType getMissionType();
+
+	/**
+	 * Get the objectives that Mission satisfies. 
+	 * @return May be an empty set.
+	 */
+	Set<ObjectiveType> getObjectiveSatisified();
 
     /**
 	 * Gets the mission qualification value for the member. Member is qualified in

@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.PersonTaskManager;
@@ -274,30 +273,16 @@ public class Mind implements Serializable, Temporal {
 			}
 		}
 
-		if (hasActiveMission) {
-			if (mission.getMissionType() == MissionType.DELIVERY) {
-				// In case of a delivery mission, the person doesn't need to be onboard
-				if (!mission.isDone()) {
-					resumeMission(0);
-				}
-			}
-
+		if (hasActiveMission && !mission.isDone()) {
+			// Missions have to be done and are stressfull so allow high stress.
+			if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
+				// Cannot perform the mission if a person is not well
+				// Note: If everyone has dangerous medical condition during a mission,
+				// then it won't matter and someone needs to drive the rover home.
+				// Add penalty in resuming the mission
+				resumeMission(1);
 			else {
-				// If the mission vehicle has embarked but the person is not on board,
-				// then release the person from the mission
-
-				if (!mission.isDone()) {
-			        // Missions have to be done and are stressfull so allow high stress.
-					if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
-			        	// Cannot perform the mission if a person is not well
-			        	// Note: If everyone has dangerous medical condition during a mission,
-			        	// then it won't matter and someone needs to drive the rover home.
-						// Add penalty in resuming the mission
-						resumeMission(1);
-					else {
-						resumeMission(2);
-					}
-				}
+				resumeMission(2);
 			}
 		}
 

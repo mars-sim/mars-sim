@@ -87,8 +87,7 @@ public class MiningMeta extends AbstractMetaMission {
 
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.MINING,
-	                        settlement, false);
+	                Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 
 	                if (rover != null) {
 	                    // Find best mining site.

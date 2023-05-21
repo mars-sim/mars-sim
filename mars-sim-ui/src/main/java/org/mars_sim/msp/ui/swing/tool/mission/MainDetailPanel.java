@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
@@ -70,7 +71,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionLog;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -246,23 +246,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		vehicleButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		vehicleButton.setVisible(false);
 		vehicleButton.addActionListener(e -> {
-			if (MissionType.isVehicleMission(missionCache.getMissionType())) {
-				// Open window for vehicle.
-				VehicleMission vehicleMission = (VehicleMission) missionCache;
+			if (missionCache instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if (vehicle != null) {
 					getDesktop().openUnitWindow(vehicle, false);
 				}
-			} else if (missionCache.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-				BuildingConstructionMission constructionMission = (BuildingConstructionMission) missionCache;
+			} else if (missionCache instanceof ConstructionMission constructionMission) {
 				if (!constructionMission.getConstructionVehicles().isEmpty()) {
 					Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
-					getDesktop().openUnitWindow(vehicle, false);
-				}
-			} else if (missionCache.getMissionType() == MissionType.BUILDING_SALVAGE) {
-				BuildingSalvageMission salvageMission = (BuildingSalvageMission) missionCache;
-				if (!salvageMission.getConstructionVehicles().isEmpty()) {
-					Vehicle vehicle = salvageMission.getConstructionVehicles().get(0);
 					getDesktop().openUnitWindow(vehicle, false);
 				}
 			}
@@ -600,8 +591,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		centerMapButton.setEnabled(true);
 		
 		// Update mission vehicle info in UI.
-		if (MissionType.isVehicleMission(mission.getMissionType())) {
-			VehicleMission vehicleMission = (VehicleMission) mission;
+		if (mission instanceof VehicleMission vehicleMission) {
 			Vehicle vehicle = vehicleMission.getVehicle();
 			if (vehicle != null) {
 				vehicleButton.setText(vehicle.getName());
@@ -656,25 +646,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 				currentVehicle = null;
 			}
-		} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
+		} else if (mission instanceof BuildingConstructionMission constructionMission) {
 			// Display first of mission's list of construction vehicles.
-			BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 			List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-			if (!constVehicles.isEmpty()) {
-				Vehicle vehicle = constVehicles.get(0);
-				vehicleButton.setText(vehicle.getName());
-				vehicleButton.setVisible(true);
-				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
-				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
-				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				vehicle.addUnitListener(this);
-				currentVehicle = vehicle;
-			}
-		} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-			// Display first of mission's list of construction vehicles.
-			BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
-			List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
 			if (!constVehicles.isEmpty()) {
 				Vehicle vehicle = constVehicles.get(0);
 				vehicleButton.setText(vehicle.getName());

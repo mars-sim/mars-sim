@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
@@ -57,7 +58,8 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * Mission for construction a stage for a settlement building. TODO externalize
  * strings
  */
-public class BuildingConstructionMission extends AbstractMission {
+public class BuildingConstructionMission extends AbstractMission
+	implements ConstructionMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -863,6 +865,7 @@ public class BuildingConstructionMission extends AbstractMission {
 	 *
 	 * @return list of construction vehicles.
 	 */
+	@Override
 	public List<GroundVehicle> getConstructionVehicles() {
 		if (constructionVehicles != null && !constructionVehicles.isEmpty()) {
 			return new ArrayList<>(constructionVehicles);
@@ -879,9 +882,9 @@ public class BuildingConstructionMission extends AbstractMission {
 			// Cancel construction mission if there are any beacon vehicles within range
 			// that need help.
 			Vehicle vehicleTarget = null;
-			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(missionType, settlement, true);
+			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
 			if (vehicle != null) {
-				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(missionType));
+				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
 				if (vehicleTarget != null) {
 					if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
 						result = true;

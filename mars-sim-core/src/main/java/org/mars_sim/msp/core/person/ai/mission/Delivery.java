@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.goods.CommerceMission;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.NegotiateDelivery;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -50,6 +52,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 	private static final int MAX_MEMBERS = 1;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
 	// Data members.
 	private double profit;
@@ -500,8 +504,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				double firstRange = firstVehicle.getRange(MissionType.DELIVERY);
-				double secondRange = secondVehicle.getRange(MissionType.DELIVERY);
+				double firstRange = firstVehicle.getRange();
+				double secondRange = secondVehicle.getRange();
 				if (firstRange > secondRange) {
 					result = 1;
 				} else if (firstRange < secondRange) {
@@ -617,5 +621,10 @@ public class Delivery extends DroneMission implements CommerceMission {
 			return true;
 		}
 		return super.isVehicleUnloadableHere(settlement);
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

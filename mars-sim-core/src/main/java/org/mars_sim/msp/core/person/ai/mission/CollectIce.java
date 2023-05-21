@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.environment.TerrainElevation;
@@ -15,6 +16,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -33,6 +35,8 @@ public class CollectIce extends CollectResourcesMission {
 	private static final int NUM_SITES = 3;
 
 	private static final MissionStatus NO_ICE_COLLECTION_SITES = new MissionStatus("Mission.status.noIceSites");
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.CROP_FARM);
 
 	private int searchCount = 0;
 
@@ -105,5 +109,11 @@ public class CollectIce extends CollectResourcesMission {
 	@Override
 	public int [] getCollectibleResources() {
 		return new int [] {resourceID};
+	}
+
+	
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

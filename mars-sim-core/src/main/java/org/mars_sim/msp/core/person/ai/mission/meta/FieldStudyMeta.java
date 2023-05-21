@@ -74,7 +74,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 	            try {
 	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(mType, settlement, false);
+	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
 	                if (rover != null) {
 
 	                    // Add probability for researcher's primary study (if any).

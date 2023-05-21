@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -52,7 +51,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -411,62 +410,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return list of available vehicles.
 	 * @throws MissionException if problem determining if vehicles are usable.
 	 */
-	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		if (getMissionType() == MissionType.DELIVERY) {
-			return getDrones(settlement);
-		}
-		else {
-			return getRovers(settlement);
-		}
-	}
+	protected abstract Collection<Vehicle> getAvailableVehicles(Settlement settlement);
 
-	/**
-	 * Gets a collection of available drones at a settlement that are usable for
-	 * this mission.
-	 * 
-	 * @param settlement
-	 * @return
-	 */
-	private Collection<Vehicle> getDrones(Settlement settlement) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
-		Collection<Drone> list = settlement.getParkedDrones();
-		if (list.isEmpty())
-			return result;
-		for (Drone v : list) {
-			if (!v.haveStatusType(StatusType.MAINTENANCE)
-					&& !v.getMalfunctionManager().hasMalfunction()
-					&& isUsableVehicle(v)
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Gets a collection of available rovers at a settlement that are usable for
-	 * this mission.
-	 * 
-	 * @param settlement
-	 * @return
-	 */
-	private Collection<Vehicle> getRovers(Settlement settlement) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
-		Collection<Vehicle> list = settlement.getParkedVehicles();
-		if (list.isEmpty())
-			return result;
-		for (Vehicle v : list) {
-			if (VehicleType.isRover(v.getVehicleType())
-					&& !v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-					&& isUsableVehicle(v)
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-	
 	/**
 	 * Finalizes the mission.
 	 *
@@ -1200,8 +1145,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
 			boolean enough = true;
 
-			// for delivery mission, Will need to alert the player differently if it runs out of fuel
-			if (getMissionType() != MissionType.DELIVERY) {
+			// for drone mission, Will need to alert the player differently if it runs out of fuel
+			if (vehicle instanceof GroundVehicle) {
 
 				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance)) < 0;
 

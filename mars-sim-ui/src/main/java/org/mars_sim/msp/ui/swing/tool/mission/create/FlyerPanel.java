@@ -229,7 +229,7 @@ class FlyerPanel extends WizardPanel {
 					else if (column == 1)
 						result = vehicle.getDescription();
 					else if (column == 2)
-						result = (int) vehicle.getRange(wizard.getMissionBean().getMissionType());
+						result = (int) vehicle.getRange();
 					else if (column == 3)
 						result = (int) vehicle.getCargoCapacity();
 					else if (column == 4)

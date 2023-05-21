@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -67,6 +68,8 @@ public class Exploration extends EVAMission
 
 	/** Amount of time to explore a site. */
 	public static final double EXPLORING_SITE_TIME = 500D;
+
+	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
 
 	// Data members
@@ -108,7 +111,7 @@ public class Exploration extends EVAMission
 			}
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
+			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(),
 					getRover().getTotalTripTimeLimit(true),
 					NUM_SITES, skill);
 
@@ -178,28 +181,6 @@ public class Exploration extends EVAMission
 		}
 	}
 
-//	/**
-//	 * Checks if there are any mineral locations within rover/mission range.
-//	 *
-//	 * @param rover          the rover to use.
-//	 * @param homeSettlement the starting settlement.
-//	 * @return true if mineral locations.
-//	 * @throws Exception if error determining mineral locations.
-//	 */
-//	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
-//
-//		double roverRange = rover.getRange(MISSION_TYPE);
-//		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
-//		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
-//		double range = roverRange;
-//		if (tripRange < range)
-//			range = tripRange;
-//
-//		MineralMap map = surfaceFeatures.getMineralMap();
-//		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
-//
-//		return (mineralLocation != null);
-//	}
 
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.
@@ -212,7 +193,7 @@ public class Exploration extends EVAMission
 	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
 		Map<String, Double> minerals = new HashMap<>();
 
-		double roverRange = rover.getRange(MISSION_TYPE);
+		double roverRange = rover.getRange();
 		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -594,5 +575,10 @@ public class Exploration extends EVAMission
 	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
 		return PREFERRED_JOBS;
+	}
+
+	@Override
+	public Set<ObjectiveType> getObjectiveSatisified() {
+		return OBJECTIVES;
 	}
 }

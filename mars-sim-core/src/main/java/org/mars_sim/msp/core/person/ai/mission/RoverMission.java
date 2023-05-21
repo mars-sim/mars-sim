@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -108,6 +110,32 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
+	 * Gets a collection of available Rovers at a settlement that are usable for
+	 * this mission.
+	 *
+	 * @param settlement the settlement to find vehicles.
+	 * @return list of available vehicles.
+	 * @throws MissionException if problem determining if vehicles are usable.
+	 */
+	@Override
+	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
+		Collection<Vehicle> result = new ArrayList<>();
+		Collection<Vehicle> list = settlement.getParkedVehicles();
+		if (list.isEmpty())
+			return result;
+		for (Vehicle v : list) {
+			if (VehicleType.isRover(v.getVehicleType())
+					&& !v.haveStatusType(StatusType.MAINTENANCE)
+					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& isUsableVehicle(v)
+					&& !v.isReserved()) {
+				result.add(v);
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
 	 *
 	 * @param settlement         the settlement to check.
@@ -115,8 +143,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	public static Vehicle getVehicleWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
-		Vehicle result = null;
+	public static Rover getVehicleWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
+		Rover result = null;
 
 		for(Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 
@@ -128,15 +156,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			usable = usable && (vehicle.getStoredMass() <= 0D);
 
-			usable = usable && (vehicle instanceof Rover);
-
-			if (usable) {
+			if (usable && (vehicle instanceof Rover rover)) {
 				if (result == null)
 					// so far, this is the first vehicle being picked
-					result = vehicle;
-				else if (vehicle.getRange(missionType) > result.getRange(missionType))
+					result = rover;
+				else if (vehicle.getRange() > result.getRange())
 					// This vehicle has a better range than the previously selected vehicle
-					result = vehicle;
+					result = rover;
 			}
 		}
 
