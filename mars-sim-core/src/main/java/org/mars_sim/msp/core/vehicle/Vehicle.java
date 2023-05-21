@@ -189,6 +189,7 @@ public abstract class Vehicle extends Unit
 		this.spec = spec;
 		this.specName = spec.getName();
 		this.vehicleType = spec.getType();
+		setBaseMass(spec.getEmptyMass());
 		
 		// Get the description
 		String description = spec.getDescription();
@@ -785,15 +786,9 @@ public abstract class Vehicle extends Unit
 		double range = 0;
 		Mission mission = getMission();
 
-        if (mission == null) {
+        if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
         	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
-        }
-		// TODO Fix this; is this clause every triggered
-        else if (mission.getStage() == Stage.PREPARATION) {
-        	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
-        	// So the range would be based on vehicle's capacity
-        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
