@@ -79,12 +79,14 @@ public class VehicleSpecCommand extends ChatCommand {
 		}
 		
 		buffer.appendLabeledString("Base Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getBaseFuelEconomy()));
-		buffer.appendLabeledString("Estimated Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getEstimatedFuelEconomy()));
 		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getInitialFuelEconomy()));
+		buffer.appendLabeledString("Estimated Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getEstimatedFuelEconomy()));
 		buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getIFuelEconomy()));
 		buffer.appendLabeledString("Cumulative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getCumFuelEconomy()));
-		buffer.appendLabeledString("Conservative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getConservativeFuelEconomy()));
+		
 		buffer.appendLabeledString("Base Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getBaseFuelConsumption()));
+		buffer.appendLabeledString("Initial Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getInitialFuelConsumption()));
+		buffer.appendLabeledString("Estimated Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getEstimatedFuelConsumption()));		
 		buffer.appendLabeledString("Instantaneous Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getIFuelConsumption()));
 		buffer.appendLabeledString("Cumulative Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getCumFuelConsumption()));	
 	

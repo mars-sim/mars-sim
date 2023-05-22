@@ -788,12 +788,12 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = getInitialFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
         	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = getEstimatedFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+    		range = getInitialFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
         }
 
         return (int)range;
@@ -938,16 +938,6 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the initial fuel economy of the vehicle [km/kg].
-	 * Note: assume that it is primarily dependent upon the current weight of the vehicle
-	 *
-	 * @return
-	 */
-	public double getInitialFuelEconomy() {
-		return getEstimatedFuelEconomy() * getBeginningMass() / 2.0 / getMass();
-	}
-
-	/**
 	 * Records the beginning weight of the vehicle and its payload [kg].
 	 */
 	public void recordStartMass() {
@@ -962,22 +952,53 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip.
-	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
+	 * Gets the initial fuel economy of the vehicle [km/kg] for a trip.
+	 *
+	 * @return
+	 */
+	public double getInitialFuelEconomy() {
+		return spec.getInitialFuelEconomy();
+	}
+
+	/**
+	 * Gets the estimated fuel economy of the vehicle [km/kg] for a trip.
 	 *
 	 * @return
 	 */
 	public double getEstimatedFuelEconomy() {
-		return spec.getEstimatedFuelEconomy();
+		double cumFE = getCumFuelEconomy();
+		double initFE = getInitialFuelEconomy();
+		double ratio = cumFE / initFE;
+		if (cumFE == 0)
+			return initFE;
+		else if (ratio < 1)
+			return (cumFE + initFE) / 2;
+		return (cumFE + initFE) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 
 	/**
-	 * Gets the conservative average fuel consumption of the vehicle [km/kg] for a trip.
+	 * Gets the initial fuel consumption of the vehicle [Wh/km] for a trip.
 	 *
 	 * @return
 	 */
-	public double getConservativeFuelEconomy() {
-		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / VehicleController.FUEL_ECONOMY_FACTOR;
+	public double getInitialFuelConsumption() {
+		return spec.getInitialFuelConsumption();
+	}
+	
+	/**
+	 * Gets the estimated fuel consumption of the vehicle [Wh/km] for a trip.
+	 *
+	 * @return
+	 */
+	public double getEstimatedFuelConsumption() {
+		double cumFC = getCumFuelConsumption();
+		double initFC = getInitialFuelConsumption();
+		double ratio = cumFC / initFC;
+		if (cumFC == 0)
+			return initFC;
+		else if (ratio < 1)
+			return (cumFC + initFC) / 2;
+		return (cumFC + initFC) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 	
 	/**
@@ -1547,7 +1568,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the specific base wear life time of this vehicle (in msols)
+	 * Gets the specific base wear life time of this vehicle (in msols).
 	 *
 	 * @return
 	 */
@@ -1561,7 +1582,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -1589,7 +1610,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the total mass on this vehicle (not including vehicle's weight)
+	 * Gets the total mass on this vehicle (not including vehicle's weight).
 	 *
 	 * @return
 	 */
@@ -1599,7 +1620,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Get the equipment list
+	 * Gets the equipment list.
 	 *
 	 * @return
 	 */
@@ -1631,7 +1652,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Does this unit possess an equipment of this equipment type
+	 * Does this unit possess an equipment of this type ?
 	 *
 	 * @param typeID
 	 * @return
@@ -1642,7 +1663,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Adds an equipment to this unit
+	 * Adds an equipment to this unit.
 	 *
 	 * @param equipment
 	 * @return true if it can be carried
@@ -1658,7 +1679,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Remove an equipment
+	 * Removes an equipment.
 	 *
 	 * @param equipment
 	 */
@@ -1668,7 +1689,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param resource the item resource
 	 * @param quantity
@@ -1680,7 +1701,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Retrieves the item resource
+	 * Retrieves the item resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1692,7 +1713,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1704,7 +1725,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Stores the resource
+	 * Stores the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1716,7 +1737,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the item resource stored
+	 * Gets the item resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1727,7 +1748,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -1738,7 +1759,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1835,6 +1856,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets a set of item resources in storage.
+	 * 
 	 * @return  a set of resources
 	 */
 	@Override
@@ -1844,6 +1866,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets a set of resources in storage.
+	 * 
 	 * @return  a set of resources
 	 */
 	@Override
@@ -1873,7 +1896,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the remaining quantity of an item resource
+	 * Gets the remaining quantity of an item resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1936,7 +1959,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Updates the location state type directly
+	 * Updates the location state type directly.
 	 *
 	 * @param type
 	 */
@@ -1945,7 +1968,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the location state type based on the type of the new container unit
+	 * Gets the location state type based on the type of the new container unit.
 	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
@@ -1980,7 +2003,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
@@ -2011,7 +2034,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Transfer the unit from one owner to another owner
+	 * Transfers the unit from one owner to another owner.
 	 *
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -2066,7 +2089,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public double getFuelNeededForTrip(double tripDistance, boolean useMargin) {
 		return vehicleController.getFuelNeededForTrip(this, tripDistance, 
-				getConservativeFuelEconomy(), useMargin);
+				getEstimatedFuelEconomy(), useMargin);
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {

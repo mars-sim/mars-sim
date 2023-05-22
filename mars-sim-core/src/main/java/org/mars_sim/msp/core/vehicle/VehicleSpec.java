@@ -82,6 +82,7 @@ public class VehicleSpec implements Serializable {
 	private static final String KWH = " kWh   ";
 	private static final String KG = " kg   ";
 	private static final String KM_KG = " km/kg   ";
+	private static final String KW = " kW   ";
 	
 	// Data members
 	private boolean hasLab = false;
@@ -100,7 +101,6 @@ public class VehicleSpec implements Serializable {
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
 
-
 	/** Base speed of vehicle in kph (can be set in child class). */
 	private double baseSpeed = 0;
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
@@ -112,7 +112,6 @@ public class VehicleSpec implements Serializable {
 	/** The base acceleration of the vehicle [m/s2]. */
 	private double baseAccel = 0;
 	
-
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
 	// Toyota Mirai Fuel cell - 90 kW
@@ -130,18 +129,23 @@ public class VehicleSpec implements Serializable {
 	private double methanolEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
 	private double drivetrainEnergy;
+	
 	/** The base fuel economy of the vehicle [km/kg]. */
 	private double baseFuelEconomy;
-	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
-	private double estimatedFuelEconomy;
+	/** The initial average fuel economy of the vehicle for a trip [km/kg]. */
+	private double initialFuelEconomy;
 	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
 	private double baseFuelConsumption;
+	/** The initial average fuel consumption of the vehicle [Wh/km]. */
+	private double initialFuelConsumption;
+	
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
 	/** The calculated empty mass of the vehicle, based on its parts [km/kg]. */
 	private double calculatedEmptyMass;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
 	private double endMass;
+	
 	/** Width of vehicle (meters). */
 	private double width;
 	/** Length of vehicle (meters). */
@@ -260,7 +264,7 @@ public class VehicleSpec implements Serializable {
 		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
 		
 		// Define percent of other energy usage (other than for drivetrain)
-		double otherEnergyUsage = 0;
+		double otherEnergyUsagePercent = 0;
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
 		double peakPower = averagePower * Math.log(2 + (1 + numBatteryModule) * (1 + numFuelCellStack));
 		// Define the estimated additional beginning mass for each type of vehicle
@@ -270,7 +274,7 @@ public class VehicleSpec implements Serializable {
 
 		if (type == VehicleType.DELIVERY_DRONE) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 5.0;
+			otherEnergyUsagePercent = 2.0;
 			// Accounts for the fuel (methanol and oxygen) and the traded goods
 			additionalBeginningMass = 500;
 			// Accounts for water and the traded goods
@@ -279,7 +283,7 @@ public class VehicleSpec implements Serializable {
 
 		else if (type == VehicleType.LUV) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 3.0;
+			otherEnergyUsagePercent = 3.0;
 			// Accounts for the occupant weight
 			additionalBeginningMass = estimatedTotalCrewWeight;
 			// Accounts for the occupant weight
@@ -289,7 +293,7 @@ public class VehicleSpec implements Serializable {
 		else if (type == VehicleType.EXPLORER_ROVER
 				|| type == VehicleType.LONG_RANGE_EXPLORER) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 7.5;
+			otherEnergyUsagePercent = 7.5;
 			// Accounts for the occupants and their consumables
 			additionalBeginningMass = estimatedTotalCrewWeight + 4 * 50;
 			// Accounts for the occupant and rock sample, ice or regolith collected
@@ -298,7 +302,7 @@ public class VehicleSpec implements Serializable {
 
 		else if (type == VehicleType.CARGO_ROVER) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 10.0;
+			otherEnergyUsagePercent = 5.0;
 			// Accounts for the occupants and their consumables and traded goods 
 			additionalBeginningMass = estimatedTotalCrewWeight + 2 * 50 + 1500;
 			// Accounts for the occupants and traded goods
@@ -307,7 +311,7 @@ public class VehicleSpec implements Serializable {
 
 		else if (type == VehicleType.TRANSPORT_ROVER) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 15.0;
+			otherEnergyUsagePercent = 10.0;
 			// Accounts for the occupants and their consumables and personal possession
 			additionalBeginningMass = estimatedTotalCrewWeight + 8 * (50 + 100);
 			// Accounts for the occupants and their personal possession
@@ -315,7 +319,7 @@ public class VehicleSpec implements Serializable {
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
-		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
+		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency;
 		// Gets the maximum total # of hours the vehicle is capable of operating
 		totalHours = drivetrainEnergy / (1 + averagePower);
 		// Gets the base range [in km] of the vehicle
@@ -326,43 +330,55 @@ public class VehicleSpec implements Serializable {
 		// Gets the base fuel consumption [in Wh/km] of this vehicle
 		baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / (1 + baseRange);
 		
+		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
 		endMass = calculatedEmptyMass + additionalEndMass;
+		// Accounts for the additional payload mass (always less than one)
+		double massModifier = 1 + .5 * (additionalBeginningMass/calculatedEmptyMass 
+				+ additionalEndMass/calculatedEmptyMass);
 		
-		// Gets the estimated average fuel economy for a trip [km/kg]
-		estimatedFuelEconomy = baseFuelEconomy * beginningMass / (1 + endMass) * .75;
+		// Gets the initial fuel economy for a trip [km/kg]
+		initialFuelEconomy = baseFuelEconomy / massModifier; 
+		// Gets the initial fuel consumption [in Wh/km] of this vehicle
+		initialFuelConsumption = baseFuelConsumption * massModifier;
+		
 		// Gets the base acceleration [m/s2]
-		baseAccel = peakPower / (1 + beginningMass) / (1 + baseSpeed) * 1000 * 3.6;
+		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / (1 + baseSpeed) * 1000 * 3.6;
 		
 
 		logger.log(null, Level.CONFIG, 0, "                  " + type.getName());
 		logger.log(null, Level.CONFIG, 0, "      drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0); 
 		logger.log(null, Level.CONFIG, 0, "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   ");  
 		logger.log(null, Level.CONFIG, 0, "                 baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   ");  
-		logger.log(null, Level.CONFIG, 0, "              averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "); 
-		logger.log(null, Level.CONFIG, 0, "                 peakPower: " + Math.round(peakPower * 100.0)/100.0 + " kW   "); 
-		logger.log(null, Level.CONFIG, 0, "                 baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  " );  
-		
+		logger.log(null, Level.CONFIG, 0, "                 baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  " ); 
+		logger.log(null, Level.CONFIG, 0, "              averagePower: " + Math.round(averagePower * 100.0)/100.0 +  KW); 
+		logger.log(null, Level.CONFIG, 0, "                 peakPower: " + Math.round(peakPower * 100.0)/100.0 + KW); 		
+	    	
+		logger.log(null, Level.CONFIG, 0, "                totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "); 
+		logger.log(null, Level.CONFIG, 0, "                 baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "); 
+	
 		logger.log(null, Level.CONFIG, 0, "                Fuel Type : " + ResourceUtil.METHANOL + " (" + getFuelType() + ")");
-		logger.log(null, Level.CONFIG, 0, "      Total Cargo Capacity: " + Math.round(getTotalCapacity() * 100.0)/100.0 + KG);
+		logger.log(null, Level.CONFIG, 0, "      Total Cargo Capacity: " + Math.round(getTotalCapacity() * 1070.0)/1070.0 + KG);
 		logger.log(null, Level.CONFIG, 0, "          cargoCapacityMap; " + cargoCapacityMap);
-		logger.log(null, Level.CONFIG, 0, "              fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG) ; 		
-		logger.log(null, Level.CONFIG, 0, "    methanolEnergyCapacity: " + Math.round(methanolEnergyCapacity * 100.0)/100.0 + KWH) ; 
-		logger.log(null, Level.CONFIG, 0, "          drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
-  	    	
-    	logger.log(null, Level.CONFIG, 0, "                totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "); 
-    	logger.log(null, Level.CONFIG, 0, "                 baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "); 
+		logger.log(null, Level.CONFIG, 0, "              fuelCapacity: " + Math.round(fuelCapacity * 1000.0)/1000.0 + KG) ; 		
+		logger.log(null, Level.CONFIG, 0, "    methanolEnergyCapacity: " + Math.round(methanolEnergyCapacity * 1000.0)/1000.0 + KWH) ; 
+		logger.log(null, Level.CONFIG, 0, "          drivetrainEnergy: " + Math.round(drivetrainEnergy * 1000.0)/1000.0 + KWH);  
     	
-    	logger.log(null, Level.CONFIG, 0, "           baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG); 
-    	logger.log(null, Level.CONFIG, 0, "   estimatedAveFuelEconomy: " + Math.round(estimatedFuelEconomy * 100.0)/100.0 + KM_KG); 
-//    	    	+ "       initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG);      		 	
-    	logger.log(null, Level.CONFIG, 0, "       baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
-
-    	logger.log(null, Level.CONFIG, 0, "       calculatedEmptyMass: " + Math.round(calculatedEmptyMass * 100.0)/100.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "             beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "                   endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
+    	logger.log(null, Level.CONFIG, 0, "           baseFuelEconomy: " + Math.round(baseFuelEconomy * 1000.0)/1000.0 + KM_KG); 
+    	logger.log(null, Level.CONFIG, 0, "        initialFuelEconomy: " + Math.round(initialFuelEconomy * 1000.0)/1000.0 + KM_KG); 
+    	
+    	logger.log(null, Level.CONFIG, 0, "       baseFuelConsumption: " + Math.round(baseFuelConsumption * 1000.0)/1000.0 + " Wh/km   ");
+    	logger.log(null, Level.CONFIG, 0, "    initialFuelConsumption: " + Math.round(initialFuelConsumption  * 1000.0)/1000.0 + " Wh/km   "); 
+    		
+      	logger.log(null, Level.CONFIG, 0, "              massModifier: " + Math.round(massModifier * 100.0)/100.0); 
+    	logger.log(null, Level.CONFIG, 0, "       calculatedEmptyMass: " + Math.round(calculatedEmptyMass * 1007.0)/1000.0 + KG); 
+    	
+    	logger.log(null, Level.CONFIG, 0, "   additionalBeginningMass: " + Math.round(additionalBeginningMass * 1000.0)/1000.0 + KG); 
+    	logger.log(null, Level.CONFIG, 0, "             beginningMass: " + Math.round(beginningMass * 1000.0)/1000.0 + KG); 
+    	logger.log(null, Level.CONFIG, 0, "         additionalEndMass: " + Math.round(additionalEndMass * 1000.0)/1000.0 + KG);  
+    	logger.log(null, Level.CONFIG, 0, "                   endMass: " + Math.round(endMass * 1000.0)/1000.0 + KG);  	
 	}
 	
 	public final void setWidth(double width) {
@@ -692,6 +708,16 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
+	 * Gets the initial fuel economy of the vehicle [km/kg] for a trip.
+	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
+	 *
+	 * @return
+	 */
+	public double getInitialFuelEconomy() {
+		return initialFuelEconomy;
+	}
+	
+	/**
 	 * Gets the base fuel consumption of the vehicle [Wh/km].
 	 * 
 	 * @return
@@ -701,14 +727,15 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip.
+	 * Gets the initial fuel consumption of the vehicle [Wh/km] for a trip.
 	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
 	 * @return
 	 */
-	public double getEstimatedFuelEconomy() {
-		return estimatedFuelEconomy;
+	public double getInitialFuelConsumption() {
+		return initialFuelConsumption;
 	}
+	
 	
 	/**
 	 * Gets the estimated beginning mass [kg].

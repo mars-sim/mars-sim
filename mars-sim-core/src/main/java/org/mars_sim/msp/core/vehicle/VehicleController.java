@@ -366,43 +366,50 @@
 			  * NOTE: DO NOT delete any of them. Needed for testing when new features are added in future.
 			  */
 			 logger.log(vehicle, Level.INFO, 20_000,  
-					 vehicle.getSpecName()
-					  + "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+					vehicle.getSpecName()
+					  + "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
 					  + "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
 					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					  + "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 10.0)/10.0 + " secs  "
 					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH      	        
-					 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
+					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH);
+			 
+			 logger.log(vehicle, Level.INFO, 20_000,
+					vehicle.getSpecName()	
+					 + "  energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 					 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH    
-					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
-					 
-					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
-					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
-					 
-						+ "avePower: " 			+ Math.round(aveP * 1_000.0)/1_000.0 + KW
-						
-					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1_000.0)/1_000.0 + WH
+					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH   	        				
 					 + "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
-					 + "energyByBattery: " 	+ Math.round(energyByBattery * 1_000.0)/1_000.0 + WH
-					 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
-					 
-					 + "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG 
-					 + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg  "
+					 + "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG
+					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W			 
+					 + "avePower: " 			+ Math.round(aveP * 1_000.0)/1_000.0 + KW);
+
+			logger.log(vehicle, Level.INFO, 20_000,
+					vehicle.getSpecName()					 
+					 + "  angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg  "
+					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N    					 
 					 + "fInitialF: " 		+ Math.round(fInitialFriction * 1_000.0)/1_000.0 + N
 					 + "fGravity: " 			+ Math.round(fGravity * 1_000.0)/1_000.0 + N
 					 + "fAeroDrag: " 		+ Math.round(fAeroDrag * 1_000.0)/1_000.0 + N
 					 + "fRolling: " 			+ Math.round(fRolling * 1_000.0)/1_000.0 + N
-					 + "fRoadSlope: "		+ Math.round(fRoadSlope * 1_000.0)/1_000.0 + N
+					 + "fRoadSlope: "		+ Math.round(fRoadSlope * 1_000.0)/1_000.0 + N);
    
-					 + "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
-						+ "estFE: " 			+ Math.round(vehicle.getEstimatedFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
-					 + "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-						+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
-					 + "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
-					 + "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
-						   + "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+			 logger.log(vehicle, Level.INFO, 20_000,
+					vehicle.getSpecName()
+					+ "  baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+					+ "initFE: " 			+ Math.round(vehicle.getInitialFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
+					+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG
+					+ "estFE: " 			+ Math.round(vehicle.getEstimatedFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
+					+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG);
+			 
+			 logger.log(vehicle, Level.INFO, 20_000,
+					vehicle.getSpecName()			 
+					+ "  baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
+					+ "initFC: " 			+ Math.round(vehicle.getInitialFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  					
+					+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM
+					+ "estFC: " 			+ Math.round(vehicle.getEstimatedFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
 			 );
 					 
 			 // Cache the new value of fuelUsed	
@@ -449,20 +456,21 @@
 			  */
 			 logger.log(vehicle, Level.INFO, 20_000,  
 			 vehicle.getSpecName()
-			 		+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+			 		+ "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
 					+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
 					+ "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					+ "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
 					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH     
+					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH);     
+
+			 logger.log(vehicle, Level.INFO, 20_000,
+						vehicle.getSpecName()				 
 					 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
-					 
-					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
-					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
-					 
 					 + "energyNeeded: " 		+ Math.round(energyNeeded * 1_000.0)/1_000.0 + WH
 					 + "energyforCharging: " + Math.round(energyforCharging * 1_000.0)/1_000.0 + WH
+					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
+					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
 			 );
 	  
 			 // Derive the instantaneous fuel consumption [Wh/km]
@@ -498,18 +506,21 @@
 	  * @return amount of fuel needed for trip (kg)
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
-		 double result = tripDistance / fuelEconomy;
+		 double amountFuel = .5 * tripDistance * 
+				 	(1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / VehicleSpec.METHANOL_WH_PER_KG);
 		 double factor = 1;
 		 if (useMargin) {
 			 if (tripDistance < 100) {
 				 // Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
 				 // in case of getting stranded locally
-				 factor = - tripDistance / 50.0 + 3 ;
+				 factor = - tripDistance / 50.0 + 3;
 			 }	
 			 factor *= vehicle.getFuelRangeErrorMargin();
-			 result *= factor;
+			 amountFuel *= factor;
+			 
 		 }
-		 return result;
+
+		 return amountFuel;
 	 }
 	 
 	 /**
