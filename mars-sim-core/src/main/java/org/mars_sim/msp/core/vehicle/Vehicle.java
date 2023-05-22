@@ -295,7 +295,7 @@ public abstract class Vehicle extends Unit
 	 * @return Name of base image for this vehicle
 	 */
 	public String getBaseImage() {
-		return baseImage;
+		return spec.getBaseImage();
 	}
 	/**
 	 * Gets the name of the vehicle specification.

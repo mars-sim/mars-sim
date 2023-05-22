@@ -68,7 +68,6 @@ public final class SVGMapUtil {
      * @return the SVG graphics node.
      */
     private static GraphicsNode getSVGGraphicsNode(String prefix, String name, boolean optional) {
-
         GraphicsNode result = null;
 
         // Load svgMapProperties from file if necessary.
