@@ -32,7 +32,7 @@ public class EventCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		HistoricalEventManager mgr = context.getSim().getEventManager();
-		List<HistoricalEvent> events = mgr.getRecentEvents();
+		List<HistoricalEvent> events = mgr.getEvents();
 		
 		if (events.isEmpty()) {
 			context.println("None to display");

@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -216,12 +215,10 @@ public class ResupplyWindow extends ToolWindow
 	
 	/**
 	 * Potentially a new Transportiem has been loaded or adjusted
-	 * @param index No idea what this does
-	 * @param se The Simple description of an event
 	 * @param he Historical view of the event 
 	 */
 	@Override
-	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+	public void eventAdded(HistoricalEvent he) {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory()) {
 			if (EventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
 				Transportable selected = getSelectedNode();

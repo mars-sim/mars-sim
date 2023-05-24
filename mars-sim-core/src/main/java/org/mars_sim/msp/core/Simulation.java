@@ -1334,10 +1334,7 @@ public class Simulation implements ClockListener, Serializable {
 			scientificStudyManager = null;
 		}
 
-		if (eventManager != null) {
-			eventManager.destroy();
-			eventManager = null;
-		}
+		eventManager = null;
 
 		 logger.config("Done with Simulation's destroyOldSimulation()");
 	}
