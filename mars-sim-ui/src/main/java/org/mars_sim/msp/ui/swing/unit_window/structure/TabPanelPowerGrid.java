@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @date 2022-07-09
+ * @date 2023-05-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;

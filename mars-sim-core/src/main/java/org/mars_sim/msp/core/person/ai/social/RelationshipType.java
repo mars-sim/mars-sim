@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RelationshipType.java
- * @date 2022-06-10
+ * @date 2023-05-24
  * @author Manny Kung
  */
 
@@ -11,8 +11,8 @@ package org.mars_sim.msp.core.person.ai.social;
 public enum RelationshipType {
 	/** First impression if for meeting a new person. */
 	FIRST_IMPRESSION, 
-	/** Existing relationship is for meeting a person who is already known. */
-	EXISTING_RELATIONSHIP, 
-	/** Communication meeting is for meeting a new person remotely (email, etc). */
-	COMMUNICATION_MEETING
+	/** For communicating with someone face-to-face locally. */
+	FACE_TO_FACE_COMMUNICATION, 
+	/** For communicating with someone remotely (voice chat, email, etc). */
+	REMOTE_COMMUNICATION
 }

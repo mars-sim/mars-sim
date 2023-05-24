@@ -251,8 +251,8 @@ public class MeetTogether extends Task {
 				
 				logger.info(initiator, Msg.getString("Task.description.meetTogether.detail", invitee.getName()));
 				
-				RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
-				RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+				RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
+				RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 		   
 				// The person is invited to a meeting setup by the inviter
 				// e.g. Joe is invited to meet with Mary

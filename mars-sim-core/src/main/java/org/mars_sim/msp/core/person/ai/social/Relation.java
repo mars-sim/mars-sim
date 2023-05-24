@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Relation.java
- * @date 2022-06-10
+ * @date 2023-05-24
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.social;
@@ -14,17 +14,25 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Relation class represents the relational connection between two people.
+ * The Relation class models the relational connection of a person toward others.
  */
 public class Relation implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	/** The person's opinion toward another person. */
-	private Map<Integer, Double> opinionMap = new HashMap<>();
+	private static final String TRUST = "trust";
+	private static final String CARE = "care";
+	private static final String RESPECT = "respect";
+	
+	/** The person's opinion of another person. */
+	private Map<Integer, Map<String, Double>> opinionMap = new HashMap<>();
+	/** The dimensions of interpersonal relationship. */
+//	private Map<String, Double> dimensionMap = new HashMap<>();
+	
 	/** The Unit Manager instance. */
 	private static UnitManager unitManager;
 
@@ -37,20 +45,45 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Gets the opinion regarding a person
+	 * Gets the opinion regarding a person.
 	 * 
 	 * @param personID
 	 * @return
 	 */
 	public double getOpinion(int personID) {
-		if (opinionMap.containsKey(personID))
-			return opinionMap.get(personID);
+		if (opinionMap.containsKey(personID)) {
+			Map<String, Double> dimensionMap = opinionMap.get(personID);
+			double average = (dimensionMap.get(TRUST) 
+					+ dimensionMap.get(CARE)
+					+ dimensionMap.get(RESPECT)) / 3.0;
+			return average;
+		}
 		else
 			return 0;
 	}
+
+	/**
+	 * Gets the opinion array regarding a person.
+	 * 
+	 * @param personID
+	 * @return
+	 */
+	public double[] getOpinions(int personID) {
+		if (opinionMap.containsKey(personID)) {
+			Map<String, Double> dimensionMap = opinionMap.get(personID);
+			double[] dim = new double[3];
+			dim[0] = dimensionMap.get(TRUST);
+			dim[1] = dimensionMap.get(CARE);
+			dim[2] = dimensionMap.get(RESPECT);
+			return dim;
+		}
+		else {
+			return null;
+		}
+	}
 	
 	/**
-	 * Sets the opinion regarding a person
+	 * Sets the opinion regarding a person.
 	 * 
 	 * @param personID
 	 * @param opinion
@@ -60,11 +93,31 @@ public class Relation implements Serializable {
 			opinion = 1;
 		if (opinion > 100)
 			opinion = 100;
-		opinionMap.put(personID, opinion);
+		
+		if (!opinionMap.containsKey(personID)) {
+			Map<String, Double> dimensionMap = new HashMap<>();
+			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
+			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
+			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
+			opinionMap.put(personID, dimensionMap);
+		}
+		else {
+			Map<String, Double> dimensionMap = opinionMap.get(personID);
+			int rand = RandomUtil.getRandomInt(2);
+			if (rand == 0) {
+				dimensionMap.put(TRUST, opinion);
+			}
+			else if (rand == 1) {
+				dimensionMap.put(CARE, opinion);
+			}
+			else {
+				dimensionMap.put(RESPECT, opinion);
+			}
+		}
 	}
 	
 	/**
-	 * Changes the opinion regarding a person
+	 * Changes the opinion regarding a person.
 	 * 
 	 * @param personID
 	 * @param mod
@@ -75,11 +128,11 @@ public class Relation implements Serializable {
 			result = 1;
 		if (result > 100)
 			result = 100;
-		opinionMap.put(personID, result);
+		setOpinion(personID, result);
 	}
 	
 	/**
-	 * Gets a set of people's ids
+	 * Gets a set of people's ids.
 	 * 
 	 * @return a set of people's ids
 	 */
@@ -100,7 +153,7 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Initialize instances
+	 * Initializes instances.
 	 * 
 	 * @param um the unitManager instance
 	 */
@@ -109,7 +162,7 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		opinionMap.clear();

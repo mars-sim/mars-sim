@@ -239,7 +239,7 @@ public class InviteStudyCollaborator extends Task {
 	            // Add invitation to study.
 	            study.addInvitedResearcher(invitee);
 
-	            RelationshipUtil.changeOpinion(person, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(5));
+	            RelationshipUtil.changeOpinion(person, invitee, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(5));
 	            
 	            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
 	                    " to collaborate in " + study.getName() + ".");

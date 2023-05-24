@@ -386,7 +386,7 @@ public class Conversation extends Task {
     		talkTo(invitee);
  
         RelationshipUtil.changeOpinion(person, invitee, 
-        		RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+        		RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 
         if (getTimeCompleted() + time >= getDuration()) {
         	endTask();

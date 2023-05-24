@@ -532,7 +532,7 @@ public final class SettlementBuilder {
 				for (Person potentialFriend : addedCrew.keySet()) {
 					if (potentialFriend.getName().equals(friendName)) {
 						int opinion = friend.getValue();
-			            RelationshipUtil.changeOpinion(person, potentialFriend, RelationshipType.EXISTING_RELATIONSHIP, opinion);
+			            RelationshipUtil.changeOpinion(person, potentialFriend, RelationshipType.FACE_TO_FACE_COMMUNICATION, opinion);
 					}
 				}
 			}

@@ -79,8 +79,8 @@ implements ListSelectionListener {
 		relationshipTable = new JTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(25);
+		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		relationshipTable.getColumnModel().getColumn(3).setPreferredWidth(70);
 		relationshipTable.setRowSelectionAllowed(true);
 		
@@ -163,7 +163,7 @@ implements ListSelectionListener {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = Object.class;
 			else if (columnIndex == 1) dataType = Object.class;
-			else if (columnIndex == 2) dataType = Double.class;
+			else if (columnIndex == 2) dataType = Object.class;
 			else if (columnIndex == 3) dataType = Object.class;
 			return dataType;
 		}
@@ -183,14 +183,17 @@ implements ListSelectionListener {
 			else if (column == 1) 
 				return p;
 			else if (column == 2) {
-				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);
-				return Math.round(opinion*10.0)/10.0;
+				double[] opinions = RelationshipUtil.getOpinionsOfPerson(person, p);
+				return "  T:" + (int)Math.round(opinions[0])
+						+ "  C:" + (int)Math.round(opinions[1])
+						+ "  R:" + (int)Math.round(opinions[2]) + "  ";
 			}
 			else if (column == 3) {
 				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);
-				return " " + getRelationshipString(opinion);
+				return " " + getRelationshipString(opinion);	
 			}
-			else return null;
+
+			return null;
 		}
 
 		public void update() {
