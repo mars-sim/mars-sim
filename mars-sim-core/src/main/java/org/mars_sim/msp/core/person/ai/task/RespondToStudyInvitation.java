@@ -185,7 +185,7 @@ public class RespondToStudyInvitation extends Task {
 
 				// Add 5 points to primary researcher's opinion of invitee for accepting
 				// invitation.
-		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(5));
+		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(2));
 
 				logger.log(person, Level.FINE, 0, "Accepted invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
@@ -193,7 +193,7 @@ public class RespondToStudyInvitation extends Task {
 
 				// Subtract 5 points from primary researcher's opinion of invitee for rejecting
 				// invitation.
-		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(-5));
+		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(-2));
 
 				logger.log(person, Level.FINE, 0, "Rejected invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");

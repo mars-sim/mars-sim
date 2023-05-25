@@ -184,9 +184,9 @@ implements ListSelectionListener {
 				return p;
 			else if (column == 2) {
 				double[] opinions = RelationshipUtil.getOpinionsOfPerson(person, p);
-				return "  T:" + (int)Math.round(opinions[0])
-						+ "  C:" + (int)Math.round(opinions[1])
-						+ "  R:" + (int)Math.round(opinions[2]) + "  ";
+				return "  T " + (int)Math.round(opinions[0])
+						+ ",  C " + (int)Math.round(opinions[1])
+						+ ",  R " + (int)Math.round(opinions[2]) + "  ";
 			}
 			else if (column == 3) {
 				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);

@@ -315,8 +315,7 @@ public class RelationshipUtil implements Serializable {
 	 * 
 	 * @param person1 the person holding the opinion.
 	 * @param people  the collection of people who the opinion is of.
-	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
-	 *         friend).
+	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (bonded).
 	 */
 	public static double getAverageOpinionOfPeople(Person person1, Collection<Person> people) {
 
