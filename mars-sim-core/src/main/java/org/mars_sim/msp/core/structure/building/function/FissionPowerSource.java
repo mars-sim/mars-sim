@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * StandardPowerSource.java
- * @version 3.2.0 2021-06-20
+ * FissionPowerSource.java
+ * @date 2023-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -10,22 +10,23 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * A power source that gives a constant supply of power.
+ * A fission power source that gives a constant supply of power.
  */
-public class StandardPowerSource extends PowerSource {
+public class FissionPowerSource extends PowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private static final double MAINTENANCE_FACTOR = 2D;
 	
-	public StandardPowerSource(double maxPower) {
+	public FissionPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.STANDARD_POWER, maxPower);
+		super(PowerSourceType.FISSION_POWER, maxPower);
 	}
 
 	/**
 	 * Gets the current power produced by the power source.
+	 * 
 	 * @param building the building this power source is for.
 	 * @return power (kW)
 	 */

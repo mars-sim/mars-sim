@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGeneration.java
- * @date 2022-06-24
+ * @date 2023-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -45,6 +45,7 @@ public class PowerGeneration extends Function {
 
 		// Determine power sources.
 		powerSources = new ArrayList<>();
+		
 		for (SourceSpec sourceSpec : buildingConfig.getPowerSources(building.getBuildingType())) {
 			String type = sourceSpec.getType();
 			double power = sourceSpec.getCapacity();
@@ -52,8 +53,8 @@ public class PowerGeneration extends Function {
 			PowerSource powerSource = null;
 			PowerSourceType powerType = PowerSourceType.getType(type);
 			switch (powerType) {
-			case STANDARD_POWER:
-				powerSource = new StandardPowerSource(power);				
+			case FISSION_POWER:
+				powerSource = new FissionPowerSource(power);				
 				break;
 				
 			case SOLAR_POWER:
@@ -107,16 +108,14 @@ public class PowerGeneration extends Function {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				PowerGeneration powerFunction = building.getPowerGeneration();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += getPowerSourceSupply(powerFunction.powerSources, settlement) * wearModifier;
+				supply += getPowerSourceSupply(building.getPowerGeneration().powerSources, settlement) * wearModifier;
 			}
 		}
 
 		double existingPowerValue = demand / (supply + 1D);
 
-
-		double powerSupply = buildingConfig.getHeatSources(buildingName).stream()
+		double powerSupply = buildingConfig.getPowerSources(buildingName).stream()
 								.mapToDouble(SourceSpec::getCapacity).sum();
 
 		return powerSupply * existingPowerValue;
@@ -137,30 +136,27 @@ public class PowerGeneration extends Function {
 		while (j.hasNext()) {
 			PowerSource source = j.next();
 			result += source.getAveragePower(settlement);
-			if (source instanceof StandardPowerSource)
+			if (source.getType() == PowerSourceType.FISSION_POWER)
 				result += source.getMaxPower();
-			else if (source instanceof FuelPowerSource) {
+			else if (source.getType() == PowerSourceType.FUEL_POWER) {
 				FuelPowerSource fuelSource = (FuelPowerSource) source;
 				double fuelPower = source.getMaxPower();
-				// AmountResource fuelResource = fuelSource.getFuelResource();
 				int id = fuelSource.getFuelResourceID();
-//				Good fuelGood = GoodsUtil.getResourceGood(id);
 				double fuelValue = settlement.getGoodsManager().getGoodValuePoint(id);
 				fuelValue *= fuelSource.getFuelConsumptionRate();
 				fuelPower -= fuelValue;
 				if (fuelPower < 0D)
 					fuelPower = 0D;
 				result += fuelPower;
-			} else if (source instanceof SolarPowerSource) {
+			} else if (source.getType() == PowerSourceType.SOLAR_POWER) {
 				result += source.getMaxPower() * .707;
-			} else if (source instanceof SolarThermalPowerSource) {
+			} else if (source.getType() == PowerSourceType.SOLAR_THERMAL) {
 				result += source.getMaxPower() * .707;
-			} else if (source instanceof WindPowerSource) {
+			} else if (source.getType() == PowerSourceType.WIND_POWER) {
 				result += source.getMaxPower() * .707;
-			} else if (source instanceof AreothermalPowerSource) {
-				double areothermalHeat = surface.getAreothermalPotential(settlement.getCoordinates());
-				// TODO: why divided by 100D
-				result += source.getMaxPower()  * .707 * areothermalHeat / 100D;
+			} else if (source.getType() == PowerSourceType.AREOTHERMAL_POWER) {
+				double areothermalHeatPercent = surface.getAreothermalPotential(settlement.getCoordinates());
+				result += source.getMaxPower()  * .707 * areothermalHeatPercent / 100D;
 			}
 		}
 
@@ -176,13 +172,12 @@ public class PowerGeneration extends Function {
 		double result = 0D;
 
 		// Building should only produce power if it has no current malfunctions.
-		// if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+		// Need to check for !getBuilding().getMalfunctionManager().hasMalfunction()
 
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {
 			PowerSource powerSource = i.next();
 			if (powerSource.getType() == PowerSourceType.FUEL_POWER) {
-				// building.getNickName() + " is HEAT_OFF");
 				powerSource.setTime(time);
 			}
 			
@@ -193,17 +188,14 @@ public class PowerGeneration extends Function {
 			}
 			
 		}
-
-//		logger.info(building.getNickName() + " generated power : " + Math.round(result * 100.0)/100.0 + " kW");
-		
+	
 		if (thermalGeneration == null)
 			thermalGeneration = building.getThermalGeneration();
 
-		// Note: some buildings don't have thermal generation function
+		// Note: Check to see if this building has thermal generation function
 		if (thermalGeneration != null) {
 			double p = thermalGeneration.getGeneratedPower();
-//			logger.info(building.getNickName() + " thermal power : " + Math.round(p * 100.0)/100.0 + " kW");
-			result += p;// calculateGeneratedPower();
+			result += p;
 		}
 	
 		return result;

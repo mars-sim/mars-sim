@@ -1013,14 +1013,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of ERV-C -->
 
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
-		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="3000">
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="6000">
 		<description>The MD1 is the first Mars-qualified Kilopower Nuclear System.
 		It comprises an array of four separate 10 kWe modules, each having a reactor
-		core using depleted uranium as fuel source. It uses Stirling converters for
+		core using depleted uranium as fuel source. It uses stirling converters for
 		generating power via mechanical movement of pistons inside as passive sodium
 		heat pipes transport thermal energy between the core containment can (hot end)
 		and the vacuum chambers (cold end). A circular radiator panel is mounted on
-		top for heat dissipation. It includes a 40 kW backup power battery.</description>
+		top for heat dissipation. It includes a 40 kWh backup power battery.</description>
 
 		<!--	Nuclear Systems Kilopower Project
 				http://hdl.handle.net/2060/20160012354
@@ -1032,7 +1032,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="40.0" />
+				<power-source type="Fission Power Source" power="40.0" />
 			</power-generation>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
@@ -1043,17 +1043,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="5000">
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="7000">
 		<description>
-			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 100kW
+			The MD4 Nuclear Reactor is a refined, robust, flight-like, 100kW
 			nuclear fission power plant. It provides a consistent power source.
-			It includes a 100 kW backup power battery.
+			It includes a 80 kWh backup power battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="100.0" />
+				<power-source type="Fission Power Source" power="100.0" />
 			</power-generation>
 
 			<power-storage capacity="80"  discharge-rate="1.25"/>
@@ -1779,7 +1779,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="200">
-		<description> This Wind Farm consists of a total of 9 Vertical Axis Wind Turbine (VAWT)
+		<description> This Wind turbine consists of a total of 9 Vertical Axis Wind Turbine (VAWT)
 		constructed with strong, lightweight material suited for Mars' low gravity and low
 		density wind load. Each VAWT provides up to 2 kW of power at the wind speed of 14 m/s
 		</description>
@@ -2043,7 +2043,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- An Array of Electrical Batteries -->
 	<building type="Medium Battery Array" width="5.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="500">
-		<description> The Medium Battery Array showcased an advanced battery system that
+		<description> The Medium Battery Array showcase an advanced battery system that
 			stored excess power during non-peak hours and released power during peak power
 			usage.
 		</description>

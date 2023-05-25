@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PowerGrid.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -35,13 +36,13 @@ public class PowerGrid implements Serializable, Temporal {
 
 	private static String sourceName = logger.getName();
 
-	public static double R_LOAD = 1000; // assume constant load resistance
+	public static final double R_LOAD = 1000; // assume constant load resistance
 
-	public static double ROLLING_FACTOR = 1.5; 
+	public static final double ROLLING_FACTOR = 1.5; 
 	
-	public static double percentAverageVoltageDrop = 98D;
+	public static final double percentAverageVoltageDrop = 98D;
 
-	public static double HOURS_PER_MILLISOL = 0.0247; // MarsClock.SECONDS_IN_MILLISOL / 3600D;
+	public static final double HOURS_PER_MILLISOL = MarsClock.HOURS_PER_MILLISOL; // equals to 0.0247;
 
 	public double degradationRatePerSol = .0004;
 
@@ -124,18 +125,18 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the stored power in the grid.
+	 * Gets the stored energy in the grid.
 	 * 
-	 * @return stored power in kW hr.
+	 * @return stored energy in kWh.
 	 */
 	public double getStoredEnergy() {
 		return totalEnergyStored;
 	}
 
 	/**
-	 * Sets the stored power in the grid.
+	 * Sets the stored energy in the grid.
 	 * 
-	 * @param newEnergyStored the new stored power (kW hr).
+	 * @param newEnergyStored the new stored energy (kWh).
 	 */
 	public void setStoredEnergy(double newEnergyStored) {
 		if (totalEnergyStored != newEnergyStored) {
@@ -147,16 +148,16 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Gets the stored energy capacity in the grid.
 	 * 
-	 * @return stored energy capacity in kW hr.
+	 * @return stored energy capacity in kWh.
 	 */
 	public double getStoredEnergyCapacity() {
 		return energyStorageCapacity;
 	}
 
 	/**
-	 * Sets the stored power capacity in the grid.
+	 * Sets the stored energy capacity in the grid.
 	 * 
-	 * @param newPowerStorageCapacity the new stored power capacity (kW hr).
+	 * @param newPowerStorageCapacity the new stored energy capacity (kWh).
 	 */
 	public void setStoredPowerCapacity(double newPowerStorageCapacity) {
 		if (energyStorageCapacity != newPowerStorageCapacity) {
@@ -238,8 +239,8 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Calculate the flow of power/energy taking place due to the supply and demand
-	 * of power
+	 * Calculates the flow of power/energy taking place due to the supply and demand
+	 * of power.
 	 * 
 	 * @param time
 	 */
@@ -349,10 +350,10 @@ public class PowerGrid implements Serializable, Temporal {
 		}
 		setGeneratedPower(power);
 
-		if (logger.isLoggable(Level.FINEST)) {
+//		if (logger.isLoggable(Level.FINEST)) {
 			logger.finest(Msg.getString("PowerGrid.log.totalPowerGenerated", //$NON-NLS-1$
 					Double.toString(power)));
-		}
+//		}
 	}
 
 	/**
@@ -372,10 +373,10 @@ public class PowerGrid implements Serializable, Temporal {
 		}
 		setStoredEnergy(store);
 
-		if (logger.isLoggable(Level.FINEST)) {
+//		if (logger.isLoggable(Level.FINEST)) {
 			logger.finest(Msg.getString("PowerGrid.log.totalPowerStored", //$NON-NLS-1$
 					Double.toString(totalEnergyStored)));
-		}
+//		}
 	}
 
 	/**
@@ -393,33 +394,33 @@ public class PowerGrid implements Serializable, Temporal {
 			if (powerUp) {
 				building.setPowerMode(PowerMode.FULL_POWER);
 				power += building.getFullPowerRequired();
-				if (logger.isLoggable(Level.FINEST)) {
+//				if (logger.isLoggable(Level.FINEST)) {
 					logger.finest(Msg.getString("PowerGrid.log.buildingFullPowerUsed", //$NON-NLS-1$
 							building.getNickName(), 
 							Double.toString(
 									Math.round(building.getFullPowerRequired()*100.00)/100.00
 									)));
-				}
+//				}
 			}
 
 			power += building.getPoweredDownPowerRequired();
 
-			if (logger.isLoggable(Level.FINEST)) {
+//			if (logger.isLoggable(Level.FINEST)) {
 				logger.finest(Msg.getString("PowerGrid.log.buildingPowerDownPowerUsed", //$NON-NLS-1$
 						building.getNickName(), 
 						Double.toString(
 								Math.round(building.getPoweredDownPowerRequired()*100.00)/100.00
 								)));
-			}
+//			}
 
 		}
 
 		setRequiredPower(power);
 
-		if (logger.isLoggable(Level.FINEST)) {
+//		if (logger.isLoggable(Level.FINEST)) {
 			logger.finest(Msg.getString("PowerGrid.log.totalPowerRequired", //$NON-NLS-1$
 					Double.toString(powerRequired)));
-		}
+//		}
 	}
 
 	/**
@@ -526,7 +527,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Deliver stored energy from a battery
+	 * Delivers stored energy from a battery.
 	 * 
 	 * @param storage PowerStorage
 	 * @param excess  energy
@@ -595,24 +596,6 @@ public class PowerGrid implements Serializable, Temporal {
 		return smallest;
 	}
 
-//	/**
-//	 * Compute total stored energy in the grid.
-//	 * @return stored energy retrieved (kW hr).
-//	 
-//	private double computeTotalStoredEnergy() {
-//		double available = 0;
-//		//BuildingManager manager = settlement.getBuildingManager();
-//		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
-//		while (i.hasNext()) {
-//			Building building = i.next();
-//			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-//			if (storage.getkWattHourStored() > 0)
-//				available = available + storage.getkWattHourStored();
-//		}
-//		
-//		return available;
-//	}
-
 	/**
 	 * Retrieves stored energy from the grid.
 	 * 
@@ -655,7 +638,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Deliver stored energy from a battery
+	 * Delivers stored energy from a battery.
 	 * 
 	 * @param storage PowerStorage
 	 * @param needed  energy
@@ -742,7 +725,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		powerMode = null;

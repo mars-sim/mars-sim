@@ -43,7 +43,7 @@ public class Mind implements Serializable, Temporal {
 
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
-	private static final int STRESS_UPDATE_CYCLE = 10;
+	private static final int STRESS_UPDATE_CYCLE = 300;
 
 	private static final double RANGE = .8;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;

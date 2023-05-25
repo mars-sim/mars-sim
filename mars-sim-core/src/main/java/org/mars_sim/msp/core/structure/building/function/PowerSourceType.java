@@ -1,24 +1,28 @@
-/**
+/*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-05-25
  * @author stpa
  */
 
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Msg;
+
 public enum PowerSourceType {
 
-	SOLAR_POWER 		("Solar Power Source"),
-	AREOTHERMAL_POWER 	("Areothermal Power Source"),
-	WIND_POWER 			("Wind Power Source"),
-	STANDARD_POWER 		("Standard Power Source"),
-	FUEL_POWER 			("Fuel Power Source"),
-	SOLAR_THERMAL 		("Solar Thermal Power Source");
+	AREOTHERMAL_POWER 	(Msg.getString("PowerSourceType.areothermalPower")), //$NON-NLS-1$ 
+	FISSION_POWER 		(Msg.getString("PowerSourceType.fissionPower")), //$NON-NLS-1$ 
+	FUEL_POWER 			(Msg.getString("PowerSourceType.fuelPower")), //$NON-NLS-1$ 
+	SOLAR_POWER 		(Msg.getString("PowerSourceType.solarPower")), //$NON-NLS-1$ 
+	SOLAR_THERMAL 		(Msg.getString("PowerSourceType.solarThermal")), //$NON-NLS-1$ 
+	WIND_POWER 			(Msg.getString("PowerSourceType.windPower")); //$NON-NLS-1$
 
 	private String name;
 
-	/** hidden constructor. */
+	/** 
+	 * Constructor. 
+	 */
 	private PowerSourceType(String name) {
 		this.name = name;
 	}

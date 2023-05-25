@@ -113,12 +113,23 @@
         </connection-list>
     </building>
 
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
-        yloc="-80.0" facing="0.0" />
+
     <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-100.0" facing="0.0" />
+
+
+    <building type="Wind Turbine" xloc="-24.0" yloc="-40.0"
+        facing="270.0" />
+    <building type="Wind Turbine" xloc="-24.0" yloc="-60.0"
+        facing="270.0" />
+    <building type="Wind Turbine" xloc="-24.0" yloc="-80.0"
+        facing="270.0" />
+    <building type="Wind Turbine" xloc="-24.0" yloc="-100.0"
+        facing="270.0" />
+    <building type="Wind Turbine" xloc="-24.0" yloc="-120.0"
+        facing="270.0" />
+
+               
 
     <building type="Medium Battery Array" xloc="40.0"
         yloc="-50.0" facing="0.0" />

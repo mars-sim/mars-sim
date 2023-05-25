@@ -36,6 +36,11 @@ public class Weather implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
 	// Static data
+	/** The maximum initial windspeed of a new location. */
+	private static final double MAX_INITIAL_WINDSPEED = 40;
+	/** The maximum initial windspeed of a new location. */
+	private static final double AVERAGE_WINDSPEED = 15;
+	
 	/** The effect of sunlight on the surface temperatures on Mars. */
 	private static final double LIGHT_EFFECT = 1.2;
 	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C] */
@@ -150,7 +155,7 @@ public class Weather implements Serializable, Temporal {
 	 * @return wind speed in m/s.
 	 */
 	public double computeWindSpeed(Coordinates location) {
-		double newSpeed = -1;
+		double newSpeed = 0;
 
 		if (windSpeedCacheMap == null)
 			windSpeedCacheMap = new HashMap<>();
@@ -165,47 +170,80 @@ public class Weather implements Serializable, Temporal {
 		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
-		double rand = RandomUtil.getRandomDouble(.75);
-
 		if (windSpeedCacheMap.containsKey(location)) {
 			double currentSpeed = windSpeedCacheMap.get(location);
 			
-			// check for the passing of each day
+			// Check for the passing of each day only
 			if (isNewSol) {
 				Settlement focus = CollectionUtils.findSettlement(location);
 				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
 				if (ds != null) {
+					double stormSpeed = -1;
+					
 					double dustSpeed = ds.getSpeed();
 					switch (ds.getType()) {
 						case DUST_DEVIL:
 							// arbitrary speed determination
-							newSpeed = .8 * currentSpeed + .2 * dustSpeed;
+							stormSpeed = .8 * currentSpeed + .2 * dustSpeed;
 							break;
 	
 						case LOCAL:
 							// arbitrary speed determination
-							newSpeed = .985 * currentSpeed + .015 * dustSpeed;
+							stormSpeed = .985 * currentSpeed + .015 * dustSpeed;
 							break;
 						
 						case REGIONAL:
 							// arbitrary speed determination
-							newSpeed = .99 * currentSpeed + .01 * dustSpeed;
+							stormSpeed = .99 * currentSpeed + .01 * dustSpeed;
 							break;
 	
 						case PLANET_ENCIRCLING:
 							// arbitrary speed determination
-							newSpeed = .995 * currentSpeed + .005 * dustSpeed;
+							stormSpeed = .995 * currentSpeed + .005 * dustSpeed;
 							break;
+							
+						default :
+							stormSpeed = .99 * currentSpeed;
 					}
+					
+					// Assume the max surface wind speed of up to 800 m/s
+					if (stormSpeed > 800) {
+						stormSpeed = 800;
+					}
+					
+					newSpeed = stormSpeed;
 				}
 			}
-			if (newSpeed < 0) {
-				newSpeed = currentSpeed*(1 - .02 * rand) 
-						+ 1.15 * rand - RandomUtil.getRandomDouble(.01);				
+			
+			else { // not a new sol, no need to check for dust storm
+				double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
+
+				// Swing the wind speed back to AVERAGE_WINDSPEED
+				if (currentSpeed > AVERAGE_WINDSPEED) {
+					newSpeed = currentSpeed * (1 + rand) - (currentSpeed - AVERAGE_WINDSPEED) * Math.abs(rand) / 30;
+				}
+				else {
+					newSpeed = currentSpeed * (1 + rand) + (AVERAGE_WINDSPEED - currentSpeed) * Math.abs(rand) / 30;
+				}
+							
+				newSpeed = Math.round(newSpeed *100.0)/100.0;
+				
+				if (newSpeed < 0) {
+					newSpeed = 0;
+				}
+				
+				// Assume the max surface wind speed of up to 100 m/s
+				if (newSpeed > 100) {
+					newSpeed = 100;
+				}
 			}
 		}
+		
 		else {
-			newSpeed = rand;
+			// If wind cache doesn't exist at this location 
+			newSpeed = RandomUtil.getRandomDouble(MAX_INITIAL_WINDSPEED);
+			
+			newSpeed = Math.round(newSpeed *100.0)/100.0;
 		}
 
 		// Despite secondhand estimates of higher velocities, official observed gust
@@ -214,12 +252,12 @@ public class Weather implements Serializable, Temporal {
 		// At higher altitudes, the movement of dust was measured at 250-300 mph
 		// (400-480 km/hr).
 
-//		if (new_speed > 50) // assume the max surface wind speed of up to 50 m/s
-//			new_speed = 50;
-		newSpeed = Math.round(newSpeed *100.0)/100.0;
+		// Note : 1 mile per hour (mph) = 0.44704 meter per sec (m/s)
 		
 		windSpeedCacheMap.put(location, newSpeed);
-				
+		
+		System.out.println(newSpeed);
+		
 		return newSpeed;
 	}
 

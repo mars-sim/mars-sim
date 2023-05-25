@@ -25,7 +25,9 @@ public class WindPowerSource extends PowerSource {
 	// - http://spectrum.library.concordia.ca/36176/1/low_reynolds_number.doc
 	// - https://www.researchgate.net/publication/245526020_Low_Reynolds_Number_Vertical_Axis_Wind_Turbine_for_Mars
 
-	/** Assume the turbine is designed to capture up to 20 m/s wind speed. */
+	// Note : 1 mile per hour (mph) = 0.44704 meter per sec (m/s)
+	
+	/** Assume the turbine is designed to capture up to the threshold of 20 m/s wind speed. */
 	private static final double WIND_SPEED_THRESHOLD = 20D; // [in m/s]
 	//private static final double AVERAGE_WIND_SPEED = 7D; // [in m/s]
 	private static final double AIR_DENSITY_MARTIAN_ATM = 0.0156D; // [in kg / m^3]
@@ -40,6 +42,7 @@ public class WindPowerSource extends PowerSource {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param maxPower the maximum generated power.
 	 */
 	public WindPowerSource(double maxPower) {
@@ -54,7 +57,7 @@ public class WindPowerSource extends PowerSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		// TODO: Make power generated to be based on current wind speed at location.
+		// Make power generated to be based on current wind speed at location.
 		double speed = Math.min(HEIGHT_FACTOR * weather.getWindSpeed(building.getCoordinates()), WIND_SPEED_THRESHOLD); 
 
 		return Math.min(getMaxPower(), numModules * getPowerOutput(speed));			

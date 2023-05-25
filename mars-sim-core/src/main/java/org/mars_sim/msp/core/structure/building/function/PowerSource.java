@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerSource.java
- * @date 2022-06-24
+ * @date 2023-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -30,13 +30,14 @@ implements Serializable {
 	
 	private PowerSourceType type;
 
-	protected static SurfaceFeatures surface ;
+	protected static SurfaceFeatures surface;
 	protected static OrbitInfo orbitInfo;
 	protected static Weather weather;
 	
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param type the type of power source.
 	 * @param maxPower the max power generated.
 	 */
@@ -47,6 +48,7 @@ implements Serializable {
 
 	/**
 	 * Gets the type of power source.
+	 * 
 	 * @return type
 	 */
 	public PowerSourceType getType() {
@@ -55,6 +57,7 @@ implements Serializable {
 
 	/**
 	 * Gets the max power generated.
+	 * 
 	 * @return power (kW)
 	 */
 	public double getMaxPower() {
@@ -63,6 +66,7 @@ implements Serializable {
 
 	/**
 	 * Gets the current power produced by the power source.
+	 * 
 	 * @param building the building this power source is for.
 	 * @return power (kW)
 	 */
@@ -70,6 +74,7 @@ implements Serializable {
 
 	/**
 	 * Gets the average power produced by the power source.
+	 * 
 	 * @param settlement the settlement this power source is at.
 	 * @return power(kW)
 	 */
@@ -82,19 +87,19 @@ implements Serializable {
 	public abstract double getMaintenanceTime();
 
 	/**
-	 * Removes the power source. e.g. Returns the fuel cell stacks to the inventory
+	 * Removes the power source. e.g. Returns the fuel cell stacks to the inventory.
 	 */
 	public abstract void removeFromSettlement();
 	
 	/**
-	 * Sets the time interval
+	 * Sets the time interval.
 	 * 
 	 * @param time
 	 */
 	public abstract void setTime(double time);
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param {@link Environment}
 	 * @param {@link SurfaceFeatures}
@@ -108,7 +113,7 @@ implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;

@@ -92,13 +92,10 @@ public class ThermalGeneration extends Function {
 		boolean removedBuilding = false;
 
 		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.THERMAL_GENERATION)) {
-			if (!newBuilding
-					&& building.getBuildingType().equalsIgnoreCase(buildingName)
-					&& !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				double wearModifier = (building.getMalfunctionManager()
-						.getWearCondition() / 100D) * .75D + .25D;
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += getHeatSourceSupply(building.getThermalGeneration().heatSources) * wearModifier;
 			}
 		}
