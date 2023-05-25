@@ -102,8 +102,6 @@ public class EmotionJSONConfig implements Serializable {
         
         try {
 	        for (int i = 0; i< size; i++) {
-//	        	String s = (String)(innerJsonObject.asJsonObject()); //.getJsonNumber(s).toString();
-//	        	System.out.println(innerJsonObject.getJsonNumber(s).intValue());
 	        	e.setAnEmotionLevel(innerJsonObject.getInt(emotionalStates[i]), i);
 	        }
         } catch (Exception e1) {
@@ -111,7 +109,6 @@ public class EmotionJSONConfig implements Serializable {
 		}
         
         settler.setEmotion(e);
-        //System.out.println(settler);     
     }
  
 	public int [] getEmotionalStates() {
@@ -164,8 +161,8 @@ public class EmotionJSONConfig implements Serializable {
     	public String toString() {
     		String result = "{ ";
     		
-    		for (int e : states) {
-    			result += e + " ";
+    		for (int ee : states) {
+    			result += ee + " ";
     		}
     		
     		return result +"}";

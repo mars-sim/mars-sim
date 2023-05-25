@@ -544,14 +544,12 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Updates the emotion states
+	 * Updates the emotion states.
 	 */
 	public void updateEmotion() {
 		// Check for physical stimulus
 		emotionMgr.checkStimulus();
-
-//		int dim = emotion.getDimension();
-		
+	
 		// Get the prior history vector
 		List<double[]> oVector = emotionMgr.getOmegaVector(); 
 		// Get the personality vector
@@ -561,17 +559,14 @@ public class Mind implements Serializable, Temporal {
 		// Get the existing emotional State vector
 		double[] eVector = emotionMgr.getEmotionVector();
 		
-		// Call Psi Function - with desire changes aVector
-		double[] psi = callPsi(iVector, pVector);//new double[dim];
-
-		// Call Omega Function - internal changes such as decay of emotional states
-		// for normalize vectors
-		double[] omega = MathUtils.normalize(oVector.get(oVector.size()-1)); //new double[dim];
-
-
+		// Get Psi Function to incorporate new stimulus
+		double[] psi = callPsi(iVector, pVector);
+		// Get Omega Function to normalize internal changes such as decay of emotional states
+		double[] omega = MathUtils.normalize(oVector.get(oVector.size()-1));
 		
-		
-		double[] newE = new double[2];
+		int dim = emotionMgr.getDimension();
+		// Construct a new emotional state function modified by psi and omega functions
+		double[] newE = new double[dim];
 
 		for (int i=0; i<2; i++) {
 			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2.05;

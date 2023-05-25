@@ -28,7 +28,7 @@ public class EmotionManager implements Serializable {
 
 	// row : level of appeal
 	// column : level of engagement
-	private String[][] description = {
+	private static final String[][] EMOTIONAL_DESCRIPTIONS = {
 					{ "restless", "sad", "rejected", "crushed", 
 							"deceived", "reckless", "terrified", "hated" },
 					{ "oppressed", "gloomy", "weary", "insecure", 
@@ -48,7 +48,7 @@ public class EmotionManager implements Serializable {
 								"happy", "cheerful", "joyful", "victorious" } 
 			};
 
-	private String[] states = {
+	private static final String[] EMOTIONAL_AXES = {
 			// + ve
 			"engagement", // arousal - activation or deactivation, on x-axis
 //				"joy",
@@ -71,10 +71,10 @@ public class EmotionManager implements Serializable {
 	};
 
 	/** The existing Emotional State vector. */
-	private double[] eVector = new double[states.length];
+	private double[] eVector = new double[EMOTIONAL_AXES.length];
 
 	/** The Influence vector. */
-	private double[] iVector = new double[states.length];
+	private double[] iVector = new double[EMOTIONAL_AXES.length];
 	
 	/** The prior history omega vectors. */
 	private List<double[]> oVector = new CopyOnWriteArrayList<>();
@@ -84,6 +84,10 @@ public class EmotionManager implements Serializable {
 	public EmotionManager(Person person) {
 		this.person = person;
 		
+//		System.out.println(Arrays.deepToString(description));
+//		System.out.println("# of rows: " + description.length);
+//		System.out.println("# of cols: " + description[0].length);
+//		
 		// Create emotional state vectors using random values
 		// Note that .4 is the mid-point
 		eVector[0] = .4 + RandomUtil.getRandomDouble(-.3, .3);
@@ -114,6 +118,8 @@ public class EmotionManager implements Serializable {
 		if (pc == null)
 			pc = person.getPhysicalCondition();
 
+		// TODO: add moral changes due to external events such as death of settlers and triumphant return of a mission
+		
 		double stress = pc.getStress(); // 0 to 100%
 		double perf = pc.getPerformanceFactor(); // 0 to 1
 		double fatigue = pc.getFatigue();
@@ -124,7 +130,6 @@ public class EmotionManager implements Serializable {
 		
 		// Modify level of engagement
 		double av0 = (perf - 0.5)/100_000 - fatigue/50_000 + theirOpinionOfMe;
-		
 
 		if (av0 > RANGE)
 			av0 = RANGE;
@@ -158,7 +163,7 @@ public class EmotionManager implements Serializable {
 		double e1 = eVector[1];
 		int row = (int) (Math.round(e0 * 9D));
 		int col = (int) (Math.round(e1 * 9D));
-		return Conversion.capitalize(description[row][col]);
+		return Conversion.capitalize(EMOTIONAL_DESCRIPTIONS[row][col]);
 	}
 
 	public List<double[]> getOmegaVector() {
@@ -174,6 +179,6 @@ public class EmotionManager implements Serializable {
 	}
 
 	public int getDimension() {
-		return states.length;
+		return EMOTIONAL_AXES.length;
 	}
 }
