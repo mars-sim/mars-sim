@@ -188,7 +188,7 @@ public class RelationshipUtil implements Serializable {
 	}
 	
 	/**
-	 * Gets a map of their opinions over me.
+	 * Gets a map of their opinions over a person.
 	 * 
 	 * @param person
 	 * @return {@link Person} map
@@ -207,6 +207,48 @@ public class RelationshipUtil implements Serializable {
 		}
 
 		return sortByValue(friends);
+	}
+	
+	/**
+	 * Gets the average opinion score over this person.
+	 * 
+	 * @param person
+	 * @return {@link Person} map
+	 */
+	public static double getAverageOpinionOfMe(Person person) {
+		Collection<Person> list = getAllKnownPeople(person);
+		int size = list.size();
+		double total = 0;
+		if (!list.isEmpty()) {
+			for (Person pp : list) {
+				total += getOpinionOfPerson(pp, person);
+			}
+			
+			return total/size;
+		}
+		
+		return 50;
+	}
+	
+	/**
+	 * Gets the person's average opinion of them.
+	 * 
+	 * @param person
+	 * @return {@link Person} map
+	 */
+	public static double getMyAverageOpinionOfThem(Person person) {
+		Collection<Person> list = getAllKnownPeople(person);
+		int size = list.size();
+		double total = 0;
+		if (!list.isEmpty()) {
+			for (Person pp : list) {
+				total += getOpinionOfPerson(person, pp);
+			}
+			
+			return total/size;
+		}
+		
+		return 50;
 	}
 	
 	/**

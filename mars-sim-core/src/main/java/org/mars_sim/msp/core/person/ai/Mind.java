@@ -44,6 +44,8 @@ public class Mind implements Serializable, Temporal {
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 10;
+
+	private static final double RANGE = .8;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
@@ -64,7 +66,7 @@ public class Mind implements Serializable, Temporal {
 	/** The person's personality. */
 	private MBTIPersonality mbti;
 	/** The person's emotional states. */
-	private EmotionManager emotion;
+	private EmotionManager emotionMgr;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
 	/** The person's relationship with others. */
@@ -96,7 +98,7 @@ public class Mind implements Serializable, Temporal {
 		// Construct the MBTI personality type.
 		mbti = new MBTIPersonality(person);
 		// Construct the emotion states.
-		emotion = new EmotionManager(person);
+		emotionMgr = new EmotionManager(person);
 		// Construct the task manager.
 		taskManager = new PersonTaskManager(this);
 		// Construct the Relation instance.
@@ -526,13 +528,13 @@ public class Mind implements Serializable, Temporal {
 				}
 			}
 
-			if (v[0] > .8)
-				v[0] = .8;
+			if (v[0] > RANGE)
+				v[0] = RANGE;
 			else if (v[0] < 0)
 				v[0] = 0;
 
-			if (v[1] > .8)
-				v[1] = .8;
+			if (v[1] > RANGE)
+				v[1] = RANGE;
 			else if (v[1] < 0)
 				v[1] = 0;
 
@@ -545,27 +547,30 @@ public class Mind implements Serializable, Temporal {
 	 * Updates the emotion states
 	 */
 	public void updateEmotion() {
-		// Check for stimulus
-		emotion.checkStimulus();
+		// Check for physical stimulus
+		emotionMgr.checkStimulus();
 
 //		int dim = emotion.getDimension();
 		
 		// Get the prior history vector
-		List<double[]> wVector = emotion.getOmegaVector(); 
+		List<double[]> oVector = emotionMgr.getOmegaVector(); 
 		// Get the personality vector
 		double[] pVector = trait.getPersonalityVector(); 
 		// Get the new emotional stimulus/Influence vector
-		double[] aVector = emotion.getEmotionInfoVector(); 
+		double[] iVector = emotionMgr.getEmotionInfoVector(); 
 		// Get the existing emotional State vector
-		double[] eVector = emotion.getEmotionVector();
-
+		double[] eVector = emotionMgr.getEmotionVector();
+		
 		// Call Psi Function - with desire changes aVector
-		double[] psi = callPsi(aVector, pVector);//new double[dim];
+		double[] psi = callPsi(iVector, pVector);//new double[dim];
 
 		// Call Omega Function - internal changes such as decay of emotional states
 		// for normalize vectors
-		double[] omega = MathUtils.normalize(wVector.get(wVector.size()-1)); //new double[dim];
+		double[] omega = MathUtils.normalize(oVector.get(oVector.size()-1)); //new double[dim];
 
+
+		
+		
 		double[] newE = new double[2];
 
 		for (int i=0; i<2; i++) {
@@ -581,22 +586,22 @@ public class Mind implements Serializable, Temporal {
 		// java.lang.OutOfMemoryError: Java heap space
 //		double[] e_tt = MathUtils.concatAll(eVector, psi, omega);
 
-		if (newE[0] > .8)
-			newE[0] = .8;
+		if (newE[0] > RANGE)
+			newE[0] = RANGE;
 		else if (newE[0] < 0)
 			newE[0] = 0;
 
-		if (newE[1] > .8)
-			newE[1] = .8;
+		if (newE[1] > RANGE)
+			newE[1] = RANGE;
 		else if (newE[1] < 0)
 			newE[1] = 0;
 
 		// Update the emotional states
-		emotion.updateEmotion(newE);
+		emotionMgr.updateEmotion(newE);
 	}
 
 	public EmotionManager getEmotion() {
-		return emotion;
+		return emotionMgr;
 	}
 
 	/**

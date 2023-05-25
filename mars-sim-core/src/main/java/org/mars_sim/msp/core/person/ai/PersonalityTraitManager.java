@@ -122,7 +122,7 @@ public class PersonalityTraitManager implements Serializable {
 	}
 
 	/**
-	 * Creates the personality vector
+	 * Creates the personality vector.
 	 * 
 	 * @return double array
 	 */

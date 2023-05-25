@@ -72,9 +72,11 @@ public class LocationTag implements LocationState, Serializable {
 	public String getQuickLocation() {
 		if (p != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType()) {
-				if (p.getBuildingLocation() != null) {
-					return p.getBuildingLocation().getNickName();
+				Building b = p.getBuildingLocation();
+				if (b != null) {
+					return b.getNickName();
 				}
+				return p.getCoordinates().getFormattedString();
 			}
 
 			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())

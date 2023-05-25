@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EmotionManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-05-24
  * @author Manny Kung
  */
 
@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -23,32 +24,33 @@ public class EmotionManager implements Serializable {
 
 	private static final double RANGE = .8;
 
-//	private double stressCache;
-//	private double fatigueCache;
-
 	private Person person;
 
 	// row : level of appeal
 	// column : level of engagement
-	private String[][] description // = new String[5][5];
-//	description 
-			= { 
-					{ "restless", "sad", "rejected", "crushed", "deceived", "reckless", "terrified", "hated" },
-					{ "oppressed", "gloomy", "weary", "insecure", "disappointed", "troubled", "disgusted", "upset" },
-					{ "fatigued", "bored", "nonchalant", "displeased", "disbelieving", "suspicious", "irritated",
-							"defiant" },
-					{ "numbing", "sedated", "skeptical", "alert", "placid", "anxious", "startled", "tense" },
+	private String[][] description = {
+					{ "restless", "sad", "rejected", "crushed", 
+							"deceived", "reckless", "terrified", "hated" },
+					{ "oppressed", "gloomy", "weary", "insecure", 
+								"disappointed", "troubled", "disgusted", "upset" },
+					{ "fatigued", "bored", "nonchalant", "displeased", 
+								"disbelieving", "suspicious", "irritated", "defiant" },
+					{ "numbing", "sedated", "skeptical", "alert", 
+								"placid", "anxious", "startled", "tense" },
 
-					{ "detached", "guarded", "nonchalant", "modest", "compliant", "discreet", "energetic",
-							"aggressive" },
-					{ "restrained", "serene", "firm", "calm", "content", "cooperative", "bold", "daring" },
-					{ "tranquil", "relaxed", "polite", "thankful", "warm", "masterful", "stimulated", "powerful" },
-					{ "introspective", "agreeable", "genial", "kind", "happy", "cheerful", "joyful", "victorious" } 
+					{ "detached", "guarded", "nonchalant", "modest", 
+								"compliant", "discreet", "energetic", "aggressive" },
+					{ "restrained", "serene", "firm", "calm", 
+								"content", "cooperative", "bold", "daring" },
+					{ "tranquil", "relaxed", "polite", "thankful", 
+								"warm", "masterful", "stimulated", "powerful" },
+					{ "introspective", "agreeable", "genial", "kind", 
+								"happy", "cheerful", "joyful", "victorious" } 
 			};
 
 	private String[] states = {
 			// + ve
-			"engagement", // arousal, x-axis
+			"engagement", // arousal - activation or deactivation, on x-axis
 //				"joy",
 //				"hope",
 //				"relief",
@@ -56,8 +58,9 @@ public class EmotionManager implements Serializable {
 //				"gratitude",
 //				"love",
 //				"surprise",
+			
 			// -ve
-			"appeal" // valence, y-axis
+			"appeal" // valence - pleasant or unpleasant, on y-axis
 //				"distress",
 //				"fear",
 //				"disappointment",
@@ -67,50 +70,36 @@ public class EmotionManager implements Serializable {
 //				"disgust"
 	};
 
-	/** The Emotional State vector */
+	/** The existing Emotional State vector. */
 	private double[] eVector = new double[states.length];
 
-	/** The Emotion Influence vector */
-	private double[] aVector = new double[states.length];
-
-//	private double[][] wVector;
-
-	private List<double[]> wVector = new CopyOnWriteArrayList<>();
+	/** The Influence vector. */
+	private double[] iVector = new double[states.length];
+	
+	/** The prior history omega vectors. */
+	private List<double[]> oVector = new CopyOnWriteArrayList<>();
 
 	private PhysicalCondition pc;
 
 	public EmotionManager(Person person) {
 		this.person = person;
+		
+		// Create emotional state vectors using random values
+		// Note that .4 is the mid-point
+		eVector[0] = .4 + RandomUtil.getRandomDouble(-.3, .3);
+		eVector[1] = .4 + RandomUtil.getRandomDouble(-.3, .3);
 
-//		int numberOfIterations = 2;
-		// Create big five personality traits using random values
-//		for (int i=0 ; i < eVector.length ; i++) {
-//			int value = 0;
-//			for (int y = 0; y < numberOfIterations; y++)
-//				value += RandomUtil.getRandomDouble(RANGE);
-//			value /= numberOfIterations * 1D;
-//			eVector[i] = value;
-//		}	
-
-		// .4 is the mid-point
-		eVector[0] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
-		eVector[1] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
-
-		wVector = new CopyOnWriteArrayList<>();
-//		wVector = new double[states.length][];
+		oVector = new CopyOnWriteArrayList<>();
 
 		// Saves the first set of emotional states
 		saveEmotion();
 	}
 
 	/**
-	 * Backs up the emotional states
+	 * Backs up the emotional states.
 	 */
 	public void saveEmotion() {
-//		int size = wVector.length;
-//		wVector[size] = eVector;
-//		int size = wVector.size();
-		wVector.add(eVector);
+		oVector.add(eVector);
 	}
 
 	public void updateEmotion(double[] v) {
@@ -118,6 +107,9 @@ public class EmotionManager implements Serializable {
 		eVector = v;
 	}
 
+	/**
+	 * Checks for physical stimulus.
+	 */
 	public void checkStimulus() {
 		if (pc == null)
 			pc = person.getPhysicalCondition();
@@ -125,52 +117,56 @@ public class EmotionManager implements Serializable {
 		double stress = pc.getStress(); // 0 to 100%
 		double perf = pc.getPerformanceFactor(); // 0 to 1
 		double fatigue = pc.getFatigue();
+		double energy = pc.getEnergy();
+		
+		// Add effect of their social expectation
+		double theirOpinionOfMe = (RelationshipUtil.getAverageOpinionOfMe(person) - 50) / 10_000;
 		
 		// Modify level of engagement
-		aVector[0] = .002 * (1 - stress / 100D) + .01 * perf - fatigue/50_000;
+		double av0 = (perf - 0.5)/100_000 - fatigue/50_000 + theirOpinionOfMe;
+		
 
-		if (aVector[0] > .8)
-			aVector[0] = .8;
-		else if (aVector[0] < 0)
-			aVector[0] = 0;
+		if (av0 > RANGE)
+			av0 = RANGE;
+		else if (av0 < 0)
+			av0 = 0;
 
+		iVector[0] = av0;
+		
+		// Add effect of my social expectation
+		double myOpinionOfThem = (RelationshipUtil.getMyAverageOpinionOfThem(person) - 50) / 10_000;
+		
 		// Modify level of appeal
-		aVector[1] = .01 * (1 - stress / 100D) + .002 * perf - fatigue/50_000;
+		double av1 = (50 - stress)/10_000_000 + (energy - PhysicalCondition.ENERGY_THRESHOLD)/1_000_000 + myOpinionOfThem;
 
-		if (aVector[1] > .8)
-			aVector[1] = .8;
-		else if (aVector[1] < 0)
-			aVector[1] = 0;
+		if (av1 > RANGE)
+			av1 = RANGE;
+		else if (av1 < 0)
+			av1 = 0;
+
+		iVector[1] = av1;
 
 	}
 
 	/**
-	 * Returns the description of the emotional state
+	 * Returns the description of the emotional state.
 	 * 
 	 * @return description string
 	 */
 	public String getDescription() {
 		double e0 = eVector[0];
 		double e1 = eVector[1];
-//		System.out.print("e0 : " + e0);
-//		System.out.print("   e1 : " + e1);
-		int row = (int) (e0 * 9D);
-		int col = (int) (e1 * 9D);
-//		System.out.print("   row : " + row);
-//		System.out.println("   col : " + col);
+		int row = (int) (Math.round(e0 * 9D));
+		int col = (int) (Math.round(e1 * 9D));
 		return Conversion.capitalize(description[row][col]);
 	}
 
-//	public double[][] getOmegaVector() {
-//		return wVector;
-//	}
-
 	public List<double[]> getOmegaVector() {
-		return wVector;
+		return oVector;
 	}
 
 	public double[] getEmotionInfoVector() {
-		return aVector;
+		return iVector;
 	}
 
 	public double[] getEmotionVector() {
