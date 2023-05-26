@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,14 +70,9 @@ public class Relation implements Serializable {
 		Map<String, Double> dimensionMap = null;
 		if (opinionMap.containsKey(personID)) {
 			dimensionMap = opinionMap.get(personID);
-
 		}
 		else {
-			dimensionMap = new HashMap<>();
-			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			opinionMap.put(personID, dimensionMap);
+			return -1.0;
 		}
 		double average = (dimensionMap.get(TRUST) 
 				+ dimensionMap.get(CARE)
@@ -96,11 +92,7 @@ public class Relation implements Serializable {
 			dimensionMap = opinionMap.get(personID);
 		}
 		else {
-			dimensionMap = new HashMap<>();
-			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			opinionMap.put(personID, dimensionMap);
+			return new double[]{-1.0, -1.0, -1.0};
 		}
 		double[] dim = new double[3];
 		dim[0] = dimensionMap.get(TRUST);
@@ -215,11 +207,10 @@ public class Relation implements Serializable {
 	 */
 	public Set<Person> getAllKnownPeople(Person person) {
 		return getPeopleIDs().stream()
-				.filter(id -> person.getIdentifier() != id)
 				.map(id -> unitManager.getPersonByID(id))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toUnmodifiableSet());
 	}
-	
+
 	/**
 	 * Initializes instances.
 	 * 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendGreenhouse.java
- * @date 2022-08-11
+ * @date 2023-05-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -272,7 +272,7 @@ public class TendGreenhouse extends Task {
 			return remainingTime;
 		}
 
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 1_000, 
+		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 5_000, 
 				"Tending " + needyCrop.getCropName() + " was no longer needed.");
 		setDescriptionCropDone();
 		

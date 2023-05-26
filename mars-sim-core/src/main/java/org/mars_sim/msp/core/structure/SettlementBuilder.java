@@ -514,7 +514,8 @@ public final class SettlementBuilder {
 
 
 	/**
-	 * Creates all configured pre-configured crew relationships
+	 * Creates all configured pre-configured crew relationships.
+	 * 
 	 * @param addedCrew
 	 */
 	private void createConfiguredRelationships(Map<Person, Map<String, Integer>> addedCrew) {

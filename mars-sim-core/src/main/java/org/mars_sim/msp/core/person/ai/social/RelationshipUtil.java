@@ -134,8 +134,8 @@ public class RelationshipUtil implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	public static boolean hasRelationship(Person person1, Person person2) {
-		return (person1.getRelation().getOpinion(person2.getIdentifier()) != 0
-				|| person2.getRelation().getOpinion(person1.getIdentifier()) != 0);
+		return (person1.getRelation().getOpinion(person2.getIdentifier()) != -1
+				&& person2.getRelation().getOpinion(person1.getIdentifier()) != -1);
 	}
 
 	/**
@@ -147,6 +147,9 @@ public class RelationshipUtil implements Serializable {
 	 * @param mod
 	 */
 	public static void changeOpinion(Person person1, Person person2, RelationshipType type, double mod) {
+		if (person1 == person2)
+			return;
+		
         // Check if existing relationship between person1 and person2.      
         if (!hasRelationship(person1, person2)) {
             // Create new relationship.
@@ -311,7 +314,7 @@ public class RelationshipUtil implements Serializable {
 		}
 		return bestFriends;
 	}
-	
+
 	/**
 	 * Gets the opinion that a person has of another person. Note: If the people
 	 * don't have a relationship, return default value of 50.
