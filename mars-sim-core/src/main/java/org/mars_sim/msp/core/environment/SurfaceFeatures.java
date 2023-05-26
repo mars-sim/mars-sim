@@ -38,6 +38,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	// May add back SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName())
 
+	public static final int OPTICAL_DEPTH_REFRESH = 3;
+	
 	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
 	/** Maximum mineral concentration estimation diff from actual. */
@@ -205,6 +207,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private synchronized double computeOpticalDepth(Coordinates location) {
 
 		double tau = 0;
+
 		// Reference :
 		// See Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars:
 		// Prospective Energy and Material Resources" by Badescu, Springer 2009.
@@ -221,7 +224,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
 		// the starting value for opticalDepth is 0.2342. See Ref below
 		if (opticalDepthMap.containsKey(location))
-			tau = (opticalDepthMap.get(location) + OPTICAL_DEPTH_STARTING + newTau) / 1.9D;
+			tau = (opticalDepthMap.get(location) + OPTICAL_DEPTH_STARTING + newTau
+					+ weather.getWindSpeed(location) / 20) / 1.7;
 		else {
 			tau = OPTICAL_DEPTH_STARTING + newTau;
 		}
@@ -231,6 +235,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			tau = tau - RandomUtil.getRandomDouble((6.0 - tau)/36.0);
 		else 
 			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
+		
 		// According to R. M. Haberlet Et al. Page 860, Table IV,
 		// tau is usually between .1 and 6 on the surface of Mars
 		
@@ -251,7 +256,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// 6. Dust storm sequences occur in three seasonal windows, with L=140—250 the primary season.
 		
 		// Get the instantaneous areocentric longitude
-		double areoLon = Math.round(orbitInfo.getSunAreoLongitude() * 1000.0)/1000.0;
+		double areoLon = Math.round(orbitInfo.getSunAreoLongitude());
 		
 		double phi = location.getPhi();
 		boolean isNorthern = false;
@@ -259,6 +264,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (phi >= 0 && phi <= HALF_PI) {
 			isNorthern = true;
 		}
+		
 		if (isNorthern && (areoLon > 140 && areoLon < 250)
 				|| (areoLon > 300 && areoLon < 360))
 			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
@@ -677,7 +683,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			double msol = pulse.getMarsTime().getMillisolInt();
 			
 			// the value of optical depth doesn't need to be refreshed too often
-			if (msol % 3 == 0) {
+			if (msol % OPTICAL_DEPTH_REFRESH == 0) {
 				Iterator<Coordinates> it = opticalDepthMap.keySet().iterator();
 				while (it.hasNext()) {
 					Coordinates coord = it.next();

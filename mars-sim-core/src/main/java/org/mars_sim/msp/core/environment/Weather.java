@@ -36,8 +36,9 @@ public class Weather implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
 	// Static data
+	public static final int WINDSPEED_REFRESH = 3;
 	/** The maximum initial windspeed of a new location. */
-	private static final double MAX_INITIAL_WINDSPEED = 40;
+	private static final double MAX_INITIAL_WINDSPEED = 20;
 	/** The maximum initial windspeed of a new location. */
 	private static final double AVERAGE_WINDSPEED = 15;
 	
@@ -101,6 +102,7 @@ public class Weather implements Serializable, Temporal {
 	private static Simulation sim;
 	private static OrbitInfo orbitInfo;
 	private static MarsClock marsClock;
+	private static SurfaceFeatures surfaceFeatures;
 
 	public Weather() {
 		weatherDataMap = new HashMap<>();
@@ -156,21 +158,30 @@ public class Weather implements Serializable, Temporal {
 	 */
 	public double computeWindSpeed(Coordinates location) {
 		double newSpeed = 0;
-
+		
 		if (windSpeedCacheMap == null)
 			windSpeedCacheMap = new HashMap<>();
 
-		// On sol 214 in this list of Viking wind speeds, 25.9 m/sec (93.24 km/hr) was
-		// recorded.
+		// On sol 214 in this list of Viking wind speeds, 
+		// 25.9 m/sec (93.24 km/hr) was recorded.
 
 		// Viking spacecraft from the surface, "during a global dust storm the diurnal
-		// temperature range narrowed
-		// sharply,...the wind speeds picked up considerably—indeed, within only an hour
-		// of the storm's arrival they
-		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
+		// temperature range narrowed sharply,
+		// ...the wind speeds picked up considerably—indeed, within only an hour
+		// of the storm's arrival they  had increased to 17 m/s (61 km/h), 
+		// with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
+		if (surfaceFeatures == null) 
+			surfaceFeatures = sim.getSurfaceFeatures();
+			
+		double optical = 1;
+		
+		if (surfaceFeatures != null) 
+			optical = surfaceFeatures.getOpticalDepth(location);
+		
 		if (windSpeedCacheMap.containsKey(location)) {
+			// Load the previous wind speed
 			double currentSpeed = windSpeedCacheMap.get(location);
 			
 			// Check for the passing of each day only
@@ -178,7 +189,7 @@ public class Weather implements Serializable, Temporal {
 				Settlement focus = CollectionUtils.findSettlement(location);
 				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
 				if (ds != null) {
-					double stormSpeed = -1;
+					double stormSpeed = 0;
 					
 					double dustSpeed = ds.getSpeed();
 					switch (ds.getType()) {
@@ -216,32 +227,54 @@ public class Weather implements Serializable, Temporal {
 			}
 			
 			else { // not a new sol, no need to check for dust storm
-				double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
-
-				// Swing the wind speed back to AVERAGE_WINDSPEED
-				if (currentSpeed > AVERAGE_WINDSPEED) {
-					newSpeed = currentSpeed * (1 + rand) - (currentSpeed - AVERAGE_WINDSPEED) * Math.abs(rand) / 30;
+				
+				int msol = sim.getMasterClock().getMarsClock().getMillisolInt();
+				
+				// the value of optical depth doesn't need to be refreshed too often
+				if (msol % WINDSPEED_REFRESH == 0) {
+					
+					double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
+	
+					double[] terrain = TerrainElevation.getTerrainProfile(location);
+					
+					double boundary = AVERAGE_WINDSPEED * optical * Math.abs(terrain[0] + terrain[1]);
+					
+//					logger.info("terrain[0]: " + terrain[0] + "  terrain[1]: " + terrain[1] 
+//							+ "  optical: " + optical + "  boundary: " + boundary );
+					
+					// Swing the wind speed back to AVERAGE_WINDSPEED
+					if (currentSpeed > boundary) {
+						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary) * Math.abs(rand) / 30;
+					}
+					else if (currentSpeed > boundary / 2) {
+						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary / 2) * Math.abs(rand) / 30;
+					}
+					else {
+						newSpeed = currentSpeed * (1 + rand) + (boundary / 2 - currentSpeed) * Math.abs(rand) / 30;
+					}
+								
+					newSpeed = Math.round(newSpeed *100.0)/100.0;
+					
+					if (newSpeed < 0) {
+						newSpeed = 0;
+					}
+					
+					// Assume the max surface wind speed of up to 100 m/s
+					if (newSpeed > 100) {
+						newSpeed = 100;
+					}
 				}
+				
 				else {
-					newSpeed = currentSpeed * (1 + rand) + (AVERAGE_WINDSPEED - currentSpeed) * Math.abs(rand) / 30;
-				}
-							
-				newSpeed = Math.round(newSpeed *100.0)/100.0;
-				
-				if (newSpeed < 0) {
-					newSpeed = 0;
-				}
-				
-				// Assume the max surface wind speed of up to 100 m/s
-				if (newSpeed > 100) {
-					newSpeed = 100;
+					// Make no change to the previous wind speed
+					newSpeed = currentSpeed;
 				}
 			}
 		}
 		
 		else {
 			// If wind cache doesn't exist at this location 
-			newSpeed = RandomUtil.getRandomDouble(MAX_INITIAL_WINDSPEED);
+			newSpeed = RandomUtil.getRandomDouble(MAX_INITIAL_WINDSPEED) ;
 			
 			newSpeed = Math.round(newSpeed *100.0)/100.0;
 		}
@@ -256,7 +289,7 @@ public class Weather implements Serializable, Temporal {
 		
 		windSpeedCacheMap.put(location, newSpeed);
 		
-		System.out.println(newSpeed);
+//		logger.info("newSpeed: " + newSpeed);
 		
 		return newSpeed;
 	}

@@ -113,6 +113,7 @@ public class TerrainElevation implements Serializable {
 			double rad = i * DEG_TO_RAD;
 			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
 		}
+
 //		// Create a new site
 //		site.setElevation(elevation);
 //		site.setSteepness(steepness);
