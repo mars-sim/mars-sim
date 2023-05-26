@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Represents the behave that a Mission exhibits.
  */
-public interface Mission extends Serializable {
+public interface Mission extends Entity, Serializable {
 
 	/**
 	 * Aborts the mission by the user. Will stop current phase.

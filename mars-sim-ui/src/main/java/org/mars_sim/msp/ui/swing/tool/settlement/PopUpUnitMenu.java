@@ -168,7 +168,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            		|| unit.getUnitType() == UnitType.PERSON
 		            	|| unit.getUnitType() == UnitType.BUILDING	
 	            		|| unit.getUnitType() == UnitType.ROBOT) {
-	            	desktop.openUnitWindow(unit, false);
+	            	desktop.showDetails(unit);
 	            }
 	            
 	            // TODO Why is this not a dedicated class ?

@@ -459,7 +459,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // If destination settlement button is pressed, open window for settlement.
         if (source == destinationButton) 
-        	desktop.openUnitWindow(destinationSettlementCache, false);
+        	desktop.showDetails(destinationSettlementCache);
     }
     
     @Override

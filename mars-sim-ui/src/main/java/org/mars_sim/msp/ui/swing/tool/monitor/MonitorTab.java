@@ -62,13 +62,6 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Display details for selected rows
-	 */
-	public void displayDetails(MainDesktopPane desktop) {
-		// No implementation
-	}
-
-	/**
 	 * Display property window controlling this view.
 	 */
 	public abstract void displayProps(MainDesktopPane desktop);

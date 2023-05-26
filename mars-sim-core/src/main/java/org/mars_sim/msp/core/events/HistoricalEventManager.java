@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.events;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -83,7 +82,6 @@ public class HistoricalEventManager implements Serializable {
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
 						&& e.getWho().equals(newEvent.getWho())
 						&& e.getContainer().equals(newEvent.getContainer())
-						&& e.getHomeTown().equals(newEvent.getHomeTown())
 						&& e.getCoordinates().equals(newEvent.getCoordinates())) {
 					return true;
 				}

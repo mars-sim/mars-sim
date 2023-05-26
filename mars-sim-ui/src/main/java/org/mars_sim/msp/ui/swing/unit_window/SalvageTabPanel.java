@@ -104,7 +104,7 @@ public class SalvageTabPanel extends TabPanel {
         settlementButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 SalvageInfo info = ((Salvagable) getUnit()).getSalvageInfo();
-                getDesktop().openUnitWindow(info.getSettlement(), false);
+                getDesktop().showDetails(info.getSettlement());
             }
         });
         settlementPanel.add(settlementButton);

@@ -51,7 +51,7 @@ public class UnitTableLauncher extends MouseInputAdapter {
                 r = sorter.convertRowIndexToModel(r);
 
             UnitModel model = (UnitModel)table.getModel();
-            desktop.openUnitWindow(model.getAssociatedUnit(r), false);
+            desktop.showDetails(model.getAssociatedUnit(r));
         }
     }
 }

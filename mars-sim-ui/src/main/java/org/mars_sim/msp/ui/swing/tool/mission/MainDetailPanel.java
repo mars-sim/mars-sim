@@ -249,12 +249,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (missionCache instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if (vehicle != null) {
-					getDesktop().openUnitWindow(vehicle, false);
+					getDesktop().showDetails(vehicle);
 				}
 			} else if (missionCache instanceof ConstructionMission constructionMission) {
 				if (!constructionMission.getConstructionVehicles().isEmpty()) {
 					Vehicle vehicle = constructionMission.getConstructionVehicles().get(0);
-					getDesktop().openUnitWindow(vehicle, false);
+					getDesktop().showDetails(vehicle);
 				}
 			}
 		});

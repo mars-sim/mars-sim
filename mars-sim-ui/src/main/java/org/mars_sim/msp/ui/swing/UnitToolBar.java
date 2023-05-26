@@ -135,7 +135,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		// show unit window on desktop
 		Unit unit = ((UnitButton) event.getSource()).getUnit();
-		parentMainWindow.getDesktop().openUnitWindow(unit, false);
+		parentMainWindow.getDesktop().showDetails(unit);
 	}
 
 	/**

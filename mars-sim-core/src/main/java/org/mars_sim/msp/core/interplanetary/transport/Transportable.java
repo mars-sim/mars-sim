@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.interplanetary.transport;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -20,7 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * An class for an item that is transported between planets/moons/etc.
  */
 public abstract class Transportable
-	implements Comparable<Transportable>, ScheduledEventHandler {
+	implements Comparable<Transportable>, Entity, ScheduledEventHandler {
 		
 	private MarsClock arrivalDate;
 	private MarsClock launchDate;
@@ -38,6 +39,7 @@ public abstract class Transportable
 		this.state = TransitState.PLANNED;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

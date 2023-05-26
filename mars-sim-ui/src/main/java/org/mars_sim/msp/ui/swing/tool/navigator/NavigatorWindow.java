@@ -689,7 +689,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-						desktop.openUnitWindow(unit, false);
+						desktop.showDetails(unit);
 					} else
 						mapLayerPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}

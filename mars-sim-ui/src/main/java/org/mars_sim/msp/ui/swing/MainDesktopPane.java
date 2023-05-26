@@ -34,7 +34,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -478,15 +480,19 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Creates and opens a window for a unit if it isn't already in existence and
-	 * open.
+	 * Creates and opens a window for an Entity if it isn't already in existence and
+	 * open. This selects the most appropriate tool window
 	 *
-	 * @param unit          the unit the window is for.
-	 * @param initialWindow true if window is opened at UI startup.
+	 * @param entity Entity to display
 	 */
-	public void openUnitWindow(Unit unit, boolean initialWindow) {
-		openUnitWindow(unit, null);
-	}
+    public void showDetails(Entity entity) {
+		if (entity instanceof Unit u) {
+			openUnitWindow(u, null);
+		}
+		else if (entity instanceof Mission m) {
+			((MissionWindow)openToolWindow(MissionWindow.NAME)).openMission(m);
+		}
+    }
 
 	/**
 	 * Open a Unit Window for a specific Unit with a optional set of user properties
@@ -816,4 +822,5 @@ public class MainDesktopPane extends JDesktopPane
 		announcementWindow = null;
 		mainWindow = null;
 	}
+
 }
