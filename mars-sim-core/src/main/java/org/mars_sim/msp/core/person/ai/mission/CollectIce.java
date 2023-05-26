@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -69,20 +70,23 @@ public class CollectIce extends CollectResourcesMission {
 				rover, iceCollectionSites);
 	}
 
-	public static double computeAverageCollectionRate(Collection<Coordinates> locations) {
-		double totalRate = 0;
-		int size = locations.size();
-
-		for (Coordinates location : locations) {
-			totalRate += TerrainElevation.obtainIceCollectionRate(location);
-		}
-
-		return totalRate / size;
-	}
+//	public static double computeAverageCollectionRate(Collection<Coordinates> locations) {
+//		double totalRate = 0;
+//		int size = locations.size();
+//
+//		for (Coordinates location : locations) {
+//			totalRate += TerrainElevation.obtainIceCollectionRate(location);
+//		}
+//
+//		return totalRate / size;
+//	}
 
 	@Override
 	protected double scoreLocation(Coordinates newLocation) {
-		return TerrainElevation.obtainIceCollectionRate(newLocation);
+		if (terrainElevation == null) 
+			terrainElevation = Simulation.instance().getSurfaceFeatures().getTerrainElevation();
+		
+		return terrainElevation.obtainIceCollectionRate(newLocation);
 	}
 
 

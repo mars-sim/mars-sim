@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -75,6 +76,8 @@ public abstract class CollectResourcesMission extends EVAMission
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 
+	protected static TerrainElevation terrainElevation;
+	
 	/**
 	 * Constructor
 	 *

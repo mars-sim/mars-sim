@@ -224,8 +224,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
 		// the starting value for opticalDepth is 0.2342. See Ref below
 		if (opticalDepthMap.containsKey(location))
-			tau = (opticalDepthMap.get(location) + OPTICAL_DEPTH_STARTING + newTau
-					+ weather.getWindSpeed(location) / 20) / 1.7;
+			tau = (.9 * opticalDepthMap.get(location) 
+				 + .1 * (OPTICAL_DEPTH_STARTING 
+						+ newTau
+						+ weather.getWindSpeed(location) / 20));
 		else {
 			tau = OPTICAL_DEPTH_STARTING + newTau;
 		}
@@ -272,6 +274,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				|| (areoLon > 120 && areoLon < 180)) {
 			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
 		}
+		
+		tau = Math.round(tau * 1000.0)/1000.0;
 		
 		// Save tau onto opticalDepthMap
 		opticalDepthMap.put(location, tau);

@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -289,7 +290,7 @@ public class Settlement extends Structure implements Temporal,
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
 	/** The object that keeps track of wheelbarrows. */
-	private StorableItem wheelbarrows;
+//	private StorableItem wheelbarrows;
 	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
@@ -326,6 +327,7 @@ public class Settlement extends Structure implements Temporal,
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	private static TerrainElevation terrainElevation;
 
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
@@ -437,13 +439,16 @@ public class Settlement extends Structure implements Temporal,
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
+		if (terrainElevation == null) 
+			terrainElevation = Simulation.instance().getSurfaceFeatures().getTerrainElevation();
+		
 //		// Get the elevation and terrain gradient factor
-		terrainProfile = TerrainElevation.getTerrainProfile(location);
+		terrainProfile = terrainElevation.getTerrainProfile(location);
 
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 
-		iceCollectionRate = iceCollectionRate + TerrainElevation.obtainIceCollectionRate(location);
+		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
 
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance

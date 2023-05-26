@@ -103,6 +103,7 @@ public class Weather implements Serializable, Temporal {
 	private static OrbitInfo orbitInfo;
 	private static MarsClock marsClock;
 	private static SurfaceFeatures surfaceFeatures;
+	private static TerrainElevation terrainElevation;
 
 	public Weather() {
 		weatherDataMap = new HashMap<>();
@@ -235,25 +236,26 @@ public class Weather implements Serializable, Temporal {
 					
 					double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
 	
-					double[] terrain = TerrainElevation.getTerrainProfile(location);
+					if (terrainElevation == null) 
+						terrainElevation = sim.getSurfaceFeatures().getTerrainElevation();
 					
-					double boundary = AVERAGE_WINDSPEED * optical * Math.abs(terrain[0] + terrain[1]);
+					double[] terrain = terrainElevation.getTerrainProfile(location);
 					
-//					logger.info("terrain[0]: " + terrain[0] + "  terrain[1]: " + terrain[1] 
-//							+ "  optical: " + optical + "  boundary: " + boundary );
+					double boundary = Math.round(AVERAGE_WINDSPEED * optical 
+									* Math.log(1.1 + Math.abs((1 + terrain[0]) * (5 - terrain[1])))* 1000.0)/1000.0;
 					
 					// Swing the wind speed back to AVERAGE_WINDSPEED
 					if (currentSpeed > boundary) {
-						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary) * Math.abs(rand) / 30;
+						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary) * Math.abs(rand) / 20;
 					}
 					else if (currentSpeed > boundary / 2) {
-						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary / 2) * Math.abs(rand) / 30;
+						newSpeed = currentSpeed * (1 + rand) - (currentSpeed - boundary / 2) * Math.abs(rand) / 20;
 					}
 					else {
-						newSpeed = currentSpeed * (1 + rand) + (boundary / 2 - currentSpeed) * Math.abs(rand) / 30;
+						newSpeed = currentSpeed * (1 + rand) + (boundary / 2 - currentSpeed) * Math.abs(rand) / 40;
 					}
 								
-					newSpeed = Math.round(newSpeed *100.0)/100.0;
+					newSpeed = Math.round(newSpeed *1000.0)/1000.0;
 					
 					if (newSpeed < 0) {
 						newSpeed = 0;
@@ -263,6 +265,9 @@ public class Weather implements Serializable, Temporal {
 					if (newSpeed > 100) {
 						newSpeed = 100;
 					}
+					
+//					logger.info("newSpeed: " + newSpeed + "  terrain[0]: " + terrain[0] + "  terrain[1]: " + terrain[1] 
+//							+ "  optical: " + optical + "  boundary: " + boundary );
 				}
 				
 				else {
@@ -276,7 +281,7 @@ public class Weather implements Serializable, Temporal {
 			// If wind cache doesn't exist at this location 
 			newSpeed = RandomUtil.getRandomDouble(MAX_INITIAL_WINDSPEED) ;
 			
-			newSpeed = Math.round(newSpeed *100.0)/100.0;
+			newSpeed = Math.round(newSpeed * 1000.0)/1000.0;
 		}
 
 		// Despite secondhand estimates of higher velocities, official observed gust

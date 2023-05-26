@@ -9,13 +9,16 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -35,6 +38,8 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
+	
 	private static final double STEP_KM = 2;
 	
 	private static final double DEG_TO_RAD = Math.PI/180;
@@ -45,6 +50,8 @@ public class TerrainElevation implements Serializable {
 
 	private static Set<CollectionSite> sites;
 
+	private transient Map<Coordinates, double[]> terrainCacheMap = new HashMap<>();
+	
 	/**
 	 * Constructor.
 	 */
@@ -53,7 +60,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns terrain steepness angle from location by sampling a step distance in given
+	 * Returns terrain steepness angle (in radians) from location by sampling a step distance in given
 	 * direction.
 	 *
 	 * @param currentLocation  the coordinates of the current location
@@ -65,7 +72,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Determines the terrain steepness angle from location by sampling a step distance in given
+	 * Determines the terrain steepness angle (in radians) from location by sampling a step distance in given
 	 * direction and elevation.
 	 *
 	 * @param currentLocation
@@ -78,11 +85,13 @@ public class TerrainElevation implements Serializable {
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
-		return Math.atan(elevationChange / STEP_KM);
+		double steepness = Math.atan(elevationChange / STEP_KM);
+//		logger.config("elevation: " + elevation + "  1.  steepness: " + Math.round(steepness * 100.0)/100.0);
+		return steepness;
 	}
 
 	/**
-	 * Determines the terrain steepness angle from location by sampling a random coordinate set and a step distance in given
+	 * Determines the terrain steepness angle (in radians) from location by sampling a random coordinate set and a step distance in given
 	 * direction and elevation.
 	 *
 	 * @param currentLocation
@@ -106,22 +115,34 @@ public class TerrainElevation implements Serializable {
 	 * @param {@link Coordinates} currentLocation
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
-	public static double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
-		double steepness = 0;
-		double elevation = getMOLAElevation(currentLocation);
-		for (int i=0 ; i <= 360 ; i++) {
-			double rad = i * DEG_TO_RAD;
-			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+	public double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
+		
+		if (!terrainCacheMap.containsKey(currentLocation)) {
+			double steepness = 0;
+			double elevation = getMOLAElevation(currentLocation);
+			for (int i=0 ; i <= 360 ; i++) {
+				double rad = i * DEG_TO_RAD;
+				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+			}
+
+			
+//			// Create a new site
+//			site.setElevation(elevation);
+//			site.setSteepness(steepness);
+	//
+//			// Save this site
+//			surfaceFeatures.setSites(currentLocation, site);
+			
+//			logger.config("elevation: " + elevation + "  steepness: " + Math.round(steepness * 1000.0)/1000.0);
+			
+			double[] terrain = {elevation, steepness};
+			
+			terrainCacheMap.put(currentLocation, terrain);
+			
+			return terrain;
 		}
-
-//		// Create a new site
-//		site.setElevation(elevation);
-//		site.setSteepness(steepness);
-//
-//		// Save this site
-//		surfaceFeatures.setSites(currentLocation, site);
-
-		return new double[] {elevation, steepness};
+		
+		return terrainCacheMap.get(currentLocation);
 	}
 
 	/**
@@ -130,7 +151,7 @@ public class TerrainElevation implements Serializable {
 	 * @param {@link Coordinates}
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
-	public static double[] getTerrainProfile(Coordinates currentLocation) {
+	public double[] getTerrainProfile(Coordinates currentLocation) {
 		return computeTerrainProfile(null, currentLocation);
 	}
 
@@ -142,7 +163,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return regolith collection rate
 	 */
-	public static void computeRegolithCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	public void computeRegolithCollectionRate(CollectionSite site, Coordinates currentLocation) {
 
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
@@ -190,7 +211,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return ice collection rate
 	 */
-	public static void computeIceCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	public void computeIceCollectionRate(CollectionSite site, Coordinates currentLocation) {
 
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
@@ -237,7 +258,7 @@ public class TerrainElevation implements Serializable {
 	 * @param loc
 	 * @return the collection rate
 	 */
-	public static double obtainIceCollectionRate(Coordinates loc) {
+	public double obtainIceCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
 		if (site.getIceCollectionRate() == -1)
 			computeIceCollectionRate(site, loc);
@@ -250,7 +271,7 @@ public class TerrainElevation implements Serializable {
 	 * @param loc
 	 * @return the collection rate
 	 */
-	public static double obtainRegolithCollectionRate(Coordinates loc) {
+	public double obtainRegolithCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
 		if (site.getRegolithCollectionRate() == -1)
 			computeRegolithCollectionRate(site, loc);
