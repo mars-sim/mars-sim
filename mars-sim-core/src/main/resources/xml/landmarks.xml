@@ -120,9 +120,9 @@
 	  	
 	  	<landmark name="Viking Lander 2" approvaldate="N/A" diameter="0.1" location="West of Mie crater, Utopia Planitia" latitude="47.64 N" longitude="225.71 W" origin="NASA" type="AO"/>
 	  	
-	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="NASA" type="AO"/>  
+	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="ESA" type="AO"/>  
 	  	
-	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.50 N" longitude="135.62 E" origin="ESA" type="AO"/>  
+	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.5024 N" longitude="135.6234 E" origin="NASA" type="AO"/>  
 	
 	  	<landmark name="Perseverance Rover" approvaldate="N/A" diameter="0.1" location="Octavia E. Butler Landing, Jezero Crater" latitude="18.44 N" longitude="77.45 E" origin="NASA" type="AO"/>  
 

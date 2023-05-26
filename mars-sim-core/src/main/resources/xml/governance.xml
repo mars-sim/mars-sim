@@ -127,9 +127,9 @@
 			</sub-agenda>
 		</agenda>
 		<agenda name="Human Habitation"
-				objective="Determining Human Habitability"
-				findings="Identifying engineering challenge of improving human habitability on the surface of Mars"
-				samples="Analyzing atmospheric condition dataset and geographical factors of human habitability in a local region">
+				objective="Determining implications of Marsquakes on human habitability"
+				findings="Identifying engineering/construction challenge in surface, underground and cliff-side architecture"
+				samples="Analyzing atmospheric conditions and geographical factors of human habitability in a local region">
 			<sub-agenda description="Predict meteorological changes">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="9"/>
