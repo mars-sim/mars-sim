@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.events;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -32,8 +34,7 @@ public abstract class HistoricalEvent implements Serializable {
 	private HistoricalEventCategory category;
 	/** Type of historical events. */
 	private EventType type;
-//	/** TODO Long description of historical events should be internationalizable. */
-//	private String description;
+
 	/** Time event occurred. */
 	private MarsClock timestamp;
 	/** Source of event may be null. */
@@ -41,9 +42,29 @@ public abstract class HistoricalEvent implements Serializable {
 	private String whatCause;
 	private String whileDoing;
 	private String who;
-	private String container;
+	private Unit container;
 	private String homeTown;
 	private String coordinates;
+
+	/**
+	 * Construct an event with the appropriate information. The time is not defined
+	 * until the event is registered with the Event Manager.
+	 * 
+	 * @param category		{@link HistoricalEventCategory} Category of event
+	 * @param type			{@link EventType} Type of event
+	 * @param source		The source for this event
+	 * @param whatCause		The cause for this event
+	 * @param whileDoing	during or While doing what
+	 * @param whoAffected	Who is being primarily affected by this event
+	 * @param container		the building/vehicle where it occurs
+	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
+	 */
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
+			String whileDoing, String whoAffected, Unit container) {
+		this(category, type, source, whatCause, whileDoing, whoAffected, container,
+				container.getAssociatedSettlement().getName(),
+				container.getCoordinates());
+	}
 
 	/**
 	 * Construct an event with the appropriate information. The time is not defined
@@ -61,7 +82,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, String container, String homeTown, String coordinates) {
+			String whileDoing, String whoAffected, Unit container, String homeTown, Coordinates coordinates) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
@@ -70,7 +91,7 @@ public abstract class HistoricalEvent implements Serializable {
 		this.who = whoAffected;
 		this.container = container;
 		this.homeTown = homeTown;
-		this.coordinates = coordinates;
+		this.coordinates = coordinates.getCoordinateString();
 	}
 
 	/**
@@ -114,7 +135,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * 
 	 * @return he building/vehicle container string
 	 */
-	public String getContainer() {
+	public Unit getContainer() {
 		return container;
 	}
 

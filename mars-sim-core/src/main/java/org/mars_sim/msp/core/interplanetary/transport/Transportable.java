@@ -142,7 +142,7 @@ public abstract class Transportable
 	 */
 	public void cancel() {
 		state = TransitState.CANCELED;
-		tm.fireEvent(this, EventType.TRANSPORT_ITEM_CANCELLED, getName() + " canceled");
+		tm.fireEvent(this, EventType.TRANSPORT_ITEM_CANCELLED);
 
 		getOwningManager().removeEvent(this);
 	}
@@ -158,12 +158,12 @@ public abstract class Transportable
 			case PLANNED:
 				// Launch has arrived
 				state = TransitState.IN_TRANSIT;
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED, getName() + " launched");
+				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
 				nextEvent = (int) MarsClock.getTimeDiff(arrivalDate, now);
 				break;
 			case IN_TRANSIT:
 				// Arrvived
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_ARRIVED, getName() + " arrived on Mars");
+				tm.fireEvent(this, EventType.TRANSPORT_ITEM_ARRIVED);
 				state = TransitState.ARRIVED;
 				performArrival(SimulationConfig.instance(), Simulation.instance());
 				break;

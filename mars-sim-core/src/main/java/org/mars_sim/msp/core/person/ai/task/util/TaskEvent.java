@@ -37,9 +37,7 @@ public class TaskEvent extends HistoricalEvent {
 				"Tracking Task",
 				description,
 				person.getName(),
-				((Unit)source).getLocationTag().getImmediateLocation(),
-				((Unit)source).getAssociatedSettlement().getName(),
-				((Unit)source).getCoordinates().getCoordinateString()
+				(Unit)source
 		);
 	}
 }

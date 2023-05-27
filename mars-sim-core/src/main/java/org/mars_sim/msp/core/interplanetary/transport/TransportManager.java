@@ -96,7 +96,7 @@ public class TransportManager implements Serializable, Temporal {
 	public void addNewTransportItem(Transportable transportItem) {
 		transportItems.add(transportItem);
 
-		fireEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED, "Mission Control");
+		fireEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED);
 	}
 
 	/**
@@ -126,9 +126,9 @@ public class TransportManager implements Serializable, Temporal {
 	 * @param action
 	 * @param reason
 	 */
-	public void fireEvent(Transportable transportItem, EventType action, String reason) {
+	public void fireEvent(Transportable transportItem, EventType action) {
 		HistoricalEvent deliverEvent = new TransportEvent(transportItem, action,
-										transportItem.getSettlementName(), reason);
+										transportItem.getSettlementName());
 		eventManager.registerNewEvent(deliverEvent);
 		logger.info("A transport item launched on " + transportItem.toString());
 	}

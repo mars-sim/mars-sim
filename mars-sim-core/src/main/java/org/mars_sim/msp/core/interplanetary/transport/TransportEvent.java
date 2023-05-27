@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.interplanetary.transport;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.EventType;
 
 /**
@@ -23,15 +24,16 @@ public class TransportEvent extends HistoricalEvent {
 	 * 
 	 * @param transportItem the transport item.
 	 * @param eventType     the event type string.
-	 * @param cause         The cause for this event.
 	 * @param location		the associated settlement where it belongs
 	 */
-	public TransportEvent(Transportable transportItem, EventType eventType, String cause, String location) {
+	public TransportEvent(Transportable transportItem, EventType eventType, String location) {
 		// Future: Add the type of rocket
-		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(), "In Transit", cause, 
-				location,
+		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(),
+				null, null,
+				// Not very nice
+				(transportItem instanceof Resupply ? ((Resupply) transportItem).getSettlement() : null),
 				transportItem.getSettlementName(),
-				transportItem.getLandingLocation().getCoordinateString()
+				transportItem.getLandingLocation()
 		);
 	}
 }

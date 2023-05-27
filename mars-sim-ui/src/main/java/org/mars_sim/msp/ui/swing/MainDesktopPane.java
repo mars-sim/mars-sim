@@ -36,6 +36,7 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -491,6 +492,9 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		else if (entity instanceof Mission m) {
 			((MissionWindow)openToolWindow(MissionWindow.NAME)).openMission(m);
+		}
+		else if (entity instanceof Transportable t) {
+			((ResupplyWindow)openToolWindow(ResupplyWindow.NAME)).openTransportable(t);
 		}
     }
 

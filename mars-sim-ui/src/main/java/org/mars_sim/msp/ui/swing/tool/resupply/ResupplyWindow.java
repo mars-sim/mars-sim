@@ -177,7 +177,7 @@ public class ResupplyWindow extends ToolWindow
 		sim.getEventManager().addListener(this);
 	}
 
-	private void addTreeNode(Transportable at) {
+	private DefaultMutableTreeNode addTreeNode(Transportable at) {
 		DefaultMutableTreeNode dNode = deliveryNodes.get(at);
 		if (dNode == null) {
 			String receiver = at.getSettlementName();
@@ -210,9 +210,26 @@ public class ResupplyWindow extends ToolWindow
 		TreePath path = new TreePath(dNode.getPath());
 		delveryTree.makeVisible(path);
 		delveryTree.scrollPathToVisible(path);
+
+		return dNode;
 	}
 
-	
+	/**
+	 * External tools has asked to open a Transportable
+	 * @param transport Mission to display
+	 */
+	public void openTransportable(Transportable transport) {
+		DefaultMutableTreeNode found = deliveryNodes.get(transport);
+		if (found == null) {
+			// Should never happen
+			found = addTreeNode(transport);
+		}
+
+		TreePath path = new TreePath(found.getPath());
+		delveryTree.makeVisible(path);
+		delveryTree.setSelectionPath(path);
+	}
+
 	/**
 	 * Potentially a new Transportiem has been loaded or adjusted
 	 * @param he Historical view of the event 

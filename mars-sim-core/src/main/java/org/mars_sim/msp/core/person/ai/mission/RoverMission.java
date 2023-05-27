@@ -781,9 +781,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				p.getPhysicalCondition().getHealthSituation(),
 				p.getTaskDescription(),
 				p.getName(),
-				p.getLocationTag().getImmediateLocation(),
-				p.getAssociatedSettlement().getName(),
-				p.getCoordinates().getCoordinateString()
+				p
 				);
 		eventManager.registerNewEvent(rescueEvent);
 	}

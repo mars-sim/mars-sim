@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.hazard;
 
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
@@ -29,11 +30,10 @@ public class HazardEvent extends HistoricalEvent {
 	 * @param whileDoing	The activity the person was engaging.
 	 * @param whoAffected	Who is being primarily affected by this event.
 	 * @param container		the building/vehicle where it occurs
-	 * @param homeTown		the associated settlement where it belongs
-	 * @param coordinates	the coordinates where it belongs
 	 */
 	public HazardEvent(EventType eventType, Object source, String whatCause, String whileDoing, String whoAffected,
-			String container, String homeTown, String coordinates) {
-		super(HistoricalEventCategory.HAZARD, eventType, source, whatCause, whileDoing, whoAffected, container, homeTown, coordinates);
+			Unit container) {
+		super(HistoricalEventCategory.HAZARD, eventType, source, whatCause, whileDoing, whoAffected,
+				container);
 	}
 }

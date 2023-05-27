@@ -14,8 +14,8 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -210,12 +210,11 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 */
 	public Object getObject(int row) {
 		HistoricalEvent event = cachedEvents.get(row);
-		Object result = null;
-		Object source = event.getSource();
-		if (source instanceof Unit)
-			result = source;
+		Object result = event.getSource();
+		if (!(result instanceof Entity)) {
+			result = event.getContainer();
+		}
 		return result;
-
 	}
 
 	/**

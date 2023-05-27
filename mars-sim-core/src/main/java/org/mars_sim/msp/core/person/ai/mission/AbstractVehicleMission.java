@@ -508,9 +508,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						reason.getName(),
 						getName(),
 						getStartingPerson().getName(),
-						vehicle.getName(),
-						vehicle.getAssociatedSettlement().getName(),
-						vehicle.getCoordinates().getCoordinateString()
+						vehicle
 						);
 		
 				eventManager.registerNewEvent(newEvent);
@@ -1162,9 +1160,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 								reason.getName(),
 								getName(),
 								getStartingPerson().getName(),
-								vehicle.getName(),
-								oldHome.getName(),
-								vehicle.getCoordinates().getCoordinateString()
+								vehicle
 								);
 						eventManager.registerNewEvent(newEvent);
 					}
@@ -1195,24 +1191,13 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
-			String settlement = null;
-
-			if (member.getUnitType() == UnitType.PERSON) {
-				settlement = ((Person)member).getAssociatedSettlement().getName();
-			}
-			else {
-				settlement = ((Robot)member).getAssociatedSettlement().getName();
-			}
-
 			// Creating mission emergency beacon event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
 					this,
 					reason,
 					this.getName(),
 					member.getName(),
-					vehicle.getName(),
-					vehicle.getAssociatedSettlement().getName(),
-					vehicle.getCoordinates().getCoordinateString()
+					vehicle
 					);
 
 			eventManager.registerNewEvent(newEvent);
@@ -1745,9 +1730,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						status.getName(),
 						getName(),
 						getStartingPerson().getName(),
-						vehicle.getName(),
-						getStartingSettlement().getName(),
-						vehicle.getCoordinates().getCoordinateString()
+						vehicle
 						);
 				eventManager.registerNewEvent(newEvent);
 			}

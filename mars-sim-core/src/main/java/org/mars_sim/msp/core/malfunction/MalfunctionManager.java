@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -437,12 +436,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
-		String malfunctionName = malfunction.getMalfunctionMeta().getName();
-
-		Settlement settlement = entity.getAssociatedSettlement();
-		String container = entity.getName();
-//		String loc1 = LocationFormat.getLocationDescription(entity);
-		String coordinates = entity.getCoordinates().getCoordinateString();
 		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 
 		String whoAffected = "None";
@@ -490,12 +483,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 		HistoricalEvent newEvent = new MalfunctionEvent(
 								eventType, 
 								malfunction, 
-								malfunctionName, 
 								whileDoing, 
 								whoAffected, 
-								container, 
-								settlement.getName(), 
-								coordinates);
+								(Unit) entity);
 		
 		eventManager.registerNewEvent(newEvent);
 
@@ -615,10 +605,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			String chiefRepairer = fixed.getMostProductiveRepairer();
 
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, fixed,
-					fixed.getName(), "Repairing", chiefRepairer, 
-					entity.getName(), 
-					entity.getAssociatedSettlement().getName(), 
-					entity.getCoordinates().getCoordinateString());
+					null, chiefRepairer, 
+					(Unit) entity);
 
 			eventManager.registerNewEvent(newEvent);
 
