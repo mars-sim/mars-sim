@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -327,6 +328,7 @@ public class Settlement extends Structure implements Temporal,
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
 
 	static {
@@ -439,8 +441,11 @@ public class Settlement extends Structure implements Temporal,
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
+		if (surfaceFeatures == null) 
+			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+		
 		if (terrainElevation == null) 
-			terrainElevation = Simulation.instance().getSurfaceFeatures().getTerrainElevation();
+			terrainElevation = surfaceFeatures.getTerrainElevation();
 		
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
@@ -450,6 +455,10 @@ public class Settlement extends Structure implements Temporal,
 
 		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
 
+		double areoThermalPot = surfaceFeatures.getAreothermalPotential(location);
+		
+		logger.config(this, " Areothermal Potential: " + Math.round(areoThermalPot * 1000.0)/1000.0);
+		
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);

@@ -218,6 +218,7 @@ public class Relation implements Serializable {
 	 */
 	public static void initializeInstances(UnitManager um) {
 		unitManager = um;		
+		RelationshipUtil.initializeInstances(um);
 	}
 	
 	/**

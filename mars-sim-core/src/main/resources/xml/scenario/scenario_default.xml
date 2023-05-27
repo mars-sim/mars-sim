@@ -21,7 +21,7 @@
 		</settlement>
 
 		<settlement name="Kyocera" template="Phase 2-JP" persons="8" robots="4" sponsor="JAXA">
-			<location longitude="188.8 W" latitude="11.9 N" />
+			<location longitude="164 E" latitude="6 N" />
 		</settlement>
 
 		<settlement name="New Seoul" template="Phase 2-KR" persons="8" robots="4" sponsor="KARI">

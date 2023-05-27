@@ -59,7 +59,7 @@ public class AreothermalMap implements Serializable {
 	 * Load areothermal hot spots from volcanic map image.
 	 */
 	private void loadHotspots() {
-		hotspots = new HashSet<Coordinates>(700);
+		hotspots = new HashSet<Coordinates>(1400);
 		URL imageMapURL = getClass().getResource("/images/" + VOLCANIC_IMG);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();

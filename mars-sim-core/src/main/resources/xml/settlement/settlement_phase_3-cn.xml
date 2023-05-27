@@ -181,6 +181,13 @@
         </connection-list>
     </building>
 
+    <building type="Methane Power Generator" xloc="40.0"
+        yloc="-40.0" facing="0.0" />
+    <building type="Methane Power Generator" xloc="60.0"
+        yloc="-40.0" facing="0.0" />
+    <building type="Methane Power Generator" xloc="80.0"
+        yloc="-40.0" facing="0.0" />      
+             
     <building type="Medium Battery Array" xloc="40.0"
         yloc="-50.0" facing="0.0" />
     <building type="Solar Photovoltaic Array" xloc="40.0"
@@ -190,25 +197,71 @@
      <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-80.0" facing="0.0" />
                
-    <building type="Medium Battery Array" xloc="55.0"
+    <building type="Medium Battery Array" xloc="40.0"
         yloc="-90.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="55.0"
+    <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-100.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="55.0"
+    <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-110.0" facing="0.0" />
-    <building type="Solar Photovoltaic Array" xloc="55.0"
+    <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-120.0" facing="0.0" />
 
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-130.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-140.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-150.0" facing="0.0" />
+     <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-160.0" facing="0.0" />
+               
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-170.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-180.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-190.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-200.0" facing="0.0" />
 
-    <building type="MD1 Nuclear Reactor" xloc="100.0"
+
+   <building type="Medium Battery Array" xloc="60.0"
+        yloc="-50.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
         yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="100.0"
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-70.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
         yloc="-80.0" facing="0.0" />
+        
+     <building type="Medium Battery Array" xloc="60.0"
+        yloc="-90.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-100.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-110.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-120.0" facing="0.0" />
+        
+        
+   <building type="Medium Battery Array" xloc="60.0"
+        yloc="-130.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-140.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-150.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-160.0" facing="0.0" />
+        
+     <building type="Medium Battery Array" xloc="60.0"
+        yloc="-170.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-180.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-190.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-200.0" facing="0.0" />
 
-        
-    <building type="MD4 Nuclear Reactor" xloc="140.0"
-        yloc="-120" facing="0.0" />
-        
 
     <building type="ERV-A" xloc="80.0" yloc="-15.0"
         facing="0.0" />

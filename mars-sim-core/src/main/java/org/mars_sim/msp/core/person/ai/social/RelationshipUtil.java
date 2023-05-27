@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
@@ -61,6 +62,9 @@ public class RelationshipUtil implements Serializable {
 	 */
 	private static final double SETTLER_MODIFIER = .02D;
 
+	/** The Unit Manager instance. */
+	private static UnitManager unitManager;
+	
 	/**
 	 * Adds a new relationship between two people.
 	 * 
@@ -118,12 +122,56 @@ public class RelationshipUtil implements Serializable {
 	/**
 	 * Gets the opinion of person1 toward person2.
 	 * 
+	 * @param person1ID
+	 * @param person2ID
+	 * return opinion
+	 */
+	public static double getOpinion(int person1ID, int person2ID) {
+		return unitManager.getPersonByID(person1ID).getRelation().getOpinion(person2ID);
+	}
+	
+	/**
+	 * Gets the opinion of person1 toward person2.
+	 * 
+	 * @param person1
+	 * @param person2ID
+	 * return opinion
+	 */
+	public static double getOpinion(Person person1, int person2ID) {
+		return person1.getRelation().getOpinion(person2ID);
+	}
+	
+	/**
+	 * Gets the opinion of person1 toward person2.
+	 * 
 	 * @param person1
 	 * @param person2
 	 * return opinion
 	 */
 	public static double[] getOpinions(Person person1, Person person2) {
 		return person1.getRelation().getOpinions(person2.getIdentifier());
+	}
+	
+	/**
+	 * Gets the opinion of person1 toward person2.
+	 * 
+	 * @param person1ID
+	 * @param person2ID
+	 * return opinion
+	 */
+	public static double[] getOpinions(int person1ID, int person2ID) {
+		return unitManager.getPersonByID(person1ID).getRelation().getOpinions(person2ID);
+	}
+	
+	/**
+	 * Gets the opinion of person1 toward person2.
+	 * 
+	 * @param person1
+	 * @param person2ID
+	 * return opinion
+	 */
+	public static double[] getOpinions(Person person1, int person2ID) {
+		return person1.getRelation().getOpinions(person2ID);
 	}
 	
 	/**
@@ -694,6 +742,15 @@ public class RelationshipUtil implements Serializable {
 		result += target.getScientificAchievement(science);
 
 		return result;
+	}
+	
+	/**
+	 * Initializes instances.
+	 * 
+	 * @param um the unitManager instance
+	 */
+	public static void initializeInstances(UnitManager um) {
+		unitManager = um;		
 	}
 	
 	/**

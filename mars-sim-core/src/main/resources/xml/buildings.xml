@@ -1824,7 +1824,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="20.0" />
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.75"/>
+			<power-storage capacity="20"  discharge-rate="1.75"/>
 		</functions>
 	</building>
 
