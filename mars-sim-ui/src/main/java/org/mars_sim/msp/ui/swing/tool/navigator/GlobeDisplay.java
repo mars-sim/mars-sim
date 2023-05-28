@@ -49,11 +49,12 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	private final int STANDARD_MAP_HEIGHT = 1440;
 	private final int STANDARD_MAP_WIDTH = 2880;
-	private final int MAP_HEIGHT = 300;
-//	private final int MAP_WIDTH = MAP_HEIGHT * 2;
+	private final int STANDARD_GLOBE_BOX_HEIGHT = 300;
+	private final int MAP_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
+	
 	private final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 	private final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
-	private final int RATIO = GLOBE_BOX_HEIGHT / MAP_HEIGHT; 
+	private final int RATIO = GLOBE_BOX_HEIGHT / STANDARD_GLOBE_BOX_HEIGHT; 
 	
 	private final int X_PADDING_ZOOM_BOX = 116 * RATIO;
 	private final int Y_PADDING_ZOOM_BOX = 116 * RATIO;
@@ -402,7 +403,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = ((leftWidth - latWidth) / 2) + 25 * RATIO;
-		int longPosition = 275 * RATIO - rightWidth + ((rightWidth - longWidth) / 2);
+		int longPosition = (GLOBE_BOX_HEIGHT - 25 * RATIO) * RATIO - rightWidth + ((rightWidth - longWidth) / 2);
 
 		g.drawString(latString, latPosition, 50 * RATIO);
 		g.drawString(longString, longPosition, 50 * RATIO);
@@ -412,13 +413,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		g.drawRect(xPaddingZoomBox, yPaddingZoomBox, widthZoomBox,  heightZoomBox);
 		
 		// Draw diagonal line to top right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox, 300 * RATIO, 0);
+		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox, GLOBE_BOX_HEIGHT, 0);
 		// Draw diagonal line to top right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox, 600 * RATIO, 0);
+		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox, GLOBE_BOX_HEIGHT * RATIO, 0);
 		// Draw diagonal line to bottom right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox + heightZoomBox, 300 * RATIO, 300 * RATIO);
+		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox + heightZoomBox, GLOBE_BOX_HEIGHT, GLOBE_BOX_HEIGHT);
 		// Draw diagonal line to bottom right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox + heightZoomBox, 600 * RATIO, 300 * RATIO);
+		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox + heightZoomBox, GLOBE_BOX_HEIGHT * RATIO, GLOBE_BOX_HEIGHT);
 
 	}
 

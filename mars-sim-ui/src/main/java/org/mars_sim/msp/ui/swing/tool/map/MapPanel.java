@@ -41,17 +41,14 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel {
 
-	/**
-	 *
-	 */
 	public static final String DEFAULT_MAPTYPE = "surface";
 
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = 300;
-	public static final int MAP_BOX_WIDTH = 300;
+	public static final int MAP_BOX_HEIGHT = 600;
+	public static final int MAP_BOX_WIDTH = 600;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;

@@ -297,7 +297,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Create the settlement combo box
         buildSettlementNameComboBox(setupSettlements());
         
-        coordPane.add(settlementComboBox);
+        JPanel settlementPane = new JPanel(new FlowLayout());
+        settlementPane.add(settlementComboBox);
+		
+        coordPane.add(settlementPane);
 		
 		controlPane.add(coordPane);
 		///////////////////////////////////////////////////////////////////////////
