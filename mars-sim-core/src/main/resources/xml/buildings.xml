@@ -1758,10 +1758,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description>The Methane Power generator utilized methane gas for the
 			generation of electricity. It makes use of the freely available carbon dioxide
 			in the Martian atmosphere and creates non-polluting by-products.
-			Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
+			Note : every mole of methane (16 g) releases 810 KJ of energy if burning 
+			       with 2 moles of oxygen (64 g) :
+			CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
 			Thus, 890kW requires 16 g/s. 
-				
 			Assume electric efficiency at 100%,
 			1 kW_e requires 1.5960 g/millisol or 1.596 kg/sol
 		</description>
@@ -1779,9 +1779,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="200">
-		<description> This Wind turbine consists of a total of 9 Vertical Axis Wind Turbine (VAWT)
-		constructed with strong, lightweight material suited for Mars' low gravity and low
-		density wind load. Each VAWT provides up to 2 kW of power at the wind speed of 14 m/s
+		<description> This Vertical Axis Wind Turbine (VAWT) is constructed with strong, 
+		lightweight material suited for Mars low gravity and low density wind load. 
+		Each VAWT provides up to a total of 18 kW of power at the wind speed of ~14 m/s
 		</description>
 		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
 
@@ -1812,7 +1812,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<!-- Array of solar thermal mirrors with steam power generator. -->
-	<building type="Solar Thermal Array" width="5.0" length="10.0" base-level="0"
+	<building type="Solar Thermal Collector" width="5.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="100">
 		<description>  The Solar Thermal Array is an array of steerable parabolic
 			reflectors that concentrates sunlight for heating up molten materials

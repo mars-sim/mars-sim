@@ -320,7 +320,7 @@ public class TimeWindow extends ToolWindow {
 		// Update the calender
 		calendarDisplay.update(mc.getMarsClock());
 		// Update areocentric longitude
-		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 1000.0)/1000.0 + "");	
+		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 1_000.0)/1_000.0 + "");	
 		
 		// Update season
 		if (mc.getClockPulse().isNewSol()) {

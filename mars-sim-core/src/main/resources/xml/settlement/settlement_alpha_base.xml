@@ -295,9 +295,9 @@
     <building type="Medium Battery Array" xloc="40.0"
         yloc="-90.0" facing="0.0" /> 
                 
-    <building type="Solar Thermal Array" xloc="40.0"
+    <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-100.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="40.0"
+    <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-110.0" facing="0.0" />
         
        

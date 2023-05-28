@@ -185,9 +185,9 @@
     <building type="MD1 Nuclear Reactor" xloc="40.0"
         yloc="-80.0" facing="0.0" />
 
-    <building type="Solar Thermal Array" xloc="60.0"
+    <building type="Solar Thermal Collector" xloc="60.0"
         yloc="-60.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="60.0"
+    <building type="Solar Thermal Collector" xloc="60.0"
         yloc="-80.0" facing="0.0" />
 
     <building type="Large Areothermal Well" xloc="100.0"

@@ -162,13 +162,13 @@
     <building type="Solar Photovoltaic Array" xloc="40.0"
         yloc="-160.0" facing="0.0" />
 
-    <building type="Solar Thermal Array" xloc="-35.5"
+    <building type="Solar Thermal Collector" xloc="-35.5"
         yloc="28.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="-41.5"
+    <building type="Solar Thermal Collector" xloc="-41.5"
         yloc="28.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="-47.5"
+    <building type="Solar Thermal Collector" xloc="-47.5"
         yloc="28.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="-53.5"
+    <building type="Solar Thermal Collector" xloc="-53.5"
         yloc="28.0" facing="0.0" />
 
     <building type="Medium Battery Array" xloc="40.0"

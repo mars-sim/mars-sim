@@ -122,12 +122,7 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	/** The current distance from the Sun to Mars (in au). */
 	private double instantaneousSunMarsDistance;
-	/**
-	 * The current areocentric longitude of the Sun (or the orbital position of
-	 * Mars).
-	 */
-	private double sunAreoLongitude;
-
+	
 	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly
 	// measured in terms of the areocentric
 	// longitude L_s, as referred to the planet's vernal equinox (the ascending node
@@ -160,6 +155,12 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	// Reference : http://www.giss.nasa.gov/tools/mars24/help/notes.html
 
+	/**
+	 * The current areocentric longitude of the Sun (or the orbital position of
+	 * Mars).
+	 */
+	private double sunAreoLongitude;
+	
 	/** The Sine of the solar declination angle. */
 	private double sineSolarDeclinationAngle;
 	/** The cache value of the cos zenith angle. */
@@ -170,6 +171,8 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	// static instances
 	private MarsClock marsClock;
+	
+	private SimulationConfig simulationConfig;
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo(MarsClock clock) {
@@ -181,10 +184,20 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
-		LocalDateTime earthTime = SimulationConfig.instance().getEarthStartDate();
+		
+		if (simulationConfig == null) {
+			simulationConfig = SimulationConfig.instance();
+		}
+		
+		LocalDateTime earthTime = simulationConfig.getEarthStartDate();
 		sunAreoLongitude = getLs(earthTime) % 360;
+		
+		logger.config("Areocentric Longitude: " + Math.round(sunAreoLongitude * 1_000.0)/1_000.0 + " deg");
+		
 		instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
 
+		logger.config("0. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
+		
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 
 		sunLongitudeOffset = computePerihelion(2043);
@@ -326,8 +339,18 @@ public class OrbitInfo implements Serializable, Temporal {
 			theta -= TWO_PIs;
 
 		// Determine new radius
-		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
-
+//		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
+		
+//		logger.config("1. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
+		
+		if (simulationConfig == null) {
+			simulationConfig = SimulationConfig.instance();
+		}
+		
+		instantaneousSunMarsDistance = getHeliocentricDistance(simulationConfig.getEarthStartDate());
+		
+//		logger.config("2. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
+		
 		// Recompute the areocentric longitude of Mars
 		sunAreoLongitude = computeSunLongitude(pulse.getMasterClock().getEarthTime());
 
@@ -343,6 +366,8 @@ public class OrbitInfo implements Serializable, Temporal {
 		double sunPhi = HALF_PI + (Math.sin(theta + HALF_PI) * TILT);
 
 		sunDirection = new Coordinates(sunPhi, sunTheta);
+		
+		// Recompute sineSolarDeclinationAngle
 		computeSineSolarDeclinationAngle();
 
 		return true;
@@ -501,6 +526,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		// 3. https://en.wiki2.org/wiki/Analemma
 		// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html
 
+		// Recompute sineSolarDeclinationAngle
 		computeSineSolarDeclinationAngle();
 		double d = getCacheSolarDeclinationAngle();
 

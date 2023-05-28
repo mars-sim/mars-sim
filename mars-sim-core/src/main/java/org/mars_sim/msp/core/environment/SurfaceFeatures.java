@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -36,11 +37,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
-	// May add back SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName())
+	public static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
 
 	public static final int OPTICAL_DEPTH_REFRESH = 3;
-	
-	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
 	/** Maximum mineral concentration estimation diff from actual. */
 	private static final int MINERAL_ESTIMATION_VARIANCE = 2;
@@ -60,11 +59,23 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// see
 	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
+	private static final double COSZ_THRESHOLD = 0.04;
+	
+	public static final int SUNLIGHT_THRESHOLD = 20;
+	
+	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
+	
 	public static final int MAX_SOLAR_IRRADIANCE = 717;
+	
+	public static final int MIN_SOLAR_IRRADIANCE = 493;
 
-	private static final double HALF_PI = Math.PI / 2d;
+	private static final double HALF_PI = Math.PI / 2;
 
-	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
+	private static final double THREE_HALF_PI = 1.5 * Math.PI;
+	
+	private static final double SQUARED_SEMI_MAJOR_AXIS = OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
+	
+//	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * SQUARED_SEMI_MAJOR_AXIS;
 
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
@@ -129,58 +140,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return terrainElevation;
 	}
 
-	/**
-	 * Returns a float value representing the current sunlight conditions at a
-	 * particular location.
-	 *
-	 * @return value from 0.0 - 1.0; 0.0 represents night time darkness. 1.0
-	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
-	 *         conditions.
-	 */
-	public double getSurfaceSunlightRatio(Coordinates location) {
-		double result = 1D;
-
-		// Method 1:
-//        double angleFromSun = sunDirection.getAngle(location);
-//        //System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
-//
-//        double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
-//
-//        if (angleFromSun < (HALF_PI) - (twilightzone / 2D)) {
-//            result = 1D;
-//        } else if (angleFromSun > (HALF_PI) + (twilightzone / 2D)) {
-//            result = 0D;
-//        } else {
-//            double twilightAngle = angleFromSun - ((HALF_PI) - (twilightzone / 2D));
-//            result = 1D - (twilightAngle / twilightzone);
-//        }
-//
-//        // NOTE: Below is the numerically shortened equivalent of the above if-else block
-//        if (angleFromSun  < 1.4708) {
-//            result = 1D;
-//        } else if (angleFromSun  > 1.6708) {
-//            result = 0D;
-//        } else {
-//            //double twilightAngle = z - 1.6708;
-//            result = 8.354 - 5 * angleFromSun;
-//        }
-
-		// Method 2:
-		double z = orbitInfo.getSolarZenithAngle(location);
-		// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
-
-		// double twilight zone = .2D;
-		if (z < 1.4708) {
-			result = 1D;
-		} else if (z > 1.6708) {
-			result = 0D;
-		} else {
-			// double twilightAngle = z - 1.6708;
-			result = 8.354 - 5 * z;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the optical depth due to the martian dust.
@@ -267,11 +226,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			isNorthern = true;
 		}
 		
-		if (isNorthern && (areoLon > 140 && areoLon < 250)
-				|| (areoLon > 300 && areoLon < 360))
-			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
-		else if (!isNorthern && (areoLon > 10 && areoLon < 70)
-				|| (areoLon > 120 && areoLon < 180)) {
+		if ((isNorthern && (areoLon > 140 && areoLon < 250) || (areoLon > 300 && areoLon < 360))
+			|| (!isNorthern && (areoLon > 10 && areoLon < 70) || (areoLon > 120 && areoLon < 180))) {
 			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
 		}
 		
@@ -281,6 +237,59 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		opticalDepthMap.put(location, tau);
 		
 		return tau;
+	}
+
+	/**
+	 * Returns a float value representing the current sunlight conditions at a
+	 * particular location.
+	 *
+	 * @return value from 0.0 - 1.0; 0.0 represents night time darkness. 1.0
+	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
+	 *         conditions.
+	 */
+	public double getSurfaceSunlightRatio(Coordinates location) {
+		double result = 1D;
+
+		// Method 1:
+//        double angleFromSun = sunDirection.getAngle(location);
+//        //System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
+//
+//        double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
+//
+//        if (angleFromSun < (HALF_PI) - (twilightzone / 2D)) {
+//            result = 1D;
+//        } else if (angleFromSun > (HALF_PI) + (twilightzone / 2D)) {
+//            result = 0D;
+//        } else {
+//            double twilightAngle = angleFromSun - ((HALF_PI) - (twilightzone / 2D));
+//            result = 1D - (twilightAngle / twilightzone);
+//        }
+//
+//        // NOTE: Below is the numerically shortened equivalent of the above if-else block
+//        if (angleFromSun  < 1.4708) {
+//            result = 1D;
+//        } else if (angleFromSun  > 1.6708) {
+//            result = 0D;
+//        } else {
+//            //double twilightAngle = z - 1.6708;
+//            result = 8.354 - 5 * angleFromSun;
+//        }
+
+		// Method 2:
+		double z = orbitInfo.getSolarZenithAngle(location);
+		// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
+
+		// double twilight zone = .2D;
+		if (z < 1.4708) {
+			result = 1D;
+		} else if (z > 1.6708) {
+			result = 0D;
+		} else {
+			// double twilightAngle = z - 1.6708;
+			result = 8.354 - 5 * z;
+		}
+
+		return result;
 	}
 
 	/**
@@ -305,6 +314,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			Double value = currentIrradiance.get(location);
 			if (value != null)
 				return value.doubleValue();
+			return 0;
 		}
 
 		return calculateSolarIrradiance(location);
@@ -317,7 +327,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return
 	 */
 	private synchronized double calculateSolarIrradiance(Coordinates location) {
-		// Approach 1
+		
+		// Approach 1 (Not in use)
 //		double s1 = 0;
 //      double L_s = mars.getOrbitInfo().getL_s();
 //      double e = OrbitInfo.ECCENTRICITY;
@@ -326,8 +337,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //    	double den = 1 - e * e;
 //    	s1 = MEAN_SOLAR_IRRADIANCE * Math.cos(z) * num / den * num / den  ;
 
+		
 		// Approach 2 consists of 5 parts
-		// PART 1 : COSINE SOLAR ZENITH ANGLE
 		
 		// g0: direct solar irradiance at the top of the atmosphere
 		double g0 = 0;
@@ -337,35 +348,106 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		double gbh = 0;
 		// gdh: diffuse irradiance on a horizontal surface
 		double gdh = 0;
+		// The effect of being in twilight zones
+//		double twilight = 1;
+		
+		// PART 1 : COSINE SOLAR ZENITH ANGLE
 
 		// Obtains the cosine solar zenith angle
 		double cosZ = orbitInfo.getCosineSolarZenithAngle(location);
-		// Find zenith
+		// Find zenith angle (from 0 to 2 pi)
 		double z = Math.acos(cosZ);
-
-		if (z >= HALF_PI) {
-			// if Mars is in the so-called twilight zone,
-			// then set it to a maximum of 12 degree below the horizon
+		// Gets the areocentric longitude
+		double areoLon = orbitInfo.getSunAreoLongitude();
+		// Gets the sunlight mod due to areoLon
+		double mod = 1.35 * (.5 * Math.sin((areoLon - 251.2774) * OrbitInfo.DEGREE_TO_RADIAN) + .5);
+//		logger.info("areoLon: " + areoLon + "   mod: " + Math.round(mod *100_000)/100_000);
+		
+//		logger.info("cosZ: " + Math.round(cosZ *1000.0)/1000.0 + "   z: " + Math.round(z *1000.0)/1000.0);
+				
+		if ((z >= HALF_PI - 0.1) && (z <= HALF_PI + 0.1)) {
+			// Case A : sunrise twilight zone
+			// Set it to a maximum of 12 degree below the horizon
+			// Note: 0.1 radian is ~5.7 deg
 			
 			// Indirect sunlight such as diffuse/scattering/reflective sunlight will light
 			// up the Martian sky
-			if (z <= HALF_PI + .1) {
-				// Note: twilight zone is defined as between 0.1 to -0.1 in radians above and below
-				// the horizon
-				gh = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; 
-				
-				// Note: need to keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
-				// G_h = Math.round((0.2094 + z)*100D);
-				// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
-			}
+			
+			// Note: twilight zone is defined as between 0.1 to -0.1 in radians above and below
+			// the horizon
+			// z0 ranges from 0 to 40 at sunrise (from 342 msol to 358 msol)
+			double z0 = Math.round((-200 * z + 100 * Math.PI + SUNLIGHT_THRESHOLD)* 10.0)/10.0;
+			
+			// Note: need to keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
+			// z1 ranges from 188 to 178 at sunrise
+//			double z1 = Math.round(((0.2094 + z) * 100) * 10.0)/10.0;
+			// This is an arbitrary model, set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
+			
+//			g0 = 41.8879;
+//			
+//			gh = g0 * mod * z0 / 20;
+			
+//			twilight = z0 / 20;
+			
+			if (cosZ < 0)
+				cosZ = COSZ_THRESHOLD * z0/SUNLIGHT_THRESHOLD;
+			
+//			logger.info("Case A - z: " + Math.round(z *1000.0)/1000.0
+//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0			
+//					+ "   z0: " + Math.round(z0 *1000.0)/1000.0
+////					+ "   z1: " + Math.round(z1 *1000.0)/1000.0
+////					+ "   twilight: " + Math.round(twilight *1000.0)/1000.0  
+////					+ "   gh: " + Math.round(gh *1000.0)/1000.0
+//					);
+			
 		}
+		
+		else if ((z >= THREE_HALF_PI - 0.1) && (z <= THREE_HALF_PI + 0.1)) {
+			// Case B : sunset twilight zone
+			// Set it to a maximum of 12 degree below the horizon
+			// Note: 0.1 radian is ~5.7 deg
+			
+			// Indirect sunlight such as diffuse/scattering/reflective sunlight will light
+			// up the Martian sky
+			
+			// Note: twilight zone is defined as between 0.1 to -0.1 in radians above and below
+			// the horizon
+			// z0 ranges from 0 to 40 at sunrise (from 342 msol to 358 msol)
+			double z0 = Math.round((-200 * z + 100 * Math.PI + 20)* 10.0)/10.0;
+			
+			// Note: need to keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
+			// z1 ranges from 188 to 178 at sunrise
+//			double z1 = Math.round(((0.2094 + z) * 100) * 10.0)/10.0;
+			// This is an arbitrary model, set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
 
-		else {
-
+//			g0 = 41.8879;
+//			
+//			gh = g0 * mod * z0 / 20;
+			
+//			twilight = z0 / 20;
+			
+			if (cosZ < 0)
+				cosZ = COSZ_THRESHOLD * z0/SUNLIGHT_THRESHOLD;
+			
+//			logger.info("Case B - z: " + Math.round(z *1000.0)/1000.0
+//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0  					
+//					+ "   z0: " + Math.round(z0 *1000.0)/1000.0
+////					+ "   z1: " + Math.round(z1 *1000.0)/1000.0
+////					+ "   twilight: " + Math.round(twilight *1000.0)/1000.0
+////					+ "   gh: " + Math.round(gh *1000.0)/1000.0 
+//					);
+		}
+		
+		if ((z < HALF_PI + 0.1) || (z > THREE_HALF_PI - 0.1)) {
+			// Case C : sun-in-the sky zone
+			
+			// Also cosZ becomes +ve
+			
 			// Part 2: get the new average solar irradiance as a result of the changing
 			// distance between Mars and Sun with respect to the value of L_s.
 			// double L_s = orbitInfo.getL_s();
 
+			
 			// Note a: Because of Mars's orbital eccentricity, L_s advances somewhat
 			// unevenly with time, but can be evaluated
 			// as a trigonometric power series for the orbital eccentricity and the orbital
@@ -377,13 +459,26 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 			// Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at
 			// perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
-			// Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5 )
-
+			// Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5)
+			
 			// Part 3: get the instantaneous radius and semi major axis
-			double r = orbitInfo.getDistanceToSun();
+//			double r = orbitInfo.getDistanceToSun();
 
-			g0 = cosZ * FACTOR / r / r;
-
+//			double squaredRatio = SQUARED_SEMI_MAJOR_AXIS / r / r;
+	
+			if (cosZ < 0)
+				cosZ = COSZ_THRESHOLD;
+			
+			g0 = cosZ * MIN_SOLAR_IRRADIANCE * mod;// * SQUARED_SEMI_MAJOR_AXIS / r / r;		
+			
+//			logger.info("Case C - z: " + Math.round(z *1000.0)/1000.0 
+////					+ "   z0: " + Math.round(z0 *1000.0)/1000.0
+//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0
+//					+ "   mod: " + Math.round(mod *1000.0)/1000.0
+////					+ "   squaredRatio: " + Math.round(squaredRatio *1_000.0)/1_000.0
+//					+ "   g0: " + Math.round(g0 *1000.0)/1000.0 
+//					);
+			
 			// if (G_0 <= 0)
 			// G_0 = 0;
 
@@ -425,7 +520,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
 			// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
+
 			gbh = g0 * cosZ / (1 + tau / 2.0 / cosZ);
+
 
 			// Assuming the reflection from the surface is negligible
 	
@@ -440,7 +537,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// sunlight
 			// On Mars, the role of diffuse solar irradiance is more prominent than that on
 			// Earth.
+			
+			gdh = gbh * (-0.822 * cosZ + 1);
 
+			
+			// Finally,
+			gh = gbh + gdh;
+			
 			// Future: Modeling the diffuse effect of solar irradiance with formula
 			// Note: the value of G_dh to decrease more slowly when value cos_z is
 			// diminishing
@@ -449,27 +552,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// Let x = G_dh/G_bh, y = cos_z
 	    	// Set cos_z = .9, G_dh = G_bh / 6 = 0.167 * G_bh;
 	    	// Set cos_z = 0, G_dh = G_bh;	
-			
-			if (cosZ > 0)
-				gdh = gbh * (-0.822 * cosZ + 1);
-			else
-				gdh = gbh;
-			
-			// Finally,
-			gh = gbh + gdh;
 
-			if (gh > MAX_SOLAR_IRRADIANCE)
-				gh = MAX_SOLAR_IRRADIANCE;
-
-			else if (gh < 20.94)
-				gh = 20.94;
-
-			// System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
-			// + " cos_z : "+ fmt3.format(cos_z)
-			// + " G_0 : " + fmt3.format(G_0)
-			// + " G_bh : " + fmt3.format(G_bh)
-			// + " G_dh : " + fmt3.format(G_dh)
-			// + " G_h : " + fmt3.format(G_h));
+//			logger.info("Case C - "
+//					+ "tau: " + Math.round(tau *1000.0)/1000.0 
+//					+ "   gbh: " + Math.round(gbh *1000.0)/1000.0
+//					+ "   gdh: " + Math.round(gdh *1000.0)/1000.0
+//					+ "   gh: " + Math.round(gh *1000.0)/1000.0 
+//					);
 
 			// For future,
 			// Part 6 : calculate other components on Mars such as twilight and
@@ -480,9 +569,22 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// have scattering produce > 0 irradiance at full night time, we need to modify
 			// code calling this method
 			// as necessary for night time indication. - Scott
-		}
 
-		if (gh < 0)
+		}
+		
+//		else {
+//			 // Case D: dark sky
+//			logger.info("Case D - z: " + Math.round(z *1000.0)/1000.0 
+//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0 
+//					+ "   mod: " + Math.round(mod *1000.0)/1000.0				
+//					+ "   g0: " + Math.round(g0 *1000.0)/1000.0 
+//					);
+//		}
+
+		if (gh > MAX_SOLAR_IRRADIANCE)
+			gh = MAX_SOLAR_IRRADIANCE;
+		
+		else if (gh < 0)
 			gh = 0;
 
 		// Take the average of the last and current irradiance
@@ -492,6 +594,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 		// Save the value in the cache
 		currentIrradiance.put(location, gh);
+		
+//		if (gh > 0) {
+//			logger.info("z: " + Math.round(z *1000.0)/1000.0
+//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0  
+//					+ "   gh: " + Math.round(gh *1000.0)/1000.0);
+//		}
 		
 		return gh;
 	}

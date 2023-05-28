@@ -487,7 +487,7 @@
 			</vehicle>
 		</building>
 
-		<building name="solar thermal array" width="5.0" length="10.0" base-level="0" constructable="true"
+		<building name="Solar Thermal Collector" width="5.0" length="10.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="array frame" >
 			<resource name="water" amount="200.0" />
 			<part name="solar parabolic mirror" number="3" />

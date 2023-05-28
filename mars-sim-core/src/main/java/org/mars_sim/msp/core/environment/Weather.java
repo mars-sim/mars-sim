@@ -751,10 +751,11 @@ public class Weather implements Serializable, Temporal {
 
 			// Note : The Mars dust storm season begins just after perihelion at around Ls =
 			// 260°.
-			double lS = Math.round(orbitInfo.getSunAreoLongitude() * 10.0) / 10.0;
-			int lSint = (int) lS;
-
-			if (lSint == 230) {
+			
+			double aLs = (int) (Math.round(orbitInfo.getSunAreoLongitude()));
+			int aLon = (int) (aLs);
+					
+			if (aLon == 230) {
 				// reset the counter once a year
 				checkStorm = 0;
 			}
@@ -766,22 +767,22 @@ public class Weather implements Serializable, Temporal {
 			// By doing curve-fitting a cosine curve
 			// (5% - .05%)/2 = 2.475
 
-			double probability = -2.475 * Math.cos(lS * Math.PI / 180D - DX) + (2.475 + .05);
+			double probability = -2.475 * Math.cos(aLs * Math.PI / 180D - DX) + (2.475 + .05);
 			// probability is 5% at max
 			double size = dustStorms.size();
 			// Artificially limit the # of dust storm to 10
-			if (lSint > 240 && lSint < 271 && size <= 10 && checkStorm < 200) {
+			if (aLon > 240 && aLon < 271 && size <= 10 && checkStorm < 200) {
 				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
 				// closed to Mars.
 
 				// All of the observed storms have begun within 50-60 degrees of Ls of
 				// perihelion (Ls ~ 250);
-				createDustDevils(probability, lS);
+				createDustDevils(probability, aLs);
 			}
 
 			else if (dustStorms.size() <= 20 && checkStorm < 200) {
 
-				createDustDevils(probability, lS);
+				createDustDevils(probability, aLs);
 			}
 
 			checkOnDustStorms();
