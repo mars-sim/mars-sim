@@ -483,18 +483,9 @@ public class TabPanelOrganization extends TabPanel {
 						if (node.getUserObject() instanceof Person) {
 							Person person = (Person) node.getUserObject();
 							if (person != null) {
-								getDesktop().openUnitWindow(person, false);
+								getDesktop().showDetails(person);
 							}
-
-//							update();
-//							tree.revalidate();
-//							tree.repaint();
 						}
-//						else {
-//							update();
-//							tree.revalidate();
-//							tree.repaint();
-//						}
 					}
 				}
 			}
@@ -586,14 +577,9 @@ public class TabPanelOrganization extends TabPanel {
 		public void unitUpdate(UnitEvent event) {
 			if (event.getType() == UnitEventType.ROLE_EVENT) {
 				Unit unit = (Unit)event.getSource();
-//				System.out.println(eventType);
 				if (unit.getUnitType() == UnitType.PERSON) {
 					Person p = (Person) unit;
 					if (p.getAssociatedSettlement() == settlement) {
-//						String personName = p.getName();
-						RoleType rt = p.getRole().getType();
-						// TODO: should only add/remove the affected person's listener and node
-//						removeListener(p);
 						emptyNodes();
 						buildTreeNodes();
 						initNodes();

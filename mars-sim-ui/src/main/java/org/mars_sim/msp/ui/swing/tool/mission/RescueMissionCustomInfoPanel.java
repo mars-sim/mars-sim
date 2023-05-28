@@ -118,7 +118,7 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
         if (rescueMission != null) {
             // Open window for vehicle.
             Vehicle vehicle = rescueMission.getVehicleTarget();
-            if (vehicle != null) desktop.openUnitWindow(vehicle, false);
+            if (vehicle != null) desktop.showDetails(vehicle);
         }
     }
 

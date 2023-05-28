@@ -29,7 +29,7 @@ public class EventTab extends TableTab {
 				EVENT_ICON);
 		
 		setFilterable(true);
-
+		setEntityDriven(true);
 	}
 
 	void filterCategories(MainDesktopPane desktop) {

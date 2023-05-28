@@ -306,18 +306,14 @@ public class RescueSalvageVehicle extends RoverMission {
 					"Rescuing Stranded Vehicle", // cause
 					getName(), // during
 					member.getName(), // member
-					vehicleTarget.getLocationTag().getLocale(),
-					vehicleTarget.getAssociatedSettlement().getName(),
-					vehicleTarget.getCoordinates().getCoordinateString()
+					vehicleTarget
 			);
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Salvaging Vehicle", 
 					getName(), // during
 					member.getName(), // member
-					vehicleTarget.getLocationTag().getLocale(),
-					vehicleTarget.getAssociatedSettlement().getName(),
-					vehicleTarget.getCoordinates().getCoordinateString()
+					vehicleTarget
 			);
 		}
 		eventManager.registerNewEvent(newEvent);
@@ -362,10 +358,8 @@ public class RescueSalvageVehicle extends RoverMission {
 						this, 
 						serious.getName(),
 					this.getName(), 
-					towedVehicle.getName(),
-					towedVehicle.getLocationTag().getImmediateLocation(), 
-					towedVehicle.getAssociatedSettlement().getName(),
-					towedVehicle.getCoordinates().getCoordinateString()
+					null,
+					towedVehicle
 					);
 				eventManager.registerNewEvent(salvageEvent);
 			}
@@ -396,10 +390,7 @@ public class RescueSalvageVehicle extends RoverMission {
 								p.getPhysicalCondition().getHealthSituation(), 
 								p.getTaskDescription(), 
 								p.getName(),
-//								p.getVehicle().getName(), 
-								p.getLocationTag().getImmediateLocation(), 
-								p.getAssociatedSettlement().getName(),
-								p.getAssociatedSettlement().getCoordinates().getCoordinateString()
+								p
 								);
 						eventManager.registerNewEvent(rescueEvent);												
 					}

@@ -28,6 +28,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
@@ -560,10 +561,14 @@ public class MonitorWindow extends ToolWindow
 		}
 	}
 
-	public void displayDetails() {
+	void displayDetails() {
 		MonitorTab selected = getSelectedTab();
-		if (selected != null) {
-			selected.displayDetails(desktop);
+		if (selected instanceof TableTab tt) {
+			for(Object row : tt.getSelection()) {
+				if (row instanceof Entity ent) {
+					desktop.showDetails(ent);
+				}
+			}
 		}
 	}
 

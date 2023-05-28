@@ -492,9 +492,7 @@ public class RadiationExposure implements Serializable, Temporal {
 							rad.toString(),
 							person.getTaskDescription(),
 							person.getName(), 
-							person.getLocationTag().getImmediateLocation(),
-							person.getAssociatedSettlement().getName(),
-							person.getCoordinates().getCoordinateString()
+							person
 							);
 					Simulation.instance().getEventManager().registerNewEvent(hEvent);
 

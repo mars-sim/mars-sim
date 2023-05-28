@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 /**
@@ -33,18 +32,6 @@ public class MissionTab extends TableTab {
 		setNavigatable(true);
 	}
 
-	/**
-	 * Display details for selected Missions
-	 */
-	@Override
-	public void displayDetails(MainDesktopPane desktop) {
-		List<?> rows = getSelection();
-		for(Object o : rows) {
-			if (o instanceof Mission u) {
-				((MissionWindow)desktop.openToolWindow(MissionWindow.NAME)).openMission(u);
-			}
-		}
-	}
 
 	/**
 	 * Get the Coordinates of the selected Mission

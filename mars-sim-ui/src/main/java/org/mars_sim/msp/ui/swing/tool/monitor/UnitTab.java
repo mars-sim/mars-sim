@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * This class represents a unit table displayed within the Monitor Window.
@@ -32,19 +31,6 @@ extends TableTab {
 
 		setEntityDriven(true);
 		setNavigatable(true);
-	}
-
-	/**
-	 * Display details for selected rows
-	 */
-	@Override
-	public void displayDetails(MainDesktopPane desktop) {
-		List<?> rows = getSelection();
-		for(Object o : rows) {
-			if (o instanceof Unit u) {
-				desktop.openUnitWindow(u, false);
-			}
-		}
 	}
 
 	/**

@@ -98,7 +98,7 @@ implements ListSelectionListener {
 		        if (me.getClickCount() == 2) {
 		            if (row > 0 && col > 0) {
 		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 1);  			
-		    			if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson, false);
+		    			if (selectedPerson != null) getDesktop().showDetails(selectedPerson);
 		    	    }
 		        }
 		    }

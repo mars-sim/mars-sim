@@ -100,7 +100,7 @@ implements ConstructionListener {
             public void actionPerformed(ActionEvent e) {
                 if (mission != null) {
                     Settlement settlement = mission.getAssociatedSettlement();
-                    if (settlement != null) getDesktop().openUnitWindow(settlement, false);
+                    if (settlement != null) getDesktop().showDetails(settlement);
                 }
             }
         });

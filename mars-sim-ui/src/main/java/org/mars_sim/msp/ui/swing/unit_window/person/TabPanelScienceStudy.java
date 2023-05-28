@@ -222,7 +222,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		if (selectedStudyIndex >= 0) {
 			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			((ScienceWindow) getDesktop().openToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
+			getDesktop().showDetails(selectedStudy);
 		}
 	}
 

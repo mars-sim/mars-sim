@@ -7,22 +7,22 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -44,6 +44,19 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	private static final int COORDINATES = 8;
 	
 	private static final int COLUMNCOUNT = 9;
+
+	// Event that are too low level to display
+	private static final Set<EventType> BLOCKED_EVENTS = Set.of(EventType.MEDICAL_STARTS,
+																EventType.MEDICAL_TREATED,
+																EventType.MEDICAL_DEATH,
+																EventType.MISSION_EMERGENCY_BEACON_ON,
+																EventType.MISSION_EMERGENCY_BEACON_OFF,
+																EventType.MISSION_EMERGENCY_DESTINATION,
+																EventType.MISSION_NOT_ENOUGH_RESOURCES,
+																EventType.MISSION_MEDICAL_EMERGENCY,
+																EventType.MISSION_RENDEZVOUS,
+																EventType.MISSION_RESCUE_PERSON,
+																EventType.MISSION_SALVAGE_VEHICLE);
 
 	/** Names of the displayed columns. */
 	static private String columnNames[];
@@ -73,26 +86,9 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 		columnTypes[COORDINATES] = String.class;
 	}
 
-	private boolean showMedical = true;
-	private boolean showMedicalCache = true;
-	private boolean showMalfunction = true;
-	private boolean showMalfunctionCache = true;
-
-	private boolean noFiring = false;
-
-	// Event categories to be displayed.
-	private boolean displayMalfunction = true;
-	private boolean displayMedical = true;
-	private boolean displayMission = true;
-	private boolean displayHazard = true;
-	private boolean displayTask = false;
-	private boolean displayTransport = false;
-
-	private MainDesktopPane desktop;
-	private NotificationMenu nMenu;
-
-	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
+	private transient List<HistoricalEvent> cachedEvents = new ArrayList<>();
 	private HistoricalEventManager eventManager;
+	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
 
 	/**
 	 * constructor. Create a new Event model based on the specified event manager.
@@ -102,12 +98,12 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 */
 	public EventTableModel(MainDesktopPane desktop) {
 
-		this.desktop = desktop;
-
 		// Add this model as an event listener.
-		Simulation sim = desktop.getSimulation();
-		this.eventManager = sim.getEventManager();
+		this.eventManager = desktop.getSimulation().getEventManager();
 		
+		 blockedTypes.add(HistoricalEventCategory.TASK);
+		 blockedTypes.add(HistoricalEventCategory.TRANSPORT);
+
 		// Update the cached events.
 		updateCachedEvents();
 		
@@ -122,55 +118,14 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	}
 
 	private synchronized void updateCachedEvents() {
-		List<SimpleEvent> events = null;
 
 		// Clean out existing cached events for the Event Table.
 		cachedEvents = new ArrayList<>();
 
-//		if (GameManager.getGameMode() == GameMode.COMMAND) {
-//			int id = unitManager.getCommanderSettlement().getIdentifier();
-//			events = new ArrayList<>(eventManager.getEvents(id));
-//		}
-//		else {
-			events = new ArrayList<>(eventManager.getEvents());
-//		}
+		List<HistoricalEvent> events = new ArrayList<>(eventManager.getEvents());
 
-
-		for (SimpleEvent event : events) {
-			HistoricalEventCategory category = HistoricalEventCategory.int2enum((int) (event.getCat()));
-			EventType eventType = EventType.int2enum((event.getType()));
-			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard) {
-				cachedEvents.add(event);
-			}
-
-			else if (category.equals(HistoricalEventCategory.MALFUNCTION) && displayMalfunction) {
-				cachedEvents.add(event);
-			}
-
-			else if (category.equals(HistoricalEventCategory.MEDICAL) && displayMedical
-					&& (eventType == EventType.MEDICAL_STARTS
-							//|| eventType == EventType.MEDICAL_CURED
-							|| eventType == EventType.MEDICAL_TREATED
-							|| eventType == EventType.MEDICAL_DEATH)) {
-				cachedEvents.add(event);
-			}
-
-			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
-					&& (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
-						|| eventType == EventType.MISSION_EMERGENCY_BEACON_OFF
-							|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
-							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
-							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
-							|| eventType == EventType.MISSION_RENDEZVOUS
-							|| eventType == EventType.MISSION_RESCUE_PERSON
-							|| eventType == EventType.MISSION_SALVAGE_VEHICLE)) {
-				cachedEvents.add(event);
-			}
-
-//			else if (category.equals(HistoricalEventCategory.TASK) && displayTask)
-//				cachedEvents.add(event);
-
-			else if (category.equals(HistoricalEventCategory.TRANSPORT) && displayTransport) {
+		for (HistoricalEvent event : events) {
+			if (isDisplayable(event)) {
 				cachedEvents.add(event);
 			}
 
@@ -183,6 +138,12 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 			}
 		});
 
+	}
+
+	private boolean isDisplayable(HistoricalEvent event) {
+		HistoricalEventCategory category = event.getCategory();
+		EventType eventType = event.getType();
+		return !blockedTypes.contains(category) && !BLOCKED_EVENTS.contains(eventType);
 	}
 
 	/**
@@ -248,17 +209,12 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 * @return Unit associated with the Event as the specified position.
 	 */
 	public Object getObject(int row) {
-//		HistoricalEvent event = cachedEvents.get(row);
-//		Object result = null;
-//		if (event != null) {
-//			Object source = event.getSource();
-//			if (source instanceof Unit) result = source;
-//			else if (source instanceof Building)
-//				result = ((Building) source).getBuildingManager().getSettlement();
-//		}
-//		return result;
-//
-		return null;
+		HistoricalEvent event = cachedEvents.get(row);
+		Object result = event.getSource();
+		if (!(result instanceof Entity)) {
+			result = event.getContainer();
+		}
+		return result;
 	}
 
 	/**
@@ -268,8 +224,6 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 */
 	public boolean getOrdered() {
 		return true;
-		// return false; // 2015-01-14 if false, events will be missing and # events
-		// will be out of sync
 	}
 
 	/**
@@ -281,57 +235,54 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		// if (rowIndex == 0 && columnIndex == 2)
-		// check if event.getCategory() == MEDICAL or MALFUNCTION
-
 		if (rowIndex < cachedEvents.size()) {
-			SimpleEvent event = cachedEvents.get(rowIndex);
+			HistoricalEvent event = cachedEvents.get(rowIndex);
 			if (event != null) {
 				switch (columnIndex) {
 				
 				case TIMESTAMP: {
-					result = event.getFullDateTimeString();
+					result = event.getTimestamp();
 				}
 					break;
 
 				case CATEGORY: {
-					result = HistoricalEventCategory.int2enum(event.getCat()).getName();
+					result = event.getCategory().getName();
 				}
 					break;
 
 				case TYPE: {
-					result = EventType.int2enum(event.getType());
+					result = event.getType().getName();
 				}
 					break;
 					
 				case CAUSE: {
-					result = eventManager.getWhat(event.getWhat());
+					result = event.getWhatCause();
 				}
 					break;	
 
 				case WHILE: {
-					result = eventManager.getWhileDoing(event.getWhileDoing());
+					result = event.getWhileDoing();
 				}
 					break;
 
 				case WHO: {
-					result = eventManager.getWho(event.getWho());
+					result = event.getWho();
 				}
 					break;
 
 				case CONTAINER: {
-					result = eventManager.getContainer(event.getContainer());
+					result = event.getContainer();
 				}
 					break;
 
 				case HOMETOWN: {
-					result = eventManager.getHomeTown(event.getHomeTown());
+					result = event.getHomeTown();
 				}
 					break;
 					
 
 				case COORDINATES: {
-					result = eventManager.getCoordinates(event.getCoordinates());
+					result = event.getCoordinates();
 				}
 					break;
 					
@@ -355,51 +306,13 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 				cachedEvents.size());
 	}
 
-	public synchronized void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
-		eventAdded(index, he);
-	}
-
 	/**
-	 * Add a new event (for using MarsProject only)
-	 *
-	 * @param index Index of the new event in the manager.
-	 * @param event {@link HistoricalEvent}
+	 * New event has been added
 	 */
-	public synchronized void eventAdded(int index, HistoricalEvent event) {
-
-		if (desktop.getMainWindow() != null) {
-
-			// TODO: include historical events and ai.task.TaskEvent, filtered by user's
-			updateCachedEvents();
-
-			if (nMenu == null) {
-//				try {
-//					nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
-//				} catch (NullPointerException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
-//				}
-			} else if (nMenu != null) {
-				// Boolean noFiring = false;
-				showMedical = nMenu.getShowMedical();
-				if (showMedical != showMedicalCache) {
-					showMedicalCache = showMedical;
-				}
-
-				showMalfunction = nMenu.getShowMalfunction();
-				if (showMalfunction != showMalfunctionCache) {
-					showMalfunctionCache = showMalfunction;
-				}
-
-				if (!showMedical && !showMalfunction) {
-					//notifyBox.emptyQueue();
-					noFiring = true;
-				}
-
-				if (!noFiring && index == 0 && event != null) {
-					SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
-				}
-			}
+	public synchronized void eventAdded(HistoricalEvent event) {
+		if (isDisplayable(event)) {
+			cachedEvents.add(event);
+			fireTableRowsInserted(cachedEvents.size()-1, cachedEvents.size()-1);
 		}
 	}
 
@@ -411,146 +324,30 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	 */
 	public void eventsRemoved(int startIndex, int endIndex) {
 		updateCachedEvents();
-		// fireTableRowsDeleted(startIndex, endIndex);
 	}
 
 	/**
-	 * Checks if malfunction events are to be displayed.
-	 *
-	 * @return true if displayed
+	 * Set the category type to display
+	 * @param type
+	 * @param isDisplayed
 	 */
-	public boolean getDisplayMalfunction() {
-		return displayMalfunction;
-	}
-
-	/**
-	 * Sets if malfunction events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayMalfunction(boolean display) {
-		displayMalfunction = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Checks if medical events are to be displayed.
-	 *
-	 * @return true if displayed
-	 */
-	public boolean getDisplayMedical() {
-		return displayMedical;
-	}
-
-	/**
-	 * Sets if medical events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayMedical(boolean display) {
-		displayMedical = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Checks if mission events are to be displayed.
-	 *
-	 * @return true if displayed
-	 */
-	public boolean getDisplayMission() {
-		return displayMission;
-	}
-
-	/**
-	 * Sets if mission events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayMission(boolean display) {
-		displayMission = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Checks if task events are to be displayed.
-	 *
-	 * @return true if displayed
-	 */
-	public boolean getDisplayTask() {
-		return displayTask;
-	}
-
-	/**
-	 * Sets if task events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayTask(boolean display) {
-		displayTask = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Checks if hazard events are to be displayed.
-	 *
-	 * @return true if displayed
-	 */
-	public boolean getDisplayHazard() {
-		return displayHazard;
-	}
-
-	/**
-	 * Sets if hazard events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayHazard(boolean display) {
-		displayHazard = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Checks if transport events are to be displayed.
-	 *
-	 * @return true if displayed
-	 */
-	public boolean getDisplayTransport() {
-		return displayTransport;
-	}
-
-	/**
-	 * Sets if transport events are to be displayed.
-	 *
-	 * @param display true if displayed
-	 */
-	public void setDisplayTransport(boolean display) {
-		displayTransport = display;
-		updateCachedEvents();
-	}
-
-	/**
-	 * Internal class for launching a notify window.
-	 */
-	private class NotifyBoxLauncher implements Runnable {
-
-		private HistoricalEvent event;
-
-		private NotifyBoxLauncher(HistoricalEvent event) {
-			this.event = event;
+	public void setDisplayed(HistoricalEventCategory type, boolean isDisplayed) {
+		if (isDisplayed) {
+			blockedTypes.remove(type);
 		}
-
-		public void run() {
-//			notifyBox.validateMsg(event);
-			// Note: adding try-catch can cause UI significant slow down here
+		else {
+			blockedTypes.add(type);
 		}
+		updateCachedEvents();
 	}
 
-	public void setNoFiring(boolean value) {
-		noFiring = value;
-	}
-
-	public boolean isNoFiring() {
-		return noFiring;
+	/**
+	 * Is a category event being displayed?
+	 * @param type
+	 * @return
+	 */
+	public boolean isDisplayed(HistoricalEventCategory type) {
+		return !blockedTypes.contains(type);
 	}
 	
 	/**
@@ -559,8 +356,6 @@ public class EventTableModel extends AbstractTableModel implements MonitorModel,
 	public void destroy() {
 		eventManager.removeListener(this);
 		eventManager = null;
-		desktop = null;
-		nMenu = null;
 		cachedEvents.clear();
 		cachedEvents = null;
 	}

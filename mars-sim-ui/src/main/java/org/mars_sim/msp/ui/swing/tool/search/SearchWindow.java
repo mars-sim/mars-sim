@@ -230,7 +230,7 @@ extends ToolWindow {
 		Unit unit = unitManager.getUnitByName(category, selectTextField.getText());
 		if (unit != null) {
 			foundUnit = true;
-			if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit, false);
+			if (openWindowCheck.isSelected()) desktop.showDetails(unit);
 			
 			if (marsNavCheck.isSelected()) {
 				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);

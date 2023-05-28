@@ -31,12 +31,6 @@ implements ActionListener {
 
 	// Data members
 	private EventTableModel model;
-	private JCheckBox malfunctionCheck;
-	private JCheckBox medicalCheck;
-	private JCheckBox missionCheck;
-	private JCheckBox taskCheck;
-	private JCheckBox transportCheck;
-	private JCheckBox hazardCheck;
 
 	/**
 	 * Constructor.
@@ -62,46 +56,27 @@ implements ActionListener {
 		categoryPane.setBorder(new MarsPanelBorder());
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
-		// Create transport events checkbox.
-		hazardCheck = new JCheckBox(HistoricalEventCategory.HAZARD.getName());
-		hazardCheck.setSelected(model.getDisplayHazard());
-		hazardCheck.addActionListener(this);
-		categoryPane.add(hazardCheck);
-		
-		// Create mechanical events checkbox.
-		malfunctionCheck = new JCheckBox(HistoricalEventCategory.MALFUNCTION.getName());
-		malfunctionCheck.setSelected(model.getDisplayMalfunction());
-		malfunctionCheck.addActionListener(this);
-		categoryPane.add(malfunctionCheck);
-
-		// Create medical events checkbox.
-		medicalCheck = new JCheckBox(HistoricalEventCategory.MEDICAL.getName());
-		medicalCheck.setSelected(model.getDisplayMedical());
-		medicalCheck.addActionListener(this);
-		categoryPane.add(medicalCheck);
-
-		// Create mission events checkbox.
-		missionCheck = new JCheckBox(HistoricalEventCategory.MISSION.getName());
-		missionCheck.setSelected(model.getDisplayMission());
-		missionCheck.addActionListener(this);
-		categoryPane.add(missionCheck);
-
-		// Create task events checkbox.
-		taskCheck = new JCheckBox(HistoricalEventCategory.TASK.getName());
-		taskCheck.setSelected(model.getDisplayTask());
-		taskCheck.addActionListener(this);
-		categoryPane.add(taskCheck);
-
-		// Create transport events checkbox.
-		transportCheck = new JCheckBox(HistoricalEventCategory.TRANSPORT.getName());
-		transportCheck.setSelected(model.getDisplayTransport());
-		transportCheck.addActionListener(this);
-		categoryPane.add(transportCheck);
+		// Create filter checboxes
+		for(HistoricalEventCategory cat : HistoricalEventCategory.values()) {
+			addCategoryCheckbox(categoryPane, model, cat);
+		}
 
 		pack();
 		
         desktop.add(this);
 	    
+	}
+
+	/**
+	 * Create a checkbox to control teh Event category filtering
+	 */
+	private void addCategoryCheckbox(JPanel categoryPane, EventTableModel model2,
+									 HistoricalEventCategory category) {
+		JCheckBox newCheck = new JCheckBox(category.getName());
+		newCheck.setSelected(model2.isDisplayed(category));
+		newCheck.addActionListener(this);
+		newCheck.setActionCommand(category.name());
+		categoryPane.add(newCheck);
 	}
 
 	/**
@@ -114,27 +89,8 @@ implements ActionListener {
 
 		JCheckBox check = (JCheckBox) event.getSource();
 
-		if (check == taskCheck)
-			model.setDisplayTask(taskCheck.isSelected());
-		else if (check == malfunctionCheck) 
-			model.setDisplayMalfunction(malfunctionCheck.isSelected());
-		else if (check == medicalCheck)
-			model.setDisplayMedical(medicalCheck.isSelected());
-		else if (check == missionCheck)
-			model.setDisplayMission(missionCheck.isSelected());
-		else if (check == transportCheck)
-			model.setDisplayTransport(transportCheck.isSelected());
-		else if (check == hazardCheck)
-			model.setDisplayHazard(hazardCheck.isSelected());
-	}
-	
-	public void destroy() {
-		model = null;
-		hazardCheck = null;
-		malfunctionCheck = null;
-		medicalCheck = null;
-		missionCheck = null;
-		taskCheck = null;
-		transportCheck = null;
+		String command = check.getActionCommand();
+		HistoricalEventCategory category = HistoricalEventCategory.valueOf(command);
+		model.setDisplayed(category, check.isSelected());
 	}
 }

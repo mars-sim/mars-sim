@@ -168,13 +168,14 @@ abstract class TableTab extends MonitorTab {
 
 	}
 
+
 	/**
 	 * This return the selected rows in the model that are current selected in this
 	 * view.
 	 *
 	 * @return array of row indexes.
 	 */
-	protected List<Object> getSelection() {
+	public final List<Object> getSelection() {
 		MonitorModel target = getModel();
 
 		int indexes[] = table.getSelectedRows();

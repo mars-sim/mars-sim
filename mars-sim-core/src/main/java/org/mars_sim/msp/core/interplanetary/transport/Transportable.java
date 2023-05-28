@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.interplanetary.transport;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -20,7 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * An class for an item that is transported between planets/moons/etc.
  */
 public abstract class Transportable
-	implements Comparable<Transportable>, ScheduledEventHandler {
+	implements Comparable<Transportable>, Entity, ScheduledEventHandler {
 		
 	private MarsClock arrivalDate;
 	private MarsClock launchDate;
@@ -38,6 +39,7 @@ public abstract class Transportable
 		this.state = TransitState.PLANNED;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -140,7 +142,7 @@ public abstract class Transportable
 	 */
 	public void cancel() {
 		state = TransitState.CANCELED;
-		tm.fireEvent(this, EventType.TRANSPORT_ITEM_CANCELLED, getName() + " canceled");
+		tm.fireEvent(this, EventType.TRANSPORT_ITEM_CANCELLED);
 
 		getOwningManager().removeEvent(this);
 	}
@@ -156,12 +158,12 @@ public abstract class Transportable
 			case PLANNED:
 				// Launch has arrived
 				state = TransitState.IN_TRANSIT;
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED, getName() + " launched");
+				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
 				nextEvent = (int) MarsClock.getTimeDiff(arrivalDate, now);
 				break;
 			case IN_TRANSIT:
 				// Arrvived
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_ARRIVED, getName() + " arrived on Mars");
+				tm.fireEvent(this, EventType.TRANSPORT_ITEM_ARRIVED);
 				state = TransitState.ARRIVED;
 				performArrival(SimulationConfig.instance(), Simulation.instance());
 				break;

@@ -1193,13 +1193,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 						
 					HistoricalEvent hEvent = new HazardEvent(
 							EventType.HAZARD_ACTS_OF_GOD,
-							getAssociatedSettlement(),
+							this,
 							mal.getMalfunctionMeta().getName(),
 							"",
 							victimNames,
-							getName(), 
-							getAssociatedSettlement().getName(),
-							getAssociatedSettlement().getCoordinates().getCoordinateString());
+							this);
 
 					if (eventManager == null)
 						eventManager = Simulation.instance().getEventManager();

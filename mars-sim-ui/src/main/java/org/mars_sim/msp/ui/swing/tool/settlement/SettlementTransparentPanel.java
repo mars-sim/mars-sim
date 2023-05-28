@@ -785,7 +785,7 @@ public class SettlementTransparentPanel extends JComponent {
 			public void actionPerformed(ActionEvent e) {
 				Settlement settlement = mapPanel.getSettlement();
 				if (settlement != null) {
-					desktop.openUnitWindow(settlement, false);
+					desktop.showDetails(settlement);
 				}
 			};
 		});

@@ -36,9 +36,7 @@ public class MedicalEvent extends HistoricalEvent {
 				illness.getType().getName(),
 				person.getTaskDescription(),
 				person.getName(),
-				person.getLocationTag().getImmediateLocation(),
-				person.getAssociatedSettlement().getName(),
-				person.getCoordinates().getCoordinateString()
+				person
 				);
 		
 		this.person = person;

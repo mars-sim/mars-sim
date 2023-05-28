@@ -11,8 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -42,6 +40,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.EntityListLauncher;
 
 /**
  * Tab panel displaying vehicle mission info.
@@ -159,17 +158,10 @@ extends TabPanel {
 		// Create member list
 		memberList = new JList<>(memberListModel);
 		// memberList.addMouseListener(this);
-		memberList.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent arg0) {
-				// If double-click, open person dialog.
-				if (arg0.getClickCount() >= 2)
-					getDesktop().openUnitWindow((Unit) memberList.getSelectedValue(), false);
-			}
-		});
+		memberList.addMouseListener(new EntityListLauncher(getDesktop()));
 		memberScrollPanel.setViewportView(memberList);
 
 		JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-//		buttonPanel.setBorder(new MarsPanelBorder());
 		memberListPanel.add(buttonPanel);
 
 		Unit unit = getUnit();
@@ -182,7 +174,7 @@ extends TabPanel {
 				Vehicle vehicle = (Vehicle) unit;
 				Mission m = missionManager.getMissionForVehicle(vehicle);
 				if (m != null) {
-					((MissionWindow)getDesktop().openToolWindow(MissionWindow.NAME)).openMission(m);
+					getDesktop().showDetails(m);
 				}
 		});
 		missionButton.setEnabled(mission != null);

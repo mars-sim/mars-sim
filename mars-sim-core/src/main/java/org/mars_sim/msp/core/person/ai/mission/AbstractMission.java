@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -84,8 +85,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractMission.class.getName());
-
-	private static final String OUTSIDE = "Outside";
 
 	private static final int MAX_CAP = 8;
 
@@ -320,40 +319,37 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Registers this historical event.
+	 * Registers this historical mission event about a Member
 	 * 
-	 * @param person
+	 * @param member
 	 * @param type
 	 * @param message
 	 */
 	private void registerHistoricalEvent(Worker member, EventType type, String message) {
-		String container = null;
+		Unit container = null;
 		String hometown = null;
-		String coordinates = null;
+		Coordinates coordinates = null;
 		if (member.isInSettlement()) {
-			hometown = member.getAssociatedSettlement().getName();
 			Building workPlace = member.getBuildingLocation();
 			if (workPlace != null) {
-				container = workPlace.getName();
+				container = workPlace;
 			}
 			else {
-				container = hometown;
+				container = member.getAssociatedSettlement();
 			}
-			coordinates = member.getAssociatedSettlement().getCoordinates().getCoordinateString();
+			coordinates = member.getAssociatedSettlement().getCoordinates();
 		} else if (member.isInVehicle()) {
-			container = member.getVehicle().getName();
-			hometown = member.getVehicle().getCoordinates().toString();
-			coordinates = member.getVehicle().getCoordinates().getCoordinateString();
+			container = member.getVehicle();
+			coordinates = member.getVehicle().getCoordinates();
 		} else {
-			container = OUTSIDE;
-			hometown = member.getAssociatedSettlement().getName();
-			coordinates = member.getCoordinates().toString();
+			container = null;
+			coordinates = member.getCoordinates();
 		}
 
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
 				message, missionName, member.getName(), 
-				container, hometown, coordinates);
+				container, member.getAssociatedSettlement().getName(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 

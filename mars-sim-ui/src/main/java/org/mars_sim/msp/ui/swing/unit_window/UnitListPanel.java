@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,11 +16,11 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.utils.EntityListLauncher;
 
 /**
  * A class that presents a selectable visual list of Units. Double clicking
@@ -52,18 +51,7 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 		
 		// Create unit list
 		JList<T> list = new JList<>(this.model);
-		list.addMouseListener(new MouseInputAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent event) {
-				// If double-click, open Unit window.
-				if (event.getClickCount() >= 2) {
-					T selected = list.getSelectedValue();
-					if (selected != null) {
-						desktop.openUnitWindow(list.getSelectedValue(), false);
-					}
-				}
-			}
-		});
+		list.addMouseListener(new EntityListLauncher(desktop));
 		
 		// Create scroll panel
 		JScrollPane scrollPanel = new JScrollPane();

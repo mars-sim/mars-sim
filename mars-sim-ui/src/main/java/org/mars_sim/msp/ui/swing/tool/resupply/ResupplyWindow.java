@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -178,7 +177,7 @@ public class ResupplyWindow extends ToolWindow
 		sim.getEventManager().addListener(this);
 	}
 
-	private void addTreeNode(Transportable at) {
+	private DefaultMutableTreeNode addTreeNode(Transportable at) {
 		DefaultMutableTreeNode dNode = deliveryNodes.get(at);
 		if (dNode == null) {
 			String receiver = at.getSettlementName();
@@ -211,17 +210,32 @@ public class ResupplyWindow extends ToolWindow
 		TreePath path = new TreePath(dNode.getPath());
 		delveryTree.makeVisible(path);
 		delveryTree.scrollPathToVisible(path);
+
+		return dNode;
 	}
 
-	
+	/**
+	 * External tools has asked to open a Transportable
+	 * @param transport Mission to display
+	 */
+	public void openTransportable(Transportable transport) {
+		DefaultMutableTreeNode found = deliveryNodes.get(transport);
+		if (found == null) {
+			// Should never happen
+			found = addTreeNode(transport);
+		}
+
+		TreePath path = new TreePath(found.getPath());
+		delveryTree.makeVisible(path);
+		delveryTree.setSelectionPath(path);
+	}
+
 	/**
 	 * Potentially a new Transportiem has been loaded or adjusted
-	 * @param index No idea what this does
-	 * @param se The Simple description of an event
 	 * @param he Historical view of the event 
 	 */
 	@Override
-	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+	public void eventAdded(HistoricalEvent he) {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory()) {
 			if (EventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
 				Transportable selected = getSelectedNode();

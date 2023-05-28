@@ -32,7 +32,7 @@ public class EventCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		HistoricalEventManager mgr = context.getSim().getEventManager();
-		List<HistoricalEvent> events = mgr.getRecentEvents();
+		List<HistoricalEvent> events = mgr.getEvents();
 		
 		if (events.isEmpty()) {
 			context.println("None to display");
@@ -50,13 +50,9 @@ public class EventCommand extends ChatCommand {
 				response.appendLabeledString("Type", e.getType().getName());
 				response.appendLabeledString("Source", source);
 				response.appendLabeledString("Cause", e.getWhatCause());
-				
-				// Create location description
-				StringBuilder location = new StringBuilder(e.getContainer());
-				if (!e.getContainer().equals(e.getCoordinates())) {
-					location.append(",").append(e.getCoordinates());
-				}
-				response.appendLabeledString("Location", location.toString());
+				response.appendLabeledString("Location", (e.getContainer() != null ?
+								e.getContainer().getName() : ""));
+				response.appendLabeledString("Coords", e.getCoordinates());
 				response.appendLabeledString("Settlement", e.getHomeTown());
 				
 				response.appendBlankLine();

@@ -83,7 +83,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 				// Open window for light utility vehicle.
 				LightUtilityVehicle luv = mission.getLightUtilityVehicle();
 				if (luv != null)
-					getDesktop().openUnitWindow(luv, false);
+					getDesktop().showDetails(luv);
 			}
 		});
 		luvPane.add(luvButton);

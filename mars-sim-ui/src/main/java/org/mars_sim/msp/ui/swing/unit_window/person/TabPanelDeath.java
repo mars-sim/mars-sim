@@ -155,7 +155,7 @@ implements ActionListener {
 				public void actionPerformed(ActionEvent event) {
 					DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
 					if (!(death.getContainerUnit() instanceof MarsSurface))
-						getDesktop().openUnitWindow(death.getContainerUnit(), false);
+						getDesktop().showDetails(death.getContainerUnit());
 				}
 			});
 			locationLabelPanel.add(topContainerButton);
