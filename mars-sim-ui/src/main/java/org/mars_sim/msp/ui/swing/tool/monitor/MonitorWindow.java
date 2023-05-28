@@ -157,7 +157,7 @@ public class MonitorWindow extends ToolWindow
 		
 		// Add all the tabs
 		addAllTabs(initialSettlements,
-									(savedProps != null ? savedProps.getProperty(TAB_PROP) : null));
+					(savedProps != null ? savedProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);

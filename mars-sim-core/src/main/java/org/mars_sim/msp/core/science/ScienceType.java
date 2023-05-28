@@ -109,6 +109,7 @@ public enum ScienceType {
 		for (ScienceType scienceType : ScienceType.values()) {
 			collabSciences.put(scienceType, new Science(scienceType));
 		}
+
 		// Configure collaborative sciences.
 		Science areology = collabSciences.get(ScienceType.AREOLOGY);
 		Science astronomy = collabSciences.get(ScienceType.ASTRONOMY);
