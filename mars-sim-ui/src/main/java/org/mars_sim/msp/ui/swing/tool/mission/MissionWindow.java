@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionWindow.java
- * @date 2023-03-31
+ * @date 2023-05-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -54,9 +54,10 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	public static final String NAME = "Mission Tool";
 	public static final String ICON = "mission";
 	
-	static final int WIDTH = 640;
-	static final int LEFT_PANEL_WIDTH = 200;
-	static final int HEIGHT = 600;
+	static final int WIDTH = 850;
+	static final int LEFT_PANEL_WIDTH = 220;
+	static final int MAP_BOX_HEIGHT = 610;
+	static final int HEIGHT = 800;
 	private static final String MISSIONNAME_PROP = "selected";
 
 	// Private members
@@ -101,6 +102,9 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 			
 		});
 
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setMaximumSize(new Dimension(WIDTH, HEIGHT));
+		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
 		mPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -146,11 +150,12 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		// Create the main detail panel.
 		mainPanel = new MainDetailPanel(desktop, this);
-		mainPanel.setSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, HEIGHT));
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);
+		navpointPane.setPreferredSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, MAP_BOX_HEIGHT));
+		navpointPane.setMaximumSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, MAP_BOX_HEIGHT));
 		tabPane.add("Navigation", navpointPane);
 
 		JSplitPane spliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, tabPane);

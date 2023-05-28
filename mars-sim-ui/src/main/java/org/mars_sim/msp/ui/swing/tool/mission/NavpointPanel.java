@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2022-07-31
+ * @date 2023-05-28
  * @author Scott Davis
  */
 
@@ -58,7 +58,6 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 
-
 /**
  * Tab panel for displaying a mission's navpoints.
  */
@@ -66,9 +65,9 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 public class NavpointPanel
 extends JPanel
 implements MissionListener {
-	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH / 2;
-	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT / 2;
-	private static final int PADDING = 64;
+	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
+	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
+//	private static final int PADDING = 0;
 	private static final int TABLE_HEIGHT = 190;
 	
 	private static final double TWO_PI = Math.PI * 2D;
@@ -107,14 +106,9 @@ implements MissionListener {
 		
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
-		mapDisplayPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JPanel left = new JPanel();
-        left.setPreferredSize(new Dimension(PADDING, HEIGHT));
-        JPanel right = new JPanel();
-        right.setPreferredSize(new Dimension(PADDING, HEIGHT));
+		mapDisplayPane.setPreferredSize(new Dimension(WIDTH + 5, HEIGHT + 5));
+		mapDisplayPane.setMaximumSize(new Dimension(WIDTH + 5, HEIGHT + 5));
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
-		mainPane.add(left, BorderLayout.WEST);
-		mainPane.add(right, BorderLayout.EAST);
 
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop(), 500L);
@@ -516,7 +510,7 @@ implements MissionListener {
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
-            return 3;
+            return 4;
         }
 		
 		/**
@@ -530,6 +524,7 @@ implements MissionListener {
             if (columnIndex == 0) return Msg.getString("NavpointPanel.column.name"); //$NON-NLS-1$
             else if (columnIndex == 1) return Msg.getString("NavpointPanel.column.location"); //$NON-NLS-1$
             else if (columnIndex == 2) return Msg.getString("NavpointPanel.column.description"); //$NON-NLS-1$
+            else if (columnIndex == 3) return Msg.getString("NavpointPanel.column.distance"); //$NON-NLS-1$
             else return "";
         }
 		
@@ -546,6 +541,7 @@ implements MissionListener {
             	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1); //$NON-NLS-1$
             	else if (column == 1) return navpoint.getLocation().getFormattedString();
             	else if (column == 2) return navpoint.getDescription();
+            	else if (column == 3) return Math.round(navpoint.getDistance()*10.0)/10.0;
             	else return Msg.getString("unknown"); //$NON-NLS-1$
             }   
             else return Msg.getString("unknown"); //$NON-NLS-1$

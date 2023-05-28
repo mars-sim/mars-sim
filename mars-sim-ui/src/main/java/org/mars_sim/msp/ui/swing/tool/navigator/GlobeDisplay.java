@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GlobeDisplay.java
- * @date 2023-05-02
+ * @date 2023-05-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
