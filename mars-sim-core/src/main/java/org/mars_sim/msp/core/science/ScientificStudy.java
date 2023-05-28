@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -35,7 +36,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * A class representing a scientific study.
  */
-public class ScientificStudy implements Serializable, Temporal, Comparable<ScientificStudy> {
+public class ScientificStudy implements Entity, Serializable, Temporal, Comparable<ScientificStudy> {
 	// POJO holding collaborators effort
 	private static final class CollaboratorStats implements Serializable {
 		private static final long serialVersionUID = 1L;

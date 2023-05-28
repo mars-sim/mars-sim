@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -495,6 +496,9 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		else if (entity instanceof Transportable t) {
 			((ResupplyWindow)openToolWindow(ResupplyWindow.NAME)).openTransportable(t);
+		}
+		else if (entity instanceof ScientificStudy s) {
+			((ScienceWindow)openToolWindow(ScienceWindow.NAME)).setScientificStudy(s);
 		}
     }
 
