@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;

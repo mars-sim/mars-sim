@@ -349,7 +349,7 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the details of a previously stored window.
+	 * Gets the details of a previously stored window.
 	 *
 	 * @param windowName the window name.
 	 * @return Known details; may return null
@@ -359,7 +359,7 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the property sets defined in the config.
+	 * Gets the property sets defined in the config.
 	 * 
 	 * @return
 	 */
@@ -368,8 +368,9 @@ public class UIConfig {
 	}
 
 	/**
-	 * Get the property set for a particular name.
-	 * If a match is not found an empty property set is returned
+	 * Gets the property set for a particular name.
+	 * If a match is not found an empty property set is returned.
+	 * 
 	 * @return
 	 */
 	public Properties getPropSet(String name) {
@@ -378,7 +379,7 @@ public class UIConfig {
 
 
 	/**
-	 * Get the details of the stored windows.
+	 * Gets the details of the stored windows.
 	 * 
 	 * @return
 	 */
@@ -389,7 +390,8 @@ public class UIConfig {
 	}
 
 	/**
-	 * Helper method to extract a Boolean out of a user properties
+	 * Helper method to extract a Boolean out of a user properties.
+	 * 
 	 * @param setting
 	 * @param name
 	 * @param defaultValue
@@ -404,7 +406,8 @@ public class UIConfig {
     }
 
 	/**
-	 * Helper method to extract a Double out of a user properties
+	 * Helper method to extract a Double out of a user properties.
+	 * 
 	 * @param setting
 	 * @param name
 	 * @param defaultValue

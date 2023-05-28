@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-05-14
+ * @date 2023-05-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -21,21 +21,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.MemoryImageSource;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -45,13 +48,18 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.environment.TerrainElevation;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
@@ -91,7 +99,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 	
-	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
+//	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
@@ -136,6 +144,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** Globe navigation. */
 	private GlobeDisplay globeNav;
 
+	/** Settlement Combo box */
+	private JComboBox<Settlement> settlementComboBox;
 	/** Latitude direction choice. */
 	private JComboBoxMW<?> latDir;
 	/** Longitude direction choice. */
@@ -147,12 +157,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel coordLabel;
 	private JLabel phiLabel;
 	private JLabel thetaLabel;
-	
-	private MineralMapLayer mineralLayer;
+
 	private Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private List<Landmark> landmarks;
+	
+	private MineralMapLayer mineralLayer;
+	
 	private UnitManager unitManager;
+	
+	private UnitManagerListener umListener;
+	
+	private Settlement selectedSettlement;
 
 	/**
 	 * Constructor.
@@ -246,6 +262,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
+		latCB.setPreferredSize(new Dimension(70, 25));
 		latCB.setSelectedItem(0);
 		coordPane.add(latCB);
 
@@ -253,6 +270,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		latDir = new JComboBoxMW<Object>(latStrings);
+		latDir.setPreferredSize(new Dimension(50, 25));
 		latDir.setEditable(false);
 		coordPane.add(latDir);
 
@@ -262,6 +280,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Switch to using ComboBoxMW for longitude
 		longCB = new JComboBoxMW<Integer>(lon_degrees);
+		longCB.setPreferredSize(new Dimension(70, 25));
 		longCB.setSelectedItem(0);
 		coordPane.add(longCB);
 
@@ -269,9 +288,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
 		longDir = new JComboBoxMW<Object>(longStrings);
+		longDir.setPreferredSize(new Dimension(50, 25));
 		longDir.setEditable(false);
 		coordPane.add(longDir);
 
+//		Settlement initialSettlement = desktop.getMainWindow().
+		
+		// Create the settlement combo box
+        buildSettlementNameComboBox(setupSettlements());
+        
+        coordPane.add(settlementComboBox);
+		
 		controlPane.add(coordPane);
 		///////////////////////////////////////////////////////////////////////////
 		
@@ -396,6 +423,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	}
 
+	/**
+	 * Sets up a list of settlements.
+	 *
+	 * @return List<Settlement>
+	 */
+	private List<Settlement> setupSettlements() {
+		List<Settlement> settlements = new ArrayList<>();
+
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
+			settlements = unitManager.getCommanderSettlements();
+		}
+
+		else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+			settlements.addAll(unitManager.getSettlements());
+		}
+
+		Collections.sort(settlements);
+		
+		return settlements;
+	}
+	
 	private void createMapLayer(String name, int order, MapLayer layer) {
 		mapLayers.put(name, new MapOrder(order, layer));
 	}
@@ -416,16 +464,67 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
+	 * Builds the settlement combo box/
+	 */
+	private void buildSettlementNameComboBox(List<Settlement> startingSettlements) {
+
+		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
+		model.addAll(startingSettlements);
+		model.setSelectedItem(selectedSettlement);
+		settlementComboBox = new JComboBox<>(model);
+		settlementComboBox.setOpaque(false);
+		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+
+		// Set the item listener only after the setup is done
+		settlementComboBox.addItemListener(event -> {
+			Settlement newSettlement = (Settlement) event.getItem();
+			// Change to the selected settlement in SettlementMapPanel
+			if (newSettlement != selectedSettlement) {
+				setSettlement(newSettlement);
+				// Need to update the existing tab
+				updateCoords(newSettlement.getCoordinates());
+			}
+		});
+
+		// Listen for new Settlements
+		umListener = event -> {
+			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
+				settlementComboBox.addItem((Settlement) event.getUnit());
+			}
+		};
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+	}
+	
+	/**
+	 * Changes the map display to the selected settlement.
+	 *
+	 * @param s
+	 */
+	private void setSettlement(Settlement s) {
+		// Set the selected settlement
+		selectedSettlement = s;
+		// Set the box opaque
+		settlementComboBox.setOpaque(false);
+	}
+	
+	/**
 	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
 	 * necessary.
 	 * 
 	 * @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
+		
+		int latitude = (int) (newCoords.getLatitudeDouble());
+		int longitude = (int) (newCoords.getLongitudeDouble());
+		
+		latCB.setSelectedItem(latitude);
+		longCB.setSelectedItem(longitude);
+		
 		mapLayerPanel.showMap(newCoords);
 		globeNav.showGlobe(newCoords);
 	}
-
+	
 	/** ActionListener method overridden */
 	public void actionPerformed(ActionEvent event) {
 
@@ -494,7 +593,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Select an unloaded map as the new choice but prompt user first
+	 * Selects an unloaded map as the new choice but prompt user first.
+	 * 
 	 * @param newMapType
 	 */
 	private void selectUnloadedMap(String newMapType) {
@@ -798,6 +898,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	
+	/**
+	 * Prepares tool window for deletion.
+	 */	
 	@Override
 	public void destroy() {
 		if (mapLayerPanel != null)
@@ -812,6 +915,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		latDir = null;
 		longDir = null;
+		
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 
 	@Override

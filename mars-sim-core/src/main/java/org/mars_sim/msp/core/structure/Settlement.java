@@ -69,7 +69,6 @@ import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.StorableItem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
