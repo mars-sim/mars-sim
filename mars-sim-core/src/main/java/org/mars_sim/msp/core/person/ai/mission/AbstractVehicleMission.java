@@ -87,7 +87,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-//	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.BATTERY_MODULE);
 	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {
@@ -132,8 +131,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private transient double cachedDistance = -1;
 	/** The current traveling status of the mission. */
 	private String travelStatus;
-	/** The cache for the mission vehicle. */
-	private String vehicleNameCache;
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
@@ -280,15 +277,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		return true;
 
 	}
-
-	/**
-	 * Gets the mission's vehicle name
-	 *
-	 * @return vehicle or null if none.
-	 */
-	public String getVehicleName() {
-		return vehicleNameCache;
-	}
 	
 	/**
 	 * Gets the mission's vehicle if there is one.
@@ -338,11 +326,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (newVehicle != null) {
 			vehicle = newVehicle;
 			startingTravelledDistance = vehicle.getOdometerMileage();
-			newVehicle.setReservedForMission(true);
+			vehicle.setReservedForMission(true);
 			vehicle.addUnitListener(this);
-			
-			// Record the vehicle name
-			vehicleNameCache = vehicle.getName();
+			vehicle.setMission(this);
 			
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
@@ -366,8 +352,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected final void leaveVehicle() {
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
+			if (vehicle.getMission().equals(this)) {
+				vehicle.setMission(null);
+			}
 			vehicle.removeUnitListener(this);
-			vehicle = null;
+			//vehicle = null;
 
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}

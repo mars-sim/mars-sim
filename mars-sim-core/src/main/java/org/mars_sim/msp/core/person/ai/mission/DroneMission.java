@@ -272,13 +272,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			// Add vehicle to a garage if available.
 			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
 
-			// Make sure the drone chasis is not overlapping a building structure in the settlement map
-//	        if (!inAGarage)
-//	        	drone.findNewParkingLoc();
-
-			// Reset the vehicle reservation
-			v.correctVehicleReservation();
-
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getStoredMass() == 0D;
 

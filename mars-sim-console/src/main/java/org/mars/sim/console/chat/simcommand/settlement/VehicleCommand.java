@@ -48,13 +48,12 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 21, 
 									"Status", 7, "Home", "Maint Due", "Mission", 25);
 
-		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
 			String vTypeStr = v.getSpecName();	
 
 			// Print mission name
 			String missionName = "";
-			Mission mission = missionMgr.getMissionForVehicle(v);
+			Mission mission = v.getMission();
 			if (mission != null) {
 				missionName = mission.getName();
 			}

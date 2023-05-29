@@ -194,10 +194,9 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		boolean result = false;
 
 		// For vehicle missions, check if vehicle is loading or unloading for the mission.
-		Mission mission = missionManager.getMissionForVehicle(vehicle);
-		if ((mission != null) && (mission instanceof VehicleMission)) {
-			VehicleMission vehicleMission = (VehicleMission) mission;
-			LoadingController lp = vehicleMission.getLoadingPlan();
+		Mission mission = vehicle.getMission();
+		if ((mission != null) && (mission instanceof VehicleMission vm)) {
+			LoadingController lp = vm.getLoadingPlan();
 			result = (lp != null) && !lp.isCompleted();
 		}
 

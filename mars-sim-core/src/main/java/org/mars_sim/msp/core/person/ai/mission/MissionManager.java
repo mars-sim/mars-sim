@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -28,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class keeps track of ongoing missions in the simulation.<br>
@@ -319,38 +316,6 @@ public class MissionManager implements Serializable {
 							  .collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets a mission that the given vehicle is a part of.
-	 *
-	 * @param vehicle the vehicle to check for.
-	 * @return mission or null if none.
-	 */
-	public Mission getMissionForVehicle(Vehicle vehicle) {
-
-		if (vehicle == null) {
-			throw new IllegalArgumentException("vehicle is null");
-		}
-
-		Mission result = null;
-
-		Iterator<Mission> i = getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (!mission.isDone()) {
-				if (mission instanceof VehicleMission
-					&& ((VehicleMission) mission).getVehicle() == vehicle) {
-					result = mission;
-				} else if (mission instanceof ConstructionMission construction) {
-					if (!construction.getConstructionVehicles().isEmpty()
-						&& construction.getConstructionVehicles().contains(vehicle)) {
-							result = mission;
-					}
-				} 
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Adds a mission plan.

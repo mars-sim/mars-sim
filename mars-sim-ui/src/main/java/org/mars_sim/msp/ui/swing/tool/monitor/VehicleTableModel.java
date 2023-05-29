@@ -188,7 +188,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case DESTINATION : {
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
+				Mission mission = vehicle.getMission();
 				if (mission instanceof VehicleMission) {
 					VehicleMission vehicleMission = (VehicleMission) mission;
 
@@ -202,7 +202,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case DESTDIST : {
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
+				Mission mission = vehicle.getMission();
 				if (mission instanceof VehicleMission) {
 					VehicleMission vehicleMission = (VehicleMission) mission;
 					result = vehicleMission.getDistanceCurrentLegRemaining();
@@ -211,7 +211,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case MISSION : {
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
+				Mission mission = vehicle.getMission();
 				if (mission != null) {
 					result = mission.getFullMissionDesignation();
 				}
