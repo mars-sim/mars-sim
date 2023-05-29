@@ -47,38 +47,34 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
-	private final int STANDARD_MAP_HEIGHT = 1440;
-	private final int STANDARD_MAP_WIDTH = 2880;
 	private final int STANDARD_GLOBE_BOX_HEIGHT = 300;
-	private final int MAP_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
-	
-	private final int GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT;
-	private final int GLOBE_BOX_WIDTH = MapPanel.MAP_BOX_WIDTH;
-	private final int RATIO = GLOBE_BOX_HEIGHT / STANDARD_GLOBE_BOX_HEIGHT; 
-	
-	private final int X_PADDING_ZOOM_BOX = 116 * RATIO;
-	private final int Y_PADDING_ZOOM_BOX = 116 * RATIO;
-	private final int WIDTH_ZOOM_BOX = 70 * RATIO;
-	private final int HEIGHT_ZOOM_BOX = 70 * RATIO;
-	
+	private final int NEW_GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT; // 450
+
+	private final double RATIO_EXPANSION = 1.0 * NEW_GLOBE_BOX_HEIGHT / STANDARD_GLOBE_BOX_HEIGHT; // 1.5
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
-	private final int LIMIT = 60 * RATIO; 
+	private final double LIMIT = (NEW_GLOBE_BOX_HEIGHT / 4 - 20) * RATIO_EXPANSION;  // NEW_GLOBE_BOX_HEIGHT / 4 - 20
 	// Half of the map pixel height / 2 
-	private final int halfMap = MAP_HEIGHT / 2;
+	private final int halfMap = NEW_GLOBE_BOX_HEIGHT / 2;
 	// lower edge = pixel height / 2 - map box height / 2
-	private final int lowEdge = halfMap - MAP_HEIGHT / 2;	
+	private final int lowEdge = halfMap - NEW_GLOBE_BOX_HEIGHT / 2;	
 
 	private final double HALF_PI = Math.PI / 2;
 
+	private int surfaceMapHeight = 1440;
+
+	private double projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
+	private double projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5 ; // 261.92
+	private double projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
+	private double projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
+
+	private int widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT / projectedRatioMap2Box); // 140.57
+	private int paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
+	
 	private int dragx;
 	private int dragy;
 	private int dxCache = 0;
 	private int dyCache = 0;
-	private int xPaddingZoomBox = X_PADDING_ZOOM_BOX;
-	private int yPaddingZoomBox = Y_PADDING_ZOOM_BOX;	
-	private int widthZoomBox = WIDTH_ZOOM_BOX;
-	private int heightZoomBox = HEIGHT_ZOOM_BOX;
-	
+
 	
 	// Data members
 	/** <code>true</code> if globe needs to be regenerated */
@@ -87,7 +83,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private MapMetaData mapType;
 
 	// height pixels divided by pi
-	private double rho = GLOBE_BOX_HEIGHT / Math.PI;
+	private double rho = NEW_GLOBE_BOX_HEIGHT / Math.PI;
 	
 	private MarsMap marsMap;
 	
@@ -104,7 +100,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * Stores the font for drawing lon/lat strings in
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
-	private Font positionFont = new Font("Helvetica", Font.PLAIN, (int)(16 * RATIO / 1.4));
+	private Font positionFont = new Font("Helvetica", Font.PLAIN, (int)(16 * RATIO_EXPANSION / 1.4));
 	/** measures the pixels needed to display text. */
 	private FontMetrics positionMetrics = getFontMetrics(positionFont);
 
@@ -145,12 +141,12 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public GlobeDisplay(final NavigatorWindow navwin) {
 		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-
+		
 		starfield = ImageLoader.getImage("map/starfield");
 		//marsMap = new MarsMap(mapType, this);
 		
 		// Set component size
-		setPreferredSize(new Dimension(GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT));
+		setPreferredSize(new Dimension(NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
 		
 		// Initialize global variables
@@ -196,7 +192,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				&& dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT
 				&& ((dxCache - dx) > -LIMIT) && ((dxCache - dx) < LIMIT) 
 				&& ((dyCache - dy) > -LIMIT) && ((dyCache - dy) < LIMIT)
-				&& x > 50 * RATIO && x < 245 * RATIO && y > 50 * RATIO && y < 245 * RATIO) {
+				&& x > 50 * RATIO_EXPANSION && x < 245 * RATIO_EXPANSION && y > 50 * RATIO_EXPANSION && y < 245 * RATIO_EXPANSION) {
 					setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
@@ -263,13 +259,15 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void updateZoomBox() {
 		if (navwin.getMapPanel() != null) {
-			int width = navwin.getMapPanel().getMap().getPixelWidth();
-			int height = navwin.getMapPanel().getMap().getPixelHeight();
+			surfaceMapHeight = navwin.getMapPanel().getMap().getPixelWidth();	
 			
-			widthZoomBox = WIDTH_ZOOM_BOX * STANDARD_MAP_WIDTH / width;
-			heightZoomBox = HEIGHT_ZOOM_BOX * STANDARD_MAP_HEIGHT / height;
-			xPaddingZoomBox = X_PADDING_ZOOM_BOX + (WIDTH_ZOOM_BOX - widthZoomBox) / 2; 
-			yPaddingZoomBox = Y_PADDING_ZOOM_BOX + (HEIGHT_ZOOM_BOX - heightZoomBox) / 2; 
+			projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
+			projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5; // 261.92
+			projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
+			projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
+
+			widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT / projectedRatioMap2Box); // 140.57
+			paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
 		}
 	}
 	
@@ -285,7 +283,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
-			dbImage = createImage(GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT);
+			dbImage = createImage(NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
 			if (dbImage == null) {
 				return;
 			} else
@@ -300,7 +298,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		g2d.setColor(Color.black);
 		// dbg.fillRect(0, 0, 150, 150);
-		g2d.fillRect(0, 0, GLOBE_BOX_WIDTH, GLOBE_BOX_HEIGHT);
+		g2d.fillRect(0, 0, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
 		// Image starfield = ImageLoader.getImage("starfield.gif");
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 		
@@ -376,25 +374,12 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	protected void drawCrossHair(Graphics2D g) {
 		g.setColor(Color.orange.brighter());
 
-//		// Draw left horizontal line
-//		g.drawLine(15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
-//		drawDashedLine(g, 15, 			150 * RATIO, 117 * RATIO, 150 * RATIO);
-//		// Draw right horizontal line
-//		g.drawLine(184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
-//		drawDashedLine(g, 184 * RATIO, 150 * RATIO, 285 * RATIO, 150 * RATIO);
-//		// Draw top vertical line
-//		g.drawLine(150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);
-//		drawDashedLine(g, 150 * RATIO,  15 * RATIO, 150 * RATIO, 117 * RATIO);		
-//		// Draw bottom vertical line
-//		g.drawLine(150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);	
-//		drawDashedLine(g, 150 * RATIO, 185 * RATIO, 150 * RATIO, 285 * RATIO);		
-
 		// use prepared font
 		g.setFont(positionFont);
 
 		// Draw longitude and latitude strings using prepared measurements
-		g.drawString(latitude, 25 * RATIO, 30 * RATIO);
-		g.drawString(longitude, 275 * RATIO - rightWidth, 30 * RATIO);
+		g.drawString(latitude, (int) (25 * RATIO_EXPANSION), (int) (30 * RATIO_EXPANSION));
+		g.drawString(longitude, (int)((STANDARD_GLOBE_BOX_HEIGHT - 25) * RATIO_EXPANSION - rightWidth), (int)(30 * RATIO_EXPANSION));
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();
@@ -402,25 +387,24 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int latWidth = positionMetrics.stringWidth(latString);
 		int longWidth = positionMetrics.stringWidth(longString);
 
-		int latPosition = ((leftWidth - latWidth) / 2) + 25 * RATIO;
-		int longPosition = (GLOBE_BOX_HEIGHT - 25 * RATIO) * RATIO - rightWidth + ((rightWidth - longWidth) / 2);
+		int latPosition = (int)(((leftWidth - latWidth) / 2) + 25 * RATIO_EXPANSION);
+		int longPosition = (int)((NEW_GLOBE_BOX_HEIGHT - 25 * RATIO_EXPANSION) * RATIO_EXPANSION - rightWidth + ((rightWidth - longWidth) / 2));
 
-		g.drawString(latString, latPosition, 50 * RATIO);
-		g.drawString(longString, longPosition, 50 * RATIO);
+		g.drawString(latString, latPosition, (int)(50 * RATIO_EXPANSION));
+		g.drawString(longString, longPosition, (int)(50 * RATIO_EXPANSION));
 		
 //		g.setColor(Color.black);
-		
-		g.drawRect(xPaddingZoomBox, yPaddingZoomBox, widthZoomBox,  heightZoomBox);
-		
-		// Draw diagonal line to top right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox, GLOBE_BOX_HEIGHT, 0);
-		// Draw diagonal line to top right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox, GLOBE_BOX_HEIGHT * RATIO, 0);
-		// Draw diagonal line to bottom right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox, yPaddingZoomBox + heightZoomBox, GLOBE_BOX_HEIGHT, GLOBE_BOX_HEIGHT);
-		// Draw diagonal line to bottom right of the left panel	
-		drawDashedLine(g, xPaddingZoomBox + widthZoomBox, yPaddingZoomBox + heightZoomBox, GLOBE_BOX_HEIGHT * RATIO, GLOBE_BOX_HEIGHT);
 
+		g.drawRect(paddingZoomBox, paddingZoomBox, widthZoomBox, widthZoomBox);
+
+		// Draw a diagonal line from top left of the zoom box to top left of the right panel	
+		drawDashedLine(g, paddingZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
+		// Draw a diagonal line from top right of the zoom box to top left of the right panel	
+		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
+		// Draw a diagonal line from bottom left of the zoom box to bottom left of the right panel	
+		drawDashedLine(g, paddingZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
+		// Draw a diagonal line from bottom right of the zoom box to bottom left of the right panel	
+		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
 	}
 
 	public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2){

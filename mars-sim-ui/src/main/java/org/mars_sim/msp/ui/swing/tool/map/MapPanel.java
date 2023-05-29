@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapPanel.java
- * @date 2023-05-02
+ * @date 2023-05-28
  * @author Scott Davis
  */
 
@@ -47,8 +47,8 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = 600;
-	public static final int MAP_BOX_WIDTH = 600;
+	public static final int MAP_BOX_HEIGHT = 500;
+	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;
@@ -95,7 +95,7 @@ public class MapPanel extends JPanel {
 	}
 
 	/*
-	 * Sets up the mouse dragging capability
+	 * Sets up the mouse dragging capability.
 	 */
 	public void setNavWin(NavigatorWindow navwin) {
 
@@ -140,7 +140,7 @@ public class MapPanel extends JPanel {
 	}
 
 	/*
-	 * Sets up the mouse dragging capability
+	 * Sets up the mouse dragging capability.
 	 */
 	public void setNavpointPanel(NavpointPanel panel) {
 
@@ -188,7 +188,7 @@ public class MapPanel extends JPanel {
 	}
 	
 	/**
-	 * Adds a new map layer
+	 * Adds a new map layer.
 	 * 
 	 * @param newLayer the new map layer.
 	 * @param index    the index order of the map layer.
@@ -245,6 +245,7 @@ public class MapPanel extends JPanel {
 
 	/**
 	 * Sets the map type.
+	 * 
 	 * @return map type set successfully
 	 */
 	public boolean setMapType(String mapStringType) {
@@ -412,8 +413,8 @@ public class MapPanel extends JPanel {
 	}
 
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.DISPLAY_WIDTH / 2D) - 1;
-		double yMap = y - (Map.DISPLAY_HEIGHT / 2D) - 1;
+		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
+		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
 		
 		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
     }
