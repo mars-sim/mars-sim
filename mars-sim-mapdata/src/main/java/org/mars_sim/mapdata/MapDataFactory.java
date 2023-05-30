@@ -87,7 +87,8 @@ import org.mars_sim.msp.common.FileLocator;
  	}
 
 	/**
-	 * Get the available map types
+	 * Gets the available map types.
+	 * 
 	 * @return
 	 */
 	public Collection<MapMetaData> getLoadedTypes() {

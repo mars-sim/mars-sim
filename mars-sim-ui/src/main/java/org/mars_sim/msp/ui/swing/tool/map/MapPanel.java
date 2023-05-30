@@ -47,7 +47,7 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = 500;
+	public static final int MAP_BOX_HEIGHT = 600;
 	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
 	private static int dragx, dragy;
 
@@ -294,6 +294,16 @@ public class MapPanel extends JPanel {
 		}
 	}
 
+
+	public void updateDisplay() {
+		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
+			|| desktop.isToolWindowOpen(MissionWindow.NAME))
+			&& update 
+			&& (!executor.isTerminated() || !executor.isShutdown())) {
+				executor.execute(new MapTask());
+		}
+	}
+
 	class MapTask implements Runnable {
 
 		private MapTask() {
@@ -306,7 +316,7 @@ public class MapPanel extends JPanel {
 
 				if (centerCoords == null) {
 					logger.severe("centerCoords is null.");
-					centerCoords = new Coordinates("0.0", "0.0");
+					centerCoords = new Coordinates(HALF_PI, 0);
 				}
 				
 				marsMap.drawMap(centerCoords);
@@ -320,16 +330,7 @@ public class MapPanel extends JPanel {
 			}
 		}
 	}
-
-	public void updateDisplay() {
-		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
-			|| desktop.isToolWindowOpen(MissionWindow.NAME))
-			&& update 
-			&& (!executor.isTerminated() || !executor.isShutdown())) {
-				executor.execute(new MapTask());
-		}
-	}
-
+	
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 

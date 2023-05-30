@@ -19,7 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -377,7 +376,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = (int)(((leftWidth - latWidth) / 2) + 25 * RATIO_EXPANSION);
-		int longPosition = (int)(NEW_GLOBE_BOX_HEIGHT - latPosition + longWidth - 25 * RATIO_EXPANSION);
+		int longPosition = (int)(NEW_GLOBE_BOX_HEIGHT - latPosition - longWidth - 5 * RATIO_EXPANSION);
 
 		g.drawString(latString, latPosition, (int)(50 * RATIO_EXPANSION));
 		g.drawString(longString, longPosition, (int)(50 * RATIO_EXPANSION));

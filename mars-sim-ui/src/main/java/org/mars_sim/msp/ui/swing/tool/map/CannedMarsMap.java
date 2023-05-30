@@ -39,7 +39,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	
 	private JComponent displayArea = null;
 
-	private Coordinates currentCenter = null;
+	private Coordinates centerCoords = null;
 	
 	/**
 	 * Constructor.
@@ -54,7 +54,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/** 
-	 * Get meta details of the underlying map
+	 * Gets meta details of the underlying map.
 	 */
 	@Override
 	public MapMetaData getType() {
@@ -77,8 +77,8 @@ public class CannedMarsMap extends JComponent implements Map {
 	 * @param newCenter the new center location
 	 */
 	public void drawMap(Coordinates newCenter) {
-		if ((newCenter != null && currentCenter == null)
-			|| (newCenter != null && currentCenter != null && !newCenter.equals(currentCenter))) {
+		if ((newCenter != null && centerCoords == null)
+			|| (newCenter != null && centerCoords != null && !newCenter.equals(centerCoords))) {
 			
 			mapImage = createMapImage(newCenter);
 
@@ -99,7 +99,7 @@ public class CannedMarsMap extends JComponent implements Map {
 			    Thread.currentThread().interrupt();
 			}
 			mapImageDone = true;
-			currentCenter = new Coordinates(newCenter);
+			centerCoords = new Coordinates(newCenter);
 			
 			// Prepare and buffer the map
 			bufferMap();
@@ -108,7 +108,6 @@ public class CannedMarsMap extends JComponent implements Map {
 	
 	/**
 	 * Draws a 2D map form the buffer.
-	 * 
 	 */
 	public void bufferMap() {
 		paintDoubleBuffer();

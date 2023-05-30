@@ -25,7 +25,6 @@ import org.mars_sim.msp.common.FileLocator;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.tool.MoreMath;
-import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 
 /**
  * The GlobeMap class generates a Mars globe.
@@ -37,7 +36,7 @@ public class GlobeMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	private static final int MAP_H = MapPanel.MAP_BOX_HEIGHT;
+	private static final int MAP_H = 600;
 	/** Width of map source image (pixels). */
 	private static final int MAP_W = MAP_H * 2;
 	private static final int HALF_MAP_HEIGHT = MAP_H / 2;
@@ -55,7 +54,7 @@ public class GlobeMap {
 	@SuppressWarnings("unchecked")
 	private Vector<Integer>[] sphereColor = new Vector[MAP_H];
 	/** cylindrical map image. */
-	private Image marsMap;
+	private Image cylindricalMapImage;
 	/** finished image of sphere with transparency. */
 	private Image globeImage;
 	/** true when image is done. */
@@ -73,12 +72,12 @@ public class GlobeMap {
 
 		// Initialize Variables
 		this.displayArea = displayArea;
-		centerCoords = new Coordinates(PI_HALF, PI_HALF);
+		centerCoords = new Coordinates(PI_HALF, 0);
 
-		// LOcate teh image file which may be downloaded from a remote site
+		// Locate the image file which may be downloaded from a remote site
 		File imageFile = FileLocator.locateFile(mapType.getLoResFile());
 		try {
-			marsMap = ImageIO.read(imageFile);
+			cylindricalMapImage = ImageIO.read(imageFile);
 		} catch (IOException e) {
 			logger.severe("Can't read image file ");
 		}
@@ -130,8 +129,6 @@ public class GlobeMap {
 		// double rho = map_height / Math.PI;
 		double sin_offset = MoreMath.sin(phi + Math.PI);
 		double cos_offset = MoreMath.cos(phi + Math.PI);
-		// double col_array_modifier = 1D / PI_double;
-		// int half_map = map_height / 2;
 
 		// Create array to hold image
 		int[] buffer_array = new int[MAP_H * MAP_H];
@@ -263,7 +260,7 @@ public class GlobeMap {
 
 		// Grab mars_surface image into pixels_color array using PixelGrabber
 		// NOTE: Replace PixelGrabber with faster method
-		PixelGrabber pg_color = new PixelGrabber(marsMap, 0, 0, MAP_W, MAP_H, pixels_color, 0, MAP_W);
+		PixelGrabber pg_color = new PixelGrabber(cylindricalMapImage, 0, 0, MAP_W, MAP_H, pixels_color, 0, MAP_W);
 		
 		try {
 			pg_color.grabPixels();
@@ -282,18 +279,17 @@ public class GlobeMap {
 				map_pixels[x][y] = pixels_color[x + (y * MAP_W)];
 
 		// Initialize variables
-		// rho = map_height / Math.PI;
-		offset = Math.PI / (2 * ih_d);
+		offset = PI_HALF / ih_d;
 
 		// Go through each row and create Sphere_Color vector with it
 		for (phi = offset; phi < Math.PI; phi += (Math.PI / ih_d)) {
 			row = MoreMath.floor((float) ((phi / Math.PI) * ih_d));//(int) Math.floor((phi / Math.PI) * ih_d);
-			circum = 2 * Math.PI * (RHO * MoreMath.sin(phi));
+			circum = PI_DOUBLE * (RHO * MoreMath.sin(phi));
 			col_num = (int) Math.round(circum);
 			sphereColor[row] = new Vector<Integer>(col_num);
 
 			// Fill vector with colors
-			for (theta = 0; theta < (2 * Math.PI); theta += ((Math.PI * 2) / circum)) {
+			for (theta = 0; theta < PI_DOUBLE; theta += (PI_DOUBLE / circum)) {
 				if (theta == 0) {
 					map_col = 0;
 				} else {
@@ -320,7 +316,7 @@ public class GlobeMap {
 	public void destroy() {
 		centerCoords = null;
 		sphereColor = null;
-		marsMap = null;
+		cylindricalMapImage = null;
 		globeImage = null;
 		displayArea = null;
 		imageDone = true;

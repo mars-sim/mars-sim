@@ -299,15 +299,6 @@ import org.mars_sim.msp.common.FileLocator;
  		while (theta < 0)
  			theta += TWO_PI;
 
-// 		int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
-// 		if (row == mapColors.size())
-// 			row--;
- //
-// 		int[] colorRow = mapColors.get(row);
-// 		int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
-// 		if (column == colorRow.length)
-// 			column--;
-
  		int row = (int) Math.round(phi * (pixels.length / Math.PI));
  		if (row == pixels.length)
  			row--;
