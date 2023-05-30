@@ -477,7 +477,7 @@ public class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y) {
-		return convertRectToSpherical(x, y, 2 * MARS_RADIUS_KM / Math.PI);
+		return convertRectToSpherical(x, y, MARS_RADIUS_KM);
 	}
 
 
@@ -485,9 +485,9 @@ public class Coordinates implements Serializable {
 	 * Converts linear rectangular XY position change to spherical coordinates with
 	 * rho value for map.
 	 *
-	 * @param x              change in x value (in km)
-	 * @param y              change in y value (in km)
-	 * @param rho            rho height pixels divided by pi
+	 * @param x              change in x value (# of pixels or km)
+	 * @param y              change in y value (# of pixels or km)
+	 * @param rho            radius (in km) or map box height divided by pi (# of pixels)
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
 
