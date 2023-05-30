@@ -125,8 +125,8 @@ class ProspectingSitePanel extends WizardPanel {
 	 */
 	boolean commitChanges() {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150D, 
-				navpointPixel.getiY() - 150D, mapPane.getMap().getScale());
+		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - Map.HALF_MAP_BOX, 
+				navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getScale());
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.COLLECT_ICE == type) 
 			getWizard().getMissionData().setIceCollectionSite(navpoint);
@@ -151,8 +151,8 @@ class ProspectingSitePanel extends WizardPanel {
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
 			
-			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
-			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
+			ellipseLayer.setEllipseDetails(new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), (pixelRange * 2));
+			IntPoint initialNavpointPos = new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
 										mapPane.getMap().getScale());
@@ -258,8 +258,8 @@ class ProspectingSitePanel extends WizardPanel {
 				if (withinBounds(displayPos)) {
 					navLayer.setNavpointPosition(0, displayPos);
 					Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-					Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150D, 
-					        displayPos.getiY() - 150D, mapPane.getMap().getScale());
+					Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
+					        displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getScale());
 					locationLabel.setText("Location: " + navpoint.getFormattedString());
 				
 					mapPane.repaint();
@@ -280,8 +280,8 @@ class ProspectingSitePanel extends WizardPanel {
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
 			
-            int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) +
-			        Math.pow(150D - position.getY(), 2D)));
+            int radius = (int) Math.round(Math.sqrt(Math.pow(Map.HALF_MAP_BOX - position.getX(), 2D) +
+			        Math.pow(Map.HALF_MAP_BOX - position.getY(), 2D)));
             
 			if (radius > pixelRange) 
 				return false;

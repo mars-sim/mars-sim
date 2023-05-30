@@ -25,6 +25,8 @@ public interface Map {
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
 	public static final int MAP_VIS_HEIGHT = DISPLAY_HEIGHT;
+	/** Half of the display box map height. */
+	public static final int HALF_MAP_BOX = (int) (0.5 * DISPLAY_HEIGHT);
 	/** this is a mysterious variable. */
 	public static final double HALF_MAP_ANGLE = 0.48587;
 

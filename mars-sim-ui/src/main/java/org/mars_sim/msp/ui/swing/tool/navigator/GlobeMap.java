@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * MarsMap.java
+ * GlobeMap.java
  * @date 2023-04-28
  * @author Scott Davis
  */
@@ -28,12 +28,12 @@ import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 
 /**
- * The MarsMap class generates a mars map.
+ * The GlobeMap class generates a Mars globe.
  */
-public class MarsMap {
+public class GlobeMap {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(MarsMap.class.getName());
+	private static final Logger logger = Logger.getLogger(GlobeMap.class.getName());
 
 	// Constant data members
 	/** Height of map source image (pixels). */
@@ -69,7 +69,7 @@ public class MarsMap {
 	 * @param mapType   the type of globe
 	 * @param displayArea the display component for the map
 	 */
-	public MarsMap(MapMetaData mapType, JComponent displayArea) {
+	public GlobeMap(MapMetaData mapType, JComponent displayArea) {
 
 		// Initialize Variables
 		this.displayArea = displayArea;

@@ -276,7 +276,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a coordinate string (with parenthesis and comma) to represent this location.
-	 * e.g. "(3.1244 E, 34.4352 S")
+	 * e.g. "(3.1244 E, 34.4352 S").
 	 *
 	 * @return formatted longitude & latitude string for this coordinate
 	 * @see #getFormattedLongitudeString()
@@ -294,7 +294,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent longitude for this location.
-	 * e.g. "35.6054 E"
+	 * e.g. "35.6054 E".
 	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
@@ -307,7 +307,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a double to represent longitude for this location. 
-	 * e.g. "-35.60"
+	 * e.g. "-35.60".
 	 *
 	 * @return double longitude
 	 */
@@ -326,7 +326,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent longitude for a given theta. 
-	 * e.g. "35.6670 E"
+	 * e.g. "35.6670 E".
 	 *
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
@@ -348,8 +348,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a common formatted string to represent latitude for this location. ex.
-	 * "35.6780 S"
+	 * Gets a common formatted string to represent latitude for this location. 
+	 * e.g. "35.6780 S"
 	 *
 	 * @return formatted latitude string for this Coordinates object
 	 */
@@ -361,7 +361,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a double to represent latitude location. ex. "-35.6"
+	 * Gets a double to represent latitude location. 
+	 * e.g. "-35.6".
 	 *
 	 * @return latitude double
 	 */
@@ -380,7 +381,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent latitude for a given phi.
-	 * e.g. "35.6230 S"
+	 * e.g. "35.6230 S".
 	 *
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
@@ -402,7 +403,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Converts phi to latitude
+	 * Converts phi to latitude.
 	 *
 	 * @return latitude in degrees
 	 */
@@ -411,7 +412,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Converts phi in radians to lat in radians
+	 * Converts phi in radians to lat in radians.
 	 *
 	 * @return latitude in radians
 	 */
@@ -469,14 +470,14 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Converts linear rectangular XY position change to spherical coordinates
+	 * Converts linear rectangular XY position change to spherical coordinates.
 	 *
 	 * @param x change in x value (in km)
 	 * @param y change in y value (in km)
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y) {
-		return convertRectToSpherical(x, y, MARS_RADIUS_KM);
+		return convertRectToSpherical(x, y, 2 * MARS_RADIUS_KM / Math.PI);
 	}
 
 
@@ -523,7 +524,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Returns angle direction to another location on surface of sphere 0 degrees is
-	 * north (clockwise)
+	 * north (clockwise).
 	 *
 	 * @param otherCoords target location
 	 * @return angle direction to target (in radians)

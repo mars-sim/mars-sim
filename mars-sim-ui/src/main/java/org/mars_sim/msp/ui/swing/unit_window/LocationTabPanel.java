@@ -342,7 +342,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		}
 		else {
 			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoords(p.getCoordinates());
+			nw.updateCoordsMaps(p.getCoordinates());
 		}
 	}
 
@@ -367,7 +367,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		}
 		else {
 			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoords(r.getCoordinates());
+			nw.updateCoordsMaps(r.getCoordinates());
 		}
 	}
 
@@ -381,7 +381,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		} else {
 			// out there on a mission
 			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoords(v.getCoordinates());
+			nw.updateCoordsMaps(v.getCoordinates());
 		}
 	}
 
@@ -392,7 +392,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (owner == null) {
 			// out there on a mission
 			NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-			nw.updateCoords(e.getCoordinates());
+			nw.updateCoordsMaps(e.getCoordinates());
 		} else {
 			// still parked inside a garage or within the premise of a settlement
 			SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);

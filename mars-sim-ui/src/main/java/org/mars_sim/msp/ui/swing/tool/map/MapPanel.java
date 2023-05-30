@@ -97,11 +97,10 @@ public class MapPanel extends JPanel {
 	/*
 	 * Sets up the mouse dragging capability.
 	 */
-	public void setNavWin(NavigatorWindow navwin) {
+	public void setDragger(NavigatorWindow navwin) {
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
-
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				int dx, dy, x = e.getX(), y = e.getY();
@@ -110,7 +109,9 @@ public class MapPanel extends JPanel {
 				dy = dragy - y;
 
 				if ((dx != 0 || dy != 0) 
-					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
+					 && x > 0 && x < MAP_BOX_WIDTH 
+					 && y > 0 && y < MAP_BOX_HEIGHT) {
+					
 					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
 					marsMap.drawMap(centerCoords);
 					repaint();
@@ -133,7 +134,7 @@ public class MapPanel extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				dragx = 0;
 				dragy = 0;
-				navwin.updateCoords(centerCoords);
+				navwin.updateCoordsMaps(centerCoords);
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
@@ -267,12 +268,17 @@ public class MapPanel extends JPanel {
 	public Coordinates getCenterLocation() {
 		return centerCoords;
 	}
-
+	
+	/**
+	 * Displays map at given center, regenerating if necessary.
+	 *
+	 * @param newCenter the center location for the globe
+	 */
 	public void showMap(Coordinates newCenter) {
 		if (centerCoords == null) {
 			if (newCenter != null) {
 				recreateMap = true;
-				centerCoords = new Coordinates(newCenter);
+				centerCoords = newCenter;
 			}
 		} else if (!centerCoords.equals(newCenter)) {
 			if (newCenter != null) {

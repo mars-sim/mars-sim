@@ -70,8 +70,8 @@ public class MineralMapLayer implements MapLayer {
 			// Clear map concentration array.
 			Arrays.fill(mineralConcentrationArray, 0);
 
-			double centerX = 150;
-			double centerY = 150;
+			double centerX = Map.HALF_MAP_BOX;
+			double centerY = Map.HALF_MAP_BOX;
 
 			double rho = baseMap.getScale();
 

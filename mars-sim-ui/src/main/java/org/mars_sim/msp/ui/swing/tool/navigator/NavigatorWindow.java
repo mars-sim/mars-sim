@@ -133,12 +133,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final String SURFACE_MAP = "surface";
 
-
 	// Data member
 	/** The latitude combox  */
 	private JComboBoxMW<?> latCB;
 	/** The longitude combox. */
-	private JComboBoxMW<?> longCB;
+	private JComboBoxMW<?> lonCB;
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapLayerPanel;
 	/** Globe navigation. */
@@ -147,9 +146,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** Settlement Combo box */
 	private JComboBox<Settlement> settlementComboBox;
 	/** Latitude direction choice. */
-	private JComboBoxMW<?> latDir;
+	private JComboBoxMW<?> latCBDir;
 	/** Longitude direction choice. */
-	private JComboBoxMW<?> longDir;
+	private JComboBoxMW<?> lonCBDir;
 	/** Minerals button. */
 	private JButton mineralsButton;
 	/** The info label on the status bar. */
@@ -204,7 +203,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
 		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
-		mapLayerPanel.setNavWin(this);
+		mapLayerPanel.setDragger(this);
 		
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
@@ -269,28 +268,28 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
-		latDir = new JComboBoxMW<Object>(latStrings);
-		latDir.setPreferredSize(new Dimension(50, 25));
-		latDir.setEditable(false);
-		coordPane.add(latDir);
+		latCBDir = new JComboBoxMW<Object>(latStrings);
+		latCBDir.setPreferredSize(new Dimension(50, 25));
+		latCBDir.setEditable(false);
+		coordPane.add(latCBDir);
 
 		// Prepare longitude entry components
 		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);
 		coordPane.add(longLabel);
 
 		// Switch to using ComboBoxMW for longitude
-		longCB = new JComboBoxMW<Integer>(lon_degrees);
-		longCB.setPreferredSize(new Dimension(70, 25));
-		longCB.setSelectedItem(0);
-		coordPane.add(longCB);
+		lonCB = new JComboBoxMW<Integer>(lon_degrees);
+		lonCB.setPreferredSize(new Dimension(70, 25));
+		lonCB.setSelectedItem(0);
+		coordPane.add(lonCB);
 
 		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
 		};
-		longDir = new JComboBoxMW<Object>(longStrings);
-		longDir.setPreferredSize(new Dimension(50, 25));
-		longDir.setEditable(false);
-		coordPane.add(longDir);
+		lonCBDir = new JComboBoxMW<Object>(longStrings);
+		lonCBDir.setPreferredSize(new Dimension(50, 25));
+		lonCBDir.setEditable(false);
+		coordPane.add(lonCBDir);
 
 //		Settlement initialSettlement = desktop.getMainWindow().
 		
@@ -353,7 +352,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		Font font = StyleManager.getSmallFont();
 		
-
 		phiLabel = new JLabel();
 		phiLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 		phiLabel.setFont(font);
@@ -365,11 +363,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(80, HEIGHT_STATUS_BAR));
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
-		coordLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
+		coordLabel.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
 		
 		statusBar.addLeftComponent(phiLabel, false);
 		statusBar.addLeftComponent(thetaLabel, false);
@@ -403,7 +401,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			String lonString = userSettings.getProperty(LON_PROP);
 			if ((latString != null) && (lonString != null)) {
 				Coordinates userCenter = new Coordinates(latString, lonString);
-				updateCoords(userCenter);
+				updateCoordsMaps(userCenter);
 			}
 		}
 		else {
@@ -480,13 +478,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(event -> {
+			if (settlementComboBox.getSelectedIndex() == -1)
+				return;
+			
 			Settlement newSettlement = (Settlement) event.getItem();
 			// Change to the selected settlement in SettlementMapPanel
 			if (newSettlement != selectedSettlement) {
 				setSettlement(newSettlement);
-				// Need to update the existing tab
-				updateCoords(newSettlement.getCoordinates());
 			}
+			
+			if (selectedSettlement != null)
+				// Need to update the coordinates
+				updateCoordsMaps(selectedSettlement.getCoordinates());
 		});
 
 		// Listen for new Settlements
@@ -516,13 +519,46 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * 
 	 * @param newCoords the new center location
 	 */
-	public void updateCoords(Coordinates newCoords) {
+	public void updateCoordsBox(Coordinates newCoords) {
 		
-		int latitude = (int) (newCoords.getLatitudeDouble());
-		int longitude = (int) (newCoords.getLongitudeDouble());
+		String lat = newCoords.getFormattedLatitudeString();
+		String lon = newCoords.getFormattedLongitudeString();
 		
-		latCB.setSelectedItem(latitude);
-		longCB.setSelectedItem(longitude);
+		String latNumS = lat.substring(0, lat.indexOf(' '));
+		String latDirS = Msg.getString("direction.degreeSign") + lat.substring(lat.indexOf(' ') + 1);
+		
+		String lonNumS = lon.substring(0, lon.indexOf(' '));
+		String lonDirS = Msg.getString("direction.degreeSign") + lon.substring(lon.indexOf(' ') + 1);
+		
+		int latNum = (int) Math.round(Double.parseDouble(latNumS));
+		int lonNum = (int) Math.round(Double.parseDouble(lonNumS));
+		
+		latCB.setSelectedItem(latNum);
+		lonCB.setSelectedItem(lonNum);
+		
+		latCBDir.setSelectedItem(latDirS);
+		lonCBDir.setSelectedItem(lonDirS);
+	}
+	
+	/**
+	 * Updates coordinates and map and globe.
+	 * 
+	 * @param newCoords the new center location
+	 */
+	public void updateCoordsMaps(Coordinates newCoords) {
+		
+		updateCoordsBox(newCoords);
+
+		mapLayerPanel.showMap(newCoords);
+		globeNav.showGlobe(newCoords);
+	}
+	
+	/**
+	 * Update map and globe.
+	 * 
+	 * @param newCoords the new center location
+	 */
+	public void updateMaps(Coordinates newCoords) {
 		
 		mapLayerPanel.showMap(newCoords);
 		globeNav.showGlobe(newCoords);
@@ -539,33 +575,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				// and recenter globe and surface map on that location.
 				try {
 
-					double latitude = 0;
-					double longitude = 0;
-
-					latitude = (int) latCB.getSelectedItem();
-					longitude = (int) longCB.getSelectedItem();
+					double latitude = (int) latCB.getSelectedItem();
+					double longitude = (int) lonCB.getSelectedItem();
 					
-					String latDirStr = (String) latDir.getSelectedItem();
-					String longDirStr = (String) longDir.getSelectedItem();
+					String latDirStr = ((String) latCBDir.getSelectedItem()).substring(1);
+					String longDirStr = ((String) lonCBDir.getSelectedItem()).substring(1);
 
 					if ((latitude >= 0D) && (latitude <= 90D) && (longitude >= 0D) && (longitude <= 360)) {
-						String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
-						if (latDirStr.equals(northString)) {
-							latitude = 90D - latitude; // $NON-NLS-1$
-						} else {
-							latitude += 90D;
+
+						String westString = Msg.getString("direction.westShort"); // $NON-NLS-1$
+						if (longDirStr.equals(westString)) {
+							// If it's toward west
+							longitude = 360D - longitude; 
 						}
 
-						String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
-						if (longitude > 0D) {
-							if (longDirStr.equals(westString)) {
-								longitude = 360D - longitude; // $NON-NLS-1$
-							}
-						}
+						updateMaps(new Coordinates(latitude + " " + latDirStr, longitude + " " + longDirStr)); // $NON-NLS-1$
 
-						double phi = RAD_PER_DEGREE * latitude;
-						double theta = RAD_PER_DEGREE * longitude;
-						updateCoords(new Coordinates(phi, theta));
+						settlementComboBox.setSelectedIndex(-1);
 					}
 				} catch (NumberFormatException e) {
 				}
@@ -912,12 +938,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			globeNav.destroy();
 
 		latCB = null;
-		longCB = null;
+		lonCB = null;
 		mapLayerPanel = null;
 		globeNav = null;
 
-		latDir = null;
-		longDir = null;
+		latCBDir = null;
+		lonCBDir = null;
 		
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}

@@ -384,7 +384,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param targetLocation the new center location
 	 */
 	public void centerMapGlobe(Coordinates targetLocation) {
-		((NavigatorWindow) openToolWindow(NavigatorWindow.NAME)).updateCoords(targetLocation);
+		((NavigatorWindow) openToolWindow(NavigatorWindow.NAME)).updateCoordsMaps(targetLocation);
 	}
 
 	/**

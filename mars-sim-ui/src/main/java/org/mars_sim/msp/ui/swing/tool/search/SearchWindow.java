@@ -234,7 +234,7 @@ extends ToolWindow {
 			
 			if (marsNavCheck.isSelected()) {
 				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-				nw.updateCoords(unit.getCoordinates());
+				nw.updateCoordsMaps(unit.getCoordinates());
 			}
 			
 			if (settlementCheck.isSelected())
@@ -262,7 +262,7 @@ extends ToolWindow {
 			if (vv.getSettlement() == null) {
 				// person is on a mission on the surface of Mars 
 				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
-				nw.updateCoords(vv.getCoordinates());
+				nw.updateCoordsMaps(vv.getCoordinates());
 			} 	
 			else {
 				// still parked inside a garage or within the premise of a settlement

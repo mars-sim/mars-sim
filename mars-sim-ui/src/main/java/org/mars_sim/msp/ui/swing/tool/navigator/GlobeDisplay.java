@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.navigator;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Stroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,8 +16,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -47,12 +48,21 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
+	private int surfaceMapHeight = 1440;
+	
 	private final int STANDARD_GLOBE_BOX_HEIGHT = 300;
 	private final int NEW_GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT; // 450
 
 	private final double RATIO_EXPANSION = 1.0 * NEW_GLOBE_BOX_HEIGHT / STANDARD_GLOBE_BOX_HEIGHT; // 1.5
-	/** The max amount of pixels in each mouse drag that the globe will update itself. */
-	private final double LIMIT = (NEW_GLOBE_BOX_HEIGHT / 4 - 20) * RATIO_EXPANSION;  // NEW_GLOBE_BOX_HEIGHT / 4 - 20
+	
+	private double projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
+	private double projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5; // 261.92
+	private double projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
+	private double projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
+
+	private int widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT * RATIO_EXPANSION / projectedRatioMap2Box); // 140.57
+	private int paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
+	
 	// Half of the map pixel height / 2 
 	private final int halfMap = NEW_GLOBE_BOX_HEIGHT / 2;
 	// lower edge = pixel height / 2 - map box height / 2
@@ -60,22 +70,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	private final double HALF_PI = Math.PI / 2;
 
-	private int surfaceMapHeight = 1440;
-
-	private double projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
-	private double projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5 ; // 261.92
-	private double projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
-	private double projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
-
-	private int widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT / projectedRatioMap2Box); // 140.57
-	private int paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
-	
 	private int dragx;
 	private int dragy;
-	private int dxCache = 0;
-	private int dyCache = 0;
 
-	
 	// Data members
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
@@ -85,12 +82,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	// height pixels divided by pi
 	private double rho = NEW_GLOBE_BOX_HEIGHT / Math.PI;
 	
-	private MarsMap marsMap;
-	
+	private GlobeMap globeMap;
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
-	/** A mouse adapter class. */
-	private Dragger dragger;
 	
 	private Graphics dbg;
 	private Image dbImage = null;
@@ -152,72 +146,67 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
 		recreate = true;
-
-		addMouseListener(new MouseAdapter() {
-			// Note: must use MouseAdapter's mousePressed separately from Dragger
-			// Use mousePressed in Dragger would result in jumpy dragging
-            @Override
-            public void mousePressed(MouseEvent e) {
-    			dragx = e.getX();
-    			dragy = e.getY();
-                repaint();
-            }
-        });
 		
-		dragger = new Dragger(navwin);
-		
-		addMouseMotionListener(dragger);
-
+		setDragger(navwin);
 
 		// Add listener once fully constructed
 		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 	}
 	
-	public class Dragger extends MouseAdapter {
-		NavigatorWindow navwin;
-		
-		public Dragger (NavigatorWindow navwin) {
-			this.navwin = navwin;
-	    }
-	    
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			int x = e.getX();
-			int y = e.getY();
+	/*
+	 * Sets up the mouse dragging capability.
+	 */
+	public void setDragger(NavigatorWindow navwin) {
 
-			int dx = dragx - x;
-			int dy = dragy - y;
+		// Note: need navWin prior to calling addMouseMotionListener()
+		addMouseMotionListener(new MouseAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				int dx, dy, x = e.getX(), y = e.getY();
 
-			if ((dx != 0 || dy != 0)// (dx < -2 || dx > 2) || (dy < -2 || dy > 2)) {
-				&& dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT
-				&& ((dxCache - dx) > -LIMIT) && ((dxCache - dx) < LIMIT) 
-				&& ((dyCache - dy) > -LIMIT) && ((dyCache - dy) < LIMIT)
-				&& x > 50 * RATIO_EXPANSION && x < 245 * RATIO_EXPANSION && y > 50 * RATIO_EXPANSION && y < 245 * RATIO_EXPANSION) {
-					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				dx = dragx - x;
+				dy = dragy - y;
 
+				if ((dx != 0 || dy != 0) 
+					 && x > 0 && x < NEW_GLOBE_BOX_HEIGHT 
+					 && y > 0 && y < NEW_GLOBE_BOX_HEIGHT) {
+					
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
-					navwin.updateCoords(centerCoords);				
+					navwin.updateCoordsMaps(centerCoords);				
 					recreate = false;
 					// Regenerate globe if recreate is true, then display
 					drawSphere();
+				}
+
+				dragx = x;
+				dragy = y;
+			}
+		});
+		
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				dragx = e.getX();
+				dragy = e.getY();
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			}
 
-			dxCache = dx;
-			dyCache = dy;
-
-			dragx = x;
-			dragy = y;
-
-			e.consume();
-		}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				dragx = 0;
+				dragy = 0;
+				navwin.updateCoordsMaps(centerCoords);
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
 	}
-
+	
 	/**
 	 * Displays topographical globe, regenerating if necessary.
 	 */
 	public void setMapType(MapMetaData newMapType) {
 		if (!newMapType.equals(mapType)) {
-			marsMap = new MarsMap(newMapType, this);
+			globeMap = new GlobeMap(newMapType, this);
 			recreate = true;
 		}
 		mapType = newMapType;
@@ -241,7 +230,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * Draws the sphere.
 	 */
 	public void updateDisplay() {
-		if (marsMap != null) {
+		if (globeMap != null) {
 			if (recreate) {
 				recreate = false;
 			}
@@ -266,13 +255,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
 			projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
 
-			widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT / projectedRatioMap2Box); // 140.57
+			widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT * RATIO_EXPANSION / projectedRatioMap2Box); // 140.57
 			paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
 		}
 	}
 	
 	public void drawSphere() {
-		marsMap.drawSphere(centerCoords);
+		globeMap.drawSphere(centerCoords);
 		paintDoubleBuffer();
 		repaint();
 	}
@@ -302,12 +291,12 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		// Image starfield = ImageLoader.getImage("starfield.gif");
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 		
-		if (marsMap == null)
+		if (globeMap == null)
 			return;
 		
-		Image image = marsMap.getGlobeImage();
+		Image image = globeMap.getGlobeImage();
 		if (image != null) {
-			if (marsMap.isImageDone()) {
+			if (globeMap.isImageDone()) {
 				g2d.drawImage(image, 0, 0, this);
 			} else {
 				return;
@@ -378,7 +367,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		g.setFont(positionFont);
 
 		// Draw longitude and latitude strings using prepared measurements
-		g.drawString(latitude, (int) (25 * RATIO_EXPANSION), (int) (30 * RATIO_EXPANSION));
+		g.drawString(latitude, (int)(25 * RATIO_EXPANSION), (int) (30 * RATIO_EXPANSION));
 		g.drawString(longitude, (int)((STANDARD_GLOBE_BOX_HEIGHT - 25) * RATIO_EXPANSION - rightWidth), (int)(30 * RATIO_EXPANSION));
 
 		String latString = centerCoords.getFormattedLatitudeString();
@@ -388,7 +377,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = (int)(((leftWidth - latWidth) / 2) + 25 * RATIO_EXPANSION);
-		int longPosition = (int)((NEW_GLOBE_BOX_HEIGHT - 25 * RATIO_EXPANSION) * RATIO_EXPANSION - rightWidth + ((rightWidth - longWidth) / 2));
+		int longPosition = (int)(NEW_GLOBE_BOX_HEIGHT - latPosition + longWidth - 25 * RATIO_EXPANSION);
 
 		g.drawString(latString, latPosition, (int)(50 * RATIO_EXPANSION));
 		g.drawString(longString, longPosition, (int)(50 * RATIO_EXPANSION));
@@ -471,14 +460,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public void destroy() {
 		MasterClock masterClock = desktop.getSimulation().getMasterClock();
 		masterClock.removeClockListener(this);
-		removeMouseListener(dragger);
-		dragger = null;
 		desktop  = null;
-
-		marsMap = null;
-		
+		globeMap = null;		
 		centerCoords = null;
-
 		dbg = null;
 		dbImage = null;
 		starfield = null;

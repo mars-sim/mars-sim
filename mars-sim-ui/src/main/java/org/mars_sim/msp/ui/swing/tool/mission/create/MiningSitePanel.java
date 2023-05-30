@@ -279,7 +279,7 @@ public class MiningSitePanel extends WizardPanel {
 			unitsToDisplay.add(getWizard().getMissionData().getStartingSettlement());
 			unitIconLayer.setUnitsToDisplay(unitsToDisplay);
 			unitLabelLayer.setUnitsToDisplay(unitsToDisplay);
-			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150),
+			ellipseLayer.setEllipseDetails(new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX), new IntPoint(Map.HALF_MAP_BOX, Map.HALF_MAP_BOX),
 					(convertRadiusToMapPixels(getRoverRange()) * 2));
 			ellipseLayer.setDisplayEllipse(true);
 			selectMiningSite(null);
