@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MissionSubAgenda.java
- * @date 2022-07-15
+ * MissionCapability.java
+ * @date 2023-05-31
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -14,9 +14,9 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.science.ScienceType;
 
 /**
- * This class represents a sub-agenda of reporting.
+ * This class represents a demonstration capability to develop.
  */
-public class MissionSubAgenda implements Serializable {
+public class MissionCapability implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -24,7 +24,7 @@ public class MissionSubAgenda implements Serializable {
 	private Map<MissionType, Integer> missionModifiers;
 	private Map<ScienceType, Integer> scienceModifiers;
 
-	public MissionSubAgenda(String description, Map<MissionType, Integer> missionModifiers,
+	public MissionCapability(String description, Map<MissionType, Integer> missionModifiers,
 							Map<ScienceType, Integer> scienceModifiers) {
 		super();
 		this.description = description;

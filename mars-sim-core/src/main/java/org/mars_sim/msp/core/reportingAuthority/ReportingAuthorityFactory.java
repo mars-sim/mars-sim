@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReportingAuthorityFactory.java
- * @date 2022-07-15
+ * @date 2023-05-31
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -38,8 +38,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private static final String MODIFIER_EL = "modifier";
 	private static final String VALUE_ATTR = "value";
 	private static final String DESCRIPTION_ATTR = "description";
-	private static final String SUB_AGENDA_EL = "sub-agenda";
-	private static final String SAMPLES_ATTR = "samples";
+	private static final String CAPABILITY_EL = "capability";
+	private static final String DATA_ATTR = "data";
 	private static final String FINDINGS_ATTR = "findings";
 	private static final String OBJECTIVE_ATTR = "objective";
 	private static final String AGENDA_EL = "agenda";
@@ -76,11 +76,11 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 			String name = agendaNode.getAttributeValue(NAME_ATTR);
 			String objective = agendaNode.getAttributeValue(OBJECTIVE_ATTR);
 			String findings = agendaNode.getAttributeValue(FINDINGS_ATTR);
-			String samples = agendaNode.getAttributeValue(SAMPLES_ATTR);
+			String data = agendaNode.getAttributeValue(DATA_ATTR);
 
 			// Load sub-agendas
-			List<MissionSubAgenda> subs = new ArrayList<>();
-			List<Element> subNodes = agendaNode.getChildren(SUB_AGENDA_EL);
+			List<MissionCapability> subs = new ArrayList<>();
+			List<Element> subNodes = agendaNode.getChildren(CAPABILITY_EL);
 			for (Element subNode : subNodes) {
 				String description = subNode.getAttributeValue(DESCRIPTION_ATTR);
 				
@@ -103,11 +103,11 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 					}
 				}
 	
-				subs.add(new MissionSubAgenda(description, missionModifiers, scienceModifiers));
+				subs.add(new MissionCapability(description, missionModifiers, scienceModifiers));
 			}	
 				
 			// Add the agenda
-			agendas.put(name, new MissionAgenda(name, objective, subs, findings, samples));
+			agendas.put(name, new MissionAgenda(name, objective, subs, findings, data));
 		}
 	
 		// Load the Reporting authorities

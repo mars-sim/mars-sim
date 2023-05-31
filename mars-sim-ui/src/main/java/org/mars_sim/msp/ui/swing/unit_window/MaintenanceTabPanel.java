@@ -75,7 +75,7 @@ public class MaintenanceTabPanel extends TabPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -121,15 +121,15 @@ public class MaintenanceTabPanel extends TabPanel {
 		columnModel.getColumn(3).setPreferredWidth(40);		
 		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
 
-		// Added sorting
+		// Add sorting
 		table.setAutoCreateRowSorter(true);
 
-        // Set=up values
+        // Set up values
         update();
 	}
 
 	/**
-	 * Update this panel
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {

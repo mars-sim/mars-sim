@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * TabPanelSponsorship.java
- * @date 2022-07-09
+ * SponsorTabPanel.java
+ * @date 2023-05-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -14,15 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
- * The TabPanelSponsorship is a tab panel for showing the settlement's 
+ * The SponsorTabPanel is a tab panel for showing the settlement's 
  * sponsor and its objective.
  */
 @SuppressWarnings("serial")
@@ -42,7 +41,7 @@ public class SponsorTabPanel extends TabPanel {
 		super(
 			null,
 			ImageLoader.getIconByName(SPONSOR_ICON),
-			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
+			Msg.getString("SponsorTabPanel.title"), //$NON-NLS-1$
 			desktop
 		);
 
@@ -57,27 +56,71 @@ public class SponsorTabPanel extends TabPanel {
 		content.add(infoPanel, BorderLayout.NORTH);
 		
 		// Prepare sponsor name label
-		infoPanel.addTextField(Msg.getString("TabPanelSponsorship.sponsor"), ra.getName(), ra.getDescription());
+		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsor"), ra.getName(), ra.getDescription());
 		
-		// Prepare obj name label
-		infoPanel.addTextField(Msg.getString("TabPanelSponsorship.objective"), ra.getMissionAgenda().getObjectiveName(),
-									null);
+		// Prepare agenda name label
+		infoPanel.addTextField(Msg.getString("SponsorTabPanel.agenda"), ra.getMissionAgenda().getName(), null);
+		
 		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		addBorder(panel, "Mission Agendas");
+		content.add(panel, BorderLayout.CENTER);
 		
+		JPanel subPanel = new JPanel(new BorderLayout());
+		panel.add(subPanel);
+		
+		JPanel panelNorth = new JPanel(new BorderLayout());
+		subPanel.add(panelNorth, BorderLayout.NORTH);
+		
+		JPanel panelCenter = new JPanel(new BorderLayout());
+		subPanel.add(panelCenter, BorderLayout.CENTER);
+		
+		
+		JPanel panel0 = new JPanel(new BorderLayout());
+		panelNorth.add(panel0, BorderLayout.NORTH);
+		
+		addBorder(panel0, Msg.getString("SponsorTabPanel.objective"));
+		
+		// For each phase, add to the text area.
+		createTA(panel0).append(ra.getMissionAgenda().getObjectiveName());
+		
+		
+		JPanel panel1 = new JPanel(new BorderLayout());
+		panelNorth.add(panel1, BorderLayout.CENTER);
+		
+		addBorder(panel1, Msg.getString("SponsorTabPanel.report"));
+		
+		// For each phase, add to the text area.
+		createTA(panel1).append(ra.getMissionAgenda().getReports());
+		
+		
+		JPanel panel2 = new JPanel(new BorderLayout());
+		panelNorth.add(panel2, BorderLayout.SOUTH);
+		
+		addBorder(panel2, Msg.getString("SponsorTabPanel.data"));
+		
+		// For each phase, add to the text area.
+		createTA(panel2).append(ra.getMissionAgenda().getData());
+		
+		
+		
+		JPanel panelCap = new JPanel(new BorderLayout());
+		panelCenter.add(panelCap, BorderLayout.SOUTH);
+		
+		addBorder(panelCap, Msg.getString("SponsorTabPanel.capability"));
+		
+		// For each phase, add to the text area.
+		createTA(panelCap).append(ra.getMissionAgenda().getCapabilities().stream()
+				.map(MissionCapability::getDescription)
+				.collect(Collectors.joining("\n")));
+	}
+	
+	private JTextArea createTA(JPanel panel) {
 		JTextArea ta = new JTextArea();
 		ta.setEditable(false);
 		ta.setColumns (30);
 		ta.setLineWrap (true);
-		ta.setBorder(new MarsPanelBorder());
+//		ta.setBorder(new MarsPanelBorder());
 		panel.add(ta);
-		
-		// For each phase, add to the text area.
-		ta.append(ra.getMissionAgenda().getAgendas().stream()
-				.map(MissionSubAgenda::getDescription)
-				.collect(Collectors.joining("\n")));
-
-		content.add(panel, BorderLayout.CENTER);
+		return ta;
 	}
 }

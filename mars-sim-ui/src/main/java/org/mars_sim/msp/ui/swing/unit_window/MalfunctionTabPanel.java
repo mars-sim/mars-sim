@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BuildingPanelMalfunctionable.java
+ * MalfunctionTabPanel.java
  * @date 2022-08-02
  * @author Scott Davis
  */
@@ -37,7 +37,7 @@ import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
 
 /**
- * The BuildingPanelMalfunctionable class is a building function panel
+ * The MalfunctionTabPanel class is a building function panel
  * representing the malfunctions of a settlement building.
  */
 @SuppressWarnings("serial")
@@ -64,13 +64,12 @@ public class MalfunctionTabPanel extends TabPanel {
 
 
 	 /**
-     * Private table model to manage the Resource Processes. It  c an act it 2 modes
+     * Private table model to manage the Resource Processes. It can act in 2 modes
      * - Single building mode
-     * - Multiple builbing mode
+     * - Multiple building mode
      */
 	private static class MalfunctionTableModel extends AbstractTableModel
                 implements UnitModel {
-
 
         private List<Malfunction> malfunctions;
 
@@ -211,7 +210,8 @@ public class MalfunctionTabPanel extends TabPanel {
 	private Settlement settlement;
 
 	/**
-	 * Build the panel that show sMalfunctions of a entity that can break
+	 * Builds the panel that show sMalfunctions of a entity that can break.
+	 * 
 	 * @param malfunctionable the malfunctionable the panel is for.
 	 * @param desktop         The main desktop.
 	 */
@@ -230,7 +230,8 @@ public class MalfunctionTabPanel extends TabPanel {
 	}
 	
 	/**
-	 * Show a panel fr a Settlement that controls numebr entity that can fail. Create an aggregated report.
+	 * Shows a panel for a Settlement that controls number entity that can fail. Create an aggregated report.
+	 * 
 	 * @param settlement Being displayed
 	 * @param desktop Owner
 	 */
@@ -258,7 +259,7 @@ public class MalfunctionTabPanel extends TabPanel {
 	}
 
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {

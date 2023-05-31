@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReportingAuthority.java
- * @date 2022-07-15
+ * @date 2023-05-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -68,7 +68,7 @@ implements UserConfigurable, Serializable {
 	 */
 	public void conductMissionObjective(Worker unit) {
 		missionAgenda.reportFindings(unit);
-		missionAgenda.gatherSamples(unit);
+		missionAgenda.gatherData(unit);
 	}
 
 	/**
@@ -184,7 +184,7 @@ implements UserConfigurable, Serializable {
 	 */
     public double getMissionRatio(MissionType type) {
         double result = 1D;
-		for (MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
+		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
 			int modifier = subAgenda.getMissionModifiers().getOrDefault(type, 0);
 
 			// The modifier is a value of 0..10 that represents a priority.
@@ -208,7 +208,7 @@ implements UserConfigurable, Serializable {
 	 */
     public double getStudyRatio(ScienceType science) {
         double result = 1D;
-		for (MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
+		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
 			int modifier = subAgenda.getScienceModifiers().getOrDefault(science, 0);
 
 			// The modifier is a value of 0..10 that represents a priority.

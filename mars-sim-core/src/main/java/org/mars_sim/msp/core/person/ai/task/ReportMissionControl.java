@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReportMissionControl.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-05-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -132,7 +132,7 @@ public class ReportMissionControl extends Task {
 	}
 
 	/**
-	 * Release office space
+	 * Releases office space.
 	 */
 	@Override
 	protected void clearDown() {
@@ -141,29 +141,4 @@ public class ReportMissionControl extends Task {
 			office.removeStaff();
 		}
 	}
-
-//	/**
-//	 * Gets an available building with the administration function.
-//	 * 
-//	 * @param person the person looking for the office.
-//	 * @return an available office space or null if none found.
-//	 */
-//	public static Building getAvailableStation(Person person) {
-//		Building result = null;
-//
-//		// If person is in a settlement, try to find a building with an Command and Control station.
-//		if (person.isInSettlement()) {
-//			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-//			List<Building> c2 = buildingManager.getBuildings(FunctionType.MANAGEMENT);
-//			c2 = BuildingManager.getNonMalfunctioningBuildings(c2);
-//			c2 = BuildingManager.getLeastCrowdedBuildings(c2);
-//
-//			if (c2.size() > 0) {
-//				Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, c2);
-//				result = RandomUtil.getWeightedRandomObject(selectedOffices);
-//			}
-//		}
-//
-//		return result;
-//	}
 }

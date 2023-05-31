@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionAgenda.java
- * @date 2022-07-15
+ * @date 2023-05-31
  * @author Manny Kung
  */
 
@@ -15,8 +15,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
- * Mission agenda for a ReportingAuthority to follow. It defines a set
- * of subagendas that specific actual targets for the RA.
+ * Mission agenda for a ReportingAuthority to follow. Each agenda has a set
+ * of capability to develop.
  */
 public class MissionAgenda implements Serializable {
 	/** default serial id. */
@@ -24,19 +24,19 @@ public class MissionAgenda implements Serializable {
 	
 	private static SimLogger logger = SimLogger.getLogger(MissionAgenda.class.getName());
 
-	private List<MissionSubAgenda> subs;
+	private List<MissionCapability> caps;
 	private String name;
 	private String objective;
 	private String findings;
-	private String samples;
+	private String data;
 	
-	MissionAgenda(String name, String objective, List<MissionSubAgenda> subs, String findings, String samples) {
+	MissionAgenda(String name, String objective, List<MissionCapability> caps, String findings, String data) {
 		super();
 		this.name = name;
 		this.objective = objective;
-		this.subs = Collections.unmodifiableList(subs);
+		this.caps = Collections.unmodifiableList(caps);
 		this.findings = findings;
-		this.samples = samples;
+		this.data = data;
 	}
 
 	/**
@@ -44,8 +44,8 @@ public class MissionAgenda implements Serializable {
 	 * 
 	 * @return
 	 */
-	public List<MissionSubAgenda> getAgendas() {
-		return subs;
+	public List<MissionCapability> getCapabilities() {
+		return caps;
 	}
 
 	/**
@@ -65,6 +65,15 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
+	 * Returns the report findings.
+	 * 
+	 * @return
+	 */
+	public String getReports() {
+		return findings;
+	}
+	
+	/**
 	 * Reports some findings by a Worker. This may adjust characteristics of the RA.
 	 * 
 	 * @param unit
@@ -74,12 +83,21 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
-	 * Gathers some samples as part of this agenda.
+	 * Returns the data collection.
+	 * 
+	 * @return
+	 */
+	public String getData() {
+		return data;
+	}
+
+	/**
+	 * Gathers data as part of this agenda.
 	 * 
 	 * @param unit
 	 */
-	public void gatherSamples(Worker unit) {
-		logger.fine(unit, name + ": " + samples);
+	public void gatherData(Worker unit) {
+		logger.fine(unit, name + ": " + data);
 	}
 	
 	public String toString() {

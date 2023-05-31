@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AuthorityEditor.java
- * @date 2021-09-04
+ * @date 2023-05-31
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -35,7 +35,7 @@ import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
-import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -183,8 +183,8 @@ public class AuthorityEditor  {
 				String selected = (String) agendaCB.getSelectedItem();
 				MissionAgenda selectedAgenda = raFactory.getAgenda(selected);
 				agendaObjective.setText(OBJECTIVE + selectedAgenda.getObjectiveName());
-				ta.setText(selectedAgenda.getAgendas().stream()
-						.map(MissionSubAgenda::getDescription)
+				ta.setText(selectedAgenda.getCapabilities().stream()
+						.map(MissionCapability::getDescription)
 						.collect(Collectors.joining(".\n- ", "- ", ".")));
 			}
 		});
