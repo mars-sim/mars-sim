@@ -351,14 +351,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected final void leaveVehicle() {
 		if (hasVehicle()) {
-			vehicle.setReservedForMission(false);
-			if (vehicle.getMission().equals(this)) {
+			if (this.equals(vehicle.getMission())) {
+				vehicle.setReservedForMission(false);
 				vehicle.setMission(null);
+				vehicle.removeUnitListener(this);
+				fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 			}
-			vehicle.removeUnitListener(this);
-			//vehicle = null;
-
-			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 	}
 
@@ -1707,10 +1705,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		if (addMissionStatus(status)) {
 			// If the MissionFlag is not present then do it
-			// A resource is mission
-			determineEmergencyDestination(status);
-
-			logger.info(getVehicle(), status.getName());
+			
+			// If mission is still at home then leave the vehicle
+			if (getStage() == Stage.PREPARATION) {
+				leaveVehicle();
+			}
+			else {
+				determineEmergencyDestination(status);
+			}
 
 			// Create an event if needed
 			if (eventType != null) {

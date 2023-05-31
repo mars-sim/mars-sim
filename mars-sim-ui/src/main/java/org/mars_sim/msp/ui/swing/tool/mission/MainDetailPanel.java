@@ -517,27 +517,25 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * @param newMission
 	 */
 	public void setMission(Mission newMission) {
+		// Remove this as previous mission listener.
+		if (missionCache != null)
+			missionCache.removeMissionListener(this);
+
 		if (newMission == null) {	
 			clearInfo();
 			return;
 		}
+				
+		missionCache = newMission;
 		
-		// Remove this as previous mission listener.
-		if (missionCache != null)
-			missionCache.removeMissionListener(this);
-					
-		if (missionCache == null || missionCache != newMission) {
-			missionCache = newMission;
-			
-			// Add this as listener for new mission.
-			newMission.addMissionListener(this);
-			
-			setCurrentMission(newMission);
-			// Update info on Main tab
-			updateMainTab(newMission);
-			// Update custom mission panel.
-			updateCustomPanel(newMission);
-		}
+		// Add this as listener for new mission.
+		newMission.addMissionListener(this);
+		
+		setCurrentMission(newMission);
+		// Update info on Main tab
+		updateMainTab(newMission);
+		// Update custom mission panel.
+		updateCustomPanel(newMission);
 	}
 
 
@@ -553,7 +551,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			return;
 		}
 
-		if (currentVehicle == null && mission.getMembers().isEmpty() && mission.isDone()) {
+		if (mission.isDone()) {
 			// Check if the mission is done and the members have been disbanded
 			memberOuterPane.removeAll();
 			memberOuterPane.add(memberLabel);

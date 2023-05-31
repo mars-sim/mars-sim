@@ -664,6 +664,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void abortMission(MissionStatus reason, EventType event) {
 		aborted = true;
+		logger.info(getStartingPerson(), "Mission " + getName() + " aborted " + reason.getName());
 	}
 
 	/**

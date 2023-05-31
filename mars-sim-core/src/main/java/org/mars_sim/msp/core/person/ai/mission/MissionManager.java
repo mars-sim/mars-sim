@@ -362,7 +362,10 @@ public class MissionManager implements Serializable {
 			else if (newStatus == PlanType.NOT_APPROVED) {
 				missionPlan.setStatus(PlanType.NOT_APPROVED);
 				historicalMissions.increaseDataPoint(PlanType.NOT_APPROVED.name(), 1D);
-				removeMission(missionPlan.getMission());
+
+				Mission m = missionPlan.getMission();
+				m.abortMission("Rejected");
+				removeMission(m);
 			}
 		}
 	}

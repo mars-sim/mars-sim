@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
+import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
@@ -75,7 +76,9 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	private Map<Mission,DefaultMutableTreeNode> missionNodes = new HashMap<>();
 	private JButton abortButton;
 	private JButton editButton;
+	private JButton approveButton;
 	private JTree missionTree;
+	private JButton rejectButton;
 
 	/**
 	 * Constructor.
@@ -166,7 +169,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		mPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the create mission button.
-		JButton createButton = new JButton("Create New Mission");
+		JButton createButton = new JButton("Create");
 		createButton.addActionListener(e -> 
 				// Create new mission.
 				createNewMission()
@@ -174,30 +177,39 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
-		editButton = new JButton("Modify Mission");
+		editButton = new JButton("Modify");
 		editButton.setEnabled(false);
 
 		editButton.addActionListener(e -> {
 			if (missionCache != null) editMission(missionCache);
 		});
-
 		buttonPane.add(editButton);
 
+		// Create the approve mission button.
+		approveButton = new JButton("Approve");
+		approveButton.setEnabled(false);
+		approveButton.addActionListener(e -> {
+			if (missionCache != null) reviewMission(missionCache, true);
+		});
+		buttonPane.add(approveButton);
+		rejectButton = new JButton("Reject");
+		rejectButton.setEnabled(false);
+		rejectButton.addActionListener(e -> {
+			if (missionCache != null) reviewMission(missionCache, false);
+		});
+		buttonPane.add(rejectButton);
+
 		// Create the abort mission button.
-		abortButton = new JButton("Abort Mission");
+		abortButton = new JButton("Abort");
 		abortButton.setEnabled(false);
 		abortButton.addActionListener(e -> {
 			// End the mission.
 			if (missionCache != null) missionCache.abortMission("User aborted");
 		});
-	
-
 		buttonPane.add(abortButton);
 
 		setSize(new Dimension(WIDTH, HEIGHT));
 		setResizable(true);
-
-		setVisible(true);
 
 		// Reselect previous mission
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
@@ -248,18 +260,20 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	 */
 	private void selectMission(Mission newMission) {	
 		
-		if (missionCache == null || !missionCache.equals(newMission)) {
-			// Update the cache
-			missionCache = newMission;
+		// Update the cache
+		missionCache = newMission;
 
-			abortButton.setEnabled(missionCache != null);
-			editButton.setEnabled(missionCache != null);
+		abortButton.setEnabled(missionCache != null);
+		editButton.setEnabled(missionCache != null);
 
-			// Highlight the selected mission in Main tab
-			mainPanel.setMission(newMission);
-			// Highlight the selected mission in Nav tab
-			navpointPane.setMission(newMission);
-		}
+		boolean preMission = ((missionCache != null) && (missionCache.getStage() == Stage.PREPARATION));
+		approveButton.setEnabled(preMission);
+		rejectButton.setEnabled(preMission);
+
+		// Highlight the selected mission in Main tab
+		mainPanel.setMission(newMission);
+		// Highlight the selected mission in Nav tab
+		navpointPane.setMission(newMission);
 	}
 
 	/**
@@ -268,6 +282,20 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	private void createNewMission() {
 		createMissionWizard = new CreateMissionWizard(desktop, this);
 	}
+
+	/**
+	 * Approve a mission being review
+	 * @param mission the mission to review
+	 */
+	private void reviewMission(Mission mission, boolean approved) {
+		MissionPlanning plan = mission.getPlan();
+		if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
+			missionMgr.approveMissionPlan(plan, (approved ?
+								PlanType.APPROVED : PlanType.NOT_APPROVED), 0);
+			selectMission(mission); // Force a full refresh
+		}
+	}
+
 
 	/**
 	 * Open wizard to edit a mission.
