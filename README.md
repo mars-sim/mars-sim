@@ -17,7 +17,9 @@
 
 ## Table of Contents
 * [Introduction](#introduction)  
-   * [Simulation](#simulation)  
+   * [Simulation](#simulation)
+* [Settlement Development](#settlement-development)
+   * [Economics](#economics)   
    * [Space Agencies](#space-agencies)   
 * [Operation Modeling](#operation-modeling)
    * [Timekeeping](#timekeeping)
@@ -31,10 +33,8 @@
    * [Mission](#mission)
    * [Weather](#weather)
    * [Maintenance and Malfunction](#maintenance-and-malfunction)
-* [Settlement Development](#settlement-development)
-   * [Economics](#economics)
 * [Summary](#summary)
-* [Getting Started](#getting-started)
+* [Set up](#set-up)
    * [Prerequisites](#prerequisites)
    * [JDK and JavaFX](#jdk-and-javafx)
    * [OS Platforms](#os-platforms)
@@ -80,11 +80,36 @@ For instance, each settler is assigned with a job, a role, having technical
 They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship)
 as they interact and work with one another. They are there to live, dream, explore, and settle Mars.
 
+---
+
+# Settlement Development
+
+One of the goals of mars-sim is to populate the surface of Mars with human settlements.
+Each settlement has an initial sponsor to guide its development but will eventually develop
+its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and
+*[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
+
+mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has 6 basic types of
+[settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from.
+A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base
+is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
+is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot*
+near sites with high mineral concentrations. Depending on its country or origin and/or sponsor,
+each level of template may vary in the numbers and types of building it contains.
+
+## Economics
+
+In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
+**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
+As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
+by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
+
 ## Space Agencies 
 
-A settler may come from any one of 29 major countries as listed in this [countries wiki](https://github.com/mars-sim/mars-sim/wiki/Countries).
-Note that the European Space Agency (ESA) consists of 22 member nations who are funding the space development effort.
-Altogether, there's also 10 possible space agencies that can be acted as a sponsor to a settlement.
+It is an incredible understaking in that there are 29 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+participating in this dream of making Mars as the second home for humanity. Altogether, there's 10 
+possible space agencies to choose from as a sponsor to start a settlement. Notably, European Space Agency (ESA) 
+is a bloc that consists of 22 member nations willing to fund this space development effort. 
 
 ---
 
@@ -183,7 +208,9 @@ to play.
 
 ## Task
 
-Settlers spend much of their time learning to *live off the land* and engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as maintenance, ensuring life support resources are plentifully supplied, growing food crops in
+Settlers spend much of their time learning to *live off the land* and engage in various 
+[tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as maintenance, 
+ensuring life support resources are plentifully supplied, growing food crops in
 [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary
 [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts
 and equipment in workshops, all of which are vital to the health of the economy of the settlements. 
@@ -207,8 +234,8 @@ in mars-sim.
 
 ## Maintenance and Malfunction
 
-The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions)
-that can occur at a given moment. 
+The perils of living on Mars are very real. There is a total of 39 types of 
+[Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. 
 
 There are 3 metrics for tracking how reliable a Part is. The [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
 is shown in terms of Percentage, Failure Rate, Mean Time Between Failure (MTBF), which are 
@@ -216,29 +243,8 @@ dynamically updated in light of any incidents that occur during the simulation. 
 malfunction, workshops and machinery factories are to produce parts for
 replenishing parts to be used during regular [maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
+
 ---
-
-# Settlement Development
-
-One of the goals of mars-sim is to populate the surface of Mars with human settlements.
-Each settlement has an initial sponsor to guide its development but will eventually develop
-its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and
-*[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
-
-mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has 6 basic types of
-[settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from.
-A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base
-is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
-is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot*
-near sites with high mineral concentrations. Depending on its country or origin and/or sponsor,
-each level of template may vary in the numbers and types of building it contains.
-
-## Economics
-
-In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
-**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
-As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
-by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
 ## Summary
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents,
@@ -251,7 +257,7 @@ planetary surface.
 
 ---
 
-# Getting Started
+# Set up
 
 Below is a summary of how player may set up one's machine to evaluate and develop mars-sim
 
@@ -439,20 +445,21 @@ e.g. Include the followings :
  - Monitor Tool's showing People/Vehicle/Mission tabs
  - Settlement Map, etc.
 
-**Specifications  (please complete the following information):**
- - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17 etc.]
- - mars-sim build version : [e.g. r7882, 3.5.0, pre-3.5.0, etc.]
+**Specifications (please complete)**
+ - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
+ - Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17]
+ - Major version and build : [e.g. 3.5.0 build 8103]
 
 **Additional context**
- - Add any other context about the problem here.
+ - Add any other context about the problem here. By providing more info above when filing it, 
+   you help expedite the handling of the issues you submit.
 
-> Note 1 : By providing the info above from the start, you help expedite the handling of the issue you submit.
-
-> Note 2 : if you double-click the jar file to start mars-sim and nothing shows up, it's possible that an instance of
-a JVM be created but it fails to load MainScene. In Windows OS, you may hit Ctrl+ESC to bring up the Task Manager and
-scroll down to see any "orphaned" instances of `Java(TM) Platform SE binary` running in the background. Be sure you
-clear them off the memory by right-clicking on it and choosing `End Task`.
+> Note 1 : if you double-click the jar file to start mars-sim and nothing shows up, 
+it's possible that an instance of JVM is already being created in the background 
+that has failed to load Main Window. To see if it's indeed the case, in Windows OS, 
+you may hit Ctrl+ESC to bring up the Task Manager and scroll down to see any 
+*orphaned* instances of `Java(TM) Platform SE binary` running in the background. 
+Be sure you first clear them off the memory by right-clicking on it and choosing `End Task`.
 
 
 ### Contribution
