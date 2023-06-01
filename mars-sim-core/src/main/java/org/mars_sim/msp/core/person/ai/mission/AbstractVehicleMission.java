@@ -326,11 +326,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (newVehicle != null) {
 			vehicle = newVehicle;
 			startingTravelledDistance = vehicle.getOdometerMileage();
-			vehicle.setReservedForMission(true);
-			vehicle.addUnitListener(this);
-			vehicle.setMission(this);
-			
-			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+			claimVehicle(vehicle);
 		}
 		else {
 			throw new IllegalArgumentException("newVehicle is null.");
@@ -348,16 +344,31 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/**
 	 * Leaves the mission's vehicle and unreserves it.
+	 * @param v Vehicle to be released
 	 */
-	protected final void leaveVehicle() {
-		if (hasVehicle()) {
-			if (this.equals(vehicle.getMission())) {
-				vehicle.setReservedForMission(false);
-				vehicle.setMission(null);
-				vehicle.removeUnitListener(this);
-				fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
-			}
+	protected final void releaseVehicle(Vehicle v) {
+		if ((v != null) && this.equals(v.getMission())) {
+			v.setReservedForMission(false);
+			v.setMission(null);
+			v.removeUnitListener(this);
+			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
+	}
+
+	/**
+	 * Claim the mission's vehicle and reserve it.
+	 * @param v Vehicle to be claimed
+	 */
+	protected final void claimVehicle(Vehicle v) {
+		if (v.getMission() != null) {
+			logger.warning(v, "Aready assigned to a Mission when assigning " + getName());
+		}
+
+		v.setReservedForMission(true);
+		v.addUnitListener(this);
+		v.setMission(this);
+		
+		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 	}
 
 	/**
@@ -434,7 +445,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		if (continueToEndMission) {
 			setPhaseEnded(true);
-			leaveVehicle();
+			releaseVehicle(vehicle);
 			super.endMission(endStatus);
 		}
 	}
@@ -1708,7 +1719,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			// If mission is still at home then leave the vehicle
 			if (getStage() == Stage.PREPARATION) {
-				leaveVehicle();
+				releaseVehicle(vehicle);
 			}
 			else {
 				determineEmergencyDestination(status);

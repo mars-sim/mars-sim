@@ -569,7 +569,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		else {
 			// Complete embark once everyone is out of the Vehicle
 			// Leave the vehicle.
-			leaveVehicle();
+			releaseVehicle(rover);
 			// End the phase.
 			setPhaseEnded(true);
 		}

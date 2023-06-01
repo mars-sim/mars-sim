@@ -299,7 +299,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 				BuildingManager.removeFromGarage(v);
 
 				// Leave the vehicle.
-				leaveVehicle();
+				releaseVehicle(getVehicle());
 				setPhaseEnded(true);
 			}
 		}
