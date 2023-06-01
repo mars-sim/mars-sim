@@ -179,9 +179,9 @@
         yloc="-60.0" facing="0.0" />
 
     <building type="Wind Turbine" xloc="-24.0" yloc="60.0"
-        facing="270.0" />
+        facing="0.0" />
     <building type="Wind Turbine" xloc="-24.0" yloc="30.0"
-        facing="270.0" />
+        facing="0.0" />
 
     <building type="Methane Power Generator" xloc="-44.5"
         yloc="5.0" facing="270.0" />
