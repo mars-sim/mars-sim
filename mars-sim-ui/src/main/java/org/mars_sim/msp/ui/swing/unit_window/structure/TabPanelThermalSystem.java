@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -54,7 +53,6 @@ public class TabPanelThermalSystem
 extends TabPanel {
 
 	// default logger.
-	//private static final Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	
 	private static final String HEAT_ICON = "heat";
 	
@@ -70,20 +68,14 @@ extends TabPanel {
 
 	private JTable heatTable ;
 
-	/**
-	 *
-	 */
 	private JScrollPane heatScrollPane;
 	
 	private JCheckBox checkbox;
 
-	JLabel heatGenTF;
-
-	JLabel powerGenTF;
-
-	JLabel electricEffTF;
-
-	private JTextField solarEffTF;
+	private JLabel heatGenTF;
+	private JLabel powerGenTF;
+	private JLabel electricEffTF;
+	private JLabel solarEffTF;
 	
 	/** Table model for heat info. */
 	private HeatTableModel heatTableModel;
@@ -98,6 +90,7 @@ extends TabPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -145,7 +138,7 @@ extends TabPanel {
 									Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency.tooltip")); //$NON-NLS-1$
 
 		double eff_solar_heat =  getAverageEfficiencySolarHeating();
-		heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"),
+		solarEffTF = heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"),
 									StyleManager.DECIMAL_PERC.format(eff_solar_heat*100D),			
 									Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 
@@ -196,7 +189,7 @@ extends TabPanel {
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		heatColumns.getColumn(1).setCellRenderer(renderer);
+//		heatColumns.getColumn(1).setCellRenderer(renderer);
 		heatColumns.getColumn(2).setCellRenderer(renderer);
 		heatColumns.getColumn(3).setCellRenderer(renderer);
 		heatColumns.getColumn(4).setCellRenderer(renderer);
@@ -205,7 +198,7 @@ extends TabPanel {
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-		// Added sorting
+		// Add sorting
 		heatTable.setAutoCreateRowSorter(true);
 
 		heatScrollPane.setViewportView(heatTable);
@@ -280,9 +273,6 @@ extends TabPanel {
 	@Override
 	public void update() {
 
-		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
-		// Check if the old heatGenCapacityCache is different from the latest .
 		double heat = thermalSystem.getGeneratedHeat();
 		if (heatGenCache != heat) {
 			heatGenCache = heat;
@@ -339,7 +329,6 @@ extends TabPanel {
 			dotGreen_half = ImageLoader.getIconByName("dot/green_half"); 
 			dotGreen_quarter = ImageLoader.getIconByName("dot/green_quarter"); 
 			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_threeQuarter");
-	
 		}
 
 		public int getRowCount() {
@@ -446,7 +435,7 @@ extends TabPanel {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

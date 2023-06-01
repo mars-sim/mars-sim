@@ -233,8 +233,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		// powerColumns.getColumn(0).setCellRenderer(renderer);
-		powerColumns.getColumn(1).setCellRenderer(renderer);
+//		powerColumns.getColumn(1).setCellRenderer(renderer);
 		powerColumns.getColumn(2).setCellRenderer(renderer);
 		powerColumns.getColumn(3).setCellRenderer(renderer);
 		powerColumns.getColumn(4).setCellRenderer(renderer);
