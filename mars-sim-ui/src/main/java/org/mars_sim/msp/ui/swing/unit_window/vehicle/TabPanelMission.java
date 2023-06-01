@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -89,9 +88,8 @@ extends TabPanel {
 
 	@Override
 	protected void buildUI(JPanel topContentPanel) {
-		MissionManager missionManager = getSimulation().getMissionManager();
 
-		Mission mission = missionManager.getMissionForVehicle(vehicle);
+		Mission mission = vehicle.getMission();
 
 		// Prepare mission top panel
 		JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -172,7 +170,7 @@ extends TabPanel {
 		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(e -> {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission m = missionManager.getMissionForVehicle(vehicle);
+				Mission m = vehicle.getMission();
 				if (m != null) {
 					getDesktop().showDetails(m);
 				}
@@ -186,7 +184,7 @@ extends TabPanel {
 		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(e -> {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission m = missionManager.getMissionForVehicle(vehicle);
+				Mission m = vehicle.getMission();
 				if (m != null) {
 					try {
 						getDesktop().addModel(new PersonTableModel(m));
@@ -205,7 +203,7 @@ extends TabPanel {
 	@Override
 	public void update() {
 		Vehicle vehicle = (Vehicle) getUnit();
-		Mission mission = getSimulation().getMissionManager().getMissionForVehicle(vehicle);
+		Mission mission = vehicle.getMission();
 
 		if (mission != null) {
 		    missionCache = mission.getName();

@@ -53,7 +53,6 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -518,27 +517,25 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * @param newMission
 	 */
 	public void setMission(Mission newMission) {
+		// Remove this as previous mission listener.
+		if (missionCache != null)
+			missionCache.removeMissionListener(this);
+
 		if (newMission == null) {	
 			clearInfo();
 			return;
 		}
+				
+		missionCache = newMission;
 		
-		// Remove this as previous mission listener.
-		if (missionCache != null)
-			missionCache.removeMissionListener(this);
-					
-		if (missionCache == null || missionCache != newMission) {
-			missionCache = newMission;
-			
-			// Add this as listener for new mission.
-			newMission.addMissionListener(this);
-			
-			setCurrentMission(newMission);
-			// Update info on Main tab
-			updateMainTab(newMission);
-			// Update custom mission panel.
-			updateCustomPanel(newMission);
-		}
+		// Add this as listener for new mission.
+		newMission.addMissionListener(this);
+		
+		setCurrentMission(newMission);
+		// Update info on Main tab
+		updateMainTab(newMission);
+		// Update custom mission panel.
+		updateCustomPanel(newMission);
 	}
 
 
@@ -554,7 +551,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			return;
 		}
 
-		if (currentVehicle == null && mission.getMembers().isEmpty() && mission.isDone()) {
+		if (mission.isDone()) {
 			// Check if the mission is done and the members have been disbanded
 			memberOuterPane.removeAll();
 			memberOuterPane.add(memberLabel);
@@ -596,6 +593,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (vehicle != null) {
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
+			}
+
+			if (vehicle != null && !mission.isDone()) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(StyleManager.DECIMAL_KMH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				try {
@@ -622,12 +622,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 			}
 			else {
-	
-				String name = ((AbstractVehicleMission)vehicleMission).getVehicleName();
-				
-				if (name != null)
-					vehicleButton.setText(name);
-				
 				vehicleStatusLabel.setText(" ");
 				speedLabel.setText(StyleManager.DECIMAL_KMH.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -639,7 +633,6 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 						travelledDistance,
 						estTotalDistance
 						));
-				
 				
 				if (currentVehicle != null) {
 					currentVehicle.removeUnitListener(this);

@@ -586,6 +586,9 @@ public class BuildingSalvageMission extends AbstractMission
 			while (i.hasNext()) {
 				GroundVehicle vehicle = i.next();
 				vehicle.setReservedForMission(false);
+				if (vehicle.getMission().equals(this)) {
+					vehicle.setMission(null);
+				}
 
 				// Store construction vehicle in settlement.
 				settlement.addParkedVehicle(vehicle);

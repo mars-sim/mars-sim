@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -41,10 +40,8 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -167,6 +164,8 @@ public abstract class Vehicle extends Unit
 	private VehicleSpec spec;
 	
 	private String baseImage;
+
+	private Mission mission;
 
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
@@ -1259,28 +1258,26 @@ public abstract class Vehicle extends Unit
 		// Add the location to the trail if outside on a mission
 		addToTrail(getCoordinates());
 
-		correctVehicleReservation();
-
 		return true;
 	}
 
 	/**
 	 * Resets the vehicle reservation status.
 	 */
-	public void correctVehicleReservation() {
-		if (isReservedMission
-			// Set reserved for mission to false if the vehicle is not associated with a
-			// mission.
-			&& missionManager.getMissionForVehicle(this) == null) {
-				logger.log(this, Level.FINE, 5000,
-						"Found reserved for an non-existing mission. Untagging it.");
-				setReservedForMission(false);
-		} else if (missionManager.getMissionForVehicle(this) != null) {
-				logger.log(this, Level.FINE, 5000,
-						"On a mission but not registered as mission reserved. Correcting it.");
-				setReservedForMission(true);
-		}
-	}
+	// public void correctVehicleReservation() {
+	// 	if (isReservedMission
+	// 		// Set reserved for mission to false if the vehicle is not associated with a
+	// 		// mission.
+	// 		&& missionManager.getMissionForVehicle(this) == null) {
+	// 			logger.log(this, Level.FINE, 5000,
+	// 					"Found reserved for an non-existing mission. Untagging it.");
+	// 			setReservedForMission(false);
+	// 	} else if (missionManager.getMissionForVehicle(this) != null) {
+	// 			logger.log(this, Level.FINE, 5000,
+	// 					"On a mission but not registered as mission reserved. Correcting it.");
+	// 			setReservedForMission(true);
+	// 	}
+	// }
 
 	/**
 	 * Gets a collection of people affected by this entity.
@@ -1514,30 +1511,13 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Checks if this vehicle is involved in a mission.
-	 *
-	 * @return true if yes
 	 */
 	public Mission getMission() {
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (!mission.isDone()) {
-				if (mission instanceof VehicleMission) {
-					if (((VehicleMission) mission).getVehicle() == this) {
-						return mission;
-					}
-					
-				} else if (mission instanceof ConstructionMission construction) {
-					if (!construction.getConstructionVehicles().isEmpty() 
-						&& construction.getConstructionVehicles().contains(this)) {
-						return mission;
-					}
+		return mission;
+	}
 
-				}
-			}
-		}
-
-		return null;
+	public void setMission(Mission newMission) {
+		this.mission = newMission;
 	}
 
 	/**

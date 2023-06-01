@@ -27,7 +27,6 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -89,8 +88,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private Coordinates destinationLocationCache;
     private Settlement destinationSettlementCache;
 
-	private MissionManager missionManager;
-
     /**
      * Constructor
      *
@@ -107,8 +104,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         );
 	
         vehicle = unit;
-
-        missionManager = desktop.getSimulation().getMissionManager();
 	}
 
     @Override
@@ -175,7 +170,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         boolean hasDestination = false;
 
-        Mission mission = missionManager.getMissionForVehicle(vehicle);
+        Mission mission = vehicle.getMission();
         if (mission instanceof VehicleMission) {
 
             VehicleMission vehicleMission = (VehicleMission) mission;
@@ -321,7 +316,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             pilotLabel.setText(pilot);
         }
         
-        Mission mission = missionManager.getMissionForVehicle(vehicle);
+        Mission mission = vehicle.getMission();
         
         boolean hasDestination = false;
         		
@@ -483,7 +478,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 	    terrainDisplay = null; 
 	    destinationLocationCache = null; 
 	    destinationSettlementCache = null; 
-		missionManager = null; 
 	}
 	
     

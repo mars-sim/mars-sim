@@ -187,7 +187,7 @@ public class Mining extends EVAMission
 			logger.warning("Light utility vehicle not available.");
 			endMission(LUV_NOT_AVAILABLE);
 		} else {
-			luv.setReservedForMission(true);
+			claimVehicle(luv);
 		}
 
 		// Set initial mission phase.
@@ -557,7 +557,7 @@ public class Mining extends EVAMission
 			miningSite.setReserved(false);
 		}
 		if (luv != null) {
-			luv.setReservedForMission(false);
+			releaseVehicle(luv);
 		}
 	}
 
@@ -567,22 +567,18 @@ public class Mining extends EVAMission
 	 * @return reserved light utility vehicle or null if none.
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
-		LightUtilityVehicle result = null;
-
-		Iterator<Vehicle> i = getStartingSettlement().getParkedVehicles().iterator();
-		while (i.hasNext() && (result == null)) {
-			Vehicle vehicle = i.next();
+		for(Vehicle vehicle : getStartingSettlement().getParkedVehicles()) {
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
 				if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
-					result = luvTemp;
-					luvTemp.setReservedForMission(true);
+					claimVehicle(luvTemp);
+					return luvTemp;
 				}
 			}
 		}
 
-		return result;
+		return null;
 	}
 
 	/**

@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -38,8 +37,6 @@ extends WizardPanel {
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
-	private static MissionManager missionManager;
-
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -47,9 +44,7 @@ extends WizardPanel {
 	public LightUtilityVehiclePanel(CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
-		
-		missionManager = getSimulation().getMissionManager();
-		
+				
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -188,7 +183,7 @@ extends WizardPanel {
 					else if (column == 1) 
 						result = vehicle.printStatusTypes();
 					else if (column == 2) {
-						Mission mission = missionManager.getMissionForVehicle(vehicle);
+						Mission mission = vehicle.getMission();
 						if (mission != null) result = mission.getName();
 						else result = "None";
 					}
@@ -230,7 +225,7 @@ extends WizardPanel {
 					result = true;
 			}
 			else if (column == 2) {
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
+				Mission mission = vehicle.getMission();
 				if (mission != null) result = true;
 			}
 

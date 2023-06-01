@@ -28,7 +28,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -51,9 +50,7 @@ class ConstructionVehiclePanel extends WizardPanel {
     private JLabel requiredLabel;
     private JLabel selectedLabel;
     private JLabel errorMessageLabel;
-    
-	private MissionManager missionManager;
-	
+    	
     /**
      * Constructor
      * @param wizard the create mission wizard.
@@ -61,9 +58,7 @@ class ConstructionVehiclePanel extends WizardPanel {
     ConstructionVehiclePanel(final CreateMissionWizard wizard) {
         // User WizardPanel constructor.
         super(wizard);
-        
-		missionManager = getSimulation().getMissionManager();
-		
+        		
         // Set the layout.
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
@@ -233,7 +228,7 @@ class ConstructionVehiclePanel extends WizardPanel {
                     else if (column == 1) 
                         result = vehicle.printStatusTypes();
                     else if (column == 2) {
-                        Mission mission = missionManager.getMissionForVehicle(vehicle);
+                        Mission mission = vehicle.getMission();
                         if (mission != null) result = mission.getName();
                         else result = "None";
                     }
@@ -275,7 +270,7 @@ class ConstructionVehiclePanel extends WizardPanel {
                 	result = true;
             }
             else if (column == 2) {
-                Mission mission = missionManager.getMissionForVehicle(vehicle);
+                Mission mission = vehicle.getMission();
                 if (mission != null) result = true;
             }
             

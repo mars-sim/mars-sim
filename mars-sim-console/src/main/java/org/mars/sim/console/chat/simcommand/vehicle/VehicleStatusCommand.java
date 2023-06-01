@@ -54,8 +54,7 @@ public class VehicleStatusCommand extends ChatCommand {
 			buffer.appendLabeledString("Operator", operator.getName());
 		}
 		
-		// TODO Why it this not on the Vehicle ????
-		Mission m = context.getSim().getMissionManager().getMissionForVehicle(source);
+		Mission m = source.getMission();
 		if (m != null) {
 			buffer.appendLabeledString("Mission", m.getName());
 			buffer.appendLabeledString("Mission Phase", m.getPhaseDescription());

@@ -217,7 +217,6 @@ public class WalkSettlementInterior extends Task {
 	private double walkingPhase(double time) {
 		double remainingTime = time - minPulseTime;
 		
-		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = 0;
 		
 		if (person != null) {
@@ -237,15 +236,16 @@ public class WalkSettlementInterior extends Task {
 		}
 		
 		// Determine walking distance.
-		double coveredKm = speed * timeHours;
-		double coveredMeters = coveredKm * 1000D;
+		double coveredMeters =  1000D * speed * MarsClock.HOURS_PER_MILLISOL * time;
 		double remainingPathDistance = getRemainingPathDistance();
 
-		
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
 			remainingTime = time - MarsClock.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
+		}
+		else {
+			remainingTime = 0D; // Use all the remaining time
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {

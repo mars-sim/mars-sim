@@ -313,19 +313,7 @@ public class BuildingConstructionMission extends AbstractMission
 		this.settlement = settlement;
 		this.constructionVehicles = vehicles;
 
-//		int bestConstructionSkill = 0;
-
 		setMissionCapacity(MAX_PEOPLE);
-
-//		Iterator<Worker> i = members.iterator();
-//		while (i.hasNext()) {
-//			Worker member = i.next();
-//			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-//
-//			if (constructionSkill > bestConstructionSkill) {
-//				bestConstructionSkill = constructionSkill;
-//			}
-//		}
 
 		ConstructionManager manager = settlement.getConstructionManager();
 
@@ -351,7 +339,6 @@ public class BuildingConstructionMission extends AbstractMission
 
 				if (!isDone()) {
 					// Reserve construction vehicles.
-					// reserveConstructionVehicles();
 					// Retrieve construction LUV attachment parts.
 					retrieveConstructionLUVParts();
 					startPhase();
@@ -422,7 +409,6 @@ public class BuildingConstructionMission extends AbstractMission
 
 				if (!isDone()) {
 					// Reserve construction vehicles.
-					// reserveConstructionVehicles();
 					// Retrieve construction LUV attachment parts.
 					retrieveConstructionLUVParts();
 					startPhase();
@@ -503,6 +489,7 @@ public class BuildingConstructionMission extends AbstractMission
 					LightUtilityVehicle luv = reserveLightUtilityVehicle();
 					if (luv != null) {
 						constructionVehicles.add(luv);
+						luv.setMission(this);
 					} else {
 						logger.warning(settlement, "BuildingConstructionMission : LUV not available");
 						endMission(LUV_NOT_AVAILABLE);
@@ -766,6 +753,11 @@ public class BuildingConstructionMission extends AbstractMission
 		// Unreserve all LUV attachment parts for this mission.
 		unreserveLUVparts();
 
+		for(GroundVehicle v : getConstructionVehicles()) {
+			if (v.getMission().equals(this)) {
+				v.setMission(null);
+			}
+		}
 		super.endMission(endStatus);
 	}
 

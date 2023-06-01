@@ -470,7 +470,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public Stage getStage() {
-		return (done ? Stage.DONE : phase.getStage());
+		return (done ? Stage.DONE :
+				// If no phase that Mission is building built so stage is PREP
+				(phase != null ? phase.getStage() : Stage.PREPARATION));
 	}
 
 	/**
@@ -662,6 +664,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void abortMission(MissionStatus reason, EventType event) {
 		aborted = true;
+		logger.info(getStartingPerson(), "Mission " + getName() + " aborted " + reason.getName());
 	}
 
 	/**

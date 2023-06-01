@@ -27,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -50,7 +49,6 @@ class FlyerPanel extends WizardPanel {
 	private VehicleTableModel vehicleTableModel;
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
-	private MissionManager missionManager;
 
 	/**
 	 * Constructor.
@@ -60,7 +58,6 @@ class FlyerPanel extends WizardPanel {
 	FlyerPanel(final CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
-		missionManager = getSimulation().getMissionManager();
 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -237,7 +234,7 @@ class FlyerPanel extends WizardPanel {
 					else if (column == 5)
 						result = vehicle.printStatusTypes();
 					else if (column == 6) {
-						Mission mission = missionManager.getMissionForVehicle(vehicle);
+						Mission mission = vehicle.getMission();
 						if (mission != null)
 							result = mission.getName();
 						else
@@ -290,7 +287,7 @@ class FlyerPanel extends WizardPanel {
 				}
 				
 			} else if (column == 9) {
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
+				Mission mission = vehicle.getMission();
 				if (mission != null)
 					result = true;
 			}

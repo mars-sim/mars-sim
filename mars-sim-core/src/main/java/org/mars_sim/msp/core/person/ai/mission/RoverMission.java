@@ -501,7 +501,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Make sure the rover chasis is not overlapping a building structure in the settlement map
         if (!isRoverInAGarage) {
-//        	rover.findNewParkingLoc();
 
         	// Outside so preload all EVASuits before the Unloading starts
         	int suitsNeeded = rover.getCrew().size();
@@ -570,9 +569,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		else {
 			// Complete embark once everyone is out of the Vehicle
 			// Leave the vehicle.
-			leaveVehicle();
-			// Reset the vehicle reservation
-			v.correctVehicleReservation();
+			releaseVehicle(rover);
 			// End the phase.
 			setPhaseEnded(true);
 		}
