@@ -8,17 +8,19 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -89,8 +91,11 @@ public class TabPanelPowerGrid extends TabPanel {
 
 	private JScrollPane powerScrollPane;
 
-	private JCheckBox checkbox;
-
+	private JRadioButton r0;
+	private JRadioButton r1;
+	private JRadioButton r2;
+	private JRadioButton r3;
+	
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
 	/** The settlement's power grid. */
@@ -123,7 +128,8 @@ public class TabPanelPowerGrid extends TabPanel {
 	protected void buildUI(JPanel content) {
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
-		buildings = manager.getBuildingsWithPowerGeneration();
+		buildings = manager.getBuildingsF1NoF2F3(
+				FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
 
 		JPanel topContentPanel = new JPanel(new BorderLayout());
 		content.add(topContentPanel, BorderLayout.NORTH);
@@ -169,20 +175,37 @@ public class TabPanelPowerGrid extends TabPanel {
 									StyleManager.DECIMAL_PLACES2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL,
 									Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 
-		// Create override check box panel.
-		JPanel checkboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
 
-		// Create override check box.
-		checkbox = new JCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
-		checkbox.setToolTipText(Msg.getString("TabPanelPowerGrid.checkbox.tooltip")); //$NON-NLS-1$
-		checkbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setNonGenerating(checkbox.isSelected());
-			}
-		});
-		checkbox.setSelected(false);
-		checkboxPane.add(checkbox);
+		// Create a button panel
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+		topContentPanel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Choose Buildings"));
+		buttonPanel.setToolTipText("Select the type of buildings");
+
+		ButtonGroup group0 = new ButtonGroup();
+
+		r0 = new JRadioButton("Power Bldgs", true);
+		r1 = new JRadioButton("Bldgs w/ Gen");
+		r2 = new JRadioButton("Bldgs w/o Gen");
+		r3 = new JRadioButton("All");
+
+		group0.add(r0);
+		group0.add(r1);
+		group0.add(r2);
+		group0.add(r3);
+		
+		buttonPanel.add(r0);
+		buttonPanel.add(r1);
+		buttonPanel.add(r2);
+		buttonPanel.add(r3);
+
+		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
+		r0.addActionListener(actionListener);
+		r1.addActionListener(actionListener);
+		r2.addActionListener(actionListener);
+		r3.addActionListener(actionListener);
+		
 
 		// Create scroll panel for the outer table panel.
 		powerScrollPane = new JScrollPane();
@@ -229,18 +252,30 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerScrollPane.setViewportView(powerTable);
 	}
 
-	/**
-	 * Sets if non-generating buildings should be shown.
-	 * 
-	 * @param value true or false.
-	 */
-	private void setNonGenerating(boolean value) {
-		if (value)
-			buildings = manager.getSortedBuildings();
-		else
-			buildings = manager.getBuildingsWithPowerGeneration();
-		powerTableModel.update();
+
+	class PolicyRadioActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JRadioButton button = (JRadioButton) event.getSource();
+
+			if (button == r0) {
+				buildings = manager.getBuildingsF1NoF2F3(
+						FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
+			}
+			else if (button == r1) {
+				buildings = manager.getBuildingsWithPowerGeneration();
+			}
+			else if (button == r2) {
+				buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, FunctionType.THERMAL_GENERATION);
+			}
+			else if (button == r3) {
+				buildings = manager.getSortedBuildings();
+			}
+
+			powerTableModel.update();
+	    }
 	}
+	
 
 	/**
 	 * Gets a list of buildings should be shown.
@@ -248,10 +283,7 @@ public class TabPanelPowerGrid extends TabPanel {
 	 * @return a list of buildings
 	 */
 	private List<Building> getBuildings() {
-		if (checkbox.isSelected())
-			return manager.getSortedBuildings();
-		else
-			return manager.getBuildingsWithPowerGeneration();
+		return buildings;
 	}
 
 	public double getAverageEfficiency() {
@@ -451,15 +483,7 @@ public class TabPanelPowerGrid extends TabPanel {
 				buildings = tempBuildings;
 				powerScrollPane.validate();
 			}
-			/*
-			 * int newSize = buildings.size(); if (size != newSize) { size = newSize;
-			 * buildings =
-			 * settlement.getBuildingManager().getBuildingsWithPowerGeneration();
-			 * //Collections.sort(buildings); } else { List<Building> newBuildings =
-			 * settlement.getBuildingManager().getACopyOfBuildings(); if
-			 * (!buildings.equals(newBuildings)) { buildings = newBuildings;
-			 * //Collections.sort(buildings); } }
-			 */
+
 			fireTableDataChanged();
 		}
 
@@ -484,7 +508,11 @@ public class TabPanelPowerGrid extends TabPanel {
 		solarCellEfficiencyTF = null;
 		powerScrollPane = null;
 
-		checkbox = null;
+		r0 = null;
+		r1 = null;
+		r2 = null;
+		r3 = null;
+		
 		powerTableModel = null;
 		powerGrid = null;
 		manager = null;

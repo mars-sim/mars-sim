@@ -622,7 +622,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of buildings in a settlement that has a given function.
+	 * Gets a list of buildings in a settlement that does not have a given function.
 	 *
 	 * @param building function {@link FunctionType} the function of the building.
 	 * @return list of buildings
@@ -829,8 +829,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the buildings in a settlement have have all of a given array of
-	 * functions.
+	 * Gets the buildings in a settlement have both function f1 and f2.
 	 *
 	 * @param functions the array of required functions {@link BuildingFunctions}.
 	 * @return list of buildings.
@@ -841,6 +840,32 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets the buildings in a settlement have no functions f1 and f2.
+	 *
+	 * @param functions the array of required functions {@link BuildingFunctions}.
+	 * @return list of buildings.
+	 */
+	public List<Building> getBuildingsNoF1F2(FunctionType f1, FunctionType f2) {
+		return buildings.stream()
+				.filter(b -> !b.hasFunction(f1) && !b.hasFunction(f2))
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets the buildings in a settlement have function f1 but with no functions f2 and f3.
+	 *
+	 * @param functions the array of required functions {@link BuildingFunctions}.
+	 * @return list of buildings.
+	 */
+	public List<Building> getBuildingsF1NoF2F3(FunctionType f1, FunctionType f2, FunctionType f3) {
+		return buildings.stream()
+				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2) && !b.hasFunction(f3))
+				.collect(Collectors.toList());
+	}
+	
+	
+	
 	/**
 	 * Gets the buildings in the settlement with a given building category.
 	 *
