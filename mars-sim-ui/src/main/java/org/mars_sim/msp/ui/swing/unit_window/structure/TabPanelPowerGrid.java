@@ -409,16 +409,12 @@ public class TabPanelPowerGrid extends TabPanel {
 				double generated = 0D;
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
 					try {
-						// PowerGeneration generator = (PowerGeneration)
-						// building.getFunction(BuildingFunction.POWER_GENERATION);
 						generated = building.getPowerGeneration().getGeneratedPower();
 					} catch (Exception e) {
 					}
 				}
 				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 					try {
-						// ThermalGeneration heater = (ThermalGeneration)
-						// building.getFunction(BuildingFunction.THERMAL_GENERATION);
 						generated += building.getThermalGeneration().getGeneratedPower();
 					} catch (Exception e) {
 					}

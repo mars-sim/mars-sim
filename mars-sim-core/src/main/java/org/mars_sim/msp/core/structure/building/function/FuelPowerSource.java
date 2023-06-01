@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FuelPowerSource.java
- * @date 2021-10-21
+ * @date 2023-05-31
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,16 +13,18 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
+/**
+ * A fuel power source that gives a steady supply of power.
+ */
 public class FuelPowerSource extends PowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final double MAINTENANCE_FACTOR = 2D;
-	
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
+	private static final double MAINTENANCE_FACTOR = 2D;
+	
 	/** The ratio of fuel to oxidizer by mass. */
 	private static final int RATIO = 4;
 	/** The size of the fuel reserve tank. */
@@ -33,14 +35,14 @@ public class FuelPowerSource extends PowerSource {
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
 
+	public static final double ELECTRICAL_EFFICIENCY = .7125;
+
 	private boolean toggle = false;
 	
-	public static final double ELECTRICAL_EFFICIENCY = .7125;
 	/** The fuel consumption rate [kg/sol]. */
 	private double rate;
 
 	private double toggleRunningWorkTime;
-
 	/** The amount of reserved fuel. */
 	private double reserveFuel;
 	/** The amount of reserved oxidizer. */

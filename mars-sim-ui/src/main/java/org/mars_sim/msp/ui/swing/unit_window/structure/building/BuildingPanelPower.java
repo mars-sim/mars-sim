@@ -7,15 +7,20 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FissionPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -43,6 +48,8 @@ extends BuildingFunctionPanel {
 	private JLabel producedTF;
 	private JLabel usedTF;
 
+	private JLabel loadCapacityLabel;
+	
 	/** The power status cache. */
 	private PowerMode powerStatusCache;
 
@@ -70,12 +77,12 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Build the UI elements
+	 * Builds the UI elements.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
 		
-		AttributePanel springPanel = new AttributePanel(isProducer ? 3 : 2);
+		AttributePanel springPanel = new AttributePanel(isProducer ? 4 : 2);
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
@@ -87,7 +94,16 @@ extends BuildingFunctionPanel {
 		if (isProducer) {
 			powerCache = generator.getGeneratedPower();
 			producedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerProduced"),
-									  StyleManager.DECIMAL_KG.format(powerCache), null);
+									  StyleManager.DECIMAL_KW.format(powerCache), null);
+			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
+			while (iP.hasNext()) {
+				PowerSource powerSource = iP.next();
+				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
+					loadCapacityLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.loadCapacity"),
+							Math.round(loadCapacity *10.0)/10.0 + " %", null);
+				}
+			}
 		}
 
 		// Prepare power used label.
@@ -97,11 +113,11 @@ extends BuildingFunctionPanel {
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
 		usedTF = springPanel.addTextField(Msg.getString("BuildingPanelPower.powerUsed"),
-													StyleManager.DECIMAL_KW.format(usedCache), null);
+										StyleManager.DECIMAL_KW.format(usedCache), null);
 	}
 
 	/**
-	 * Update this panel
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {
@@ -115,11 +131,19 @@ extends BuildingFunctionPanel {
 
 		// Update power production if necessary.
 		if (isProducer) {
-			//PowerGeneration generator = building.getPowerGeneration();//(PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
 			double power = generator.getGeneratedPower();
 			if (powerCache != power) {
 				powerCache = power;
 				producedTF.setText(StyleManager.DECIMAL_KW.format(powerCache)); //$NON-NLS-1$
+			}
+			
+			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
+			while (iP.hasNext()) {
+				PowerSource powerSource = iP.next();
+				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
+					loadCapacityLabel.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
+				}
 			}
 		}
 
@@ -137,7 +161,7 @@ extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

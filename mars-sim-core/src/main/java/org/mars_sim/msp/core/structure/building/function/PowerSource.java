@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerSource.java
- * @date 2023-05-25
+ * @date 2023-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;

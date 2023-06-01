@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGeneration.java
- * @date 2023-05-25
+ * @date 2023-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -49,12 +49,15 @@ public class PowerGeneration extends Function {
 		for (SourceSpec sourceSpec : buildingConfig.getPowerSources(building.getBuildingType())) {
 			String type = sourceSpec.getType();
 			double power = sourceSpec.getCapacity();
-		
+			int numModules = sourceSpec.getNumModules();
+			double stirlingConversion = sourceSpec.getConversionEfficiency();
+			double percentLoadCapacity = sourceSpec.getpercentLoadCapacity();
+			
 			PowerSource powerSource = null;
 			PowerSourceType powerType = PowerSourceType.getType(type);
 			switch (powerType) {
 			case FISSION_POWER:
-				powerSource = new FissionPowerSource(power);				
+				powerSource = new FissionPowerSource(numModules, power, stirlingConversion, percentLoadCapacity);				
 				break;
 				
 			case SOLAR_POWER:
@@ -193,6 +196,7 @@ public class PowerGeneration extends Function {
 			thermalGeneration = building.getThermalGeneration();
 
 		// Note: Check to see if this building has thermal generation function
+		// that may convert thermal energy to electrical power
 		if (thermalGeneration != null) {
 			double p = thermalGeneration.getGeneratedPower();
 			result += p;

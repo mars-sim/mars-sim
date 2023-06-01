@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SourceSpec.java
- * @date 2022-07-07
+ * @date 2023-05-31
  * @author Barry Evans
  */
 
@@ -20,14 +20,22 @@ public class SourceSpec {
 	public static final String CONSUMPTION_RATE = "consumption-rate";
 	
 	private String type;
-	private double capacity;
+
 	private Properties attributes;
 	
-	public SourceSpec(String type, double capacity, Properties attributes) {
+	private int numModules;
+	private double conversionEfficiency;
+	private double percentLoadCapacity;
+	private double capacity;
+	
+	public SourceSpec(String type, Properties attributes, int numModules, double unitCapacity, double stirlingConversion, double percentLoadCapacity) {
 		super();
 		this.type = type;
-		this.capacity = capacity;
+		this.capacity = unitCapacity;
 		this.attributes = attributes;
+		this.numModules = numModules;
+		this.conversionEfficiency = stirlingConversion;
+		this.percentLoadCapacity = percentLoadCapacity;
 	}
 
 	public String getType() {
@@ -37,7 +45,20 @@ public class SourceSpec {
 	public double getCapacity() {
 		return capacity;
 	}
+	
+	public int getNumModules() {
+		return numModules;
+	}
 
+	public double getConversionEfficiency() {
+		return conversionEfficiency;
+	}
+	
+	public double getpercentLoadCapacity() {
+		return percentLoadCapacity;
+	}
+
+	
 	public String getAttribute(String prop) {
 		return attributes.getProperty(prop);
 	}

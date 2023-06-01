@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConfig.java
- * @date 2022-07-07
+ * @date 2023-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -69,6 +69,10 @@ public class BuildingConfig {
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String TYPE = "type";
+	private static final String MODULES = "modules";
+	private static final String CONVERSION = "stirling-conversion";
+	private static final String PERCENT_LOADING = "percent-loading";
+	
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
@@ -397,27 +401,40 @@ public class BuildingConfig {
 	 * Parses a sources element.
 	 * 
 	 * @param list
-	 * @param capacityName
+	 * @param unitName
 	 * @return
 	 */
-	private List<SourceSpec> parseSources(List<Element> list, String capacityName) {
+	private List<SourceSpec> parseSources(List<Element> list, String unitName) {
 		List<SourceSpec> sourceList = new ArrayList<>();
 		for (Element sourceElement : list) {
 			Properties attrs = new  Properties();
 			String type = null;
-			double capacity = 0D;
+			double unitCapacity = 0D;
+			int numModules = 1;
+			double stirlingConversion = 100;
+			double percentLoadCapacity = 100;
+			
 			for(Attribute attr : sourceElement.getAttributes()) {
 				if (attr.getName().equals(TYPE)) {
 					type = attr.getValue();
 				}
-				else if (attr.getName().equals(capacityName)) {
-					capacity = Double.parseDouble(attr.getValue());
+				else if (attr.getName().equals(MODULES)) {
+					numModules = Integer.parseInt(attr.getValue());
+				}
+				else if (attr.getName().equals(unitName)) {
+					unitCapacity = Double.parseDouble(attr.getValue());
+				}
+				else if (attr.getName().equals(CONVERSION)) {
+					stirlingConversion = Double.parseDouble(attr.getValue());
+				}
+				else if (attr.getName().equals(PERCENT_LOADING)) {
+					percentLoadCapacity = Double.parseDouble(attr.getValue());
 				}
 				else {
 					attrs.put(attr.getName(), attr.getValue());
 				}
 			}
-			sourceList.add(new SourceSpec(type, capacity, attrs));
+			sourceList.add(new SourceSpec(type, attrs, numModules, unitCapacity, stirlingConversion, percentLoadCapacity));
 		}
 		return sourceList;
 	}

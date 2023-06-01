@@ -93,6 +93,9 @@
 	<!ATTLIST power-source type CDATA #REQUIRED>
 	<!ATTLIST power-source toggle (true|false) #IMPLIED>
 	<!ATTLIST power-source power CDATA #REQUIRED>
+	<!ATTLIST power-source modules CDATA #IMPLIED>
+	<!ATTLIST power-source stirling-conversion CDATA #IMPLIED>
+	<!ATTLIST power-source percent-loading CDATA #IMPLIED>
 	<!ATTLIST power-source fuel-type CDATA #IMPLIED>
 	<!ATTLIST power-source consumption-rate CDATA #IMPLIED>
 	<!ELEMENT power-storage EMPTY>
@@ -1012,15 +1015,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-C -->
 
-	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
+	<building type="Kilopower Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="6000">
-		<description>The MD1 is the first Mars-qualified Kilopower Nuclear System.
-		It comprises an array of four separate 10 kWe modules, each having a reactor
-		core using depleted uranium as fuel source. It uses stirling converters for
-		generating power via mechanical movement of pistons inside as passive sodium
-		heat pipes transport thermal energy between the core containment can (hot end)
-		and the vacuum chambers (cold end). A circular radiator panel is mounted on
-		top for heat dissipation. It includes a 40 kWh backup power battery.</description>
+		<description>The Kilopower Reactor is a 10 kWe module with
+		a reactor core using depleted uranium as fuel source. 
+		It uses stirling converters for generating power via mechanical movement of pistons 
+		inside as passive sodium heat pipes transport thermal energy between the core 
+		containment can (hot end) and the vacuum chambers (cold end). 
+		A circular radiator panel is mounted on top for heat dissipation. 
+		It includes a 10 kWh backup power battery.</description>
 
 		<!--	Nuclear Systems Kilopower Project
 				http://hdl.handle.net/2060/20160012354
@@ -1032,7 +1035,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Fission Power Source" power="40.0" />
+				<power-source type="Fission Power Source" modules="1" power="43.3" stirling-conversion="27.4" percent-loading="83.3"/>
+			</power-generation>
+
+			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<!--thermal-generation>
+				<heat-source type="Electric Heating" capacity="25.0" />
+			</thermal-generation-->
+		</functions>
+	</building>
+	
+	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="6000">
+		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
+		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
+
+		<power-required base-power="0.25" base-power-down-power="0.025" />
+
+		<functions>
+			<power-generation>
+				<power-source type="Fission Power Source" modules="1" power="175.0" stirling-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
@@ -1045,18 +1067,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="7000">
 		<description>
-			The MD4 Nuclear Reactor is a refined, robust, flight-like, 100kW
-			nuclear fission power plant. It provides a consistent power source.
-			It includes a 80 kWh backup power battery.
+			The MD4 Nuclear Reactor is a robust, flight-ready nuclear fission power plant. 
+			At 83.3% load capacity, it provides a consistent power supply of ~100 kWe.
+			It also includes a 80 kWh backup battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
 
 		<functions>
 			<power-generation>
-				<power-source type="Fission Power Source" power="100.0" />
+				<power-source type="Fission Power Source" modules="3" power="145.8" stirling-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
 
-			<power-storage capacity="80"  discharge-rate="1.25"/>
+			<power-storage capacity="80" discharge-rate="1.25"/>
 
 			<!--thermal-generation>
 				<heat-source type="Electric Heating" capacity="80.0" />
