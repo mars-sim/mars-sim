@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScenarioConfig.java
- * @date 2021-08-20
+ * @date 2023-06-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.configuration;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -25,15 +26,21 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.InitialSettlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Loads and maintains a repository Scenario instances from XML files.
  */
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ScenarioConfig.class.getName());
+
 	
 	private static final String PREFIX = "scenario";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
@@ -56,6 +63,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	// Default scenario
 	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
 
+	private static List<Coordinates> occupiedLocations = new ArrayList<>();
+	
 	
 	public ScenarioConfig() {
 		super(PREFIX);
@@ -83,7 +92,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		List<String> manifest = new ArrayList<>();
 		
 		// Find any Reporting authority & crew that are not bundled
-		// ReportingAuthority are exprted as one
+		// ReportingAuthority are exported as one
 		Set<UserConfigurable> crewExported = new HashSet<>();
 		Set<UserConfigurable> raToExport = new HashSet<>();
 		for(InitialSettlement initial : item.getSettlements()) {
@@ -154,7 +163,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Take the contents and 
+	 * Takes the contents.
+	 * 
 	 * @param contents
 	 * @param raFactory 
 	 * @throws IOException
@@ -203,7 +213,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Converts a Scenario into an XML representation
+	 * Converts a Scenario into an XML representation.
 	 */
 	@Override
 	protected Document createItemDoc(Scenario item) {
@@ -266,7 +276,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Load arriving settlements.
+	 * Loads arriving settlements.
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
@@ -286,6 +296,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
 			Coordinates location = parseLocation(settlementElement);
+			occupiedLocations.add(location);
 
 			String arrivalStr = settlementElement.getAttributeValue(ARRIVAL_ATTR);
 			int arrivalSols = Integer.parseInt(arrivalStr);
@@ -316,7 +327,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 
 	/**
-	 * Load initial settlements.
+	 * Loads initial settlements.
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
@@ -332,7 +343,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
 			Coordinates location = parseLocation(settlementElement);
-
+			occupiedLocations.add(location);
+			
 			String numberStr = settlementElement.getAttributeValue(PERSONS_ATTR);
 			int popNumber = Integer.parseInt(numberStr);
 			if (popNumber < 0) {
@@ -365,6 +377,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	private static Coordinates parseLocation(Element parent) {
+		
+		List<Coordinates> locations = new ArrayList<>();
 		Coordinates location = null;
 		
 		List<Element> locationNodes = parent.getChildren(LOCATION_EL);
@@ -383,8 +397,19 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
 			location = new Coordinates(latitudeString, longitudeString);
+			locations.add(location);
 		}
 		
-		return location;
+		locations.removeAll(occupiedLocations);
+		
+		int rand = RandomUtil.getRandomInt(locations.size());
+		
+		if (locations.isEmpty()) {
+			// Would still return the last coordinate
+			logger.log(Level.SEVERE, "Note that " + location.getFormattedString() + " has been used previously by another settlement.");
+			return location;
+		}
+		
+		return locations.get(rand);
 	}
 }

@@ -19,7 +19,7 @@
     <scenario>
         <scenario-name value="Corporate Expansion" />
         <sponsor value="SpaceX" />
-        <base name="Musk City" longitude="20.5 E" latitude="20.9 S"
+        <base name="Phelgra City" longitude="203.35 E" latitude="40.02 N"
         	population="24" bots="48" template="Alpha Base (Phase 4)" />
     </scenario>
 

@@ -40,7 +40,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 	public static final double R_LOAD = 1000; // assume constant load resistance
 
-	public static final double ROLLING_FACTOR = 1.0; 
+	public static final double ROLLING_FACTOR = 1.1; 
 	
 	public static final double percentAverageVoltageDrop = 98D;
 
@@ -261,11 +261,11 @@ public class PowerGrid implements Serializable, Temporal {
 				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
 					if (increaseLoad) {
 						((FissionPowerSource)powerSource).increaseLoadCapacity();
-						logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Up.");
+//						logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Up.");
 					}
 					else {
 						((FissionPowerSource)powerSource).decreaseLoadCapacity();
-						logger.log(b, Level.INFO, 10000, "Power Capacity Power Capacity Stepped Down.");
+//						logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Down.");
 					}
 				}
 				
@@ -301,8 +301,8 @@ public class PowerGrid implements Serializable, Temporal {
 			double excessEnergy = (powerGenerated - powerRequired) * timeHr * systemEfficiency;
 			storeExcessPower(excessEnergy, time);
 			
-			int rand = RandomUtil.getRandomInt(20);
-			if (rand == 20) {
+			int rand = RandomUtil.getRandomInt(10);
+			if (rand == 10) {
 				// Step down the capacity of the fission power plant by a small percent
 				updateFissionPower(false);
 			}
