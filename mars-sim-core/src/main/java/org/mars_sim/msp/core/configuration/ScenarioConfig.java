@@ -376,6 +376,12 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		return result;
 	}
 
+	/**
+	 * Parses the lat and lon of a location.
+	 * 
+	 * @param parent
+	 * @return
+	 */
 	private static Coordinates parseLocation(Element parent) {
 		
 		List<Coordinates> locations = new ArrayList<>();
@@ -402,13 +408,13 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		
 		locations.removeAll(occupiedLocations);
 		
-		int rand = RandomUtil.getRandomInt(locations.size());
-		
 		if (locations.isEmpty()) {
 			// Would still return the last coordinate
 			logger.log(Level.SEVERE, "Note that " + location.getFormattedString() + " has been used previously by another settlement.");
 			return location;
 		}
+		
+		int rand = RandomUtil.getRandomInt(locations.size()-1);
 		
 		return locations.get(rand);
 	}
