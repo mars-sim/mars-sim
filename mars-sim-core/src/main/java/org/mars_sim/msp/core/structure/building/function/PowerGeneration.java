@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGeneration.java
- * @date 2023-05-31
+ * @date 2023-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -50,14 +50,18 @@ public class PowerGeneration extends Function {
 			String type = sourceSpec.getType();
 			double power = sourceSpec.getCapacity();
 			int numModules = sourceSpec.getNumModules();
-			double stirlingConversion = sourceSpec.getConversionEfficiency();
+			double conversion = sourceSpec.getConversionEfficiency();
 			double percentLoadCapacity = sourceSpec.getpercentLoadCapacity();
 			
 			PowerSource powerSource = null;
 			PowerSourceType powerType = PowerSourceType.getType(type);
 			switch (powerType) {
 			case FISSION_POWER:
-				powerSource = new FissionPowerSource(numModules, power, stirlingConversion, percentLoadCapacity);				
+				powerSource = new FissionPowerSource(numModules, power, conversion, percentLoadCapacity);				
+				break;
+				
+			case THERMIONIC_NUCLEAR_POWER:
+				powerSource = new ThermionicNuclearPowerSource(numModules, power, conversion, percentLoadCapacity);				
 				break;
 				
 			case SOLAR_POWER:
@@ -139,28 +143,29 @@ public class PowerGeneration extends Function {
 		while (j.hasNext()) {
 			PowerSource source = j.next();
 			result += source.getAveragePower(settlement);
-			if (source.getType() == PowerSourceType.FISSION_POWER)
-				result += source.getMaxPower();
-			else if (source.getType() == PowerSourceType.FUEL_POWER) {
-				FuelPowerSource fuelSource = (FuelPowerSource) source;
-				double fuelPower = source.getMaxPower();
-				int id = fuelSource.getFuelResourceID();
-				double fuelValue = settlement.getGoodsManager().getGoodValuePoint(id);
-				fuelValue *= fuelSource.getFuelConsumptionRate();
-				fuelPower -= fuelValue;
-				if (fuelPower < 0D)
-					fuelPower = 0D;
-				result += fuelPower;
-			} else if (source.getType() == PowerSourceType.SOLAR_POWER) {
-				result += source.getMaxPower() * .707;
-			} else if (source.getType() == PowerSourceType.SOLAR_THERMAL) {
-				result += source.getMaxPower() * .707;
-			} else if (source.getType() == PowerSourceType.WIND_POWER) {
-				result += source.getMaxPower() * .707;
-			} else if (source.getType() == PowerSourceType.AREOTHERMAL_POWER) {
-				double areothermalHeatPercent = surface.getAreothermalPotential(settlement.getCoordinates());
-				result += source.getMaxPower()  * .707 * areothermalHeatPercent / 100D;
-			}
+//			if (source.getType() == PowerSourceType.FISSION_POWER
+//					|| source.getType() == PowerSourceType.THERMIONIC_NUCLEAR)
+//				result += source.getMaxPower();
+//			else if (source.getType() == PowerSourceType.FUEL_POWER) {
+//				FuelPowerSource fuelSource = (FuelPowerSource) source;
+//				double fuelPower = source.getMaxPower();
+//				int id = fuelSource.getFuelResourceID();
+//				double fuelValue = settlement.getGoodsManager().getGoodValuePoint(id);
+//				fuelValue *= fuelSource.getFuelConsumptionRate();
+//				fuelPower -= fuelValue;
+//				if (fuelPower < 0D)
+//					fuelPower = 0D;
+//				result += fuelPower;
+//			} else if (source.getType() == PowerSourceType.SOLAR_POWER) {
+//				result += source.getMaxPower() * .707;
+//			} else if (source.getType() == PowerSourceType.SOLAR_THERMAL) {
+//				result += source.getMaxPower() * .707;
+//			} else if (source.getType() == PowerSourceType.WIND_POWER) {
+//				result += source.getMaxPower() * .707;
+//			} else if (source.getType() == PowerSourceType.AREOTHERMAL_POWER) {
+//				double areothermalHeatPercent = surface.getAreothermalPotential(settlement.getCoordinates());
+//				result += source.getMaxPower()  * .707 * areothermalHeatPercent / 100D;
+//			}
 		}
 
 		return result;

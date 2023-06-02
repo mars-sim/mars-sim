@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGrid.java
- * @date 2023-05-25
+ * @date 2023-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FissionPowerSource;
+import org.mars_sim.msp.core.structure.building.function.ThermionicNuclearPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -246,7 +247,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * 
 	 * @return power generated in kW
 	 */
-	public double updateFissionPower(boolean increaseLoad) {
+	public double stepUpDownPower(boolean increaseLoad) {
 		double power = 0D;
 
 		Iterator<Building> i = manager.getBuildings(FunctionType.POWER_GENERATION).iterator();
@@ -261,13 +262,24 @@ public class PowerGrid implements Serializable, Temporal {
 				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
 					if (increaseLoad) {
 						((FissionPowerSource)powerSource).increaseLoadCapacity();
-//						logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Up.");
+						// may use logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Up.")
 					}
 					else {
 						((FissionPowerSource)powerSource).decreaseLoadCapacity();
-//						logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Down.");
+						// may use logger.log(b, Level.INFO, 10000, "Fission Reactor Power Capacity Stepped Down.");
 					}
 				}
+				
+				else if (powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
+					if (increaseLoad) {
+						((ThermionicNuclearPowerSource)powerSource).increaseLoadCapacity();
+					}
+					else {
+						((ThermionicNuclearPowerSource)powerSource).decreaseLoadCapacity();
+					}
+				}
+				else
+					return power;
 				
 				double now = powerSource.getCurrentPower(b);
 				
@@ -304,7 +316,7 @@ public class PowerGrid implements Serializable, Temporal {
 			int rand = RandomUtil.getRandomInt(10);
 			if (rand == 10) {
 				// Step down the capacity of the fission power plant by a small percent
-				updateFissionPower(false);
+				stepUpDownPower(false);
 			}
 		}
 
@@ -315,11 +327,11 @@ public class PowerGrid implements Serializable, Temporal {
 			int rand = RandomUtil.getRandomInt(50);
 			if (rand == 50) {
 				// Step up the capacity of the fission power plant by a small percent
-				updateFissionPower(true);
+				stepUpDownPower(true);
 			}
 			
 			// increases the load capacity of fission reactors if available
-			double newPower0 = updateFissionPower(true);
+			double newPower0 = stepUpDownPower(true);
 
 			// Update the total generated power with contribution from increased power load capacity of fission reactors
 			setGeneratedPower(powerGenerated + newPower0);
@@ -358,7 +370,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 			// If still not having sufficient power,
 			// increases the load capacity of fission reactors if available
-			double newPower2 = updateFissionPower(true);
+			double newPower2 = stepUpDownPower(true);
 
 			// Update the total generated power with contribution from increased power load capacity of fission reactors
 			setGeneratedPower(powerGenerated + newPower2);

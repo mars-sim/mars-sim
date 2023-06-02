@@ -94,7 +94,7 @@
 	<!ATTLIST power-source toggle (true|false) #IMPLIED>
 	<!ATTLIST power-source power CDATA #REQUIRED>
 	<!ATTLIST power-source modules CDATA #IMPLIED>
-	<!ATTLIST power-source stirling-conversion CDATA #IMPLIED>
+	<!ATTLIST power-source thermal-conversion CDATA #IMPLIED>
 	<!ATTLIST power-source percent-loading CDATA #IMPLIED>
 	<!ATTLIST power-source fuel-type CDATA #IMPLIED>
 	<!ATTLIST power-source consumption-rate CDATA #IMPLIED>
@@ -1015,6 +1015,38 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-C -->
 
+	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" base-level="0"
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="4000">
+		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor system, 
+		 which was developed by Soviet Union. In 1987, TOPAZ-II was the first successfully demonstrated
+		 for use by Cosmos 1818 and Cosmos 1867 satellites in space. It is based on thermionic energy 
+		 conversion with highly enriched uranium oxide pellet as fuel. It was colled by liquid-metal 
+		 consisting of sodium and potassium. It has 37 single-cell TFEs, with a much improved 10.5% 
+		 thermal-to-electrical conversion efficiency and 83.3% load capacity to provide ~10 kWe.</description>
+		<power-required base-power="1" base-power-down-power="0.1" />
+		<functions>
+			<power-generation>
+				<power-source type="Thermionic Nuclear Power Source" 
+					modules="37" power="3.1" thermal-conversion="10.5" percent-loading="83.3"/>
+			</power-generation>
+			<power-storage capacity="5"  discharge-rate="1.25"/>
+		</functions>
+	</building>
+	
+	<building type="TOPAZ-3 Reactor" width="4.0" length="6.0" base-level="0"
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="4000">
+		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has higher 
+		 thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, it provides ~30 kWe.</description>
+		<power-required base-power="1" base-power-down-power="0.1" />
+		<functions>
+			<power-generation>
+				<power-source type="Thermionic Nuclear Power Source" 
+					modules="74" power="4.7" thermal-conversion="10.37" percent-loading="83.3"/>
+			</power-generation>
+			<power-storage capacity="15"  discharge-rate="1.25"/>
+		</functions>
+	</building>
+		
 	<building type="Kilopower Reactor" width="2.0" length="2.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="1500">
 		<description>The Kilopower Reactor contains two 10 kWe modules with
@@ -1024,24 +1056,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		containment can (hot end) and the vacuum chambers (cold end). 
 		A circular radiator panel is mounted on top for heat dissipation. 
 		It includes a 10 kWh backup power battery.</description>
-
 		<!--	Nuclear Systems Kilopower Project
 				http://hdl.handle.net/2060/20160012354
 				http://hdl.handle.net/2060/20170002010
 				https://ntrs.nasa.gov/search.jsp?R=20150011642&hterms=Kilopower&qs=N%3D0%26Ntk%3DAll%26Ntt%3DKilopower%26Ntx%3Dmode%2520matchallpartial
 		-->
-
 		<power-required base-power="0.25" base-power-down-power="0.025" />
-
 		<functions>
 			<power-generation>
-				<power-source type="Fission Power Source" modules="2" power="43.3" stirling-conversion="27.4" percent-loading="83.3"/>
+				<power-source type="Fission Power Source" 
+					modules="2" power="43.3" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-
 			<power-storage capacity="10"  discharge-rate="1.25"/>
-			<!--thermal-generation>
-				<heat-source type="Electric Heating" capacity="25.0" />
-			</thermal-generation-->
 		</functions>
 	</building>
 	
@@ -1049,18 +1075,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="4000">
 		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
 		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
-
 		<power-required base-power="0.25" base-power-down-power="0.025" />
-
 		<functions>
 			<power-generation>
-				<power-source type="Fission Power Source" modules="1" power="175.0" stirling-conversion="27.4" percent-loading="83.3"/>
+				<power-source type="Fission Power Source" 
+					modules="1" power="175.0" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-
 			<power-storage capacity="40"  discharge-rate="1.25"/>
-			<!--thermal-generation>
-				<heat-source type="Electric Heating" capacity="25.0" />
-			</thermal-generation-->
 		</functions>
 	</building>
 
@@ -1072,14 +1093,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			It also includes a 80 kWh backup battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
-
 		<functions>
 			<power-generation>
-				<power-source type="Fission Power Source" modules="3" power="145.8" stirling-conversion="27.4" percent-loading="83.3"/>
+				<power-source type="Fission Power Source" 
+					modules="3" power="145.8" thermal-conversion="27.4" percent-loading="83.3"/>
 			</power-generation>
-
 			<power-storage capacity="80" discharge-rate="1.25"/>
-
 			<!--thermal-generation>
 				<heat-source type="Electric Heating" capacity="80.0" />
 			</thermal-generation-->
@@ -1092,10 +1111,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		building providing black/water recycling, air processing and waste
 		recycling functions for the settlement.
 		</description>
-
 		<!-- see water tank calculation on Mars
 		    at https://www.physicsforums.com/threads/pressure-a-water-tank-on-mars.242305/ -->
-
 		<power-required base-power=".5" base-power-down-power=".05"/>
 
 		<functions>

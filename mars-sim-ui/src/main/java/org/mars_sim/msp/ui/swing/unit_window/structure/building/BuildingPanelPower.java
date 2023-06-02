@@ -99,7 +99,8 @@ extends BuildingFunctionPanel {
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
 				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER
+						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
 					loadCapacityLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.loadCapacity"),
 							Math.round(loadCapacity *10.0)/10.0 + " %", null);
 				}
@@ -141,7 +142,8 @@ extends BuildingFunctionPanel {
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
 				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER) {
+				if (powerSource.getType() == PowerSourceType.FISSION_POWER
+						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
 					loadCapacityLabel.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
 				}
 			}

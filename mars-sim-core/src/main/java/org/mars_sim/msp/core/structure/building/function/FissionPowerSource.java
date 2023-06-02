@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * FissionPowerSource.java
- * @date 2023-05-31
- * @author Scott Davis
+ * @date 2023-06-02
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
@@ -10,7 +10,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * A fission power source that gives a steady supply of power.
+ * A fission power source that gives a steady supply of electrical power.
  */
 public class FissionPowerSource extends PowerSource {
 
