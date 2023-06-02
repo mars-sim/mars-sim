@@ -11,7 +11,7 @@
     <xs:element name="settlement">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="location" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="location" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
             <xs:attribute name="template" type="xs:string"/>

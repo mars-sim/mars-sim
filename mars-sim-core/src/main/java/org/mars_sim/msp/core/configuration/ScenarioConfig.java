@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScenarioConfig.java
- * @date 2021-08-20
+ * @date 2023-06-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.configuration;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.InitialSettlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Loads and maintains a repository Scenario instances from XML files.
@@ -56,6 +57,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	// Default scenario
 	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
 
+	private static List<Coordinates> occupiedLocations = new ArrayList<>();
+	
 	
 	public ScenarioConfig() {
 		super(PREFIX);
@@ -83,7 +86,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		List<String> manifest = new ArrayList<>();
 		
 		// Find any Reporting authority & crew that are not bundled
-		// ReportingAuthority are exprted as one
+		// ReportingAuthority are exported as one
 		Set<UserConfigurable> crewExported = new HashSet<>();
 		Set<UserConfigurable> raToExport = new HashSet<>();
 		for(InitialSettlement initial : item.getSettlements()) {
@@ -154,7 +157,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Take the contents and 
+	 * Takes the contents.
+	 * 
 	 * @param contents
 	 * @param raFactory 
 	 * @throws IOException
@@ -203,7 +207,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Converts a Scenario into an XML representation
+	 * Converts a Scenario into an XML representation.
 	 */
 	@Override
 	protected Document createItemDoc(Scenario item) {
@@ -266,7 +270,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Load arriving settlements.
+	 * Loads arriving settlements.
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
@@ -286,6 +290,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
 			Coordinates location = parseLocation(settlementElement);
+			occupiedLocations.add(location);
 
 			String arrivalStr = settlementElement.getAttributeValue(ARRIVAL_ATTR);
 			int arrivalSols = Integer.parseInt(arrivalStr);
@@ -316,7 +321,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 
 	/**
-	 * Load initial settlements.
+	 * Loads initial settlements.
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
@@ -332,7 +337,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
 			Coordinates location = parseLocation(settlementElement);
-
+			occupiedLocations.add(location);
+			
 			String numberStr = settlementElement.getAttributeValue(PERSONS_ATTR);
 			int popNumber = Integer.parseInt(numberStr);
 			if (popNumber < 0) {
@@ -365,7 +371,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	private static Coordinates parseLocation(Element parent) {
-		Coordinates location = null;
+		
+		List<Coordinates> locations = new ArrayList<>();
 		
 		List<Element> locationNodes = parent.getChildren(LOCATION_EL);
 		if (locationNodes.size() > 0) {
@@ -382,9 +389,14 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 			latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
-			location = new Coordinates(latitudeString, longitudeString);
+			Coordinates location = new Coordinates(latitudeString, longitudeString);
+			locations.add(location);
 		}
 		
-		return location;
+		locations.removeAll(occupiedLocations);
+		
+		int rand = RandomUtil.getRandomInt(locations.size());
+		
+		return locations.get(rand);
 	}
 }

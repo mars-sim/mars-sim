@@ -50,12 +50,28 @@
         </connection-list>
     </building>
 
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
+        
+    <building type="Kilopower Reactor" xloc="490.0"
+        yloc="-500" facing="0.0" />
+    <building type="Kilopower Reactor" xloc="490.0"
+        yloc="-505" facing="0.0" />
+        
+        
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-40.0" facing="0.0" />        
+    <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
+    <building type="Solar Thermal Collector" xloc="40.0"
         yloc="-80.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
+
+
+    <building type="Medium Battery Array" xloc="60.0"
+        yloc="-50.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
         yloc="-60.0" facing="0.0" />
+    <building type="Wind Turbine" xloc="60.0"
+        yloc="-70.0" facing="0.0" />
+        
 
     <building type="ERV-A" xloc="80.0" yloc="-15.0" facing="0.0" />
     <building type="ERV-B" xloc="80.0" yloc="25.0" facing="0.0" />

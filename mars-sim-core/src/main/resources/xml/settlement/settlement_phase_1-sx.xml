@@ -64,6 +64,7 @@
     <building type="Methane Power Generator" xloc="40.0"
         yloc="-40.0" facing="0.0" />
 
+
     <building type="Medium Battery Array" xloc="40.0"
         yloc="-50.0" facing="0.0" />
     <building type="Solar Photovoltaic Array" xloc="40.0"

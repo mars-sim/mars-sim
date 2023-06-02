@@ -18,9 +18,11 @@
 ## Table of Contents
 * [Introduction](#introduction)  
    * [Simulation](#simulation)
-* [Settlement Development](#settlement-development)
+   * [Exploration](#exploration)
+   * [Mars Direct Mission Plan](mars-direct-mission-plan) 
+   * [Settlement](#settlement)
    * [Economics](#economics)   
-   * [Space Agencies](#space-agencies)   
+   * [Countries](#countries)   
 * [Operation Modeling](#operation-modeling)
    * [Timekeeping](#timekeeping)
    * [Indoor Atmosphere](#indoor-atmosphere)
@@ -80,22 +82,38 @@ For instance, each settler is assigned with a job, a role, having technical
 They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship)
 as they interact and work with one another. They are there to live, dream, explore, and settle Mars.
 
----
+## Exploration
 
-# Settlement Development
+History is shaped by pioneers. The exploration of Mars started in the 1960s with sending robotic 
+spacecraft to orbit the planet. The apex of this spirit of exploration will be culminated by the first human landing 
+in near future. Early explorers of Mars will come face-to-face with insurmountable challenges. 
+The first generations human explorers will not explore long distances from their habitat but within 
+a region being called an "Exploration Zone", say, within 100 km of their landing. Many mission planning
+activities would have been taken place prior to their arrival to first identify all the Science and Resource 
+Region of Interests (ROI). mars-sim is modeled to simulate the exploration of Mars within a decade after 
+the first landing. Humanity has shifted into high gears with the effort of making Mars the second home.
 
-One of the goals of mars-sim is to populate the surface of Mars with human settlements.
+## Mars Direct Mission Plan 
+
+mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has crafted 5 basic
+settlement types, namely, Phase 1 Base, Phase 2 Base, Phase 3 Base, Alpha Base and special outposts. 
+
+In general, a 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base
+is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
+is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot*
+near sites with high mineral concentrations. 
+
+Depending on its country or origin and/or sponsor, each template may vary in the numbers and types of building it contains.
+Altogether, there is a total of 24 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+to choose from.
+
+## Settlement
+
+The selection of a landing site is determined by a variety of factors. 
+One of the goals of mars-sim is to populate Mars with human settlements.
 Each settlement has an initial sponsor to guide its development but will eventually develop
 its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and
 *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.
-
-mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin* and has 6 basic types of
-[settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from.
-A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base
-is constructed under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base
-is designated as *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot*
-near sites with high mineral concentrations. Depending on its country or origin and/or sponsor,
-each level of template may vary in the numbers and types of building it contains.
 
 ## Economics
 
@@ -104,7 +122,7 @@ In terms of [economics](https://github.com/mars-sim/mars-sim/wiki/Economics) mod
 As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
 by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
-## Space Agencies 
+## Countries 
 
 It is an incredible understaking in that there are 29 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
 participating in this dream of making Mars as the second home for humanity. Altogether, there's 10 

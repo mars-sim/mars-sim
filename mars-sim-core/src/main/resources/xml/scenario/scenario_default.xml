@@ -29,7 +29,16 @@
 		</settlement>
 
 		<settlement name="Starcity" template="Phase 3-SX" persons="12" robots="8" sponsor="SPACEX">
-			<location longitude="165.32 E" latitude="41.01 N" />
+    	<!-- 52nd Lunar and Planetary Science Conference 2021 (LPI COntrib. No. 2548), 
+        "SpaceX Starship Landing Sites on Mars" 2420.pdf -->   
+       		<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->
+			<location longitude="163.95 E" latitude="35.23 N" />        		
+     		<!-- AP-1site (Elev -3.9 km) in Arcadia Planitia, the 2nd prime landing -->
+			<location longitude="202.1 E" latitude="39.8 N" />       
+      		<!-- AP-9 site (Elev -3.9 km) in Arcadia Planitia, the 3rd prime landing -->
+			<location longitude="203.35 E" latitude="40.02 N" />        		
+     		<!-- EM-16 site (Elev -3.9 km) in Erebus Montes, the 4th prime landing -->
+			<location longitude="192.03 E" latitude="39.89 N" />
 		</settlement>
 
 		<settlement name="Zvezda" template="Phase 3-RU" persons="12" robots="8" sponsor="RKA">
