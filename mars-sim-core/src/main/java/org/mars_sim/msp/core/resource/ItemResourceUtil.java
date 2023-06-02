@@ -40,13 +40,6 @@ public class ItemResourceUtil implements Serializable {
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
-	private static final String[] ASSEMBLE_ROVER = {"Assemble explorer rover",
-	                                                "Assemble long range explorer",
-	                                                "Assemble cargo rover",
-	                                                "Assemble transport rover",
-	                                                "Assemble light utility vehicle",
-	                                                "Assemble delivery drone"};
-	
 	/** 
 	 * Parts for creating an EVA Suit. 
 	 */
@@ -79,16 +72,6 @@ public class ItemResourceUtil implements Serializable {
 	
 	public static Set<Integer> evaSuitPartIDs;
 	
-	public static Map<Integer, Set<Integer>> vehiclePartIDs = new HashMap<>();
-	// 0 : Explorer Rover
-	// 1 : Long Range Explorer 
-	// 2 : transport rover
-	// 3 : cargo rover
-	// 4 : luv
-	// 5 : delivery drone
-
-	private static Map<Integer, List<String>> vehicleParts = new HashMap<>();
-	
 	/**
 	 * Constructor.
 	 */
@@ -120,39 +103,6 @@ public class ItemResourceUtil implements Serializable {
 			evaSuitPartIDs = convertNameListToResourceIDs(evaSuitParts);
 
 			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			calculatedEmptyMass = manufactureProcessInfo.calculateTotalInputMass();
-		}
-		
-		return calculatedEmptyMass;
-	}
-	
-	public static double initVehicle(int type) {
-
-		double calculatedEmptyMass = 0;
-		
-		if (vehiclePartIDs.isEmpty()|| vehiclePartIDs.get(type) == null) {
-
-			ManufactureProcessInfo manufactureProcessInfo = null;
-			
-			if (manufactureConfig == null)
-				manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
-			
-			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equals(ASSEMBLE_ROVER[type])) {
-		        		manufactureProcessInfo = info;
-				}
-			}
-			
-			List<String> names = manufactureProcessInfo.getInputNames();
-			
-			
-			vehicleParts.put(type, names);
-		
-			Set<Integer> ids = convertNameListToResourceIDs(names);
-			
-			vehiclePartIDs.put(type, ids);
-			
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
 			calculatedEmptyMass = manufactureProcessInfo.calculateTotalInputMass();
 		}
 		

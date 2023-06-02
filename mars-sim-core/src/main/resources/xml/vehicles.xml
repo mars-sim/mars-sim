@@ -7,7 +7,7 @@
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
 	<!-- These are aligned with VehicleType enum-->
-	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|LONG_RANGE_EXPLORER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|EXPLORER_ROVER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
 	<!ATTLIST vehicle length CDATA #REQUIRED>
@@ -220,7 +220,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	</vehicle>
 
-	<vehicle name="Long Range Explorer" type="LONG_RANGE_EXPLORER" width="3.5" length="8.0" base-image="long range explorer">
+	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long range explorer">
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
 		<battery-module number="3" />
 		<fuel-cell-stack number="4" />

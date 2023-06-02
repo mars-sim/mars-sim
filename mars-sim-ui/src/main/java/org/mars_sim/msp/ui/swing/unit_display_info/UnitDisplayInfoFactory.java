@@ -55,7 +55,7 @@ public final class UnitDisplayInfoFactory {
 				Vehicle vehicle = (Vehicle) unit;
 				VehicleType type = vehicle.getVehicleType();
 				switch (type) {
-					case EXPLORER_ROVER, LONG_RANGE_EXPLORER:	
+					case EXPLORER_ROVER:	
 						return explorerRoverBean;
 					case TRANSPORT_ROVER:
 						return transportRoverBean;

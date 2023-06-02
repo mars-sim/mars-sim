@@ -1039,16 +1039,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Manually override the number of wheels and battery needed for each mission
 		// since the automated process is not reliable
-		if (VehicleType.isRover(vehicle.getVehicleType())) {
-
-			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER || 
-				vehicle.getVehicleType() == VehicleType.LONG_RANGE_EXPLORER) 
+		switch(vehicle.getVehicleType()) {
+			case EXPLORER_ROVER:
 				result.computeIfAbsent(wheelID, k -> 2);
-			else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER
-					|| vehicle.getVehicleType() == VehicleType.TRANSPORT_ROVER) 
+				break;
+			case CARGO_ROVER, TRANSPORT_ROVER:
 				result.computeIfAbsent(wheelID, k -> 4);
-			
-//			result.computeIfAbsent(batteryID, k -> 1);
+				break;
+			default:
+				break;
 		}
 		
 		return result;

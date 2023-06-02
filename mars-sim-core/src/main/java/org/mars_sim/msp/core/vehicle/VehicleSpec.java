@@ -10,10 +10,13 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.manufacture.ManufactureConfig;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -94,7 +97,7 @@ public class VehicleSpec implements Serializable {
 	private int sickbayBeds = 0;
 	private int labTechLevel = -1;
 	private int attachmentSlots;
-	private int typeID;
+	//private int typeID;
 	
 	/** The # of battery modules of the vehicle.  */
 	private int numBatteryModule;
@@ -175,6 +178,8 @@ public class VehicleSpec implements Serializable {
 	private LocalPosition airlockInteriorLoc;
 	private LocalPosition airlockExteriorLoc;
 
+	private Set<Integer> partIDs;
+
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			int batteryModule, int fuelCellStack,
@@ -207,42 +212,38 @@ public class VehicleSpec implements Serializable {
 	/**
 	 * Initializes the specifications.
 	 * Note: Called by VehicleConfig to update the cargo capacity.
+	 * @param manuConfig 
 	 */
-	public void init() {
+	void calculateDetails(ManufactureConfig manuConfig) {
 		
-		typeID = -1;
-		if (type == VehicleType.EXPLORER_ROVER) {
-			typeID = 0;
-		}
-		else if (type == VehicleType.LONG_RANGE_EXPLORER) {
-			typeID = 1;
-		}
-		else if (type == VehicleType.CARGO_ROVER) {
-			typeID = 2;
-		}
-		else if (type == VehicleType.TRANSPORT_ROVER) {
-			typeID = 3;
-		}
-		else if (type == VehicleType.LUV) {
-			typeID = 4;
-		}
-		else if (type == VehicleType.DELIVERY_DRONE) {
-			typeID = 5;
-		}
-		
-		calculateEmptyMass(typeID);
+		calculateEmptyMass(manuConfig);
 		
 		defineVehiclePerformance();
 	}
 
 	/**
 	 * Calculates the base/empty mass of this type of vehicle.
-	 * 
-	 * @param typeID
 	 */
-	public void calculateEmptyMass(int typeID) {
-		
-		calculatedEmptyMass = ItemResourceUtil.initVehicle(typeID);
+	private void calculateEmptyMass(ManufactureConfig manuConfig) {
+				
+		// Find the name of the process to build this type ov vehicle Spec
+		ManufactureProcessInfo buildDetails = null;
+		String buildName = "Assemble " + type.name().replace("_", " ");
+		for (ManufactureProcessInfo info : manuConfig.getManufactureProcessList()) {
+			if (info.getName().equalsIgnoreCase(buildName)) {
+				buildDetails = info;
+			}
+		}
+		if (buildDetails == null) {
+			throw new IllegalStateException("Can not find Manufacturing process for vehicle called "
+											+ buildName);
+		}
+			
+		List<String> names = buildDetails.getInputNames();
+		partIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
+						
+		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
+		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
 		
 		logger.config(DASHES);
 		logger.config(" Rover Type : " + name);
@@ -272,50 +273,51 @@ public class VehicleSpec implements Serializable {
 		// Define the estimated additional end mass for each type of vehicle
 		double additionalEndMass = 0;		
 
-		if (type == VehicleType.DELIVERY_DRONE) {
-			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsagePercent = 2.0;
-			// Accounts for the fuel (methanol and oxygen) and the traded goods
-			additionalBeginningMass = 500;
-			// Accounts for water and the traded goods
-			additionalEndMass = 400;		
-		}
+		switch (type) {
+			case DELIVERY_DRONE: {
+				// Hard-code percent energy usage for this vehicle.
+				otherEnergyUsagePercent = 2.0;
+				// Accounts for the fuel (methanol and oxygen) and the traded goods
+				additionalBeginningMass = 500;
+				// Accounts for water and the traded goods
+				additionalEndMass = 400;		
+			} break;
 
-		else if (type == VehicleType.LUV) {
-			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsagePercent = 3.0;
-			// Accounts for the occupant weight
-			additionalBeginningMass = estimatedTotalCrewWeight;
-			// Accounts for the occupant weight
-			additionalEndMass = estimatedTotalCrewWeight;			
-		}
+			case LUV: {
+				// Hard-code percent energy usage for this vehicle.
+				otherEnergyUsagePercent = 3.0;
+				// Accounts for the occupant weight
+				additionalBeginningMass = estimatedTotalCrewWeight;
+				// Accounts for the occupant weight
+				additionalEndMass = estimatedTotalCrewWeight;			
+			} break;
 
-		else if (type == VehicleType.EXPLORER_ROVER
-				|| type == VehicleType.LONG_RANGE_EXPLORER) {
-			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsagePercent = 7.5;
-			// Accounts for the occupants and their consumables
-			additionalBeginningMass = estimatedTotalCrewWeight + 4 * 50;
-			// Accounts for the occupant and rock sample, ice or regolith collected
-			additionalEndMass = estimatedTotalCrewWeight + 800;	
-		}
+			case EXPLORER_ROVER: {
+				// Hard-code percent energy usage for this vehicle.
+				otherEnergyUsagePercent = 7.5;
+				// Accounts for the occupants and their consumables
+				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 50;
+				// Accounts for the occupant and rock sample, ice or regolith collected
+				additionalEndMass = estimatedTotalCrewWeight + 800;	
+			} break;
 
-		else if (type == VehicleType.CARGO_ROVER) {
-			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsagePercent = 5.0;
-			// Accounts for the occupants and their consumables and traded goods 
-			additionalBeginningMass = estimatedTotalCrewWeight + 2 * 50 + 1500;
-			// Accounts for the occupants and traded goods
-			additionalEndMass = estimatedTotalCrewWeight + 1500;				
-		}
+			case CARGO_ROVER: {
+				// Hard-code percent energy usage for this vehicle.
+				otherEnergyUsagePercent = 5.0;
+				// Accounts for the occupants and their consumables and traded goods 
+				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 50 + 1500;
+				// Accounts for the occupants and traded goods
+				additionalEndMass = estimatedTotalCrewWeight + 1500;				
+			} break;
 
-		else if (type == VehicleType.TRANSPORT_ROVER) {
-			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsagePercent = 10.0;
-			// Accounts for the occupants and their consumables and personal possession
-			additionalBeginningMass = estimatedTotalCrewWeight + 8 * (50 + 100);
-			// Accounts for the occupants and their personal possession
-			additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
+			case TRANSPORT_ROVER: {
+				// Hard-code percent energy usage for this vehicle.
+				otherEnergyUsagePercent = 10.0;
+				// Accounts for the occupants and their consumables and personal possession
+				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (50 + 100);
+				// Accounts for the occupants and their personal possession
+				additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
+			} break;
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
@@ -420,15 +422,6 @@ public class VehicleSpec implements Serializable {
 	 */
 	public VehicleType getType() {
 		return type;
-	}
-	
-	/**
-	 * Gets the type id of the vehicle specification.
-	 * 
-	 * @return
-	 */
-	public int getTypeID() {
-		return typeID;
 	}
 	
 	/**
@@ -760,5 +753,27 @@ public class VehicleSpec implements Serializable {
 	 */
 	public double getTotalHours() {
 		return totalHours;
+	}
+
+	/**
+	 * Get the wear modifier for this vehicle spec
+	 */
+    public double getWearModifier() {
+	
+		return switch(type) {
+			case DELIVERY_DRONE -> .75;
+			case LUV -> 2D;
+			case EXPLORER_ROVER -> 1D;
+			case TRANSPORT_ROVER -> 1.5D;
+			case CARGO_ROVER -> 1.25D;
+		};
+    }
+
+	/**
+	 * Get the parts of the consistuent this vehicle spec
+	 * @return
+	 */
+	public Set<Integer> getParts() {
+		return partIDs;
 	}
 }

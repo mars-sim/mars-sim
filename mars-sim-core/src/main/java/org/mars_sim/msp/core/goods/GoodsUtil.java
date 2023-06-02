@@ -33,10 +33,6 @@ public class GoodsUtil {
     /** default logger. */
     private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
 
-    private static final String HEAVY = "vehicle heavy";
-    private static final String MEDIUM = "vehicle medium";
-    private static final String SMALL = "vehicle small";
-
     // Data members
     private static Map<Integer, Good> goodsMap = null;
     private static List<Good> goodsList = null;
@@ -101,23 +97,6 @@ public class GoodsUtil {
         }
 
         return null;
-    }
-
-
-    /**
-     * Gets the string type for a given vehicle type.
-     * 
-     * @param vehicleType
-     * @return
-     */
-    public static String getVehicleCategory(VehicleType vehicleType) {
-        if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
-            return HEAVY;
-        else if (vehicleType == VehicleType.EXPLORER_ROVER || vehicleType == VehicleType.LONG_RANGE_EXPLORER)
-            return MEDIUM;
-        else if (vehicleType == VehicleType.LUV || vehicleType == VehicleType.DELIVERY_DRONE)
-            return SMALL;
-        return "";
     }
 
     /**

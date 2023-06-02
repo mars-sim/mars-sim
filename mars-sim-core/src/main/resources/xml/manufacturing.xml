@@ -1593,7 +1593,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>-->
 
-	<process name="Assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
+	<process name="Assemble Delivery Drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="2.0" />
@@ -1623,7 +1623,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
+	<process name="Assemble LUV" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
@@ -1698,45 +1698,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Assemble long range explorer" tech="3" skill="4" work-time="2400" process-time="1200"
-			power-required="4.5">
-		<inputs>
-			<resource name="acetylene" amount="2.0" />		
-			<resource name="polystyrene" amount="15" />			
-			<part name="aerogel tile" number="8" />					
-			<part name="navigation circuit board" number="1" />
-			<part name="communications circuit board" number="1" />
-			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame - large" number="4" />
-			<part name="rover chassis panel" number="4" />
-			<part name="rover windshield" number="2" />
-			<part name="rover window" number="4" />
-			<part name="winch" number="1" />
-			<part name="rover generator" number="1" />
-			<part name="motor - large" number="3" />			
-			<part name="methane fuel cell stack" number="4" />
-			<part name="battery module" number="3" />
-			<part name="gas tank" number="3" />
-			<part name="fuel tank" number="3" />
-			<part name="water tank" number="3" />
-			<part name="fuel pump" number="3" />
-			<part name="oxygen pump" number="3" />
-			<part name="satellite dish" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="plastic tubing" number="4" />
-			<part name="plastic pipe" number="4" />
-			<part name="steel pipe" number="4" />
-			<part name="plastic bottle" number="4" />
-			<part name="lubricant bottle" number="4" />
-			<part name="rover wheel" number="12" />
-			<part name="optical cable" number="6" />
-		</inputs>
-		<outputs>
-			<vehicle name="long range explorer" number="1" />
-		</outputs>
-	</process>
 	
 	<process name="Assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">

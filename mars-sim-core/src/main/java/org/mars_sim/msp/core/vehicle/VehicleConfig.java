@@ -18,6 +18,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -80,17 +81,19 @@ public class VehicleConfig {
 	 * Constructor.
 	 * 
 	 * @param vehicleDoc {@link Document} DOM document with vehicle configuration.
+	 * @param manuCon Use to calculate vehcile construction details
 	 */
-	public VehicleConfig(Document vehicleDoc) {
-		loadVehicleSpecs(vehicleDoc);
+	public VehicleConfig(Document vehicleDoc, ManufactureConfig manuConfig) {
+		loadVehicleSpecs(vehicleDoc, manuConfig);
 	}
 
 	/**
 	 * Parses only once. Stores resulting data for later use.
 	 * 
 	 * @param vehicleDoc
+	 * @param manuConfig 
 	 */
-	private synchronized void loadVehicleSpecs(Document vehicleDoc) {
+	private synchronized void loadVehicleSpecs(Document vehicleDoc, ManufactureConfig manuConfig) {
 		if (map != null) {
 			// just in case if another thread is being created
 			return;
@@ -164,8 +167,8 @@ public class VehicleConfig {
 				v.setCargoCapacity(totalCapacity, cargoCapacityMap);
 			}
 
-			// Call init() to use the cargo capacity for performance analysis
-			v.init();
+			// Use the cargo capacity for performance analysis
+			v.calculateDetails(manuConfig);
 			
 			// sickbay
 			if (!vehicleElement.getChildren(SICKBAY).isEmpty()) {

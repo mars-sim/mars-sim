@@ -162,8 +162,6 @@ public abstract class Vehicle extends Unit
 	private VehicleController vehicleController;
 	/** The VehicleSpec instance. */
 	private VehicleSpec spec;
-	
-	private String baseImage;
 
 	private Mission mission;
 
@@ -224,12 +222,11 @@ public abstract class Vehicle extends Unit
 		
 		// Make this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
-		// Manually add this vehicle to the settlement
-		settlement.addOwnedVehicle(this);
+
 		// Set the initial coordinates to be that of the settlement
 		setCoordinates(settlement.getCoordinates());
-		
-		setupBaseWear();
+		baseWearLifetime = 668_000 * spec.getWearModifier(); // 668 Sols (1 orbit)
+
 
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
@@ -253,29 +250,6 @@ public abstract class Vehicle extends Unit
 		passengerActivitySpots = spec.getPassengerActivitySpots();
 	}
 
-	/**
-	 * Sets the base wear life time.
-	 */
-	private void setupBaseWear() {
-	
-		if (vehicleType == VehicleType.DELIVERY_DRONE) {
-			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
-		}
-		else if (vehicleType == VehicleType.LUV) {
-			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
-		}
-		else if (vehicleType == VehicleType.EXPLORER_ROVER
-				|| vehicleType == VehicleType.LONG_RANGE_EXPLORER) {
-			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
-		}
-		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
-			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
-		}
-		else if (vehicleType == VehicleType.CARGO_ROVER) {
-			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
-		}
-	}
-	
 	/**
 	 * Sets the scope string.
 	 */

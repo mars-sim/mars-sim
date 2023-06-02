@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -72,22 +71,11 @@ class VehicleGood extends Good {
 
         this.vs = vs;
         this.vehicleType = vs.getType();
-        switch(vehicleType) {
-		case DELIVERY_DRONE, LUV:
-			goodType = GoodType.VEHICLE_SMALL;
-            break;
-
-		case EXPLORER_ROVER, LONG_RANGE_EXPLORER:
-            goodType = GoodType.VEHICLE_MEDIUM;
-            break;
-
-		case TRANSPORT_ROVER, CARGO_ROVER:
-            goodType = GoodType.VEHICLE_HEAVY;
-            break;
-
-        default:
-            throw new IllegalArgumentException(vs.getName() + " has unknown vehicle type.");
-        }
+        this.goodType = switch(vehicleType) {
+			case DELIVERY_DRONE, LUV -> GoodType.VEHICLE_SMALL;
+			case EXPLORER_ROVER -> GoodType.VEHICLE_MEDIUM;
+			case TRANSPORT_ROVER, CARGO_ROVER -> GoodType.VEHICLE_HEAVY;
+        };
 
 		this.theoreticalRange = getVehicleRange(vs);
 
@@ -268,28 +256,14 @@ class VehicleGood extends Good {
 			}
 		}
 
-        double transportationFactor = owner.getTransportationFactor();
-		switch (vehicleType) {
-            case CARGO_ROVER:
-			    demand *= (.5 + transportationFactor) * CARGO_VEHICLE_FACTOR;
-                break;
-		
-            case TRANSPORT_ROVER:
-			    demand *= (.5 + transportationFactor) * TRANSPORT_VEHICLE_FACTOR;
-                break;
-            case LONG_RANGE_EXPLORER, EXPLORER_ROVER:
-			    demand *= (.5 + transportationFactor) * EXPLORER_VEHICLE_FACTOR;
-                break;
-
-		    case DELIVERY_DRONE:
-			    demand *= (.5 + transportationFactor) * DRONE_VEHICLE_FACTOR;
-                break;
-
-		    case LUV:
-			    demand *= (.5 + transportationFactor) * LUV_VEHICLE_FACTOR;
-                break;
-        }
-		return demand;
+        double typeModifier = switch (vehicleType) {
+            case CARGO_ROVER -> CARGO_VEHICLE_FACTOR;		
+            case TRANSPORT_ROVER -> TRANSPORT_VEHICLE_FACTOR;
+            case EXPLORER_ROVER -> EXPLORER_VEHICLE_FACTOR;
+		    case DELIVERY_DRONE -> DRONE_VEHICLE_FACTOR;
+		    case LUV -> LUV_VEHICLE_FACTOR;
+        };
+		return demand * (.5 + owner.getTransportationFactor()) * typeModifier;
 	}
 
 	/**
@@ -372,12 +346,10 @@ class VehicleGood extends Good {
 	private double determineMissionVehicleDemand(GoodsManager owner, Settlement settlement, MissionType missionType, boolean buy) {
 
 		double demand = determineMissionJob(owner, settlement, missionType);
-
-		int typeID = vs.getTypeID();
 		
 		double partDemand = 0;
 		
-		Set<Integer> setIDs = ItemResourceUtil.vehiclePartIDs.get(typeID);
+		Set<Integer> setIDs = vs.getParts();
 		if (setIDs != null && !setIDs.isEmpty()) {
 			for (int id : setIDs) {
 				partDemand += owner.getDemandValueWithID(id);
