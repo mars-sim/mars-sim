@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -39,7 +37,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ScenarioConfig.class.getName());
+	// may add back SimLogger logger = SimLogger.getLogger(ScenarioConfig.class.getName());
 
 	
 	private static final String PREFIX = "scenario";
@@ -276,8 +274,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	/**
 	 * Loads arriving settlements.
-	 * @param occupiedLocations 
 	 * 
+	 * @param occupiedLocations
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
