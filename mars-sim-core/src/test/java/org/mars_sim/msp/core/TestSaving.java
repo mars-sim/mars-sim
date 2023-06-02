@@ -32,7 +32,7 @@ public class TestSaving extends TestCase implements SimulationListener {
         sim.createNewSimulation(64); 
 
 
-        // Build a realistic simualtion with entities to save
+        // Build a realistic simulation with entities to save
         SettlementBuilder builder = new SettlementBuilder(sim, simConfig);
         ScenarioConfig config = new ScenarioConfig();
         Scenario bootstrap = config.getItem("Single Settlement");
@@ -41,12 +41,12 @@ public class TestSaving extends TestCase implements SimulationListener {
         saveFile = File.createTempFile("save-test", ".sim");
         sim.requestSave(saveFile, this);
 
-        // Simualtion a clock pulse to trigger the save
+        // Simulate a clock pulse to trigger the save
         MasterClock mc = sim.getMasterClock();
         ClockPulse pulse = new ClockPulse(1, 0.01D, mc.getMarsClock(), mc, false, false);
         sim.clockPulse(pulse);
 
-        // Check simualtions saved and it contains data
+        // Check simulations saved and it contains data
         assertFalse("Simultion save pending", sim.isSavePending());
         assertEquals("Simulation save status", SimulationListener.SAVE_COMPLETED, saveFeedback);
         assertTrue("Simulation file exists", saveFile.isFile());

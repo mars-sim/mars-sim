@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -35,6 +37,10 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * Loads and maintains a repository Scenario instances from XML files.
  */
 public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ScenarioConfig.class.getName());
+
 	
 	private static final String PREFIX = "scenario";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
@@ -373,6 +379,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static Coordinates parseLocation(Element parent) {
 		
 		List<Coordinates> locations = new ArrayList<>();
+		Coordinates location = null;
 		
 		List<Element> locationNodes = parent.getChildren(LOCATION_EL);
 		if (locationNodes.size() > 0) {
@@ -389,13 +396,19 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 			latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
-			Coordinates location = new Coordinates(latitudeString, longitudeString);
+			location = new Coordinates(latitudeString, longitudeString);
 			locations.add(location);
 		}
 		
 		locations.removeAll(occupiedLocations);
 		
 		int rand = RandomUtil.getRandomInt(locations.size());
+		
+		if (locations.isEmpty()) {
+			// Would still return the last coordinate
+			logger.log(Level.SEVERE, "Note that " + location.getFormattedString() + " has been used previously by another settlement.");
+			return location;
+		}
 		
 		return locations.get(rand);
 	}
