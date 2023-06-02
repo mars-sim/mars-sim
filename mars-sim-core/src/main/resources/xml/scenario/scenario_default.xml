@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 
 <scenario-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scenario.xsd"
-	name="Default" description="Default provided Scenario">
+	name="Default" description="Default Scenario">
 	<initial-settlement-list>
 	<!-- List of initial settlements in the simulation -->
 		<settlement name="New Plymouth" template="Phase 2-US" persons="8" robots="4" sponsor="NASA">
