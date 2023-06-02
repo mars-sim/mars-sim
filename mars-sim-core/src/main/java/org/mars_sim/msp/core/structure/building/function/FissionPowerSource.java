@@ -19,7 +19,7 @@ public class FissionPowerSource extends PowerSource {
 	/** default logger. */
 //	private static final Logger logger = Logger.getLogger(FissionPowerSource.class.getName());
 
-	private static final int MAX_LOAD_CAPACITY = 120;
+	private static final int MAX_LOAD_CAPACITY = 110;
 	
 	private static final int MIN_LOAD_CAPACITY = 5;
 	
