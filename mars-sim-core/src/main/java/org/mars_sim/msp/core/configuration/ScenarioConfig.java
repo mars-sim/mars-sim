@@ -61,10 +61,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String ARRIVAL_ATTR = "arrival-in-sols";
 	
 	// Default scenario
-	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
-
-	private static List<Coordinates> occupiedLocations = new ArrayList<>();
-	
+	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};	
 	
 	public ScenarioConfig() {
 		super(PREFIX);
@@ -269,19 +266,22 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		Element root = doc.getRootElement();
 		String name = root.getAttributeValue(NAME_ATTR);
 		String description = root.getAttributeValue(DESCRIPTION_ATTR);
-		List<InitialSettlement> is = loadInitialSettlements(root);
-		List<ArrivingSettlement> arrivals = loadArrivingSettlements(root);
+
+		List<Coordinates> occupiedLocations = new ArrayList<>();
+		List<InitialSettlement> is = loadInitialSettlements(root, occupiedLocations);
+		List<ArrivingSettlement> arrivals = loadArrivingSettlements(root, occupiedLocations);
 		
 		return new Scenario(name, description, is, arrivals, predefined);
 	}
 	
 	/**
 	 * Loads arriving settlements.
+	 * @param occupiedLocations 
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
-	private List<ArrivingSettlement> loadArrivingSettlements(Element arrivalElement) {
+	private List<ArrivingSettlement> loadArrivingSettlements(Element arrivalElement, List<Coordinates> occupiedLocations) {
 		List<ArrivingSettlement> arrivals = new ArrayList<>();
 
 		Element arrivalList = arrivalElement.getChild(ARRIVING_SETTLEMENT_LIST);
@@ -289,13 +289,14 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			// An old style scenario configu with no arriving settlements
 			return arrivals;
 		}
+
 		List<Element> arrivalNodes = arrivalList.getChildren(ARRIVING_SETTLEMENT);
 		for (Element settlementElement : arrivalNodes) {
 
 			String name = settlementElement.getAttributeValue(NAME_ATTR);
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
-			Coordinates location = parseLocation(settlementElement);
+			Coordinates location = parseLocation(settlementElement, occupiedLocations);
 			occupiedLocations.add(location);
 
 			String arrivalStr = settlementElement.getAttributeValue(ARRIVAL_ATTR);
@@ -328,11 +329,12 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 
 	/**
 	 * Loads initial settlements.
+	 * @param occupiedLocations 
 	 * 
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
-	private List<InitialSettlement> loadInitialSettlements(Element scenarioElement) {
+	private List<InitialSettlement> loadInitialSettlements(Element scenarioElement, List<Coordinates> occupiedLocations) {
 		Element initialSettlementList = scenarioElement.getChild(INITIAL_SETTLEMENT_LIST);
 		List<Element> settlementNodes = initialSettlementList.getChildren(SETTLEMENT_EL);
 		List<InitialSettlement> initialSettlements = new ArrayList<>();
@@ -342,7 +344,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			String settlementName = settlementElement.getAttributeValue(NAME_ATTR);
 			String template = settlementElement.getAttributeValue(TEMPLATE_ATTR);
 
-			Coordinates location = parseLocation(settlementElement);
+			Coordinates location = parseLocation(settlementElement, occupiedLocations);
 			occupiedLocations.add(location);
 			
 			String numberStr = settlementElement.getAttributeValue(PERSONS_ATTR);
@@ -382,14 +384,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	 * @param parent
 	 * @return
 	 */
-	private static Coordinates parseLocation(Element parent) {
+	private static Coordinates parseLocation(Element parent, List<Coordinates> occupiedLocations) {
 		
 		List<Coordinates> locations = new ArrayList<>();
-		Coordinates location = null;
-		
 		List<Element> locationNodes = parent.getChildren(LOCATION_EL);
-		if (locationNodes.size() > 0) {
-			Element locationElement = locationNodes.get(0);
+		for(Element locationElement : locationNodes) {
 
 			String longitudeString = locationElement.getAttributeValue(LONGITUDE_ATTR);
 			String latitudeString = locationElement.getAttributeValue(LATITUDE_ATTR);
@@ -402,20 +401,15 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 			latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
-			location = new Coordinates(latitudeString, longitudeString);
-			locations.add(location);
+			locations.add(new Coordinates(latitudeString, longitudeString));
 		}
 		
 		locations.removeAll(occupiedLocations);
 		
 		if (locations.isEmpty()) {
-			// Would still return the last coordinate
-			logger.log(Level.SEVERE, "Note that " + location.getFormattedString() + " has been used previously by another settlement.");
-			return location;
+			return null;
 		}
 		
-		int rand = RandomUtil.getRandomInt(locations.size()-1);
-		
-		return locations.get(rand);
+		return locations.get(RandomUtil.getRandomInt(locations.size()-1));		
 	}
 }
