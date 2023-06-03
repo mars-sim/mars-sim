@@ -762,6 +762,182 @@
 	</person-name-list>
 
 	<country-list>
+		<country name="Brazil">
+			<first-name-list>
+				<!-- Brazil : will replace with Brazilian names -->
+				<first-name value="Paulo" gender="male" />
+				<first-name value="Eduardo" gender="male" />		
+				<first-name value="Marcos" gender="male" />
+				
+				<!--http://iheartbrazil.com/brazilian-boy-names/ -->
+				<first-name value="Jose" gender="male" />
+				<first-name value="Joao" gender="male" />
+				<first-name value="Antonio" gender="male" />
+				<first-name value="Francisco" gender="male" />
+				<first-name value="Carlos" gender="male" />
+				<first-name value="Pedro" gender="male" />
+				<first-name value="Lucas" gender="male" />
+				<first-name value="Luiz" gender="male" />
+						
+				<first-name value="Adriano" gender="male" />
+				<first-name value="Afonso" gender="male" />
+				<first-name value="Alexandre" gender="male" />
+				<first-name value="Andre" gender="male" />
+				<first-name value="Arthur" gender="male" />
+				<first-name value="Augusto" gender="male" />
+				
+				<first-name value="Benicio" gender="male" />
+				<first-name value="Benjamim" gender="male" />
+				<first-name value="Bento" gender="male" />
+				<first-name value="Breno" gender="male" />
+				<first-name value="Bernardo" gender="male" />
+				<first-name value="Bruno" gender="male" />
+				
+				<first-name value="Caio" gender="male" />
+				<first-name value="Carlos" gender="male" />
+				<first-name value="Caua" gender="male" />
+				<first-name value="Cesar" gender="male" />
+				<first-name value="Cleiton" gender="male" />
+				<first-name value="Claudio" gender="male" />
+				<first-name value="Cristiano" gender="male" />
+
+				<first-name value="Damiao" gender="male" />
+				<first-name value="Danilo" gender="male" />
+				<first-name value="Davi" gender="male" />
+				<first-name value="Diego" gender="male" />
+				<first-name value="Domingos" gender="male" />
+				
+				
+				<!--http://iheartbrazil.com/brazilian-girl-names/ -->
+				<first-name value="Michele" gender="female" />
+				
+				<first-name value="Bruna" gender="female" />
+				
+				<first-name value="Maria" gender="female" />
+				<first-name value="Ana" gender="female" />
+				<first-name value="Francisca" gender="female" />
+				<first-name value="Antonia" gender="female" />
+				<first-name value="Adriana" gender="female" />
+				<first-name value="Juliana" gender="female" />
+				<first-name value="Marcia" gender="female" />
+				<first-name value="Fernanda" gender="female" />
+				<first-name value="Patricia" gender="female" />
+				<first-name value="Aline" gender="female" />
+				
+				
+				<first-name value="Adriene" gender="female" />
+				<first-name value="Agata" gender="female" />
+				<first-name value="Alessandra" gender="female" />
+
+				<first-name value="Amelia" gender="female" />
+				<first-name value="Anita" gender="female" />
+				<first-name value="Aline" gender="female" />
+				<first-name value="Alzira" gender="female" />
+				<first-name value="Ana" gender="female" />
+
+				<first-name value="Analu" gender="female" />
+				<first-name value="Andreia" gender="female" />
+				<first-name value="Aparecida" gender="female" />
+				<first-name value="Aurea" gender="female" />
+				
+				
+				<first-name value="Beatriz" gender="female" />
+
+				<first-name value="Belinda" gender="female" />
+				<first-name value="Bethania" gender="female" />
+				<first-name value="Bibiana" gender="female" />
+				<first-name value="Bruna" gender="female" />
+				
+				<first-name value="Camila" gender="female" />
+
+				<first-name value="Carina" gender="female" />
+				<first-name value="Carla" gender="female" />
+				<first-name value="Carolina" gender="female" />
+				<first-name value="Cassia" gender="female" />
+				<first-name value="Catarina" gender="female" />
+
+				<first-name value="Celia" gender="female" />
+				<first-name value="Cintia" gender="female" />
+				<first-name value="Conceicao" gender="female" />
+				<first-name value="Claudia" gender="female" />
+				<first-name value="Cristiana" gender="female" />
+
+			</first-name-list>
+			<last-name-list>
+				<!--http://iheartbrazil.com/brazilian-last-names/ -->
+				
+				<last-name value="Pontes" />
+				<last-name value="Melo" />
+				<last-name value="Vasconcellos" />
+				
+				<last-name value="Silva" />
+				<last-name value="Santos" />
+				<last-name value="Olveira" />
+				<last-name value="Souza" />
+				<last-name value="Rodrigues" />
+				<last-name value="Ferreira" />
+				<last-name value="Alves" />
+
+				<last-name value="Anjos" />
+				<last-name value="Assuncao" />
+				<last-name value="Batista" />
+				<last-name value="Santiago" />
+				<last-name value="Trindade" />
+
+				<last-name value="Graca" />
+				<last-name value="Pereira" />
+				<last-name value="Lima" />
+				<last-name value="carvalho" />
+				<last-name value="Gomes" />
+
+				<last-name value="Costa" />
+				<last-name value="Ribeiro" />
+				<last-name value="Martins" />
+				<last-name value="Almeida" />
+				<last-name value="Lopes" />
+
+				<last-name value="Soares" />
+				<last-name value="Fernandes" />
+				<last-name value="Vieira" />
+				<last-name value="Barbosa" />
+				<last-name value="Rocha" />
+
+				<last-name value="Dias" />
+				<last-name value="Nascimento" />
+				<last-name value="Andrade" />
+
+				<last-name value="Moreira" />
+				<last-name value="Nunes" />
+				<last-name value="Marques" />
+				<last-name value="Machado" />
+				<last-name value="Mendes" />
+
+				<last-name value="Freitas" />
+				<last-name value="Cardoso" />
+				<last-name value="Ramos" />
+				<last-name value="Goncalves" />
+				<last-name value="Santana" />
+
+				<last-name value="Teixeira" />
+				<last-name value="Araujo" />
+				<last-name value="Conceicao" />
+				<last-name value="Bezerra" />
+				<last-name value="Campos" />
+
+				<last-name value="Reis" />
+				<last-name value="Moraes" />
+				<last-name value="Borges" />
+				<last-name value="Castro" />
+				<last-name value="Monteiro" />
+
+				<last-name value="Moura" />
+				<last-name value="Miranda" />
+				<last-name value="Garcia" />
+				<last-name value="Duarte" />
+				<last-name value="Medeiros" />				
+			</last-name-list>
+		</country>
+	
 		<country name="China">
 			<first-name-list>
 				<!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts

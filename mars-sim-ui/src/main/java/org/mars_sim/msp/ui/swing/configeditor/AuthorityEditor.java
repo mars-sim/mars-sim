@@ -193,9 +193,9 @@ public class AuthorityEditor  {
 		agendaObjective.setAlignmentX(Component.LEFT_ALIGNMENT);
 		agendaPanel.add(agendaObjective);
 		
-		JLabel goals = new JLabel("Goals:");
-		goals.setAlignmentX(Component.LEFT_ALIGNMENT);
-		agendaPanel.add(goals);
+		JLabel cap = new JLabel("Mission Capabilities:");
+		cap.setAlignmentX(Component.LEFT_ALIGNMENT);
+		agendaPanel.add(cap);
 		
 		ta = new JTextArea();
 		ta.setAlignmentX(Component.LEFT_ALIGNMENT);

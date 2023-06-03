@@ -27,10 +27,10 @@ implements UserConfigurable, Serializable {
 
 	private static SimLogger logger = SimLogger.getLogger(ReportingAuthority.class.getName());
 
-	// Maximum points for a top priority subaganda
-	private static final double MAX_RATIO_PER_SUBAGENDA = 0.5D;
+	// Maximum points for a top priority capability demonstration
+	private static final double MAX_RATIO_PER_CAPABILITY = 0.5D;
 	// Maximum priority value
-	private static final int MAX_PRIORITY_PER_SUBAGENDA = 10;
+	private static final int MAX_PRIORITY_PER_CAPABILITY = 10;
 
 	private MissionAgenda missionAgenda;
 
@@ -189,8 +189,8 @@ implements UserConfigurable, Serializable {
 
 			// The modifier is a value of 0..10 that represents a priority.
 			// For each priority point add a value to the ratio. 
-			modifier = Math.min(modifier, MAX_PRIORITY_PER_SUBAGENDA);
-			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
+			modifier = Math.min(modifier, MAX_PRIORITY_PER_CAPABILITY);
+			result += (modifier * MAX_RATIO_PER_CAPABILITY)/MAX_PRIORITY_PER_CAPABILITY;
 		}
 
 		if (result != 1D) {
@@ -213,14 +213,15 @@ implements UserConfigurable, Serializable {
 
 			// The modifier is a value of 0..10 that represents a priority.
 			// For each priority point add a value to the ratio. 
-			modifier = Math.min(modifier, MAX_PRIORITY_PER_SUBAGENDA);
-			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
+			modifier = Math.min(modifier, MAX_PRIORITY_PER_CAPABILITY);
+			result += (modifier * MAX_RATIO_PER_CAPABILITY)/MAX_PRIORITY_PER_CAPABILITY;
 		}
  		return result;
     }
 
 	/**
-	 * Get the male /female ratio for this Authority.
+	 * Gets the male /female ratio for this Authority.
+	 * 
 	 * @return percetnage of Males to Females.
 	 */
     public double getGenderRatio() {

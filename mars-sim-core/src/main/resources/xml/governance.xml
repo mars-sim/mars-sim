@@ -58,6 +58,7 @@
 				<modifier science="ENGINEERING" value="8"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Building Colonies"
 				objective="Building Self-Sustaining Colonies"
 				findings="Updating the report of the best practices in resource utilization"
@@ -79,6 +80,7 @@
 				<modifier science="AREOLOGY" value="2"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Finding Life"
 				objective="Finding Life Past and Present on Mars"
 				findings="Looking for signature of life in soil data"
@@ -96,6 +98,7 @@
 				<modifier mission="MINING" value="3"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Health Hazards"
 				objective="Researching short and long term medical impact on human health"
 				findings="Reporting on the various health hazards for human beings living on Mars"
@@ -125,6 +128,7 @@
 				<modifier science="MEDICINE" value="9"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Human Habitation"
 				objective="Determining factors for human habitability"
 				findings="Identifying engineering/construction challenge in surface, underground and cliff-side architecture"
@@ -144,6 +148,7 @@
 				<modifier science="MEDICINE" value="5"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Planet Life"
 				objective="Making life multiplanetary"
 				findings="Surveying sociological and ideological implications in living under this spatial environment"
@@ -171,6 +176,7 @@
 				<modifier mission="TRADE" value="6"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Prospect Minerals"
 				objective="Prospecting Precious Minerals"
 				findings="Documenting the process and history of climate on Mars"
@@ -193,6 +199,7 @@
 				<modifier mission="MINING" value="6"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Leapfrogs Science and Technology"
 				objective="Advancing Scientific Knowledge"
 				findings="Exploring meterological research opportunities in this region"
@@ -214,6 +221,7 @@
 				<modifier mission="MINING" value="2"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Settling Mars"
 				objective="Making Mars the 2nd home for humanity"
 				findings="Investigating local in-situ resources that one can collect and process for immediate uses"
@@ -241,6 +249,7 @@
 				<modifier science="PSYCHOLOGY" value="10"/>
 			</capability>
 		</agenda>
+		
 		<agenda name="Space Applications"
 				objective="Developing Practical Space Applications"
 				findings="Developing framework for applied space research in this frontier"
@@ -260,13 +269,38 @@
 				<modifier science="ENGINEERING" value="8"/>				
 			</capability>
 			<capability description="Improve closed-loop life support system">
-				<modifier mission="COLLECT_REGOLITH" value="9"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier mission="MINING" value="3"/>
 				<modifier science="COMPUTING" value="4"/>
 				<modifier science="MEDICINE" value="6"/>										
 			</capability>
 		</agenda>
+		
+		<agenda name="Space Tracking"
+				objective="Developing Space Observation and Tracking Platforms"
+				findings="Developing space object tracking stations"
+				data="Measuring cosmic ray radiation from galactic sources">
+			<capability description="Test ground observatory designs">
+				<modifier mission="AREOLOGY" value="3"/>
+				<modifier mission="METEOROLOGY" value="3"/>
+				<modifier science="ASTRONOMY" value="9"/>
+				<modifier science="PHYSICS" value="4"/>	
+				<modifier science="COMPUTING" value="4"/>								
+			</capability>
+			<capability description="Test radiation-proof fabric and barrier">
+				<modifier mission="BIOLOGY" value="5"/>
+				<modifier science="MEDICINE" value="7"/>				
+				<modifier mission="TRADE" value="1"/>
+				<modifier science="PHYSICS" value="4"/>				
+				<modifier science="ENGINEERING" value="4"/>				
+			</capability>
+			<capability description="Improve tracking of space objects">
+				<modifier science="PHYSICS" value="8"/>
+				<modifier science="MATHEMATICS" value="6"/>
+				<modifier science="COMPUTING" value="8"/>									
+			</capability>
+		</agenda>
+				
 		<agenda name="Surface Operations"
 				objective="Pushing Boundaries of Surface Operations"
 				findings="Identifying the human factors in surface operations"
@@ -314,6 +348,29 @@
 	<!--  Reporting authorities. The code attribute must match
 		the ReportingAuthorityType enum -->
 	<authorities>
+		<authority code="AEB" name="Agencia Espacial Brasileira"
+					agenda="Space Tracking" gender-ratio="0.85">
+			<country name="Brazil"/>
+			<settlement-name name="Alcantara" />
+			<settlement-name name="Antonina" />
+			<settlement-name name="Antonio Prado" />
+			<settlement-name name="Escola" />
+			<settlement-name name="Florianopolis" />
+			<settlement-name name="Morretes" />		
+			<settlement-name name="Paraty" />
+			<settlement-name name="Sao Sebastiao" />	
+
+			<rover-name name="Agrale" />  
+			<rover-name name="Lobini" />  
+			<rover-name name="Marcopolo" />    
+			<rover-name name="Neobus" />  
+			<rover-name name="Engesa" />  
+			<rover-name name="Troller" /> 
+			<rover-name name="Puma" />  
+			<rover-name name="Santa Matilde" /> 
+
+		</authority>
+
 		<authority code="CNSA" name="China National Space Administration"
 					agenda="Prospect Minerals" gender-ratio="0.75">
 			<country name="China"/>
@@ -345,6 +402,7 @@
 			<rover-name name="Piaofu" />    <!-- Chinese for hovering -->
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
+		
 		<authority code="CSA" name="Canadian Space Agency"
 					agenda="Leapfrogs Science and Technology"  gender-ratio="0.5">
 			<country name="Canada"/>
@@ -503,8 +561,8 @@
 			<rover-name name="Shi-Ki" />
 		</authority>
 
-		<authority code="KARI" name="Korea Aerospace Research Institute"
-					agenda="Space Applications" gender-ratio="0.4">
+		<authority code="KASA" name="Korea Aerospace Administration"
+					agenda="Space Applications" gender-ratio="0.75">
 			<country name="South Korea"/>
 			<settlement-name name="New Sacheon" />
 			<settlement-name name="New Gimhae" />
