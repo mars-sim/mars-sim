@@ -184,8 +184,6 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		setupCaches();
 
 		setSettlementFilter(settlement);
-
-		listenForUnits();
 	}
 
 	/**
