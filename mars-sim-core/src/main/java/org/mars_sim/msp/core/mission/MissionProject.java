@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
@@ -53,6 +54,11 @@ public abstract class MissionProject implements Mission {
         }
     }
 
+    private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
+
+    // Key for the user aborted mission
+    private static final String USER_ABORT = "Mission.status.abortedReason";
+
     private Project control;
     private String missionCallSign;
     private MissionLog log;
@@ -80,8 +86,14 @@ public abstract class MissionProject implements Mission {
      */
     @Override
     public void abortMission(String reason) {
-        log.addEntry("Aborted:" + reason);
-        control.abort(reason);
+        abortMission(new MissionStatus(USER_ABORT, reason));
+
+    }
+
+    protected void abortMission(MissionStatus reason) {
+        log.addEntry("Aborted:" + reason.getName());
+        control.abort(reason.getName());
+		logger.warning(leader, "Mission aborted : " + reason.getName());
     }
 
     @Override
@@ -159,9 +171,20 @@ public abstract class MissionProject implements Mission {
         return control.getStage();
     }
 
+    /**
+     * Define the step of this Mission
+     * @param plan
+     */
+    protected void setSteps(List<MissionStep> plan) {
+        for(MissionStep ps : plan) {
+            control.addStep(ps);
+        }
+    }
+    
+
     @Override
     public String getPhaseDescription() {
-       return control.getStepName();
+       return control.getStep().getDescription();
     }
 
     @Override
@@ -217,6 +240,10 @@ public abstract class MissionProject implements Mission {
     @Override
     public boolean performMission(Worker member) {
         return control.execute(member);
+    }
+
+    protected Project getControl() {
+        return control;
     }
 
     /**

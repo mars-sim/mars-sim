@@ -30,7 +30,7 @@ public class MissionStatus implements Serializable {
 		this.name = Msg.getString(key);
 	}
 
-	MissionStatus(String key, String argument) {
+	public MissionStatus(String key, String argument) {
 		this.name  = Msg.getString(key, argument);
 	}
 

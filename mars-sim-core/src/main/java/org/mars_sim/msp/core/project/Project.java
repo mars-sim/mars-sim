@@ -151,11 +151,11 @@ public class Project implements Serializable {
     }
 
     /**
-     * Get the description of the current project step
+     * What is active currently
      * @return
      */
-    public String getStepName() {
-        return (currentStep != null ? currentStep.getDescription() : null);
+    public ProjectStep getStep() {
+        return currentStep;
     }
 
     /**

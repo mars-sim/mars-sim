@@ -9,8 +9,12 @@ package org.mars_sim.msp.core.mission;
 import java.util.Collections;
 import java.util.Map;
 
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * Represent a step that a Mission has to undertake. 
@@ -37,5 +41,28 @@ public abstract class MissionStep extends ProjectStep {
      */
     Map<Integer,Number> getRequiredResources() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Assign a Task to a Worker as part of this mission step
+     * @param worker Worker looking to work
+     * @param task Task allocated
+     */
+    protected boolean assignTask(Worker worker, Task task) {
+        // Bit messy
+        if (worker instanceof Robot r) {
+            if (r.getMalfunctionManager().hasMalfunction() 
+                    || !r.getSystemCondition().isBatteryAbove(5)) {
+                return false;
+            }
+        }
+        else if (worker instanceof Person p) {
+            if (task.isEffortDriven() && (p.getPerformanceRating() == 0D)) {
+                return false;
+            }
+        }
+
+        worker.getTaskManager().addTask(task);
+        return true;
     }
 }
