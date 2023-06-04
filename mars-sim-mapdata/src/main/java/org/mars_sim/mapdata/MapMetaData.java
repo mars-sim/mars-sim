@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * MapMetaData.java
+ * @date 2023-06-03
+ * @author Barry Evans
+ */
+
 package org.mars_sim.mapdata;
 
 public class MapMetaData {

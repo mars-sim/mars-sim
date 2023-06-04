@@ -60,6 +60,8 @@ public class MapPanel extends JPanel {
 
 	private String mapErrorMessage;
 
+	private String mapStringType;
+	
 	private List<MapLayer> mapLayers;
 
 	private Coordinates centerCoords;
@@ -244,6 +246,10 @@ public class MapPanel extends JPanel {
 		return marsMap;
 	}
 
+	public MapData getMapData() {
+		return mapUtil.getMapData(mapStringType);
+	}
+	
 	/**
 	 * Sets the map type.
 	 * 
@@ -253,6 +259,7 @@ public class MapPanel extends JPanel {
 		
 		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
 			MapData data = mapUtil.getMapData(mapStringType);
+			this.mapStringType = mapStringType;
 			if (data == null) {
 				logger.warning("Map type cannot be loaded " + mapStringType);
 				return false;
@@ -403,6 +410,13 @@ public class MapPanel extends JPanel {
 		updateDisplay();
 	}
 
+    public Coordinates getMouseCoordinates(int x, int y) {
+		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
+		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
+		
+		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
+    }
+    
 	/**
 	 * Prepares map panel for deletion.
 	 */
@@ -419,10 +433,4 @@ public class MapPanel extends JPanel {
 		mapImage = null;
 	}
 
-    public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
-		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
-		
-		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
-    }
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataUtil.java
- * @date 2023-04-28
+ * @date 2023-06-03
  * @author Scott Davis
  */
 
@@ -102,7 +102,8 @@ import java.util.Collection;
      }
 
      /**
-      * Get the map types available
+      * Gets the map types available.
+      * 
       * @return
       */
     public Collection<MapMetaData> getMapTypes() {

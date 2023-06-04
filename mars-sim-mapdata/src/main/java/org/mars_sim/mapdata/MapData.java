@@ -9,6 +9,8 @@
 
  import java.awt.Color;
  import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
  /**
   * An interface for map data.
@@ -62,4 +64,22 @@
      * @return
      */
     public MapMetaData getMetaData();
+    
+    /**
+     * Gets the unmodified cylindrical map image.
+     * 
+     * @return
+     */
+ 	public BufferedImage getCylindricalMapImage();
+ 	
+ 	
+	/**
+ 	 * Loads the 2-D integer map data set pixel array.
+ 	 * 
+ 	 * @param imageName
+ 	 * @return
+ 	 * @throws IOException
+ 	 */
+ 	public int[][] getPixels();
+ 	
  }

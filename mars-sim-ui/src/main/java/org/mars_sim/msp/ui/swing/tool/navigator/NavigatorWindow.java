@@ -122,7 +122,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private static final int HEIGHT_STATUS_BAR = 16;
 
-	private static final double RAD_PER_DEGREE = Math.PI / 180D;
+//	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
 	private static final String WHITESPACE = " ";
 	private static final String THETA = "\u03B8: "; //"Theta: ";
@@ -645,6 +645,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (mapLayerPanel.setMapType(newMapType)) {
 			// Update dependent panels
 			MapMetaData metaType = mapLayerPanel.getMapType();
+			// Gets a new GlobeMap if it's a different metaType
 			globeNav.setMapType(metaType);
 
 			if (metaType.isColourful()) {

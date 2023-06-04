@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A static helper class to locate files for the configuration of the system
+ * A static helper class to locate files for the configuration of the system.
  */
 public final class FileLocator {
     private static Logger logger = Logger.getLogger(FileLocator.class.getName());
@@ -30,7 +30,8 @@ public final class FileLocator {
     }
     
     /**
-     * Set the base directory where files are cached
+     * Sets the base directory where files are cached.
+     * 
      * @param newBase Folder to cache downloaded files
      * 
      */
@@ -39,7 +40,8 @@ public final class FileLocator {
     }
 
     /**
-     * Set the URL of the remote content store.
+     * Sets the URL of the remote content store.
+     * 
      * @param newURL
      */
     public static void setContentURL(String newURL) {
@@ -48,7 +50,8 @@ public final class FileLocator {
     }
 
     /**
-     * Is this file locally available and does not need a download?
+     * Is this file locally available and does not need a download ?
+     * 
      * @param name
      * @return
      */
@@ -71,7 +74,8 @@ public final class FileLocator {
     }
 
     /**
-     * Locate an external file used in the configuration.
+     * Locates an external file used in the configuration.
+     * 
      * @param name Name will be a partial path
      * @return
      */
@@ -82,7 +86,7 @@ public final class FileLocator {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
-            // Attempt to find the file in the resoruces
+            // Attempt to find the file in the resources
             InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
             if (resourceStream != null) {
                 try {
@@ -116,7 +120,8 @@ public final class FileLocator {
     }
 
     /**
-     * Download a file from the remote repository
+     * Downloads a file from the remote repository.
+     * 
      * @param url
      * @param dest
      * @throws IOException
@@ -125,11 +130,11 @@ public final class FileLocator {
 
         try (BufferedInputStream in = new BufferedInputStream(source);
             FileOutputStream fileOutputStream = new FileOutputStream(dest)) {
-                byte dataBuffer[] = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                    fileOutputStream.write(dataBuffer, 0, bytesRead);
-                }
+            byte dataBuffer[] = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }
         }
     }
 }

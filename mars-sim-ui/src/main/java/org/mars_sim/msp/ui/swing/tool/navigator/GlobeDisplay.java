@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GlobeDisplay.java
- * @date 2023-05-28
+ * @date 2023-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -205,7 +205,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 */
 	public void setMapType(MapMetaData newMapType) {
 		if (!newMapType.equals(mapType)) {
-			globeMap = new GlobeMap(newMapType, this);
+			globeMap = new GlobeMap(this, newMapType, this);
 			recreate = true;
 		}
 		mapType = newMapType;
@@ -261,6 +261,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	
 	public void drawSphere() {
 		globeMap.drawSphere(centerCoords);
+//		globeMap.drawMap(centerCoords);
 		paintDoubleBuffer();
 		repaint();
 	}
@@ -376,7 +377,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = (int)(((leftWidth - latWidth) / 2) + 25 * RATIO_EXPANSION);
-		int longPosition = (int)(NEW_GLOBE_BOX_HEIGHT - latPosition - longWidth - 5 * RATIO_EXPANSION);
+		int longPosition = (int)(NEW_GLOBE_BOX_HEIGHT - latPosition - longWidth - 2.5 * RATIO_EXPANSION);
 
 		g.drawString(latString, latPosition, (int)(50 * RATIO_EXPANSION));
 		g.drawString(longString, longPosition, (int)(50 * RATIO_EXPANSION));
@@ -441,6 +442,10 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		}
 	}
 
+	public NavigatorWindow getNavigatorWindow() {
+		return navwin;
+	}
+	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {

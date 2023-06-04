@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
