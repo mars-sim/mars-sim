@@ -2054,6 +2054,14 @@ public abstract class Vehicle extends Unit
 		return vehicleController;
 	}
 	
+	/** 
+	 * Gets the VehicleSpec instance. 
+	 */
+	public VehicleSpec getVehicleSpec() {
+		return spec;
+	}
+	
+	
 	/**
 	 * Compares if an object is the same as this unit
 	 *

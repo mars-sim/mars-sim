@@ -26,7 +26,7 @@ import com.google.common.io.ByteStreams;
 /**
  * This class reads the topographical or elevation data of MOLA Mission Experiment 
  * Gridded Data Records (MEGDRs) acquired by MGS mission. 
- * See https://pds-geosciences.wustl.edu/missions/mgs/megdr.html.
+ * @See https://pds-geosciences.wustl.edu/missions/mgs/megdr.html.
  */
 public class MEGDRMapReader {
 
@@ -41,7 +41,15 @@ public class MEGDRMapReader {
 //	map resolution of 5760x2880
 //	16 pixels per degree (or 0.0625by 0.0625 degrees)
 //	map scale of 3.705 km per pixel	
+//	
+// `megt90n000fb.img` provides
+//	map resolution of 11520x5760
+//	32 pixels per degree (or 0.03125 by 0.03125 degrees)
+//	map scale of 1.853 km per pixel		
 	
+	
+	
+	 
 //	private static final String IMG_FILE = "megt90n000cb.img";
 //	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "720x1440_uncompressed";

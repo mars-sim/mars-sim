@@ -1049,8 +1049,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		
 	<building type="Kilopower Reactor" width="2.0" length="2.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="1500">
-		<description>The Kilopower Reactor contains two 10 kWe modules with
-		a reactor core using depleted uranium as fuel source. 
+		<description>The Kilopower Reactor provides ~20 kWe. It contains two 10 kWe modules, 
+		each with a reactor core using depleted uranium as fuel source. 
 		It uses stirling converters for generating power via mechanical movement of pistons 
 		inside as passive sodium heat pipes transport thermal energy between the core 
 		containment can (hot end) and the vacuum chambers (cold end). 
