@@ -6,13 +6,14 @@
  */
 package org.mars_sim.msp.core.mission;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionLog;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Project;
 import org.mars_sim.msp.core.project.ProjectStep;
@@ -54,10 +56,16 @@ public abstract class MissionProject implements Mission {
         }
     }
 
+    // Mission score for Worker
+    private static record Candidate(Worker worker, double score) {};
+
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
 
     // Key for the user aborted mission
     private static final String USER_ABORT = "Mission.status.abortedReason";
+
+	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
+    public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
 
     private Project control;
     private String missionCallSign;
@@ -71,11 +79,18 @@ public abstract class MissionProject implements Mission {
 	private transient Set<MissionListener> listeners = null;
     private MarsClock stepStarted;
 
-    public MissionProject(String name, MissionType type, int priority, int maxMembers, Person leader) {
+    private Set<Worker> members = new HashSet<>();
+
+    private int minMembers;
+
+    public MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {
         this.type = type;
         this.priority = priority;
         this.maxMembers = maxMembers;
+        this.minMembers = minMembers;
+
         this.leader = leader;
+        leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
     }
@@ -172,16 +187,80 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Define the step of this Mission
+     * Define the step of this Mission. This will trigger finding suitable people.
      * @param plan
      */
     protected void setSteps(List<MissionStep> plan) {
         for(MissionStep ps : plan) {
             control.addStep(ps);
         }
-    }
-    
 
+        if (members.size() < minMembers) {
+            findMembers();
+        }
+    }
+
+    /**
+	 * Checks to see if a member is capable of joining a mission.
+	 *
+	 * @param member the member to check.
+	 * @return true if member could join mission.
+	 */
+	private static boolean isCapableOfMission(Worker member) {
+		if (member instanceof Person p) {
+			// Make sure person isn't already on a mission.
+			boolean onMission = (p.getMind().getMission() != null);
+
+			// Make sure person doesn't have any serious health problems.
+			boolean healthProblem = p.getPhysicalCondition().hasSeriousMedicalProblems();
+
+			return (!onMission && !healthProblem);
+		}
+        // TODO need Robot selector
+		return false;
+	}
+
+    /** 
+     * Find new members based on the skils needed for the Mission steps.
+     */
+    private void findMembers() {
+    	// Get all people qualified for the mission.
+		Collection<Person> possibles = leader.getAssociatedSettlement().getIndoorPeople();
+
+		List<Candidate> qualifiedPeople = new ArrayList<>();
+		for(Person person : possibles) {
+			if (isCapableOfMission(person)) {
+				// Determine the person's mission qualification.
+				double qualification = getMissionQualification(person) * 100D;
+                if (qualification > 0) {
+
+                    // Determine how much the recruiter likes the person.
+                    double likability = RelationshipUtil.getOpinionOfPerson(leader, person);
+
+                    // Check if person is the best recruit.
+                    double personValue = (qualification + likability) / 2D;
+                    qualifiedPeople.add(new Candidate(person, personValue));
+                }
+			}
+		}
+
+        // Check numbers
+        int needed = minMembers - members.size();
+        if (needed > qualifiedPeople.size()) {
+            abortMission(NOT_ENOUGH_MEMBERS);
+        }
+        else if ((possibles.size() - needed) < 2) {
+            abortMission(LOW_SETTLEMENT_POPULATION);
+        }
+		
+		// Recruit the most qualified and most liked people first.
+		qualifiedPeople.sort(Comparator.comparing(Candidate::score, Comparator.reverseOrder()));
+        for(int i = 0; i < needed; i++) {
+            Candidate choosen = qualifiedPeople.get(i);
+            choosen.worker.setMission(this);
+        }
+	}
+    
     @Override
     public String getPhaseDescription() {
        return control.getStep().getDescription();
@@ -210,20 +289,17 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public void addMember(Worker member) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addMember'");
+        members.add(member);
     }
 
     @Override
     public void removeMember(Worker member) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeMember'");
+        members.remove(member);
     }
 
     @Override
     public Collection<Worker> getMembers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMembers'");
+        return members;
     }
 
     @Override
@@ -255,24 +331,15 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Add a new step to the mission
-     * @param newStep
-     */
-    protected void addMissionStep(MissionStep newStep) {
-        control.addStep(newStep);
-    }
-
-    /**
      * Get the resources needed to complete the mission
      * @return
      */
-    public Map<Integer, Number> getResources() {
+    public MissionManifest getResources(boolean includeOptionals) {
+        MissionManifest resources = new MissionManifest();
         List<ProjectStep> steps = control.getRemainingSteps();
-        Map<Integer, Number> resources = new HashMap<>();
         for(ProjectStep ps : steps) {
             if (ps instanceof MissionStep ms) {
-                ms.getRequiredResources().forEach((key, value)
-                            -> resources.merge(key, value, (v1, v2) ->  MissionUtil.numberAdd(v1, v2)));
+                ms.getRequiredResources(resources, includeOptionals);
             }
         }
 

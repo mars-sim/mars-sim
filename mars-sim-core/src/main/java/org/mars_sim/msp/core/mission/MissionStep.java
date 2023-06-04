@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.mission;
 
-import java.util.Collections;
-import java.util.Map;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -35,12 +33,13 @@ public abstract class MissionStep extends ProjectStep {
     }
 
     /**
-     * Calcaulte what resources are needed for this step.
+     * Calculate what resources are needed for this step.
      * The return value may change once the step is active.
-     * @return Map of resource id to quantity
+     * @param includeOptionals
+     * @param resources
      */
-    Map<Integer,Number> getRequiredResources() {
-        return Collections.emptyMap();
+    void getRequiredResources(MissionManifest resources, boolean includeOptionals) {
+       // Do nonthing; nothing to add
     }
 
     /**

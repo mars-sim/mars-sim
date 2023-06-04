@@ -159,7 +159,7 @@ public class Project implements Serializable {
     }
 
     /**
-     * Is the project finoshed; either completed ot aborted
+     * Is the project finished; either completed ot aborted
      * @return Finsihed
      */
     public boolean isFinished() {

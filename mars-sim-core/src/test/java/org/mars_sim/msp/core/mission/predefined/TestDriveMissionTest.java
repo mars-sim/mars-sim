@@ -7,9 +7,12 @@
 package org.mars_sim.msp.core.mission.predefined;
 
 
+import java.util.Collection;
+
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.mission.MissionVehicleProject;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -23,6 +26,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         Settlement home = buildSettlement();
         buildRover(home, "Rover 1", null);
         Person leader = buildPerson("Leader", home);
+        Person support = buildPerson("Support", home);
         MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, leader);
 
         // Check vehicle details
@@ -34,5 +38,11 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         assertEquals("Mission navpoints", 2, mp.getNavpoints().size());
         assertEquals("Mission distance", TestDriveMission.TRAVEL_DIST * 2, mp.getDistanceProposed(),
                                     0.01D);
+
+        // Check Members
+        Collection<Worker> members = mp.getMembers();
+        assertEquals("Mission members", 2, members.size());
+        assertTrue("Member " + leader.getName(), members.contains(leader));
+        assertTrue("Member " + support.getName(), members.contains(support));
     }
 }

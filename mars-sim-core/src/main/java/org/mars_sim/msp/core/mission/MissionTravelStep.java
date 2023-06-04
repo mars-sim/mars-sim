@@ -6,8 +6,7 @@
  */
 package org.mars_sim.msp.core.mission;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.beans.DesignMode;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleController;
 
@@ -116,24 +116,32 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * What resources are needed for this travel
+     * What resources are needed for this travel. Should be vehicle fuel plus food and oxygen.
      */
     @Override
-    Map<Integer, Number> getRequiredResources() {
+    void getRequiredResources(MissionManifest manifest, boolean addOptionals) {
 
         Vehicle vehicle = getVehicle();
 
         // Must use the same logic in all cases otherwise too few fuel will be loaded
-        double amount = vehicle.getFuelNeededForTrip(destination.getDistance(), true);
-
-        Map<Integer,Number> result = new HashMap<>();
-        result.put(vehicle.getFuelType(), amount);
+        double amount = vehicle.getFuelNeededForTrip(destination.getDistance(), addOptionals);
+        manifest.addResource(vehicle.getFuelType(), amount, true);
         
         // if useMargin is true, include more oxygen
         double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
-        result.put(ResourceUtil.oxygenID, amountOxygen);
+        if (vehicle instanceof Rover) {
+           // Add in suppliers for crew
+           double travelDuration = 500D;
+           double personSols = getProject().getMembers().size() * travelDuration;
+           amountOxygen += personSols * 0.5D;
 
-        return result;
+           // Add food and water
+           // TODO use correct consumpation rates
+           manifest.addResource(ResourceUtil.waterID, personSols * 0.5D, true);
+           manifest.addResource(ResourceUtil.foodID, personSols * 0.5D, true);
+
+        }
+        manifest.addResource(ResourceUtil.oxygenID, amountOxygen, true);
     }
 
     /**

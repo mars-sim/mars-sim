@@ -34,7 +34,7 @@ public class MissionVehicleProject extends MissionProject
     private List<NavPoint> route;
 
     public MissionVehicleProject(String name, MissionType type, int priority, int maxMembers, Person leader) {
-        super(name, type, priority, maxMembers, leader);
+        super(name, type, priority, 2, maxMembers, leader);
 
         Vehicle best = findBestVehicle(leader.getAssociatedSettlement());
         if (best == null) {
