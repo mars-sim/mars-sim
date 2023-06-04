@@ -32,7 +32,7 @@ public class GlobeMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	private static final int MAP_H = 600;
+	private static final int MAP_H = NavigatorWindow.MAP_BOX_WIDTH;
 	/** Width of map source image (pixels). */
 	private static final int MAP_W = MAP_H * 2;
 	private static final int HALF_MAP_HEIGHT = MAP_H / 2;

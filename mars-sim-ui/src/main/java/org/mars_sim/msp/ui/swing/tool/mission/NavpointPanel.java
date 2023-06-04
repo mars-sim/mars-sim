@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2023-05-28
+ * @date 2023-06-03
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -68,7 +69,7 @@ implements MissionListener {
 	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 //	private static final int PADDING = 0;
-	private static final int TABLE_HEIGHT = 190;
+	private static final int TABLE_HEIGHT = MissionWindow.TABLE_HEIGHT;
 	
 	private static final double TWO_PI = Math.PI * 2D;
 	
@@ -99,17 +100,34 @@ implements MissionListener {
 		setLayout(new BorderLayout());
 		
 		// Create the main panel.
-		JPanel mainPane = new JPanel(new BorderLayout(0, 0));
+		JPanel mainPane = new JPanel(new BorderLayout(0, 0));	
+
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
-		mapDisplayPane.setPreferredSize(new Dimension(WIDTH + 5, HEIGHT + 5));
-		mapDisplayPane.setMaximumSize(new Dimension(WIDTH + 5, HEIGHT + 5));
+		
+		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
+		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		mapDisplayPane.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+		
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
 
+		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		
+		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
+		mapPane.setSize(new Dimension(WIDTH, HEIGHT));
+		mapPane.setPreferredSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
+		mapPane.setMaximumSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
+		
+		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
+		
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop(), 500L);
 		// Set up mouse control
@@ -118,6 +136,7 @@ implements MissionListener {
 		mapPanel.addMouseMotionListener(new MouseMotionListener());
 		
 		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
 		trailLayer = new VehicleTrailMapLayer();
 		navpointLayer = new NavpointMapLayer(this);
@@ -130,10 +149,11 @@ implements MissionListener {
 		mapPanel.addMapLayer(trailLayer, 4);
 		mapPanel.addMapLayer(navpointLayer, 5);
   
-        // Forcing map panel to be 300x300 size.
         mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
         mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        mapDisplayPane.add(mapPanel, BorderLayout.CENTER);
+        mapPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        
+        mapPane.add(mapPanel);
         
 		// Create the north button.
         JButton northButton = new JButton(ImageLoader.getIconByName("map/navpoint_north")); //$NON-NLS-1$
@@ -201,7 +221,7 @@ implements MissionListener {
 		
 		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
-        navpointTablePane.add(navpointScrollPane, BorderLayout.CENTER);
+        navpointTablePane.add(navpointScrollPane, BorderLayout.SOUTH);
         
         // Create the navpoint table model.
         navpointTableModel = new NavpointTableModel();

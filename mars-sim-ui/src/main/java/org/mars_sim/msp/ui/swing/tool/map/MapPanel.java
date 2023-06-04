@@ -47,7 +47,7 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = 600;
+	public static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_WIDTH;
 	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
 	private static int dragx, dragy;
 
@@ -92,6 +92,7 @@ public class MapPanel extends JPanel {
 
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
+		setSize(getPreferredSize());
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}
