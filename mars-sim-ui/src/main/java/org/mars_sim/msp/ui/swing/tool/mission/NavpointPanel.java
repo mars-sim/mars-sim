@@ -217,7 +217,7 @@ implements MissionListener {
 				VehicleMission travelMission = (VehicleMission) missionCache;
 				int index = navpointTable.getSelectedRow();
 				if (index > -1) {
-					NavPoint navpoint = travelMission.getNavpoint(index); 
+					NavPoint navpoint = travelMission.getNavpoints().get(index); 
 					navpointLayer.setSelectedNavpoint(navpoint);
 					mapPanel.showMap(navpoint.getLocation());
 				}
@@ -552,11 +552,9 @@ implements MissionListener {
 		 */
 		public void updateNavpoints() {
 		    
-			if (missionCache instanceof VehicleMission) {
+			if (missionCache instanceof VehicleMission travelMission) {
 				navpoints.clear();
-				VehicleMission travelMission = (VehicleMission) missionCache;
-				for (int x=0; x < travelMission.getNumberOfNavpoints(); x++) 
-					navpoints.add(travelMission.getNavpoint(x));
+				navpoints.addAll(travelMission.getNavpoints());
 				fireTableDataChanged();
 			}
 			else {

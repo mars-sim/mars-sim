@@ -31,7 +31,7 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         assertEquals("Vehicle mission", mp, assigned.getMission());
 
         // Check route
-        assertEquals("Mission navpoints", 2, mp.getNumberOfNavpoints());
+        assertEquals("Mission navpoints", 2, mp.getNavpoints().size());
         assertEquals("Mission distance", TestDriveMission.TRAVEL_DIST * 2, mp.getDistanceProposed(),
                                     0.01D);
     }

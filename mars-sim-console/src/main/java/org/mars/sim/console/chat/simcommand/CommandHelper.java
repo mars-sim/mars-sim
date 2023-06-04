@@ -318,21 +318,21 @@ public class CommandHelper {
 			response.appendNumberedList("Members", names);
 		
 			// Travel mission has a route
-			if (mission instanceof VehicleMission) {
-				VehicleMission tm = (VehicleMission) mission;
-				int navPoints = tm.getNumberOfNavpoints();
-				if ((navPoints > 0) && (tm.getNextNavpointIndex() >= 0)) {
+			if (mission instanceof VehicleMission tm) {
+				List<NavPoint> route = tm.getNavpoints();
+				if (!route.isEmpty()) {
 					response.appendText("Itinerary:");
 					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
 										"Description");
-					for(int i = tm.getNextNavpointIndex(); i < navPoints; i++) {
-						NavPoint nv = tm.getNavpoint(i);
+					NavPoint currentNav = tm.getCurrentDestination();
+					for(NavPoint nv : route) {
 						String distance = String.format(KM_FORMAT, nv.getDistance());
+						String prefix = (nv.equals(currentNav) ? "* " : "");
 						if (nv.isSettlementAtNavpoint()) {
-							response.appendTableRow(nv.getSettlement().getName(), distance, "");
+							response.appendTableRow(prefix + nv.getSettlement().getName(), distance, "");
 						}
 						else {
-							response.appendTableRow(nv.getLocation().getCoordinateString(),
+							response.appendTableRow(prefix + nv.getLocation().getCoordinateString(),
 									distance,
 									nv.getDescription());
 						}

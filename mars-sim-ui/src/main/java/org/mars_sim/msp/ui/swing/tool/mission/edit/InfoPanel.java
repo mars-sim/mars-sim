@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -36,6 +37,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -238,14 +240,16 @@ public class InfoPanel extends JPanel {
 		// 		actions.add(ACTION_CONTINUE);
 		// }
 		
-		if (mission instanceof VehicleMission) {
-			VehicleMission vehicleMission = (VehicleMission) mission;
-
+		if (mission instanceof VehicleMission vm) {
 			// Check if go home action can be added.
-			int nextNavpointIndex = vehicleMission.getNextNavpointIndex();
-			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (vehicleMission.getNumberOfNavpoints() - 1))) {
-				if (mission.getStage() == Stage.ACTIVE)
+			if (mission.getStage() == Stage.ACTIVE) {
+				NavPoint currentNavPoint = vm.getCurrentDestination();
+				List<NavPoint> route = vm.getNavpoints();
+
+				// If the current destination is the last one then already on the way home
+				if (!route.isEmpty() && !route.get(route.size()-1).equals(currentNavPoint)) {
 					actions.add(ACTION_HOME);
+				}
 			}
 		}
 		

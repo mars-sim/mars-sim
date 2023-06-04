@@ -1535,8 +1535,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return navpoint index or -1 if none.
 	 */
-	@Override
-	public final int getNextNavpointIndex() {
+	protected final int getNextNavpointIndex() {
 		if (navIndex < navPoints.size())
 			return navIndex;
 		else
@@ -1550,37 +1549,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if the new navpoint is out of range.
 	 */
 	protected final void setNextNavpointIndex(int newNavIndex) {
-		if (newNavIndex < getNumberOfNavpoints()) {
+		if (newNavIndex < navPoints.size()) {
 			navIndex = newNavIndex;
 		} else
 			logger.severe(getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 	}
 
 	/**
-	 * Gets the navpoint at an index value.
+	 * Gets the navpoints
 	 * 
-	 * @param index the index value
 	 * @return navpoint
-	 * @throws IllegaArgumentException if no navpoint at that index.
 	 */
 	@Override
-	public NavPoint getNavpoint(int index) {
-		if ((index >= 0) && (index < getNumberOfNavpoints()))
-			return navPoints.get(index);
-		else {
-			logger.severe(getName() + " navpoint " + index + " is null.");
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the number of navpoints on the trip.
-	 * 
-	 * @return number of navpoints
-	 */
-	@Override
-	public int getNumberOfNavpoints() {
-		return navPoints.size();
+	public List<NavPoint> getNavpoints() {
+		return navPoints;
 	}
 	
 	/**
@@ -1801,7 +1783,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				int offset = 2;
 				if (getPhase().equals(TRAVELLING))
 					offset = 1;
-				setNextNavpointIndex(getNumberOfNavpoints() - offset);
+				setNextNavpointIndex(navPoints.size() - offset);
 				updateTravelDestination();
 			}
 			
@@ -1898,8 +1880,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
-		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-			NavPoint next = getNavpoint(x); 
+		for (int x = index + 1; x < navPoints.size(); x++) {
+			NavPoint next = navPoints.get(x); 
 			if (next != null)
 				navDist += next.getDistance();
 		}

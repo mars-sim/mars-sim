@@ -148,20 +148,8 @@ public class MissionVehicleProject extends MissionProject
     }
 
     @Override
-    public int getNumberOfNavpoints() {
-        return route.size();
-    }
-
-    @Override
-    public NavPoint getNavpoint(int i) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNavpoint'");
-    }
-
-    @Override
-    public int getNextNavpointIndex() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNextNavpointIndex'");
+    public List<NavPoint> getNavpoints() {
+        return route;
     }
 
     @Override

@@ -109,8 +109,8 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	private void displayMission(VehicleMission mission, Coordinates mapCenter, Map baseMap, Graphics g) {
-		for (int x = 0; x < mission.getNumberOfNavpoints(); x++) {
-			displayNavpoint(mission.getNavpoint(x), mapCenter, baseMap, g);
+		for (NavPoint np : mission.getNavpoints()) {
+			displayNavpoint(np, mapCenter, baseMap, g);
 		}
 	}
 
