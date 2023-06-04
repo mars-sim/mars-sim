@@ -30,19 +30,22 @@ import com.google.common.io.ByteStreams;
  */
 public class MEGDRMapReader {
 
-	// HEIGHT = 720
-	// WIDTH = 1440
-	// megt90n000cb.img has a resolution of 4 pixels per degree (or 0.25 by 0.25 degrees)
-	// map scale : 14.818 km per pixel
-
+//	NOTE: (Do not delete)
+//	
+// `megt90n000cb.img` provides 
+//	map resolution of 1440x720
+//	4 pixels per degree (or 0.25 by 0.25 degrees)
+//	map scale of 14.818 km per pixel
+//	
+// `megt90n000eb.img` provides
+//	map resolution of 5760x2880
+//	16 pixels per degree (or 0.0625by 0.0625 degrees)
+//	map scale of 3.705 km per pixel	
+	
 //	private static final String IMG_FILE = "megt90n000cb.img";
 //	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 
-	// HEIGHT = 2880
-	// WIDTH = 5760
-	// megt90n000eb.img has a resolution of 16 pixels per degree (or 0.0625 by 0.0625 degrees)
-	// map scale : 3.705 km per pixel
 	private static final String IMG_FILE = "megt90n000eb.img";
 //	private static final String COMPRESSED = "2880x5760_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "2880x5760_uncompressed";
@@ -70,7 +73,7 @@ public class MEGDRMapReader {
 	}
 	
 	/**
-	 * This class loads NASA's MEGDR elevation dataset. 
+	 * This class loads NASA's MEGDR elevation data set. 
 	 * 
 	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">mars-sim Issue #225</a>
 	 */
