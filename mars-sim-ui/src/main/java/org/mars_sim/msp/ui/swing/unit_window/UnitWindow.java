@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitWindow.java
- * @date 2023-03-30
+ * @date 2023-06-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -9,12 +9,14 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -24,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -38,13 +41,14 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 public abstract class UnitWindow extends ModalInternalFrame
 			implements ConfigurableWindow {
 
-	public static final int WIDTH = 530;
-	public static final int HEIGHT = 620;
-
-	public static final int STATUS_HEIGHT = 60;
+	private static final String AGENCY_FOLDER = "agency/";	
 	private static final String UNIT_TYPE = "unittype";
 	private static final String UNIT_NAME = "unitname";
 	private static final String SELECTED_TAB = "selected_tab";
+
+	public static final int WIDTH = 530;
+	public static final int HEIGHT = 620;
+	public static final int STATUS_HEIGHT = 60;
 	
 	/** The tab panels. */
 	private List<TabPanel> tabPanels;
@@ -228,7 +232,8 @@ public abstract class UnitWindow extends ModalInternalFrame
 	}
 
 	/**
-	 * Apply the preiously saved UI props to a window
+	 * Applies the preciously saved UI props to a window.
+	 * 
 	 * @param props
 	 */	
     public void setUIProps(Properties props) {
@@ -242,18 +247,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 			}
 		}
     }
-
-	/**
-	 * Prepares unit window for deletion.
-	 */
-	public void destroy() {		
-		if (tabPanels != null)
-			tabPanels.clear();
-		tabPanels = null;
-		tabPane = null;
-		desktop = null;
-		unit = null;
-	}
 
 	/**
 	 * Find a Unit from a previously generated UI Settings instance.
@@ -272,4 +265,43 @@ public abstract class UnitWindow extends ModalInternalFrame
 		}
 		return null;
 	}
+	
+    /**
+     * Creates and returns space agency label.
+     * 
+     * @return
+     */
+    public JLabel agencyLabel() {
+		// Add space agency img
+		String agencyStr = null;
+		
+		if (unit.getUnitType() == UnitType.SETTLEMENT) {
+			agencyStr = ((Settlement)unit).getReportingAuthority().getName();
+		}
+		else
+			agencyStr = unit.getAssociatedSettlement().getReportingAuthority().getName();
+
+		Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
+				.getScaledInstance(UnitWindow.STATUS_HEIGHT - 5, UnitWindow.STATUS_HEIGHT - 5,
+		        Image.SCALE_SMOOTH);
+		
+		JLabel agencyLabel = new JLabel(new ImageIcon(img));
+		agencyLabel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
+	
+		return agencyLabel;
+    }
+    
+    
+	/**
+	 * Prepares unit window for deletion.
+	 */
+	public void destroy() {		
+		if (tabPanels != null)
+			tabPanels.clear();
+		tabPanels = null;
+		tabPane = null;
+		desktop = null;
+		unit = null;
+	}
+
 }

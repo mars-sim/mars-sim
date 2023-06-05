@@ -12,6 +12,10 @@
 			<location longitude="50.0 W" latitude="20.0 N" />
 		</settlement>
 
+		<settlement name="Arcadia" template="Phase 2-EU" persons="8" robots="6" sponsor="ESA">
+			<location longitude="20.9156 E" latitude="0.7777 N" />	
+		</settlement>
+		
 		<settlement name="Catarina" template="Phase 1-BR" persons="4" robots="4" sponsor="AEB">
 			<location longitude="10.0 E" latitude="10.0 S" />
 		</settlement>
@@ -47,10 +51,6 @@
 
 		<settlement name="Zvezda" template="Phase 3-RU" persons="12" robots="8" sponsor="RKA">
 			<location longitude="76.37 E" latitude="25.94 N" />
-		</settlement>
-
-		<settlement name="New Boston" template="Phase 3-MS" persons="12" robots="12" sponsor="MS">
-			<location longitude="20.9156 E" latitude="0.7777 N" />	
 		</settlement>
 
 		<settlement name="Schiaparelli Point" template="Alpha Base" crew="Alpha" persons="24" robots="12" sponsor="MS">

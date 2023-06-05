@@ -325,7 +325,7 @@ public final class SettlementBuilder {
 	 */
 	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
-		ReportingAuthority sponsor = settlement.getSponsor();
+		ReportingAuthority sponsor = settlement.getReportingAuthority();
 
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
@@ -389,7 +389,7 @@ public final class SettlementBuilder {
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
 		// Get person's settlement or same sponsor
-		ReportingAuthority defaultSponsor = settlement.getSponsor();
+		ReportingAuthority defaultSponsor = settlement.getReportingAuthority();
 
 		// Create all configured people.
 		for (Member m : crew.getTeam()) {

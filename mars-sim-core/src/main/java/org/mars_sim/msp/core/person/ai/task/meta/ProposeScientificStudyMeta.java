@@ -113,7 +113,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
 				// Check the favourited research of the Reporting Authority
 				ScienceType science = ScienceType.getJobScience(job);
-				result *= settlement.getSponsor().getStudyRatio(science);
+				result *= settlement.getReportingAuthority().getStudyRatio(science);
 	        }
 
 	        // Crowding modifier

@@ -812,6 +812,8 @@ public class Coordinates implements Serializable {
 		String numLongitude = s.substring(0, s.length() - 1);
 		try {
 			double doubleLongitude = Double.parseDouble(numLongitude);
+
+			// Future: should self-correct instead of throwing error
 			if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
 				return LON_BEGIN_WITH; //$NON-NLS-1$
 			}

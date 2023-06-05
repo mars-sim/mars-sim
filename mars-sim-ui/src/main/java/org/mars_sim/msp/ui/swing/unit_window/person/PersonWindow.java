@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonWindow.java
- * @date 2022-10-24
+ * @date 2023-06-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -72,8 +73,11 @@ public class PersonWindow extends UnitWindow {
 		this.person = person;
 	
 		// Create status panel
-		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		statusPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
 		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
 		initTopPanel(person);
@@ -85,18 +89,18 @@ public class PersonWindow extends UnitWindow {
 	
 	
 	public void initTopPanel(Person person) {
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
+		statusPanel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT + 5));
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
 
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
-
 		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
-		JPanel namePane = new JPanel(new BorderLayout(50, 0));
+		JPanel namePane = new JPanel(new BorderLayout(0, 0));
+		namePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		namePane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		namePane.add(nameLabel, BorderLayout.CENTER);
 	
 		Font font = StyleManager.getSmallLabelFont();
@@ -106,7 +110,7 @@ public class PersonWindow extends UnitWindow {
 		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
 		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
 
-		statusPanel.add(namePane);
+		statusPanel.add(namePane, BorderLayout.WEST);
 
 		JLabel townIconLabel = new JLabel();
 		townIconLabel.setToolTipText("Hometown");
@@ -143,28 +147,41 @@ public class PersonWindow extends UnitWindow {
 
 		townPanel.add(townIconLabel);
 		townPanel.add(townLabel);
-		townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		townPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		jobPanel.add(jobIconLabel);
 		jobPanel.add(jobLabel);
-		jobPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		jobPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		rolePanel.add(roleIconLabel);
 		rolePanel.add(roleLabel);
-		rolePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		rolePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		shiftPanel.add(shiftIconLabel);
 		shiftPanel.add(shiftLabel);
-		shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		shiftPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JPanel rowPanel = new JPanel(new GridLayout(2, 2, 0, 0));
-		rowPanel.add(townPanel);
-		rowPanel.add(rolePanel);
-		rowPanel.add(shiftPanel);
-		rowPanel.add(jobPanel);
+		JPanel gridPanel = new JPanel(new GridLayout(2, 2, 0, 0));		
+		gridPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		gridPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
+		gridPanel.add(townPanel);
+		gridPanel.add(rolePanel);
+		gridPanel.add(shiftPanel);
+		gridPanel.add(jobPanel);
 
-		statusPanel.add(rowPanel);
-		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		statusPanel.add(gridPanel, BorderLayout.CENTER);
+		
+		// Add space agency label and logo
+		JLabel agencyLabel = agencyLabel();
+		
+		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
+		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		agencyPanel.add(agencyLabel);
+
+		statusPanel.add(agencyPanel, BorderLayout.EAST);
 	}
 	
 	public void initTabPanel(Person person) {
@@ -276,9 +293,7 @@ public class PersonWindow extends UnitWindow {
 	 */
 	public void destroy() {		
 		person = null;
-		
 		statusPanel = null;
-		
 		townLabel = null;
 		jobLabel = null;
 		roleLabel = null;

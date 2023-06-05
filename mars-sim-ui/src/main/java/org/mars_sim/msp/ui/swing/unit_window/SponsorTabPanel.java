@@ -8,12 +8,16 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.util.stream.Collectors;
 
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import java.awt.Dimension;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
@@ -29,10 +33,9 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class SponsorTabPanel extends TabPanel {
 	
-	private static final String AGENCY_ICON = "agency/";
+	private static final String AGENCY_FOLDER = "agency/";
 	private static final String TAB_ICON = "sponsor";
-	
-	private Icon agencyIcon;
+
 	private ReportingAuthority ra;
 	
 	
@@ -51,25 +54,32 @@ public class SponsorTabPanel extends TabPanel {
 			desktop
 		);
 
-		String agencyStr = ra.getName();
-	
-		agencyIcon = ImageLoader.getIconByName(AGENCY_ICON + agencyStr);
 		this.ra = ra;
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 
-		JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		content.add(iconPanel, BorderLayout.NORTH);
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		content.add(mainPanel, BorderLayout.NORTH);
 		
-		JLabel agencyLabel = new JLabel(agencyIcon);
-		agencyLabel.setSize(150, 150);
+		JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		iconPanel.setPreferredSize(new Dimension(90, 90));		
+		mainPanel.add(iconPanel, BorderLayout.NORTH);
+		
+		String agencyStr = ra.getName();
+		Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyStr))
+				.getScaledInstance(80, 80,
+		        Image.SCALE_SMOOTH);
+		
+		JLabel agencyLabel = new JLabel(new ImageIcon(img));
+		agencyLabel.setPreferredSize(new Dimension(90, 90));
 		iconPanel.add(agencyLabel);
 		
 		// Prepare info panel.
 		AttributePanel infoPanel = new AttributePanel(3);
-		content.add(infoPanel, BorderLayout.CENTER);
+		mainPanel.add(infoPanel, BorderLayout.CENTER);
 		
 		// Prepare sponsor name label
 		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsor"), ra.getDescription(), null);
@@ -78,15 +88,9 @@ public class SponsorTabPanel extends TabPanel {
 		// Prepare agenda name label
 		infoPanel.addTextField(Msg.getString("SponsorTabPanel.agenda"), ra.getMissionAgenda().getName(), null);
 		
-
-
-//		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		content.add(panel, BorderLayout.SOUTH);
-		
 		JPanel subPanel = new JPanel(new BorderLayout());
-		content.add(subPanel, BorderLayout.SOUTH);
-//		panel.add(subPanel);
-		
+		mainPanel.add(subPanel, BorderLayout.SOUTH);
+	
 		JPanel panelNorth = new JPanel(new BorderLayout());
 		subPanel.add(panelNorth, BorderLayout.NORTH);
 		

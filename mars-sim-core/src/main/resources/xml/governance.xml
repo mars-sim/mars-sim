@@ -770,7 +770,7 @@
 			<rover-name name="Maleev" />
 		</authority>
 
-		<authority code="SPACEX" name="Space X"
+		<authority code="SPACEX" name="Space Exploration Technologies Corporation"
 					agenda="Planet Life" gender-ratio="0.5">
 			<country name="USA"/>
 			<country name="Canada"/>

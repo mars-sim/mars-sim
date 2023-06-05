@@ -50,7 +50,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 		Coordinates location = settlement.getCoordinates();
 		double elevation = Math.round(TerrainElevation.getMOLAElevation(location) * 1000.0)/1000.0;
 
-		response.appendLabeledString("Sponsor", settlement.getSponsor().getDescription());
+		response.appendLabeledString("Sponsor", settlement.getReportingAuthority().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
 		response.appendLabeledString("Location", location.getCoordinateString());
 		response.appendLabeledString("Elevation", elevation + " km");

@@ -87,7 +87,7 @@ public class GameManager {
 		Collection<Settlement> settlements = unitMgr.getSettlements();
 		for(Settlement s : settlements) {
 			// If the sponsors are a match
-			if (sponsorCode.equals(s.getSponsor().getName()) ) {
+			if (sponsorCode.equals(s.getReportingAuthority().getName()) ) {
 				selected = s;
 				logger.config("The Sponsor '" + sponsorCode + "' does have a settlement called '" + s + "'.");
 				break;

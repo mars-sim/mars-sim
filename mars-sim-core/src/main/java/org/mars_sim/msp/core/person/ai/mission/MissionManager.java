@@ -198,7 +198,7 @@ public class MissionManager implements Serializable {
 		double totalProbCache = 0D;
 
 		Settlement startingSettlement = person.getAssociatedSettlement();
-		ReportingAuthority sponsor = startingSettlement.getSponsor();
+		ReportingAuthority sponsor = startingSettlement.getReportingAuthority();
 
 		// Determine probabilities.
 		for (MetaMission metaMission : List.copyOf(MetaMissionUtil.getMetaMissions())) {

@@ -166,7 +166,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	public void discoverReportingAuthorities(UnitManager mgr) {
 		// Then overwrite the loaded with those that are active in the simulation
 		for (Settlement s : mgr.getSettlements()) {
-			ReportingAuthority ra = s.getSponsor();
+			ReportingAuthority ra = s.getReportingAuthority();
 			addItem(ra);
 		}
 	}

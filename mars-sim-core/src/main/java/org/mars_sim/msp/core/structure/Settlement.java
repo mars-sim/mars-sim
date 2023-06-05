@@ -549,9 +549,9 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Gets sponsoring agency for the person.
+	 * Gets the space agency.
 	 */
-	public ReportingAuthority getSponsor() {
+	public ReportingAuthority getReportingAuthority() {
 		return sponsor;
 	}
 
