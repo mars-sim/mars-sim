@@ -146,7 +146,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	public static Rover getVehicleWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
 		Rover result = null;
 
-		for(Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
+		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 
 			boolean usable = !vehicle.isReservedForMission();
 

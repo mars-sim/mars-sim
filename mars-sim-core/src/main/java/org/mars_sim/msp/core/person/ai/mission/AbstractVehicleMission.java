@@ -188,6 +188,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		addNavpoint(startingNavPoint);
+		
 		lastStopNavpoint = startingNavPoint;
 
 		setTravelStatus(AT_NAVPOINT);
@@ -230,8 +231,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		for (Vehicle v : vList) {
 			// CHeck if vehicle is usable
-			if (isUsableVehicle(v)
-					&& v.getBaseRange() * .8 < distanceProposed) {
+			if (isUsableVehicle(v)) {
 				// Compare to existing best
 				if (!bestVehicles.isEmpty()) {
 					int comparison = compareVehicles(v, bestVehicles.get(0));
@@ -1430,8 +1430,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Need to recalculate what is left to travel to get resoruces loaded
 		// for return
 		distanceProposed = 0D;
+		
 		computeTotalDistanceProposed();
-
 	}
 	
 	/**
