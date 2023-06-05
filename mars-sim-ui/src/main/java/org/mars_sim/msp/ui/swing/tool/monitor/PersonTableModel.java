@@ -222,7 +222,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		if (settlementListener != null) {
-			settlement.removeUnitListener(settlementListener);
+			if (settlement != null) {
+				settlement.removeUnitListener(settlementListener);
+			}
+			settlementListener = null;
 		}
 
 		this.settlement = filter;
