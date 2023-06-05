@@ -896,15 +896,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel.
-	 *
-	 * @return resource type id
-	 */
-	public int getFuelType() {
-		return super.getFuelType();
-	}
-
-	/**
 	 * Sets unit's location coordinates
 	 *
 	 * @param newLocation the new location of the unit

@@ -98,15 +98,6 @@ public class Drone extends Flyer {
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel
-	 *
-	 * @return resource type id
-	 */
-	public int getFuelType() {
-		return super.getFuelType();
-	}
-
-	/**
 	 * Gets the amount resource type that this vehicle uses as fuel
 	 *
 	 * @return amount resource
