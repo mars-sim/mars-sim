@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * MissionLoadStep.java
+ * MissionLoadVehicleStep.java
  * @date 2023-06-05
  * @author Barry Evans
  */
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * This mission step is responsible for loading a vehicle ready for a new Mission.
  * Workers may be set the local task.
  */
-public class MissionLoadStep extends MissionStep {
+public class MissionLoadVehicleStep extends MissionStep {
 
     private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
     private LoadingController loadingPlan;
@@ -32,7 +32,7 @@ public class MissionLoadStep extends MissionStep {
     /**
      * @param parent Parent mission
      */
-    public MissionLoadStep(MissionVehicleProject parent) {
+    public MissionLoadVehicleStep(MissionVehicleProject parent) {
         super(parent, Stage.PREPARATION, "Load Vehicle");
     }
 

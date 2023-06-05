@@ -118,7 +118,7 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public LoadingController getLoadingPlan() {
-        if (getCurrentStep() instanceof MissionLoadStep ls) {
+        if (getCurrentStep() instanceof MissionLoadVehicleStep ls) {
             return ls.getLoadingPlan();
         }
         return null;
@@ -183,7 +183,7 @@ public class MissionVehicleProject extends MissionProject
 
         // Add in the basic steps needs in a Vehicle Mission
         List<MissionStep> fullPlan = new ArrayList<>();
-        fullPlan.add(new MissionLoadStep(this));
+        fullPlan.add(new MissionLoadVehicleStep(this));
         fullPlan.add(new MissionBoardVehicleStep(this));
         fullPlan.addAll(plan);
         fullPlan.add(new MissionDisembarkStep(this));
