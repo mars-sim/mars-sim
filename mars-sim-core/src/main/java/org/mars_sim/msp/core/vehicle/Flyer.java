@@ -209,38 +209,4 @@ public abstract class Flyer extends Vehicle {
 			setParkedLocation(newLoc, newFacing);
 		}
 	}
-
-	/**
-	 * Checks if the vehicle has enough amount of fuel as prescribed
-	 * 
-	 * @param fuelConsumed
-	 * @return true if it has enough fuel
-	 */
-/* 
-	protected boolean hasEnoughFuel(double fuelConsumed) {
-		Vehicle v = getVehicle();
-        int fuelType = v.getFuelType();
-        
-    	try {
-    		double remainingFuel = v.getAmountResourceStored(fuelType);
-//	
-    		if (remainingFuel < LEAST_AMOUNT) {
-    			v.addSecondaryStatus(StatusType.OUT_OF_FUEL);
-    			return false;
-    		}
-    			
-    		if (fuelConsumed > remainingFuel) {
-            	fuelConsumed = remainingFuel;
-            	return false;
-    		}
-    		else
-    			return true;
-	    }
-	    catch (Exception e) {
-	    	logger.log(this, Level.SEVERE, 0, 
-	    			"Could not retrieve methane. Cannot fly.", e);
-	    	return false;
-	    }
-	}
-	*/
 }

@@ -102,9 +102,8 @@ public class Drone extends Flyer {
 	 *
 	 * @return resource type id
 	 */
-	@Override
 	public int getFuelType() {
-		return METHANOL_ID;
+		return super.getFuelType();
 	}
 
 	/**

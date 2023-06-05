@@ -1370,7 +1370,9 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return resource type
 	 */
-	public abstract int getFuelType();
+	public int getFuelType() {
+		return spec.getFuelType();
+	}
 	
 	/**
 	 * Gets the estimated distance traveled in one sol.

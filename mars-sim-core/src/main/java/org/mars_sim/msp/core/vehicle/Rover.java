@@ -901,7 +901,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return resource type id
 	 */
 	public int getFuelType() {
-		return METHANOL_ID;
+		return super.getFuelType();
 	}
 
 	/**

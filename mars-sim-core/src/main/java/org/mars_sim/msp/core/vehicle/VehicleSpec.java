@@ -38,7 +38,7 @@ public class VehicleSpec implements Serializable {
 
 	public static final String METHANOL = "methanol";
 	
-	public static final int METHANOL_ID = ResourceUtil.methanolID;
+	public static int METHANOL_ID = 0;
 	
 	// Future : may move fuel specs to a separate config file
 	/**
@@ -207,6 +207,7 @@ public class VehicleSpec implements Serializable {
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * Person.getAverageWeight();
 		
+		METHANOL_ID = ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
 	}
 	
 	/**
@@ -648,7 +649,7 @@ public class VehicleSpec implements Serializable {
 	 * @return resource type id
 	 */
 	public int getFuelType() {
-		return ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
+		return METHANOL_ID;
 	}
 	
 	/**
