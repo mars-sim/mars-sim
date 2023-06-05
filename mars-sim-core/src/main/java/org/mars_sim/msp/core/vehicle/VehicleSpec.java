@@ -246,9 +246,6 @@ public class VehicleSpec implements Serializable {
 		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
 		
 		logger.config(DASHES);
-		logger.config(" Rover Type : " + name);
-		logger.config(" Empty Mass : " + Math.round(calculatedEmptyMass * 100.0)/100.0 + KG);
-		logger.config(DASHES);
 	}
 	
 	/**
@@ -323,7 +320,7 @@ public class VehicleSpec implements Serializable {
 		// Gets the estimated energy available for drivetrain [in kWh]
 		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency;
 		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = drivetrainEnergy / (1 + averagePower);
+		totalHours = drivetrainEnergy / (1 + averagePower * .75);
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;
 
@@ -348,9 +345,8 @@ public class VehicleSpec implements Serializable {
 		
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / (1 + baseSpeed) * 1000 * 3.6;
-		
 
-		logger.log(null, Level.CONFIG, 0, "                  " + type.getName());
+		logger.log(null, Level.CONFIG, 0, "                      Type: " + name);
 		logger.log(null, Level.CONFIG, 0, "      drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0); 
 		logger.log(null, Level.CONFIG, 0, "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   ");  
 		logger.log(null, Level.CONFIG, 0, "                 baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   ");  
@@ -375,12 +371,12 @@ public class VehicleSpec implements Serializable {
     	logger.log(null, Level.CONFIG, 0, "    initialFuelConsumption: " + Math.round(initialFuelConsumption  * 1000.0)/1000.0 + " Wh/km   "); 
     		
       	logger.log(null, Level.CONFIG, 0, "              massModifier: " + Math.round(massModifier * 100.0)/100.0); 
-    	logger.log(null, Level.CONFIG, 0, "       calculatedEmptyMass: " + Math.round(calculatedEmptyMass * 1007.0)/1000.0 + KG); 
+      	logger.log(null, Level.CONFIG, 0, "       calculatedEmptyMass: " + Math.round(calculatedEmptyMass * 100.0)/100.0 + KG); 
     	
-    	logger.log(null, Level.CONFIG, 0, "   additionalBeginningMass: " + Math.round(additionalBeginningMass * 1000.0)/1000.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "             beginningMass: " + Math.round(beginningMass * 1000.0)/1000.0 + KG); 
-    	logger.log(null, Level.CONFIG, 0, "         additionalEndMass: " + Math.round(additionalEndMass * 1000.0)/1000.0 + KG);  
-    	logger.log(null, Level.CONFIG, 0, "                   endMass: " + Math.round(endMass * 1000.0)/1000.0 + KG);  	
+    	logger.log(null, Level.CONFIG, 0, "   additionalBeginningMass: " + Math.round(additionalBeginningMass * 100.0)/100.0 + KG); 
+    	logger.log(null, Level.CONFIG, 0, "             beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG); 
+    	logger.log(null, Level.CONFIG, 0, "         additionalEndMass: " + Math.round(additionalEndMass * 100.0)/100.0 + KG);  
+    	logger.log(null, Level.CONFIG, 0, "                   endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
 	}
 	
 	public final void setWidth(double width) {

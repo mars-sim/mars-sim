@@ -1674,7 +1674,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="3" />			
-			<part name="methane fuel cell stack" number="4" />
+			<part name="methanol fuel cell stack" number="4" />
 			<part name="battery module" number="2" />
 			<part name="gas tank" number="2" />	
 			<part name="fuel tank" number="2" />
@@ -1715,13 +1715,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="4" />			
-			<part name="methane fuel cell stack" number="5" />
+			<part name="methanol fuel cell stack" number="5" />
 			<part name="battery module" number="4" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank" number="4" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="4" />
-			<part name="oxygen pump" number="4" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -1755,13 +1755,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="5" />			
-			<part name="methane fuel cell stack" number="6" />
+			<part name="methanol fuel cell stack" number="6" />
 			<part name="battery module" number="5" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank" number="4" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="4" />
-			<part name="oxygen pump" number="3" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -3186,13 +3186,13 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="motor - large" number="3" />
 		<part-salvage name="battery module" number="2" />
-		<part-salvage name="methane fuel cell stack" number="4" />
+		<part-salvage name="methanol fuel cell stack" number="4" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="2" />
+		<part-salvage name="gas tank" number="2" />
+		<part-salvage name="water tank" number="2" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />
@@ -3216,15 +3216,15 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="methane fuel cell stack" number="5" />
+		<part-salvage name="methanol fuel cell stack" number="5" />
 		<part-salvage name="motor - large" number="4" />
-		<part-salvage name="battery module" number="3" />
+		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="gas tank" number="4" />
+		<part-salvage name="water tank" number="4" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />
@@ -3250,13 +3250,13 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methane fuel cell stack" number="6" />
 		<part-salvage name="motor - large" number="5" />
-		<part-salvage name="battery module" number="4" />
+		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="gas tank" number="4" />
+		<part-salvage name="water tank" number="4" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />

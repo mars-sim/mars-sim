@@ -230,7 +230,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		for (Vehicle v : vList) {
 			// CHeck if vehicle is usable
-			if (isUsableVehicle(v)) {
+			if (isUsableVehicle(v)
+					&& v.getBaseRange() * .8 < distanceProposed) {
 				// Compare to existing best
 				if (!bestVehicles.isEmpty()) {
 					int comparison = compareVehicles(v, bestVehicles.get(0));

@@ -110,7 +110,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover [km/hr](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="35.0" />
+		<base-speed value="30.0" />
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -224,9 +224,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
 		<battery-module number="3" />
 		<fuel-cell-stack number="4" />
-		<drivetrain-efficiency value=".9" />
-		<base-speed value="40.0" />
-		<average-power value="10" />
+		<drivetrain-efficiency value=".75" />
+		<base-speed value="30.0" />
+		<average-power value="15" />
 		<empty-mass value="1200.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
@@ -275,7 +275,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can accommodate up to 8 people.</description>
 		<battery-module number="4" />
 		<fuel-cell-stack number="5" />			
-		<drivetrain-efficiency value=".75" />
+		<drivetrain-efficiency value=".85" />
 		<base-speed value="25.0" />
 		<average-power value="20" />
 		<empty-mass value="1700.0" />
@@ -326,9 +326,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can have fit two people only to maximize cargo space.</description>
 		<battery-module number="5" />
 		<fuel-cell-stack number="6" />
-		<drivetrain-efficiency value=".75" />
+		<drivetrain-efficiency value=".9" />
 		<base-speed value="25.0" />
-		<average-power value="25" />		
+		<average-power value="20" />		
 		<empty-mass value="2000.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
