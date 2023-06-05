@@ -263,7 +263,8 @@ public abstract class MissionProject implements Mission {
     
     @Override
     public String getPhaseDescription() {
-       return control.getStep().getDescription();
+        ProjectStep current = control.getStep();
+        return (current != null ? current.getDescription() : "");
     }
 
     @Override
@@ -273,8 +274,7 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public MissionPlanning getPlan() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPlan'");
+        return null;
     }
 
     @Override
@@ -318,8 +318,8 @@ public abstract class MissionProject implements Mission {
         return control.execute(member);
     }
 
-    protected Project getControl() {
-        return control;
+    protected ProjectStep getCurrentStep() {
+        return control.getStep();
     }
 
     /**

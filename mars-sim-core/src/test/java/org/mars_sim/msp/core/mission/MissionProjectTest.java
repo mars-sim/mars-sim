@@ -59,15 +59,21 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
 
     class TestMission extends MissionProject {
 
-        public TestMission(String name, Person leader) {
+        public TestMission(String name, Person leader, int numSteps) {
             super(name, MissionType.AREOLOGY, 1, 1, 1, leader);
+         
+            List<MissionStep> steps = new ArrayList<>();
+            for(int i = 0; i < numSteps; i++) {
+                steps.add(new TestStep(this, i, OXYGEN_VALUE, FOOD_VALUE));
+            }
+            setSteps(steps);
         }
     }
 
     public void testCreation() {
         Settlement home = buildSettlement();
         Person leader = buildPerson("Leader", home);
-        MissionProject mp = new TestMission(MISSION_NAME, leader);
+        MissionProject mp = new TestMission(MISSION_NAME, leader, 0);
 
         assertEquals("Mission name", MISSION_NAME, mp.getName());
         assertEquals("Mission settlement", home, mp.getAssociatedSettlement());
@@ -77,17 +83,13 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
     public void testResources() {
         Settlement home = buildSettlement();
         Person leader = buildPerson("Leader", home);
-        TestMission mp = new TestMission(MISSION_NAME, leader);
+        int numSteps = 3;
+        TestMission mp = new TestMission(MISSION_NAME, leader, numSteps);
 
-        List<MissionStep> steps = new ArrayList<>();
-        for(int i = 0; i < 3; i++) {
-            steps.add(new TestStep(mp, i, OXYGEN_VALUE, FOOD_VALUE));
-        }
-
-        // MissionManifest manifest = mp.getResources(true);
-        // Map<Integer,Number> needed = manifest.getResources(true);
-        // assertEquals("Oxygen needed", steps.size() * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
-        // assertEquals("Food needed", steps.size() * FOOD_VALUE, needed.get(ResourceUtil.foodID));
-        // assertEquals("Number of resources needed", 2, needed.size());
+        MissionManifest manifest = mp.getResources(true);
+        Map<Integer,Number> needed = manifest.getResources(true);
+        assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
+        assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.foodID));
+        assertEquals("Number of resources needed", 2, needed.size());
     }
 }

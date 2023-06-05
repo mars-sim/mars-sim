@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.mission;
 
-import java.beans.DesignMode;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;

@@ -35,14 +35,6 @@ public class MissionVehicleProject extends MissionProject
 
     public MissionVehicleProject(String name, MissionType type, int priority, int maxMembers, Person leader) {
         super(name, type, priority, 2, maxMembers, leader);
-
-        Vehicle best = findBestVehicle(leader.getAssociatedSettlement());
-        if (best == null) {
-			abortMission(NO_AVAILABLE_VEHICLES);
-		}
-        else {
-            setVehicle(best);
-        }
     }
 
     /**
@@ -126,8 +118,10 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public LoadingController getLoadingPlan() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getLoadingPlan'");
+        if (getCurrentStep() instanceof MissionLoadStep ls) {
+            return ls.getLoadingPlan();
+        }
+        return null;
     }
 
     @Override
@@ -138,7 +132,7 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public boolean isTravelling() {
-        return (getControl().getStep() instanceof MissionTravelStep);
+        return (getCurrentStep() instanceof MissionTravelStep);
     }
 
     @Override
@@ -160,12 +154,13 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public boolean isVehicleUnloadableHere(Settlement settlement) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isVehicleUnloadableHere'");
+        return false;
     }
     
     /**
-     * Extract the Navpoints and calculate the proposed
+     * Extract the Navpoints and calculate the proposed. This will extract the NavPoints for the Route.
+     * It will also select a Vehicle based on the steps.
+     * @param plan Steps for the mission
      */
     @Override
     protected void setSteps(List<MissionStep> plan) {
@@ -176,7 +171,24 @@ public class MissionVehicleProject extends MissionProject
         proposedDistance = route.stream()
                             .mapToDouble(NavPoint::getDistance)
                             .sum();
-        super.setSteps(plan);
+
+        if (vehicle == null) {
+            Vehicle best = findBestVehicle(getStartingPerson().getAssociatedSettlement());
+            if (best == null) {
+                abortMission(NO_AVAILABLE_VEHICLES);
+                return;
+            }
+            setVehicle(best);
+        }
+
+        // Add in the basic steps needs in a Vehicle Mission
+        List<MissionStep> fullPlan = new ArrayList<>();
+        fullPlan.add(new MissionLoadStep(this));
+        fullPlan.add(new MissionBoardVehicleStep(this));
+        fullPlan.addAll(plan);
+        fullPlan.add(new MissionDisembarkStep(this));
+
+        super.setSteps(fullPlan);
     }
     
 }
