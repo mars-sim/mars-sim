@@ -66,14 +66,11 @@ import org.mars_sim.msp.common.FileLocator;
  	 * @throws IOException Problem loading map data
  	 */
  	IntegerMapData(MapMetaData newMeta) throws IOException {
-
-		if (meta == null || !newMeta.getName().equals(meta.getName())) {
-			this.meta = newMeta;
-			// Load data files
-			pixels = loadMapData(newMeta.getHiResFile());
-			rho =  pixelHeight / Math.PI;
-			logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
-		}
+		this.meta = newMeta;
+		// Load data files
+		pixels = loadMapData(newMeta.getHiResFile());
+		rho =  pixelHeight / Math.PI;
+		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
 	/**
