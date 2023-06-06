@@ -83,8 +83,8 @@ public abstract class OperateVehicle extends Task {
     private static final String KPH = " kph  ";
 	
 	// Data members
-	/** The fuel type of this vehicle. */
-	private int fuelType;
+	/** The fuel type id of this vehicle. */
+	private int fuelTypeID;
 	/** The distance [km] to the destination at the start of the trip. */
 	private double startTripDistance; 
 	
@@ -121,7 +121,7 @@ public abstract class OperateVehicle extends Task {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-        fuelType = vehicle.getFuelType();
+        fuelTypeID = vehicle.getFuelTypeID();
 		
 		malfunctionManager = vehicle.getMalfunctionManager();
 		
@@ -185,7 +185,7 @@ public abstract class OperateVehicle extends Task {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-        fuelType = vehicle.getFuelType();
+        fuelTypeID = vehicle.getFuelTypeID();
         
 		// Check for valid parameters.
 		if (destination == null) {
@@ -388,26 +388,32 @@ public abstract class OperateVehicle extends Task {
         if (vehicle.isInSettlement()) 
         	return time;
   	
-        double remainingFuel = vehicle.getAmountResourceStored(fuelType);
-
-    	if (remainingFuel < LEAST_AMOUNT) {
-    		logger.log(vehicle, Level.SEVERE, 20_000L, 
-					"Case A: Out of fuel. Cannot drive.");
-    		// Turn on emergency beacon
-	    	turnOnBeacon(fuelType);
-        	endTask();
-        	return time;
-    	}
-
-        double remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
-
-    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
-    		logger.log(vehicle, Level.SEVERE, 20_000L, 
-					"Case B: Out of fuel oxidizer. Cannot drive.");
-    		// Turn on emergency beacon
-	    	turnOnBeacon(OXYGEN_ID);
-        	endTask();
-        	return time;
+        double remainingFuel = -1;
+        
+        double remainingOxidizer = -1;
+        
+        if (fuelTypeID > 0) {
+	        remainingFuel = vehicle.getAmountResourceStored(fuelTypeID);
+	
+	    	if (remainingFuel < LEAST_AMOUNT) {
+	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+						"Case A: Out of fuel. Cannot drive.");
+	    		// Turn on emergency beacon
+		    	turnOnBeacon(fuelTypeID);
+	        	endTask();
+	        	return time;
+	    	}
+	
+	        remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
+	
+	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
+	    		logger.log(vehicle, Level.SEVERE, 20_000L, 
+						"Case B: Out of fuel oxidizer. Cannot drive.");
+	    		// Turn on emergency beacon
+		    	turnOnBeacon(OXYGEN_ID);
+	        	endTask();
+	        	return time;
+	        }
         }
         
         // Find the distance to destination.

@@ -64,7 +64,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	@Override
-	public int getFuelType() {
+	public int getFuelTypeID() {
 		return METHANOL_ID;
 	}
 

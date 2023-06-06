@@ -987,14 +987,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
 
-			result.put(vehicle.getFuelType(), amount);
-			
-			// if useMargin is true, include more oxygen
-			double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
-			
-			if (!useMargin)	amountOxygen = amount;
+			int fuelTypeID = vehicle.getFuelTypeID();
+			if (fuelTypeID > 0) {
+				result.put(vehicle.getFuelTypeID(), amount);
+				// if useMargin is true, include more oxygen
+				double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
+				
+				if (!useMargin)	amountOxygen = amount;
 
-			result.put(ResourceUtil.oxygenID, amountOxygen);
+				result.put(ResourceUtil.oxygenID, amountOxygen);
+			}
 		}
 		
 		return result;

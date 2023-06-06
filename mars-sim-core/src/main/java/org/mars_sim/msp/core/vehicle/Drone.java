@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Drone.java
- * @date 2021-10-16
+ * @date 2023-06-05
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.vehicle;

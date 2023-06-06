@@ -74,6 +74,8 @@ public abstract class Vehicle extends Unit
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
 	
+	private static final double MAXIMUM_RANGE = 10_000;
+	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
@@ -764,9 +766,16 @@ public abstract class Vehicle extends Unit
         	range = getInitialFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else {
-            double amountOfFuel = getAmountResourceStored(getFuelType());
-        	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = getInitialFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+        	
+    		int fuelTypeID = getFuelTypeID();
+    		if (fuelTypeID < 0) {
+    			range = MAXIMUM_RANGE;
+    		}
+    		else {
+                double amountOfFuel = getAmountResourceStored(fuelTypeID);
+            	// During the journey, the range would be based on the amount of fuel in the vehicle
+        		range = getInitialFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+    		}
         }
 
         return (int)range;
@@ -1366,12 +1375,21 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the resource type that this vehicle uses for fuel.
+	 * Gets the resource type id that this vehicle uses for fuel.
 	 *
-	 * @return resource type
+	 * @return resource type id
 	 */
-	public int getFuelType() {
+	public int getFuelTypeID() {
 		return spec.getFuelType();
+	}
+	
+	/**
+	 * Gets the fuel type of this vehicle.
+	 *
+	 * @return fuel type string
+	 */
+	public String getFuelTypeStr() {
+		return spec.getFuelTypeStr();
 	}
 	
 	/**

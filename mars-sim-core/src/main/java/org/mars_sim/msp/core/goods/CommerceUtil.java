@@ -444,8 +444,12 @@ public final class CommerceUtil {
 		Map<Good, Integer> neededResources = new HashMap<>(4);
 
 		// Get required fuel.
-		Good fuelGood = GoodsUtil.getGood(delivery.getFuelType());
-		neededResources.put(fuelGood, (int) delivery.getFuelNeededForTrip(distance, false));
+		int fuelTypeID = delivery.getFuelTypeID();
+		Good fuelGood = null;
+		if (fuelTypeID != -1) {
+			fuelGood = GoodsUtil.getGood(fuelTypeID);
+			neededResources.put(fuelGood, (int) delivery.getFuelNeededForTrip(distance, false));
+		}
 
 		if (delivery instanceof Crewable) {
 			// Needs a crew

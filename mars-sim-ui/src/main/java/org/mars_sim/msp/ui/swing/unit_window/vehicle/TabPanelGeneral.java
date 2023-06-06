@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @date 2023-02-25
+ * @date 2023-06-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -71,7 +71,17 @@ public class TabPanelGeneral extends TabPanel {
 		infoPanel.addTextField( "Specification", v.getSpecName(), null);
 		infoPanel.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);
 		infoPanel.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
-		infoPanel.addTextField( "Fuel", ResourceUtil.findAmountResourceName(v.getFuelType()), null);
+		
+		int fuelTypeID = v.getFuelTypeID();
+		String fuelTypeStr = "None";
+		if (fuelTypeID < 0) {
+			fuelTypeStr = v.getFuelTypeStr();
+		}
+		else {
+			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
+		}
+		
+		infoPanel.addTextField( "Fuel Type", fuelTypeStr, null);
 		infoPanel.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
 		infoPanel.addTextField( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()), null);
 		infoPanel.addTextField( "Estimated Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);

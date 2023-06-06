@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /** 
  * The Specification of a Vehicle loaded from the external configuration.
@@ -36,24 +38,44 @@ public class VehicleSpec implements Serializable {
 	
 	public static final String DASHES = " -----------------------------------------------------------------------";
 
-	public static final String METHANOL = "methanol";
-	
-	public static int METHANOL_ID = 0;
+	// As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. 
+	// Energy Density is 8.9 kWh/L or 44-46 MJ/kg
 	
 	// Future : may move fuel specs to a separate config file
+	
+	
+
 	/**
-	 * <p> Methane's Specific Energy is 55.5 MJ/kg,  or 15.416 kWh/kg
-	 * <p> Energy density is 0.0364 MJ/L, 36.4 kJ/L, or 10 Wh/L
+	 * <p> Methane's Specific Energy is 15.416 kWh/kg (or 55.5 MJ/kg).
 	 * <p> Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	 */
-	public static final double METHANE_SPECIFIC_ENERGY = 15.416; // [in kWh/kg]
+	public static final double METHANE_SPECIFIC_ENERGY = 15.4167; // [in kWh/kg]
+//	/**
+//	 * Methane's energy density [in kWh/L], or 0.0364 MJ/L, 36.4 kJ/L, or 10 Wh/L ?
+//	 */
+//	public static final double METHANE_ENERGY_DENSITY = 4.33; 
+	
+	
 	/**
-	 * <p> Methane's Specific Energy is 22.034 MJ/kg,  or 6.1206 kWh/kg
-	 * <p> As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. Energy Density is 8.9 kWh/L or 44-46 MJ/kg
+	 * Methanol's Specific Energy is 6.1206 kWh/kg (or 22.0342 MJ/kg).
+	 * Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ.
 	 */
 	public static final double METHANOL_SPECIFIC_ENERGY = 6.1206; // [in kWh/kg]
+	/**
+	 * Methanol's energy density [in kWh/L].
+	 */
+	public static final double METHANOL_ENERGY_DENSITY = 4.33;
 	
-	public static final double METHANOL_ENERGY_DENSITY = 4.33; // [in kWh/L]
+	
+	/**
+	 * Uranium oxide's specific energy [in kWh/kg].
+	 */
+	public static final double URANIUM_OXIDE_SPECIFIC_ENERGY = 49_600;
+	
+	/**
+	 * Stirling conversion efficiency.
+	 */
+	public static final double STIRLING_CONVERSION_EFFICIENCY = .274;
 	
 	/**
 	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using 
@@ -73,11 +95,19 @@ public class VehicleSpec implements Serializable {
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methane. */	
 	public static final double METHANE_WH_PER_KG = 1000.0 / METHANE_KG_PER_KWH;
 
+	
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methanol. */
 	public static final double METHANOL_KG_PER_KWH = 1.0 / RMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methanol. */	
 	public static final double METHANOL_WH_PER_KG = 1000.0 / METHANOL_KG_PER_KWH; 
 
+	
+	/** The kWh-to-Kg conversion factor for our nuclear-powered vehicles using uranium oxide. */
+	public static final double URANIUM_OXIDE_KG_PER_KWH = 1.0 / STIRLING_CONVERSION_EFFICIENCY / URANIUM_OXIDE_SPECIFIC_ENERGY; 
+	/** The kg-to-Wh conversion factor for our nuclear-powered vehicles using uranium oxide. */	
+	public static final double URANIUM_OXIDE_WH_PER_KG = 1000.0 / URANIUM_OXIDE_KG_PER_KWH; 
+	
+	
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 	
@@ -166,6 +196,14 @@ public class VehicleSpec implements Serializable {
 	
 	private VehicleType type;
 	
+	private PowerSourceType powerSourceType;
+	
+	private String fuelTypeStr;
+	
+	private int fuelTypeID;
+
+	private double value;
+	
 	private Map<Integer, Double> cargoCapacityMap;
 	private List<ScienceType> labTechSpecialties = null;
 	private List<Part> attachableParts = null;
@@ -182,6 +220,7 @@ public class VehicleSpec implements Serializable {
 
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
+			String powerSourceStr, String fuelTypeStr, double value,
 			int batteryModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double averagePower,
@@ -189,6 +228,30 @@ public class VehicleSpec implements Serializable {
 		this.name = name;
 		this.type = type;
 		this.description = description;
+		this.baseImage = baseImage;
+		
+		this.powerSourceType = PowerSourceType.getType(powerSourceStr.replaceAll("_", " ").toLowerCase());
+		
+		this.fuelTypeStr = Conversion.capitalize(fuelTypeStr.toLowerCase());
+		
+		if (PowerSourceType.FUEL_POWER == powerSourceType) {
+			
+			if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANOL)) {
+				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
+			}
+			else if (fuelTypeStr.equalsIgnoreCase(ResourceUtil.METHANE)) {
+				fuelTypeID = ResourceUtil.findAmountResource(ResourceUtil.METHANE).getID();
+			}
+		}
+		else if (PowerSourceType.FISSION_POWER == powerSourceType) {
+			fuelTypeID = -1;
+		}
+		else if (PowerSourceType.SOLAR_POWER == powerSourceType) {
+			fuelTypeID = -1;
+		}
+		
+		this.value = value;
+		
 		// Set the # of battery modules of the vehicle.
 		this.numBatteryModule = batteryModule;	
 		// Set the # of fuel cell stacks of the vehicle.
@@ -202,12 +265,10 @@ public class VehicleSpec implements Serializable {
 		this.averagePower = averagePower;
 		// Get the crew capacity
 		this.crewSize = crewSize;
-		
-		this.baseImage = baseImage;
+	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * Person.getAverageWeight();
-		
-		METHANOL_ID = ResourceUtil.findAmountResource(ResourceUtil.METHANOL).getID();
+
 	}
 	
 	/**
@@ -255,12 +316,23 @@ public class VehicleSpec implements Serializable {
 	 * @param spec
 	 */
 	private void defineVehiclePerformance() {
-		// Gets the capacity [in kg] of vehicle's fuel tank
-		fuelCapacity = getCargoCapacity(getFuelType());
-		// Gets the energy capacity [kWh] based on a full tank of methanol
-		methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
-		// Gets the conversion factor for a specific vehicle [Wh/kg]
-		conversionFuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainEfficiency;
+
+		if (fuelTypeID > 0) {
+			// Gets the capacity [in kg] of vehicle's fuel tank
+			fuelCapacity = getCargoCapacity(getFuelType());
+			// Gets the energy capacity [kWh] based on a full tank of methanol
+			methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
+			// Gets the conversion factor for a specific vehicle [Wh/kg]
+			conversionFuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency;
+		}
+		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR")){
+			// Gets the capacity [in kg] of vehicle's fuel tank
+			fuelCapacity = .01;
+			// Gets the energy capacity [kWh] based on a full tank of methanol
+			methanolEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
+			// Gets the conversion factor for a specific vehicle [Wh/kg]
+			conversionFuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainEfficiency;
+		}
 		
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsagePercent = 0;
@@ -649,7 +721,25 @@ public class VehicleSpec implements Serializable {
 	 * @return resource type id
 	 */
 	public int getFuelType() {
-		return METHANOL_ID;
+		return fuelTypeID;
+	}
+	
+	/**
+	 * Gets the power source type that this vehicle uses as fuel.
+	 *
+	 * @return power source type 
+	 */
+	public PowerSourceType getPowerSourceType() {
+		return powerSourceType;
+	}
+	
+	/**
+	 * Gets the fuel type of this vehicle.
+	 *
+	 * @return fuel type string
+	 */
+	public String getFuelTypeStr() {
+		return fuelTypeStr;
 	}
 	
 	/**
@@ -767,10 +857,12 @@ public class VehicleSpec implements Serializable {
     }
 
 	/**
-	 * Get the parts of the consistuent this vehicle spec
+	 * Gets the parts of the consistent this vehicle spec.
+	 * 
 	 * @return
 	 */
 	public Set<Integer> getParts() {
 		return partIDs;
 	}
+	
 }

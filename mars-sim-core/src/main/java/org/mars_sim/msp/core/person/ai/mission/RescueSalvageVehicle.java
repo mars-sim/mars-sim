@@ -681,9 +681,12 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Override and full rover with fuel and life support resources.
 		Map<Integer, Number> result = new HashMap<>(4);
 
-		result.put(getVehicle().getFuelType(), getVehicle().getAmountResourceCapacity(getVehicle().getFuelType()));
-		result.put(OXYGEN_ID, getVehicle().getAmountResourceCapacity(OXYGEN_ID));
-		result.put(WATER_ID, getVehicle().getAmountResourceCapacity(WATER_ID));
+		int fuelTypeID = getVehicle().getFuelTypeID();
+		if (fuelTypeID > 0) {
+			result.put(fuelTypeID, getVehicle().getAmountResourceCapacity(fuelTypeID));
+			result.put(OXYGEN_ID, getVehicle().getAmountResourceCapacity(OXYGEN_ID));
+			result.put(WATER_ID, getVehicle().getAmountResourceCapacity(WATER_ID));
+		}
 		result.put(FOOD_ID, getVehicle().getAmountResourceCapacity(FOOD_ID));
 
 		// Get parts too.

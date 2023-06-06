@@ -32,12 +32,14 @@
 	 
 	 /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
 	 public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	 /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
+
 	 public static final int WATER_ID = ResourceUtil.waterID;
 	 /** The ratio of the amount of oxidizer to fuel. */
 	 public static final double RATIO_OXIDIZER_FUEL = 1.5;
-	 /** The ratio of water produced to methanol consumed. */
+	 /** The ratio of water produced for every methanol consumed. */
 	 private static final double RATIO_WATER_METHANOL = 1.125;
+	 /** The ratio of water produced for every methanol consumed. */
+	 private static final double RATIO_WATER_METHANE = 2.25;
 	 /** The factor for estimating the adjusted fuel economy. */
 	 public static final double FUEL_ECONOMY_FACTOR = 1.25;
 	 
@@ -60,8 +62,8 @@
 	 private static final String W = " W  ";		
 		 
 	 // Data members
-	 /** The fuel type of this vehicle. */
-	 private int fuelType;
+	 /** The fuel type id of this vehicle. */
+	 private int fuelTypeID;
 	 /**  Cache the time in hr. */ 
 	 private double hrsTimeCache;
 	 /** Cache the distance traveled in km. */ 
@@ -83,7 +85,7 @@
 	 public VehicleController(Vehicle vehicle) {
 		 this.vehicle = vehicle;
 		 battery = new Battery(vehicle);
-		 fuelType = vehicle.getFuelType();
+		 fuelTypeID = vehicle.getFuelTypeID();
 	 }
  
 	 /**
@@ -278,7 +280,8 @@
 				 // Derive the mass of fuel needed kg = Wh / Wh/kg
 				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
 				 
-				 if (fuelNeeded <= remainingFuel) {
+				 // Note that if remainingFuel == -1, it's either nuclear powered
+				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
 					 // Case B: fuel is sufficient
 					 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Case B: Partial battery with sufficient fuel.  " 
@@ -413,9 +416,9 @@
 			 );
 					 
 			 // Cache the new value of fuelUsed	
-			 if (fuelNeeded > 0) {
+			 if (fuelNeeded > 0 && remainingFuel != -1) {
 				 // Retrieve the fuel needed for the distance traveled
-				 vehicle.retrieveAmountResource(fuelType, fuelUsedCache);
+				 vehicle.retrieveAmountResource(fuelTypeID, fuelUsedCache);
 				 // Assume double amount of oxygen as fuel oxidizer
 				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelUsedCache);
 				 // Generate 1.75 times amount of the water from the fuel cells

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, average-power,
+	<!ELEMENT vehicle (description?, power-source, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, average-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle name CDATA #REQUIRED>
@@ -14,6 +14,12 @@
 	<!ATTLIST vehicle base-image CDATA #IMPLIED>
 
 	<!ELEMENT description (#PCDATA)>
+	
+	<!ELEMENT power-source EMPTY>
+	<!ATTLIST power-source type (FISSION_POWER_SOURCE|FUEL_POWER_SOURCE|THERMIONIC_NUCLEAR_POWER_SOURCE|SOLAR_POWER_SOURCE) #REQUIRED>
+	<!ATTLIST power-source fuel (NUCLEAR|METHANOL|METHANE|SOLAR) #REQUIRED>
+	<!ATTLIST power-source value CDATA #REQUIRED>
+ 
 
 	<!ELEMENT battery-module EMPTY>
 	<!ATTLIST battery-module number CDATA #REQUIRED>
@@ -96,6 +102,17 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
+		<!-- The power source type for the vehicle (required) -->
+		<!-- Default: varied according to the type of vehicle -->
+		<!-- e.g. "Fission Power Source", "Fuel Power Source" -->
+		
+		<!-- The type of fuel that power source uses (required) -->
+		<!-- e.g. "Nuclear", "Methanol" -->
+		
+		<!-- The average value (could be in kW or kWh) provided by this power source (required) -->
+		<!-- e.g. "15.0" -->
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>
+		
 		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<battery-module number="2" />
@@ -222,6 +239,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<vehicle name="Long Range Explorer" type="EXPLORER_ROVER" width="3.5" length="8.0" base-image="long range explorer">
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".75" />
@@ -273,6 +291,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Transport Rover" type="TRANSPORT_ROVER" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another
 			and can accommodate up to 8 people.</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
 		<battery-module number="4" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
@@ -324,6 +343,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle name="Cargo Rover" type="CARGO_ROVER" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="5" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
@@ -369,6 +389,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	-->
 	<vehicle name="Light Utility Vehicle" type="LUV" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="1" />
 		<fuel-cell-stack number="1" />
 		<drivetrain-efficiency value=".9" />
@@ -397,6 +418,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="1" />
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".85" />
