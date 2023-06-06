@@ -110,7 +110,7 @@ public class Project implements Serializable {
     public void abort(String reason) {
         isAborted = true;
 
-        if (currentStep != null) {
+        if ((currentStep != null) && !currentStep.isCompleted()) {
             currentStep.complete();
         }
     }
@@ -186,5 +186,12 @@ public class Project implements Serializable {
         if (!isAborted) {
             advanceStep();
         }
+    }
+
+    /**
+     * Abort the current step. Mark it as complete and advance
+     */
+    public void abortStep() {
+       currentStep.complete(); 
     }
 }

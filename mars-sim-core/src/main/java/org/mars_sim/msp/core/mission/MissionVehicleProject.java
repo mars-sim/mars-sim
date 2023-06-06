@@ -85,7 +85,11 @@ public class MissionVehicleProject extends MissionProject
      * @return Return -1 if not suitable at all
      */
     private int scoreVehicle(Vehicle v) {
-        return 1;
+        // TODO needs better choosing based on capabilities and range
+        return switch(v.getVehicleType()) {
+            case CARGO_ROVER, EXPLORER_ROVER, TRANSPORT_ROVER -> 1;
+            case LUV, DELIVERY_DRONE -> -1;
+        };
     }
 
     @Override
@@ -100,20 +104,17 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public double getTotalDistanceTravelled() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalDistanceTravelled'");
+        return 100D;
     }
 
     @Override
     public double getTotalDistanceRemaining() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalDistanceRemaining'");
+        return 100D;
     }
 
     @Override
     public double getDistanceCurrentLegRemaining() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDistanceCurrentLegRemaining'");
+        return 50D;
     }
 
     @Override
@@ -126,8 +127,7 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public MarsClock getLegETA() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getLegETA'");
+        return null;
     }
 
     @Override
@@ -137,8 +137,7 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public NavPoint getCurrentDestination() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCurrentDestination'");
+        return null;
     }
 
     @Override

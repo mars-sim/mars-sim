@@ -7,12 +7,15 @@
 package org.mars_sim.msp.core.mission;
 
 
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Represent a step that a Mission has to undertake. 
@@ -20,17 +23,38 @@ import org.mars_sim.msp.core.robot.Robot;
  * May also override the start & complete methods to implement any startup or cleardown logic.
  */
 public abstract class MissionStep extends ProjectStep {
+	private static final SimLogger logger = SimLogger.getLogger(MissionStep.class.getName());
 
-    private MissionProject project;
+    private static MarsClock marsClock;
+
+    private static UnitManager unitManager;
+
+    private MissionProject mission;
 
     protected MissionStep(MissionProject project, Stage stage, String description) {
         super(stage, description);
-        this.project = project;
+        this.mission = project;
     }
     
-    protected MissionProject getProject() {
-        return project;
+    protected MissionProject getMission() {
+        return mission;
     }
+
+    /**
+     * How on has the current step been running?
+     * @return mSol
+     */
+    protected int getStepDuration() {
+        return (int) MarsClock.getTimeDiff(marsClock, mission.getPhaseStartTime());
+    }
+
+    /**
+     * Get the leader for this Mission
+     * @return
+     */
+    protected Person getLeader() {
+		return mission.getStartingPerson();
+	}
 
     /**
      * Calculate what resources are needed for this step.
@@ -48,20 +72,33 @@ public abstract class MissionStep extends ProjectStep {
      * @param task Task allocated
      */
     protected boolean assignTask(Worker worker, Task task) {
+        boolean assignTask = false;
+
         // Bit messy
         if (worker instanceof Robot r) {
-            if (r.getMalfunctionManager().hasMalfunction() 
-                    || !r.getSystemCondition().isBatteryAbove(5)) {
-                return false;
-            }
+            assignTask = (!r.getMalfunctionManager().hasMalfunction() 
+                                && r.getSystemCondition().isBatteryAbove(5));
         }
         else if (worker instanceof Person p) {
-            if (task.isEffortDriven() && (p.getPerformanceRating() == 0D)) {
-                return false;
-            }
+            assignTask = (!task.isEffortDriven() || (p.getPerformanceRating() != 0D));
         }
 
-        worker.getTaskManager().addTask(task);
-        return true;
+        if (assignTask) {
+            assignTask = worker.getTaskManager().addTask(task);
+        }
+        if (!assignTask) {
+            logger.warning(worker, "Unable to start " + task.getName());
+        }
+
+        return assignTask;
+    }
+
+    protected static UnitManager getUnitManager() {
+        return unitManager;
+    }
+
+    public static void initializeInstances(MarsClock mc, UnitManager um) {
+        marsClock = mc;
+        unitManager = um;
     }
 }

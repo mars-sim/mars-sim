@@ -43,7 +43,7 @@ public class MissionLoadVehicleStep extends MissionStep {
      */
     @Override
     protected boolean execute(Worker worker) {
-        MissionVehicleProject vp = (MissionVehicleProject) getProject();
+        MissionVehicleProject vp = (MissionVehicleProject) getMission();
         Vehicle v = vp.getVehicle();
         Settlement settlement = v.getSettlement();
 		if (loadingPlan == null) {
@@ -60,13 +60,11 @@ public class MissionLoadVehicleStep extends MissionStep {
 		}
 
         // Loading still active
+        boolean workOn = false;
         if (loadingPlan.isFailure()) {
             vp.abortMission(CANNOT_LOAD_RESOURCES);
-            return false;
         }
-
-        boolean workOn = false;
-        if (!loadingPlan.isCompleted()) {
+        else if (!loadingPlan.isCompleted()) {
 			// Load vehicle if not fully loaded.
 
             // Note: randomly select this member to load resources for the rover
@@ -103,7 +101,7 @@ public class MissionLoadVehicleStep extends MissionStep {
      */
     private Task createLoadTask(Worker worker, Vehicle vehicle) {
         boolean inGarage = vehicle.isInAGarage();
-        VehicleMission target = (VehicleMission) getProject();
+        VehicleMission target = (VehicleMission) getMission();
         if (worker instanceof Person p) {
             if (inGarage) {
                 return new LoadVehicleEVA(p, target);

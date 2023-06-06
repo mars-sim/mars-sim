@@ -72,6 +72,7 @@ public abstract class MissionProject implements Mission {
     private MissionLog log;
     private MissionType type;
     private int priority;
+    private int minMembers;
     private int maxMembers;
     private Person leader;
 
@@ -80,8 +81,8 @@ public abstract class MissionProject implements Mission {
     private MarsClock stepStarted;
 
     private Set<Worker> members = new HashSet<>();
-
-    private int minMembers;
+    private Set<Worker> signedUp = new HashSet<>();
+    private Set<MissionStatus> status = new HashSet<>();
 
     public MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {
         this.type = type;
@@ -109,12 +110,15 @@ public abstract class MissionProject implements Mission {
         log.addEntry("Aborted:" + reason.getName());
         control.abort(reason.getName());
 		logger.warning(leader, "Mission aborted : " + reason.getName());
+        status.add(reason);
     }
 
+    /**
+     * Complete the current step immediately
+     */
     @Override
     public void abortPhase() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'abortPhase'");
+        control.abortStep();
     }
 
     @Override
@@ -162,8 +166,7 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public Set<MissionStatus> getMissionStatus() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMissionStatus'");
+        return status;
     }
 
     @Override
@@ -290,6 +293,7 @@ public abstract class MissionProject implements Mission {
     @Override
     public void addMember(Worker member) {
         members.add(member);
+        signedUp.add(member);
     }
 
     @Override
@@ -297,17 +301,28 @@ public abstract class MissionProject implements Mission {
         members.remove(member);
     }
 
+    /**
+     * All the workers that are active in the Mission. Doe snot include thos that have left.
+     * @return Workers active
+     */
     @Override
     public Collection<Worker> getMembers() {
         return members;
     }
 
+    /**
+     * Get a list of everyone thta has signed up to the Mission
+     * @return Everyone originally signed up
+     */
     @Override
     public Set<Worker> getSignup() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSignup'");
+        return signedUp;
     }
 
+    /**
+     * Who is leading the Mission
+     * @return Leading person
+     */
     @Override
     public Person getStartingPerson() {
         return leader;
@@ -372,5 +387,13 @@ public abstract class MissionProject implements Mission {
 				listeners.remove(oldListener);
 			}
 		}
+    }
+
+    /**
+     * Add an entry to the mission log
+     * @param string
+     */
+    public void addMissionLog(String string) {
+        log.addEntry(string);
     }
 }

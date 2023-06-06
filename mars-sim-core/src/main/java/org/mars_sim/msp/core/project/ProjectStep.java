@@ -18,6 +18,7 @@ public abstract class ProjectStep implements Serializable {
     private Project parent;
     private Stage stage;
     private String description;
+    private boolean completed = false;;
 
     protected ProjectStep(Stage stage, String description) {
         if ((stage == Stage.WAITING) || (stage == Stage.DONE) || (stage == Stage.ABORTED)) {
@@ -73,6 +74,15 @@ public abstract class ProjectStep implements Serializable {
      * @param worker Triggered the stop
      */
     protected void complete() {
+        completed = true;
         parent.completeStep(this);
+    }
+
+    /**
+     * Is the step completed
+     * @return
+     */
+    boolean isCompleted() {
+        return completed;
     }
 }

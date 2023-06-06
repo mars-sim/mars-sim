@@ -43,7 +43,7 @@ public class MissionTravelStep extends MissionStep {
     @Override
     protected boolean execute(Worker worker) {
 
-        Vehicle vehicle = ((VehicleMission) getProject()).getVehicle();
+        Vehicle vehicle = ((VehicleMission) getMission()).getVehicle();
         Coordinates current = vehicle.getCoordinates();
         Coordinates target =  destination.getLocation();
 
@@ -93,7 +93,7 @@ public class MissionTravelStep extends MissionStep {
      * @return
      */
     private Vehicle getVehicle() {
-        return ((VehicleMission) getProject()).getVehicle();
+        return ((VehicleMission) getMission()).getVehicle();
     }
 
     /**
@@ -106,7 +106,7 @@ public class MissionTravelStep extends MissionStep {
         if (vehicle instanceof GroundVehicle gv) {
             double coveredSoFar = gv.getCoordinates().getDistance(startingCoordinate);
             return new DriveGroundVehicle((Person) worker, gv, destination.getLocation(),
-                                            getProject().getPhaseStartTime(), coveredSoFar);
+                                            getMission().getPhaseStartTime(), coveredSoFar);
         }
         else {
             throw new IllegalArgumentException("Can only operatate Ground Vehicle " + vehicle.getName());
@@ -130,7 +130,7 @@ public class MissionTravelStep extends MissionStep {
         if (vehicle instanceof Rover) {
            // Add in suppliers for crew
            double travelDuration = 500D;
-           double personSols = getProject().getMembers().size() * travelDuration;
+           double personSols = getMission().getMembers().size() * travelDuration;
            amountOxygen += personSols * 0.5D;
 
            // Add food and water
