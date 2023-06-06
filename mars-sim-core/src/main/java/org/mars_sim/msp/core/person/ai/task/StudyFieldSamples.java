@@ -435,7 +435,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		// Take field samples from inventory.
 		if (!isDone()) {
 			Unit container = person.getContainerUnit();
-			if (container.getUnitType() != UnitType.PLANET) {
+			if (container.getUnitType() != UnitType.MARS) {
 				double mostStored = 0D;
 	            int bestID = 0;
 	            if (container instanceof ResourceHolder) {

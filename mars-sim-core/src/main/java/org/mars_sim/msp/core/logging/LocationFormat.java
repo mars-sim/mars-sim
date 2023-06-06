@@ -40,7 +40,7 @@ public final class LocationFormat {
 				
 		StringBuilder buffer = new StringBuilder();
 		if (context != null) {
-			if (context.getUnitType() == UnitType.PLANET) {
+			if (context.getUnitType() == UnitType.MARS) {
 				outputCoordinates(entity, buffer);
 			}
 			else {
@@ -71,7 +71,7 @@ public final class LocationFormat {
 		
 		// Go up the chain if not surface
 		if (next != null) {
-			if (next.getUnitType() != UnitType.PLANET) {
+			if (next.getUnitType() != UnitType.MARS) {
 				locationDescription(next, outputMessage);
 				outputMessage.append(" - ");
 			}

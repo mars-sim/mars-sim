@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MarsSurface.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-05
  * @author Manny Kung
  */
 
@@ -48,16 +48,15 @@ public class MarsSurface extends Unit {
 
 	@Override
 	public UnitType getUnitType() {
-		return UnitType.PLANET;
+		return UnitType.MARS;
 	}
 
-	@Override
 	public Settlement getSettlement() {
 		return null;
 	}
 
 	/**
-	 * Adds a person
+	 * Adds a person.
 	 *
 	 * @param person
 	 * @param true if the person can be added
@@ -69,7 +68,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Removes a person
+	 * Removes a person.
 	 *
 	 * @param person
 	 * @param true if the person can be removed
@@ -81,7 +80,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Adds a robot
+	 * Adds a robot.
 	 *
 	 * @param robot
 	 * @param true if the robot can be added
@@ -93,7 +92,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Removes a robot
+	 * Removes a robot.
 	 *
 	 * @param robot
 	 * @param true if the robot can be removed
@@ -105,7 +104,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Adds a vehicle
+	 * Adds a vehicle.
 	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be added
@@ -121,7 +120,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Removes a vehicle
+	 * Removes a vehicle.
 	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be removed
@@ -133,7 +132,7 @@ public class MarsSurface extends Unit {
 	}
 
 	/**
-	 * Gets the unit's container unit. Returns null if unit has no container unit.
+	 * Gets the unit's container unit.
 	 *
 	 * @return the unit's container unit
 	 */
@@ -141,12 +140,12 @@ public class MarsSurface extends Unit {
 	public Unit getContainerUnit() {
 		if (unitManager == null) // for maven test
 			return null;
-		// Note: there is no outer space unit
-		return this;
+		// Return outer space unit
+		return unitManager.getOuterSpace();
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */

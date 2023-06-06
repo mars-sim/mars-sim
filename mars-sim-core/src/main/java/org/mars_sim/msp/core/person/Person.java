@@ -746,7 +746,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
+		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
 		Unit c = getContainerUnit();
@@ -1978,7 +1978,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -2036,7 +2036,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -2050,7 +2050,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
@@ -2083,7 +2083,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (ut == UnitType.PLANET) {
+		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
 		else if (ut == UnitType.BUILDING) {
@@ -2109,7 +2109,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 					logger.warning(this + "Not possible to be stored into " + cu + ".");
 				}
 			}
-			else if (destination.getUnitType() == UnitType.PLANET) {
+			else if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {

@@ -348,7 +348,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -406,7 +406,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -420,7 +420,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		// if the unit is in a settlement
@@ -467,7 +467,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //		boolean transferred = false;
 		Unit cu = getContainerUnit();
 
-		if (cu.getUnitType() == UnitType.PLANET) {
+		if (cu.getUnitType() == UnitType.MARS) {
 			// do nothing. mars surface currently doesn't track equipment
 			canRetrieve = true;
 		}
@@ -482,7 +482,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 		else {	
 
-			if (destination.getUnitType() == UnitType.PLANET) {
+			if (destination.getUnitType() == UnitType.MARS) {
 				// do nothing. mars surface currently doesn't track equipment
 				canStore = true;
 			}

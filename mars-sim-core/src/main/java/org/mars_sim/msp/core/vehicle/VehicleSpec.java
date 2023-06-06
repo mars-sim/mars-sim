@@ -42,8 +42,7 @@ public class VehicleSpec implements Serializable {
 	// Energy Density is 8.9 kWh/L or 44-46 MJ/kg
 	
 	// Future : may move fuel specs to a separate config file
-	
-	
+
 
 	/**
 	 * <p> Methane's Specific Energy is 15.416 kWh/kg (or 55.5 MJ/kg).
@@ -865,4 +864,26 @@ public class VehicleSpec implements Serializable {
 		return partIDs;
 	}
 	
+	/**
+	 * Returns the specified value of the power source of this vehicle spec.
+	 * 
+	 * @return
+	 */
+	public double getValue() {
+		return value;
+	}
+	
+	public void destroy() {
+		cargoCapacityMap = null;
+		labTechSpecialties = null;
+		attachableParts = null;
+		operatorActivitySpots = null;
+		passengerActivitySpots = null;
+		sickBayActivitySpots = null;
+		labActivitySpots = null;
+		airlockLoc = null;
+		airlockInteriorLoc = null;
+		airlockExteriorLoc = null;
+		partIDs = null;
+	}
 }

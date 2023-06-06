@@ -1153,7 +1153,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
+		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
 		Unit c = getContainerUnit();
@@ -1892,7 +1892,7 @@ public abstract class Vehicle extends Unit
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -1970,7 +1970,7 @@ public abstract class Vehicle extends Unit
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -1984,7 +1984,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		// if the vehicle is parked in a garage
@@ -2018,7 +2018,7 @@ public abstract class Vehicle extends Unit
 		// Set the old container unit
 		Unit cu = getContainerUnit();
 
-		if (cu.getUnitType() == UnitType.PLANET) {
+		if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
@@ -2026,7 +2026,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		if (transferred) {
-			if (destination.getUnitType() == UnitType.PLANET) {
+			if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
 			}
 			else if (cu.getUnitType() == UnitType.SETTLEMENT) {

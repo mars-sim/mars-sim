@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.environment.OuterSpace;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
@@ -46,6 +47,7 @@ import org.mars_sim.msp.core.logging.SimuLoggingFormatter;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -299,6 +301,9 @@ public class Simulation implements ClockListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures();
 	}
 		
+	/**
+	 * Initializes instance for the maven test.
+	 */
 	public void testRun() {
 		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
@@ -325,8 +330,19 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
 
+		// Initialize OuterSpace instance
+		OuterSpace outerSpace = new OuterSpace();
+		// Add it to unitManager
+		unitManager.addUnit(outerSpace);
+		
+		// Initialize Moon instance
+		Moon moon = new Moon();
+		// Add it to unitManager
+		unitManager.addUnit(moon);
+		
 		// Build planetary objects
 		MarsSurface marsSurface = new MarsSurface();
+		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 	
         RoleUtil.initialize();
@@ -409,9 +425,19 @@ public class Simulation implements ClockListener, Serializable {
 
 		EquipmentFactory.initialise(unitManager);
 
+		// Initialize OuterSpace instance
+		OuterSpace outerSpace = new OuterSpace();
+		// Add it to unitManager
+		unitManager.addUnit(outerSpace);
+		
+		// Initialize Moon instance
+		Moon moon = new Moon();
+		// Add it to unitManager
+		unitManager.addUnit(moon);
+		
 		// Initialize MarsSurface instance
 		MarsSurface marsSurface = new MarsSurface();
-		// Build objects
+		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 
 		// Initialize instances in Airlock
@@ -653,6 +679,11 @@ public class Simulation implements ClockListener, Serializable {
 		MetaTaskUtil.initializeMetaTasks();
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
+		
+		// Re-initialize OuterSpace instance
+		OuterSpace outerSpace = unitManager.getOuterSpace();
+		// Re-initialize OuterSpace instance
+		Moon moon = unitManager.getMoon();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 

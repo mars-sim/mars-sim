@@ -27,6 +27,8 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.environment.OuterSpace;
+import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -104,9 +106,15 @@ public class UnitManager implements Serializable, Temporal {
 
 	private static ThreadLocal<Settlement> activeSettlement = new ThreadLocal<>();
 
-	/** The instance of MarsSurface. */
+	/** The instance of Mars Surface. */
 	private MarsSurface marsSurface;
-
+	
+	/** The instance of Outer Space. */
+	private OuterSpace outerSpace;
+	
+	/** The instance of Moon. */
+	private Moon moon;
+	
 	/**
 	 * Constructor.
 	 */
@@ -183,6 +191,8 @@ public class UnitManager implements Serializable, Temporal {
 	public Unit getUnitByID(Integer id) {
 		if (id.intValue() == Unit.MARS_SURFACE_UNIT_ID)
 			return marsSurface;
+		else if (id.intValue() == Unit.OUTER_SPACE_UNIT_ID)
+			return outerSpace;
 		else if (id.intValue() == Unit.UNKNOWN_UNIT_ID) {
 			return null;
 		}
@@ -289,11 +299,20 @@ public class UnitManager implements Serializable, Temporal {
 				lookupSite.put(unit.getIdentifier(),
 							   (ConstructionSite) unit);
 				break;
-			case PLANET:
+			case MARS:
 				// Bit of a hack at the moment.
 				// Need to revisit once extra Planets added.
 				marsSurface = (MarsSurface) unit;
 				break;
+				
+			case OUTER_SPACE:
+				outerSpace = (OuterSpace) unit;
+				break;
+				
+			case MOON:
+				moon = (Moon) unit;
+				break;
+				
 			default:
 				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
 			}
@@ -618,7 +637,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns Mars surface instance
+	 * Returns the Mars surface instance
 	 *
 	 * @return {@Link MarsSurface}
 	 */
@@ -626,6 +645,24 @@ public class UnitManager implements Serializable, Temporal {
 		return marsSurface;
 	}
 
+	/**
+	 * Returns the outer space instance
+	 *
+	 * @return {@Link OuterSpace}
+	 */	
+	public OuterSpace getOuterSpace() {
+		return outerSpace;
+	}
+	
+	/**
+	 * Returns the Moon instance
+	 *
+	 * @return {@Link Moon}
+	 */	
+	public Moon getMoon() {
+		return moon;
+	}
+	
 	/**
 	 * Extracts the UnitType from an identifier
 	 * @param id

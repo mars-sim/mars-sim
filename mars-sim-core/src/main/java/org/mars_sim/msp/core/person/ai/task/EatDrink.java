@@ -962,7 +962,7 @@ public class EatDrink extends Task {
 			endTask();
 		}
 		
-		else if (containerUnit.getUnitType() == UnitType.PLANET) {
+		else if (containerUnit.getUnitType() == UnitType.MARS) {
 			// Doing EVA outside. Get water from one's EVA suit
 			suit = person.getSuit();
 		}
@@ -1153,7 +1153,7 @@ public class EatDrink extends Task {
 
 		Unit containerUnit = person.getContainerUnit();
 
-		if (containerUnit.getUnitType() != UnitType.PLANET) {
+		if (containerUnit.getUnitType() != UnitType.MARS) {
 			ResourceHolder rh = (ResourceHolder)containerUnit;
 			boolean option = true;
 
