@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @date 2023-06-05
+ * @date 2023-06-06
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -64,7 +64,7 @@ public class TabPanelGeneral extends TabPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(17);
+		AttributePanel infoPanel = new AttributePanel(21);
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
 		infoPanel.addTextField( "Type", v.getVehicleType().getName(), null);
@@ -92,7 +92,12 @@ public class TabPanelGeneral extends TabPanel {
 		infoPanel.addTextField( "Drivetrain Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()), null);	
 		infoPanel.addTextField( "Base Fuel Consumption", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getBaseFuelConsumption()), null);
 		infoPanel.addTextField( "Initial Fuel Consumption", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getInitialFuelConsumption()), null);
+		infoPanel.addTextField( "Cumulative Fuel Consumption", StyleManager.DECIMAL_WH_KM.format(v.getCumFuelConsumption()), null);
+		infoPanel.addTextField( "Estimated Fuel Consumption", StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelConsumption()), null);
 		infoPanel.addTextField( "Base Fuel Economy", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getBaseFuelEconomy()), null);	
 		infoPanel.addTextField( "Initial Fuel Economy", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getInitialFuelEconomy()), null);			
+		infoPanel.addTextField( "Cumulative Fuel Economy", StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()), null);	
+		infoPanel.addTextField( "Estimated Fuel Economy", StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()), null);			
+
 	}
 }
