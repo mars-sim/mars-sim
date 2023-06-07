@@ -113,7 +113,7 @@ implements MissionListener {
 		
 		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
 		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		mapDisplayPane.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+//		mapDisplayPane.setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
 

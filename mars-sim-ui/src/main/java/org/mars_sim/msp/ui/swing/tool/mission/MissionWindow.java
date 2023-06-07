@@ -112,7 +112,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		setSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setMaximumSize(new Dimension(WIDTH, HEIGHT));
+//		setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
@@ -149,7 +149,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		
 		scroller.setSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
 		scroller.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
-		scroller.setMaximumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
+//		scroller.setMaximumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
 		
 		treePanel.add(scroller, BorderLayout.CENTER);
 
@@ -170,7 +170,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		
 		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
-		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+//		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		
 		tabPane.add("Navigation", navpointPane);
 
