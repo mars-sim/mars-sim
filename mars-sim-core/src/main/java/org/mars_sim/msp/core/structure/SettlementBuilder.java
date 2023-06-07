@@ -326,15 +326,21 @@ public final class SettlementBuilder {
 	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
 		ReportingAuthority sponsor = settlement.getReportingAuthority();
+		long males = settlement.getAllAssociatedPeople().stream()
+												.filter(p -> p.getGender() == GenderType.MALE).count();
+		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
 
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
-
-			GenderType gender = GenderType.FEMALE;
-			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
+			// Choose the next gender based on the current ratio of M/F
+			GenderType gender;
+			if (males < targetMales) {
 				gender = GenderType.MALE;
+				males++;
 			}
-			Person person = null;
+			else {
+				gender = GenderType.FEMALE;
+			}
 
 			// This is random and may change on each call
 			String country = sponsor.getDefaultCountry();
@@ -343,7 +349,7 @@ public final class SettlementBuilder {
 			String fullname = Person.generateName(country, gender);
 
 			// Use Builder Pattern for creating an instance of Person
-			person = Person.create(fullname, settlement)
+			Person person = Person.create(fullname, settlement)
 					.setGender(gender)
 					.setCountry(country)
 					.setSponsor(sponsor)
