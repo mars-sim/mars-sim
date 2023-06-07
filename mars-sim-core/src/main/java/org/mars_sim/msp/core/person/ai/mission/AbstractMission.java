@@ -697,12 +697,24 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 	}
 
+
+	/**
+	 * An internal problem has happened to end the mission.
+	 * 
+	 * @param source
+	 * @param reason
+	 */
+	protected void endMissionProblem(Loggable source, String reason) {
+		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
+		logger.severe(source, getName() + ": " + status.getName());
+		endMission(status);
+	}
+	
 	/**
 	 * Finalizes the mission. Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
 	 *
 	 * @param endStatus A status to add for the end of Mission
-	 *
 	 */
 	protected void endMission(MissionStatus endStatus) {
 		if (done) {
@@ -715,7 +727,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			missionStatus.add(endStatus);
 		}
 
-		// If no mission flags have been added then it was accomplised
+		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase;
 		if (missionStatus.isEmpty() && !aborted) {
@@ -1260,15 +1272,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		fullMissionDesignation = buffer.toString();
 
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
-	}
-
-	/**
-	 * An internal problem has happened so end the mission.
-	 */
-	protected void endMissionProblem(Loggable source, String reason) {
-		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
-		logger.severe(source, getName() + ": " + status.getName());
-		endMission(status);
 	}
 
 	@Override
