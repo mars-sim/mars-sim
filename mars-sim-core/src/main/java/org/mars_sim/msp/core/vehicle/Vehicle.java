@@ -763,7 +763,7 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = getInitialFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -774,7 +774,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = getInitialFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+        		range = getEstimatedFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
     		}
         }
 
@@ -842,7 +842,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (fuelCumUsed == 0)
+		if (odometerMileage == 0 || fuelCumUsed == 0)
 			return 0;
 		return odometerMileage / fuelCumUsed;
 	}
@@ -855,7 +855,7 @@ public abstract class Vehicle extends Unit
 	public double getCumFuelConsumption() {
 		if (odometerMileage == 0 || fuelCumUsed == 0)
 			return 0;
-		return VehicleSpec.METHANOL_WH_PER_KG * fuelCumUsed / odometerMileage;
+		return getFuelConv() * fuelCumUsed / odometerMileage;
 	}
 
 	/**
@@ -948,14 +948,15 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelEconomy() {
+		double baseFE = getBaseFuelEconomy();
 		double cumFE = getCumFuelEconomy();
 		double initFE = getInitialFuelEconomy();
 		double ratio = cumFE / initFE;
 		if (cumFE == 0)
-			return initFE;
+			return (baseFE + initFE) / 2;
 		else if (ratio < 1)
-			return (cumFE + initFE) / 2;
-		return (cumFE + initFE) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (baseFE + initFE + cumFE) / 3;
+		return (baseFE + initFE + cumFE) / 3 * VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 
 	/**
@@ -973,14 +974,15 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelConsumption() {
+		double baseFC = getBaseFuelConsumption();
 		double cumFC = getCumFuelConsumption();
 		double initFC = getInitialFuelConsumption();
 		double ratio = cumFC / initFC;
 		if (cumFC == 0)
-			return initFC;
+			return (baseFC + initFC) / 2;
 		else if (ratio < 1)
-			return (cumFC + initFC) / 2;
-		return (cumFC + initFC) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (baseFC + initFC + cumFC) / 3;
+		return (baseFC + initFC + cumFC) / 3 * VehicleController.FUEL_CONSUMPTION_FACTOR;
 	}
 	
 	/**

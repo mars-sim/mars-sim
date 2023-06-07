@@ -114,7 +114,6 @@ public abstract class TabPanel extends JScrollPane {
 		// Ideally yes
 		//setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
 
-
 		JScrollBar vertical = getVerticalScrollBar();
 		vertical.setValue(0);
 		

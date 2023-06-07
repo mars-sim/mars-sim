@@ -150,6 +150,8 @@ public class VehicleSpec implements Serializable {
 	
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
+	/** The peak power output of the vehicle. (kW). */
+	private double peakPower = 0;
 	
 	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
 	private double totalHours;
@@ -162,11 +164,31 @@ public class VehicleSpec implements Serializable {
 	/** The estimated energy available for the drivetrain [kWh]. */
 	private double drivetrainEnergy;
 	
-	/** The base fuel economy of the vehicle [km/kg]. */
+	
+	// Definition : Fuel economy of a vehicle refers to the distance traveled 
+	// by a vehicle and the amount of fuel consumed.
+	
+	// See https://en.wikipedia.org/wiki/Fuel_efficiency
+	
+	/** 
+	 * The base fuel economy of the vehicle [km/kg].  
+	 * Note: it's the distance traveled by a vehicle per kg of fuel consumed
+	 */
 	private double baseFuelEconomy;
 	/** The initial average fuel economy of the vehicle for a trip [km/kg]. */
 	private double initialFuelEconomy;
-	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
+
+	
+	// Definition : Fuel consumption of a vehicle refers to the energy used
+	// by a vehicle to travel each km.
+	
+	// See https://ev-database.org/cheatsheet/energy-consumption-electric-car 
+	
+	
+	/** 
+	 * The base fuel consumption of the vehicle [Wh/km]. 
+	 * Note: it's the energy used by a vehicle to travel each km.
+	 */
 	private double baseFuelConsumption;
 	/** The initial average fuel consumption of the vehicle [Wh/km]. */
 	private double initialFuelConsumption;
@@ -336,7 +358,7 @@ public class VehicleSpec implements Serializable {
 		// Define percent of other energy usage (other than for drivetrain)
 		double otherEnergyUsagePercent = 0;
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		double peakPower = averagePower * Math.log(2 + (1 + numBatteryModule) * (1 + numFuelCellStack));
+		peakPower = averagePower * Math.log(2 + (1 + numBatteryModule) * (1 + numFuelCellStack));
 		// Define the estimated additional beginning mass for each type of vehicle
 		double additionalBeginningMass = 0;
 		// Define the estimated additional end mass for each type of vehicle
@@ -540,15 +562,31 @@ public class VehicleSpec implements Serializable {
 	}
 	
 
-	/** @return the baseSpeed */
+	/** 
+	 * Returns the base speed output of the vehicle [in kph].
+	 * 
+	 * @return the baseSpeed 
+	 */
 	public final double getBaseSpeed() {
 		return baseSpeed;
 	}
 	
-	/** @return the averagePower */
+	/** 
+	 * Returns the average power output of the vehicle [in kW].
+	 * 
+	 * @return the averagePower 
+	 */
 	public final double getAveragePower() {
 		return averagePower;
 	}
+	
+	/** 
+	 * Returns the peak power output of the vehicle [in kW].
+	 */
+	public final double getPeakPower() {
+		return peakPower;
+	}
+	
 
 	/** @return the emptyMass */
 	public final double getEmptyMass() {

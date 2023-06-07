@@ -41,7 +41,9 @@
 	 /** The ratio of water produced for every methanol consumed. */
 	 private static final double RATIO_WATER_METHANE = 2.25;
 	 /** The factor for estimating the adjusted fuel economy. */
-	 public static final double FUEL_ECONOMY_FACTOR = 1.25;
+	 public static final double FUEL_ECONOMY_FACTOR = .8;
+	 /** The factor for estimating the adjusted fuel consumption. */
+	 public static final double FUEL_CONSUMPTION_FACTOR = 1.2;
 	 
 	 /** Mars surface gravity is 3.72 m/s2. */
 	 private static final double GRAVITY = 3.72;
@@ -510,7 +512,7 @@
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
 		 double amountFuel = .5 * tripDistance * 
-				 	(1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / VehicleSpec.METHANOL_WH_PER_KG);
+				 	(1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / vehicle.getFuelConv());// VehicleSpec.METHANOL_WH_PER_KG);
 		 double factor = 1;
 		 if (useMargin) {
 			 if (tripDistance < 100) {
