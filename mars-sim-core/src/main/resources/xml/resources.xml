@@ -294,7 +294,7 @@
 	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
 		The common name for the organic chemical compound propene. An alkene which is a colorless gaseous
 		(at room temperature and pressure) hydrocarbon with the chemical formula C3H6.</resource>
-	<resource name="polypropylene" type="chemical" phase="solid" demand=".01">
+	<resource name="Polypropylene" type="chemical" phase="solid" demand=".01">
 		A thermoplastic polymer stiffer than polyethylene. Characterized by a more transparent appearance 
 		and higher tensile strength, polypropylene bags offer a higher heat and chemical resistance than 
 		polyethylene bags, as well as rigid protective edges to prevent scratches. Polypropylene is a soft, 

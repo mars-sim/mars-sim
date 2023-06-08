@@ -115,7 +115,6 @@ public class BuildingConstructionMission extends AbstractMission
 	private ConstructionStage stage;
 
 	private List<GroundVehicle> constructionVehicles;
-	private Collection<Worker> members;
 	private List<Integer> luvAttachmentParts;
 
 	/**
@@ -297,9 +296,6 @@ public class BuildingConstructionMission extends AbstractMission
 		// TODO: Need to pick the best one, not the first one
 		super(missionType, (Worker) members.toArray()[0]);
 
-		
-		// this.site = no_site;
-		this.members = members;
 		this.settlement = settlement;
 		this.constructionVehicles = vehicles;
 
@@ -448,7 +444,8 @@ public class BuildingConstructionMission extends AbstractMission
 					LightUtilityVehicle luv = reserveLightUtilityVehicle();
 					if (luv != null) {
 						constructionVehicles.add(luv);
-						luv.setMission(this);
+//						luv.setMission(this);
+						claimVehicle(luv);
 					} else {
 						logger.warning(settlement, "BuildingConstructionMission : LUV not available");
 						endMission(LUV_NOT_AVAILABLE);
@@ -457,7 +454,24 @@ public class BuildingConstructionMission extends AbstractMission
 			}
 		}
 	}
+	
+	/**
+	 * Claims the mission's vehicle and reserve it.
+	 * 
+	 * @param v Vehicle to be claimed
+	 */
+	protected final void claimVehicle(Vehicle v) {
+		if (v.getMission() != null) {
+			logger.warning(v, "Aready assigned to a Mission when assigning " + getName());
+		}
 
+		v.setReservedForMission(true);
+//		v.addUnitListener(this);
+		v.setMission(this);
+		
+		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+	}
+	
 	/**
 	 * Retrieves LUV attachment parts from the settlement.
 	 */
@@ -578,8 +592,10 @@ public class BuildingConstructionMission extends AbstractMission
 	 */
 	private void selectSitePhase(Worker member) {
 		// Need player to acknowledge the site location before proceeding
-		if (site.isSitePicked())
+		if (site.isSitePicked()) {
 			setPhaseEnded(true);
+			logger.info(settlement, site, "Ending the 'Select Site' phase.");
+		}
 	}
 	
 	/**
@@ -603,16 +619,13 @@ public class BuildingConstructionMission extends AbstractMission
 	 */
 	private void retrieveMaterials(Worker member) {
 		// If material not available, prompt settlers to dig local regolith
-//		Set<Worker> members = getMembers();
-//		for (Worker m: members) {
-			Person p = (Person) member;
-			// 50% chance of assigning task
-			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)) {
-					boolean accepted = assignTask(p, new DigLocalRegolith(p));
-					if (accepted)
-						logger.info(p, 20_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
-			}
-//		}			
+		Person p = (Person) member;
+		if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
+			&& member.getUnitType() == UnitType.PERSON) {
+			boolean accepted = assignTask(p, new DigLocalRegolith(p));
+			if (accepted)
+				logger.info(p, 20_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
+		}		
 	}
 	
 	/**
@@ -723,6 +736,9 @@ public class BuildingConstructionMission extends AbstractMission
 			return;
 		}
 
+		// Display the LUV(s)
+		showLightUtilityVehicle();
+		
 		// Anyone in the crew or a single person at the home settlement has a
 		// dangerous illness, end phase.
 		if (hasEmergency()) {
@@ -736,15 +752,11 @@ public class BuildingConstructionMission extends AbstractMission
 
 		if (!getPhaseEnded()) {
 			// Assign construction task to member.
-			Set<Worker> members = getMembers();
-			for (Worker m: members) {
-				Person p = (Person) m;
-				// 50% chance of assigning task, otherwise allow break.
-				if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
-					&& m.getUnitType() == UnitType.PERSON
-					&& ConstructBuilding.canConstruct(p, site)) {
-						assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
-				}
+			Person p = (Person) member;
+			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
+				&& member.getUnitType() == UnitType.PERSON
+				&& ConstructBuilding.canConstruct(p, site)) {
+					assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
 			}
 		}
 
@@ -782,7 +794,7 @@ public class BuildingConstructionMission extends AbstractMission
 		// Unreserve all LUV attachment parts for this mission.
 		unreserveLUVparts();
 
-		for(GroundVehicle v : getConstructionVehicles()) {
+		for (GroundVehicle v : getConstructionVehicles()) {
 			if (v.getMission().equals(this)) {
 				v.setMission(null);
 			}
@@ -829,6 +841,23 @@ public class BuildingConstructionMission extends AbstractMission
 	}
 
 	/**
+	 * Display the light utility vehicles on the settlement map.
+	 *
+	 * @return reserved light utility vehicle or null if none.
+	 */
+	private void showLightUtilityVehicle() {
+
+		Iterator<GroundVehicle> i = constructionVehicles.iterator();
+		while (i.hasNext()) {
+			GroundVehicle vehicle = i.next();
+			LightUtilityVehicle luv = (LightUtilityVehicle) vehicle;
+			// Place light utility vehicles at random location in construction site.
+			LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
+			luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+		}
+	}
+	
+	/**
 	 * Reserves a light utility vehicle for the mission.
 	 *
 	 * @return reserved light utility vehicle or null if none.
@@ -847,10 +876,6 @@ public class BuildingConstructionMission extends AbstractMission
 					result = luvTemp;
 					luvTemp.setReservedForMission(true);
 
-					// Place light utility vehicles at random location in construction site.
-					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalRelativePosition(site);
-					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-
 					if (!settlement.removeParkedVehicle(luvTemp)) {
 						endMissionProblem(luvTemp, "Can not remove parked vehicle");
 					}
@@ -863,7 +888,7 @@ public class BuildingConstructionMission extends AbstractMission
 
 
 	/*
-	 * Unreserve and store back all LUV attachment parts in settlement.
+	 * Unreserves and store back all LUV attachment parts in settlement.
 	 */
 	public void unreserveLUVparts() {
 
@@ -1477,7 +1502,6 @@ public class BuildingConstructionMission extends AbstractMission
 		site = null;
 		stage = null;
 		constructionVehicles = null;
-		members = null;
 		luvAttachmentParts = null;
 	}
 }

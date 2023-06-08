@@ -112,7 +112,7 @@ public class Settlement extends Structure implements Temporal,
 	// public static final int HALF_RANGE = MAX_RANGE / 2;
 	// public static final int QUARTER_RANGE = MAX_RANGE / 4;
 	
-	private static final int MAX = 3000;
+	private static final int MAX = 6000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -455,7 +455,11 @@ public class Settlement extends Structure implements Temporal,
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 
 		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
+		regolithCollectionRate = regolithCollectionRate + terrainElevation.obtainRegolithCollectionRate(location);
 
+		logger.config(this, " iceCollectionRate: " + Math.round(iceCollectionRate * 100.0)/100.0);
+		logger.config(this, " regolithCollectionRate: " + Math.round(regolithCollectionRate * 100.0)/100.0);
+		
 		double areoThermalPot = surfaceFeatures.getAreothermalPotential(location);
 		
 		logger.config(this, " Areothermal Potential: " + Math.round(areoThermalPot * 1000.0)/1000.0);
@@ -2743,7 +2747,7 @@ public class Settlement extends Structure implements Temporal,
 			result = 1.0 * reserve / pop ;
 		}
 
-		result = result + concreteDemand + cementDemand;
+		result = result + .5 * concreteDemand + .5 * cementDemand;
 		
 		if (result < 0)
 			result = 0;
@@ -2751,6 +2755,8 @@ public class Settlement extends Structure implements Temporal,
 			result = MAX;
 		
 //		logger.info(this, 30_000L, "regolithDemand: " + regolithDemand
+//						+ "   cementDemand: " + cementDemand
+//						+ "   concreteDemand: " + concreteDemand
 //						+ "   sandDemand: " + sandDemand
 //						+ "   regolith Prob value: " + result);
 		return result;

@@ -286,13 +286,13 @@
 		<input resource="regolith" rate="100.0"  />
 
 		<output resource="basaltic" rate="5.0"  />
-		<output resource="gypsum" rate="5.0"  />
+		<output resource="gypsum" rate="25.0"  />
 		<output resource="smectite" rate="2.0"  />
 		<output resource="allophane" rate="2.0"  />
 		<output resource="akaganeite" rate="2.0"  />
 		<output resource="bassanite" rate="2.0"  />
 
-		<output resource="sand" rate="82.0"  />
+		<output resource="sand" rate="62.0"  />
 	</process>
 				
 	<process name="Extract nitrogen compounds from regolith" power-required="0.01" >
@@ -632,7 +632,7 @@
 		<input resource="iron oxide" rate="2.5"  />
 		<input resource="silica" rate="5.0"  />
 
-		<output resource="cement" rate="5.0"  />
+		<output resource="cement" rate="50.0"  />
 	</process>
 
 	<process name="Mix sulfur concrete" power-required="0.2" >
@@ -652,22 +652,23 @@
 		12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
 		13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)
 		</description>						
-		<input resource="sulfur" rate="25.0"  />
-		<input resource="sand" rate="35.0"  />
-		<input resource="cement" rate="60.0"  />
+		<input resource="sulfur" rate="14.0"  />
+		<input resource="sand" rate="60.0"  />
+		<input resource="cement" rate="20.0"  />
 		<input resource="polyethylene" rate="1.0"  />
+		<input resource="water" rate="5.0"  />		
 
-		<output resource="concrete" rate="120.0"  />
+		<output resource="concrete" rate="95.0"  />
 	</process>
 
 	<!-- Same as concrete mixing but using lime in place of cement. -->
 	<process name="Mix limecrete" power-required="0.2" >
-		<input resource="sulfur" rate="10.0"  />
-		<input resource="sand" rate="40.0"  />
-		<input resource="lime" rate="50.0"  />
+		<input resource="sand" rate="60.0"  />
+		<input resource="lime" rate="34.0"  />
 		<input resource="polyethylene" rate="1.0"  />
+		<input resource="water" rate="5.0"  />		
 
-		<output resource="concrete" rate="100.0"  />
+		<output resource="concrete" rate="95.0"  />
 	</process>
 
 	<process name="Make magnesium-based concrete" power-required="0.5" >
@@ -685,11 +686,13 @@
 			See 'Constructing Mars: Concrete and Energy Production from Serpentinization Products' 
 			https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 
 		</description>
-		<input resource="olivine" rate="63.0"  />
+		<input resource="olivine" rate="20.0"  />
+		<input resource="sand" rate="61.0"  />
+		<input resource="magnesium" rate="10.0"  />		
 		<input resource="water" rate="9.0"  />
 
 		<output resource="hydrogen" rate="1.0"  />
-		<output resource="concrete" rate="71.0"  />
+		<output resource="concrete" rate="94.0"  />
 	</process>
 
 	<process name="Produce Ethylene" power-required="0.05" >
@@ -747,6 +750,7 @@
 			14% ethane, 5% tailgas  
 		</description>	
 		<input resource="methanol" rate="10"  />
+		
 		<output resource="ethylene" rate="4.1"  />
 		<output resource="prophylene" rate="3.9"  />
 	</process>
@@ -757,6 +761,7 @@
 			CaCO3 (calcium carbonate) -> CaO (lime) + CO2 
 		</description>	
 		<input resource="calcium carbonate" rate="50.0"  />
+		
 		<output resource="lime" rate="27.8"  />
 		<output resource="carbon dioxide" rate="21.8"  />
 	</process>

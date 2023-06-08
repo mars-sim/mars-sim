@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalMeta.java
- * @date 2022-07-18
+ * @date 2023-06-08
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -22,9 +22,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public abstract class DigLocalMeta extends FactoryMetaTask {
 
-//	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
+	// can add back SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName())
 
-	private static final double VALUE = .1;
+	private static final double VALUE = 50;
 	private static final int MAX = 2_000;
 	private static final int CAP = 3_000;
 	
@@ -51,14 +51,15 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     	if (collectionProbability == 0.0)
     		return 0;
     	
-        double result = RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
+        double result = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
        
+//        logger.info(settlement, 10_000, "Early " + ResourceUtil.findAmountResourceName(resourceId) + (int)result);
+        
     	// Will not perform this task if he has a mission
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
 
-    
       if (result > MAX)
     	  result = MAX;
 
@@ -86,6 +87,8 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
         	result *= .2;
+        
+//        logger.info(settlement, 10_000, "Mid " + ResourceUtil.findAmountResourceName(resourceId) + (int)result);
         
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -134,6 +137,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         if (result > CAP)
         	result = CAP;
 
+//        logger.info(settlement, 10_000, "End: " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
         return result;
     }
 
