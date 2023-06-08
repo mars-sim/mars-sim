@@ -64,7 +64,7 @@ public class ResourceUtil implements Serializable {
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
 	public static final String MORTAR = "mortar";
-	public static final String CEMENT = "mortar";
+	public static final String CEMENT = "cement";
 
 	public static final String SAND = "sand";
 

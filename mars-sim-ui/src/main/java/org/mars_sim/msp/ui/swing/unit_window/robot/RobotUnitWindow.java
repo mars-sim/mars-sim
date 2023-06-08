@@ -24,7 +24,7 @@ import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelSkill;
  * The RobotWindow is the window for displaying a robot.
  */
 @SuppressWarnings("serial")
-public class RobotWindow extends UnitWindow {
+public class RobotUnitWindow extends UnitWindow {
 
 	/** Is robot inoperable? */
 	private boolean inoperableCache = false;
@@ -37,7 +37,7 @@ public class RobotWindow extends UnitWindow {
 	 * @param desktop the main desktop panel.
 	 * @param robot   the robot for this window.
 	 */
-	public RobotWindow(MainDesktopPane desktop, Robot robot) {
+	public RobotUnitWindow(MainDesktopPane desktop, Robot robot) {
 		// Use UnitWindow constructor
 		super(desktop, robot, robot.getAssociatedSettlement().getName() + " - " + robot.getNickName(), false);
 		this.robot = robot;

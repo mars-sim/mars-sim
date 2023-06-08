@@ -23,7 +23,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The VehicleWindow is the window for displaying a vehicle.
  */
 @SuppressWarnings("serial")
-public class VehicleWindow extends UnitWindow {
+public class VehicleUnitWindow extends UnitWindow {
 
 	// Data members
 	private boolean salvaged;
@@ -36,7 +36,7 @@ public class VehicleWindow extends UnitWindow {
 	 * @param desktop the main desktop panel.
 	 * @param vehicle the vehicle for this window.
 	 */
-	public VehicleWindow(MainDesktopPane desktop, Vehicle vehicle) {
+	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
 		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getNickName(), true);
 		this.vehicle = vehicle;

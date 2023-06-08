@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-07
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 /**
  * The EquipmentWindow is the window for displaying a piece of equipment.
  */
-public class EquipmentWindow extends UnitWindow {
+public class EquipmentUnitWindow extends UnitWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,13 +31,14 @@ public class EquipmentWindow extends UnitWindow {
 	private boolean salvaged;
 
 	private Equipment equipment;
+	
     /**
      * Constructor
      *
      * @param desktop the main desktop panel.
      * @param equipment the equipment this window is for.
      */
-    public EquipmentWindow(MainDesktopPane desktop, Equipment equipment) {
+    public EquipmentUnitWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
         super(desktop, equipment, equipment.getAssociatedSettlement().getName() + " - " + equipment.getName(), false);
         this.equipment = equipment;

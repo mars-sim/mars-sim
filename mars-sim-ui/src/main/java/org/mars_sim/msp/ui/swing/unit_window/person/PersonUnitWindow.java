@@ -35,7 +35,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The PersonWindow is the window for displaying a person.
  */
 @SuppressWarnings("serial")
-public class PersonWindow extends UnitWindow {
+public class PersonUnitWindow extends UnitWindow {
 
 	private static final String TOWN = "settlement";
 	private static final String JOB = "career";
@@ -67,7 +67,7 @@ public class PersonWindow extends UnitWindow {
 	 * @param desktop the main desktop panel.
 	 * @param person  the person for this window.
 	 */
-	public PersonWindow(MainDesktopPane desktop, Person person) {
+	public PersonUnitWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
 		super(desktop, person, person.getNickName(), true);
 		this.person = person;

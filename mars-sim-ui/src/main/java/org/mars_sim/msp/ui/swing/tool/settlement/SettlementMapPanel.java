@@ -174,7 +174,6 @@ public class SettlementMapPanel extends JPanel {
 		repaint();
 	}
 
-	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
 
 		// Set up the dayNightMapLayer layers
@@ -279,7 +278,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Checks if the player selected an unit
+	 * Checks if the player selected an unit.
 	 *
 	 * @param evt
 	 */

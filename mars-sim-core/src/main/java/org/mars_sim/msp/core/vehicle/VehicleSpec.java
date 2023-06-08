@@ -43,27 +43,41 @@ public class VehicleSpec implements Serializable {
 	
 	// Future : may move fuel specs to a separate config file
 
-
+	
+	
 	/**
-	 * <p> Methane's Specific Energy is 15.416 kWh/kg (or 55.5 MJ/kg).
-	 * <p> Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
+	 * Methane's Specific Energy is 15.416 kWh/kg (or 55.5 MJ/kg).
+	 * 
+	 * @See https://hypertextbook.com/facts/2004/BillyWan.shtml
 	 */
 	public static final double METHANE_SPECIFIC_ENERGY = 15.4167; // [in kWh/kg]
-//	/**
-//	 * Methane's energy density [in kWh/L], or 0.0364 MJ/L, 36.4 kJ/L, or 10 Wh/L ?
-//	 */
-//	public static final double METHANE_ENERGY_DENSITY = 4.33; 
+	/**
+	 * Methane's volumetric energy density [in kWh/L]. or 38.3 MJ/L with unknown wt %. 
+	 */
+	public static final double METHANE_VOLUMETRIC_ENERGY_DENSITY = 7.1689; 
+	
+	// 1 liter of methane weighs 0.465 kilogram. or 2.1505 L = 1 kg
+	// 
+	// 1 kg of methane is equal to 1496.558 liters, and 1 liter of methane is equal to 0.0006682 kg
+	// The density of methane is 0.6682 kg/m3 for 25C
+	
+	// Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	
 	
 	/**
-	 * Methanol's Specific Energy is 6.1206 kWh/kg (or 22.0342 MJ/kg).
-	 * Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ.
+	 * Methanol's Specific Energy is 6.1206 kWh/kg (or 22.0342 MJ/kg)
+	 * https://en.wikipedia.org/wiki/Fuel_efficiency uses 19.9 MJ/kg and 17.9 MJ/L
 	 */
 	public static final double METHANOL_SPECIFIC_ENERGY = 6.1206; // [in kWh/kg]
+
 	/**
-	 * Methanol's energy density [in kWh/L].
+	 * Methanol's volumetric energy density [in kWh/L].
 	 */
-	public static final double METHANOL_ENERGY_DENSITY = 4.33;
+	public static final double METHANOL_VOLUMETRIC_ENERGY_DENSITY = 4.33;
+	/**
+	 * Methanol's gravimetric energy density [in kWh/L].
+	 */
+	public static final double METHANOL_GRAVIMETRIC_ENERGY_DENSITY = 5.53;
 	
 	
 	/**

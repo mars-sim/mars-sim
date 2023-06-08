@@ -141,6 +141,8 @@ public class Settlement extends Structure implements Temporal,
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	private static final int REGOLITH_ID = ResourceUtil.regolithID;
 	private static final int SAND_ID = ResourceUtil.sandID;
+	private static final int CONCRETE_ID = ResourceUtil.concreteID;
+	private static final int CEMENT_ID = ResourceUtil.cementID;
 	private static final int ICE_ID = ResourceUtil.iceID;
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
@@ -2708,12 +2710,25 @@ public class Settlement extends Structure implements Temporal,
 		else if (sandDemand < 1)
 			sandDemand = 1;
 		
-		int pop = numCitizens;
+		double concreteDemand = goodsManager.getDemandValueWithID(CONCRETE_ID);
+		if (concreteDemand > REGOLITH_MAX)
+			concreteDemand = REGOLITH_MAX;
+		else if (concreteDemand < 1)
+			concreteDemand = 1;
+		
+		double cementDemand = goodsManager.getDemandValueWithID(CEMENT_ID);
+		if (cementDemand > REGOLITH_MAX)
+			cementDemand = REGOLITH_MAX;
+		else if (cementDemand < 1)
+			cementDemand = 1;
 
 		double regolithAvailable = goodsManager.getSupplyValue(REGOLITH_ID);
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
+		
 		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
+		
+		int pop = numCitizens;
 		int reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
 		
 		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand) {
@@ -2728,6 +2743,8 @@ public class Settlement extends Structure implements Temporal,
 			result = 1.0 * reserve / pop ;
 		}
 
+		result = result + concreteDemand + cementDemand;
+		
 		if (result < 0)
 			result = 0;
 		if (result > MAX)
@@ -3024,16 +3041,26 @@ public class Settlement extends Structure implements Temporal,
 		return mineralValue;
 	}
 
+	/**
+	 * Returns the ice collection rate in the vicinity of this settlement.
+	 * 
+	 * @return
+	 */
     public double getIceCollectionRate() {
     	return iceCollectionRate;
     }
 
+    /**
+	 * Returns the regolith collection rate in the vicinity of this settlement.
+     * 
+     * @return
+     */
     public double getRegolithCollectionRate() {
     	return regolithCollectionRate;
     }
 
 	/**
-	 * Remove the record of the deceased person from airlock
+	 * Removes the record of the deceased person from airlock.
 	 *
 	 * @param person
 	 */

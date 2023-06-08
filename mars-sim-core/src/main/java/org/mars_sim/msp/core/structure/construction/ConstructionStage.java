@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStage.java
- * @date 2021-12-15
+ * @date 2023-06-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -42,6 +42,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Constructor.
+     * 
      * @param info the stage information.
      */
     public ConstructionStage(ConstructionStageInfo info, ConstructionSite site) {
@@ -59,6 +60,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Get the construction stage information.
+     * 
      * @return stage information.
      */
     public ConstructionStageInfo getInfo() {
@@ -67,6 +69,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the completed work time on the stage.
+     * 
      * @return work time (in millisols).
      */
     public double getCompletedWorkTime() {
@@ -75,6 +78,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Sets the completed work time on the stage.
+     * 
      * @param completedWorkTime work time (in millisols).
      */
     public void setCompletedWorkTime(double completedWorkTime) {
@@ -83,6 +87,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the amount work time that can be completed for this stage.
+     * 
      * @return completable work time (millisols).
      */
     public double getCompletableWorkTime() {
@@ -91,6 +96,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the required work time for the stage.
+     * 
      * @return work time (in millisols).
      */
     public double getRequiredWorkTime() {
@@ -103,6 +109,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Adds work time to the construction stage.
+     * 
      * @param workTime the work time (in millisols) to add.
      */
     public void addWorkTime(double workTime) {
@@ -123,6 +130,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Checks if the stage is complete.
+     * 
      * @return true if stage is complete.
      */
     public boolean isComplete() {
@@ -131,6 +139,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Checks if the stage is salvaging.
+     * 
      * @return true if stage is salvaging.
      */
     public boolean isSalvaging() {
@@ -139,6 +148,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Sets if the stage is salvaging.
+     * 
      * @param isSalvaging true if staging is salvaging.
      */
     public void setSalvaging(boolean isSalvaging) {
@@ -147,6 +157,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the remaining parts needed for construction.
+     * 
      * @return map of parts and their numbers.
      */
     public Map<Integer, Integer> getRemainingParts() {
@@ -155,6 +166,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the remaining resources needed for construction.
+     * 
      * @return map of resources and their amounts (kg).
      */
     public Map<Integer, Double> getRemainingResources() {
@@ -163,6 +175,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Adds parts to the construction stage.
+     * 
      * @param part the part to add.
      * @param number the number of parts to add.
      */
@@ -198,7 +211,8 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Add resource to the construction stage.
+     * Adds resource to the construction stage.
+     * 
      * @param resource the resource to add.
      * @param amount the amount (kg) of resource to add.
      */
@@ -255,6 +269,7 @@ public class ConstructionStage implements Serializable {
 
     /**
      * Gets the total mass of construction materials.
+     * 
      * @param resources map of resources and their amounts (kg).
      * @param parts map of parts and their numbers.
      * @return total mass.
@@ -291,4 +306,14 @@ public class ConstructionStage implements Serializable {
         else result = Conversion.capitalize("Constructing " + info.getName());
         return result;
     }
+    
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		info = null;
+	    site = null;
+	    remainingParts = null;
+	    remainingResources = null;
+	}
 }

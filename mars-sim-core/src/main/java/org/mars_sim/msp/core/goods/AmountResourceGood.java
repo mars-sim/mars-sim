@@ -167,7 +167,7 @@ class AmountResourceGood extends Good {
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
+	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 3000; 
@@ -957,6 +957,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceConstructionSiteDemand(Settlement settlement) {
 		double demand = 0D;
+		double amount = 0D;
 		int resource = getID();
 
 		// Add demand for resource required as remaining construction material on
@@ -966,11 +967,15 @@ class AmountResourceGood extends Good {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getRemainingResources().containsKey(resource)) {
 					double requiredAmount = stage.getRemainingResources().get(resource);
+					amount += requiredAmount;
 					demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
 			}
 		}
 
+		logger.info(settlement, 20_000L, ResourceUtil.findAmountResourceName(resource) + " needs " 
+				+ Math.round(amount * 10.0)/10.0
+				+ " for constructions.  Raising demand to " + Math.round(demand * 10.0)/10.0);
 		return demand;
 	}
 

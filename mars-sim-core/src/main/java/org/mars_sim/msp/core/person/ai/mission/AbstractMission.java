@@ -492,7 +492,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @throws MissionException if newPhase is not in the mission's collection of
 	 *                          phases.
 	 */
-	protected final void setPhase(MissionPhase newPhase, String subjectOfPhase) {
+	protected void setPhase(MissionPhase newPhase, String subjectOfPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		}
@@ -775,6 +775,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If task is effort-driven and person too ill, do not assign task.
 
+		Task currentTask = person.getMind().getTaskManager().getTask();
+		
+		if (currentTask != null && currentTask.getName().equals(task.getName()))
+			// If the person has been doing this task, 
+			// then there is no need of adding it.
+			return true;
+		
         if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().addTask(task);
 		}
@@ -800,6 +807,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (!robot.getSystemCondition().isBatteryAbove(5))
 			return false;
 
+		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
+		
+		if (currentTask != null && currentTask.getName().equals(task.getName()))
+			// If the robot has been doing this task, 
+			// then there is no need of adding it.
+			return true;
+		
 		return robot.getBotMind().getBotTaskManager().addTask(task);
 	}
 

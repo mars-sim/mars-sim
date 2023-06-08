@@ -485,8 +485,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			currentStateType = LocationStateType.OUTER_SPACE;
 			containerID = (Integer) OUTER_SPACE_UNIT_ID;
 		} else if (getUnitType() == UnitType.CONSTRUCTION) {
-			currentStateType = LocationStateType.OUTER_SPACE;
-			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+			currentStateType = LocationStateType.MARS_SURFACE;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		} else {
 			currentStateType = LocationStateType.UNKNOWN;
 			containerID = (Integer) UNKNOWN_UNIT_ID;
@@ -526,7 +526,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			return LocationStateType.INSIDE_VEHICLE;
 
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE; // or WITHIN_SETTLEMENT_VICINITY
 
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
@@ -845,7 +845,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * PrepareS object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		location = null;

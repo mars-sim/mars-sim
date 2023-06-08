@@ -464,7 +464,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Closes a tool window if it is open
+	 * Closes a tool window if it is open.
 	 *
 	 * @param toolName the name of the tool window
 	 */
@@ -483,7 +483,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Creates and opens a window for an Entity if it isn't already in existence and
-	 * open. This selects the most appropriate tool window
+	 * open. This selects the most appropriate tool window.
 	 *
 	 * @param entity Entity to display
 	 */
@@ -503,7 +503,8 @@ public class MainDesktopPane extends JDesktopPane
     }
 
 	/**
-	 * Open a Unit Window for a specific Unit with a optional set of user properties
+	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
+	 * 
 	 * @param unit Unit to display
 	 * @param initProps Initial properties
 	 */

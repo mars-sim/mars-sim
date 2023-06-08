@@ -22,7 +22,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
  * The BuildingWindow is the window for displaying a piece of building.
  */
 @SuppressWarnings("serial")
-public class BuildingWindow extends UnitWindow {
+public class BuildingUnitWindow extends UnitWindow {
 	
     /**
      * Constructor
@@ -30,7 +30,7 @@ public class BuildingWindow extends UnitWindow {
      * @param desktop the main desktop panel.
      * @param building the building this window is for.
      */
-    public BuildingWindow(MainDesktopPane desktop, Building building) {
+    public BuildingUnitWindow(MainDesktopPane desktop, Building building) {
         // Use UnitWindow constructor
         super(desktop, building, building.getSettlement().getName() + " - " + building.getNickName(), false);
 

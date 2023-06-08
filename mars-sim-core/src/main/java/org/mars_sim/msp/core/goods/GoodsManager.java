@@ -45,8 +45,9 @@ public class GoodsManager implements Serializable {
 		}
 
 		/**
-		 * Time to updated lists
-		 * @param now Cuurrent time not used.
+		 * Time to updated lists.
+		 * 
+		 * @param now Current time not used.
 		 */
 		@Override
 		public int execute(MarsClock now) {
