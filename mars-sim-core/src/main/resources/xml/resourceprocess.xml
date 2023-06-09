@@ -327,10 +327,11 @@
 		<output resource="water" rate="96.0"  />
 		<output resource="regolith" rate="2.0"  />
 		<output resource="magnesium" rate="0.5"  />	
-		<output resource="calcium " rate="0.5"  />					
-		<output resource="perchlorate" rate=".2"  />	
-		<output resource="aluminum oxide" rate=".4"  />	
-		<output resource="iron oxide" rate=".4"  />	
+		<output resource="calcium" rate="0.5"  />					
+		<output resource="perchlorate" rate="0.1"  />	
+		<output resource="aluminum oxide" rate="0.2"  />	
+		<output resource="iron oxide" rate="0.4"  />	
+		<output resource="silica" rate="0.3"  />			
 				
 	</process>
 
@@ -734,13 +735,19 @@
 		<description>
 		Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
 		
-		Sulfur concrete, sometimes named thioconcrete or sulfurcrete, is a composite construction material,
-		composed mainly of sulfur and aggregate (generally a coarse aggregate made of gravel or crushed 
-		rocks and a fine aggregate such as sand). Cement and water, important compounds in normal concrete,
-		are not part of sulfur concrete. The concrete is heated above the melting point of elemental sulfur
-		(115.21 °C (239.38 °F)) at ca. 140 °C (284 °F) in a ratio of between 12% and 25% sulfur,
-		the rest being aggregate.
+		The sulfur concrete making process involves heating sulfur to 240 C, over twice its melting point. 
 		
+		This liquid sulfur is mixed with the abundant Martian soil, then left to cool. 
+		
+		The sulfur and soil bind together to create solid concrete. 
+		
+		Cement and water, important compounds in normal concrete, are not part of sulfur concrete. 
+		
+		A mixture of 50 percent sulfur and 50 percent Martian soil with a particle size of 1 mm resulted 
+		in a compressive strength of 50 MPa that's twice the regular concrete. 
+		
+		It also had about twice the compressive strength of sulfur concrete made with sand aggregate.
+			
 		1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
 		2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
 		3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
@@ -751,13 +758,15 @@
 		8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
 		9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
 		10. https://www.azom.com/news.aspx?newsID=43710
-		11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
+		11. [This is Concrete, Feb 2019]()https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf)
 		12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
 		13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)
+		14. [A Novel Material for In Situ Construction on Mars: Experiments and Numerical Simulations](https://arxiv.org/abs/1512.05461)
+		15. [A Home Away from Home](https://pubs.acs.org/doi/10.1021/acscentsci.7b00538)
 		</description>
-		<input resource="sulfur" rate="19.0"  />
-		<input resource="sand" rate="50.0"  />
-		<input resource="regolith" rate="30.0"  />
+		<input resource="sulfur" rate="50.0"  />
+		<input resource="sand" rate="25.0"  />
+		<input resource="regolith" rate="24.0"  />
 		<input resource="polyethylene" rate="1.0"  />	
 
 		<output resource="concrete" rate="100.0"  />
