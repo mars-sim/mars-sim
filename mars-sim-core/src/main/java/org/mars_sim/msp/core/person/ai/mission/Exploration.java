@@ -62,12 +62,11 @@ public class Exploration extends EVAMission
 
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
-
+	/** Amount of time to explore a site. */
+	private static final int STANDARD_TIME_PER_SITE = 250;
+	
 	/** Number of collection sites. */
 	private int numSites;
-
-	/** Amount of time to explore a site. */
-	public double siteTime = 250D;
 	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
@@ -93,9 +92,6 @@ public class Exploration extends EVAMission
 		setIgnoreSunlight(true);
 		
 		Settlement s = getStartingSettlement();
-		
-		int sol = marsClock.getMissionSol();
-		numSites = 2 + (int)(1.0 * sol / 20);
 
 		if (s != null && !isDone()) {
 			// Recruit additional members to mission.
@@ -112,7 +108,10 @@ public class Exploration extends EVAMission
 			}
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-				
+
+			int sol = marsClock.getMissionSol();
+			numSites = 2 + (int)(1.0 * sol / 20);
+			
 			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(),
 					getRover().getTotalTripTimeLimit(true),
 					numSites, skill);
@@ -122,6 +121,9 @@ public class Exploration extends EVAMission
 				return;
 			}
 
+			// Update the number of determined sites
+			numSites = explorationSites.size();
+			
 			initSites(explorationSites);
 
 			// Set initial mission phase.
@@ -195,12 +197,11 @@ public class Exploration extends EVAMission
 	 * @param averageSpeed  the average speed of the vehicle.
 	 * @return range (km) limit.
 	 */
-	private double getTripTimeRange(int numSites, double siteTime, double tripTimeLimit, double averageSpeed) {
-		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
+	private double getTripTimeRange(int numSites, double tripTimeLimit, double averageSpeed) {
+		double tripTimeTravellingLimit = tripTimeLimit - (numSites * STANDARD_TIME_PER_SITE);
 		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		double timeRange = tripTimeTravellingLimit * averageSpeedMillisol;
-		return timeRange;
+		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
 	/**
@@ -229,7 +230,7 @@ public class Exploration extends EVAMission
 
 		// Update exploration site completion.
 		double timeDiff = getPhaseDuration();
-		double completion = timeDiff / siteTime;
+		double completion = timeDiff / STANDARD_TIME_PER_SITE;
 		if (completion > 1D) {
 			completion = 1D;
 		}
@@ -309,7 +310,7 @@ public class Exploration extends EVAMission
 	 * @return time (millisols)
 	 */
 	protected double getEstimatedTimeOfAllEVAs() {
-		return siteTime * getNumEVASites();
+		return STANDARD_TIME_PER_SITE * getNumEVASites();
 	}
 
 	/**
@@ -331,7 +332,7 @@ public class Exploration extends EVAMission
 		// Determining the actual traveling range.
 		double limit = 0;
 		double range = roverRange;
-		double timeRange = getTripTimeRange(numSites, siteTime, tripTimeLimit, getAverageVehicleSpeedForOperators());
+		double timeRange = getTripTimeRange(numSites, tripTimeLimit, getAverageVehicleSpeedForOperators());
 		if (timeRange < range) {
 			range = timeRange;
 		}
@@ -418,7 +419,7 @@ public class Exploration extends EVAMission
 	 * @return Estimated time per EVA site
 	 */
 	protected double getEstimatedTimeAtEVASite(boolean buffer) {
-		return siteTime;
+		return STANDARD_TIME_PER_SITE;
 	}
 
 	/**
@@ -575,7 +576,7 @@ public class Exploration extends EVAMission
 	 * Gets amount of time to explore a site. 
 	 */
 	public double getSiteTime() {
-		return siteTime;
+		return STANDARD_TIME_PER_SITE;
 	}
 	
 	@Override

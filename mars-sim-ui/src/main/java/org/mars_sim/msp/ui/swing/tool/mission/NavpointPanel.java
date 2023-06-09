@@ -111,8 +111,8 @@ implements MissionListener {
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
 		
-		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
-		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
+//		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //		mapDisplayPane.setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
@@ -122,9 +122,9 @@ implements MissionListener {
 		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
-		mapPane.setSize(new Dimension(WIDTH, HEIGHT));
-		mapPane.setPreferredSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
-		mapPane.setMaximumSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
+//		mapPane.setSize(new Dimension(WIDTH, HEIGHT));
+//		mapPane.setPreferredSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
+//		mapPane.setMaximumSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
 		
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
@@ -216,7 +216,7 @@ implements MissionListener {
 		// Create the navpoint table panel.
 		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
-		navpointTablePane.setPreferredSize(new Dimension(-1, TABLE_HEIGHT));
+//		navpointTablePane.setPreferredSize(new Dimension(-1, TABLE_HEIGHT));
 		add(navpointTablePane, BorderLayout.SOUTH);
 		
 		// Create the navpoint scroll panel.

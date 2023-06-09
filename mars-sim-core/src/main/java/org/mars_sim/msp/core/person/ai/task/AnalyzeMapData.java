@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2022-10-01
+ * @date 2023-06-09
  * @author Manny Kung
  */
 
@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.function.Computation;

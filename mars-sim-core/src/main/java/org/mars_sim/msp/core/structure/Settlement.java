@@ -3083,15 +3083,14 @@ public class Settlement extends Structure implements Temporal,
 	 * @return range (km) limit.
 	 */
 	private double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
-		int numSites = 2;
+		int sol = marsClock.getMissionSol();
+		int numSites = 2 + (int)(1.0 * sol / 20);
 		double siteTime = 250;
 		
 		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
 		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		double timeRange = tripTimeTravellingLimit * averageSpeedMillisol;
-
-		return timeRange;
+		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 	
 	/**
@@ -3530,7 +3529,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -3540,9 +3539,15 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Reinitialize references after loading from a saved sim
+	 * Reinitialize references after loading from a saved sim.
 	 */
 	public void reinit() {
+		if (surfaceFeatures == null) 
+			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+		
+		if (terrainElevation == null) 
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		
 		buildingManager.reinit();
 	}
 
