@@ -64,13 +64,12 @@ public class Exploration extends EVAMission
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 
 	/** Number of collection sites. */
-	private static final int NUM_SITES = 5;
+	private int numSites;
 
 	/** Amount of time to explore a site. */
-	public static final double EXPLORING_SITE_TIME = 500D;
-
+	public double siteTime = 250D;
+	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
-
 
 	// Data members
 	/** Map of exploration sites and their completion. */
@@ -79,7 +78,6 @@ public class Exploration extends EVAMission
 	private ExploredLocation currentSite;
 	/** List of sites explored by this mission. */
 	private List<ExploredLocation> exploredSites;
-
 
 	/**
 	 * Constructor.
@@ -95,6 +93,9 @@ public class Exploration extends EVAMission
 		setIgnoreSunlight(true);
 		
 		Settlement s = getStartingSettlement();
+		
+		int sol = marsClock.getMissionSol();
+		numSites = 2 + (int)(1.0 * sol / 20);
 
 		if (s != null && !isDone()) {
 			// Recruit additional members to mission.
@@ -111,9 +112,10 @@ public class Exploration extends EVAMission
 			}
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+				
 			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(),
 					getRover().getTotalTripTimeLimit(true),
-					NUM_SITES, skill);
+					numSites, skill);
 
 			if (explorationSites.isEmpty()) {
 				endMission(NO_EXPLORATION_SITES);
@@ -140,6 +142,7 @@ public class Exploration extends EVAMission
 		// Use RoverMission constructor.
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE);
+		
 		setIgnoreSunlight(true);
 		
 		initSites(explorationSites);
@@ -154,13 +157,15 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Setup the exploration sites
+	 * Sets up the exploration sites.
 	 */
 	private void initSites(List<Coordinates> explorationSites) {
 
+		numSites = explorationSites.size();
+		
 		// Initialize explored sites.
-		exploredSites = new ArrayList<>(NUM_SITES);
-		explorationSiteCompletion = new HashMap<>(NUM_SITES);
+		exploredSites = new ArrayList<>(numSites);
+		explorationSiteCompletion = new HashMap<>(numSites);
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX, REQUIRED_SPECIMEN_CONTAINERS);
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
@@ -181,46 +186,21 @@ public class Exploration extends EVAMission
 		}
 	}
 
-
-	/**
-	 * Checks if there are any mineral locations within rover/mission range.
-	 *
-	 * @param rover          the rover to use.
-	 * @param homeSettlement the starting settlement.
-	 * @return true if mineral locations.
-	 * @throws Exception if error determining mineral locations.
-	 */
-	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
-		Map<String, Double> minerals = new HashMap<>();
-
-		double roverRange = rover.getRange();
-		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
-		double range = roverRange;
-		if (tripRange < range)
-			range = tripRange;
-
-		MineralMap map = surfaceFeatures.getMineralMap();
-		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
-
-		if (mineralLocation != null)
-			minerals = map.getAllMineralConcentrations(mineralLocation);
-
-		return minerals;
-	}
-
 	/**
 	 * Gets the range of a trip based on its time limit and exploration sites.
 	 *
+	 * @param numSites
+	 * @param siteTime
 	 * @param tripTimeLimit time (millisols) limit of trip.
 	 * @param averageSpeed  the average speed of the vehicle.
 	 * @return range (km) limit.
 	 */
-	private static double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
-		double tripTimeTravellingLimit = tripTimeLimit - (NUM_SITES * EXPLORING_SITE_TIME);
+	private double getTripTimeRange(int numSites, double siteTime, double tripTimeLimit, double averageSpeed) {
+		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
 		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
+		double timeRange = tripTimeTravellingLimit * averageSpeedMillisol;
+		return timeRange;
 	}
 
 	/**
@@ -249,7 +229,7 @@ public class Exploration extends EVAMission
 
 		// Update exploration site completion.
 		double timeDiff = getPhaseDuration();
-		double completion = timeDiff / EXPLORING_SITE_TIME;
+		double completion = timeDiff / siteTime;
 		if (completion > 1D) {
 			completion = 1D;
 		}
@@ -329,7 +309,7 @@ public class Exploration extends EVAMission
 	 * @return time (millisols)
 	 */
 	protected double getEstimatedTimeOfAllEVAs() {
-		return EXPLORING_SITE_TIME * getNumEVASites();
+		return siteTime * getNumEVASites();
 	}
 
 	/**
@@ -342,35 +322,42 @@ public class Exploration extends EVAMission
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
 	private List<Coordinates> determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
-		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
+		// Calculate the confidence score for determining the distance
+		// The longer it stays on Mars, the higher the confidence
+		int confidence = 2 * (1 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol()));
 
 		List<Coordinates> unorderedSites = new ArrayList<>();
 
 		// Determining the actual traveling range.
 		double limit = 0;
 		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit, getAverageVehicleSpeedForOperators());
+		double timeRange = getTripTimeRange(numSites, siteTime, tripTimeLimit, getAverageVehicleSpeedForOperators());
 		if (timeRange < range) {
 			range = timeRange;
 		}
 
-
 		// Determine the first exploration site.
 		Coordinates startingLocation = getCurrentMissionLocation();
 		Coordinates currentLocation = null;
+		
 		List<Coordinates> outstandingSites = findCandidateSites(startingLocation);
 		if (!outstandingSites.isEmpty()) {
 			currentLocation = outstandingSites.remove(0);
 		}
 		else {
-			currentLocation = determineFirstExplorationSite((range / 2D), areologySkill);
+			limit = range / 2D;
+	
+			// Use the confidence score to limit the range
+			double distance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+			
+			currentLocation = determineFirstExplorationSite(distance, areologySkill);
 		}
+		
 		if (currentLocation != null) {
 			unorderedSites.add(currentLocation);
 		}
 		else
 			throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");
-
 
 		// Determine remaining exploration sites.
 		double siteDistance = Coordinates.computeDistance(startingLocation, currentLocation);
@@ -389,12 +376,16 @@ public class Exploration extends EVAMission
 		// Pick some new ones
 		while ((unorderedSites.size() < numSites) && (remainingRange > 1D)) {
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+			
 			limit = range / 4D;
-			siteDistance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
-			Coordinates newLocation = currentLocation.getNewLocation(direction, siteDistance);
+			
+			double distance = RandomUtil.getRandomDouble(confidence, (int)limit);
+			
+			Coordinates newLocation = currentLocation.getNewLocation(direction, distance);
 			unorderedSites.add(newLocation);
+			
 			currentLocation = newLocation;
-			remainingRange -= siteDistance;
+			remainingRange -= distance;
 		}
 
 		List<Coordinates> sites = null;
@@ -427,7 +418,7 @@ public class Exploration extends EVAMission
 	 * @return Estimated time per EVA site
 	 */
 	protected double getEstimatedTimeAtEVASite(boolean buffer) {
-		return EXPLORING_SITE_TIME;
+		return siteTime;
 	}
 
 	/**
@@ -501,7 +492,7 @@ public class Exploration extends EVAMission
 			// Use random direction and distance for first location
 			// if no minerals found within range.
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			double distance = RandomUtil.getRandomDouble(10, range);
+			double distance = RandomUtil.getRandomDouble(1, range);
 			result = startingLocation.getNewLocation(direction, distance);
 		}
 
@@ -572,6 +563,21 @@ public class Exploration extends EVAMission
 		return siteValue / count;
 	}
 
+	
+	/** 
+	 * Gets number of collection sites. 
+	 */
+	public int getNumSites() {
+		return numSites;
+	}
+
+	/** 
+	 * Gets amount of time to explore a site. 
+	 */
+	public double getSiteTime() {
+		return siteTime;
+	}
+	
 	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
 		return PREFERRED_JOBS;

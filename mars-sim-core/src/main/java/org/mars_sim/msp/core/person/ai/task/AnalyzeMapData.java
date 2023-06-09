@@ -43,6 +43,7 @@ public class AnalyzeMapData extends Task {
 	private static final TaskPhase ANALYZING = new TaskPhase(Msg.getString("Task.phase.analyzing")); //$NON-NLS-1$
 
     // Data members.
+	private double siteTime = 250;
 	/** The number of estimation improvement made for a site. */	
 	private int numImprovement;
     /** Computing Units needed per millisol. */		
@@ -246,7 +247,8 @@ public class AnalyzeMapData extends Task {
      * @param improvement
      */
 	private void improveMineralConcentrationEstimates(double time, double improvement) {
-		double probability = (time * Exploration.EXPLORING_SITE_TIME / 1000.0) * improvement;
+
+		double probability = (time * siteTime / 1000.0) * improvement;
 		if (probability > .9)
 			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {

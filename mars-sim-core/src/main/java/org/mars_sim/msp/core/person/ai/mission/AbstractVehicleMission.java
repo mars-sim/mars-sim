@@ -935,12 +935,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 		}
 
+		if (totalSpeed < 0)
+			totalSpeed = 0;
+		
 		if (count > 0) {
 			result = totalSpeed / count;
 		}
 		if (result == 0) {
 			result = vehicle.getBaseSpeed();
 		}
+	
 		return result;
 	}
 

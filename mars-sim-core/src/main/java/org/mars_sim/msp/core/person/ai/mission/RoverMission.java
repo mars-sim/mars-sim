@@ -1001,7 +1001,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (useBuffer) {
 			timeLimit /= rover.getLifeSupportRangeErrorMargin();
 		}
-
+		
 		return timeLimit;
 	}
 

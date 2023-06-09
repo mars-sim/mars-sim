@@ -856,6 +856,7 @@
 			Assuming 10% loss during production.
 		</description>
 		<input resource="ethylene" rate="5.0"  />
+		
 		<output resource="polyethylene" rate="4.5"  />
 	</process>
 
@@ -871,6 +872,7 @@
 		<input resource="lime" rate="2.0"  />
 		<input resource="water" rate="16.05"  />
 		<input resource="ethylene" rate="8.34"  />
+		
 		<output resource="carbon monoxide" rate="24.97"  />
 		<output resource="styrene" rate="30.95"  />
 	</process>

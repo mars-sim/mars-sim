@@ -358,7 +358,7 @@
 
 			 double iFC = 0;	
 			 
-			 if (distanceTravelled > 0) {
+			 if (distanceTravelled > 0 && overallEnergyUsed > 0) {
 				 // Derive the instantaneous fuel consumption [Wh/km]
 				 iFC = overallEnergyUsed / distanceTravelled;	        
 				 // Set the instantaneous fuel consumption [Wh/km]
@@ -476,7 +476,7 @@
 
 			 double iFC = 0;	
 			 
-			 if (distanceTravelled > 0) {
+			 if (distanceTravelled > 0 && regenEnergyBuffer > 0) {
 				 // Derive the instantaneous fuel consumption [Wh/km]
 				 iFC = regenEnergyBuffer / distanceTravelled;	        
 				 // Set the instantaneous fuel consumption [Wh/km]

@@ -62,6 +62,8 @@ class ExplorationSitesPanel extends WizardPanel {
 	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
 
+	private final static int STANDARD_TIME_PER_SITE = 250;
+	
 	// Data members.
 	private MapPanel mapPane;
 	private EllipseLayer ellipseLayer;
@@ -336,7 +338,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * @return time (millisols)
 	 */
 	private double getTimePerSite() {
-		return Exploration.EXPLORING_SITE_TIME;
+		return STANDARD_TIME_PER_SITE;
 	}
 
 	/**

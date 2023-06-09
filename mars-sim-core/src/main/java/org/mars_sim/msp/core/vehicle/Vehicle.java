@@ -765,7 +765,7 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity());// * getBeginningMass() / getMass();// * fuel_range_error_margin
+        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -776,7 +776,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel);// * getBeginningMass() / getMass();
+        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
     		}
         }
 
