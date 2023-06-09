@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;

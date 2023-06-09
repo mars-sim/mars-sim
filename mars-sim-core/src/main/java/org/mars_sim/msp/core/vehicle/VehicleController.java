@@ -71,7 +71,7 @@
 	 /** Cache the distance traveled in km. */ 
 	 private double distanceCache;
 	 /** Cache the fuel used in kg. */ 
-	 private double fuelUsedCache;	
+//	 private double fuelUsedCache;	
 	 
 	 /** The vehicle to operate. */ 
 	 private Vehicle vehicle;
@@ -91,7 +91,7 @@
 	 }
  
 	 /**
-	  * Adjust the speed of the vehicle (Accelerates or Decelerate) and possibly use the fuel or 
+	  * Adjusts the speed of the vehicle (Accelerates or Decelerate) and possibly use the fuel or 
 	  * battery reserve or both to speed up or slow down the vehicle.
 	  *
 	  * @param hrsTime
@@ -100,10 +100,14 @@
 	  * @return
 	  */
 	 public double adjustSpeed(double hrsTime, double distance, double vKPH, double remainingFuel, double remainingOxidizer) {
+		 // Set overallEnergyUsed [in Wh], not in kWh
+		 double overallEnergyUsed = 0;
+		 /** Cache the energy recovered from regen braking in kWh. */ 
+		 double regenEnergyBuffer = 0;	
 		 
 		 double remainingHrs = 0;
  
-			double navpointDist = distance; // [in km]   
+		 double navpointDist = distance; // [in km]   
 		 // Gets initial speed in kph
 		 double uKPH = vehicle.getSpeed(); 
 		 // Gets initial speed in m/s
@@ -118,19 +122,19 @@
 		 // Note: 1 m/s = 3.6 km/hr (or kph)	     	
 		 double vMS = vKPH / KPH_CONV; // [in m/s]
 	  
-			if (vKPH < 0 || vMS < 0) {
+		 if (vKPH < 0 || vMS < 0) {
 			 logger.log(vehicle, Level.INFO, 20_000, "Final speed was negative (" 
 					 +  Math.round(vKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 vKPH = 0;
 		 }
 			
-			if (uKPH < 0 || uMS < 0) {
+		 if (uKPH < 0 || uMS < 0) {
 			 logger.log(vehicle, Level.INFO, 20_000, "Initial speed was negative (" 
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
 		 }
- 
-			double distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
+		 // distance in km
+		 double distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
 			
 		 double accelTarget = (vMS - uMS) / secs; // [in m/s2]
 		 // Gets the current mass of the vehicle with payload
@@ -158,6 +162,7 @@
 		 if (vehicle instanceof Drone) {
 			 // For drones, it needs energy to ascend into the air and hover in the air
 			 // Note: Refine this equation for drones 
+			 // in km
 			 double currentHeight = ((Drone) vehicle).getHoveringHeight();
 			 
 			 fGravity = - mg;
@@ -176,7 +181,7 @@
 				 }
 				   else {
 					 // For ascent, assume the height gained is the same as distanceTravelled
-					   potentialEnergyDrone = mg * distanceTravelled;
+					   potentialEnergyDrone = mg * 1000 * distanceTravelled;
 				   }
 			 }
  
@@ -193,11 +198,11 @@
 					   // See detail strategies on https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
 					   if (currentHeight < distanceTravelled) {
 						   // Assume the height lost is the same as distanceTravelled
-						   potentialEnergyDrone = .25 * mg * currentHeight;
+						   potentialEnergyDrone = .25 * mg * 1000 * currentHeight;
 					   }
 					   else {
 						 // For descent, assume the height lost is the same as distanceTravelled
-						   potentialEnergyDrone = .25 * mg * distanceTravelled;
+						   potentialEnergyDrone = .25 * mg * 1000 * distanceTravelled;
 					   }
 				   }
 			 }
@@ -240,7 +245,7 @@
 			 
 			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-					 "Need to exert power just to maintain the speed at "
+					 "Case 1A: Need to exert power just to maintain the speed at "
 					 + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
 					 + "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
 					 + "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
@@ -249,7 +254,7 @@
 			 }
 			 else {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-					 "Need to accelerate and increase the speed from "
+					 "Case 1B: Need to accelerate and increase the speed from "
 					 +  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
 					 + "to " + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
 					 + "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
@@ -258,44 +263,48 @@
 					 );
 			 }        
   
-			 // Convert the total energy needed from J to Wh
+			 // Convert the total energy [in Wh]. Need to convert from J to Wh
 			 double totalEnergyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
 			 // Get energy from the battery
-			 double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000.0, hrsTime) * 1000.0;
+			 double energyByBattery = battery.requestEnergy(totalEnergyNeeded / 1000, hrsTime) * 1000.0;
 			 // Get energy from the fuel
 			 double energyByFuel = totalEnergyNeeded - energyByBattery;
 			 
-			 // Case A : Battery has enough juice for the acceleration
-			  if (totalEnergyNeeded == energyByBattery) {
+			 overallEnergyUsed = totalEnergyNeeded;
+			 
+			 // Case 2A : Battery has enough juice for the acceleration
+			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 1000.0)/1000.0) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case A: Use on-board battery only. "
+						 "Case 2A: Use on-board battery only. "
 						 + "energyByBattery: " + Math.round(energyByBattery * 1000.0)/1000.0 + WH
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				
+						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH 						 
 						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
 						 );  
-			  }
+			 }
 			  
-			  else if (energyByFuel > 0.001) {
-				  // Case B and C: If the battery is unable to meet the needed energy requirement
+			 else if (energyByFuel > 0.001) {
+				  // Case 2B and 2C: If the battery is unable to meet the needed energy requirement
 				 // Need to turn on fuel cells to supply more power
 				  
 				 // Derive the mass of fuel needed kg = Wh / Wh/kg
 				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
 				 
-				 // Note that if remainingFuel == -1, it's either nuclear powered
+				 // Note that if remainingFuel == -1, it's either nuclear powered or solar powered
 				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
-					 // Case B: fuel is sufficient
+					 // Case 2B: fuel is sufficient
 					 logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case B: Partial battery with sufficient fuel.  " 
+						 "Case 2B: Partial battery with sufficient fuel.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 						
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH  						 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 						 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + " km."
 						 );
-				  }
+				 }
 				 else {				
-					 // Case C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
+					 // Case 2C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
 					 
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;
@@ -305,6 +314,9 @@
 					 // FUTURE: need to consider the on-board vehicle power usage
 					 iPower = energyByFuel / secs * JOULES_PER_WH;
  
+					 // recompute overallEnergyUsed
+					 overallEnergyUsed = energyByFuel + energyByBattery;
+							 
 					 // Find the new speed   
 					 vKPH = iPower - potentialEnergyDrone / secs / aMotor / mass;
 					 
@@ -315,13 +327,14 @@
  
 					 accelTarget = (vMS - uMS) / secs; // [in m/s^2]
 					 // Recompute the new distance it could travel
-						distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
+					 distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
 						
 					 logger.log(vehicle, Level.INFO, 20_000,  
-							 "Case C: Partial battery and insufficient fuel.  " 
+							 "Case 2C: Partial battery and insufficient fuel.  " 
 							 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 							 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
-							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				        	
+							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
+							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH							 
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 							 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W							
 							 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH   							
@@ -329,41 +342,40 @@
 							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM
 							 );
 				 }
-			  }
-			  else {
+			 }
+			 else { // Case 2D : is this normal ?
 				  logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case D: Unknown.  " 
+						 "Case 2D: Unknown.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH				        	
+						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH							 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 						 );
-			  }
+			 }
 			 
 			 double iFE = 0;
-			 
-			 if (fuelNeeded > 0) {
-				 // Derive the instantaneous fuel economy [in km/kg]
-				 iFE = distanceTravelled / fuelNeeded;	        
-				 // Set the instantaneous fuel economy [in km/kg]
-				 vehicle.setIFuelEconomy(iFE);
-			 }
- 
-			 // Derive the instantaneous fuel consumption [Wh/km]
+
 			 double iFC = 0;	
 			 
 			 if (distanceTravelled > 0) {
 				 // Derive the instantaneous fuel consumption [Wh/km]
-				 iFC = totalEnergyNeeded / distanceTravelled;	        
+				 iFC = overallEnergyUsed / distanceTravelled;	        
 				 // Set the instantaneous fuel consumption [Wh/km]
 				 vehicle.setIFuelConsumption(iFC);
+
+				 // Derive the instantaneous fuel economy [in km/kg]
+				 iFE = distanceTravelled / overallEnergyUsed * vehicle.getFuelConv();	        
+				 // Set the instantaneous fuel economy [in km/kg]
+				 vehicle.setIFuelEconomy(iFE);
 			 }
+ 
 			 
 			 double bFC = vehicle.getBaseFuelConsumption();       
 			 // Get the base fuel economy 
 			 double bFE = vehicle.getBaseFuelEconomy();      	
 			 // Calculate the average power for this time period [in kW]
-			 double aveP = totalEnergyNeeded / 1000.0 / hrsTime;
+			 double aveP = overallEnergyUsed / 1000.0 / hrsTime;
 			 
 			 /*
 			  * May comment off the block of codes below once debugging is done.
@@ -386,6 +398,7 @@
 					 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH    
 					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH   	        				
 					 + "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
+					 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH   					 
 					 + "fuelUsed: " 			+ Math.round(fuelNeeded * 100_000.0)/100_000.0 + KG
 					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W			 
 					 + "avePower: " 			+ Math.round(aveP * 1_000.0)/1_000.0 + KW);
@@ -420,26 +433,28 @@
 			 // Cache the new value of fuelUsed	
 			 if (fuelNeeded > 0 && remainingFuel != -1) {
 				 // Retrieve the fuel needed for the distance traveled
-				 vehicle.retrieveAmountResource(fuelTypeID, fuelUsedCache);
+				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume double amount of oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelUsedCache);
+				 vehicle.retrieveAmountResource(OXYGEN_ID, RATIO_OXIDIZER_FUEL * fuelNeeded);
 				 // Generate 1.75 times amount of the water from the fuel cells
-				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelUsedCache);
+				 vehicle.storeAmountResource(WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 				 
-				 fuelUsedCache = fuelNeeded;
+//				 fuelUsedCache = fuelNeeded;
 			 }
 		 }
 		 
 		 else {
 				// Case 2: deceleration is needed
+			 
 			 // Gets the deceleration using regenerative braking
 			 double aRegen = aMotor;
 			 // Set new vehicle acceleration
 			 vehicle.setAccel(aRegen);
 			 
 			 double iPower = - aRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
-			 
-			 logger.log(vehicle, Level.INFO, 20_000,  "Need to decelerate and reduce the speed from " 
+					 
+			 logger.log(vehicle, Level.INFO, 20_000, 
+					 "Case 2: Need to decelerate and reduce the speed from " 
 					 +  Math.round(uKPH * 10.0)/10.0 + KPH
 					 + "to " + Math.round(vKPH * 10.0)/10.0
 					 + KPH
@@ -451,8 +466,27 @@
 			 
 			 // Convert the energyNeeded energy from J to Wh
 			 double energyNeeded = iPower * secs / JOULES_PER_WH ; // [in Wh]
-				 
+			 // Get the energy stored [Wh] into the battery
 			 double energyforCharging = battery.provideEnergy(energyNeeded / 1000, hrsTime) * 1000; 
+			 
+			 // Record this regen energy [Wh] as cache
+			 regenEnergyBuffer = energyforCharging;
+			 
+			 double iFE = 0;
+
+			 double iFC = 0;	
+			 
+			 if (distanceTravelled > 0) {
+				 // Derive the instantaneous fuel consumption [Wh/km]
+				 iFC = regenEnergyBuffer / distanceTravelled;	        
+				 // Set the instantaneous fuel consumption [Wh/km]
+				 vehicle.setIFuelConsumption(iFC);
+
+				 // Derive the instantaneous fuel economy [in km/kg]
+				 iFE = distanceTravelled / regenEnergyBuffer * vehicle.getFuelConv();	        
+				 // Set the instantaneous fuel economy [in km/kg]
+				 vehicle.setIFuelEconomy(iFE);
+			 }
 			 
 			 /*
 			  * May comment off the block of codes below once debugging is done.
@@ -471,30 +505,25 @@
 
 			 logger.log(vehicle, Level.INFO, 20_000,
 						vehicle.getSpecName()				 
-					 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
+					 + "  Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
 					 + "energyNeeded: " 		+ Math.round(energyNeeded * 1_000.0)/1_000.0 + WH
-					 + "energyforCharging: " + Math.round(energyforCharging * 1_000.0)/1_000.0 + WH
+					 + "regenEnergyBuffer: " + Math.round(regenEnergyBuffer * 1_000.0)/1_000.0 + WH
 					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
 					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
 			 );
-	  
-			 // Derive the instantaneous fuel consumption [Wh/km]
-			 double iFC = 0;	
-			 
-			 if (distanceTravelled > 0) {
-				 // Derive the instantaneous fuel consumption [Wh/km]
-				 iFC = energyforCharging / distanceTravelled;	        
-				 // Set the instantaneous fuel consumption [Wh/km]
-				 vehicle.setIFuelConsumption(iFC);
-			 }
 		 }
 		 
 		 // Set new vehicle speed
 		 vehicle.setSpeed(vKPH);
 		 // Determine new position
-		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled));       
+		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
+		 
+		 double totalEnergyUsed = (1.0 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) * (overallEnergyUsed + regenEnergyBuffer);
 		 // Add distance traveled to vehicle's odometer.
-		 vehicle.addOdometerMileage(distanceTravelled, fuelNeeded);
+		 logger.info(vehicle, 20_000L, "d: " + Math.round(distanceTravelled * 10.0)/10.0 
+				 + "  e: "  + Math.round(totalEnergyUsed* 10.0)/10.0
+				 + "  e/d: "  + Math.round(totalEnergyUsed/distanceTravelled* 10.0)/10.0);
+		 vehicle.addOdometerMileage(distanceTravelled, totalEnergyUsed);
 		 // Track maintenance due to distance traveled.
 		 vehicle.addDistanceLastMaintenance(distanceTravelled);
 		 // Derive the instantaneous fuel economy [in km/kg]
@@ -511,8 +540,13 @@
 	  * @return amount of fuel needed for trip (kg)
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
-		 double amountFuel = .5 * tripDistance * 
-				 	(1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / vehicle.getFuelConv());// VehicleSpec.METHANOL_WH_PER_KG);
+		 // The amount of "fuel" covered by the energy in the battery 
+		 double batteryFuel = vehicle.getController().getBattery().getcurrentEnergy() / vehicle.getFuelConv();
+		 
+		 double amountFuel = tripDistance * 
+				 	.5 * (1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / vehicle.getFuelConv())
+				 	- batteryFuel;
+
 		 double factor = 1;
 		 if (useMargin) {
 			 if (tripDistance < 100) {
@@ -546,13 +580,27 @@
 		 return distanceCache;
 	 }
 	 
-	 /** 
-	  * Gets the fuelUsed cache in kg.
-	  * 
-	  * @return
-	  */
-	 public double getFuelUsedCache() {
-		 return fuelUsedCache;
-	 }
+//	 /** 
+//	  * Gets the fuelUsed cache in kg.
+//	  * 
+//	  * @return
+//	  */
+//	 public double getFuelUsedCache() {
+//		 return fuelUsedCache;
+//	 }
 	 
+	/** 
+	 * Charges up the battery in no time. 
+	 */
+	public void topUpBatteryEnergy() {
+		battery.topUpBatteryEnergy();
+	}
+		
+	/** 
+	 * Charges up the battery in no time. 
+	 */
+	public Battery getBattery() {
+		return battery;
+	}
+
  }

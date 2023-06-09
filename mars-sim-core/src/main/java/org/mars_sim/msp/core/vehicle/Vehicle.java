@@ -74,6 +74,7 @@ public abstract class Vehicle extends Unit
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
 	
+	private static final double RANGE_FACTOR = 1.2;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
@@ -117,7 +118,9 @@ public abstract class Vehicle extends Unit
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
 	/** The cumulative fuel usage of the vehicle [kg] */
-	private double fuelCumUsed;
+//	private double fuelCumUsed;
+	/** The cumulative energy usage of the vehicle [kWh] */
+	private double cumEnergyUsedKWH;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
 	private double iFuelEconomy;
 	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
@@ -752,7 +755,6 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets the current fuel range of the vehicle.
-	 * Note : this method will be overridden by Rover's getRange().
 	 *
 	 * @return the current fuel range of the vehicle (in km)
 	 */
@@ -763,7 +765,7 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBeginningMass() / getMass();// * fuel_range_error_margin
+        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity());// * getBeginningMass() / getMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -774,7 +776,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = getEstimatedFuelEconomy() * amountOfFuel * getBeginningMass() / getMass();
+        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel);// * getBeginningMass() / getMass();
     		}
         }
 
@@ -800,13 +802,22 @@ public abstract class Vehicle extends Unit
 		return spec.getFuelCapacity();
 	}
 
+//	/**
+//	 * Gets the cumulative fuel usage of the vehicle [kg].
+//	 *
+//	 * @return
+//	 */
+//	public double getFuelCumulativeUsage() {
+//		return fuelCumUsed;
+//	}
+	
 	/**
-	 * Gets the cumulative fuel usage of the vehicle [kg].
-	 *
+	 * Gets the cumulative energy usage of the vehicle [kWh].
+	 * 
 	 * @return
 	 */
-	public double getFuelCumulativeUsage() {
-		return fuelCumUsed;
+	public double getCumEnergyUsage() {
+		return cumEnergyUsedKWH;
 	}
 	
 	/**
@@ -842,9 +853,10 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (odometerMileage == 0 || fuelCumUsed == 0)
+//		return getFuelConv() / getCumFuelConsumption();
+		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return odometerMileage / fuelCumUsed;
+		return odometerMileage / cumEnergyUsedKWH / 1000 * getFuelConv();
 	}
 	
 	/**
@@ -853,9 +865,9 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0 || fuelCumUsed == 0)
+		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return getFuelConv() * fuelCumUsed / odometerMileage;
+		return 1000 * cumEnergyUsedKWH / odometerMileage;
 	}
 
 	/**
@@ -956,15 +968,17 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelEconomy() {
-		double baseFE = getBaseFuelEconomy();
-		double cumFE = getCumFuelEconomy();
-		double initFE = getInitialFuelEconomy();
-		double ratio = cumFE / initFE;
-		if (cumFE == 0)
-			return (baseFE + initFE) / 2;
-		else if (ratio < 1)
-			return (baseFE + initFE + cumFE) / 3;
-		return (.3 * baseFE + .2 * initFE + .5 * cumFE) * VehicleController.FUEL_ECONOMY_FACTOR;
+		double base = getBaseFuelEconomy();
+		double cum = getCumFuelEconomy();
+		double init = getInitialFuelEconomy();
+		// Note: init < base always
+		// Note: if cum < base, then trip is less economical more than expected
+		// Note: if cum > base, then trip is more economical than expected
+		if (cum == 0)
+			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+		else {
+			return (.3 * base + .3 * init + .4 * cum);
+		}
 	}
 
 	/**
@@ -982,15 +996,17 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelConsumption() {
-		double baseFC = getBaseFuelConsumption();
-		double cumFC = getCumFuelConsumption();
-		double initFC = getInitialFuelConsumption();
-		double ratio = cumFC / initFC;
-		if (cumFC == 0)
-			return (baseFC + initFC) / 2;
-		else if (ratio < 1)
-			return (baseFC + initFC + cumFC) / 3;
-		return (.2 * baseFC + .3 * initFC + .5 * cumFC) * VehicleController.FUEL_CONSUMPTION_FACTOR;
+		double base = getBaseFuelConsumption();
+		double cum = getCumFuelConsumption();
+		double init = getInitialFuelConsumption();
+		// Note: init > base always
+		// Note: if cum > base, then vehicle consumes more than expected
+		// Note: if cum < base, then vehicle consumes less than expected		
+		if (cum == 0)
+			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+		else {
+			return (.3 * base + .3 * init + .4 * cum);
+		}
 	}
 	
 	/**
@@ -1034,12 +1050,12 @@ public abstract class Vehicle extends Unit
 	 * and record the fuel used.
 	 *
 	 * @param distance the distance traveled traveled [km]
-	 * @param fuelUsed the fuel used [kg]
+	 * @param cumEnergyUsed the energy used [Wh]
 	 */
-	public void addOdometerMileage(double distance, double fuelUsed) {
-		odometerMileage += distance;
-		lastDistance = distance;
-		fuelCumUsed += fuelUsed;
+	public void addOdometerMileage(double distance, double cumEnergyUsed) {
+		this.odometerMileage += distance;
+		this.lastDistance = distance;
+		this.cumEnergyUsedKWH += cumEnergyUsed/1000;
 	}
 
 	public double getLastDistanceTravelled() {

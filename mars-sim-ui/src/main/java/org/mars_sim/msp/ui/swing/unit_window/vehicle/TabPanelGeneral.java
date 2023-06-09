@@ -99,9 +99,9 @@ public class TabPanelGeneral extends TabPanel {
 		labelGrid.addTextField( "Drivetrain Eff", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()), null);	
 		labelGrid.addTextField( "Drivetrain Energy", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()), null);
 		
-		labelGrid.addTextField( "Fuel Conversion", StyleManager.DECIMAL_WH_KG.format(v.getVehicleSpec().getFuelConv()), null);
+		labelGrid.addTextField( "Fuel2Drive Conversion", StyleManager.DECIMAL_WH_KG.format(v.getVehicleSpec().getFuelConv()), null);
 		labelGrid.addTextField( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()), null);
-		labelGrid.addTextField( "Estimated Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);
+		labelGrid.addTextField( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);
 		
 		// Prepare spring layout info panel.
 		AttributePanel fuelPanel = new AttributePanel(10);

@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalRegolithMeta extends DigLocalMeta {
     
-	private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName());
+	// can add back private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName())
 	
 	private static final int THRESHOLD_AMOUNT = 50;
 	
@@ -58,8 +57,8 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	double result = getProbability(ResourceUtil.regolithID, settlement, 
     			person, rate * settlement.getRegolithProbabilityValue());
     	
-    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
-    			+ "  Final regolith: " + Math.round(result* 100.0)/100.0);
+//    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
+//    			+ "  Final regolith: " + Math.round(result* 100.0)/100.0);
         
         return result;
     }

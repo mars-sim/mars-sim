@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -34,7 +33,7 @@ public class Battery implements Serializable {
     private static final double STANDARD_VOLTAGE = 600;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-    private static final double ENERGY_PER_MODULE = 15.0;
+    public static final double ENERGY_PER_MODULE = 15.0;
     
     private static final String KWH = " kWH  ";
     private static final String KW = " kW  ";
@@ -58,7 +57,7 @@ public class Battery implements Serializable {
     /** The standby power consumption in kW. */
     private double standbyPower = 0.01;
 	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity = 15;
+	private double maxCapacity = ENERGY_PER_MODULE;
 
 	private Unit unit;
 	
@@ -79,7 +78,7 @@ public class Battery implements Serializable {
         	maxCapacity = ENERGY_PER_MODULE * modules;
         }
 
-        currentEnergy = RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
+        currentEnergy = maxCapacity; //RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
  
         updateLowPowerMode();
     }
@@ -212,6 +211,13 @@ public class Battery implements Serializable {
 	 */
 	public double getcurrentEnergy() {
 		return currentEnergy;
+	}
+	
+	/** 
+	 * Charges up the battery in no time. 
+	 */
+	public void topUpBatteryEnergy() {
+		currentEnergy = maxCapacity;
 	}
 	
 	public double getLowPowerPercent() {

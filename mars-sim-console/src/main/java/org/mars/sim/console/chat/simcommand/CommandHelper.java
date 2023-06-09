@@ -71,6 +71,7 @@ public class CommandHelper {
 	public static final String DOUBLE_FORMAT = "%.2f";
 	public static final String KG_FORMAT = "%.2f kg";
 	public static final String KM_FORMAT = "%.2f km";
+	public static final String KWH_FORMAT = "%.2f kWh";
 	public static final String PERC_FORMAT = "%.0f%%";
 	public static final String PERC1_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.equipment.Battery;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -169,6 +170,8 @@ public class VehicleSpec implements Serializable {
 	/** The peak power output of the vehicle. (kW). */
 	private double peakPower = 0;
 	
+	// Define percent of other energy usage (other than for drivetrain)
+	private double otherEnergyUsagePercent = 0;
 	/** The estimated total number of hours the vehicle can run [hr], given the full tank of fuel. */
 	private double totalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
@@ -179,7 +182,8 @@ public class VehicleSpec implements Serializable {
 	private double methanolEnergyCapacity;
 	/** The estimated energy available for the drivetrain [kWh]. */
 	private double drivetrainEnergy;
-	
+	/** The available max energy capacity from the battery [kWh]. */
+	private double batteryCapacity;	
 	
 	// Definition : Fuel economy of a vehicle refers to the distance traveled 
 	// by a vehicle and the amount of fuel consumed.
@@ -305,7 +309,7 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * Person.getAverageWeight();
-
+		
 	}
 	
 	/**
@@ -354,6 +358,8 @@ public class VehicleSpec implements Serializable {
 	 */
 	private void defineVehiclePerformance() {
 
+    	batteryCapacity = Battery.ENERGY_PER_MODULE * numBatteryModule;
+    	
 		if (fuelTypeID > 0) {
 			// Gets the capacity [in kg] of vehicle's fuel tank
 			fuelCapacity = getCargoCapacity(getFuelType());
@@ -368,11 +374,9 @@ public class VehicleSpec implements Serializable {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			methanolEnergyCapacity = fuelCapacity / URANIUM_OXIDE_KG_PER_KWH ;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			conversionFuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainEfficiency;
+			conversionFuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainEfficiency + batteryCapacity;
 		}
 		
-		// Define percent of other energy usage (other than for drivetrain)
-		double otherEnergyUsagePercent = 0;
 		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
 		peakPower = averagePower * Math.log(3 + 1.5 * (1 + numBatteryModule) + 1.5 * (1 + numFuelCellStack));
 		// Define the estimated additional beginning mass for each type of vehicle
@@ -429,24 +433,37 @@ public class VehicleSpec implements Serializable {
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
-		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency;
-		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = drivetrainEnergy / (.25 * peakPower + .75 * averagePower);
-		// Gets the base range [in km] of the vehicle
-		baseRange = baseSpeed * totalHours;
-
-		// Gets the base fuel economy [in km/kg] of this vehicle
-		baseFuelEconomy = baseRange / (1 + fuelCapacity);
-		// Gets the base fuel consumption [in Wh/km] of this vehicle
-		baseFuelConsumption =  methanolEnergyCapacity * 1000.0 / (1 + baseRange);
+		drivetrainEnergy = methanolEnergyCapacity * (1.0 - otherEnergyUsagePercent / 100.0) * drivetrainEfficiency + batteryCapacity;
 		
+		// Gets the estimated energy available to be consumed for the trip [in kWh]
+		double estEnergyConsumed = methanolEnergyCapacity * drivetrainEfficiency + batteryCapacity;
+		
+		// Gets the estimated average power on the road (including coasting)
+		double roadPower = .25 * (.15 * peakPower + .85 * averagePower);
+		
+		// Gets the maximum total # of hours the vehicle is capable of operating
+		totalHours = estEnergyConsumed / roadPower;
+		// kW / kph -> (kW / km / h) -> kW * h / km
+		double averageForce = roadPower / baseSpeed; 
+
+		
+		// Gets the base range [in km] of the vehicle
+		double baseRange0 = baseSpeed * totalHours;
+		// kWh / (kW * h / km) -> km * h / h -> km
+		baseRange = estEnergyConsumed / averageForce;
+		
+		// Gets the base fuel economy [in km/kg] of this vehicle
+		baseFuelEconomy = baseRange / Math.max(1, fuelCapacity);
+	
+		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
+		baseFuelConsumption =  1000 * estEnergyConsumed / Math.max(1, baseRange);
 		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
 		endMass = calculatedEmptyMass + additionalEndMass;
 		// Accounts for the additional payload mass (always less than one)
-		double massModifier = 1 + .5 * (additionalBeginningMass/calculatedEmptyMass 
+		double massModifier = 1 + .2 * (additionalBeginningMass/calculatedEmptyMass 
 				+ additionalEndMass/calculatedEmptyMass);
 		
 		// Gets the initial fuel economy for a trip [km/kg]
@@ -455,18 +472,23 @@ public class VehicleSpec implements Serializable {
 		initialFuelConsumption = baseFuelConsumption * massModifier;
 		
 		// Gets the base acceleration [m/s2]
-		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / (1 + baseSpeed) * 1000 * 3.6;
+		baseAccel = peakPower / (1 + .5 * (endMass + beginningMass)) / Math.max(1, baseSpeed) * 1000 * 3.6;
 
 		double totalTripOxygenPerPerson = .9 * totalHours / 24.66 ;
 		
 		logger.log(null, Level.CONFIG, 0, "                      Type: " + name);
 		logger.log(null, Level.CONFIG, 0, "      drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0); 
 		logger.log(null, Level.CONFIG, 0, "conversionFuel2DriveEnergy: " + Math.round(conversionFuel2DriveEnergy * 100.0)/100.0 + " Wh/kg   ");  
+		
 		logger.log(null, Level.CONFIG, 0, "                 baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " m/s   ");  
 		logger.log(null, Level.CONFIG, 0, "                 baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  " ); 
 		logger.log(null, Level.CONFIG, 0, "              averagePower: " + Math.round(averagePower * 100.0)/100.0 +  KW); 
 		logger.log(null, Level.CONFIG, 0, "                 peakPower: " + Math.round(peakPower * 100.0)/100.0 + KW); 		
-	    	
+		logger.log(null, Level.CONFIG, 0, "                 roadPower: " + Math.round(roadPower * 100.0)/100.0 + KW); 
+		
+		logger.log(null, Level.CONFIG, 0, "              averageForce: " + Math.round(averageForce * 100.0)/100.0 + " kW * h / km   "); 	    	
+				
+		
 		logger.log(null, Level.CONFIG, 0, "                totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "); 
 		
 		if (type != VehicleType.LUV
@@ -474,6 +496,7 @@ public class VehicleSpec implements Serializable {
 			logger.log(null, Level.CONFIG, 0, "      Trip oxygen / person: " + Math.round(totalTripOxygenPerPerson * 100.0)/100.0 + KG);
 		}
 		
+		logger.log(null, Level.CONFIG, 0, "              Base Range 0: " + Math.round(baseRange0 * 100.0)/100.0 + KM); 
 		logger.log(null, Level.CONFIG, 0, "                Base Range: " + Math.round(baseRange * 100.0)/100.0 + KM); 
 		
 		double estRange0 = (.75 * baseFuelEconomy + .25 * initialFuelEconomy) * fuelCapacity;
@@ -487,9 +510,13 @@ public class VehicleSpec implements Serializable {
 		logger.log(null, Level.CONFIG, 0, "                Fuel Type : " + ResourceUtil.METHANOL + " (" + getFuelType() + ")");
 		logger.log(null, Level.CONFIG, 0, "      Total Cargo Capacity: " + Math.round(getTotalCapacity() * 1070.0)/1070.0 + KG);
 		logger.log(null, Level.CONFIG, 0, "          cargoCapacityMap; " + cargoCapacityMap);
-		logger.log(null, Level.CONFIG, 0, "              fuelCapacity: " + Math.round(fuelCapacity * 1000.0)/1000.0 + KG) ; 		
+		logger.log(null, Level.CONFIG, 0, "              fuelCapacity: " + Math.round(fuelCapacity * 1000.0)/1000.0 + KG) ; 
+		
 		logger.log(null, Level.CONFIG, 0, "    methanolEnergyCapacity: " + Math.round(methanolEnergyCapacity * 1000.0)/1000.0 + KWH) ; 
+		logger.log(null, Level.CONFIG, 0, "           batteryCapacity: " + Math.round(batteryCapacity * 1000.0)/1000.0 + KWH);  		
 		logger.log(null, Level.CONFIG, 0, "          drivetrainEnergy: " + Math.round(drivetrainEnergy * 1000.0)/1000.0 + KWH);  
+		logger.log(null, Level.CONFIG, 0, "         estEnergyConsumed: " + Math.round(estEnergyConsumed * 1000.0)/1000.0 + KWH); 
+		
     	
     	logger.log(null, Level.CONFIG, 0, "           baseFuelEconomy: " + Math.round(baseFuelEconomy * 1000.0)/1000.0 + KM_KG); 
     	logger.log(null, Level.CONFIG, 0, "        initialFuelEconomy: " + Math.round(initialFuelEconomy * 1000.0)/1000.0 + KM_KG); 
@@ -942,6 +969,10 @@ public class VehicleSpec implements Serializable {
 	 */
 	public double getValue() {
 		return value;
+	}
+	
+	public double getOtherEnergyUsagePercent() {
+		return otherEnergyUsagePercent;
 	}
 	
 	public void destroy() {

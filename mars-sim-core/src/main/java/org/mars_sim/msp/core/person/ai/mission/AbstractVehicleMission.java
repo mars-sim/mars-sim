@@ -104,7 +104,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
 	/** Estimate number of broken parts per malfunctions */
 	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
-
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
 	
@@ -218,6 +217,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Worker startingMember = getStartingPerson();
 		if (getVehicle() != null)
 			logger.info(startingMember, "Preparing " + getName() + " using " + getVehicle().getName() + ".");
+		
+		// Charges up the battery instantly
+		getVehicle().getController().topUpBatteryEnergy();
 	}
 
 	/**
