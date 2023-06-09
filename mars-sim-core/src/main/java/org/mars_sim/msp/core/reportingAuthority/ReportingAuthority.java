@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -228,4 +230,17 @@ implements UserConfigurable, Serializable {
         return genderRatio;
     }
 
+	/** 
+	 * Get the predefined Preferences for this authority based on the Agenda/Objectives assigned
+	*/
+    public Map<PreferenceKey, Double> getPreferences() {
+        Map<PreferenceKey, Double> result = new HashMap<>();
+		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
+			// Merge the various capabilities into one taking the largest
+			Map<PreferenceKey, Double> subs = subAgenda.getPreferences();
+			subs.forEach((k,v) -> result.merge(k, v, (v1,v2) ->
+									Math.max(v1.doubleValue(), v2.doubleValue())));
+		}
+		return result;
+    }
 }

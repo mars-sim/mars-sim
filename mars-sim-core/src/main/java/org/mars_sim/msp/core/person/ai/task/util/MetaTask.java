@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -59,6 +60,7 @@ public abstract class MetaTask {
 	
 	private boolean effortDriven = true;
 	private String name;
+	private String id;
 	
 	private WorkerType workerType;
 	private TaskScope scope;
@@ -73,6 +75,7 @@ public abstract class MetaTask {
 		this.name = name;
 		this.workerType = workerType;
 		this.scope = scope;
+		this.id = this.getClass().getSimpleName().replace("Meta", "").toUpperCase();
 	}
 
 	/**
@@ -128,6 +131,15 @@ public abstract class MetaTask {
 	 */
 	public final String getName() {
 		return name;
+	}
+
+	/**
+	 * Get a unique non-internalised key for this task.
+	 * Note getName is an internationalised value
+	 * @return the MetaTask class name with "meta" removed
+	 */
+	public String getID() {
+		return id;
 	}
 
 	/**
@@ -212,11 +224,14 @@ public abstract class MetaTask {
 
         score = score * (1D + (person.getPreference().getPreferenceScore(this)/5D));
 
+		// Apply the home base modifier
+		score = score * person.getAssociatedSettlement().getPreferenceModifier(
+							new PreferenceKey(PreferenceKey.Type.TASK, getID()));
+
         if (score < 0) score = 0;
-        
         return score;
 	}
-	
+
 	/**
 	 * Applies a modified based on the Job. Rules are:
 	 * 1. Person must have a Job

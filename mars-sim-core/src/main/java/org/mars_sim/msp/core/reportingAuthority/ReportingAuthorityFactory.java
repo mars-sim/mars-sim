@@ -49,6 +49,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private static final String SETTLEMENTNAME_EL = "settlement-name";
 	private static final String ROVERNAME_EL = "rover-name";
 	private static final String GENDER_ATTR = "gender-ratio";
+	private static final String PERFERENCE_EL = "preference";
+	private static final String TYPE_ATTR = "type";
 	
 	private Map<String,MissionAgenda> agendas;
 
@@ -103,7 +105,18 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 					}
 				}
 	
-				subs.add(new MissionCapability(description, missionModifiers, scienceModifiers));
+				// Load the preferences
+				Map<PreferenceKey, Double> preferences = new HashMap<>();	
+				for (Element preNode : subNode.getChildren(PERFERENCE_EL)) {
+					double value = Double.parseDouble(preNode.getAttributeValue(VALUE_ATTR));
+					PreferenceKey.Type pType = PreferenceKey.Type.valueOf(preNode.getAttributeValue(TYPE_ATTR));
+					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
+
+					preferences.put(new PreferenceKey(pType, pName), value);
+				}
+
+				subs.add(new MissionCapability(description, missionModifiers, scienceModifiers,
+												Collections.unmodifiableMap(preferences)));
 			}	
 				
 			// Add the agenda

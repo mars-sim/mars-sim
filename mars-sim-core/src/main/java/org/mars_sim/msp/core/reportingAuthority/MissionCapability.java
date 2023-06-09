@@ -24,12 +24,15 @@ public class MissionCapability implements Serializable {
 	private Map<MissionType, Integer> missionModifiers;
 	private Map<ScienceType, Integer> scienceModifiers;
 
+	private Map<PreferenceKey, Double> preferences;
+
 	public MissionCapability(String description, Map<MissionType, Integer> missionModifiers,
-							Map<ScienceType, Integer> scienceModifiers) {
+							Map<ScienceType, Integer> scienceModifiers, Map<PreferenceKey, Double> preferences) {
 		super();
 		this.description = description;
 		this.missionModifiers = Collections.unmodifiableMap(missionModifiers);
 		this.scienceModifiers = Collections.unmodifiableMap(scienceModifiers);
+		this.preferences = preferences;
 
 	}
 	
@@ -48,4 +51,12 @@ public class MissionCapability implements Serializable {
 	public String toString() {
 		return description;
 	}
+
+	/**
+	 * What preferenes are defined for this capabilty
+	 * @return
+	 */
+    public Map<PreferenceKey, Double> getPreferences() {
+        return preferences;
+    }
 }

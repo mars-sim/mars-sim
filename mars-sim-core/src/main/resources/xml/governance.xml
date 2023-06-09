@@ -8,12 +8,16 @@
 	<!ATTLIST agenda objective CDATA #REQUIRED>
 	<!ATTLIST agenda findings CDATA #REQUIRED>
 	<!ATTLIST agenda data CDATA #REQUIRED>
-	<!ELEMENT capability (modifier*)>
+	<!ELEMENT capability (modifier*, preference*)>
 	<!ATTLIST capability description CDATA #REQUIRED>
 	<!ELEMENT modifier EMPTY>
 	<!ATTLIST modifier mission CDATA #IMPLIED>
 	<!ATTLIST modifier science CDATA #IMPLIED>
 	<!ATTLIST modifier value CDATA #REQUIRED>
+	<!ELEMENT preference EMPTY>
+	<!ATTLIST preference type CDATA #REQUIRED>
+	<!ATTLIST preference name CDATA #REQUIRED>
+	<!ATTLIST preference value CDATA #REQUIRED>
 
 	<!ELEMENT authorities (authority+)>
 	<!ELEMENT authority (country+, settlement-name*, rover-name*)>
@@ -249,7 +253,8 @@
 			<capability description="Engineer soil capable of hosting and sustaining organic microbial life">
 				<modifier mission="COLLECT_REGOLITH" value="3"/>
 				<modifier science="BIOLOGY" value="6"/>		
-				<modifier science="BOTANY" value="6"/>								
+				<modifier science="BOTANY" value="6"/>	
+				<preference type="TASK" name="TendGreenhouse" value="2"/>							
 			</capability>
 			<capability description="Improve building structural integrity">
 				<modifier mission="COLLECT_REGOLITH" value="2"/>

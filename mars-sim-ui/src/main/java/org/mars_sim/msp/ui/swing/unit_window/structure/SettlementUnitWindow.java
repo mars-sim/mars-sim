@@ -220,6 +220,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		
 		addTabPanel(new NotesTabPanel(settlement, desktop));
 
+		addTabPanel(new TabPanelPreferences(settlement, desktop));
+
 		addTabPanel(new TabPanelOrganization(settlement, desktop));
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
