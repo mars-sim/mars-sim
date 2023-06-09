@@ -763,7 +763,7 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = getEstimatedFuelEconomy() * getFuelCapacity() * getBeginningMass() / getMass();// * fuel_range_error_margin
         }
         else {
         	
@@ -774,7 +774,7 @@ public abstract class Vehicle extends Unit
     		else {
                 double amountOfFuel = getAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
-        		range = getEstimatedFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+        		range = getEstimatedFuelEconomy() * amountOfFuel * getBeginningMass() / getMass();
     		}
         }
 
@@ -913,6 +913,14 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Mass of Equipment is the stored mass plus the base mass.
+	 */
+	@Override
+	public double getMass() {
+		return eqmInventory.getStoredMass() + getBaseMass();
+	}
+	
+	/**
 	 * Gets the estimated beginning mass [kg].
 	 */
 	public double getBeginningMass() {
@@ -956,7 +964,7 @@ public abstract class Vehicle extends Unit
 			return (baseFE + initFE) / 2;
 		else if (ratio < 1)
 			return (baseFE + initFE + cumFE) / 3;
-		return (baseFE + initFE + cumFE) / 3 * VehicleController.FUEL_ECONOMY_FACTOR;
+		return (.3 * baseFE + .2 * initFE + .5 * cumFE) * VehicleController.FUEL_ECONOMY_FACTOR;
 	}
 
 	/**
@@ -982,7 +990,7 @@ public abstract class Vehicle extends Unit
 			return (baseFC + initFC) / 2;
 		else if (ratio < 1)
 			return (baseFC + initFC + cumFC) / 3;
-		return (baseFC + initFC + cumFC) / 3 * VehicleController.FUEL_CONSUMPTION_FACTOR;
+		return (.2 * baseFC + .3 * initFC + .5 * cumFC) * VehicleController.FUEL_CONSUMPTION_FACTOR;
 	}
 	
 	/**
@@ -1565,15 +1573,6 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Unit getHolder() {
 		return this;
-	}
-
-	
-	/**
-	 * Mass of Equipment is the stored mass plus the base mass.
-	 */
-	@Override
-	public double getMass() {
-		return eqmInventory.getStoredMass() + getBaseMass();
 	}
 
 	/**

@@ -111,7 +111,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- The average value (could be in kW or kWh) provided by this power source (required) -->
 		<!-- e.g. "15.0" -->
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		
 		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
@@ -131,7 +131,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<average-power value="15.0" />
+		<average-power value="20.0" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
@@ -160,9 +160,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
 			<capacity resource="methanol" value="300.0" />
-
+			
+			<!-- ratio of oxidizer to fuel is 1.5:1. Thus 300 kg methanol needs 450 kg oxygen -->
+			<!-- Assuming totalTripHours is 45 hrs, each person consumes .8 kg / 24.66 hrs * totalTripHours -> 1.65 kg -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="750.0" />
+			<capacity resource="oxygen" value="460.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="nitrogen" value="50.0" />
@@ -242,15 +244,15 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
 		<fuel-cell-stack number="4" />
-		<drivetrain-efficiency value=".75" />
+		<drivetrain-efficiency value=".85" />
 		<base-speed value="30.0" />
 		<average-power value="15" />
 		<empty-mass value="1200.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
-		<cargo total-capacity="2500.0">
+		<cargo total-capacity="2000.0">
 			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="900.0" />
+			<capacity resource="oxygen" value="610.0" />
 			<capacity resource="nitrogen" value="50.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
 			<capacity resource="water" value="400.0" />
@@ -302,7 +304,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
 			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="1000.0" />
+			<capacity resource="oxygen" value="620.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
 			<capacity resource="water" value="400.0" />
@@ -354,7 +356,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
 			<capacity resource="methanol" value="400.0" />
-			<capacity resource="oxygen" value="1000.0" />
+			<capacity resource="oxygen" value="810.0" />
 			<capacity resource="nitrogen" value="100.0" />
 			<capacity resource="carbon dioxide" value="10.0" />
 			<capacity resource="water" value="300.0" />
@@ -400,7 +402,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
 			<capacity resource="methanol" value="15.0" />
-			<capacity resource="oxygen" value="35.0" />		
+			<capacity resource="oxygen" value="22.5" />		
 		</cargo>
 		<part-attachment number-slots="3">
             <part name="bulldozer blade" />
@@ -418,15 +420,15 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="1" />
 		<fuel-cell-stack number="2" />
-		<drivetrain-efficiency value=".85" />
+		<drivetrain-efficiency value=".95" />
 		<base-speed value="100.0" />
-		<average-power value ="10" />		
+		<average-power value ="20" />		
 		<empty-mass value="160.0" />
 		<crew-size value="0" />
-		<cargo total-capacity="800.0">
+		<cargo total-capacity="600.0">
 			<capacity resource="methanol" value="200.0" />
 			<capacity resource="oxygen" value="300.0" />
 		</cargo>
