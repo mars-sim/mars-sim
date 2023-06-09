@@ -359,8 +359,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				<process-engine name="Carbon Dioxide Pump"/>
 				<process-engine name="Syngas Plant"/>
-
-				<process-engine name="melt and filter ice" number-modules="3"/>
+				<process-engine name="Melt Ice" number-modules="3" />
+				<process-engine name="Filter Brine Water" number-modules="3" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -821,9 +821,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV-A" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="3000">
 		<description> The Earth Return Vehicle Type A (ERV-A) is a vehicle base sent ahead
-		    of the arrival of the human crew. It provides equipment package for producing and handling
-		    viable life-support and mission-capable resources. It is NOT fully flight capable
-			and would require retrofitting to become flight-ready space vehicle.
+		    of the arrival of the human crew. It provides equipment package for producing 
+		    and handling viable life-support and mission-capable resources. It is NOT 
+		    fully flight capable and would require retrofitting to become flight-ready.
+			
+				Mars Direct Mission Plan :
+					(1). ERV -
+				 	(a). Payload imported from Earth -
+					 	 Consumables : 3400 kg
+					 	 Hydrogen feedstock : 6300 kg
+					(b). Produced on Mars :
+						 water : 18900 kg
+						 Oxygen : 16080 kg
+						 Methane : 8400 kg
+
+					(2). Hab -
+					(a). Payload imported from Earth -
+					 	 Consumables : 7000 kg
+				 			
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -840,7 +855,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6"/>
 				<process-engine name="Oxygen Generation System" number-modules="2"/>			
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="6"/>
-				<process-engine name="melt and filter ice" number-modules="4"/>		
+				<process-engine name="Melt Ice" number-modules="4"/>	
+				<process-engine name="Filter Brine Water" number-modules="4"/>						
 			</resource-processing>
 
 			<storage capacity="300000">
@@ -856,6 +872,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="ice" capacity="5000.0" />
 				<resource-storage resource="grey water" capacity="2000.0" />				
 				<resource-storage resource="rock salt" capacity="500.0" />
+				
 				<!-- Payload imported from Earth
 				resource-initial resource="hydrogen" amount="6300.0" /-->
 
@@ -869,20 +886,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="hydrogen" amount="6300.0" />
 				<resource-initial resource="water" amount="18900.0" />
 
-				<!-- Mars Direct Mission Plan :
-					(1). ERV -
-				 	(a). Payload imported from Earth -
-					 	 Consumables : 3400 kg
-					 	 Hydrogen feedstock : 6300 kg
-					(b). Produced on Mars :
-						 water : 18900 kg
-						 Oxygen : 16080 kg
-						 Methane : 8400 kg
-
-					(2). Hab -
-					(a). Payload imported from Earth -
-					 	 Consumables : 7000 kg
-				 -->
 
 			</storage>
 		</functions>
@@ -891,9 +894,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="3000">
-		<description> The Earth Return Vehicle Type B (ERV-B) It furnishes many regolith-related processing
-		equipment package that extract ores and minerals. It may be reconfigured into a flight-ready space
-		vehicle with habitation space. 
+		<description> The Earth Return Vehicle Type B (ERV-B) It furnishes many regolith-
+		related processing equipment package that extract ores and minerals. It may be 
+		reconfigured into a flight-ready space vehicle with habitation space. 
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -947,11 +950,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="bassanite" capacity="1000.0" />
 				<resource-storage resource="gypsum" capacity="5000.0" />
 				<resource-storage resource="smectite" capacity="1000.0" />		
+					
+				<!-- 10 types of minerals -->												
+				<resource-storage resource="chalcopyrite" capacity="1000.0" />
+				<resource-storage resource="goethite" capacity="1000.0" />
+				<resource-storage resource="hematite" capacity="1000.0" />		
+				<resource-storage resource="kamacite" capacity="1000.0" />
+				<resource-storage resource="magnesite" capacity="1000.0" />
+				
+				<resource-storage resource="magnetite" capacity="5000.0" />
+				<resource-storage resource="malachite" capacity="1000.0" />	
+				<resource-storage resource="olivine" capacity="1000.0" />
+				<resource-storage resource="taenite" capacity="5000.0" />
+				<resource-storage resource="sylvite" capacity="1000.0" />					
 												
 				<resource-storage resource="regolith" capacity="7500.0" />
-				<resource-storage resource="concrete" capacity="7500.0" />
-				<resource-storage resource="cement" capacity="7500.0" />
 				<resource-storage resource="sand" capacity="5000.0" />
+				<resource-storage resource="brine water" capacity="5000.0" />				
 				
 			</storage>
 		</functions>
@@ -981,10 +996,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					
 				<!-- 4 types of cement/concrete -->			
 				<process-engine name="make cement" number-modules="5"/>
+				<process-engine name="mix concrete 1" number-modules="5"/>
+				<process-engine name="mix concrete 2" number-modules="5"/>				
 				<process-engine name="mix sulfur concrete" number-modules="5"/>
-				<process-engine name="mix limecrete" number-modules="5"/>
-				<process-engine name="make magnesium-based concrete" number-modules="2"/>
-				
+				<process-engine name="mix limecrete 1" number-modules="5"/>
+				<process-engine name="mix limecrete 2" number-modules="5"/>				
+				<process-engine name="make magnesium-based concrete 1" number-modules="2"/>
+				<process-engine name="make magnesium-based concrete 2" number-modules="2"/>
+								
 				<!-- 6 industrial ingredients -->	
 				<process-engine name="Produce Ethylene" number-modules="2"/>
 				<process-engine name="Produce Polyethylene from Ethylene" number-modules="50"/>
@@ -1003,8 +1022,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="aluminum" capacity="3000.0" />
 				<resource-storage resource="calcium carbonate" capacity="2500.0" />
 					 			
+				<resource-storage resource="concrete" capacity="7500.0" />
+				
+				<resource-storage resource="cement" capacity="7500.0" />
 				<resource-storage resource="sulfur" capacity="2500.0" />
-				<resource-storage resource="lime" capacity="3000.0" />			
+				<resource-storage resource="lime" capacity="3000.0" />		
+					
 				<resource-storage resource="ethylene" capacity="1000.0" />	
 				<resource-storage resource="polyethylene" capacity="1000.0" />	
 				<resource-storage resource="polystyrene" capacity="1000.0" />	
@@ -2593,7 +2616,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="4"/>
 				<process-engine name="Carbon Dioxide Pump"/>
 				<process-engine name="Syngas Plant"/>
-				<process-engine name="melt and filter ice" number-modules="10" />
+				<process-engine name="Melt Ice" number-modules="3" />
+				<process-engine name="Filter Brine Water" number-modules="3" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
