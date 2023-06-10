@@ -23,9 +23,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -151,10 +153,17 @@ public class TabPanelPreferences extends TabPanel {
 			break;
 
 			case MISSION:
-			break;
+				newItems = new ArrayList<>();
+				for(MissionType mt : MissionType.values()) {
+					newItems.add(getRendered(new PreferenceKey(Type.MISSION, mt.name())));
+				}
+				break;
 
 			case SCIENCE:
-			break;
+				newItems = ScienceType.valuesList().stream()
+									.map(mt -> getRendered(new PreferenceKey(Type.SCIENCE, mt.name())))
+									.toList();
+				break;
 		}
 
 		if (newItems != null) {
@@ -173,8 +182,17 @@ public class TabPanelPreferences extends TabPanel {
 		}
 
 		// Create a better readable number of the user
-		String label = MetaTaskUtil.getMetaTask(key.getName()).getName();
-
+		String label = "?";
+		try {
+			label = switch (key.getType()) {
+				case TASK -> MetaTaskUtil.getMetaTask(key.getName()).getName();
+				case SCIENCE -> ScienceType.valueOf(key.getName()).getName();
+				case MISSION -> MissionType.valueOf(key.getName()).getName();
+			};
+		}
+		catch (RuntimeException e) {
+			// Problem with the specifc user value not matching any known item
+		}
 		RenderableKey result = new RenderableKey(key, label);
 		keys.put(key, result);
 		return result;

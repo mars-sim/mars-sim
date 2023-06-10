@@ -302,8 +302,6 @@ public class Settlement extends Structure implements Temporal,
 
 	/** The set of processes being overridden. */
 	private Set<OverrideType> processOverrides = new HashSet<>();
-	/** The set of disabled missions. */
-	private Set<MissionType> disabledMissions = new HashSet<>();
 	/** The set of available pressurized/pressurizing airlocks. */
 	private Set<Integer> availablePAirlocks = new HashSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
@@ -2997,12 +2995,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		if (disable) {
-			disabledMissions.add(mission);
-		}
-		else {
-			disabledMissions.remove(mission);
-		}
+		double newValue = (disable ? 0D : 1D);
+		setPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name()), newValue);
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -3020,7 +3014,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return !disabledMissions.contains(mission);
+		return (getPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name())) > 0D);
 	}
 
 	public double getTotalMineralValue(Rover rover) {

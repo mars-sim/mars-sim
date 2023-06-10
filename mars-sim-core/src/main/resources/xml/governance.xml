@@ -8,16 +8,12 @@
 	<!ATTLIST agenda objective CDATA #REQUIRED>
 	<!ATTLIST agenda findings CDATA #REQUIRED>
 	<!ATTLIST agenda data CDATA #REQUIRED>
-	<!ELEMENT capability (modifier*, preference*)>
+	<!ELEMENT capability (preference*)>
 	<!ATTLIST capability description CDATA #REQUIRED>
-	<!ELEMENT modifier EMPTY>
-	<!ATTLIST modifier mission CDATA #IMPLIED>
-	<!ATTLIST modifier science CDATA #IMPLIED>
-	<!ATTLIST modifier value CDATA #REQUIRED>
 	<!ELEMENT preference EMPTY>
 	<!ATTLIST preference type CDATA #REQUIRED>
 	<!ATTLIST preference name CDATA #REQUIRED>
-	<!ATTLIST preference value CDATA #REQUIRED>
+	<!ATTLIST preference modifier CDATA #REQUIRED>
 
 	<!ELEMENT authorities (authority+)>
 	<!ELEMENT authority (country+, settlement-name*, rover-name*)>
@@ -41,25 +37,24 @@
 				findings="Identify uniqueness of how advanced technologies may be tested in this environmental space"
 				data="Mapping the morphology of this local region as test bed for developing advanced technologies of interest">
 			<capability description="Improve rover and flyer range and performance">
-				<modifier mission="EMERGENCY_SUPPLY" value="6"/>
-				<modifier mission="EXPLORATION" value="2"/>
-				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="6"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="3"/>
-				<modifier science="ENGINEERING" value="5"/>
-				<modifier science="PHYSICS" value="2"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="0.8"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="1.6"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.3"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="5"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="2"/>
 			</capability>
 			<capability description="Prototype new building material">
-				<modifier mission="COLLECT_REGOLITH" value="4"/>
-				<modifier mission="MINING" value="4"/>
-				<modifier mission="TRADE" value="2"/>
-				<modifier science="ENGINEERING" value="9"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.4"/>
+				<preference type="MISSION" name="MINING" modifier="1.2"/>
+				<preference type="MISSION" name="TRADE" modifier="0.8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="9"/>
 			</capability>
 			<capability description="Test out new propulsion systems">
-				<modifier mission="DELIVERY" value="3"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="3"/>
-				<modifier science="ENGINEERING" value="8"/>
-				<modifier science="PHYSICS" value="8"/>
+				<preference type="MISSION" name="DELIVERY" modifier="0.7"/>
+				<preference type="MISSION" name="TRADE" modifier="0.7"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.3"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>
 			</capability>
 		</agenda>
 		
@@ -68,23 +63,23 @@
 				findings="Updating the report of the best practices in resource utilization"
 				data="Locating Understanding implications of Marsquakes in erecting structures">
 			<capability description="Study meteorological environmental factors">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="9"/>
-				<modifier science="AREOLOGY" value="2"/>
-				<modifier science="METEOROLOGY" value="9"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.4"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.6"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="METEOROLOGY" modifier="9"/>
 			</capability>
 			<capability description="Fortify building structural integrity">
-				<modifier mission="COLLECT_REGOLITH" value="3"/>
-				<modifier mission="MINING" value="3"/>
-				<modifier science="AREOLOGY" value="2"/>
-				<modifier science="MATHEMATICS" value="2"/>	
-				<modifier science="ENGINEERING" value="5"/>
-				<modifier science="PHYSICS" value="5"/>											
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
+				<preference type="MISSION" name="MINING" modifier="1.2"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="2"/>	
+				<preference type="SCIENCE" name="ENGINEERING" modifier="5"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="5"/>											
 			</capability>
 			<capability description="Refine techniques for ISRU polymer synthesis">
-				<modifier mission="COLLECT_REGOLITH" value="9"/>
-				<modifier mission="MINING" value="3"/>
-				<modifier science="AREOLOGY" value="2"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.9"/>
+				<preference type="MISSION" name="MINING" modifier="3"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="2"/>
 			</capability>
 		</agenda>
 		
@@ -93,23 +88,23 @@
 				findings="Looking for signature of life in soil data"
 				data="Analyzing and Cataloging data from various sites">
 			<capability description="Follow the water">
-				<modifier mission="BIOLOGY" value="3"/>
-				<modifier science="BOTANY" value="3"/>				
-				<modifier mission="COLLECT_ICE" value="5"/>
-				<modifier science="BIOLOGY" value="4"/>	
-				<modifier science="CHEMISTRY" value="7"/>								
+				<preference type="MISSION" name="BIOLOGY" modifier="1.9"/>
+				<preference type="SCIENCE" name="BOTANY" modifier="3"/>				
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.2"/>
+				<preference type="SCIENCE" name="BIOLOGY" modifier="4"/>	
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>								
 			</capability>
 			<capability description="Search regions capable hosting/sustaining microbial life">
-				<modifier mission="BIOLOGY" value="6"/>			
-				<modifier science="BIOLOGY" value="6"/>
-				<modifier science="BOTANY" value="6"/>				
-				<modifier science="CHEMISTRY" value="6"/>				
+				<preference type="MISSION" name="BIOLOGY" modifier="1.6"/>			
+				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>
+				<preference type="SCIENCE" name="BOTANY" modifier="6"/>				
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="6"/>				
 			</capability>
 			<capability description="Core drill rock data from selected locations">
-				<modifier mission="EXPLORATION" value="4"/>
-				<modifier mission="COLLECT_REGOLITH" value="4"/>
-				<modifier mission="MINING" value="6"/>	
-				<modifier science="CHEMISTRY" value="7"/>	
+				<preference type="MISSION" name="EXPLORATION" modifier="1.8"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.4"/>
+				<preference type="MISSION" name="MINING" modifier="1.6"/>	
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>	
 			</capability>
 		</agenda>
 		
@@ -118,30 +113,27 @@
 				findings="Reporting on the various health hazards for human beings living on Mars"
 				data="Classifying environmental hazards for surface operation">
 			<capability description="Investigate biological hazards">
-				<modifier mission="BIOLOGY" value="6"/>
-				<modifier mission="COLLECT_ICE" value="2"/>
-				<modifier mission="METEOROLOGY" value="1"/>
-				<modifier science="BIOLOGY" value="7"/>
-				<modifier science="BOTANY" value="5"/>				
-				<modifier science="MEDICINE" value="6"/>				
+				<preference type="MISSION" name="BIOLOGY" modifier="1.6"/>
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.2"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.4"/>
+				<preference type="SCIENCE" name="BIOLOGY" modifier="7"/>
+				<preference type="SCIENCE" name="BOTANY" modifier="5"/>				
+				<preference type="SCIENCE" name="MEDICINE" modifier="6"/>				
 			</capability>
 			<capability description="Examining microbes in water ice">
-				<modifier mission="AREOLOGY" value="1"/>
-				<modifier mission="BIOLOGY" value="3"/>
-				<modifier mission="COLLECT_ICE" value="1"/>
-				<modifier mission="COLLECT_REGOLITH" value="1"/>
-				<modifier mission="MINING" value="1"/>
-				<modifier science="BIOLOGY" value="6"/>
-				<modifier science="BOTANY" value="3"/>								
+				<preference type="MISSION" name="BIOLOGY" modifier="1.4"/>
+				<preference type="MISSION" name="COLLECT_ICE" modifier="2"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.2"/>
+				<preference type="MISSION" name="MINING" modifier="1"/>
+				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>
+				<preference type="SCIENCE" name="BOTANY" modifier="3"/>								
 			</capability>
 			<capability description="Observe radiation risks, limits and exposures">
-				<modifier mission="AREOLOGY" value="1"/>
-				<modifier mission="BIOLOGY" value="4"/>
-				<modifier mission="COLLECT_ICE" value="1"/>
-				<modifier mission="COLLECT_REGOLITH" value="1"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
-				<modifier science="MEDICINE" value="9"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="BIOLOGY" modifier="1.2"/>
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.1"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.1"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="9"/>
 			</capability>
 		</agenda>
 		
@@ -150,19 +142,19 @@
 				findings="Identifying engineering challenge in constructing surface, underground and cliff-side dwelling"
 				data="Analyzing atmospheric conditions and geographical factors of human habitability in a local region">
 			<capability description="Predict meteorological changes">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="9"/>
-				<modifier science="METEOROLOGY" value="1"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.5"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="METEOROLOGY" modifier="1"/>
 			</capability>
 			<capability description="Study underground water reserve">
-				<modifier mission="COLLECT_ICE" value="9"/>
-				<modifier mission="AREOLOGY" value="6"/>	
-				<modifier science="CHEMISTRY" value="7"/>							
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.9"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.6"/>	
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>							
 			</capability>
 			<capability description="Characterize radiation countermeasures">
-				<modifier mission="BIOLOGY" value="8"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier science="MEDICINE" value="5"/>
+				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="5"/>
 			</capability>
 		</agenda>
 		
@@ -171,26 +163,23 @@
 				findings="Surveying sociological and ideological implications in populating a region"
 				data="Unlock factors for transforming Mars into hospitable biomes to usher in human colonization">
 			<capability description="Conceptualize interplanetary transportation network">
-				<modifier mission="DELIVERY" value="9"/>
-				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
-				<modifier mission="EXPLORATION" value="5"/>
-				<modifier mission="TRADE" value="2"/>
-				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="4"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="7"/>
+				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
 			</capability>
 			<capability description="Study terraforming Mars environment">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="BIOLOGY" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier science="CHEMISTRY" value="3"/>
-				<modifier science="AREOLOGY" value="7"/>				
+				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="BIOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="3"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="7"/>				
 			</capability>
 			<capability description="Investigate environmentally sustainable energy solutions">
-				<modifier mission="AREOLOGY" value="2"/>
-				<modifier mission="DELIVERY" value="2"/>
-				<modifier mission="EXPLORATION" value="1"/>
-				<modifier mission="METEOROLOGY" value="1"/>
-				<modifier science="PHYSICS" value="6"/>				
+				<preference type="MISSION" name="AREOLOGY" modifier="1.2"/>
+				<preference type="MISSION" name="DELIVERY" modifier="1.2"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>				
 			</capability>
 		</agenda>
 		
@@ -199,24 +188,22 @@
 				findings="Documenting the process and history of climate on Mars"
 				data="Analyzing the wealth of mineral contents from the colleted soil data">
 			<capability description="Analyze various signatures of minerals">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="COLLECT_REGOLITH" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier mission="MINING" value="3"/>
-				<modifier science="CHEMISTRY" value="8"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.8"/>
+				<preference type="MISSION" name="MINING" modifier="1.3"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="8"/>
 			</capability>
 			<capability description="Corroborate surface geological data with on-orbit scans">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier science="AREOLOGY" value="7"/>	
-				<modifier science="ASTRONOMY" value="4"/>								
+				<preference type="MISSION" name="AREOLOGY" modifier="1.5"/>
+				<preference type="SCIENCE" name="AREOLOGY" modifier="7"/>	
+				<preference type="SCIENCE" name="ASTRONOMY" modifier="4"/>								
 			</capability>
 			<capability description="Core drill rock data from selected locations">
-				<modifier mission="EXPLORATION" value="4"/>
-				<modifier mission="COLLECT_REGOLITH" value="4"/>
-				<modifier mission="MINING" value="6"/>	
-				<modifier science="CHEMISTRY" value="7"/>						
+				<preference type="MISSION" name="EXPLORATION" modifier="1.9"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.4"/>
+				<preference type="MISSION" name="MINING" modifier="2"/>	
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>						
 			</capability>
 		</agenda>
 		
@@ -225,24 +212,21 @@
 				findings="Exploring what science disciplines are most benefit in a given region"
 				data="Analyzing gravity and atmospheric variability for deploying laser communication array">
 			<capability description="Analyze meteorite fragments">
-				<modifier mission="EXPLORATION" value="4"/>			
-				<modifier mission="AREOLOGY" value="5"/>
-				<modifier mission="MINING" value="6"/>
-				<modifier mission="METEOROLOGY" value="5"/>
-				<modifier science="PHYSICS" value="3"/>				
+				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>			
+				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>				
 			</capability>
 			<capability description="Research environmental suitability for scientific projects">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier science="PSYCHOLOGY" value="5"/>
-				<modifier science="MEDICINE" value="3"/>				
+				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="3"/>				
 			</capability>
 			<capability description="Analyze bio-signature in rocks and water ice">
-				<modifier mission="BIOLOGY" value="8"/>
-				<modifier mission="COLLECT_ICE" value="4"/>
-				<modifier mission="COLLECT_REGOLITH" value="3"/>
-				<modifier mission="MINING" value="2"/>
-				<modifier science="CHEMISTRY" value="7"/>				
+				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="COLLECT_ICE" modifier="1.4"/>
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
+				<preference type="MISSION" name="MINING" modifier="2"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>				
 			</capability>
 		</agenda>
 		
@@ -251,26 +235,23 @@
 				findings="Investigating local in-situ resources that one can collect and process for immediate uses"
 				data="Analyzing structural integrity of geological features for building settlements in this region">
 			<capability description="Engineer soil capable of hosting and sustaining organic microbial life">
-				<modifier mission="COLLECT_REGOLITH" value="3"/>
-				<modifier science="BIOLOGY" value="6"/>		
-				<modifier science="BOTANY" value="6"/>	
-				<preference type="TASK" name="TendGreenhouse" value="1.2"/>							
+				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
+				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>		
+				<preference type="SCIENCE" name="BOTANY" modifier="6"/>	
+				<preference type="TASK" name="TendGreenhouse" modifier="1.2"/>							
 			</capability>
 			<capability description="Improve building structural integrity">
-				<modifier mission="COLLECT_REGOLITH" value="2"/>
-				<modifier mission="TRADE" value="2"/>
-				<modifier science="ENGINEERING" value="8"/>
-				<modifier science="COMPUTING" value="3"/>	
-				<modifier science="PHYSICS" value="6"/>														
+				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="3"/>	
+				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>														
 			</capability>
 			<capability description="Minimize physiological effects of long term exposure to martian environment">
-				<modifier mission="AREOLOGY" value="1"/>
-				<modifier mission="BIOLOGY" value="1"/>
-				<modifier mission="EXPLORATION" value="2"/>
-				<modifier mission="METEOROLOGY" value="2"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
-				<modifier science="PSYCHOLOGY" value="5"/>
-				<modifier science="MEDICINE" value="8"/>
+				<preference type="MISSION" name="AREOLOGY" modifier="1"/>
+				<preference type="MISSION" name="BIOLOGY" modifier="1.5"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.2"/>
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="8"/>
 			</capability>
 		</agenda>
 		
@@ -279,25 +260,19 @@
 				findings="Developing framework for applied space research in this frontier"
 				data="Analyzing various region impact how space research is conducted">
 			<capability description="Test space-ground links">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier science="PHYSICS" value="8"/>	
-				<modifier science="COMPUTING" value="4"/>								
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>	
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
 			</capability>
 			<capability description="Test new flexible space suit micro fabric">
-				<modifier mission="BIOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier science="ENGINEERING" value="8"/>				
+				<preference type="MISSION" name="BIOLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>				
 			</capability>
 			<capability description="Improve closed-loop life support system">
-				<modifier mission="MINING" value="3"/>
-				<modifier science="COMPUTING" value="4"/>
-				<modifier science="MEDICINE" value="6"/>	
-				<modifier science="BOTANY" value="3"/>		
-				<modifier science="BIOLOGY" value="3"/>															
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="6"/>	
+				<preference type="SCIENCE" name="BOTANY" modifier="3"/>		
+				<preference type="SCIENCE" name="BIOLOGY" modifier="3"/>															
 			</capability>
 		</agenda>
 		
@@ -306,23 +281,22 @@
 				findings="Developing space object tracking stations"
 				data="Measuring and identifying galactic origins of cosmic ray radiation">
 			<capability description="Test ground observatory designs">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier science="ASTRONOMY" value="9"/>
-				<modifier science="PHYSICS" value="4"/>	
-				<modifier science="COMPUTING" value="4"/>								
+				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
+				<preference type="SCIENCE" name="ASTRONOMY" modifier="9"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>	
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
 			</capability>
 			<capability description="Test radiation-proof fabric and barrier">
-				<modifier mission="BIOLOGY" value="5"/>
-				<modifier science="MEDICINE" value="7"/>				
-				<modifier mission="TRADE" value="1"/>
-				<modifier science="PHYSICS" value="4"/>				
-				<modifier science="ENGINEERING" value="4"/>				
+				<preference type="MISSION" name="BIOLOGY" modifier="1.5"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="7"/>				
+				<preference type="MISSION" name="TRADE" modifier="1"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>				
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>				
 			</capability>
 			<capability description="Improve tracking of space objects">
-				<modifier science="PHYSICS" value="8"/>
-				<modifier science="MATHEMATICS" value="6"/>
-				<modifier science="COMPUTING" value="8"/>									
+				<preference type="SCIENCE" name="PHYSICS" modifier="8"/>
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="8"/>									
 			</capability>
 		</agenda>
 				
@@ -331,43 +305,28 @@
 				findings="Identifying the human factors in surface operations"
 				data="Analyzing soil's strength for the suitability of  spaceport construction">
 			<capability description="Stress test on human endurance">
-				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="2"/>
-				<modifier science="PSYCHOLOGY" value="2"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
 			</capability>
 			<capability description="Test return vehicle capability">
-				<modifier mission="DELIVERY" value="6"/>
-				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
-				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="3"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="2"/>
-				<modifier science="ENGINEERING" value="7"/>					
+				<preference type="MISSION" name="DELIVERY" modifier="1.6"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="7"/>					
 			</capability>
 			<capability description="Characterize dynamics of human interactions">
-				<modifier mission="AREOLOGY" value="1"/>
-				<modifier mission="BIOLOGY" value="1"/>
-				<modifier mission="COLLECT_ICE" value="1"/>
-				<modifier mission="COLLECT_REGOLITH" value="1"/>
-				<modifier mission="EXPLORATION" value="1"/>
-				<modifier mission="METEOROLOGY" value="1"/>
-				<modifier mission="MINING" value="1"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
-				<modifier science="PSYCHOLOGY" value="8"/>
+				<preference type="MISSION" name="TRADE" modifier="1.4"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
 			</capability>
 			<capability description="Extend EVA operations to climbing caves">
-				<modifier mission="AREOLOGY" value="1"/>
-				<modifier mission="BIOLOGY" value="1"/>
-				<modifier mission="COLLECT_ICE" value="1"/>
-				<modifier mission="COLLECT_REGOLITH" value="1"/>
-				<modifier mission="EXPLORATION" value="1"/>
-				<modifier mission="METEOROLOGY" value="1"/>
-				<modifier mission="MINING" value="1"/>
-				<modifier mission="TRADE" value="1"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.2"/>
+				<preference type="MISSION" name="MINING" modifier="1.4"/>
 			</capability>
 		</agenda>
-
 	</agendas>
 
 	<!--  Reporting authorities. The code attribute must match

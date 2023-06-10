@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -25,8 +26,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * Meta task for the ProposeScientificStudy task.
  */
 public class ProposeScientificStudyMeta extends FactoryMetaTask {
-
-    private static final double FACTOR = 2D;
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -113,7 +112,8 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
 				// Check the favourited research of the Reporting Authority
 				ScienceType science = ScienceType.getJobScience(job);
-				result *= settlement.getReportingAuthority().getStudyRatio(science);
+				result *= settlement.getPreferenceModifier(
+								new PreferenceKey(PreferenceKey.Type.SCIENCE, science.name()));
 	        }
 
 	        // Crowding modifier
