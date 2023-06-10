@@ -7,13 +7,12 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.configuration.UserConfigurable;
-import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -24,13 +23,6 @@ implements UserConfigurable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static SimLogger logger = SimLogger.getLogger(ReportingAuthority.class.getName());
-
-	// Maximum points for a top priority capability demonstration
-	private static final double MAX_RATIO_PER_CAPABILITY = 0.5D;
-	// Maximum priority value
-	private static final int MAX_PRIORITY_PER_CAPABILITY = 10;
 
 	private MissionAgenda missionAgenda;
 
@@ -176,48 +168,6 @@ implements UserConfigurable, Serializable {
 		return true;
 	}
 
-	/**
-	 * Gets a favourite ratio for a particular mission. Value of 1.0 is neutral.
-	 * 
-	 * @param type
-	 * @return Ratio to apply to the mission score
-	 */
-    public double getMissionRatio(MissionType type) {
-        double result = 1D;
-		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
-			int modifier = subAgenda.getMissionModifiers().getOrDefault(type, 0);
-
-			// The modifier is a value of 0..10 that represents a priority.
-			// For each priority point add a value to the ratio. 
-			modifier = Math.min(modifier, MAX_PRIORITY_PER_CAPABILITY);
-			result += (modifier * MAX_RATIO_PER_CAPABILITY)/MAX_PRIORITY_PER_CAPABILITY;
-		}
-
-		if (result != 1D) {
-			logger.info(name + " has returned a boost of " + Math.round(result * 100.0)/100.0
-					+ " for Mission " + type);
-		}
-		return result;
-    }
-
-	/**
-	 * Gets a favourite ratio for a particular science. Value of 1.0 is neutral.
-	 * 
-	 * @param science
-	 * @return Ratio to apply to the Study score
-	 */
-    public double getStudyRatio(ScienceType science) {
-        double result = 1D;
-		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
-			int modifier = subAgenda.getScienceModifiers().getOrDefault(science, 0);
-
-			// The modifier is a value of 0..10 that represents a priority.
-			// For each priority point add a value to the ratio. 
-			modifier = Math.min(modifier, MAX_PRIORITY_PER_CAPABILITY);
-			result += (modifier * MAX_RATIO_PER_CAPABILITY)/MAX_PRIORITY_PER_CAPABILITY;
-		}
- 		return result;
-    }
 
 	/**
 	 * Gets the male /female ratio for this Authority.
@@ -228,4 +178,17 @@ implements UserConfigurable, Serializable {
         return genderRatio;
     }
 
+	/** 
+	 * Get the predefined Preferences for this authority based on the Agenda/Objectives assigned
+	*/
+    public Map<PreferenceKey, Double> getPreferences() {
+        Map<PreferenceKey, Double> result = new HashMap<>();
+		for (MissionCapability subAgenda : missionAgenda.getCapabilities()) {
+			// Merge the various capabilities into one taking the largest
+			Map<PreferenceKey, Double> subs = subAgenda.getPreferences();
+			subs.forEach((k,v) -> result.merge(k, v, (v1,v2) ->
+									Math.max(v1.doubleValue(), v2.doubleValue())));
+		}
+		return result;
+    }
 }

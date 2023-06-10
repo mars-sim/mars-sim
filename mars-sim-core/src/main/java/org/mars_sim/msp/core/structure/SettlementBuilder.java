@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -173,6 +174,22 @@ public final class SettlementBuilder {
 		}
 	}
 
+	/**
+	 * Generate a unique name for the Settlement
+	 * @return
+	 */
+	private String generateName(ReportingAuthority sponsor) {
+		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
+
+		List<String> usedNames = unitManager.getSettlements().stream()
+							.map(s -> s.getName()).collect(Collectors.toList());
+
+		remainingNames.removeAll(usedNames);
+		int idx = RandomUtil.getRandomInt(remainingNames.size());
+
+		return remainingNames.get(idx);
+	}
+
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
 		String sponsor = spec.getSponsor();
 		// Fi the sponsor has not be defined; then use the template
@@ -184,7 +201,7 @@ public final class SettlementBuilder {
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
-			name = Settlement.generateName(ra);
+			name = generateName(ra);
 		}
 
 		// Get settlement longitude

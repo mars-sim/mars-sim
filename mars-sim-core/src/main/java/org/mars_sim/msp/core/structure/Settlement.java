@@ -68,7 +68,9 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -109,10 +111,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
-	// public static final int MAX_RANGE = 4000;
-	// public static final int HALF_RANGE = MAX_RANGE / 2;
-	// public static final int QUARTER_RANGE = MAX_RANGE / 4;
-	
+
 	private static final int MAX = 6000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
@@ -238,10 +237,6 @@ public class Settlement extends Structure implements Temporal,
 	private double iceProbabilityValue = 0;
 	/** The settlement's current probability value for regolith. */
 	private double regolithProbabilityValue = 0;
-	/** The settlement's current probability value for oxygen. */
-	private double oxygenProbabilityValue = 0;
-	/** The settlement's current probability value for methane. */
-	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** Total Crop area */
@@ -309,8 +304,6 @@ public class Settlement extends Structure implements Temporal,
 
 	/** The set of processes being overridden. */
 	private Set<OverrideType> processOverrides = new HashSet<>();
-	/** The set of disabled missions. */
-	private Set<MissionType> disabledMissions = new HashSet<>();
 	/** The set of available pressurized/pressurizing airlocks. */
 	private Set<Integer> availablePAirlocks = new HashSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
@@ -327,6 +320,7 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
+	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -410,6 +404,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Determine the reporting authority
 		this.sponsor = sponsor;
+		preferenceModifiers.putAll(sponsor.getPreferences());
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -2872,14 +2867,6 @@ public class Settlement extends Structure implements Temporal,
 		return regolithProbabilityValue;
 	}
 
-	public double getOxygenProbabilityValue() {
-		return oxygenProbabilityValue;
-	}
-
-	public double getMethaneProbabilityValue() {
-		return methaneProbabilityValue;
-	}
-
 	public double getOutsideTemperature() {
 		return outside_temperature;
 	}
@@ -3010,12 +2997,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		if (disable) {
-			disabledMissions.add(mission);
-		}
-		else {
-			disabledMissions.remove(mission);
-		}
+		double newValue = (disable ? 0D : 1D);
+		setPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name()), newValue);
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -3033,7 +3016,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return !disabledMissions.contains(mission);
+		return (getPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name())) > 0D);
 	}
 
 	public double getTotalMineralValue(Rover rover) {
@@ -3047,7 +3030,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 		return mineralValue;
 	}
-
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.
 	 *
@@ -3158,22 +3140,6 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public Settlement getSettlement() {
 		return null;
-	}
-
-	/**
-	 * Generate a unique name for the Settlement
-	 * @return
-	 */
-	public static String generateName(ReportingAuthority sponsor) {
-		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
-
-		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(s -> s.getName()).collect(Collectors.toList());
-
-		remainingNames.removeAll(usedNames);
-		int idx = RandomUtil.getRandomInt(remainingNames.size());
-
-		return remainingNames.get(idx);
 	}
 
 	/**
@@ -3454,32 +3420,9 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory;
 	}
 
-//	/**
-//	 * Sets the unit's container unit.
-//	 *
-//	 * @param newContainer the unit to contain this unit.
-//	 */
-//	@Override
-//	public void setContainerUnit(Unit newContainer) {
-//		if (newContainer != null) {
-//			if (newContainer.equals(getContainerUnit())) {
-//				return;
-//			}
-//			// 1. Set Coordinates
-//			setCoordinates(newContainer.getCoordinates());
-//			// 2. Set LocationStateType
-//			currentStateType = LocationStateType.MARS_SURFACE;
-//			// 3. Set containerID
-//			setContainerID(newContainer.getIdentifier());
-//			// 4. Fire the container unit event
-//			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-//		}
-//		else {
-//			setContainerID(MARS_SURFACE_UNIT_ID);
-//		}
-//	}
-
-	
+	/**
+	 * Get the task manager that controls the backlog for the Settlement
+	 */
     public SettlementTaskManager getTaskManager() {
         return taskManager;
     }
@@ -3497,6 +3440,9 @@ public class Settlement extends Structure implements Temporal,
 		creditManager = cm;
 	}
 	
+	/**
+	 * Get the manager of future scheduled events for this Settlemetn
+	 */
 	public ScheduledEventManager getFutureManager() {
 		return futureEvents;
 	}
@@ -3538,6 +3484,31 @@ public class Settlement extends Structure implements Temporal,
 		return this;
 	}
 	
+	/**
+	 * Get the modifier to apply of a certain preference
+	 * @param key The preference
+	 * @return The appropriate modifier; return 1 by default
+	 */
+	public double getPreferenceModifier(PreferenceKey key) {
+		return preferenceModifiers.getOrDefault(key, 1D);
+	}
+
+	/**
+	 * Set the modifier to apply to preference of a certain type.
+	 * @param key The preference to update
+	 * @param value The new modifier value
+	 */
+	public void setPreferenceModifier(PreferenceKey key, double value) {
+		preferenceModifiers.put(key, value);
+	}
+
+	/**
+	 * Get the preference that this Settlement influences
+	 */
+	public Set<PreferenceKey> getKnownPreferences() {
+		return preferenceModifiers.keySet();
+	}
+
 	/**
 	 * Reinitialize references after loading from a saved sim.
 	 */
@@ -3590,6 +3561,4 @@ public class Settlement extends Structure implements Temporal,
 
 		scientificAchievement = null;
 	}
-
-
 }
