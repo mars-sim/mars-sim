@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +88,7 @@ public class MetaTaskUtil {
 	private static List<FactoryMetaTask> personMetaTasks;
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
-	private static Map<String,MetaTask> nameToMetaTask;
+	private static Map<String,MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 
 	/**
@@ -101,7 +102,7 @@ public class MetaTaskUtil {
 	 */
 	public static synchronized void initializeMetaTasks() {
 
-		if (nameToMetaTask != null) {
+		if (idToMetaTask != null) {
 			// Created by another thread during the wait
 			return;
 		}
@@ -169,9 +170,9 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new YogaMeta());
 		
 		// Build the name lookup for later
-		nameToMetaTask = new HashMap<>();
+		idToMetaTask = new HashMap<>();
 		for(MetaTask t : allMetaTasks) {
-			nameToMetaTask.put(t.getClass().getSimpleName().toLowerCase(), t);
+			idToMetaTask.put(t.getID(), t);
 		}
 
 		// Pick put settlement tasks
@@ -208,6 +209,14 @@ public class MetaTaskUtil {
 		tasks.addAll(metaPerScope.get(TaskScope.ANY_HOUR));
 		tasks.addAll(metaPerScope.get(TaskScope.NONWORK_HOUR));
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);
+	}
+
+	/**
+	 * Get all the known MetaTasks
+	 * @return 
+	 */
+	public static Collection<MetaTask> getAllMetaTasks() {
+		return idToMetaTask.values(); 
 	}
 
 	/**
@@ -253,7 +262,7 @@ public class MetaTaskUtil {
 	 * @return meta tasks.
 	 */
 	public static MetaTask getMetaTask(String name) {
-		return nameToMetaTask.get(name.toLowerCase());
+		return idToMetaTask.get(name.toUpperCase());
 	}
 
 	/**
@@ -265,7 +274,7 @@ public class MetaTaskUtil {
 		String ss = s.replace("EVA", "")
 				.replace("Inside", "")
 				.replace("Garage", "");
-		String metaTaskName = ss.trim() + "Meta";
+		String metaTaskName = ss.trim();
 	
 		return getMetaTask(metaTaskName);
 	}

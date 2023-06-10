@@ -254,7 +254,7 @@
 				<modifier mission="COLLECT_REGOLITH" value="3"/>
 				<modifier science="BIOLOGY" value="6"/>		
 				<modifier science="BOTANY" value="6"/>	
-				<preference type="TASK" name="TendGreenhouse" value="2"/>							
+				<preference type="TASK" name="TendGreenhouse" value="1.2"/>							
 			</capability>
 			<capability description="Improve building structural integrity">
 				<modifier mission="COLLECT_REGOLITH" value="2"/>

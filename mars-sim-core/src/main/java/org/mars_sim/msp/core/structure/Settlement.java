@@ -3447,16 +3447,10 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Get the modifier to apply of a certain preference
 	 * @param key The preference
-	 * @return The appropriate modifier
+	 * @return The appropriate modifier; return 1 by default
 	 */
 	public double getPreferenceModifier(PreferenceKey key) {
-		//return activityWeights.getOrDefault(new ActivityKey(type, name), 1D);
-		double result = 1D;
-		if (preferenceModifiers.containsKey(key)) {
-			result = preferenceModifiers.get(key);
-			logger.info(this, "Found activity weight for " + key + " = " + result);
-		}
-		return result;
+		return preferenceModifiers.getOrDefault(key, 1D);
 	}
 
 	/**

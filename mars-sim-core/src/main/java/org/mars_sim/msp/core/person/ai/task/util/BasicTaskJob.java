@@ -18,9 +18,11 @@ public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
     private transient FactoryMetaTask mt;
+    private String mtID;
 
     public BasicTaskJob(FactoryMetaTask metaTask, double score) {
         super(metaTask.getName(), score);
+        this.mtID = metaTask.getID();
         this.mt = metaTask;
     }
 
@@ -29,7 +31,7 @@ public class BasicTaskJob extends AbstractTaskJob {
      */
     private FactoryMetaTask getMeta() {
         if (mt == null) {
-            mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(getDescription());
+            mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(mtID);
         }
 
         return mt;
