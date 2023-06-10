@@ -566,7 +566,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public double getBaseMass() {
 		return baseMass;
 	}
-    
+	
 	/**
 	 * Checks if it has a unit listener.
 	 * 

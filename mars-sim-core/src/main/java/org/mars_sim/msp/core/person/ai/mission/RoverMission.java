@@ -72,7 +72,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double OXYGEN_MARGIN = 1.25;
 	
 	/* The marginal factor for the amount of food to be brought during a mission. */
-	private static final double FOOD_MARGIN = 2.25;
+	private static final double FOOD_MARGIN = 1.5;
 
 	/* What is the lowest fullness of an EVASuit to be usable. */
 	private static final double EVA_LOWEST_FILL = 0.5D;
@@ -871,7 +871,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	@Override
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) {
-		// Note: currently, it uses methane as fuel. May switch to methanol in near future
+
 		Map<Integer, Number> result = super.getResourcesNeededForTrip(useBuffer, distance);
 
 		// Determine estimate time for trip.
@@ -879,7 +879,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		double timeSols = time / 1000D;
 
 		int people = getMembers().size();
-		addLifeSupportResources(result, people, timeSols, useBuffer);
+		
+		result = addLifeSupportResources(result, people, timeSols, useBuffer);
 
 		// Add resources to load EVA suit of each person
 		// Determine life support supplies needed for trip.
@@ -899,7 +900,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @param timeSols
 	 * @param useBuffer
 	 */
-	protected void addLifeSupportResources(Map<Integer, Number> result,
+	protected Map<Integer, Number> addLifeSupportResources(Map<Integer, Number> result,
 												  int crewNum, double timeSols,
 												  boolean useBuffer) {
 
@@ -920,6 +921,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (useBuffer)
 			foodAmount *= lifeSupportRangeErrorMargin * FOOD_MARGIN;
 		result.merge(FOOD_ID, foodAmount, (a,b) -> (a.doubleValue() + b.doubleValue()));
+		
+		return result;
 	}
 
 	/**
@@ -1001,7 +1004,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (useBuffer) {
 			timeLimit /= rover.getLifeSupportRangeErrorMargin();
 		}
-
+		
 		return timeLimit;
 	}
 

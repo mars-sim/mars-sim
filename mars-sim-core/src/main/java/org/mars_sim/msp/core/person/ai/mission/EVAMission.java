@@ -290,7 +290,7 @@ abstract class EVAMission extends RoverMission {
 	}
 
     /**
-     * Get the remaining mission tiem based on the travel and the remaining EVA time.
+     * Get the remaining mission time based on the travel and the remaining EVA time.
      * @return Mission time left.
      */
     @Override
@@ -354,10 +354,12 @@ abstract class EVAMission extends RoverMission {
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}
-
+		
+		double sunriseWaitMod = 1 + MAX_WAIT_SUBLIGHT/1000;
+		
 		// Add estimated EVA time at sites that haven't been visited yet.
 		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
-		result += evaSiteTime * remainingEVASites;
+		result += evaSiteTime * remainingEVASites * sunriseWaitMod;
 
 		return result;
 	}
@@ -398,7 +400,7 @@ abstract class EVAMission extends RoverMission {
 		double timeSols = explorationSitesTime / 1000D;
 
 		// Add the amount for the site visits
-		addLifeSupportResources(result, getMembers().size(), timeSols, useBuffer);
+		result = addLifeSupportResources(result, getMembers().size(), timeSols, useBuffer);
 
 		return result;
 	}

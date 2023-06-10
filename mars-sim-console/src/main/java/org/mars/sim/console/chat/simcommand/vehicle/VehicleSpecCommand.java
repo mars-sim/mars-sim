@@ -105,7 +105,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		if (isRover || isDrone) {
 			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, source.getCargoCapacity()));
 			buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
-			buffer.appendLabeledString("Cumulative Fuel Usage", String.format(CommandHelper.KG_FORMAT, source.getFuelCumulativeUsage()));	
+			buffer.appendLabeledString("Cumulative Energy Usage", String.format(CommandHelper.KWH_FORMAT, source.getCumEnergyUsage()));	
 		}
 
 		if (source instanceof Medical) {

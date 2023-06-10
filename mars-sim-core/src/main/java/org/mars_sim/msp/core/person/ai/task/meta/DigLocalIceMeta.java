@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -22,7 +21,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalIceMeta extends DigLocalMeta {
 
-	private static SimLogger logger = SimLogger.getLogger(DigLocalIceMeta.class.getName());
+	// can add back private static SimLogger logger = SimLogger.getLogger(DigLocalIceMeta.class.getName());
 	
 	private static final int THRESHOLD_AMOUNT = 50;
 	
@@ -60,8 +59,8 @@ public class DigLocalIceMeta extends DigLocalMeta {
     	double result = getProbability(ResourceUtil.iceID, settlement, 
     			person, rate * settlement.getIceProbabilityValue());
     	
-    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getIceCollectionRate() * 100.0)/100.0  
-    			+ "  Final ice: " + Math.round(result* 100.0)/100.0);
+//    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getIceCollectionRate() * 100.0)/100.0  
+//    			+ "  Final ice: " + Math.round(result* 100.0)/100.0);
         
         return result;
     }

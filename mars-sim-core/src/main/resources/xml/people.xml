@@ -219,24 +219,39 @@
 		<!-- Default: 0.62 dry Weight -->
 		<food-consumption-rate value="0.62" />
 
-		<!-- TODO: account for carbohydrates & protein content (1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food
+		<!-- TODO: account for carbohydrates & protein content 
+		
+			(1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food
+			
 			A heavy workload requires about 3000 Cal/day...consist of 2000 g of water,
 			470 g dry weight of various carbohydrates and fats, 60 to 70 g dry weight
-			of proteins, and adequate quantities of various minerals and vitamins (2).
-			http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN
-			Food solids: 0.62Kg , Water in food: 1.15Kg (3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy
+			of proteins, and adequate quantities of various minerals and vitamins 
+			
+			(2). http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN
+			
+			Food solids: 0.62Kg , Water in food: 1.15Kg 
+			
+			(3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy
 			a. Fats and ethanol have 37 and 29 kJ/g (8.8 and 6.9 kcal/g) b. Proteins
 			and most carbohydrates have about 17 kJ/g (4.1 kcal/g) c. Notes: 1. Each
-			meal is 0.62kg / 4 2. Assume a daily intake of: 0.1 kg of fats, 0.4 kg of
+			meal is 0.62kg / 4 2. 
+			
+			Assume a daily intake of: 0.1 kg of fats, 0.4 kg of
 			proteins and carbo, 0.12 of fibers and others, Daily intake : .1 * 1000 *
-			33 kJ + .4 * 1000 * 17 kJ + ... = 10100 kJ or 2415.2 kcal Each meal has 0.1550
+			33 kJ + .4 * 1000 * 17 kJ + ... = 10100 kJ or 2415.2 kcal 
+			
+			Each meal has 0.1550
 			kg or 2525 kJ 1 kg ==> 16290.323 kJ FOOD_COMPOSITION_ENERGY_RATIO = 16290.323
+			
 			(4). A standard conversion in the Systeme Internation de'Unites is that one
 			calorie equals 4.186 joules, which is how much energy is given off in heat
-			to raise 1 kg of water 1 degree Celsius. 4.186 J = 1 cal OR 4.186 kJ = 1
-			Cal or 1 kcal a). 1 small kilocalorie (kcal) is equal to 1 large food calorie
-			(Cal): 1 kcal = 1 Cal b). 1 small kilocalorie (kcal) is equal to 1000 small
-			calories (cal): 1 kcal = 1000 cal -->
+			to raise 1 kg of water 1 degree Celsius. 
+			
+			4.186 J = 1 cal OR 4.186 kJ = 1	Cal or 1 kcal 
+			
+			a). 1 small kilocalorie (kcal) is equal to 1 large food calorie	(Cal): 1 kcal = 1 Cal b). 
+			
+			1 small kilocalorie (kcal) is equal to 1000 small calories (cal): 1 kcal = 1000 cal -->
 
 		<!-- Number of millisols a person can survive without oxygen -->
 		<!-- Note: 1 millisol = 88.77 seconds -->

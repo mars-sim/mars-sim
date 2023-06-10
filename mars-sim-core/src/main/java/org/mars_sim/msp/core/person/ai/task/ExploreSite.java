@@ -58,7 +58,8 @@ public class ExploreSite extends EVAOperation {
 	
 	// Future: should keep track of the actual total exploring site time and use it below.
 	// The longer it stays, the more samples are collected and better the mining estimation
-	private double chance = numSamplesCollected * Exploration.EXPLORING_SITE_TIME / 8000.0;
+	private double chance = 0.5;
+	private double siteTime = 250;
 
 	private ExploredLocation site;
 	private Rover rover;
@@ -213,6 +214,12 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private void collectRocks(double time) {
 		if (hasSpecimenContainer()) {
+			
+			if (person.getMission() != null) {
+				siteTime = ((Exploration)person.getMission()).getSiteTime();
+				chance = numSamplesCollected * siteTime / 8000.0;
+			}
+			
 			double probability = (1 + site.getNumEstimationImprovement()) * chance * time 
 					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
 			if (probability > .9)
@@ -245,7 +252,11 @@ public class ExploreSite extends EVAOperation {
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		double probability = (time * Exploration.EXPLORING_SITE_TIME / 1000.0) 
+
+		if (person.getMission() != null)
+			siteTime = ((Exploration)person.getMission()).getSiteTime();
+		
+		double probability = (time * siteTime / 1000.0) 
 				* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D
 				* ESTIMATE_IMPROVEMENT_FACTOR;
 		if (probability > .9)

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * Mission.java
- * @date 2022-08-10
+ * AbstractMission.java
+ * @date 2023-06-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -54,7 +54,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**
- * The Mission class represents a large multi-person task There is at most one
+ * The AbstractMission class represents a large multi-person task There is at most one
  * instance of a mission per person. A Mission may have one or more people
  * associated with it.
  */

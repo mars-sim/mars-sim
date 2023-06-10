@@ -28,7 +28,10 @@
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
 	<resource name="Carbon Dioxide" type="compound" phase="gas" life-support="true"/>
 
-	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich permafrost outside soil</resource>
+	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
+
+	<resource name="Brine Water" type="compound" phase="liquid">Brine water comes from melted mineral ice or from underground water reserve.</resource>
+
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
@@ -250,6 +253,32 @@
 	<resource name="Epsom salt" type="chemical" phase="solid" demand=".5"> 
 		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
+	<resource name="Perchlorate" type="chemical" phase="solid" demand=".5"> 
+		Perchlorate salts such as magnesium perchlorate Mg(ClO4)2 is a powerful 
+		oxidizing agent. 
+		
+		The salt is also a superior desiccant (drying agent)  
+		to dry gas or air samples for gas analysis.  
+		
+		Perchlorates have been found on Mars. Being a drying agent, it retains 
+		water from the atmosphere and may release it when conditions are 
+		favorable and temperature is above 273 K. 
+		
+		Briny solutions that contain salts such as magnesium perchlorate 
+		have a lower melting point than that of pure water. 
+		
+		The abundance of perchlorate salts on Mars could support the theory 
+		that liquid aqueous solutions might exist on or below the surface, 
+		where temperature and pressure conditions would ordinarily cause
+		the water to freeze.
+		
+		However, when irradiated with a simulated Martian UV flux, 
+		perchlorates become bacteriocidal. It ensures the low probability of 
+		survival of biological contaminants released from robotic 
+		and human exploration missions.
+		
+		</resource>		
+	
 		
 <!-- Chemical for utility -->
 	<resource name="Sodium hypochlorite" type="chemical" phase="liquid">

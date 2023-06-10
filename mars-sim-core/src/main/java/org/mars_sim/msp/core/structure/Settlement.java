@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
+import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
@@ -109,6 +110,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
+
 
 	private static final int MAX = 6000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
@@ -3021,14 +3023,58 @@ public class Settlement extends Structure implements Temporal,
 		if (mineralValue == -1) {
 			// Check if any mineral locations within rover range and obtain their
 			// concentration
-			Map<String, Double> minerals = Exploration.getNearbyMineral(rover, this);
+			Map<String, Double> minerals = getNearbyMineral(rover, this);
 			if (!minerals.isEmpty()) {
 				mineralValue = Exploration.getTotalMineralValue(this, minerals);
 			}
 		}
 		return mineralValue;
 	}
+	/**
+	 * Checks if there are any mineral locations within rover/mission range.
+	 *
+	 * @param rover          the rover to use.
+	 * @param homeSettlement the starting settlement.
+	 * @return true if mineral locations.
+	 * @throws Exception if error determining mineral locations.
+	 */
+	public Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
+		Map<String, Double> minerals = new HashMap<>();
 
+		double roverRange = rover.getRange();
+		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
+		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
+		double range = roverRange;
+		if (tripRange < range)
+			range = tripRange;
+
+		MineralMap map = surfaceFeatures.getMineralMap();
+		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+
+		if (mineralLocation != null)
+			minerals = map.getAllMineralConcentrations(mineralLocation);
+
+		return minerals;
+	}
+	
+	/**
+	 * Gets the range of a trip based on its time limit and exploration sites.
+	 *
+	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @param averageSpeed  the average speed of the vehicle.
+	 * @return range (km) limit.
+	 */
+	private double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
+		int sol = marsClock.getMissionSol();
+		int numSites = 2 + (int)(1.0 * sol / 20);
+		double siteTime = 250;
+		
+		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
+		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+		double averageSpeedMillisol = averageSpeed / millisolsInHour;
+		return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+	
 	/**
 	 * Returns the ice collection rate in the vicinity of this settlement.
 	 * 
@@ -3429,7 +3475,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -3464,9 +3510,15 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Reinitialize references after loading from a saved sim
+	 * Reinitialize references after loading from a saved sim.
 	 */
 	public void reinit() {
+		if (surfaceFeatures == null) 
+			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+		
+		if (terrainElevation == null) 
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		
 		buildingManager.reinit();
 	}
 

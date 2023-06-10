@@ -369,8 +369,10 @@ public class AirComposition implements Serializable {
 			return O2_MOLAR_MASS;
 		else if (gasId == ResourceUtil.waterID)
 				return H2O_MOLAR_MASS;
-		else
-			throw new IllegalArgumentException("Unknown gas id=" + gasId);
+		else {
+			String g = ResourceUtil.findAmountResourceName(gasId);
+			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+		}
 	}
 
 	/**

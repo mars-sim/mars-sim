@@ -431,7 +431,7 @@ public abstract class OperateVehicle extends Task {
               
         // Case 2: Already arrived
         if (dist <= DESTINATION_BUFFER) {
-        	logger.log(vehicle, Level.INFO,  20_000L, "Case 2: Arrived at " + getNavpointName()
+        	logger.log(vehicle, Level.INFO,  20_000L, "Case 1: Arrived at " + getNavpointName()
         			+ " (dist: " 
         			+ Math.round(dist * 1_000.0)/1_000.0 + " km).");
 
@@ -483,7 +483,7 @@ public abstract class OperateVehicle extends Task {
 		  // Case 1 : Will soon arrive
         if (dist <= (distanceToCover + DESTINATION_BUFFER)) {
  	
-           	logger.log(vehicle, Level.INFO, 20_000,  "Case 1: Will soon arrive at " + getNavpointName() 
+           	logger.log(vehicle, Level.INFO, 20_000,  "Case 2: Arriving soon at " + getNavpointName() 
            		+ ". Slowing down. Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + KM
            		+ "distanceToCover: " + Math.round(distanceToCover * 1_000.0)/1_000.0 + KM
            		+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
@@ -510,7 +510,7 @@ public abstract class OperateVehicle extends Task {
         		nextSpeedKPH = topSpeedKPH;
         	}
 
-           	logger.log(vehicle, Level.INFO, 20_000,  "Case 0: Going to " + getNavpointName() 
+           	logger.log(vehicle, Level.INFO, 20_000,  "Case 3: Proceeding to " + getNavpointName() 
            			+ ".  Remaining dist: " + Math.round(dist * 1_000.0)/1_000.0 + KM
         			+ "uKPH: " + + Math.round(uKPH * 1_000.0)/1_000.0 + KPH
                 	+ "topSpeedKPH: " + + Math.round(topSpeedKPH * 1_000.0)/1_000.0 + KPH
