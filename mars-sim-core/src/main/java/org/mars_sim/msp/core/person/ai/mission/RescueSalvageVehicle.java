@@ -425,7 +425,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		int peopleNum = getRescuePeopleNum(vehicleTarget);
 
 		// Determine life support supplies needed for to support rescued people
-		addLifeSupportResources(result, peopleNum, timeSols, useBuffer);
+		result = addLifeSupportResources(result, peopleNum, timeSols, useBuffer);
 
 		// Add extra EVA Suits based on how many people to be rescued
 		return result;

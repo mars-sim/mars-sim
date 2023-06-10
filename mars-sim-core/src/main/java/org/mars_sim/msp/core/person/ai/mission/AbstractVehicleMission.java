@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.goods.GoodsUtil;
@@ -909,9 +910,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
 		}
 
-		// If buffer, multiply by 1.2
+		// If buffer, multiply by the the life support margin
 		if (useMargin) {
-			result *= 1.2;
+			result *= vehicle.getLifeSupportRangeErrorMargin();
 		}
 		return result;
 	}
@@ -1103,11 +1104,24 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				double amount = (Double) value;
 				double amountStored = vehicle.getAmountResourceStored(id);
 
+				// Check inside vehicle
+				if (VehicleType.isRover(vehicle.getVehicleType())) {
+					Rover rover = (Rover) vehicle;
+					// Check people's possession
+					for (Person person: rover.getCrew()) {
+						amountStored += person.getAmountResourceStored(id);
+					}
+					// Check vehicle's equipment
+					for (Equipment equipment: rover.getEquipmentSet()) {
+						amountStored += equipment.getAmountResourceStored(id);
+					}
+				}
+				
 				if (amountStored < amount) {
 					String newLog = "Not enough "
 							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 							+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
-							+ Math.round(amountStored * 100D) / 100D + " kg";
+							+ Math.round(amountStored * 100D) / 100D + " kg.";
 					logger.log(vehicle, Level.WARNING, 10_000, newLog);
 					return id;
 				}

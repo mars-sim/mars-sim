@@ -62,7 +62,7 @@
 			bring -->
 		<!-- default value : 1.5 Valid from 1.0 to 3.0 -->
 		<rover-life-support-range-error-margin
-			value="1.5" />
+			value="1.2" />
 
 		<!-- This vehicle range error margin imposed on the fuel of the vehicle. -->
 		<!-- This value will multiply with the amount of fuel needed for the mission -->

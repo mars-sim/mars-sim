@@ -909,7 +909,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the range of the vehicle
+	 * Gets the range of the vehicle.
 	 *
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
@@ -994,6 +994,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	
 	/**
 	 * Gets the time limit of the trip based on life support capacity.
+	 * Called by ExplorationSitePanel.
 	 * 
 	 * @param number of members
 	 * @param useBuffer use time buffer in estimation if true.

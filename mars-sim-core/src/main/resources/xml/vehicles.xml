@@ -173,10 +173,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="carbon dioxide" value="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="80.0" />
+			<capacity resource="water" value="100.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="8.0" />
+			<capacity resource="food" value="20.0" />
 
 			<!-- Default: varies according to the type of vehicle -->
 			<!--<capacity resource="dessert" value="120.0" />-->
@@ -257,8 +257,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="nitrogen" value="2.0" />
 			<capacity resource="carbon dioxide" value="2.0" />
 			
-			<capacity resource="water" value="160.0" />
-			<capacity resource="food" value="20.0" />
+			<capacity resource="water" value="200.0" />
+			<capacity resource="food" value="40.0" />
 			
 			<capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" />
@@ -313,8 +313,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="nitrogen" value="16.0" />
 			<capacity resource="carbon dioxide" value="8.0" />
 			
-			<capacity resource="water" value="2000.0" />
-			<capacity resource="food" value="200.0" />
+			<capacity resource="water" value="2500.0" />
+			<capacity resource="food" value="250.0" />
 			
 			<capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" />
@@ -363,8 +363,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="nitrogen" value="16.0" />
 			<capacity resource="carbon dioxide" value="8.0" />
 			
-			<capacity resource="water" value="2000.0" />
-			<capacity resource="food" value="200.0" />
+			<capacity resource="water" value="2500.0" />
+			<capacity resource="food" value="250.0" />
 			
 			<capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" />
