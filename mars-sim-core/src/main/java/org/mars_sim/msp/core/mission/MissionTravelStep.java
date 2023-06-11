@@ -126,20 +126,14 @@ public class MissionTravelStep extends MissionStep {
         manifest.addResource(vehicle.getFuelType(), amount, true);
         
         // if useMargin is true, include more oxygen
-        double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
+        manifest.addResource(ResourceUtil.oxygenID, VehicleController.RATIO_OXIDIZER_FUEL * amount,
+                            true);
+
         if (vehicle instanceof Rover) {
-           // Add in suppliers for crew
-           double travelDuration = 500D;
-           double personSols = getMission().getMembers().size() * travelDuration;
-           amountOxygen += personSols * 0.5D;
+            double travelDuration = 500D;
 
-           // Add food and water
-           // TODO use correct consumpation rates
-           manifest.addResource(ResourceUtil.waterID, personSols * 0.5D, true);
-           manifest.addResource(ResourceUtil.foodID, personSols * 0.5D, true);
-
+            addLifeSupportResource(getMission().getMembers().size(), travelDuration, addOptionals, manifest);
         }
-        manifest.addResource(ResourceUtil.oxygenID, amountOxygen, true);
     }
 
     /**
@@ -149,4 +143,36 @@ public class MissionTravelStep extends MissionStep {
     public NavPoint getDestination() {
         return destination;
     }
+
+    /**
+     * Completing the travel step transfer the Vehicle to the desitnation Settlement
+    */ 
+    @Override
+    protected void complete() {
+        Settlement target = destination.getSettlement();
+        Vehicle v = getVehicle();
+
+        // If target is a settlement then park it
+		if (target != null) {
+            // Should already have been transferred to the Settlment but safety check
+            if (!target.equals(v.getSettlement())) {
+                if (v.transfer(target)) {
+                    logger.warning(v, "Had to transfer as part of Travel step to " + target.getName() + ".");
+                }
+                else {
+                    logger.warning(v, "Unable to transfer to " + target.getName() + ".");
+                }
+            }
+
+            // garage it
+            target.getBuildingManager().addToGarage(v);
+		}
+        super.complete();
+    }
+    
+    @Override
+    public String toString() {
+        return "Mission " + getMission().getName() + " travel to " + destination.getDescription();
+    }
+
 }

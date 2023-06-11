@@ -114,4 +114,10 @@ public class MissionLoadVehicleStep extends MissionStep {
 
         return null;
     }
+
+    @Override
+	public String toString() {
+		return "Mission " + getMission().getName() + " load  " + 
+                    ((MissionVehicleProject) getMission()).getVehicle().getName();
+	}
 }

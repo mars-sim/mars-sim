@@ -45,13 +45,13 @@ public abstract class MissionProject implements Mission {
         }
 
         @Override
-        protected void stepCompleted(ProjectStep completedStep) {
-            log.addEntry("Completed " + completedStep.getDescription());
+        protected void completed(boolean successful) {
+            completeMission(successful);
         }
 
         @Override
         protected void stepStarted(ProjectStep activeStep) {
-            log.addEntry("Started " + activeStep.getDescription());
+            log.addEntry(activeStep.getDescription());
             stepStarted = log.getLastEntry().getTime();
         }
     }
@@ -66,6 +66,8 @@ public abstract class MissionProject implements Mission {
 
 	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
+    private static final MissionStatus ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
+
 
     private Project control;
     private String missionCallSign;
@@ -107,10 +109,25 @@ public abstract class MissionProject implements Mission {
     }
 
     protected void abortMission(MissionStatus reason) {
-        log.addEntry("Aborted:" + reason.getName());
-        control.abort(reason.getName());
-		logger.warning(leader, "Mission aborted : " + reason.getName());
-        status.add(reason);
+        if (!control.isFinished()) {
+            logger.warning(leader, "Mission aborted : " + reason.getName());
+
+            log.addEntry("Aborted:" + reason.getName());
+            control.abort(reason.getName());
+        }
+    }
+
+    /**
+     * Call back from the Project controller
+     * @see Project.completed
+     */
+    private void completeMission(boolean successful) {
+        if (successful) {
+            // Assume that the status has already been updated as part of the abort
+            log.addEntry("Completed");
+            status.add(ACCOMPLISHED);
+        }
+        clearDown();
     }
 
     /**
@@ -198,6 +215,9 @@ public abstract class MissionProject implements Mission {
             control.addStep(ps);
         }
 
+        // Add the close down step
+        control.addStep(new MissionCloseStep(this));
+        
         if (members.size() < minMembers) {
             findMembers();
         }
@@ -298,7 +318,12 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public void removeMember(Worker member) {
-        members.remove(member);
+        if (members.remove(member)) {
+            // Add experience
+            if (member instanceof Person p) {
+                p.getShiftSlot().setOnCall(false);
+            }
+        }
     }
 
     /**
@@ -395,5 +420,16 @@ public abstract class MissionProject implements Mission {
      */
     public void addMissionLog(String string) {
         log.addEntry(string);
+    }
+
+    /**
+     * Clear down the mission as it has completed. This should be overriden by subclasses/
+     */
+    protected void clearDown() {
+        // Force release of any remaining members
+        for(Worker w : members) {
+            logger.warning(w, "Still attached to Mission " + getName() + " at clear down");
+            w.setMission(null);
+        }
     }
 }

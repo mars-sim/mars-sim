@@ -1446,11 +1446,11 @@ public abstract class Vehicle extends Unit
 		}
 	}
 
-	public double getFuelRangeErrorMargin() {
+	public static double getFuelRangeErrorMargin() {
 		return fuel_range_error_margin;
 	}
 
-	public double getLifeSupportRangeErrorMargin() {
+	public static double getLifeSupportRangeErrorMargin() {
 		return life_support_range_error_margin;
 	}
 
@@ -2002,7 +2002,9 @@ public abstract class Vehicle extends Unit
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
-			transferred = ((Settlement)cu).removeParkedVehicle(this);
+			Settlement currentBase = (Settlement)cu;
+			transferred = currentBase.removeParkedVehicle(this);
+			this.setCoordinates(currentBase.getCoordinates());
 		}
 
 		if (transferred) {

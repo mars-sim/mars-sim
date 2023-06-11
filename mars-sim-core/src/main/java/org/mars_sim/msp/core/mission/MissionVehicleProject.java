@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
+import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -47,6 +48,22 @@ public class MissionVehicleProject extends MissionProject
         vehicle.setReservedForMission(true);
     }
 
+    private void releaseVehicle(Vehicle v) {
+        if (this.equals(v.getMission())) {
+            // If still assigned then release
+            v.setMission(null);
+            v.setReservedForMission(false);
+        }
+    }
+
+    /**
+     * Clear down the mission as it has been completed.
+     */
+    @Override
+    protected void clearDown() {
+        releaseVehicle(vehicle);
+        super.clearDown();
+    }
     /**
 	 * Find the best suitable vehicle for the mission if possible.
 	 *
@@ -80,7 +97,7 @@ public class MissionVehicleProject extends MissionProject
 	}
 
     /**
-     * Score the vehcle suitability for this Mission
+     * Score the vehicle suitability for this Mission
      * @param v
      * @return Return -1 if not suitable at all
      */
@@ -137,6 +154,11 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public NavPoint getCurrentDestination() {
+        ProjectStep step = getCurrentStep();
+        if (step instanceof MissionTravelStep mts) {
+            return mts.getDestination();
+        }
+
         return null;
     }
 

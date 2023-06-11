@@ -379,6 +379,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 				else if (m.isDone()) {
 					mIcon = COMPLETED;
 				}
+				this.setText(m.getName());
 				this.setIcon(mIcon);
 			}
 			return this;

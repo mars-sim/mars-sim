@@ -10,12 +10,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * Represents a project that has a number of steps
  */
 public class Project implements Serializable {
+    private static final SimLogger logger = SimLogger.getLogger(Project.class.getName());
+
     private String name;
     private List<ProjectStep> steps = new ArrayList<>();
     private int currentStepIdx = -1; // Hold the index to make it easier
@@ -82,12 +85,21 @@ public class Project implements Serializable {
         
         if (currentStepIdx >= steps.size()) {
             isDone = true;
+            completed(true);
         }
         else {
             currentStep = steps.get(currentStepIdx);
+            logger.info(getName() + " started step " + currentStep);
             currentStep.start();
             stepStarted(currentStep);
         }
+    }
+
+    /**
+     * Callback that this project has completed
+     * @param successful
+     */
+    protected void completed(boolean successful) {
     }
 
     /**
@@ -113,6 +125,7 @@ public class Project implements Serializable {
         if ((currentStep != null) && !currentStep.isCompleted()) {
             currentStep.complete();
         }
+        completed(false);
     }
 
     /** 

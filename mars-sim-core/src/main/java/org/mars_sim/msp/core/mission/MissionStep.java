@@ -10,12 +10,15 @@ package org.mars_sim.msp.core.mission;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Represent a step that a Mission has to undertake. 
@@ -64,6 +67,26 @@ public abstract class MissionStep extends ProjectStep {
      */
     void getRequiredResources(MissionManifest resources, boolean includeOptionals) {
        // Do nonthing; nothing to add
+    }
+
+    /**
+     * Calculate and add life support resources to the manifest for the crew
+     * @param crew Number of crew members
+     * @param durationMSol Duration to cover for supplies
+     * @param ideal Calculate the ideal amount which will be more thn the minimum
+     * @param manifest Place to hold the order
+     */
+    protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, MissionManifest manifest) {
+        double personSols = (crew * durationMSol)/1000D; // Consumption rates are in Sols
+        personSols *= (ideal ? Vehicle.getLifeSupportRangeErrorMargin() : 1D);
+        manifest.addResource(ResourceUtil.oxygenID,
+                        PhysicalCondition.getOxygenConsumptionRate() * personSols, true);
+
+		manifest.addResource(ResourceUtil.waterID,
+                        PhysicalCondition.getWaterConsumptionRate() * personSols, true);
+
+        manifest.addResource(ResourceUtil.foodID,
+		                PhysicalCondition.getFoodConsumptionRate() * personSols, true);
     }
 
     /**

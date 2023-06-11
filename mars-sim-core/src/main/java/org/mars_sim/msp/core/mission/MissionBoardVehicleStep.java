@@ -74,6 +74,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		// All good to leave
         if (canLeave) {
             depart(mp, v);
+			mp.getLog().setStarted();
             complete();
         }
         return canWork;
@@ -207,5 +208,10 @@ public class MissionBoardVehicleStep extends MissionStep {
 		// No route to board
 		logger.warning(worker, "Cannot walk to vehicle " + v.getName() + " for board");
 		return false; 
+	}
+
+	@Override
+	public String toString() {
+		return "Mission " + getMission().getName() + " board  " + getVehicle().getName();
 	}
 }
