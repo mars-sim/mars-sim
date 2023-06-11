@@ -24,9 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -46,7 +44,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -127,9 +124,6 @@ public class SimulationConfig implements Serializable {
 	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
 
 	private static final String MISSION_CONFIGURATION = "mission-configuration";
-	private static final String MISSION_TYPE = "mission-type";
-	private static final String BOOST = "boost";
-	private static final String NAME = "name";
 	private static final String EVA_LIGHT = "min-eva-light";
 	private static final String CONTENT_URL = "content-url";
 
@@ -181,8 +175,6 @@ public class SimulationConfig implements Serializable {
 	private transient List<String> excludedList;
 
 	private transient ReportingAuthorityFactory raFactory;
-
-	private transient Map<MissionType, Integer> missionBoosts = new EnumMap<>(MissionType.class);
 
 	private double minEVALight;
 
@@ -265,11 +257,6 @@ public class SimulationConfig implements Serializable {
 
 		// LOad MIssion Types
 		Element missionConfig = root.getChild(MISSION_CONFIGURATION);
-		for(Element mission : missionConfig.getChildren(MISSION_TYPE)) {
-			MissionType mt = MissionType.valueOf(mission.getAttributeValue(NAME).toUpperCase());
-			int boost = Integer.parseInt(mission.getAttributeValue(BOOST));
-			missionBoosts.put(mt, boost);
-		}
 		minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
 		checkXMLFileVersion();
 
@@ -551,13 +538,6 @@ public class SimulationConfig implements Serializable {
 	 * Getter
 	 * -----------------------------------------------------------------------------
 	 */
-
-	/**
-	 * Any mission boosts applied
-	 */
-	public Map<MissionType, Integer> getMissionBoosts() {
-		return missionBoosts;
-	}
 
 	/**
 	 * Gets the ratio of simulation time to real time in simulation.xml

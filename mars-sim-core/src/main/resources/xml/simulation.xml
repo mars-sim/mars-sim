@@ -27,12 +27,9 @@
 	<!ATTLIST average-transit-time value CDATA #REQUIRED>
 	<!ELEMENT unused-cores EMPTY>
 	<!ATTLIST unused-cores value CDATA #REQUIRED>
-	<!ELEMENT mission-configuration (min-eva-light, mission-type*)>
+	<!ELEMENT mission-configuration (min-eva-light)>
 	<!ELEMENT min-eva-light EMPTY>
 	<!ATTLIST min-eva-light value CDATA #REQUIRED>
-	<!ELEMENT mission-type EMPTY>
-	<!ATTLIST mission-type name CDATA #REQUIRED>
-	<!ATTLIST mission-type boost CDATA #REQUIRED>
 ]>
 
 <simulation-configuration>
@@ -120,10 +117,5 @@
 	<mission-configuration>
 		<!-- minEVALight is in "flux" where the max is 717 -->
 		<min-eva-light value="7.0"/>
-
-		<!-- Mission type element must have a name that matches the MissionType enum -->
-		<!-- Example of a mission type boost
-		<mission-type name="COLLECT_ICE" boost="150" />
-		-->
 	</mission-configuration>
 </simulation-configuration>

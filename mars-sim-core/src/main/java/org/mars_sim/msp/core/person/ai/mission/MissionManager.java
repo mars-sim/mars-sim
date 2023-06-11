@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +49,6 @@ public class MissionManager implements Serializable {
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
 	private SolMetricDataLogger<String> historicalMissions;
-
-	/** Prob boost for Mission Types */
-	private transient Map<MissionType, Integer> missionBoost = new EnumMap<>(MissionType.class);
 
 	/**
 	 * Constructor.
@@ -377,12 +373,6 @@ public class MissionManager implements Serializable {
 	 * Sets up any Mission configurations.
 	 */
 	public void initializeInstances(SimulationConfig simulationConfig) {
-		if (missionBoost == null) {
-			missionBoost = simulationConfig.getMissionBoosts();
-		}
-		else {
-			missionBoost.putAll(simulationConfig.getMissionBoosts());
-		}
 		EVAOperation.setMinSunlight(simulationConfig.getMinEVALight());
 	}
 	
