@@ -47,7 +47,7 @@ public class EquipmentInventory
 
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;
-
+	
 		// Create equipment set
 		equipmentSet = new UnitSet<>();
 

@@ -127,8 +127,8 @@ public class Battery implements Serializable {
     		double powerMax = getMaxPowerDraw();
     				
     		double energyToDeliver = 0;
-	    	double energyToSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
-	    	if (energyToSupply <= 0)
+	    	double energyCanSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
+	    	if (energyCanSupply <= 0)
 	    		return 0;
 	    	
 //    		double powerAvailable = 0;
@@ -137,12 +137,12 @@ public class Battery implements Serializable {
 //    		else
 //    			powerAvailable = powerMax;
 	    	
-    		energyToDeliver = Math.min(currentEnergy, Math.min(energyToSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
+    		energyToDeliver = Math.min(currentEnergy, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
           	logger.log(unit, Level.INFO, 20_000, 
           			"[Battery Status]  "
           	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + KWH
-          			+ "energyToSupply: " + Math.round(energyToSupply * 1_000.0)/1_000.0 + KWH
+          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
                 	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
                   	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
                 	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "

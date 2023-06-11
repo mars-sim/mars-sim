@@ -1263,6 +1263,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return health.getcurrentEnergy();
 	}
 	
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
+	}
+	
 	/**
 	 * Compares if an object is the same as this robot
 	 *

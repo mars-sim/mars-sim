@@ -150,7 +150,8 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Checks if all the beds have been taken/registered
+	 * Checks if all the beds have been taken/registered.
+	 * 
 	 * @return
 	 */
 	public boolean areAllBedsTaken() {
@@ -216,7 +217,7 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Assigns a given bed to a given person
+	 * Assigns a given bed to a given person.
 	 *
 	 * @param person
 	 * @param bed

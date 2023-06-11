@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EatDrinkMeta.java
- * @date 2022-08-10
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -33,6 +33,8 @@ public class EatDrinkMeta extends FactoryMetaTask {
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
 	private static final int CAP = 6_000;
+	public static final double VEHICLE_FOOD_RATION = .25;
+	public static final double MISSION_FOOD_RATION = .5;
 		
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int WATER_ID = ResourceUtil.waterID;
@@ -129,12 +131,6 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		}
 
 		else if (person.isInVehicle()) {
-
-			// Future: how to prevent a person to eat food from the vehicle 
-			// before the mission embarking ? 
-			
-			// Note: it will affect the amount of food available 
-			// for the mission
 			
 			if (UnitType.VEHICLE == container.getUnitType()) {
 				vehicle = (Vehicle)container;
@@ -157,13 +153,27 @@ public class EatDrinkMeta extends FactoryMetaTask {
 						water = true;
 					}
 				}
-				
-				else if (hungry && (foodAmount > 0 || desserts > 0)) {
-					food = true;
-				}
-
-				else if (thirsty && waterAmount > 0) {
-					water = true;
+				else {
+					// One way that prevents a person from eating vehicle food
+					// before the mission embarking is
+					// by having the person carry food himself
+					
+					// Note: if not, it may affect the amount of water/food available 
+					// for the mission
+					
+					rh = (ResourceHolder) person;
+					if (foodAmount == 0)
+						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					if (waterAmount == 0)
+						waterAmount = rh.getAmountResourceStored(WATER_ID);
+		
+					if (hungry && (foodAmount > 0 || desserts > 0)) {
+						food = true;
+					}
+	
+					else if (thirsty && waterAmount > 0) {
+						water = true;
+					}
 				}
 			}
 		}
@@ -194,6 +204,14 @@ public class EatDrinkMeta extends FactoryMetaTask {
 					Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
 					h0 *= getBuildingModifier(diningBuilding, person);
 
+				}
+				else if (person.isInVehicle() ) {
+					// Person will try refraining from eating food while in a vehicle
+					h0 *= VEHICLE_FOOD_RATION;
+				}
+				else if (person.getMission() != null) {
+					// Person will tends to ration food while in a mission
+					h0 *= MISSION_FOOD_RATION;
 				}
 			}
 

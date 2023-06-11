@@ -188,7 +188,7 @@ extends TabPanel {
 		
 		sleepTF = new JTextField(text.toString());
 		sleepTF.setEditable(false);
-		sleepTF.setColumns(20);
+		sleepTF.setColumns(30);
 		sleepTF.setCaretPosition(0);
 		
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -210,58 +210,6 @@ extends TabPanel {
         tablesPanel.setLayout(new BoxLayout(tablesPanel, BoxLayout.Y_AXIS));
 		content.add(tablesPanel, BorderLayout.CENTER);
 
-		// Add radiation dose info
-		// Prepare radiation panel
-		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
-		tablesPanel.add(radiationPanel, BorderLayout.NORTH);
-
-		// Prepare radiation label
-		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(radiationLabel);
-		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
-		radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.radiation.tooltip")); //$NON-NLS-1$
-			 
-		// Prepare radiation scroll panel
-		JScrollPane radiationScrollPanel = new JScrollPane();
-		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
-
-		// Prepare radiation table model
-		radiationTableModel = new RadiationTableModel(condition);
-
-		// Create radiation table
-		radiationTable = new JTable(radiationTableModel) {
-
-            //Implement table cell tool tips.           
-            public String getToolTipText(MouseEvent e) {
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-//              int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-				if (colIndex < RADIATION_TOOL_TIPS.length) {
-                    tip = RADIATION_TOOL_TIPS[colIndex];
-				}
-                return tip;
-            }
-        };
-	
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		TableColumnModel rModel = radiationTable.getColumnModel();
-		rModel.getColumn(0).setCellRenderer(renderer);
-		rModel.getColumn(1).setCellRenderer(renderer);
-		rModel.getColumn(2).setCellRenderer(renderer);
-		rModel.getColumn(3).setCellRenderer(renderer);
-
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 75));
-		rModel.getColumn(0).setPreferredWidth(40);
-		rModel.getColumn(1).setPreferredWidth(100);
-		rModel.getColumn(2).setPreferredWidth(65);
-		rModel.getColumn(3).setPreferredWidth(35);
-		radiationTable.setRowSelectionAllowed(true);
-		radiationScrollPanel.setViewportView(radiationTable);
-		
-		// Added sorting
-		radiationTable.setAutoCreateRowSorter(true);
 
 		// Prepare sleep time panel
 		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
@@ -340,9 +288,91 @@ extends TabPanel {
 		
 		// Add sorting
 		foodTable.setAutoCreateRowSorter(true);
+
+		///////////////////////////
 		
+
+		// Add radiation dose info
+		// Prepare radiation panel
+		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
+		tablesPanel.add(radiationPanel, BorderLayout.NORTH);
+
+		// Prepare radiation label
+		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(radiationLabel);
+		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
+		radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.radiation.tooltip")); //$NON-NLS-1$
+			 
+		// Prepare radiation scroll panel
+		JScrollPane radiationScrollPanel = new JScrollPane();
+		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
+
+		// Prepare radiation table model
+		radiationTableModel = new RadiationTableModel(condition);
+
+		// Create radiation table
+		radiationTable = new JTable(radiationTableModel) {
+
+            //Implement table cell tool tips.           
+            public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+//              int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+				if (colIndex < RADIATION_TOOL_TIPS.length) {
+                    tip = RADIATION_TOOL_TIPS[colIndex];
+				}
+                return tip;
+            }
+        };
+	
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		TableColumnModel rModel = radiationTable.getColumnModel();
+		rModel.getColumn(0).setCellRenderer(renderer);
+		rModel.getColumn(1).setCellRenderer(renderer);
+		rModel.getColumn(2).setCellRenderer(renderer);
+		rModel.getColumn(3).setCellRenderer(renderer);
+
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 75));
+		rModel.getColumn(0).setPreferredWidth(40);
+		rModel.getColumn(1).setPreferredWidth(100);
+		rModel.getColumn(2).setPreferredWidth(65);
+		rModel.getColumn(3).setPreferredWidth(35);
+		radiationTable.setRowSelectionAllowed(true);
+		radiationScrollPanel.setViewportView(radiationTable);
+		
+		// Added sorting
+		radiationTable.setAutoCreateRowSorter(true);
+
 		/////////////////////////////////////////////////////////		
 		
+		// Prepare medication panel.
+		JPanel medicationPanel = new JPanel(new BorderLayout());
+		tablesPanel.add(medicationPanel);
+	
+		// Prepare medication label.
+		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
+		StyleManager.applySubHeading(medicationLabel);
+		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
+	
+		// Prepare medication scroll panel
+		JScrollPane medicationScrollPanel = new JScrollPane();
+		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
+	
+		// Prepare medication table model.
+		medicationTableModel = new MedicationTableModel(condition);
+	
+		// Prepare medication table.
+		medicationTable = new JTable(medicationTableModel);
+		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
+		medicationTable.setRowSelectionAllowed(true);
+		medicationScrollPanel.setViewportView(medicationTable);
+	
+		// Add sorting
+		medicationTable.setAutoCreateRowSorter(true);
+	
+		//////////////////////////////
 		
 		// Prepare health problem panel
 		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
@@ -371,30 +401,6 @@ extends TabPanel {
 		healthProblemTable.setAutoCreateRowSorter(true);
 		
 		
-		// Prepare medication panel.
-		JPanel medicationPanel = new JPanel(new BorderLayout());
-		tablesPanel.add(medicationPanel);
-
-		// Prepare medication label.
-		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(medicationLabel);
-		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
-
-		// Prepare medication scroll panel
-		JScrollPane medicationScrollPanel = new JScrollPane();
-		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
-
-		// Prepare medication table model.
-		medicationTableModel = new MedicationTableModel(condition);
-
-		// Prepare medication table.
-		medicationTable = new JTable(medicationTableModel);
-		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
-		medicationTable.setRowSelectionAllowed(true);
-		medicationScrollPanel.setViewportView(medicationTable);
-
-		// Add sorting
-		medicationTable.setAutoCreateRowSorter(true);
 		
 		// Update at least one before displaying it
 		update();
@@ -408,13 +414,19 @@ extends TabPanel {
 		// Prepare sleep time TF
 		StringBuilder text = new StringBuilder();
 		int size = bestSleepTime.length;
+		int lastSleepTime = -1;
 		for (int i=0; i<size; i++) {
-			text.append("@ ") .append(bestSleepTime[i])
-			.append(" msol (w:")
-			.append(person.getSleepWeight(bestSleepTime[i]))
-			.append(")");
-			if (i != size - 1)
-				text.append(",  ");
+			int sleepTime = bestSleepTime[i];
+			if (lastSleepTime != sleepTime) {
+				if (i != 0) {
+					text.append(",  ");
+				}
+				text.append("@ ").append(sleepTime)
+				.append(" msol (w:")
+				.append(person.getSleepWeight(sleepTime))
+				.append(")");
+				lastSleepTime = sleepTime;
+			}
 		}
 		
 		return text;

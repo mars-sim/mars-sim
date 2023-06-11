@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2021-12-20
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -26,6 +26,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -88,7 +90,7 @@ public class InventoryTabPanel extends TabPanel {
 			inventoryContentPanel.add(resourcesPanel);
 
 			// Create resources table model
-			resourceTableModel = new ResourceTableModel(rHolder);
+			resourceTableModel = new ResourceTableModel(unit);
 
 			// Create resources table
 			JTable resourceTable = new JTable(resourceTableModel);
@@ -212,20 +214,43 @@ public class InventoryTabPanel extends TabPanel {
 		private Map<Resource, Double> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
+		private Unit unit;
 		private ResourceHolder holder;
 
-        private ResourceTableModel(ResourceHolder unit) {
-        	this.holder = unit;
+        private ResourceTableModel(Unit unit) {
+        	this.unit = unit;
+        	this.holder = (ResourceHolder) unit;
         	loadResources(keys, resources, capacity);
         }
 
         private void loadResources(List<Resource> kys, Map<Resource, Double> res, Map<Resource, Double> cap) {  
-			List<AmountResource> arItems = holder.getAmountResourceIDs().stream()
-							.map(ar -> ResourceUtil.findAmountResource(ar))
-							.filter(Objects::nonNull)
-							.toList();
+        	List<AmountResource> arItems = holder.getAmountResourceIDs().stream()
+					.map(ar -> ResourceUtil.findAmountResource(ar))
+					.filter(Objects::nonNull)
+					.toList();
+        	
+        	if (unit.getUnitType() == UnitType.PERSON) {
+        		
+        		List<AmountResource> ars = ((Person)unit).getEquipmentInventory()
+        				.getAmountResourceIDs().stream()
+    					.map(ar -> ResourceUtil.findAmountResource(ar))
+    					.filter(Objects::nonNull)
+    					.toList();
+        		
+        		kys.addAll(ars);	
+        	}
+        	else if (unit.getUnitType() == UnitType.ROBOT) {
+        		List<AmountResource> ars = ((Robot)unit).getEquipmentInventory()
+        				.getAmountResourceIDs().stream()
+    					.map(ar -> ResourceUtil.findAmountResource(ar))
+    					.filter(Objects::nonNull)
+    					.toList();
+        		
+        		kys.addAll(ars);	
+            }
 
 			kys.addAll(arItems);
+			
 			for (AmountResource resource : arItems) {
 				res.put(resource, holder.getAmountResourceStored(resource.getID()));
 				cap.put(resource, holder.getAmountResourceCapacity(resource.getID()));
