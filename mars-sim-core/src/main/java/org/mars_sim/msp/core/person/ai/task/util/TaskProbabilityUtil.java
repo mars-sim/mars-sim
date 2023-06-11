@@ -4,7 +4,7 @@
  * @date 2022-06-11
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.meta;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.Iterator;
 
@@ -58,7 +58,7 @@ public class TaskProbabilityUtil {
     }
 
 
-    protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
+    public static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
         double modifier = 1D;
 
         Building currentBuilding = BuildingManager.getBuilding(robot);

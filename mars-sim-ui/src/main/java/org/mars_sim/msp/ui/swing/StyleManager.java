@@ -117,7 +117,7 @@ public class StyleManager {
         // Sub heading font used inside panels is BOLD & size +4
         Properties subHeadingProps = new Properties();
         subHeadingProps.setProperty(FONT_STYLE, "BOLD");
-        subHeadingProps.setProperty(FONT_SIZE, "+4");
+        subHeadingProps.setProperty(FONT_SIZE, "+3");
         styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
 
         // Default is the LAF with a Red accent colour
@@ -232,7 +232,7 @@ public class StyleManager {
     }
 
     /**
-     * Loads the styles defintions to use in this UI.
+     * Loads the styles definitions to use in this UI.
      * 
      * @param newStyles
      */

@@ -182,27 +182,16 @@ extends TabPanel {
 		JLabel sleepHrLabel = new JLabel(Msg.getString("TabPanelFavorite.sleepHour"), SwingConstants.RIGHT); //$NON-NLS-1$
 		sleepHrLabel.setFont(StyleManager.getLabelFont());
 		springPanel.add(sleepHrLabel);
-
-		// Checks the 3 best sleep time
-    	int bestSleepTime[] = person.getPreferredSleepHours();		
-		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
-		StringBuilder text = new StringBuilder();
-		int size = bestSleepTime.length;
-		for (int i=0; i<size; i++) {
-			text.append(bestSleepTime[i])
-			.append(" (") 
-			.append(person.getSleepWeight(bestSleepTime[i]))
-			.append(")");
-			if (i != size - 1)
-				text.append(",  ");
-		}
+		StringBuilder text = updateSleepTime();		
+		
 		sleepTF = new JTextField(text.toString());
 		sleepTF.setEditable(false);
 		sleepTF.setColumns(20);
 		sleepTF.setCaretPosition(0);
+		
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper5.add(sleepTF);
 		springPanel.add(wrapper5);
 
@@ -411,6 +400,26 @@ extends TabPanel {
 		update();
 	}
 
+	private StringBuilder updateSleepTime() {	
+		// Checks the 3 best sleep time
+    	int bestSleepTime[] = person.getPreferredSleepHours();
+		Arrays.sort(bestSleepTime);
+		
+		// Prepare sleep time TF
+		StringBuilder text = new StringBuilder();
+		int size = bestSleepTime.length;
+		for (int i=0; i<size; i++) {
+			text.append("@ ") .append(bestSleepTime[i])
+			.append(" msol (w:")
+			.append(person.getSleepWeight(bestSleepTime[i]))
+			.append(")");
+			if (i != size - 1)
+				text.append(",  ");
+		}
+		
+		return text;
+	}
+	
 
 	/**
 	 * Updates the info on this panel.
@@ -487,23 +496,10 @@ extends TabPanel {
 			ghrelinTCache = newGT;
 			ghrelinTLabel.setText(DECIMAL_MSOLS.format(newGT));
 		}
-		
-		// Checks the 3 best sleep times
-    	int bestSleepTime[] = person.getPreferredSleepHours();		
-		Arrays.sort(bestSleepTime);
-		
-		// Prepare sleep time TF
-		StringBuilder text = new StringBuilder();
-		int size = bestSleepTime.length;
-		for (int i=0; i<size; i++) {
-			text.append(bestSleepTime[i])
-			.append(" (") 
-			.append(person.getSleepWeight(bestSleepTime[i]))
-			.append(")");
-			if (i != size - 1)
-				text.append(",  ");
-		}
-	
+
+		// Update sleep time TF
+		StringBuilder text = updateSleepTime();
+
 		if (!sleepTF.getText().equalsIgnoreCase(text.toString()))
 			sleepTF.setText(text.toString());
 		

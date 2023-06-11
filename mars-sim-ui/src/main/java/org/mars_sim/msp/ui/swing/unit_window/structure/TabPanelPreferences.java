@@ -23,6 +23,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
@@ -38,8 +39,12 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelPreferences extends TabPanel {
 
+	/** Default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TabPanelPreferences.class.getName());
+
+
 	/**
-	 * Rrepresents a renderable version fo a PreferenceKey with a displayable label.
+	 * Represents a renderable version for a Preference Key with a displayable label.
 	 */
 	private static final record RenderableKey(PreferenceKey key, String label) {
 		@Override
@@ -58,6 +63,7 @@ public class TabPanelPreferences extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
@@ -96,11 +102,11 @@ public class TabPanelPreferences extends TabPanel {
 		cModel.getColumn(0).setPreferredWidth(30);
 		cModel.getColumn(2).setPreferredWidth(20);
 
-		// Added the two methods below to make all heatTable columns
+		// Add the two methods below to make all columns
 		// Resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 
-		// Added sorting
+		// Add sorting
 		table.setAutoCreateRowSorter(true);
 
 		// Create editor control
@@ -119,8 +125,8 @@ public class TabPanelPreferences extends TabPanel {
 		add.addActionListener(i -> {addEntry();});
 		newPanel.add(add);
 
-		// Add an expaliantion
-		JLabel message = new JLabel("Edit the modifier column to change");
+		// Add an explanation
+		JLabel message = new JLabel("Note: Click on modifier column to change");
 		message.setFont(StyleManager.getSmallFont());
 		topPanel.add(message, BorderLayout.SOUTH);
 
@@ -129,14 +135,14 @@ public class TabPanelPreferences extends TabPanel {
 	}
 
 	/**
-	 * Add a new entry to the settlement
+	 * Adds a new entry to the settlement.
 	 */
 	private void addEntry() {
 		tableModel.addEntry((RenderableKey) nameCombo.getSelectedItem(), 1D);
 	}
 
 	/**
-	 * Populate the name combo based on the type of preference
+	 * Populates the name combo based on the type of preference.
 	 */
 	private void populateNameCombo() {
 		PreferenceKey.Type selectedType = (Type) typeCombo.getSelectedItem();
@@ -172,7 +178,8 @@ public class TabPanelPreferences extends TabPanel {
 	}
 
 	/**
-	 * Get a renderable version of a PreferenceKey
+	 * Gets a renderable version of a PreferenceKey.
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -199,7 +206,7 @@ public class TabPanelPreferences extends TabPanel {
 	}
 
 	/**
-	 * Internal class used as model for preference weights
+	 * Internal class used as model for preference weights.
 	 */
 	private static class PreferenceTableModel
 				extends AbstractTableModel {
@@ -219,7 +226,7 @@ public class TabPanelPreferences extends TabPanel {
 		}
 
 		/**
-		 * Add an entry to the table and the Settlement
+		 * Adds an entry to the table and the Settlement.
 		 */
 		public void addEntry(RenderableKey preference, double modifier) {
 			if (!items.contains(preference)) {
@@ -229,6 +236,10 @@ public class TabPanelPreferences extends TabPanel {
 				manager.setPreferenceModifier(preference.key(), modifier);
 				int newRow = items.size()-1;
 				fireTableRowsInserted(newRow, newRow);
+				
+				logger.info(manager, preference.label().toString() + " @ " 
+						+ Math.round(modifier * 10.0)/10.0 
+						+ " manually added by Player in Settlement's Preference tab.");
 			}
 		}
 

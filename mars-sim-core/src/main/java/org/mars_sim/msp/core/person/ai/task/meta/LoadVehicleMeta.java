@@ -45,7 +45,7 @@ public class LoadVehicleMeta extends MetaTask
         private boolean eva;
 
         private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
-            super(owner, "Load " + (eva ? "via EVA " : "") + target.getName(), score);
+            super(owner, "Load " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
             this.target = target;
             this.eva = eva;
         }

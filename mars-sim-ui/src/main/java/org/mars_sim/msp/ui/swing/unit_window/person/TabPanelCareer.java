@@ -564,8 +564,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				}
 
 				if (box == JOptionPane.YES_OPTION) {
-					roleCache = selectedRole;
+	
 					person.getRole().changeRoleType(selectedRole);
+					
+					logger.info(person, "Player just changed his/her role from " 
+							+ roleCache.getName() + " to " + selectedRole.getName() + ".");
+					
+					roleCache = selectedRole;
 				}
 				else {
 					roleComboBox.setSelectedItem(roleCache.getName());

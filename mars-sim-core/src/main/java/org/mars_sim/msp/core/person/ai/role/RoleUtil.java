@@ -210,8 +210,6 @@ public class RoleUtil implements Serializable {
 		person.getRole().addRoleHistory(roleType);
 		// Fire the role event
 		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
-
-		//logger.info(person, "New Role " + roleType.getName());
 	}
 
 	/**
