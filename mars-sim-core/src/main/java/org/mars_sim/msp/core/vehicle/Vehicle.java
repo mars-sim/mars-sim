@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2023-05-17
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -77,6 +77,8 @@ public abstract class Vehicle extends Unit
 	private static final double RANGE_FACTOR = 1.2;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
+	private static final int MAX_NUM_SOLS = 14;
+	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
@@ -103,6 +105,12 @@ public abstract class Vehicle extends Unit
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
+	/** The average road load power of the vehicle [kph]. */
+	private double averageRoadLoadSpeed;
+
+	/** The average road load power of the vehicle [kW]. */
+	private double averageRoadLoadPower;
+			
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -150,7 +158,12 @@ public abstract class Vehicle extends Unit
 	private StatusType primaryStatus;
 
 	/** The vehicle's status log. */
-	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
+	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(MAX_NUM_SOLS);
+	/** The vehicle's road speed history. */
+	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	/** The vehicle's road power history. */	
+	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager;
 	/** Direction vehicle is traveling */
@@ -170,6 +183,7 @@ public abstract class Vehicle extends Unit
 
 	private Mission mission;
 
+	
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
@@ -707,7 +721,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getAveragePower() {
-		return spec.getAveragePower();
+		return spec.getBasePower();
 	}
 	
 	/**
@@ -802,14 +816,44 @@ public abstract class Vehicle extends Unit
 		return spec.getFuelCapacity();
 	}
 
-//	/**
-//	 * Gets the cumulative fuel usage of the vehicle [kg].
-//	 *
-//	 * @return
-//	 */
-//	public double getFuelCumulativeUsage() {
-//		return fuelCumUsed;
-//	}
+	/**
+	 * Sets the average road load speed of the vehicle [kph].
+	 * 
+	 * @return
+	 */
+	public void setAverageRoadLoadSpeed(int value) {
+		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
+		roadSpeedHistory.addDataPoint(value);
+	}
+	
+	/**
+	 * Sets the average road load power of the vehicle [kW].
+	 * 
+	 * @return
+	 */
+	public void setAverageRoadLoadPower(int value) {
+		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
+		roadPowerHistory.addDataPoint(value);
+	}
+	
+	/**
+	 * Gets the average road load power of the vehicle [kph].
+	 * 
+	 * @return
+	 */
+	public double getAverageRoadLoadSpeed() {
+		return averageRoadLoadSpeed;
+	}
+	
+	/**
+	 * Gets the average road load power of the vehicle [kW].
+	 * 
+	 * @return
+	 */
+	public double getAverageRoadLoadPower() {
+		return averageRoadLoadPower;
+	}
+	
 	
 	/**
 	 * Gets the cumulative energy usage of the vehicle [kWh].
@@ -844,7 +888,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getFuelConv() {
-		return spec.getFuelConv();
+		return spec.getFuel2DriveEnergy();
 	}
 	
 	/**
@@ -870,6 +914,23 @@ public abstract class Vehicle extends Unit
 		return 1000 * cumEnergyUsedKWH / odometerMileage;
 	}
 
+	
+	/**
+	 * Gets the coefficient for converting cumulative FC to cumulative FE.
+	 * 
+	 * @return
+	 */
+	public double getCoeffCumFC2FE() {
+		double cumFE = getCumFuelEconomy();
+		double cumFC = getCumFuelConsumption();
+		
+		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed >0)
+			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
+		
+		return 0;
+	}
+	
+	
 	/**
 	 * Gets the base fuel economy of the vehicle [km/kg].
 	 * 
@@ -1267,6 +1328,36 @@ public abstract class Vehicle extends Unit
 		// Add the location to the trail if outside on a mission
 		addToTrail(getCoordinates());
 
+		// Check once per msol (millisol integer)
+		if (pulse.isNewMSol()) {
+			int count = 0;
+			int sum = 0;
+
+			for (int sol: roadSpeedHistory.getHistory().keySet()) {
+				List<MSolDataItem<Integer>> speeds = roadSpeedHistory.getHistory().get(sol);
+				for (MSolDataItem<Integer> s: speeds) {
+					count++;
+					sum += s.getData();
+				}
+			}
+			
+			if (count > 0 && sum > 0)
+				averageRoadLoadSpeed = sum / count;
+			
+			count = 0;
+			sum = 0;
+			for (int sol: roadPowerHistory.getHistory().keySet()) {
+				List<MSolDataItem<Integer>> speeds = roadPowerHistory.getHistory().get(sol);
+				for (MSolDataItem<Integer> s: speeds) {
+					count++;
+					sum += s.getData();
+				}
+			}
+			
+			if (count > 0 && sum > 0)
+				averageRoadLoadPower = sum / count;
+		}
+		
 		return true;
 	}
 

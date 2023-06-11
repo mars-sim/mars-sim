@@ -48,7 +48,7 @@ public class VehicleConfig {
 	private static final String FUEL_CELL_STACK = "fuel-cell-stack";
 	private static final String DRIVETRAIN_EFFICIENCY = "drivetrain-efficiency";
 	private static final String BASE_SPEED = "base-speed";
-	private static final String AVERAGE_POWER = "average-power";
+	private static final String BASE_POWER = "base-power";
 	private static final String EMPTY_MASS = "empty-mass";
 	private static final String CREW_SIZE = "crew-size";
 	private static final String CARGO = "cargo";
@@ -138,7 +138,7 @@ public class VehicleConfig {
 			double drivetrainEff = Double
 					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
-			double averagePower = Double.parseDouble(vehicleElement.getChild(AVERAGE_POWER).getAttributeValue(VALUE));
+			double basePower = Double.parseDouble(vehicleElement.getChild(BASE_POWER).getAttributeValue(VALUE));
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
@@ -146,7 +146,7 @@ public class VehicleConfig {
 			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, 
 					powerSourceType, fuelTypeStr, powerValue,
 					battery, fuelCell, 
-					drivetrainEff, baseSpeed, averagePower, emptyMass, 
+					drivetrainEff, baseSpeed, basePower, emptyMass, 
 					crewSize);
 			
 			v.setWidth(width);

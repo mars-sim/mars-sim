@@ -72,7 +72,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double OXYGEN_MARGIN = 1.25;
 	
 	/* The marginal factor for the amount of food to be brought during a mission. */
-	private static final double FOOD_MARGIN = 1.5;
+	private static final double FOOD_MARGIN = 1.75;
 
 	/* What is the lowest fullness of an EVASuit to be usable. */
 	private static final double EVA_LOWEST_FILL = 0.5D;

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, power-source, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, average-power,
+	<!ELEMENT vehicle (description?, power-source, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle name CDATA #REQUIRED>
@@ -29,8 +29,8 @@
 	<!ATTLIST drivetrain-efficiency value CDATA #REQUIRED>
 	<!ELEMENT base-speed EMPTY>
 	<!ATTLIST base-speed value CDATA #REQUIRED>
-	<!ELEMENT average-power EMPTY>
-	<!ATTLIST average-power value CDATA #REQUIRED>
+	<!ELEMENT base-power EMPTY>
+	<!ATTLIST base-power value CDATA #REQUIRED>
 	<!ELEMENT empty-mass EMPTY>
 	<!ATTLIST empty-mass value CDATA #REQUIRED>
 	<!ELEMENT crew-size EMPTY>
@@ -131,7 +131,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<average-power value="20.0" />
+		<base-power value="20.0" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
@@ -246,7 +246,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="30.0" />
-		<average-power value="15" />
+		<base-power value="15" />
 		<empty-mass value="1200.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
@@ -302,7 +302,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="25.0" />
-		<average-power value="20" />
+		<base-power value="20" />
 		<empty-mass value="1700.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
@@ -352,7 +352,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="25.0" />
-		<average-power value="20" />		
+		<base-power value="20" />		
 		<empty-mass value="2000.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
@@ -397,7 +397,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="1" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="20.0" />
-		<average-power value="10" />		
+		<base-power value="10" />		
 		<empty-mass value="270.0" />
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
@@ -426,7 +426,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="100.0" />
-		<average-power value ="20" />		
+		<base-power value ="20" />		
 		<empty-mass value="160.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="600.0">

@@ -95,19 +95,18 @@
 	  * battery reserve or both to speed up or slow down the vehicle.
 	  *
 	  * @param hrsTime
-	  * @param distance
+	  * @param distToCover the distance that can be covered [in km]
+//	  * @param navpointDist the total distance to the next navpoint [in km]
 	  * @param vKPH
 	  * @return
 	  */
-	 public double adjustSpeed(double hrsTime, double distance, double vKPH, double remainingFuel, double remainingOxidizer) {
+	 public double consumeFuelEnergy(double hrsTime, double distToCover, double vKPH, double remainingFuel, double remainingOxidizer) {
 		 // Set overallEnergyUsed [in Wh], not in kWh
 		 double overallEnergyUsed = 0;
 		 /** Cache the energy recovered from regen braking in kWh. */ 
 		 double regenEnergyBuffer = 0;	
 		 
 		 double remainingHrs = 0;
- 
-		 double navpointDist = distance; // [in km]   
 		 // Gets initial speed in kph
 		 double uKPH = vehicle.getSpeed(); 
 		 // Gets initial speed in m/s
@@ -134,7 +133,7 @@
 			 uKPH = 0;
 		 }
 		 // distance in km
-		 double distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
+		 double distanceTravelled = distToCover; //vKPH * hrsTime;
 			
 		 double accelTarget = (vMS - uMS) / secs; // [in m/s2]
 		 // Gets the current mass of the vehicle with payload
@@ -174,7 +173,7 @@
 			  // Also need to account for the use of fuel or battery's power to ascend and descend 
 			 
 			 if (uMS < vMS) {
-				 // Case A : During ascent
+				 // Scenario A : During ascent
 				   if (currentHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
 					   // Do NOT ascent anymore
 					   potentialEnergyDrone = 0;
@@ -186,7 +185,7 @@
 			 }
  
 			 else {
-				 // Case B : During controlled descent
+				 // Scenario B : During controlled descent
 				 if (currentHeight <= 0) {
 					   // Do NOT ascent anymore
 					 potentialEnergyDrone = 0;
@@ -229,37 +228,37 @@
 		 // Gets the summation of all the forces acting against the forward motion of the vehicle
 		 double totalForce = fInitialFriction + fAeroDrag + fGravity + fRolling + fRoadSlope;
 		 // Gets the natural deceleration due to these forces
-		 double aForcesAgainst = totalForce / mass;
+		 double accelForcesAgainst = totalForce / mass;
 		 // Gets the acceleration of the motor
-		 double aMotor = accelTarget - aForcesAgainst;
+		 double accelMotor = accelTarget - accelForcesAgainst;
 		  
 		 double fuelNeeded = 0;
 		 
-		 if (aMotor >= 0) {
-			 // Case 1: acceleration is needed to either maintain the speed or to go up to the top speed
+		 if (accelMotor >= 0) {
+			 // Scenario 1: acceleration is needed to either maintain the speed or to go up to the top speed
   
 			 // Set new vehicle acceleration
-			 vehicle.setAccel(aMotor);
+			 vehicle.setAccel(accelMotor);
 			 
-			 double iPower = aMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
+			 double iPower = accelMotor * mass * vMS + potentialEnergyDrone / secs; // [in W]
 			 
 			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-					 "Case 1A: Need to exert power just to maintain the speed at "
+					 "Scenario 1A: Need to exert power just to maintain the speed at "
 					 + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
-					 + "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
+					 + "accelMotor: " + Math.round(accelMotor * 1_000.0)/1_000.0 + " m/s2  "
 					 + "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
-					 + "aForcesAgainst: " + Math.round(aForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
+					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
 					 );
 			 }
 			 else {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-					 "Case 1B: Need to accelerate and increase the speed from "
+					 "Scenario 1B: Need to accelerate and increase the speed from "
 					 +  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
 					 + "to " + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
-					 + "aMotor: " + Math.round(aMotor * 1_000.0)/1_000.0 + " m/s2  "
+					 + "accelMotor: " + Math.round(accelMotor * 1_000.0)/1_000.0 + " m/s2  "
 					 + "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
-					 + "aForcesAgainst: " + Math.round(aForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
+					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
 					 );
 			 }        
   
@@ -272,10 +271,10 @@
 			 
 			 overallEnergyUsed = totalEnergyNeeded;
 			 
-			 // Case 2A : Battery has enough juice for the acceleration
+			 // Scenario 2A : Battery has enough juice for the acceleration
 			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 1000.0)/1000.0) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case 2A: Use on-board battery only. "
+						 "Scenario 2A: Use on-board battery only. "
 						 + "energyByBattery: " + Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH 						 
@@ -284,7 +283,7 @@
 			 }
 			  
 			 else if (energyByFuel > 0.001) {
-				  // Case 2B and 2C: If the battery is unable to meet the needed energy requirement
+				  // Scenario 2B and 2C: If the battery is unable to meet the needed energy requirement
 				 // Need to turn on fuel cells to supply more power
 				  
 				 // Derive the mass of fuel needed kg = Wh / Wh/kg
@@ -292,9 +291,9 @@
 				 
 				 // Note that if remainingFuel == -1, it's either nuclear powered or solar powered
 				 if (remainingFuel == -1 || fuelNeeded <= remainingFuel) {
-					 // Case 2B: fuel is sufficient
+					 // Scenario 2B: fuel is sufficient
 					 logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case 2B: Partial battery with sufficient fuel.  " 
+						 "Scenario 2B: Partial battery with sufficient fuel.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 						
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
@@ -304,7 +303,7 @@
 						 );
 				 }
 				 else {				
-					 // Case 2C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
+					 // Scenario 2C : fuel needed is less than available (just used up the last drop of fuel). Update fuelNeeded.
 					 
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;
@@ -318,7 +317,7 @@
 					 overallEnergyUsed = energyByFuel + energyByBattery;
 							 
 					 // Find the new speed   
-					 vKPH = iPower - potentialEnergyDrone / secs / aMotor / mass;
+					 vKPH = iPower - potentialEnergyDrone / secs / accelMotor / mass;
 					 
 					 // FUTURE : may need to find a way to optimize motor power usage 
 					 // and slow down the vehicle to the minimal to conserve power	
@@ -327,10 +326,10 @@
  
 					 accelTarget = (vMS - uMS) / secs; // [in m/s^2]
 					 // Recompute the new distance it could travel
-					 distanceTravelled = (uKPH + vKPH) / 2 * hrsTime;
-						
+					 distanceTravelled = vKPH * hrsTime;
+							 
 					 logger.log(vehicle, Level.INFO, 20_000,  
-							 "Case 2C: Partial battery and insufficient fuel.  " 
+							 "Scenario 2C: Partial battery and insufficient fuel.  " 
 							 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 							 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
 							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
@@ -338,14 +337,14 @@
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
 							 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W							
 							 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH   							
-							 + "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
+//							 + "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
 							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM
 							 );
 				 }
 			 }
-			 else { // Case 2D : is this normal ?
+			 else { // Scenario 2D : is this normal ?
 				  logger.log(vehicle, Level.INFO, 20_000,  
-						 "Case 2D: Unknown.  " 
+						 "Scenario 2D: Unknown.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
 						 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
@@ -386,7 +385,7 @@
 					vehicle.getSpecName()
 					  + "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
 					  + "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
+//					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					  + "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 10.0)/10.0 + " secs  "
 					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
@@ -415,19 +414,19 @@
    
 			 logger.log(vehicle, Level.INFO, 20_000,
 					vehicle.getSpecName()
-					+ "  baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
-					+ "initFE: " 			+ Math.round(vehicle.getInitialFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
-					+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG
-					+ "estFE: " 			+ Math.round(vehicle.getEstimatedFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
-					+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG);
+					+ "  baseFE: " 			+ Math.round(bFE * 100.0)/100.0 + KM_KG  
+					+ "initFE: " 			+ Math.round(vehicle.getInitialFuelEconomy() * 100.0)/100.0 + KM_KG
+					+ "instantFE: " 		+ Math.round(iFE * 100.0)/100.0 + KM_KG
+					+ "estFE: " 			+ Math.round(vehicle.getEstimatedFuelEconomy() * 100.0)/100.0 + KM_KG
+					+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 100.0)/100.0 + KM_KG);
 			 
 			 logger.log(vehicle, Level.INFO, 20_000,
 					vehicle.getSpecName()			 
-					+ "  baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
-					+ "initFC: " 			+ Math.round(vehicle.getInitialFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  					
-					+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM
-					+ "estFC: " 			+ Math.round(vehicle.getEstimatedFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
-					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+					+ "  baseFC: " 			+ Math.round(bFC * 100.0)/100.0 + WH_KM 
+					+ "initFC: " 			+ Math.round(vehicle.getInitialFuelConsumption() * 100.0)/100.0 + WH_KM  					
+					+ "instantFC: " 		+ Math.round(iFC * 100.0)/100.0 + WH_KM
+					+ "estFC: " 			+ Math.round(vehicle.getEstimatedFuelConsumption() * 100.0)/100.0 + WH_KM  
+					+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 100.0)/100.0 + WH_KM  
 			 );
 					 
 			 // Cache the new value of fuelUsed	
@@ -444,21 +443,20 @@
 		 }
 		 
 		 else {
-				// Case 2: deceleration is needed
+				// Scenario 2: deceleration is needed
 			 
 			 // Gets the deceleration using regenerative braking
-			 double aRegen = aMotor;
+			 double accelRegen = accelMotor;
 			 // Set new vehicle acceleration
-			 vehicle.setAccel(aRegen);
+			 vehicle.setAccel(accelRegen);
 			 
-			 double iPower = - aRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
+			 double iPower = - accelRegen * mass * vMS; // (vMS + uMS)/2.0; // [in W]
 					 
 			 logger.log(vehicle, Level.INFO, 20_000, 
-					 "Case 2: Need to decelerate and reduce the speed from " 
+					 "Scenario 2: Need to decelerate and reduce the speed from " 
 					 +  Math.round(uKPH * 10.0)/10.0 + KPH
-					 + "to " + Math.round(vKPH * 10.0)/10.0
-					 + KPH
-					 + "regen decel: " + Math.round(aRegen * 1_000.0)/1_000.0 
+					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH
+					 + "regen decel: " + Math.round(accelRegen * 1_000.0)/1_000.0 
 					 + " m/s2.  "
 					 + "target decel: " + Math.round(accelTarget * 1_000.0)/1_000.0 
 					 + " m/s2."			
@@ -497,7 +495,7 @@
 			 vehicle.getSpecName()
 			 		+ "  mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
 					+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-					+ "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
+//					+ "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					+ "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
 					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
@@ -506,7 +504,7 @@
 			 logger.log(vehicle, Level.INFO, 20_000,
 						vehicle.getSpecName()				 
 					 + "  Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
-					 + "energyNeeded: " 		+ Math.round(energyNeeded * 1_000.0)/1_000.0 + WH
+					 + "energyNeeded: " 		+ Math.round(energyNeeded * 100.0)/100.0 + WH
 					 + "regenEnergyBuffer: " + Math.round(regenEnergyBuffer * 1_000.0)/1_000.0 + WH
 					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
 					 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W
@@ -515,14 +513,26 @@
 		 
 		 // Set new vehicle speed
 		 vehicle.setSpeed(vKPH);
+		 // Calculate the average road load power in kW
+		 double averageRoadLoadPower = overallEnergyUsed / secs * 3.6;
+		 
+		 if (vKPH > 0 && averageRoadLoadPower > 0) {
+			 // update average road load speed
+			 vehicle.setAverageRoadLoadSpeed((int)Math.round(vKPH));
+			 // update average road load power
+			 vehicle.setAverageRoadLoadPower((int)Math.round(averageRoadLoadPower));
+		 }
+
 		 // Determine new position
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
 		 
 		 double totalEnergyUsed = (1.0 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) * (overallEnergyUsed + regenEnergyBuffer);
 		 // Add distance traveled to vehicle's odometer.
-		 logger.info(vehicle, 20_000L, "d: " + Math.round(distanceTravelled * 10.0)/10.0 
-				 + "  e: "  + Math.round(totalEnergyUsed* 10.0)/10.0
-				 + "  e/d: "  + Math.round(totalEnergyUsed/distanceTravelled* 10.0)/10.0);
+		 logger.info(vehicle, 20_000L, "d: " + Math.round(distanceTravelled * 100.0)/100.0 
+				 + "  totalEnergyUsed: "  + Math.round(totalEnergyUsed* 100.0)/100.0
+				 + "  totalEnergyUsed/d: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
+				 + "  ave RL Power: " + Math.round(averageRoadLoadPower * 100.0)/100.0
+				 );
 		 vehicle.addOdometerMileage(distanceTravelled, totalEnergyUsed);
 		 // Track maintenance due to distance traveled.
 		 vehicle.addDistanceLastMaintenance(distanceTravelled);

@@ -74,6 +74,24 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
+	/** How often are remaining resources checked. */
+	private static final int RESOURCE_CHECK_DURATION = 40;
+	/** The speed mod due to driving at night. */
+	private static final double NIGHT_TIME_SPEED_MOD = 0.3;
+	
+	/** The small insignificant amount of distance in km. */
+	private static final double SMALL_DISTANCE = .1;
+	/** Modifier for number of parts needed for a trip. */
+	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
+	/** Estimate number of broken parts per malfunctions */
+	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
+	/** Default speed if no operators have ever driven. */
+	private static final double DEFAULT_SPEED = 10D;
+		
+	// Travel Mission status
+	protected static final String AT_NAVPOINT = "At a navpoint";
+	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
+
 	/** Mission phases. */
 	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
@@ -88,25 +106,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
+	private static final Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {
 																	ItemResourceUtil.FIBERGLASS});
 																	
-	// Travel Mission status
-	protected static final String AT_NAVPOINT = "At a navpoint";
-	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
-
-	/** How often are remaining resources checked. */
-	private static final int RESOURCE_CHECK_DURATION = 40;
-	/** The small insignificant amount of distance in km. */
-	private static final double SMALL_DISTANCE = .1;
-	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
-	/** Estimate number of broken parts per malfunctions */
-	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
-	/** Default speed if no operators have ever driven. */
-	private static final double DEFAULT_SPEED = 10D;
 	
 	
 	// Data members
@@ -904,7 +908,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected final double getEstimatedTripTime(boolean useMargin, double distance) {
 		double result = 0;
 		// Determine average driving speed for all mission members.
-		double averageSpeed = getAverageVehicleSpeedForOperators();
+		double averageSpeed = getAverageVehicleSpeedForOperators() * ((1 + NIGHT_TIME_SPEED_MOD) / 2);
 		logger.log(vehicle, Level.FINE, 10_000, "Estimated average speed: " + Math.round(averageSpeed * 100.0)/100.0 + " kph.");
 		if (averageSpeed > 0) {
 			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
