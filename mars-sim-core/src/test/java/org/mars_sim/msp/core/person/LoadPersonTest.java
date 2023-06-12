@@ -83,9 +83,9 @@ extends TestCase {
 		double amount = 1D;
 		
 		double excess = person.storeAmountResource(ResourceUtil.foodID, amount);	
-		assertTrue("Can't carry food.", excess > 0);
+		assertTrue("Can't carry food.", excess == 0.0);
 		
 		double missing = person.retrieveAmountResource(ResourceUtil.foodID, amount);
-		assertTrue("Can't retrieve food.", missing > 0);
+		assertTrue("Can't retrieve food.", missing == 0.0);
 	}
 }
