@@ -259,6 +259,7 @@ public class VehicleSpec implements Serializable {
 	private LocalPosition airlockExteriorLoc;
 
 	private Set<Integer> partIDs;
+	private Set<Integer> amountIDs;
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double value,
@@ -329,7 +330,7 @@ public class VehicleSpec implements Serializable {
 	 */
 	private void calculateEmptyMass(ManufactureConfig manuConfig) {
 				
-		// Find the name of the process to build this type ov vehicle Spec
+		// Find the name of the process to build this type of vehicle Spec
 		ManufactureProcessInfo buildDetails = null;
 		String buildName = "Assemble " + type.name().replace("_", " ");
 		for (ManufactureProcessInfo info : manuConfig.getManufactureProcessList()) {
@@ -343,6 +344,7 @@ public class VehicleSpec implements Serializable {
 		}
 			
 		List<String> names = buildDetails.getInputNames();
+		amountIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
 		partIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
 						
 		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  
