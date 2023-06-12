@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle and
@@ -463,7 +464,7 @@ public abstract class OperateVehicle extends Task {
 	} 
 	
 	/**
-	 * Moves the vehicle by engaging its motor controller to compute fuel usage and distance to be traversed.
+	 * Moves the vehicle by engaging its motor controller to compute fuel and energy usage and distance to be traversed.
 	 * 
 	 * @param hrsTime 			time [in hrs]
 	 * @param dist2Dest 		distance to destination [in km]
@@ -481,12 +482,24 @@ public abstract class OperateVehicle extends Task {
     	double maxAccel = vehicle.getAllowedAccel();
    
     	double skillMod = getSkillMod();
-    	
-    	double lightMod = getLightConditionModifier();
-    	
+    	// Get the sunlight modifier
+		double lightMod = getLightConditionModifier();
+		  
+    	// Get the terrain modifier
     	double terrainMod = getTerrainModifier(vehicle.getDirection());
-    	// Gets top speed in kph allowed by this driver at this moment
-    	double topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * Math.max(0.2, lightMod * terrainMod);
+    	
+    	double topSpeedKPH = 0;
+    	
+    	if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+         	// Allow only 50% impact from lightMod
+    		topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (.5 * .5 * lightMod);
+    	}
+    	else {
+        	// Gets top speed in kph allowed by this pilot 
+    		// Allow only 30% impact from lightMod and 30% from terrain
+        	topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() *(.4 + .3 * lightMod + 3 * terrainMod);
+    	}
+    	
     	// Gets the ideal speed after acceleration. v^2 = u^2 + 2*a*d
 		double idealSpeedMS = Math.sqrt(uMS * uMS + 2 * maxAccel * dist2Dest);
     	// Gets the ideal speed in kph
