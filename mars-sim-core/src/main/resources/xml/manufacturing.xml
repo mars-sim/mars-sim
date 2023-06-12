@@ -1197,6 +1197,7 @@ Note: 1 kg of H2 is 14.13 liter
 			
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="10" />
+			<part name="biosensor" number="6" />
 		</inputs>
 		<outputs>
 			<equipment name="eva suit" number="1" />
@@ -1214,9 +1215,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="work gloves" number="2" />
 		</outputs>
 	</process>
-
+	
 	<!-- Small wheels are made with steel sheets and steel wires. -->
-	<process name="Make small wheels" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make small wheels" tech="2" skill="2" work-time="50" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -1616,7 +1617,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
-			<part name="propeller" number="4" />			
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
 		</inputs>
 		<outputs>
 			<vehicle name="delivery drone" number="1" />
@@ -1651,7 +1653,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />			
+			<part name="oxygen pump" number="1" />	
+			<part name="CMOS sensor" number="4" />						
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />
@@ -1692,6 +1695,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="3" />
 			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />
+			<part name="CMOS sensor" number="6" />	
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
@@ -1733,6 +1737,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="8" />
+			<part name="CMOS sensor" number="10" />				
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
@@ -1773,6 +1778,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="10" />
+			<part name="CMOS sensor" number="8" />				
 		</inputs>
 		<outputs>
 			<vehicle name="cargo rover" number="1" />
@@ -2548,6 +2554,32 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+
+	<process name="Make biosensor" tech="3" skill="3" work-time="80" process-time="20"
+			power-required=".01">
+		<inputs>
+			<resource name="cane fiber" amount="0.1" />
+			<part name="CMOS sensor" number="1" />
+			<part name="logic board" number="1" />
+			<part name="electrical wire" number="3" />			
+		</inputs>
+		<outputs>
+			<part name="biosensor" number="1" />
+		</outputs>
+	</process>
+	
+	
+	<process name="Make CMOS sensor" tech="3" skill="3" work-time="80" process-time="200"
+			power-required=".01">
+		<inputs>
+			<part name="semiconductor wafer" number="1" />
+			<part name="electrical wire" number="1" />			
+		</inputs>
+		<outputs>
+			<part name="CMOS sensor" number="20" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing semiconductor wafer. -->
 	<process name="Fabricate semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
 			power-required="1.0">
@@ -3155,11 +3187,35 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="suit heating unit" number="1" />
 		<part-salvage name="electrical wire" number="3" />
 		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">
+		<part-salvage name="aerogel tile" number="2" />				
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="vehicle frame - small" number="1" />
+		<part-salvage name="aluminum sheet" number="1" />
+		<part-salvage name="rover chassis panel" number="1" />
+		<part-salvage name="motor - small" number="4" />
+		<part-salvage name="methanol fuel cell stack" number="2" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="plastic tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
-	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
+	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="2" work-time="800">
 		<part-salvage name="vehicle frame - small" number="1" />
 		<part-salvage name="motor - small" number="4" />
 		<part-salvage name="battery module" number="1" />
@@ -3174,10 +3230,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="1" />
 		<part-salvage name="aluminum scrap" number="2" />
 		<part-salvage name="optical cable" number="3" />
+		<part-salvage name="CMOS sensor" number="4" />			
 	</salvage>
 
 	<!-- Salvage process for an explorer rover. -->
-	<salvage item-name="explorer rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3206,10 +3263,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="6" />			
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
-	<salvage item-name="transport rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="transport rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3238,10 +3296,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="5" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="10" />		
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
-	<salvage item-name="cargo rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3270,22 +3329,23 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="8" />		
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->
-	<salvage item-name="barrel" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="barrel" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="steel sheet" number="1" />
 	</salvage>
 
 	<!-- Salvage process for a gas canister. -->
-	<salvage item-name="gas canister" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="gas canister" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="steel canister" number="1" />
 		<part-salvage name="valve" number="2" />
 		<part-salvage name="gasket" number="4" />
 	</salvage>
 
 	<!-- Salvage process for a large bag. -->
-	<salvage item-name="large bag" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="large bag" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
 	</salvage>
