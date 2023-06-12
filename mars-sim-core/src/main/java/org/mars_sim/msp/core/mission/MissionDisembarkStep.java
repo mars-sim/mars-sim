@@ -174,4 +174,10 @@ public class MissionDisembarkStep extends MissionStep {
     private Vehicle getVehicle() {
         return ((MissionVehicleProject)getMission()).getVehicle();
     }
+
+        
+    @Override
+    public String toString() {
+        return "Mission " + getMission().getName() + " disembark";
+    }
 }

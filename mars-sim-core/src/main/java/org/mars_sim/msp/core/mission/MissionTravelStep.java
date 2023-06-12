@@ -104,7 +104,7 @@ public class MissionTravelStep extends MissionStep {
      */
     private Task createOperateVehicleTask(Vehicle vehicle, Worker worker) {
         if (vehicle instanceof GroundVehicle gv) {
-            double coveredSoFar = gv.getCoordinates().getDistance(startingCoordinate);
+            double coveredSoFar = getDistanceCovered();
             return new DriveGroundVehicle((Person) worker, gv, destination.getLocation(),
                                             getMission().getPhaseStartTime(), coveredSoFar);
         }
@@ -120,9 +120,11 @@ public class MissionTravelStep extends MissionStep {
     void getRequiredResources(MissionManifest manifest, boolean addOptionals) {
 
         Vehicle vehicle = getVehicle();
+        double distance = destination.getDistance() - getDistanceCovered();
+        MissionVehicleProject mvp = (MissionVehicleProject) getMission();
 
         // Must use the same logic in all cases otherwise too few fuel will be loaded
-        double amount = vehicle.getFuelNeededForTrip(destination.getDistance(), addOptionals);
+        double amount = vehicle.getFuelNeededForTrip(distance, addOptionals);
         manifest.addResource(vehicle.getFuelType(), amount, true);
         
         // if useMargin is true, include more oxygen
@@ -130,10 +132,20 @@ public class MissionTravelStep extends MissionStep {
                             true);
 
         if (vehicle instanceof Rover) {
-            double travelDuration = 500D;
+            double travelDuration = mvp.getEstimateTravelTime(distance);
 
-            addLifeSupportResource(getMission().getMembers().size(), travelDuration, addOptionals, manifest);
+            addLifeSupportResource(mvp.getMembers().size(), travelDuration, addOptionals, manifest);
         }
+    }
+
+    /**
+     * Distance covered so far.
+     */
+    public double getDistanceCovered() {
+        if (startingCoordinate == null) {
+            return 0D;
+        }          
+        return getVehicle().getCoordinates().getDistance(startingCoordinate);
     }
 
     /**
@@ -174,5 +186,4 @@ public class MissionTravelStep extends MissionStep {
     public String toString() {
         return "Mission " + getMission().getName() + " travel to " + destination.getDescription();
     }
-
 }

@@ -51,8 +51,8 @@ public class MissionLoadVehicleStep extends MissionStep {
 			loadingPlan = new LoadingController(v.getSettlement(), v,
 												manifest.getResources(true),
 												manifest.getResources(false),
-                                                manifest.getItems(true),
-												manifest.getItems(false));	
+                                                manifest.getEquipment(true),
+												manifest.getEquipment(false));	
             
                                                 
             // Try and move the vehicle to garage
@@ -117,7 +117,6 @@ public class MissionLoadVehicleStep extends MissionStep {
 
     @Override
 	public String toString() {
-		return "Mission " + getMission().getName() + " load  " + 
-                    ((MissionVehicleProject) getMission()).getVehicle().getName();
+		return "Mission " + getMission().getName() + " load  vehicle";
 	}
 }

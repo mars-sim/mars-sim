@@ -54,6 +54,11 @@ public abstract class MissionProject implements Mission {
             log.addEntry(activeStep.getDescription());
             stepStarted = log.getLastEntry().getTime();
         }
+
+        @Override
+        protected void stepCompleted(ProjectStep closedStep) {
+            MissionProject.this.stepCompleted((MissionStep) closedStep);
+        }
     }
 
     // Mission score for Worker
@@ -224,6 +229,14 @@ public abstract class MissionProject implements Mission {
         if (members.size() < minMembers) {
             findMembers();
         }
+    }
+
+    /**
+     * Callback method to be notified when a stepis completed
+     * @param ms The Mission step just completed
+     */
+    protected void stepCompleted(MissionStep ms) {
+        // Do nothing
     }
 
     /**
@@ -430,9 +443,12 @@ public abstract class MissionProject implements Mission {
      */
     protected void clearDown() {
         // Force release of any remaining members
-        for(Worker w : members) {
-            logger.warning(w, "Still attached to Mission " + getName() + " at clear down");
-            w.setMission(null);
+        if (members.isEmpty()) {
+            List<Worker> oldmembers = new ArrayList<>(members);
+            for(Worker w : oldmembers) {
+                logger.warning(w, "Still attached to Mission " + getName() + " at clear down");
+                w.setMission(null);
+            }
         }
     }
 }

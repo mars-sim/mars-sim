@@ -9,11 +9,14 @@ package org.mars_sim.msp.core.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -208,6 +211,32 @@ public class MissionBoardVehicleStep extends MissionStep {
 		// No route to board
 		logger.warning(worker, "Cannot walk to vehicle " + v.getName() + " for board");
 		return false; 
+	}
+
+    /**
+     * What resources are needed for this travel. This includes the spares needed for the Vehicle.
+	 * @param manifet Capture the parts needed
+	 * @param addOptionals Any optional spares
+     */
+    @Override
+    void getRequiredResources(MissionManifest manifest, boolean addOptionals) {
+		MissionVehicleProject mvp = (MissionVehicleProject) getMission();
+		
+		// Get the estimated duration
+		double durationMSols = mvp.getEstimateTravelTime(mvp.getDistanceProposed());
+		double numberAccidents = durationMSols * OperateVehicle.BASE_ACCIDENT_CHANCE;
+		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
+
+		Map<Integer, Double> parts = mvp.getVehicle().getMalfunctionManager().getRepairPartProbabilities();
+		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
+			Integer id = entry.getKey();
+			double value = entry.getValue();
+			double freq = value * numberMalfunctions * MalfunctionManager.PARTS_NUMBER_MODIFIER;
+			int number = (int) Math.round(freq);
+			if (number > 0) {
+				manifest.addItem(id, number, false);
+			}
+		}
 	}
 
 	@Override

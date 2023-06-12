@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -33,9 +34,21 @@ public class MissionVehicleProject extends MissionProject
     private Vehicle vehicle;
     private double proposedDistance;
     private List<NavPoint> route;
+    private double distanceCompleted = 0;
 
     public MissionVehicleProject(String name, MissionType type, int priority, int maxMembers, Person leader) {
         super(name, type, priority, 2, maxMembers, leader);
+    }
+
+    /**
+     * If the completed step is a Travel step then update the distance
+     * @param ms The Mission step just completed
+     */
+    @Override
+    protected void stepCompleted(MissionStep ms) {
+        if (ms instanceof MissionTravelStep mts) {
+            distanceCompleted += mts.getDestination().getDistance();
+        }
     }
 
     /**
@@ -114,6 +127,18 @@ public class MissionVehicleProject extends MissionProject
         return vehicle;
     }
 
+    /**
+     * Return the location based on the vehicle if the mission is active
+     * @return Coordinates of home
+     */
+    @Override
+    public Coordinates getCurrentMissionLocation() {
+        if (!isDone()) {
+            return getVehicle().getCoordinates();
+        }
+        return super.getCurrentMissionLocation();
+    }
+
     @Override
     public double getDistanceProposed() {
         return proposedDistance;
@@ -121,17 +146,25 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public double getTotalDistanceTravelled() {
-        return 100D;
+        double result = distanceCompleted;
+        if (getCurrentStep() instanceof MissionTravelStep mts) {
+            result += mts.getDistanceCovered();
+        }   
+        return result;
     }
 
     @Override
     public double getTotalDistanceRemaining() {
-        return 100D;
+        // Not perfectly accurate but quick
+        return getDistanceProposed() - getTotalDistanceTravelled();
     }
 
     @Override
     public double getDistanceCurrentLegRemaining() {
-        return 50D;
+        if (getCurrentStep() instanceof MissionTravelStep mts) {
+            return mts.getDestination().getDistance() - mts.getDistanceCovered();
+        }   
+        return 0D;
     }
 
     @Override
@@ -211,5 +244,18 @@ public class MissionVehicleProject extends MissionProject
 
         super.setSteps(fullPlan);
     }
-    
+
+    /**
+     * How long will it take for this Misison to cover a distance
+     * @param distance Distance to cover
+     * @return Durstino in mSols
+     */
+    public double getEstimateTravelTime(double distance) {
+        double result = 0D;
+        double averageSpeed = vehicle.getBaseSpeed() * 0.8D;
+		if (averageSpeed > 0) {
+			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
+		}
+        return result;
+    }  
 }
