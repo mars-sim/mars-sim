@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.mission.predefined;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.LocalPosition;
@@ -21,10 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import com.google.common.cache.LoadingCache;
 
 public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
     /**
@@ -37,10 +33,13 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH, 1);
         buildRover(home, "Rover 1", null);
         Person leader = buildPerson("Leader", home);
-        Person support = buildPerson("Support", home);
+        for(int i = 0; i < 1 + MissionProject.MIN_POP; i++) {
+            buildPerson("Support" + i, home);
+        }
         MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, leader);
 
         // Check vehicle details
+        assertFalse("Mission active", mp.isDone());
         Vehicle assigned = mp.getVehicle();
         assertNotNull("Assign Vehicle", assigned);
         assertEquals("Vehicle mission", mp, assigned.getMission());
@@ -54,7 +53,6 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         Collection<Worker> members = mp.getMembers();
         assertEquals("Mission members", 2, members.size());
         assertTrue("Member " + leader.getName(), members.contains(leader));
-        assertTrue("Member " + support.getName(), members.contains(support));
 
         // Run to the loading stage
         assertTrue("Initial stage completed", executeMission(leader, assigned, mp, 10));

@@ -68,6 +68,9 @@ public abstract class MissionProject implements Mission {
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
     private static final MissionStatus ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 
+    // Minimum settlement population after a mission
+    public static final int MIN_POP = 2;
+
 
     private Project control;
     private String missionCallSign;
@@ -272,7 +275,7 @@ public abstract class MissionProject implements Mission {
         if (needed > qualifiedPeople.size()) {
             abortMission(NOT_ENOUGH_MEMBERS);
         }
-        else if ((possibles.size() - needed) < 2) {
+        else if ((possibles.size() - needed) < MIN_POP) {
             abortMission(LOW_SETTLEMENT_POPULATION);
         }
 		
