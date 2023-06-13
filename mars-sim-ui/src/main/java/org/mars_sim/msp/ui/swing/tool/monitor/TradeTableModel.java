@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
@@ -257,7 +256,7 @@ implements UnitListener {
     		EquipmentType type = EquipmentType.convertID2Type(id);
 
     		if (type == EquipmentType.EVA_SUIT)
-    			return settlement.getNumEVASuit() * EVASuit.emptyMass;
+    			return settlement.getNumEVASuit() * EquipmentFactory.getEquipmentMass(type);
     		
     		return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
     	}

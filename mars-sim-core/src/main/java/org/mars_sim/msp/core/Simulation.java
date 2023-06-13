@@ -328,7 +328,7 @@ public class Simulation implements ClockListener, Serializable {
 				marsClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
-		EquipmentFactory.initialise(unitManager);
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
@@ -423,7 +423,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		TaskManager.initializeInstances(this, simulationConfig);
 
-		EquipmentFactory.initialise(unitManager);
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
@@ -710,7 +710,7 @@ public class Simulation implements ClockListener, Serializable {
 				marsClock, orbitInfo, weather);
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-		EquipmentFactory.initialise(unitManager);
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
 		// Rediscover the MissionControls

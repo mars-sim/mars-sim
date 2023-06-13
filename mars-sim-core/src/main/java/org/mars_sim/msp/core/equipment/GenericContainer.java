@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GenericContainer.java
- * @date 2021-10-13
+ * @date 2023-06-12
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.equipment;
@@ -47,12 +47,21 @@ class GenericContainer extends Equipment implements Container {
 
 		this.reusable = reusable;
 
-		// Sets the base mass of the bag.
-		setBaseMass(EquipmentFactory.getEquipmentMass(type));
-
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
+		
+		setBaseMass(type);
 	}
 
+	/**
+	 * Sets the base mass of this container type.
+	 * 
+	 * @param type
+	 */
+	public void setBaseMass(EquipmentType type) {
+		// Sets the base mass of the bag.
+		setBaseMass(EquipmentFactory.getEquipmentMass(type));
+	}
+	
 	/**
 	 * Gets the total capacity of resource that this container can hold.
 	 *
@@ -171,8 +180,8 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Can this container hold a specific Amount Resources; this will look at
-	 * the Phase Type
+	 * Can this container hold a specific Amount Resources ? 
+	 * It will look at the Phase Type
 	 */
 	private boolean canStore(int resourceId) {
 		AmountResource required = ResourceUtil.findAmountResource(resourceId);

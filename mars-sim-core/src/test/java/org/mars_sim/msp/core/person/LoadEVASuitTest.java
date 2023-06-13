@@ -110,7 +110,7 @@ extends TestCase {
 		
 		System.out.println(suitSettlement.getName() + " has empty mass: " + mass + " kg");
 		
-		assertEquals("EVA suit's empty mass is incorrect.", 13.0, mass);
+		assertEquals("EVA suit's empty mass is incorrect.", 13.6, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suitSettlement.transfer(person);

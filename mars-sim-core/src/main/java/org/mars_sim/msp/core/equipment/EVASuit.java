@@ -114,9 +114,6 @@ public class EVASuit extends Equipment
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double MASS_O2_MINIMUM_LIMIT;
 
-	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
-	public static double emptyMass;
-
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -142,7 +139,7 @@ public class EVASuit extends Equipment
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Create MicroInventory instance
-		microInventory = new MicroInventory(this, CAPACITY + emptyMass);
+		microInventory = new MicroInventory(this, CAPACITY);
 
 		// Set capacity for each resource
 		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
@@ -150,18 +147,19 @@ public class EVASuit extends Equipment
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
 
 		// Set the base mass of the EVA suit as empty mass
-		setBaseMass(emptyMass);
+//		setBaseMass(emptyMass);
 	}
 	
 	static {
 
-		// Calculate the empty mass
-		emptyMass = ItemResourceUtil.initEVASuit();
+		// Initialize the parts
+		ItemResourceUtil.initEVASuit();
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		
 		double o2Consumed = personConfig.getHighO2ConsumptionRate();
 		double co2Expelled = personConfig.getCO2ExpelledRate();
+		
 		GAS_RATIO = co2Expelled / o2Consumed;
 				
 		MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
@@ -173,7 +171,7 @@ public class EVASuit extends Equipment
 		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 		
 		logger.config(DASHES);
-		logger.config(" Suit's Unloaded Weight : " + Math.round(emptyMass * 1_000.0)/1_000.0 + " kg");
+//		logger.config(" Suit's Unloaded Weight : " + Math.round(getBaseMass() * 1_000.0)/1_000.0 + " kg");
 		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
 		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
 					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");

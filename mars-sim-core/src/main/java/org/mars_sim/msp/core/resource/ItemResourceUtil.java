@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2023-05-16
+ * @date 2023-06-12
  * @author Manny Kung
  */
 
@@ -44,13 +44,6 @@ public class ItemResourceUtil implements Serializable {
 	 * Parts for creating an EVA Suit. 
 	 */
 	private static List<String> evaSuitParts;
-//			"eva helmet",			"helmet visor",
-//			PRESSURE_SUIT,			"coveralls",
-//			"suit heating unit",	"eva gloves",
-//			"eva boots",			"eva pads",
-//			"eva backpack",			"eva antenna",
-//			"eva battery",			"eva radio",
-	
 
 	
 	// 3-D printer
@@ -81,10 +74,10 @@ public class ItemResourceUtil implements Serializable {
 		createIDs();
 	}
 	
-	public static double initEVASuit() {
-
-		double calculatedEmptyMass = 0;
-		
+	/**
+	 * Initializes the EVA suit parts.
+	 */
+	public static void initEVASuit() {
 		if (evaSuitPartIDs == null || evaSuitPartIDs.isEmpty()) {
 
 			ManufactureProcessInfo manufactureProcessInfo = null;
@@ -95,18 +88,12 @@ public class ItemResourceUtil implements Serializable {
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
 		        		manufactureProcessInfo = info;
+		        		break;
 				}
 			}
 
-			evaSuitParts = manufactureProcessInfo.getInputNames();
-		
-			evaSuitPartIDs = convertNameListToResourceIDs(evaSuitParts);
-
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			calculatedEmptyMass = manufactureProcessInfo.calculateTotalInputMass();
+			evaSuitPartIDs = convertNameListToResourceIDs(manufactureProcessInfo.getInputNames());
 		}
-		
-		return calculatedEmptyMass;
 	}
 	
 	/**
