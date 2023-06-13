@@ -139,7 +139,7 @@ public final class EquipmentFactory {
 	 * @return
 	 */
     public static double calculateMass(String processName) {	
-		if (!weights.isEmpty() || !weights.containsKey(processName)) {
+		if (weights.isEmpty() || !weights.containsKey(processName)) {
 			double mass = 0;
 	    	ManufactureProcessInfo manufactureProcessInfo = null;
 	    	
@@ -152,6 +152,7 @@ public final class EquipmentFactory {
 	
 			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
 			mass = manufactureProcessInfo.calculateTotalInputMass();
+			// Save the key value pair onto the weights Map
 			weights.put(processName, mass);
 			
 			return mass;

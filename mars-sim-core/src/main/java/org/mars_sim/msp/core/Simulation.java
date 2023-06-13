@@ -362,6 +362,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
+		
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
@@ -420,9 +421,8 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-		TaskManager.initializeInstances(this, simulationConfig);
 
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 
 		// Initialize OuterSpace instance
@@ -454,9 +454,6 @@ public class Simulation implements ClockListener, Serializable {
 		Crop.initializeInstances(cc);
 		Job.initializeInstances(unitManager, missionManager);
 
-		// Initialize meta tasks
-		MetaTaskUtil.initializeMetaTasks();
-
 		transportManager = new TransportManager(this);
 
         // Initialize ManufactureUtil
@@ -465,7 +462,11 @@ public class Simulation implements ClockListener, Serializable {
         new RoleUtil();
      // Initialize RoleUtil
         RoleUtil.initialize();
-
+		Role.initializeInstances(marsClock);
+		// Initialize meta tasks
+		MetaTaskUtil.initializeMetaTasks();
+		TaskManager.initializeInstances(this, simulationConfig);
+		
 		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											medicalManager, eventManager,
@@ -675,8 +676,6 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void reinitializeInstances() {
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		// Re-initialize the utility class for getting lists of meta tasks.
-		MetaTaskUtil.initializeMetaTasks();
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		
@@ -710,6 +709,7 @@ public class Simulation implements ClockListener, Serializable {
 				marsClock, orbitInfo, weather);
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
@@ -735,8 +735,13 @@ public class Simulation implements ClockListener, Serializable {
 		Mind.initializeInstances(missionManager);
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(masterClock, marsClock);
+		
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(this, simulationConfig);
+		Job.initializeInstances(unitManager, missionManager);
+		// Re-initialize the utility class for getting lists of meta tasks.
+		MetaTaskUtil.initializeMetaTasks();
+		
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
@@ -750,8 +755,7 @@ public class Simulation implements ClockListener, Serializable {
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
 		ResourceProcess.initializeInstances(marsClock);
-		Job.initializeInstances(unitManager, missionManager);
-
+	
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
 		// Re-initialize Mission related class

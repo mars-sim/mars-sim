@@ -10,12 +10,9 @@ package org.mars_sim.msp.core.person;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.InventoryUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -24,36 +21,20 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
-import org.mars_sim.msp.core.structure.building.function.Function;
-
-import junit.framework.TestCase;
 
 /**
  * Tests the ability of a person to load resources into an EVA suit.
  */
-public class LoadEVASuitTest
-extends TestCase {
+public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 
 	private Settlement settlement = null;
-	private UnitManager unitManager;
 	private Person person;
 	private String name = "Jim Loader";
 	
-	@Override
-    public void setUp() throws Exception {
-		// Create new simulation instance.
-        SimulationConfig simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
-        
-        Simulation sim = Simulation.instance();
-        sim.testRun();
+    @Override
+    public void setUp() {
+		super.setUp();
 
-        unitManager = sim.getUnitManager();
-
-        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
-        							 sim.getWeather(), sim.getUnitManager());
-        
 		// Create test settlement.
 		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
@@ -157,7 +138,5 @@ extends TestCase {
 		// 4. Loads the resources into the EVA suit
 		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
 				(percentageFull > 0.0));
-
-				
 	}
 }
