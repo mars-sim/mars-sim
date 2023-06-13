@@ -13,6 +13,9 @@
 	<!ELEMENT outputs (resource*, part*, equipment*, vehicle*)>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource name1 CDATA #IMPLIED>
+	<!ATTLIST resource name2 CDATA #IMPLIED>
+	<!ATTLIST resource name3 CDATA #IMPLIED>	
 	<!ATTLIST resource amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part name CDATA #REQUIRED>
@@ -637,30 +640,10 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make steel barrel" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make plastic barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<equipment name="barrel" number="6" />
-		</outputs>
-	</process>
-
-	<process name="Make polyethylene barrel" tech="1" skill="1" work-time="10" process-time="10"
-			power-required="0.1">
-		<inputs>
-			<resource name="polyethylene" amount="7.8" />
-		</inputs>
-		<outputs>
-			<equipment name="barrel" number="6" />
-		</outputs>
-	</process>
-
-	<process name="Make polypropylene barrel" tech="1" skill="1" work-time="10" process-time="10"
-			power-required="0.1">
-		<inputs>
-			<resource name="polypropylene" amount="7.8" />
+			<resource name="polypropylene" name1="polyethylene" amount="7.8" />
 		</inputs>
 		<outputs>
 			<equipment name="barrel" number="6" />
@@ -676,27 +659,17 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rope" number="1" />
 		</outputs>
 	</process>
-	
-	<process name="Make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
-			power-required=".1">
-		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<equipment name="specimen box" number="12" />
-		</outputs>
-	</process>
 
 	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="polyethylene" amount="7.8" />
+			<resource name="polyethylene" name1="polypropylene" amount="7.8" />
 		</inputs>
 		<outputs>
 			<equipment name="specimen box" number="12" />
 		</outputs>
 	</process>
-
+	
 	<!-- Produces 10kg steel canister. -->
 	<process name="Make steel canister" tech="1" skill="1" work-time="10" process-time="10"
 			 power-required=".1">
@@ -990,7 +963,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
-	<process name="maufacture bags" tech="1" skill="1" work-time="10" process-time="5"
+	<process name="manufacture bag" tech="1" skill="1" work-time="10" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="5" />
@@ -1002,7 +975,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
-	<process name="maufacture large bags" tech="1" skill="1" work-time="20" process-time="5"
+	<process name="manufacture large bag" tech="1" skill="1" work-time="20" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="2" />
@@ -1013,7 +986,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="maufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
+	<process name="manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="aluminum" amount="0.8" />			

@@ -22,9 +22,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 public final class EquipmentFactory {
 	
 	private static final String wheel = "Make wheelbarrow";
-	private static final String bottle = "maufacture thermal bottle";
-	private static final String largeBag = "maufacture large bag";
-	private static final String bag = "maufacture bag";
+	private static final String bottle = "manufacture thermal bottle";
+	private static final String largeBag = "manufacture large bag";
+	private static final String bag = "manufacture bag";
 	private static final String box = "Make plastic specimen box";
 	private static final String barrel = "Make plastic barrel";
 	private static final String canister = "Make gas canister";
@@ -142,7 +142,7 @@ public final class EquipmentFactory {
 		if (weights.isEmpty() || !weights.containsKey(processName)) {
 			double mass = 0;
 	    	ManufactureProcessInfo manufactureProcessInfo = null;
-	    	
+
 	    	for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 	    		if (info.getName().equalsIgnoreCase(processName)) {
 	    			manufactureProcessInfo = info;

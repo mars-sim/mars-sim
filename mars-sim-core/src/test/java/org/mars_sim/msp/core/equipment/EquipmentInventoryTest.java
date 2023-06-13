@@ -100,9 +100,8 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 	 */
 	public void testItemOverloading() throws Exception {
 		Part drillPart = (Part) ItemResourceUtil.findItemResource(PNEUMATIC_DRILL);
-
-
 		int maxDrills = 2;
+		
 		EquipmentInventory inv = new EquipmentInventory(settlement, drillPart.getMassPerItem() * 2);
 
 		int returned = inv.storeItemResource(drillPart.getID(), maxDrills);

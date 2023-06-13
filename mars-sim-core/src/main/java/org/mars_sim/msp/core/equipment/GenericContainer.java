@@ -54,17 +54,17 @@ class GenericContainer extends Equipment implements Container {
 		setBaseMass(type);
 	}
 
-	/**
-	 * Gets the base mass.
-	 */
-	@Override
-	public double getBaseMass() {
-		double mass = super.getBaseMass();
-		if (mass == 0) {
-			setBaseMass(type);
-		}
-		return super.getBaseMass();
-	}
+//	/**
+//	 * Gets the base mass.
+//	 */
+//	@Override
+//	public double getBaseMass() {
+//		double mass = super.getBaseMass();
+//		if (mass == 0) {
+//			setBaseMass(type);
+//		}
+//		return super.getBaseMass();
+//	}
 	
 	/**
 	 * Sets the base mass of this container type.
