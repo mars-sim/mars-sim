@@ -138,7 +138,7 @@ public final class EquipmentFactory {
 	 * @param processName
 	 * @return
 	 */
-    public static double calculateMass(String processName) {		
+    public static double calculateMass(String processName) {	
 		if (!weights.isEmpty() || !weights.containsKey(processName)) {
 			double mass = 0;
 	    	ManufactureProcessInfo manufactureProcessInfo = null;
@@ -153,6 +153,7 @@ public final class EquipmentFactory {
 			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
 			mass = manufactureProcessInfo.calculateTotalInputMass();
 			weights.put(processName, mass);
+			
 			return mass;
 		}
 

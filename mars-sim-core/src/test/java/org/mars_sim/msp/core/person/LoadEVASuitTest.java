@@ -15,7 +15,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
@@ -96,7 +99,8 @@ extends TestCase {
 			person.storeAmountResource(i, amount) ; 
 		}
 		
-		EVASuit suitSettlement = new EVASuit("EVA Suit 001", settlement);
+		EVASuit suitSettlement = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
+//		EVASuit suitSettlement = new EVASuit("EVA Suit 001", settlement);
 		
 		settlement.addEquipment(suitSettlement);
 		

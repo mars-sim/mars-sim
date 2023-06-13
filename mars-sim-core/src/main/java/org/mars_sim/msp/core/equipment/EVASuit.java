@@ -123,12 +123,12 @@ public class EVASuit extends Equipment
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param name
-	 *
 	 * @param settlement the location of the EVA suit.
 	 * @throws Exception if error creating EVASuit.
 	 */
-	public EVASuit(String name, Settlement settlement) {
+	EVASuit(String name, Settlement settlement) {
 
 		// Use Equipment constructor.
 		super(name, TYPE, settlement);
@@ -145,9 +145,9 @@ public class EVASuit extends Equipment
 		microInventory.setCapacity(OXYGEN_ID, OXYGEN_CAPACITY);
 		microInventory.setCapacity(WATER_ID, WATER_CAPACITY);
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
-
-		// Set the base mass of the EVA suit as empty mass
-//		setBaseMass(emptyMass);
+		
+		// Sets the base mass of the bag.
+		setBaseMass(EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT));
 	}
 	
 	static {
