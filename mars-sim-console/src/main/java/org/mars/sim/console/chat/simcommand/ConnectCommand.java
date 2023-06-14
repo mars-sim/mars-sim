@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConnectCommand.java
- * @date 2022-07-15
+ * @date 2023-06-14
  * @author Barry Evans
  */
 
@@ -20,13 +20,14 @@ import org.mars.sim.console.chat.simcommand.settlement.SettlementChat;
 import org.mars.sim.console.chat.simcommand.vehicle.VehicleChat;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Connects to an entity. This is a singleton
+ * Connects to an entity. This is a singleton.
  */
 public class ConnectCommand extends ChatCommand {
 
@@ -39,8 +40,9 @@ public class ConnectCommand extends ChatCommand {
 	}
 
 	/**
-	 * Connects to another entity; this will change the Conversation current command to one specific to the
-	 * entity.
+	 * Connects to another entity. 
+	 * This will change the Conversation current command to one specific to the entity.
+	 * 
 	 * @return 
 	 */
 	@Override
@@ -85,17 +87,16 @@ public class ConnectCommand extends ChatCommand {
 
 				Unit match = matched.get(0);
 				
-				// No choice but to use instanceof
-				if (match instanceof Person) {
+				if (match.getUnitType() == UnitType.PERSON) {
 					newCommand = new PersonChat((Person) match, parent);
 				}
-				else if (match instanceof Robot) {
+				else if (match.getUnitType() == UnitType.ROBOT) {
 					newCommand = new RobotChat((Robot) match, parent);
 				}
-				else if (match instanceof Vehicle) {
+				else if (match.getUnitType() == UnitType.VEHICLE) {
 					newCommand = new VehicleChat((Vehicle) match, parent);
 				}
-				else if (match instanceof Settlement) {
+				else if (match.getUnitType() == UnitType.SETTLEMENT) {
 					newCommand = new SettlementChat((Settlement) match, parent);
 				}
 				else {
@@ -114,7 +115,8 @@ public class ConnectCommand extends ChatCommand {
 	}
 
 	/**
-	 * Get all the units in the simulation. Really should come directly off UnitManager.
+	 * Gets all the units in the simulation. Really should come directly off UnitManager.
+	 * 
 	 * @param um
 	 * @return
 	 */

@@ -3317,6 +3317,17 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return eqmInventory.getAllAmountResourceStored(resource);
+	}
+	
+	/**
 	 * Gets the amount resource owned by all resource holders.
 	 *
 	 * @param resource
@@ -3353,6 +3364,16 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory.getItemResourceIDs();
 	}
 
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return eqmInventory.getAllAmountResourceIDs();
+	}
+	
 	/**
 	 * Does it have this item resource ?
 	 *

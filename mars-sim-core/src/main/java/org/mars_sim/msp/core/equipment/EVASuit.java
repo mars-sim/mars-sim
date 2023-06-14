@@ -552,6 +552,17 @@ public class EVASuit extends Equipment
 	}
 
 	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return microInventory.getAmountResourceStored(resource);
+	}
+	
+	/**
 	 * Retrieves the resource
 	 *
 	 * @param resource
@@ -592,7 +603,17 @@ public class EVASuit extends Equipment
 	public Set<Integer> getAmountResourceIDs() {
 		return microInventory.getResourcesStored();
 	}
-
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return getAmountResourceIDs();
+	}
+	
 	/**
 	 * Is this equipment empty ?
 	 *

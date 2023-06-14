@@ -1889,20 +1889,37 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
-//		return ((ResourceHolder)this).getAmountResourceStored(resource) + eqmInventory.getAmountResourceStored(resource);
 	}
 
 	/**
-	 * Gets all stored amount resources.
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return eqmInventory.getAllAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory.
 	 *
 	 * @return all stored amount resources.
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
-//		Set<Integer> set = new HashSet<>(((ResourceHolder)this).getAmountResourceIDs());
-//		set.addAll(eqmInventory.getAmountResourceIDs());
-//		return set;
+	}
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return eqmInventory.getAllAmountResourceIDs();
 	}
 
 	/**

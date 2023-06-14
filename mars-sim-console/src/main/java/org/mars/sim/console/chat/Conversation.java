@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Conversation.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-06-14
  * @author Barry Evans
  */
 
@@ -49,7 +49,8 @@ public class Conversation implements UserOutbound {
 	private Set<ConversationRole> roles = null;
 	
 	/**
-	 * Start a conversation with the user using a Comms Channel starting with a certain command.
+	 * Starts a conversation with the user using a Comms Channel starting with a certain command.
+	 * 
 	 * @param comms an instance of UserChannel
 	 * @param initial an instance of InteractiveChatCommand
 	 * @param roles a set of ConversationRole
@@ -85,7 +86,8 @@ public class Conversation implements UserOutbound {
 	}
 	
 	/**
-	 * Update the current chat command and potentially remober it for later.
+	 * Updates the current chat command and potentially remember it for later.
+	 * 
 	 * @param newCommand New chat
 	 * @param remember Push this in the stack of previous commands
 	 */
@@ -102,7 +104,7 @@ public class Conversation implements UserOutbound {
     }
     
 	/**
-	 * Interact with the end user.
+	 * Interacts with the end user.
 	 */
     public void interact() {
     	if (current == null) {
@@ -160,7 +162,7 @@ public class Conversation implements UserOutbound {
     }
 
 	/**
-	 * This reset the current command to the previous one.
+	 * Resets the current command to the previous one.
 	 */
 	public void resetCommand() {
 		current = previous.pop();
@@ -189,11 +191,11 @@ public class Conversation implements UserOutbound {
 		this.activeCommand = activeCommand;
 	}
 
-	@Override
 	/**
 	 * User has pressed a special key that is listened for.
 	 * @param keyStroke Key pressed
 	 */
+	@Override
 	public void keyStrokeApplied(String key) { 		
 		switch(key) {
 		case AUTO_COMPLETE_KEY:
@@ -219,11 +221,11 @@ public class Conversation implements UserOutbound {
 	}
 
 	/**
-	 * Cancel the current command that is registered
+	 * Cancels the current command that is registered.
 	 */
 	private void cancelCommand() {
 		if (activeCommand != null) {
-			println("Cancelling command please wait......");
+			println("Cancelling command. Please wait......");
 			activeCommand.cancel();
 			activeCommand = null;
 		}
@@ -289,7 +291,8 @@ public class Conversation implements UserOutbound {
 	}
 
 	/**
-	 * Gte a integer input
+	 * Gets a integer input.
+	 * 
 	 * @param prompt
 	 * @return
 	 */

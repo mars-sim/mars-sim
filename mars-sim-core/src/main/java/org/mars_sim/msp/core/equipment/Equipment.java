@@ -89,7 +89,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Mass of Equipment is the base mass plus what every it is storing
+	 * Returns the mass of Equipment. The base mass plus what every it is storing.
 	 */
 	@Override
 	public double getMass() {
@@ -98,7 +98,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Gets the total weight of the stored resources
+	 * Gets the total weight of the stored resources.
 	 *
 	 * @return
 	 */

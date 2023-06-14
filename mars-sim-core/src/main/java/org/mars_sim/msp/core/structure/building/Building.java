@@ -1356,6 +1356,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return getSettlement().getAllAmountResourceStored(resource);
+	}
+	
+	/**
 	 * Stores the amount resource
 	 *
 	 * @param resource the amount resource
@@ -1421,7 +1432,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public Set<Integer> getAmountResourceIDs() {
 		return getSettlement().getAmountResourceIDs();
 	}
-
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return getSettlement().getAllAmountResourceIDs();
+	}
+	
 	/**
 	 * Sets the unit's container unit.
 	 *

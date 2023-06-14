@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.Complaint;
 
 /** 
- * Reports on a Persons health
+ * Reports on a Persons health.
  */
 public class PersonHealthCommand extends AbstractPersonCommand {
 	

@@ -108,6 +108,17 @@ class GenericContainer extends Equipment implements Container {
 		return Set.of(resourceHeld);
 	}
 
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return getAmountResourceIDs();
+	}
+	
 	/**
 	 * Total mass held.
 	 */
@@ -158,6 +169,17 @@ class GenericContainer extends Equipment implements Container {
 		return 0;
 	}
 
+	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return getAmountResourceStored(resource);
+	}
+	
 	/**
 	 * Stores the resource but only if it matches current resource or empty.
 	 *
