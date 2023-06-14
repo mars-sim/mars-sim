@@ -62,7 +62,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 	private static final String MANU_ICON = "manufacture";
 	
-	private static int processStringWidth = 120;
+	private static int processStringWidth = 170;
 
 	/** The manufacture building. */
 	private Manufacture workshop;

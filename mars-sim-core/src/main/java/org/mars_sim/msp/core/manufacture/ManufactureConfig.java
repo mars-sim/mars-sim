@@ -1,13 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-12
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.manufacture;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +31,7 @@ public class ManufactureConfig {
 
 	// Element names
 	private static final String PROCESS = "process";
-	private static final String NAME = "name";
+	private static final String NAME = "name";	
 	private static final String TECH = "tech";
 	private static final String SKILL = "skill";
 	private static final String WORK_TIME = "work-time";
@@ -87,12 +89,15 @@ public class ManufactureConfig {
 		
 		// Build the global list in a temp to avoid access before it is built
 		List<ManufactureProcessInfo> newList = new ArrayList<>();
-
+		
 		Element root = manufactureDoc.getRootElement();
 		List<Element> processNodes = root.getChildren(PROCESS);
 
 		for (Element processElement : processNodes) {
 
+			// Create a map that stores the resource to be swapped out with an alternate resource
+			Map<String, String> alternateResourceMap = new HashMap<>();
+			
 			ManufactureProcessInfo process = new ManufactureProcessInfo();
 
 			String name = "";
@@ -119,7 +124,7 @@ public class ManufactureConfig {
 			
 			process.setInputList(inputList);
 
-			parseResources(inputList, inputs.getChildren(RESOURCE));
+			parseInputResources(inputList, inputs.getChildren(RESOURCE), alternateResourceMap);
 			parseParts(inputList, inputs.getChildren(PART));
 			parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
 			parseVehicles(inputList, inputs.getChildren(VEHICLE));
@@ -130,42 +135,167 @@ public class ManufactureConfig {
 			
 			process.setOutputList(outputList);
 
-			parseResources(outputList, outputs.getChildren(RESOURCE));
+			parseOutputResources(outputList, outputs.getChildren(RESOURCE));
 			parseParts(outputList, outputs.getChildren(PART));
 			parseEquipment(outputList, outputs.getChildren(EQUIPMENT));
 			parseVehicles(outputList, outputs.getChildren(VEHICLE));
-			
+
 			// Add process to newList.
 			newList.add(process);
-		}
+		
+			if (!alternateResourceMap.isEmpty()) {
+				// Create a list for the original resources from alternateResourceMap
+				List<String> originalResourceList = new ArrayList<>(alternateResourceMap.values());
+				// Create a list for the alternate resources from alternateResourceMap
+				List<String> altResourceList = new ArrayList<>(alternateResourceMap.keySet());
+				
+				String processName = process.getName();
+		
+//				System.out.println("processName: " + processName);
+				
+//				System.out.println("alternateResourceMap: " + alternateResourceMap);
+				
+				int size = altResourceList.size();
+				
+				for (int i = 0; i < size; i++) {
+					
+					// Use copy constructor to create a new instance
+					ManufactureProcessInfo altProcess = new ManufactureProcessInfo(process);
 
+					String altProcessName = processName + " " + (i + 1);
+							
+					String originalResource = originalResourceList.get(i);
+					String altResource = altResourceList.get(i);
+
+					// Rename the original process name by appending it with a numeral
+					altProcess.setName(altProcessName);
+
+					// Create a brand new list
+					List<ManufactureProcessItem> newInputItems = new ArrayList<>();
+					
+					for (ManufactureProcessItem item: inputList) {
+						
+						String resName = item.getName();								
+						double amount = item.getAmount();				
+						ItemType type = item.getType();
+					
+						ManufactureProcessItem newItem = new ManufactureProcessItem();
+						
+						if (resName.equalsIgnoreCase(originalResource)) {
+							AmountResource resource = ResourceUtil.findAmountResource(resName);
+							if (resource != null) {
+								// Replace with the alternate resource name
+								newItem.setName(altResource);
+							}
+							else {
+//								System.out.println("resName: " + resName + "  originalResource: " + originalResource + "  inputList: " + inputList);
+								newItem.setName(resName);
+							}
+						}
+						else {
+							newItem.setName(resName);
+						}
+						
+						newItem.setAmount(amount);						
+						newItem.setType(type);
+		
+						newInputItems.add(newItem);					
+					}
+					
+					// Write the modified input resource list onto the new list
+					altProcess.setInputList(newInputItems);
+					
+					// Add process to newList.
+					newList.add(altProcess);
+				}
+			}
+		}
+		
 		// Assign the newList now built
 		manufactureProcessList = Collections.unmodifiableList(newList);
 	}
 
 	/**
-	 * Parses the amount resource elements in a node list.
+	 * Parses the input amount resource elements in a node list.
+	 * 
+	 * @param list          the list to store the resources in.
+	 * @param resourceNodes the node list.
+	 * @param alternateResourceMap the map that stores the resource to be swapped out with an alternate resource
+	 * @throws Exception if error parsing resources.
+	 */
+	private static void parseInputResources(List<ManufactureProcessItem> list, List<Element> resourceNodes, 
+			Map<String, String> alternateResourceMap) {
+		
+		for (Element resourceElement : resourceNodes) {
+			
+			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
+			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
+			String originalResourceName = "";
+			
+			for (int i = 0; i < 4; i++) {
+				String num = "";
+				if (i == 0)
+					num = "";
+				else 
+					num = i + "";
+				String resourceXMLName = resourceElement.getAttributeValue(NAME + num);
+				
+				if (resourceXMLName != null) {
+				
+					if (i == 0) {
+						originalResourceName = resourceXMLName;
+					}
+				
+					// Checks if resourceName exists at all
+					AmountResource resource = ResourceUtil.findAmountResource(resourceXMLName);
+					if (resource == null)
+						logger.severe(resourceXMLName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
+					else {
+						if (i == 0) {
+							resourceItem.setName(resourceXMLName);						
+							resourceItem.setAmount(Double.parseDouble(resourceElement.getAttributeValue(AMOUNT)));
+							list.add(resourceItem);
+						}
+						else {
+							alternateResourceMap.put(resourceXMLName, originalResourceName);
+//							System.out.println(alternateResourceMap.size() + "  originalResourceName: " + originalResourceName
+//									+ "  ->  resourceXMLName: " + resourceXMLName);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Parses the output amount resource elements in a node list.
 	 * 
 	 * @param list          the list to store the resources in.
 	 * @param resourceNodes the node list.
 	 * @throws Exception if error parsing resources.
 	 */
-	private static void parseResources(List<ManufactureProcessItem> list, List<Element> resourceNodes) {
+	private static void parseOutputResources(List<ManufactureProcessItem> list, List<Element> resourceNodes) {
+
 		for (Element resourceElement : resourceNodes) {
+			
 			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
 			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
+			
 			String resourceName = resourceElement.getAttributeValue(NAME);
-			AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-			if (resource == null)
-				logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
-			else {
-				resourceItem.setName(resourceName);
-				resourceItem.setAmount(Double.parseDouble(resourceElement.getAttributeValue(AMOUNT)));
-				list.add(resourceItem);
+			
+			if (resourceName != null) {
+				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				if (resource == null)
+					logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
+				else {		
+					resourceItem.setName(resourceName);
+					resourceItem.setAmount(Double.parseDouble(resourceElement.getAttributeValue(AMOUNT)));
+					list.add(resourceItem);
+				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Parses the part elements in a node list.
 	 * 

@@ -1,14 +1,15 @@
 /*
  * Mars Simulation Project
  * ManufactureProcessItem.java
- * @date 2022-07-26
+ * @date 2023-06-12
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
-
+import java.util.List;
+import java.util.ArrayList;
 import org.mars_sim.msp.core.resource.ItemType;
 
 /**
@@ -20,18 +21,27 @@ public class ManufactureProcessItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+//	List<String> names = new ArrayList<>();
 	private String name;
 	private ItemType type;
 	private double amount;
 
-	public String getName() {
-		return name;
-	}
-
+//	public void setName(List<String> names) {
+//		this.names = names;
+//	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	public String getName() {
+		return name;
+	}
+	
+//	public List<String> getNames() {
+//		return names;
+//	}
+	
 	public ItemType getType() {
 		return type;
 	}

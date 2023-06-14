@@ -269,17 +269,15 @@ public class Manufacture extends Function {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				building.getSettlement().retrieveAmountResource(id, item.getAmount());
-				// Add tracking demand
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				building.getSettlement().retrieveItemResource(id, (int) item.getAmount());
-				// Add tracking demand
+				// Future: add equipment here as the requirement for this process				
 //			} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 //				String equipmentType = item.getName();
 //				int number = (int) item.getAmount();
 //				building.getSettlement().getEquipmentInventory().removeEquipment(equipmentType);
 			} else 
-				// Future: add equipment here as the requirement for this process
 				logger.log(getBuilding().getSettlement(), Level.SEVERE, 20_000,
 						getBuilding()
 						+ " Manufacture process input: " + item.getType() + " not a valid type.");

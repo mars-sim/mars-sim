@@ -428,6 +428,8 @@ public final class ManufactureUtil {
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
+				if (!result)
+					return false;
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}

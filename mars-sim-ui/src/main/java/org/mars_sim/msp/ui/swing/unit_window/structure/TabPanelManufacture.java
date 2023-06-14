@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -62,7 +63,7 @@ public class TabPanelManufacture extends TabPanel {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
 	
-	private static final int WORD_WIDTH = 50;
+	private static final int WORD_WIDTH = 70;
 	private static final String MANU_ICON ="manufacture";
 	
 	/** The Settlement instance. */
@@ -138,7 +139,7 @@ public class TabPanelManufacture extends TabPanel {
 			manufactureListPane.add(new ManufacturePanel(i.next(), true, WORD_WIDTH));
 
 		// Create salvage panels.
-		salvageCache = new ArrayList<>(getSalvageProcesses());
+		salvageCache = new ArrayList<>(); //getSalvageProcesses(); //getSalvageProcesses());
 		Iterator<SalvageProcess> j = salvageCache.iterator();
 		while (j.hasNext())
 			manufactureListPane.add(new SalvagePanel(j.next(), true, WORD_WIDTH));
@@ -420,8 +421,7 @@ public class TabPanelManufacture extends TabPanel {
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			Manufacture workshop = i.next().getManufacture();
-			result.addAll(workshop.getProcesses());
+			result.addAll(i.next().getManufacture().getProcesses());
 		}
 
 		return result;
@@ -433,12 +433,11 @@ public class TabPanelManufacture extends TabPanel {
 	 * @return list of salvage processes.
 	 */
 	private List<SalvageProcess> getSalvageProcesses() {
-		List<SalvageProcess> result = new ArrayList<SalvageProcess>();
+		List<SalvageProcess> result = new ArrayList<>();
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			Manufacture workshop = i.next().getManufacture();
-			result.addAll(workshop.getSalvageProcesses());
+			result.addAll(i.next().getManufacture().getSalvageProcesses());
 		}
 
 		return result;
@@ -591,13 +590,12 @@ public class TabPanelManufacture extends TabPanel {
 	 */
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 
-		private static final int PROCESS_NAME_LENGTH = 50;
+		private static final int PROCESS_NAME_LENGTH = 70;
 		private String prompt;
 
 		/*
 		 * Set the text to display when no item has been selected.
 		 */
-		// 2014-12-01 Added prompt
 		public ManufactureSelectionListCellRenderer(String prompt) {
 			this.prompt = prompt;
 		}
@@ -611,7 +609,7 @@ public class TabPanelManufacture extends TabPanel {
 			if (value instanceof ManufactureProcessInfo) {
 				ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 				if (info != null) {
-					String processName = info.getName();
+					String processName = Conversion.capitalize(info.getName());
 					if (processName.length() > PROCESS_NAME_LENGTH)
 						processName = processName.substring(0, PROCESS_NAME_LENGTH)
 								+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
@@ -622,11 +620,10 @@ public class TabPanelManufacture extends TabPanel {
 			} else if (value instanceof SalvageProcessInfo) {
 				SalvageProcessInfo info = (SalvageProcessInfo) value;
 				if (info != null) {
-					String processName = info.toString();
+					String processName = Conversion.capitalize(info.getName());
 					if (processName.length() > PROCESS_NAME_LENGTH)
 						processName = processName.substring(0, PROCESS_NAME_LENGTH)
 								+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
-					// 2014-11-19 Capitalized process names
 					((JLabel) result).setText(processName);
 					((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 				}
