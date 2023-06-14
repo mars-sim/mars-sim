@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * {@link #theta} is longitude in (0 - 2 PI) radians or (0 - 360) degrees. <br/>
  * {@link #phi} is latitude in (0 - PI) radians or (0 - 180) degrees. <br/>
  */
-public class Coordinates implements Serializable {
+public final class Coordinates implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -50,15 +50,19 @@ public class Coordinates implements Serializable {
 
 	// Data members
 	/** Phi value of coordinates PHI is latitude in 0-PI radians.*/
-	private double phi;
+	private final double phi;
 	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
-	private double theta;
+	private final double theta;
 
 	/** Formatted string of the latitude. */
-	private String latCache;
+	private final String latStr;
 	/** Formatted string of the longitude. */
-	private String lonCache;
-
+	private final String lonStr;
+	/** Formatted string of both latitude and longitude. */
+	private String formattedString;
+	/** Formatted coordinate string of both latitude and longitude. */
+	private String coordinateString;
+	
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 
 	/**
@@ -68,23 +72,35 @@ public class Coordinates implements Serializable {
 	 * @param theta  (longitude) the theta angle of the spherical coordinate
 	 */
 	public Coordinates(double phi, double theta) {
-
+		
+		double p = phi;
+		double t = theta;
+		
 		// Set Coordinates
 		// Make sure phi is between 0 and PI.
 		// Not between -90 (-pi/2 radians) and 90 degrees (pi/2 radians).
-		this.phi = phi;
-		while (this.phi > Math.PI)
-			this.phi -= Math.PI;
-		while (this.phi < 0)
-			this.phi += Math.PI;
 
+		while (p > Math.PI)
+			p -= Math.PI;
+		while (p < 0)
+			p += Math.PI;
+
+		this.phi = p;
+
+		latStr = getFormattedLatitudeString(phi);
+		
 		// Make sure theta is between 0 and 2 PI.
 		// Not between 0 (-pi radians) and 90 degrees (pi radians).
-		this.theta = theta;
-		while (this.theta < 0D)
-			this.theta += TWO_PI;
-		while (this.theta > TWO_PI)
-			this.theta -= TWO_PI;
+
+		while (t < 0D)
+			t += TWO_PI;
+		while (t > TWO_PI)
+			t -= TWO_PI;
+		
+		this.theta = t;
+		
+		lonStr = getFormattedLongitudeString(theta);
+		
 	}
 
 	/**
@@ -107,7 +123,7 @@ public class Coordinates implements Serializable {
 	 * @see #getFormattedString()
 	 */
 	public String toString() {
-		return getFormattedString();
+		return formattedString;
 	}
 
 	/**
@@ -175,8 +191,8 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
-	private double getAngleHaversine(Coordinates otherCoords) {
-
+	private double getAngleHaversine(Coordinates otherCoords) {	
+		// Calculate angleHaversine 
 		double phi1 = -1D * (phi - PI_HALF);
 		double phi2 = -1D * (otherCoords.phi - PI_HALF);
 		double diffPhi = Math.abs(phi1 - phi2);
@@ -185,6 +201,7 @@ public class Coordinates implements Serializable {
 		double temp1 = Math.pow(Math.sin(diffPhi / 2D), 2D);
 		double temp2 = Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(diffTheta / 2D), 2D);
 		double temp3 = Math.sqrt(temp1 + temp2);
+
 		return 2D * Math.asin(temp3);
 	}
 
@@ -258,11 +275,15 @@ public class Coordinates implements Serializable {
 	 * @see #getFormattedLatitudeString()
 	 */
 	public String getFormattedString() {
-		StringBuilder buffer = new StringBuilder();
-		buffer.append(getFormattedLatitudeString());
-		buffer.append(' ');
-		buffer.append(getFormattedLongitudeString());
-		return buffer.toString();
+		if (formattedString == null) {
+			StringBuilder buffer = new StringBuilder();
+			buffer.append(getFormattedLatitudeString());
+			buffer.append(' ');
+			buffer.append(getFormattedLongitudeString());
+			formattedString = buffer.toString();
+		}
+		
+		return formattedString;
 	}
 
 	/**
@@ -274,13 +295,16 @@ public class Coordinates implements Serializable {
 	 * @see #getFormattedLatitudeString()
 	 */
 	public String getCoordinateString() {
-		StringBuilder buffer = new StringBuilder();
-		buffer.append('(');
-		buffer.append(getFormattedLatitudeString());
-		buffer.append(", ");
-		buffer.append(getFormattedLongitudeString());
-		buffer.append(')');
-		return buffer.toString();
+		if (coordinateString == null) {
+			StringBuilder buffer = new StringBuilder();
+			buffer.append('(');
+			buffer.append(getFormattedLatitudeString());
+			buffer.append(", ");
+			buffer.append(getFormattedLongitudeString());
+			buffer.append(')');
+			coordinateString = buffer.toString();
+		}
+		return coordinateString;
 	}
 
 	/**
@@ -289,11 +313,8 @@ public class Coordinates implements Serializable {
 	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
-	public String getFormattedLongitudeString() {
-		if (lonCache == null) {
-			lonCache = getFormattedLongitudeString(theta);
-		}
-		return lonCache;
+	public final String getFormattedLongitudeString() {
+		return lonStr;
 	}
 
 	/**
@@ -344,11 +365,8 @@ public class Coordinates implements Serializable {
 	 *
 	 * @return formatted latitude string for this Coordinates object
 	 */
-	public String getFormattedLatitudeString() {
-		if (latCache == null) {
-			latCache = getFormattedLatitudeString(phi);
-		}
-		return latCache;
+	public final String getFormattedLatitudeString() {
+		return latStr;
 	}
 
 	/**
@@ -568,7 +586,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Parse a latitude string into a phi value. e.g. input: "25.344 N"
+	 * Parses a latitude string into a phi value. e.g. input: "25.344 N"
 	 * For latitude string: North is positive (+); South is negative (-)
 	 * For phi : it starts from the north pole (phi = 0) to the south pole (phi = PI)
 	 *
@@ -628,7 +646,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Parse a longitude string into a theta value. e.g. input:  "63.5532 W"
+	 * Parses a longitude string into a theta value. e.g. input:  "63.5532 W"
 	 * Note: East is positive (+), West is negative (-)
 	 *
 	 * @param longitude as string
@@ -706,7 +724,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Check for the validity of the input latitude
+	 * Checks for the validity of the input latitude.
 	 *
 	 * @param latitude the input latitude
 	 */
@@ -760,7 +778,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Check for the validity of the input longitude
+	 * Checks for the validity of the input longitude.
 	 *
 	 * @param longitude the input longitude
 	 */
@@ -816,7 +834,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Returns true if coordinates have equal phi and theta values
+	 * Returns true if coordinates have equal phi and theta values.
 	 *
 	 * @param otherCoords Coordinates object to be matched against
 	 * @return true if Coordinates values match, false otherwise
