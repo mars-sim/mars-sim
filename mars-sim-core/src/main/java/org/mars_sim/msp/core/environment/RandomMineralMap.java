@@ -370,7 +370,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				Direction direction = startingLocation.getDirectionToPoint(concentration.getLocation());
 				result = startingLocation.getNewLocation(direction, range);
 			} else
-				result = new Coordinates(concentration.getLocation());
+				result = new Coordinates(concentration.getLocation().getPhi(), concentration.getLocation().getTheta());
 		}
 
 		return result;

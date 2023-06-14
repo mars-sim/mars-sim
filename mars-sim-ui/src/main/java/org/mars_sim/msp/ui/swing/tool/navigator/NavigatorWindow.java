@@ -828,7 +828,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Checks if the mouse is hovering over a map
+	 * Checks if the mouse is hovering over a map.
 	 * 
 	 * @param event
 	 */

@@ -137,7 +137,7 @@ public class AreothermalMap implements Serializable {
 				result = 0D;
 
 			// Add location's areothermal potential to cache.
-			areothermalPotentialCache.put(new Coordinates(location), result);
+			areothermalPotentialCache.put(new Coordinates(location.getPhi(), location.getTheta()), result);
 		}
 
 		return result;

@@ -78,21 +78,20 @@
 
 		<!-- Earth start date/time -->
 		<!-- "yyyy-MM-dd hh:mm:ss" format -->
+		<!-- Previously designated as "2043-09-30 00:00:00.000" (iso8601 String: "2043-09-30T00:0:00.000Z") -->
 		<!-- Default: 2028-08-17 15:23:13.740 -->
-		<!-- Note that iso8601 String is "2043-09-30T00:0:00.000Z".
-		     see https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME -->
-		<!-- It was previously designated as "2043-09-30 00:00:00.000" -->
+		<!-- See https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME -->
 		<earth-start-date-time value="2028-08-17 15:23:13.740"/>
 
 		<!-- Mars start date/time -->
 		<!-- "orbit-month-sol:millisol" format -->
+		<!-- Previously designated as "0015-Adir-01:000.000" -->		
 		<!-- Default: 01-Adir-01:000.000 -->
-		<!-- It was previously designated as "0015-Adir-01:000.000" -->
 		<mars-start-date-time value="01-Adir-01:000.000" />
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
 		<!-- Value must be a positive number between 1 and 360 and cannot be zero -->
-		<!-- Min : 1 ; Max : 360 -->
+		<!-- In minutes. Min : 1 ; Max : 360 -->
 		<!-- Default: 15 -->
 		<autosave-interval value="15" />
 
@@ -118,4 +117,5 @@
 		<!-- minEVALight is in "flux" where the max is 717 -->
 		<min-eva-light value="7.0"/>
 	</mission-configuration>
+
 </simulation-configuration>

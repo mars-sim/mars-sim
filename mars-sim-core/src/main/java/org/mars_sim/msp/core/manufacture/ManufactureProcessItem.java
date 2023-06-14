@@ -8,8 +8,7 @@
 package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
+
 import org.mars_sim.msp.core.resource.ItemType;
 
 /**
@@ -21,15 +20,10 @@ public class ManufactureProcessItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-//	List<String> names = new ArrayList<>();
 	private String name;
 	private ItemType type;
 	private double amount;
 
-//	public void setName(List<String> names) {
-//		this.names = names;
-//	}
-	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -38,9 +32,6 @@ public class ManufactureProcessItem implements Serializable {
 		return name;
 	}
 	
-//	public List<String> getNames() {
-//		return names;
-//	}
 	
 	public ItemType getType() {
 		return type;

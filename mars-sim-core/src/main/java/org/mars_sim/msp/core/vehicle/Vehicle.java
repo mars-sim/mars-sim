@@ -1486,9 +1486,9 @@ public abstract class Vehicle extends Unit
 		} else if (trail.size() > 0) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
 			if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D))
-				trail.add(new Coordinates(location));
+				trail.add(new Coordinates(location.getPhi(), location.getTheta()));
 		} else
-			trail.add(new Coordinates(location));
+			trail.add(new Coordinates(location.getPhi(), location.getTheta()));
 	}
 
 	/**

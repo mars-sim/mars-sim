@@ -18,7 +18,6 @@ import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -38,7 +37,7 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
+//	Will add back SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName())
 	
 	private static final double STEP_KM = 2;
 	
@@ -111,11 +110,10 @@ public class TerrainElevation implements Serializable {
 	 * Computes the terrain profile of a site at a coordinate
 	 * direction and elevation.
 	 *
-	 * @param {@link CollectionSite} site
 	 * @param {@link Coordinates} currentLocation
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
-	public double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
+	public double[] computeTerrainProfile(Coordinates currentLocation) {
 		
 		if (!terrainCacheMap.containsKey(currentLocation)) {
 			double steepness = 0;
@@ -124,17 +122,7 @@ public class TerrainElevation implements Serializable {
 				double rad = i * DEG_TO_RAD;
 				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
 			}
-
-			
-//			// Create a new site
-//			site.setElevation(elevation);
-//			site.setSteepness(steepness);
-	//
-//			// Save this site
-//			surfaceFeatures.setSites(currentLocation, site);
-			
-//			logger.config("elevation: " + elevation + "  steepness: " + Math.round(steepness * 1000.0)/1000.0);
-			
+		
 			double[] terrain = {elevation, steepness};
 			
 			terrainCacheMap.put(currentLocation, terrain);
@@ -148,11 +136,11 @@ public class TerrainElevation implements Serializable {
 	/**
 	 * Gets the terrain profile of a location.
 	 *
-	 * @param {@link Coordinates}
+	 * @param {@link Coordinates} currentLocation
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
 	public double[] getTerrainProfile(Coordinates currentLocation) {
-		return computeTerrainProfile(null, currentLocation);
+		return computeTerrainProfile(currentLocation);
 	}
 
 
@@ -225,8 +213,8 @@ public class TerrainElevation implements Serializable {
 
 		double rate = RATE;
 
-		// Note: Add seasonal variation for north and south hemisphere
-		// Note: The collection rate may be increased by relevant scientific studies
+		// Note 1: Add seasonal variation for north and south hemisphere
+		// Note 2: The collection rate may be increased by relevant scientific studies
 
 		if (latitude < 60 && latitude > -60) {
 			// The steeper the slope, the harder it is to retrieve the ice deposit

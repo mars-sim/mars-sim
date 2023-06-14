@@ -88,15 +88,6 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Clone constructor.
-	 *
-	 * @param originalCoordinates the Coordinates object to be cloned
-	 */
-	public Coordinates(Coordinates originalCoordinates) {
-		this(originalCoordinates.phi, originalCoordinates.theta);
-	}
-
-	/**
 	 * Constructor with a latitude and longitude string. Expects direction
 	 * abbreviations according to current locale, so for english NESW, for german
 	 * NOSW, french NESO, etc.
@@ -120,7 +111,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * phi accessor (related to latitude).
+	 * Returns the phi accessor (related to latitude).
 	 *
 	 * @return the phi angle value of the coordinate
 	 */
@@ -129,7 +120,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * theta accessor (related to longitude).
+	 * Returns the theta accessor (related to longitude).
 	 *
 	 * @return the theta angle value of the coordinate
 	 */
