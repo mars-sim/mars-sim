@@ -857,27 +857,27 @@ public class EatDrink extends Task {
 //						logger.info(person.getSettlement(), 10_000L, "shortfall: "  Math.round(shortfall *1000.0)/1000.0);
 						if (shortfall > 0) {
 							if (shortfall == PACKED_PRESERVED_FOOD_CARRIED) {
-								logger.info(person, 10_000L, "Can't check out any preserved food.");
+								logger.info(person, 20_000L, "Unable to check out preserved food.");
 							}
 							else {
 								double excess = person.storeAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
 								if (excess > 0) {
 									// Store back to settlement
 									((ResourceHolder)container).storeAmountResource(FOOD_ID, excess);
-									logger.info(person, 10_000L, "Just checked out " 
-											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
-											+ " kg preserved food.");
+//									logger.info(person, 10_000L, "Just checked out " 
+//											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
+//											+ " kg preserved food.");
 								}
-								else
-									logger.info(person, 10_000L, "Just checked out " 
-											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
-											+ " kg preserved food.");
+//								else
+//									logger.info(person, 10_000L, "Just checked out " 
+//											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
+//											+ " kg preserved food.");
 							}
 						}
-						else {
-							logger.info(person, 10_000L, "Carried " + Math.round(PACKED_PRESERVED_FOOD_CARRIED*1000.0)/1000.0 
-									+ " kg preserved food.");
-						}
+//						else {
+//							logger.info(person, 10_000L, "Carried " + Math.round(PACKED_PRESERVED_FOOD_CARRIED*1000.0)/1000.0 
+//									+ " kg preserved food.");
+//						}
 //					}
 				}				
 //			}

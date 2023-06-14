@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomMineralMap.java
- * @date 2021-09-20
+ * @date 2023-06-14
  * @author Scott Davis
  */
 
@@ -46,8 +46,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final int W = 300;
 	private static final int H = 150;
 	
-	private static final int NUM_REGIONS = 3300;
-	private static final int NUM_CONCONCENTRATIONS = 2500;
+	private static final int NUM_REGIONS = 1500;
+	private static final int NUM_CONCONCENTRATIONS = 2000;
 	
 	private static final float REGION_FACTOR = 5;
 	private static final float NON_REGION_FACTOR = 100F;

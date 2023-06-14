@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AreothermalMap.java
- * @date 2021-09-20
+ * @date 2023-06-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Msg;
 /**
  * A map of areothermal power generation potential on the Martian surface.
  */
-//@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class AreothermalMap implements Serializable {
 
 	/** default serial id. */
@@ -56,7 +55,7 @@ public class AreothermalMap implements Serializable {
 	}
 
 	/**
-	 * Load areothermal hot spots from volcanic map image.
+	 * Loads areothermal hot spots from volcanic map image.
 	 */
 	private void loadHotspots() {
 		hotspots = new HashSet<Coordinates>(1400);
@@ -137,14 +136,14 @@ public class AreothermalMap implements Serializable {
 				result = 0D;
 
 			// Add location's areothermal potential to cache.
-			areothermalPotentialCache.put(new Coordinates(location.getPhi(), location.getTheta()), result);
+			areothermalPotentialCache.put(location, result);
 		}
 
 		return result;
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		hotspots.clear();
