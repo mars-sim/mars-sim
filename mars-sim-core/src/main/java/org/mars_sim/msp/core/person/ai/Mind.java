@@ -74,11 +74,11 @@ public class Mind implements Serializable, Temporal {
 	
 	private static MissionManager missionManager;
 
-	static {
-		Simulation sim = Simulation.instance();
-		// Load the mission manager
-		missionManager = sim.getMissionManager();
-	}
+//	static {
+//		Simulation sim = Simulation.instance();
+//		// Load the mission manager
+//		missionManager = sim.getMissionManager();
+//	}
 
 	/**
 	 * Constructor 1.
