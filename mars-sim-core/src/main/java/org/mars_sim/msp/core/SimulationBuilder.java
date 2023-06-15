@@ -353,9 +353,12 @@ public class SimulationBuilder {
 
 			Simulation sim = Simulation.instance();
 			
-			// Create class instances
-//			sim.createNewSimulation(userTimeRatio);
-			sim.loadSim();
+			// Question : Why does it have to create all class instances, 
+			// only later be rewritten in loadSimulation() ?
+			sim.createNewSimulation(userTimeRatio);
+
+			// Note: if skipping createNewSimulation(), UnitManager would not be deserialized correctly
+//			sim.loadSim();
 			
 			sim.loadSimulation(simFile);		
 			

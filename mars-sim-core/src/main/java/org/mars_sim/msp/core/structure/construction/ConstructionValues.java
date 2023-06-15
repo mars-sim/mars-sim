@@ -464,7 +464,7 @@ implements Serializable {
                     else {
                         // Check if any existing buildings have same frame stage and can be refit or refurbished 
                         // into new building.
-                        Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+                        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
                         while (i.hasNext()) {
                             ConstructionStageInfo tempBuildingStage = ConstructionUtil.getConstructionStageInfo(
                                     i.next().getBuildingType());

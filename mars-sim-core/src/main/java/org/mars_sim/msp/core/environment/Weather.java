@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.core.environment;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -982,6 +984,17 @@ public class Weather implements Serializable, Temporal {
 		marsClock = c;
 		orbitInfo = oi;
 	}
+	
+//	/**
+//	 * Reinitializes instances after deserialization.
+//	 * 
+//	 * @param in
+//	 * @throws IOException
+//	 * @throws ClassNotFoundException
+//	 */
+//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//		System.out.println("Weather's readObjects");
+//	}
 	
 	/**
 	 * Prepares object for garbage collection.

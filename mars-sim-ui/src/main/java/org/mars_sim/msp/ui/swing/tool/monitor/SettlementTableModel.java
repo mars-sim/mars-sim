@@ -256,7 +256,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 			case MALFUNCTION: {
 				int severity = 0;
 				Malfunction malfunction = null;
-				Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();
+				Iterator<Building> i = settle.getBuildingManager().getBuildingSet().iterator();
 				while (i.hasNext()) {
 					Building building = i.next();
 					Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();

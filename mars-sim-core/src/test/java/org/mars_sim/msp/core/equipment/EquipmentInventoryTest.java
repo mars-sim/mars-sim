@@ -31,9 +31,7 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
     public void setUp() {
 		super.setUp();
 
-		// Create test settlement.
-		settlement = new MockSettlement();
-		unitManager.addUnit(settlement);
+		settlement = buildSettlement();
     }
 
 

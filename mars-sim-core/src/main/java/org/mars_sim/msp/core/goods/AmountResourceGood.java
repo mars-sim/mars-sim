@@ -676,7 +676,7 @@ class AmountResourceGood extends Good {
 	 */
 	private static List<ResourceProcess> getResourceProcesses(Settlement settlement) {
 		List<ResourceProcess> processes = new ArrayList<>();
-		for(Building building : settlement.getBuildingManager().getBuildings()) {
+		for(Building building : settlement.getBuildingManager().getBuildingSet()) {
 			if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
 				ResourceProcessing processing = building.getResourceProcessing();
 				processes.addAll(processing.getProcesses());

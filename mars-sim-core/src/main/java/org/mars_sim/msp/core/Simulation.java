@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2022-11-02
+ * @date 2023-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -34,8 +34,8 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
-import org.mars_sim.msp.core.environment.OuterSpace;
 import org.mars_sim.msp.core.environment.OrbitInfo;
+import org.mars_sim.msp.core.environment.OuterSpace;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -69,7 +69,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -317,13 +316,13 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initializes instance for the maven test.
 	 */
 	public void testRun() {
-
+		
+		ResourceUtil.getInstance().initializeInstances();
+		
 		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
 		
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
-		
-		ResourceUtil.getInstance();
 
 		// Should this method call the initialiseTransient method ?
 
@@ -377,8 +376,9 @@ public class Simulation implements ClockListener, Serializable {
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 
-		// Initialize science related class
+		// Initialize ScientificStudy
 		ScientificStudy.initializeInstances(marsClock);
+		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
 
@@ -429,6 +429,7 @@ public class Simulation implements ClockListener, Serializable {
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
 		weather = new Weather();
+		
 		Weather.initializeInstances(this, marsClock, orbitInfo);
 		
 		// Create surface features
@@ -442,13 +443,12 @@ public class Simulation implements ClockListener, Serializable {
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
 		
-		scientificStudyManager = new ScientificStudyManager();
-		
 		eventManager = new HistoricalEventManager();
-
+		
+		transportManager = new TransportManager(this);
+		
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		
 
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
@@ -467,7 +467,14 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
-		transportManager = new TransportManager(this);
+		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
+
+		scientificStudyManager = new ScientificStudyManager();
+		// Re-initialize ScientificStudy
+		ScientificStudy.initializeInstances(marsClock);
+		// Re-initialize ScientificStudyUtil
+		ScientificStudyUtil.initializeInstances(unitManager);
+		
 	
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -508,12 +515,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
-		
-		// Initialize science related class
-		ScientificStudy.initializeInstances(marsClock);
-		
-		ScientificStudyUtil.initializeInstances(unitManager);
-		
+
 		Relation.initializeInstances(unitManager);
 		
 		CreditManager.initializeInstances(unitManager);	
@@ -543,7 +545,7 @@ public class Simulation implements ClockListener, Serializable {
 	private void reinitializeInstances() {
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
-		
+
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
@@ -573,23 +575,23 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize medical manager
 		medicalManager.initializeInstances(mc);
 		
+		transportManager.reinitalizeInstances(this);
 	
+		// Re-initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+
+		
 		// Re-initialize OuterSpace instance
 		OuterSpace outerSpace = unitManager.getOuterSpace();
 		// Re-initialize OuterSpace instance
 		Moon moon = unitManager.getMoon();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
-
-		// Start a chain of calls to set instances
-		unitManager.reinit();	
-		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-	
-		// Initialize Unit
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-	
-		transportManager.reinitalizeInstances(this);
+		
+		// Re-nitialize ScientificStudy
+		ScientificStudy.initializeInstances(marsClock);
+		// Re-nitialize ScientificStudyUtil
+		ScientificStudyUtil.initializeInstances(unitManager);
 		
 		// Initialize ManufactureUtil
         new ManufactureUtil();
@@ -603,9 +605,9 @@ public class Simulation implements ClockListener, Serializable {
 		Mind.initializeInstances(missionManager);
 		
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
-	
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		
 		AirComposition.initializeInstances(pc);
 		
 		ResourceProcess.initializeInstances(marsClock);
@@ -628,10 +630,6 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 				medicalManager, eventManager,
 				simulationConfig.getPartConfiguration());
-
-		// Re-initialize science related class
-		ScientificStudy.initializeInstances(marsClock);
-		ScientificStudyUtil.initializeInstances(unitManager);
 	
 		Relation.initializeInstances(unitManager);
 		
@@ -653,23 +651,23 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, marsClock);
 		
-		
-		
-		
+		///////////////////////////////////////////////////////////////
 		
 		// Rediscover the MissionControls
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
-		
-		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-	
+			
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
 		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
+
 		
-		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
-	
+		// Start a chain of calls to set instances
+		// Warning: must call this at the end of this method
+		// after all instances are set
+		unitManager.reinit();
+		
 		doneInitializing = true;
 	}
 		
@@ -755,9 +753,18 @@ public class Simulation implements ClockListener, Serializable {
 			transportManager = (TransportManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
-
-			UnitSet.reinit(unitManager);
 			
+			UnitSet.reinit(unitManager);
+
+		} catch (ClassNotFoundException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't find class when loading " + file + " : " + e.getMessage());
+
+		} catch (ObjectStreamException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't read object stream when loading " + file + " : " + e.getMessage());
+	
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Input/Output problem when loading " + file + " : ", e.getMessage()); 
+
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());
 			
@@ -774,7 +781,7 @@ public class Simulation implements ClockListener, Serializable {
     }
 
     /**
-     * Computes the size of the file
+     * Computes the size of the file.
      *
      * @param file
      * @return the file size with unit in a string
@@ -816,7 +823,7 @@ public class Simulation implements ClockListener, Serializable {
 			loadBuild = "unknown";
 
 		logger.config(" ");
-		logger.config("                   Info on The Saved Simulation                      ");
+		logger.config("                   Info on Saved Simulation                      ");
 		logger.config(DASHES);
 		logger.config("                   Filename : " + filename);
 		logger.config("                       Path : " + path);
@@ -824,7 +831,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("              Made in Build : " + loadBuild);
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		if (lastSaveTimeStamp != null)
-			logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
+		logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthTime());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
 
@@ -838,7 +845,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		initialSimulationCreated = true;
-
 		// Re-initialize instances
 		reinitializeInstances();
 		// Set this flag to false

@@ -1267,10 +1267,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 public boolean isAdjacentBuilding(FunctionType type) {
 	 	Settlement s = getSettlement();
 	 	if (s != null) {
-	 		Building b = getBuildingLocation();
-
-	 		List<Building> list = s.createAdjacentBuildings(b);
-	 		for (Building bb : list) {
+	 		for (Building bb : s.createAdjacentBuildings(getBuildingLocation())) {
 	 			if (bb.hasFunction(type))
 	 				return true;
 	 		}

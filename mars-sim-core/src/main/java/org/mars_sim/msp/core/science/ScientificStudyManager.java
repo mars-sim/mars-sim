@@ -29,14 +29,14 @@ public class ScientificStudyManager // extends Thread
 	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
 	
 	// Data members
-	private List<ScientificStudy> studies;
+	private List<ScientificStudy> studies = new ArrayList<>();
 
 	/**
 	 * Constructor.
 	 */
 	public ScientificStudyManager() {
 		// Methods are threadsafe
-		studies = new ArrayList<>();
+//		studies = new ArrayList<>();
 	}
 
 	/**
@@ -358,7 +358,7 @@ public class ScientificStudyManager // extends Thread
 
 		return array;
 	}
-
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

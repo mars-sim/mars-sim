@@ -171,7 +171,7 @@ public class LifeSupport extends Function {
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = building.getBuildingManager().getBuildings().iterator(); 
+			Iterator<Building> i = building.getBuildingManager().getBuildingSet().iterator(); 
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {

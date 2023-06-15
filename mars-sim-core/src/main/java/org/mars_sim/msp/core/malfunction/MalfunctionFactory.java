@@ -147,7 +147,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	private static Collection<Malfunctionable> getBuildingMalfunctionables(Settlement settlement) {
 		// Should get a collection of buildings only
-		return new ArrayList<>(settlement.getBuildingManager().getBuildings());
+		return new ArrayList<>(settlement.getBuildingManager().getBuildingSet());
 	}
 
 	/**

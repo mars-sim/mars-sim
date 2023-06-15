@@ -1,11 +1,12 @@
 /*
  * Mars Simulation Project
  * Heating.java
- * @date 2022-08-06
+ * @date 2023-06-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -722,10 +723,8 @@ extends Function {
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
 			// Note : time = .121 at x128
-			
-			if (adjacentBuildings == null) {
-				adjacentBuildings = building.getSettlement().getBuildingConnectors(building);
-			}
+
+			adjacentBuildings = new ArrayList<>(building.getSettlement().getBuildingConnectors(building));
 			
 			int size = adjacentBuildings.size();
 			//area_factor = Math.sqrt(Math.sqrt(floorArea));

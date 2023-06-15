@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -1059,9 +1060,7 @@ public class BuildingConstructionMission extends AbstractMission
 			BuildingManager buildingManager = site.getSettlement().getBuildingManager();
 			if (buildingManager.getNumBuildings() > 0) {
 				for (int x = 10; !goodPosition; x += 10) {
-					List<Building> allBuildings = buildingManager.getACopyOfBuildings();
-					Collections.shuffle(allBuildings);
-					for (Building b : allBuildings) {
+					for (Building b : buildingManager.getBuildingSet()) {
 						goodPosition = positionNextToBuilding(site, b, (double) x, false);
 						if (goodPosition) {
 							break;
