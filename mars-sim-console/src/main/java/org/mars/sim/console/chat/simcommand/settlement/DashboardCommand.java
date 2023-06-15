@@ -52,7 +52,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 
 		response.appendLabeledString("Sponsor", settlement.getReportingAuthority().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
-		response.appendLabeledString("Location", location.getCoordinateString());
+		response.appendLabeledString("Location", location.getFormattedString());
 		response.appendLabeledString("Elevation", elevation + " km");
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
 

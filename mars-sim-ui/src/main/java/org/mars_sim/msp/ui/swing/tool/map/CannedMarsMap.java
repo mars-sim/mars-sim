@@ -101,7 +101,7 @@ public class CannedMarsMap extends JComponent implements Map {
 			    Thread.currentThread().interrupt();
 			}
 
-			centerCoords = new Coordinates(newCenter.getPhi(), newCenter.getTheta());
+			centerCoords = newCenter;
 			// Prepare and buffer the map
 			bufferMap();
 		}

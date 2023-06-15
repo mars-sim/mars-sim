@@ -49,8 +49,8 @@ public class DistanceCommand extends ChatCommand {
 				double distance = start.getDistance(end);
 				result  = true;
 				
-				context.println("The distance between (" + start.getCoordinateString() + ") and ("
-						+ end.getCoordinateString() + ") is " + Math.round(distance *1_000.0)/1_000.0 + " km");
+				context.println("The distance between (" + start.getFormattedString() + ") and ("
+						+ end.getFormattedString() + ") is " + Math.round(distance *1_000.0)/1_000.0 + " km");
 			}
 		}
 		

@@ -852,7 +852,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				.append(Math.round(h0*1000.0)/1000.0)
 				.append(KM);
 			
-			coordSB.append(pos.getCoordinateString());
+			coordSB.append(pos.getFormattedString());
 			
 			updateStatusBarLabels(elevSB.toString(), coordSB.toString(), phi, theta);
 

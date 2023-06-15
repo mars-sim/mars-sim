@@ -95,11 +95,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		
 		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
-		if (minerals == null)
-			// This happens during maven tests 
-			// determineMineralConcentrations() is not needed for any maven tests.
-			return;
-		
 		Collections.shuffle(minerals);
 		int size = minerals.size(); 
 		int remainingConc = 100;
@@ -370,7 +365,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				Direction direction = startingLocation.getDirectionToPoint(concentration.getLocation());
 				result = startingLocation.getNewLocation(direction, range);
 			} else
-				result = new Coordinates(concentration.getLocation().getPhi(), concentration.getLocation().getTheta());
+				result = concentration.getLocation();
 		}
 
 		return result;

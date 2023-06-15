@@ -55,13 +55,11 @@ public final class Coordinates implements Serializable {
 	private final double theta;
 
 	/** Formatted string of the latitude. */
-	private final String latStr;
+	private String latStr;
 	/** Formatted string of the longitude. */
-	private final String lonStr;
+	private String lonStr;
 	/** Formatted string of both latitude and longitude. */
 	private String formattedString;
-	/** Formatted coordinate string of both latitude and longitude. */
-	private String coordinateString;
 	
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 
@@ -86,8 +84,6 @@ public final class Coordinates implements Serializable {
 			p += Math.PI;
 
 		this.phi = p;
-
-		latStr = getFormattedLatitudeString(phi);
 		
 		// Make sure theta is between 0 and 2 PI.
 		// Not between 0 (-pi radians) and 90 degrees (pi radians).
@@ -97,10 +93,7 @@ public final class Coordinates implements Serializable {
 		while (t > TWO_PI)
 			t -= TWO_PI;
 		
-		this.theta = t;
-		
-		lonStr = getFormattedLongitudeString(theta);
-		
+		this.theta = t;		
 	}
 
 	/**
@@ -287,33 +280,15 @@ public final class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a coordinate string (with parenthesis and comma) to represent this location.
-	 * e.g. "(3.1244 E, 34.4352 S").
-	 *
-	 * @return formatted longitude & latitude string for this coordinate
-	 * @see #getFormattedLongitudeString()
-	 * @see #getFormattedLatitudeString()
-	 */
-	public String getCoordinateString() {
-		if (coordinateString == null) {
-			StringBuilder buffer = new StringBuilder();
-			buffer.append('(');
-			buffer.append(getFormattedLatitudeString());
-			buffer.append(", ");
-			buffer.append(getFormattedLongitudeString());
-			buffer.append(')');
-			coordinateString = buffer.toString();
-		}
-		return coordinateString;
-	}
-
-	/**
 	 * Gets a common formatted string to represent longitude for this location.
 	 * e.g. "35.6054 E".
 	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public final String getFormattedLongitudeString() {
+		if (lonStr == null) {
+			lonStr = getFormattedLongitudeString(theta);
+		}
 		return lonStr;
 	}
 
@@ -366,6 +341,9 @@ public final class Coordinates implements Serializable {
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public final String getFormattedLatitudeString() {
+		if (latStr == null) {
+			latStr = getFormattedLatitudeString(phi);
+		}
 		return latStr;
 	}
 

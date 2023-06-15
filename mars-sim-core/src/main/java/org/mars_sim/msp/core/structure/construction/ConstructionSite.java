@@ -477,8 +477,8 @@ implements  LocalBoundedObject {
 		Coordinates coord = getCoordinates();
 		BuildingConstructionMission.positionNewSite(this);
 		logger.info(this, "Manually relocated by player from " 
-				+ coord.getCoordinateString() + " to "
-				+ getCoordinates().getCoordinateString());
+				+ coord.getFormattedString() + " to "
+				+ getCoordinates().getFormattedString());
 	}
 
     public ConstructionManager getConstructionManager() {

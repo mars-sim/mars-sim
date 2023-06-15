@@ -91,7 +91,7 @@ public abstract class HistoricalEvent implements Serializable {
 		this.who = whoAffected;
 		this.container = container;
 		this.homeTown = homeTown;
-		this.coordinates = coordinates.getCoordinateString();
+		this.coordinates = coordinates.getFormattedString();
 	}
 
 	/**

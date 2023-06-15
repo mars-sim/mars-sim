@@ -333,7 +333,7 @@ public class CommandHelper {
 							response.appendTableRow(nv.getSettlement().getName(), distance, "");
 						}
 						else {
-							response.appendTableRow(nv.getLocation().getCoordinateString(),
+							response.appendTableRow(nv.getLocation().getFormattedString(),
 									distance,
 									nv.getDescription());
 						}

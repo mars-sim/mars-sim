@@ -133,7 +133,7 @@ public class AnalyzeMapData extends Task {
 		 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
 		 		+ Math.round(seed * 1000.0)/1000.0 + ". "
 		 		+ num + " candidate sites identified. Final site selected: " 
-		 		+ site.getLocation().getCoordinateString() + ".");
+		 		+ site.getLocation().getFormattedString() + ".");
 		
        	// Add task phases
     	addPhase(ANALYZING);

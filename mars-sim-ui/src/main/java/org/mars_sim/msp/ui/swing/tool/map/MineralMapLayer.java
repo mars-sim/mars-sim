@@ -63,7 +63,7 @@ public class MineralMapLayer implements MapLayer {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		String mapType = baseMap.getType().getId();
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
-			mapCenterCache = new Coordinates(mapCenter.getPhi(), mapCenter.getTheta());
+			mapCenterCache = mapCenter;
 			mapTypeCache = mapType;
 			updateLayer = false;
 
