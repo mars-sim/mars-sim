@@ -354,7 +354,8 @@ public class SimulationBuilder {
 			Simulation sim = Simulation.instance();
 			
 			// Create class instances
-			sim.createNewSimulation(userTimeRatio);
+//			sim.createNewSimulation(userTimeRatio);
+			sim.loadSim();
 			
 			sim.loadSimulation(simFile);		
 			

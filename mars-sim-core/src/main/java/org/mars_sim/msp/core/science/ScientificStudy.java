@@ -121,8 +121,8 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	/** A major topics this scientific study is aiming at. */
 	private List<String> topics;
 
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	private static ScienceConfig scienceConfig = SimulationConfig.instance().getScienceConfig();
+	private static MarsClock marsClock;
+	private static ScienceConfig scienceConfig;
 
 	/**
 	 * Constructor.
@@ -1063,6 +1063,8 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 					"Finished writing proposal for " + getName() 
 					+ " study. Starting to invite collaborative researchers.");
 				// Picks research topics 
+				if (scienceConfig == null)
+					scienceConfig = SimulationConfig.instance().getScienceConfig();
 				topics.add(scienceConfig.getATopic(science));
 				setPhase(INVITATION_PHASE);
 			}

@@ -304,7 +304,7 @@ public class ResourceUtil implements Serializable {
 	}
 	
 	/**
-	 * Create a set of essential resources.
+	 * Creates a set of essential resources.
 	 */
 	private static void createEssentialResources() {
 		essentialResources = new HashSet<>();
@@ -353,15 +353,8 @@ public class ResourceUtil implements Serializable {
 		ResourceUtil.INSTANCE = instance;
 	}
 
-	public void initializeNewSim() {
-		// Create maps
-		createMaps();
-		// Map the static instances
-		mapInstances();
-	}
-
 	/**
-	 * Recreates the Amount Resource instances in all map
+	 * Recreates the Amount Resource instances in all map.
 	 */
 	public void initializeInstances() {
 		// Create maps
@@ -371,7 +364,7 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Creates maps of amount resources
+	 * Creates maps of amount resources.
 	 */
 	public static synchronized void createMaps() {
 		if (amountResourceMap == null) {
@@ -394,6 +387,9 @@ public class ResourceUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * Maps ids to amount resources.
+	 */
 	private static void mapInstances() {
 
 		// AmountResource instances as Integer
@@ -582,7 +578,7 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * convenience method that calls {@link #getAmountResources()} and turns the
+	 * A convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
 	 *
 	 * @return {@link List}<{@link String}>

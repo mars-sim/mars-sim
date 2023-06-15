@@ -122,12 +122,13 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						regionSet.addAll(sedimentaryRegionSet);
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
-//				System.out.println("regionArray: " + regionArray.length);
+				// Will have one region array for each of 10 types of minerals System.out.println("regionArray: " + regionArray.length);
 				
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
 					int concentrationNumber = Math
 							.round((float) regionArray.length / REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
+					// Test the generation of concentrationNumber System.out.println("1. concentrationNumber: " + concentrationNumber); // between 34-684 for diff minerals
 					for (int x = 0; x < concentrationNumber; x++) {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
@@ -149,6 +150,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				else {
 					// If no locales, randomly distribute mineral on surface.
 					int concentrationNumber = Math.round(NON_REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
+					// Test the generation of concentrationNumber System.out.println("2. concentrationNumber: " + concentrationNumber)
 					for (int x = 0; x < concentrationNumber; x++) {
 						// Get a rand lat
 						double phi = Coordinates.getRandomLatitude();
