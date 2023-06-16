@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 	/**
-     * Represents a Job needed for intenral maintenance on a Building
+     * Represents a Job needed for internal maintenance on a Building
      */
     private static class MaintainTaskJob extends SettlementTask {
 
@@ -43,7 +43,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		private boolean eva;
 
         public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, double score) {
-			super(owner, "Maintain " + (eva ? "via EVA " : "") + target.getName(), score);
+			super(owner, "Maintain " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
             this.target = target;
 			this.eva = eva;
         }
@@ -126,7 +126,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask>  tasks = new ArrayList<>();
 	
-		for (Building building: settlement.getBuildingManager().getBuildings()) {
+		for (Building building: settlement.getBuildingManager().getBuildingSet()) {
 			double score = scoreMaintenance(building);
 
 			if (score > 0) {

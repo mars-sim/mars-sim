@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -173,6 +174,22 @@ public final class SettlementBuilder {
 		}
 	}
 
+	/**
+	 * Generate a unique name for the Settlement
+	 * @return
+	 */
+	private String generateName(ReportingAuthority sponsor) {
+		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
+
+		List<String> usedNames = unitManager.getSettlements().stream()
+							.map(s -> s.getName()).collect(Collectors.toList());
+
+		remainingNames.removeAll(usedNames);
+		int idx = RandomUtil.getRandomInt(remainingNames.size());
+
+		return remainingNames.get(idx);
+	}
+
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
 		String sponsor = spec.getSponsor();
 		// Fi the sponsor has not be defined; then use the template
@@ -184,7 +201,7 @@ public final class SettlementBuilder {
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
-			name = Settlement.generateName(ra);
+			name = generateName(ra);
 		}
 
 		// Get settlement longitude
@@ -325,16 +342,22 @@ public final class SettlementBuilder {
 	 */
 	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
 
-		ReportingAuthority sponsor = settlement.getSponsor();
+		ReportingAuthority sponsor = settlement.getReportingAuthority();
+		long males = settlement.getAllAssociatedPeople().stream()
+												.filter(p -> p.getGender() == GenderType.MALE).count();
+		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
 
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
-
-			GenderType gender = GenderType.FEMALE;
-			if (RandomUtil.getRandomDouble(1.0D) <= sponsor.getGenderRatio()) {
+			// Choose the next gender based on the current ratio of M/F
+			GenderType gender;
+			if (males < targetMales) {
 				gender = GenderType.MALE;
+				males++;
 			}
-			Person person = null;
+			else {
+				gender = GenderType.FEMALE;
+			}
 
 			// This is random and may change on each call
 			String country = sponsor.getDefaultCountry();
@@ -343,7 +366,7 @@ public final class SettlementBuilder {
 			String fullname = Person.generateName(country, gender);
 
 			// Use Builder Pattern for creating an instance of Person
-			person = Person.create(fullname, settlement)
+			Person person = Person.create(fullname, settlement)
 					.setGender(gender)
 					.setCountry(country)
 					.setSponsor(sponsor)
@@ -389,7 +412,7 @@ public final class SettlementBuilder {
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
 		// Get person's settlement or same sponsor
-		ReportingAuthority defaultSponsor = settlement.getSponsor();
+		ReportingAuthority defaultSponsor = settlement.getReportingAuthority();
 
 		// Create all configured people.
 		for (Member m : crew.getTeam()) {

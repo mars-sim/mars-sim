@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EatDrink.java
- * @date 2022-07-06
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.meta.ConversationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -77,7 +78,8 @@ public class EatDrink extends Task {
 	private static final int THIRST_PER_WATER_SERVING = 450;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.001;
-	
+	/** The amount of preserved food for carrying in a person [in kg]. */
+	private static final double PACKED_PRESERVED_FOOD_CARRIED = .2; 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
 	private static final double DESSERT_STRESS_MODIFIER = -.8D;
@@ -184,8 +186,8 @@ public class EatDrink extends Task {
 		}
 
 		else if (person.isInVehicle()) {
-			
-			checkVehicle(container, hungry, thirsty, waterAmount);
+
+			checkPersonVehicle(container, hungry, thirsty, waterAmount);
 		}
 
 		else {
@@ -206,6 +208,13 @@ public class EatDrink extends Task {
 			goForWater();
 	}
 		
+	/**
+	 * Checks if the settlement has food and water.
+	 * 
+	 * @param hungry
+	 * @param thirsty
+	 * @param waterAmount
+	 */
 	private void checkSettlement(boolean hungry, boolean thirsty, double waterAmount) {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
@@ -227,22 +236,46 @@ public class EatDrink extends Task {
 		}
 	}
 	
-	private void checkVehicle(Unit container, boolean hungry, boolean thirsty, double waterAmount) {
+	/**
+	 * Checks if the person or vehicle has food and water.
+	 * 
+	 * @param container
+	 * @param hungry
+	 * @param thirsty
+	 * @param waterAmount
+	 */
+	private void checkPersonVehicle(Unit container, boolean hungry, boolean thirsty, double waterAmount) {
 		 
 		if (UnitType.VEHICLE == container.getUnitType()) {
-
-			ResourceHolder rh = (ResourceHolder) container;
-			if (foodAmount == 0)
-				foodAmount = rh.getAmountResourceStored(FOOD_ID);
-			if (waterAmount == 0)
-				waterAmount = rh.getAmountResourceStored(WATER_ID);
+			
+			ResourceHolder rh = (ResourceHolder) person;
+			foodAmount = rh.getAmountResourceStored(FOOD_ID);
 			
 			if (hungry && (foodAmount > 0 || desserts > 0)) {
 				food = true;
 			}
+			else {
+				rh = (ResourceHolder) container;
+				foodAmount = rh.getAmountResourceStored(FOOD_ID);
+				
+				if (hungry && (foodAmount > 0 || desserts > 0)) {
+					food = true;
+				}
+			}
 
+			rh = (ResourceHolder) person;
+			waterAmount = rh.getAmountResourceStored(WATER_ID);
+				
 			if (thirsty && waterAmount > 0) {
 				water = true;
+			}
+			else {
+				rh = (ResourceHolder) container;
+				waterAmount = rh.getAmountResourceStored(WATER_ID);
+				
+				if (thirsty && waterAmount > 0) {
+					water = true;
+				}
 			}
 		}
 		
@@ -710,15 +743,84 @@ public class EatDrink extends Task {
 		if (cumulativeProportion + proportion > foodConsumedPerServing) {
 			proportion = foodConsumedPerServing - cumulativeProportion;
 		}
-
+		
 		if (proportion > MIN) {
 
 			Unit container = person.getContainerUnit();
-			if (person.isInside()) {
-				// Take preserved food from inventory if it is available.
-				boolean haveFood = retrieveAnResource(proportion, FOOD_ID, (ResourceHolder)container);
+			
+//			if (person.isInside()) {
+				
+				boolean haveFood = false;
 
-				if (haveFood) {
+				if (person.isInVehicle()) {
+					// Person will try refraining from eating food while in a vehicle
+					proportion *= EatDrinkMeta.VEHICLE_FOOD_RATION;
+					// Take preserved food carried by person if available
+					double missing = person.retrieveAmountResource(FOOD_ID, proportion);
+					if (missing == 0.0) {
+//						logger.info(person, 10_000L, "Possessed " 
+//							+ Math.round(proportion *1000.0)/1000.0 
+//							+ " kg preserved food.");
+						haveFood = true;
+					}
+					else if (missing == proportion) {
+//						logger.info(person, 10_000L, "Had no possession of preserved food.");
+					}
+					else if (missing > 0) {
+//						logger.info(person, 10_000L, "Possessed " 
+//								+ Math.round(proportion *1000.0)/1000.0 
+//								+ " kg preserved food.");
+						proportion = proportion - missing;
+						if (proportion > 0) {
+//							logger.info(person, 10_000L, "Possessed " 
+//									+ Math.round(proportion *1000.0)/1000.0 
+//									+ " kg preserved food.");
+							haveFood = true;
+						}
+					}
+				}
+				
+				else if (person.getMission() != null) {
+					// Person will tends to ration food while in a mission
+					proportion *= EatDrinkMeta.MISSION_FOOD_RATION;
+					// Take preserved food carried by person if available
+					double missing = person.retrieveAmountResource(FOOD_ID, proportion);
+					if (missing == 0.0) {
+//						logger.info(person, 10_000L, "Possessed " 
+//							+ Math.round(proportion *1000.0)/1000.0 
+//							+ " kg preserved food.");
+						haveFood = true;
+					}
+					else if (missing == proportion) {
+//						logger.info(person, 10_000L, "Had no possession of preserved food.");
+					}
+					else if (missing > 0) {
+						proportion = proportion - missing;
+						if (proportion > 0) {
+//							logger.info(person, 10_000L, "Possessed " 
+//									+ Math.round(proportion *1000.0)/1000.0 
+//									+ " kg preserved food.");
+							haveFood = true;
+						}
+					}
+				}
+				
+				if (!haveFood && person.isInSettlement()) {
+					// Take preserved food from container if it is available.
+					double settlementFood = person.getSettlement().retrieveAmountResource(FOOD_ID, proportion);
+					if (proportion - settlementFood > 0) {
+						haveFood = true;
+						settlementFood = person.getSettlement().retrieveAmountResource(FOOD_ID, proportion);
+//						logger.info(person, 10_000L, 
+//							"Just retrieved " 
+//							+ Math.round(proportion *1000.0)/1000.0 
+//							+ " kg preserved food.");				
+					}
+				}
+				
+				if (haveFood && proportion > 0) {
+//					logger.info(person, 10_000L, 
+//							"Preserved food proportion: " + Math.round(proportion * 1000.0) / 1000.0);
 					// Record the amount consumed
 					pc.recordFoodConsumption(proportion, 0);
 					// Add to cumulativeProportion
@@ -736,7 +838,52 @@ public class EatDrink extends Task {
 					// Not enough food available to eat, will end this task.
 					proportion = 0;
 				}
-			}
+				
+				if (person.isInSettlement()) {
+					
+//					logger.info(person, 10_000L, 
+//							"eatingTime: " + Math.round(eatingTime * 1000.0) / 1000.0
+//						+ "  person.getEatingSpeed(): " + Math.round(person.getEatingSpeed() * 1000.0) / 1000.0
+//						+ "  proportion: " + Math.round(proportion * 1000.0) / 1000.0				
+//						+ "  cumulativeProportion: " + Math.round(cumulativeProportion * 1000.0) / 1000.0
+//						+ "  foodConsumedPerServing: " + Math.round(foodConsumedPerServing * 1000.0) / 1000.0
+//					);  
+					
+					// See if the person also wants to carry food
+//					int rand = RandomUtil.getRandomInt(5);
+//					if (rand == 0) {
+						// Take preserved food from container if it is available.
+						double shortfall = ((ResourceHolder)person.getSettlement()).retrieveAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
+//						logger.info(person.getSettlement(), 10_000L, "shortfall: "  Math.round(shortfall *1000.0)/1000.0);
+						if (shortfall > 0) {
+							if (shortfall == PACKED_PRESERVED_FOOD_CARRIED) {
+								logger.info(person, 20_000L, "Unable to check out preserved food.");
+							}
+							else {
+								double excess = person.storeAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
+								if (excess > 0) {
+									// Store back to settlement
+									((ResourceHolder)container).storeAmountResource(FOOD_ID, excess);
+//									logger.info(person, 10_000L, "Just checked out " 
+//											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
+//											+ " kg preserved food.");
+								}
+//								else
+//									logger.info(person, 10_000L, "Just checked out " 
+//											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
+//											+ " kg preserved food.");
+							}
+						}
+//						else {
+//							logger.info(person, 10_000L, "Carried " + Math.round(PACKED_PRESERVED_FOOD_CARRIED*1000.0)/1000.0 
+//									+ " kg preserved food.");
+//						}
+//					}
+				}				
+//			}
+			
+
+			
 		} else {
 			// Person is not inside a container unit, will end this task.
 			proportion = 0;
@@ -962,7 +1109,7 @@ public class EatDrink extends Task {
 			endTask();
 		}
 		
-		else if (containerUnit.getUnitType() == UnitType.PLANET) {
+		else if (containerUnit.getUnitType() == UnitType.MARS) {
 			// Doing EVA outside. Get water from one's EVA suit
 			suit = person.getSuit();
 		}
@@ -1019,18 +1166,50 @@ public class EatDrink extends Task {
 			}
 			
 			if (containerUnit != null)  {
-				int level = person.getAssociatedSettlement().getWaterRationLevel();
-				amount = Math.max(MIN, amount / level);
 				
-				// for either in settlement or vehicle
-				double available = getAmountResourceStored(containerUnit, WATER_ID);
-				// Test to see if there's enough water
-				if (available >= amount) {
-					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				if (person.isInSettlement() ) {
+					
+					int level = person.getAssociatedSettlement().getWaterRationLevel();
+					amount = Math.max(MIN, amount / level);
+					
+					double available = getAmountResourceStored(containerUnit, WATER_ID);
+					// Test to see if there's enough water
+					if (available >= amount) {
+						consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+					}
+					else if (available > 0) {
+						amount = available;
+						consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+					}
 				}
-				else if (available > 0) {
-					amount = available;
-					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				
+				else if (person.isInVehicle() ) {
+					// Person will try refraining from eating food while in a vehicle
+					amount *= EatDrinkMeta.VEHICLE_FOOD_RATION;
+					// Take water carried by person if available
+					double available = getAmountResourceStored(person, WATER_ID);
+					// Test to see if there's enough water
+					if (available >= amount) {
+						consumeWater((ResourceHolder)person, amount, waterOnly);
+					}
+					else if (available > 0) {
+						amount = available;
+						consumeWater((ResourceHolder)person, amount, waterOnly);
+					}
+				}
+				else if (person.getMission() != null) {
+					// Person will tends to ration food while in a mission
+					amount *= EatDrinkMeta.MISSION_FOOD_RATION;
+					// Take water carried by person if available
+					double available = getAmountResourceStored(person, WATER_ID);
+					// Test to see if there's enough water
+					if (available >= amount) {
+						consumeWater((ResourceHolder)person, amount, waterOnly);
+					}
+					else if (available > 0) {
+						amount = available;
+						consumeWater((ResourceHolder)person, amount, waterOnly);
+					}
 				}
 			}
 		}
@@ -1153,7 +1332,7 @@ public class EatDrink extends Task {
 
 		Unit containerUnit = person.getContainerUnit();
 
-		if (containerUnit.getUnitType() != UnitType.PLANET) {
+		if (containerUnit.getUnitType() != UnitType.MARS) {
 			ResourceHolder rh = (ResourceHolder)containerUnit;
 			boolean option = true;
 

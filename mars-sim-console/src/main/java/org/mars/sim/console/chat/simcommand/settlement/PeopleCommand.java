@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-06-14
  * @author Barry Evans
  */
 
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * Command to display people in a Settlement
+ * Command to display people in a Settlement.
  * This is a singleton.
  */
 public class PeopleCommand extends AbstractSettlementCommand {
@@ -31,7 +31,8 @@ public class PeopleCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the 
+	 * Outputs the population info.
+	 * 
 	 * @return 
 	 */
 	@Override

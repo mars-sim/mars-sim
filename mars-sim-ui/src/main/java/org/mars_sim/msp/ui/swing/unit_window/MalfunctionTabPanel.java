@@ -251,7 +251,7 @@ public class MalfunctionTabPanel extends TabPanel {
 
 	private static List<Malfunction> createSettlementMalfunction(Settlement s) {
 		List<Malfunction> active = new ArrayList<>();
-		for(Building b : s.getBuildingManager().getBuildings()) {
+		for(Building b : s.getBuildingManager().getBuildingSet()) {
 			active.addAll(b.getMalfunctionManager().getMalfunctions());
 		}
 

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.goods.GoodsUtil;
@@ -73,6 +74,24 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
+	/** How often are remaining resources checked. */
+	private static final int RESOURCE_CHECK_DURATION = 40;
+	/** The speed mod due to driving at night. */
+	private static final double NIGHT_TIME_SPEED_MOD = 0.3;
+	
+	/** The small insignificant amount of distance in km. */
+	private static final double SMALL_DISTANCE = .1;
+	/** Modifier for number of parts needed for a trip. */
+	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
+	/** Estimate number of broken parts per malfunctions */
+	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
+	/** Default speed if no operators have ever driven. */
+	private static final double DEFAULT_SPEED = 10D;
+		
+	// Travel Mission status
+	protected static final String AT_NAVPOINT = "At a navpoint";
+	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
+
 	/** Mission phases. */
 	private static final MissionPhase LOADING = new MissionPhase("loading", Stage.PREPARATION);
 	private static final MissionPhase DEPARTING = new MissionPhase("departing", Stage.PREPARATION);
@@ -87,26 +106,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
+	private static final Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {
 																	ItemResourceUtil.FIBERGLASS});
 																	
-	// Travel Mission status
-	protected static final String AT_NAVPOINT = "At a navpoint";
-	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
-
-	/** How often are remaining resources checked. */
-	private static final int RESOURCE_CHECK_DURATION = 40;
-	/** The small insignificant amount of distance in km. */
-	private static final double SMALL_DISTANCE = .1;
-	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
-	/** Estimate number of broken parts per malfunctions */
-	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
-
-	/** Default speed if no operators have ever driven. */
-	private static final double DEFAULT_SPEED = 10D;
 	
 	
 	// Data members
@@ -188,6 +192,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		addNavpoint(startingNavPoint);
+		
 		lastStopNavpoint = startingNavPoint;
 
 		setTravelStatus(AT_NAVPOINT);
@@ -217,6 +222,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Worker startingMember = getStartingPerson();
 		if (getVehicle() != null)
 			logger.info(startingMember, "Preparing " + getName() + " using " + getVehicle().getName() + ".");
+		
+		// Charges up the battery instantly
+		getVehicle().getController().topUpBatteryEnergy();
 	}
 
 	/**
@@ -900,15 +908,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected final double getEstimatedTripTime(boolean useMargin, double distance) {
 		double result = 0;
 		// Determine average driving speed for all mission members.
-		double averageSpeed = getAverageVehicleSpeedForOperators();
+		double averageSpeed = getAverageVehicleSpeedForOperators() * ((1 + NIGHT_TIME_SPEED_MOD) / 2);
 		logger.log(vehicle, Level.FINE, 10_000, "Estimated average speed: " + Math.round(averageSpeed * 100.0)/100.0 + " kph.");
 		if (averageSpeed > 0) {
 			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
 		}
 
-		// If buffer, multiply by 1.2
+		// If buffer, multiply by the the life support margin
 		if (useMargin) {
-			result *= 1.2;
+			result *= vehicle.getLifeSupportRangeErrorMargin();
 		}
 		return result;
 	}
@@ -932,12 +940,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 		}
 
+		if (totalSpeed < 0)
+			totalSpeed = 0;
+		
 		if (count > 0) {
 			result = totalSpeed / count;
 		}
 		if (result == 0) {
 			result = vehicle.getBaseSpeed();
 		}
+	
 		return result;
 	}
 
@@ -986,14 +998,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
 
-			result.put(vehicle.getFuelType(), amount);
-			
-			// if useMargin is true, include more oxygen
-			double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
-			
-			if (!useMargin)	amountOxygen = amount;
+			int fuelTypeID = vehicle.getFuelTypeID();
+			if (fuelTypeID > 0) {
+				result.put(vehicle.getFuelTypeID(), amount);
+				// if useMargin is true, include more oxygen
+				double amountOxygen = VehicleController.RATIO_OXIDIZER_FUEL * amount;
+				
+				if (!useMargin)	amountOxygen = amount;
 
-			result.put(ResourceUtil.oxygenID, amountOxygen);
+				result.put(ResourceUtil.oxygenID, amountOxygen);
+			}
 		}
 		
 		return result;
@@ -1094,11 +1108,24 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				double amount = (Double) value;
 				double amountStored = vehicle.getAmountResourceStored(id);
 
+				// Check inside vehicle
+				if (VehicleType.isRover(vehicle.getVehicleType())) {
+					Rover rover = (Rover) vehicle;
+					// Check people's possession
+					for (Person person: rover.getCrew()) {
+						amountStored += person.getAmountResourceStored(id);
+					}
+					// Check vehicle's equipment
+					for (Equipment equipment: rover.getEquipmentSet()) {
+						amountStored += equipment.getAmountResourceStored(id);
+					}
+				}
+				
 				if (amountStored < amount) {
 					String newLog = "Not enough "
 							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 							+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
-							+ Math.round(amountStored * 100D) / 100D + " kg";
+							+ Math.round(amountStored * 100D) / 100D + " kg.";
 					logger.log(vehicle, Level.WARNING, 10_000, newLog);
 					return id;
 				}
@@ -1429,8 +1456,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Need to recalculate what is left to travel to get resoruces loaded
 		// for return
 		distanceProposed = 0D;
+		
 		computeTotalDistanceProposed();
-
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationStateType.java
- * @date 2023-05-09
+ * @date 2023-06-05
  * @author Manny Kung
  */
 
@@ -21,9 +21,10 @@ public enum LocationStateType {
 	INSIDE_SETTLEMENT				(Msg.getString("LocationStateType.insideSettlement")), //$NON-NLS-1$
 	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
 	ON_PERSON_OR_ROBOT				(Msg.getString("LocationStateType.onPersonOrRobot")), //$NON-NLS-1$
-	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")), //$NON-NLS-1$
 	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVicinity")), //$NON-NLS-1$
+	MARS_SURFACE					(Msg.getString("LocationStateType.marsSurface")), //$NON-NLS-1$
 	OUTER_SPACE						(Msg.getString("LocationStateType.outerSpace")), //$NON-NLS-1$
+	MOON							(Msg.getString("LocationStateType.moon")), //$NON-NLS-1$
 	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
 	;
 

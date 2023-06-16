@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2023-05-02
+ * @date 2023-06-03
  * @author Scott Davis
  */
  package org.mars_sim.mapdata;
@@ -55,25 +55,27 @@ import org.mars_sim.msp.common.FileLocator;
 	private double rho;
 	// Name of the map
 	private MapMetaData meta;
+	
+	private BufferedImage cylindricalMapImage;
  	
  	/**
- 	 * Constructor
+ 	 * Constructor.
  	 * 
 	 * @param name   the name/description of the data
  	 * @param filename   the map data file name.
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData meta) throws IOException {
- 	
+ 	IntegerMapData(MapMetaData newMeta) throws IOException {
+		this.meta = newMeta;
 		// Load data files
-		pixels = loadMapData(meta.getHiResFile());
+		pixels = loadMapData(newMeta.getHiResFile());
 		rho =  pixelHeight / Math.PI;
-		this.meta = meta;
 		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
 	/**
-	 * The name of the map
+	 * Gets the meta data of the map.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -121,12 +123,17 @@ import org.mars_sim.msp.common.FileLocator;
  	private int[][] loadMapData(String imageName) throws IOException {
 
  		File imageFile = FileLocator.locateFile(imageName);
- 		BufferedImage image = ImageIO.read(imageFile);
+ 		cylindricalMapImage = null;
+		try {
+			cylindricalMapImage = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			logger.severe("Can't read image file ");
+		}
 
- 		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
- 		pixelWidth = image.getWidth();
- 		pixelHeight = image.getHeight();
- 		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
+ 		final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
+ 		pixelWidth = cylindricalMapImage.getWidth();
+ 		pixelHeight = cylindricalMapImage.getHeight();
+ 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 
  		int[][] result = new int[pixelHeight][pixelWidth];
  		if (hasAlphaChannel) {
@@ -329,4 +336,22 @@ import org.mars_sim.msp.common.FileLocator;
  				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (pixelHeight/2)) - lowEdge;
  		return new Point(buff_x, buff_y);
  	}
+ 	
+ 	public BufferedImage getCylindricalMapImage() {
+ 		return cylindricalMapImage;
+ 	}
+ 	
+ 	public int[][] getPixels() {
+ 		return pixels;
+ 	}
+ 	
+	/**
+	 * Prepares map panel for deletion.
+	 */
+	public void destroy() {
+	 	pixels = null;
+	 	meta = null;
+		cylindricalMapImage = null;
+	}
+ 	
  }

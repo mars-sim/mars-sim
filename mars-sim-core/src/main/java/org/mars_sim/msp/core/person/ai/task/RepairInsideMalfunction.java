@@ -278,7 +278,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
 				if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
 						|| building.hasFunction(FunctionType.EARTH_RETURN)) {
-					if (worker.getSettlement().getBuildingConnectors(building).size() > 0) {
+					if (worker.getSettlement().getAdjacentBuildings(building).size() > 0) {
 						// Walk to malfunctioning building.
 						walkToRandomLocInBuilding(building, true);
 						isWalk = true;

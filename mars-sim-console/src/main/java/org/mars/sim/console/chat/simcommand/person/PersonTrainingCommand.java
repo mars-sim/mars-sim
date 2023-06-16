@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 
 /** 
- * Reports on a Persons training
+ * Reports on a Persons training.
  */
 public class PersonTrainingCommand extends AbstractPersonCommand {
 

@@ -156,13 +156,14 @@ public class TabPanelLog extends TabPanel {
 	}
 
 	/**
-	 * Build a combox box modle that hold sthe Sols in the vehcile log
+	 * Builds a combobox box model that holds the sols in the vehicle log.
+	 * 
 	 * @return
 	 */
 	private ComboBoxModel<Integer> createSolModel(Integer today) {
 
-		// Create comboBoxModel by takign the sols from the vehicle log.
-		DefaultComboBoxModel<Integer> solModel = new DefaultComboBoxModel<Integer>();
+		// Create comboBoxModel by taking the sols from the vehicle log.
+		DefaultComboBoxModel<Integer> solModel = new DefaultComboBoxModel<>();
 
 		// Using internal iterator in lambda expression
 		for(int s = today; s > 0; s--) {
@@ -201,7 +202,6 @@ public class TabPanelLog extends TabPanel {
 
 		// Update the sol combobox at the beginning of a new sol
 		if (!todayInteger.equals(currentDay)) {
-	
 
 			// Update the solList comboBox
 			solBox.setModel(createSolModel(currentDay));
@@ -244,7 +244,7 @@ public class TabPanelLog extends TabPanel {
 				return this;
 			}
 
-			setText(SOL + value);// + WHITESPACES);
+			setText(SOL + value);
 
 			return c;
 		}
@@ -315,7 +315,8 @@ public class TabPanelLog extends TabPanel {
 		}
 
 		/**
-		 * Prints a string list of status types
+		 * Prints a string list of status types.
+		 * 
 		 * @param statusTypes the set of status types
 		 * @return
 		 */
@@ -325,7 +326,8 @@ public class TabPanelLog extends TabPanel {
 		}
 		
 		/**
-		 * Prepares a list of activities done on the selected day
+		 * Prepares a list of activities done on the selected day.
+		 * 
 		 * @param solStatus
 		 */
 		public void update(List<MSolDataItem<Set<StatusType>>> solStatus) {

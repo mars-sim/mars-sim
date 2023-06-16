@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalIce.java
- * @date 2021-08-15
+ * @date 2023-06-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,8 +13,8 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
- * The DigLocalIce class is a task for performing
- * collecting ice outside of a settlement.
+ * The DigLocalRegolith class is a task for digging and collecting
+ * ice right outside in the vicinity of a settlement.
  */
 public class DigLocalIce
 extends DigLocal {

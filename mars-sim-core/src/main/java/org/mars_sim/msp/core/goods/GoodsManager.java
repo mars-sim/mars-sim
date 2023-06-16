@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.goods;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,8 +46,9 @@ public class GoodsManager implements Serializable {
 		}
 
 		/**
-		 * Time to updated lists
-		 * @param now Cuurrent time not used.
+		 * Time to updated lists.
+		 * 
+		 * @param now Current time not used.
 		 */
 		@Override
 		public int execute(MarsClock now) {
@@ -156,9 +158,9 @@ public class GoodsManager implements Serializable {
 	 */
 	public GoodsManager(Settlement settlement, int sunRiseOffSet) {
 		this.settlement = settlement;
-		
 		// Schedule an event to recalculate shopping lists just after sunrise
 		settlement.getFutureManager().addEvent(sunRiseOffSet + 10, new FutureHandler());
+		
 		populateGoodsValues();
 	}
 
@@ -771,18 +773,6 @@ public class GoodsManager implements Serializable {
 	public void clearDeal(MissionType commerce) {
 		deals.remove(commerce);
 	}
-
-	/**
-	 * Custom read to re-init deals variable.
-	 */
-	private void readObject(java.io.ObjectInputStream in)
-    	throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-		deals = new EnumMap<>(MissionType.class);
-		buyList = Collections.emptyMap();
-		sellList = Collections.emptyMap();
-	}
-
 	
 	private void calculateSellList() {
 		// This logic is a draft and need more refinement
@@ -815,7 +805,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Calaculate the current buying list for this Settlement.
+	 * Calculates the current buying list for this Settlement.
 	 */
 	private void calculateBuyList() {
 
@@ -844,5 +834,17 @@ public class GoodsManager implements Serializable {
 
 		// Any deal are now invalid
 		deals.clear();
+	}
+	
+	/**
+	 * Custom read to re-init deals variable.
+	 */
+	private void readObject(ObjectInputStream in)
+    	throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		
+		deals = new EnumMap<>(MissionType.class);
+		buyList = Collections.emptyMap();
+		sellList = Collections.emptyMap();
 	}
 }

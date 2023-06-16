@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @date 2022-08-24
+ * @date 2023-06-06
  * @author Scott Davis
  */
 
@@ -347,7 +347,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         if (!hasDestination) {
           	// If destination is none, update destination text label.
-        	if (!destinationTextCache.equals("")) {
+        	if (destinationTextCache != null && !destinationTextCache.equals("")) {
         		destinationTextCache = "";
         		destinationTextLabel.setText(destinationTextCache);
         		addDestinationTextLabel();

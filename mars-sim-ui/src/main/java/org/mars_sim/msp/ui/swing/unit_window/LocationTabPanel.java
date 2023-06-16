@@ -111,7 +111,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		content.add(locationPanel);
 
 		// Initialize location cache
-		locationCache = new Coordinates(unit.getCoordinates());
+		locationCache = unit.getCoordinates();
 
 		String dir_N_S = null;
 		String dir_E_W = null;

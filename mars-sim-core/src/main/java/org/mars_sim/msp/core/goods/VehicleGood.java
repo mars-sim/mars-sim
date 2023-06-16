@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -603,8 +605,10 @@ class VehicleGood extends Good {
             double baseSpeed = v.getBaseSpeed();
             double distancePerSol = baseSpeed / SPEED_TO_DISTANCE;
             
-            // Check food capacity as range limit.
-//            System.out.println("personConfig is " + personConfig);
+            if (personConfig == null) 
+            	personConfig = SimulationConfig.instance().getPersonConfig();
+            
+            // Check food capacity as range limit.       
             double foodConsumptionRate = personConfig.getFoodConsumptionRate();
             double foodCapacity = v.getCargoCapacity(ResourceUtil.foodID);
             double foodSols = foodCapacity / (foodConsumptionRate * crewSize);

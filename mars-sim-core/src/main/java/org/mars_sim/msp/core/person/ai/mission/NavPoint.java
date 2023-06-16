@@ -134,7 +134,7 @@ public class NavPoint implements Serializable {
 	
 	@Override
 	public String toString() {
-		return description + " @ " + location.getCoordinateString();
+		return description + " @ " + location.getFormattedString();
 	}
 
 	/**

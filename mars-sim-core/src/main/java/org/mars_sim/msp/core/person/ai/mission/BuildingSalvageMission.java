@@ -313,7 +313,7 @@ public class BuildingSalvageMission extends AbstractMission
 
 		SalvageValues values = settlement.getConstructionManager().getSalvageValues();
 		Map<Building, Double> salvageBuildings = new HashMap<>();
-		Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			double salvageProfit = values.getNewBuildingSalvageProfit(building, constructionSkill);

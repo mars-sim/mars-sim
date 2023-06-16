@@ -174,7 +174,6 @@ public class SettlementMapPanel extends JPanel {
 		repaint();
 	}
 
-	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
 
 		// Set up the dayNightMapLayer layers
@@ -279,7 +278,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Checks if the player selected an unit
+	 * Checks if the player selected an unit.
 	 *
 	 * @param evt
 	 */
@@ -331,7 +330,7 @@ public class SettlementMapPanel extends JPanel {
 
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 
@@ -573,7 +572,7 @@ public class SettlementMapPanel extends JPanel {
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 		Building selectedBuilding = null;
 
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 

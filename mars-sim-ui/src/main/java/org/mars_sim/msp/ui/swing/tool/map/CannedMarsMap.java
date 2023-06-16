@@ -93,14 +93,15 @@ public class CannedMarsMap extends JComponent implements Map {
 			mt.addImage(mapImage, 0);
 			try {
 				mt.waitForID(0);
+				// Indicate that image is complete
+				mapImageDone = true;
 			} catch (InterruptedException e) {
 				logger.log(Level.SEVERE, Msg.getString("CannedMarsMap.log.mediaTrackerInterrupted") + e); //$NON-NLS-1$
 				// Restore interrupted state
 			    Thread.currentThread().interrupt();
 			}
-			mapImageDone = true;
-			centerCoords = new Coordinates(newCenter);
-			
+
+			centerCoords = newCenter;
 			// Prepare and buffer the map
 			bufferMap();
 		}
@@ -195,5 +196,15 @@ public class CannedMarsMap extends JComponent implements Map {
 	@Override
     public int getPixelWidth() {
 		return mapData.getWidth();
+	}
+	
+	/**
+	 * Prepares map panel for deletion.
+	 */
+	public void destroy() {
+		mapImage = null;
+		mapData = null;	
+		displayArea = null;
+		centerCoords = null;
 	}
 }

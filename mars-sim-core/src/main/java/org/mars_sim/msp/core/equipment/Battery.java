@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -34,7 +33,7 @@ public class Battery implements Serializable {
     private static final double STANDARD_VOLTAGE = 600;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-    private static final double ENERGY_PER_MODULE = 15.0;
+    public static final double ENERGY_PER_MODULE = 15.0;
     
     private static final String KWH = " kWH  ";
     private static final String KW = " kW  ";
@@ -58,7 +57,7 @@ public class Battery implements Serializable {
     /** The standby power consumption in kW. */
     private double standbyPower = 0.01;
 	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity = 15;
+	private double maxCapacity = ENERGY_PER_MODULE;
 
 	private Unit unit;
 	
@@ -79,7 +78,7 @@ public class Battery implements Serializable {
         	maxCapacity = ENERGY_PER_MODULE * modules;
         }
 
-        currentEnergy = RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
+        currentEnergy = maxCapacity; //RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
  
         updateLowPowerMode();
     }
@@ -128,8 +127,8 @@ public class Battery implements Serializable {
     		double powerMax = getMaxPowerDraw();
     				
     		double energyToDeliver = 0;
-	    	double energyToSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
-	    	if (energyToSupply <= 0)
+	    	double energyCanSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
+	    	if (energyCanSupply <= 0)
 	    		return 0;
 	    	
 //    		double powerAvailable = 0;
@@ -138,12 +137,12 @@ public class Battery implements Serializable {
 //    		else
 //    			powerAvailable = powerMax;
 	    	
-    		energyToDeliver = Math.min(currentEnergy, Math.min(energyToSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
+    		energyToDeliver = Math.min(currentEnergy, Math.min(energyCanSupply, Math.min(powerRequest * time, Math.min(kWh, powerMax * time))));
 
           	logger.log(unit, Level.INFO, 20_000, 
           			"[Battery Status]  "
           	       	+ "currentEnergy: " + Math.round(currentEnergy * 1_000.0)/1_000.0 + KWH
-          			+ "energyToSupply: " + Math.round(energyToSupply * 1_000.0)/1_000.0 + KWH
+          			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
                 	+ "kWh: " + + Math.round(kWh * 1_000.0)/1_000.0 + KWH
                   	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
                 	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
@@ -212,6 +211,13 @@ public class Battery implements Serializable {
 	 */
 	public double getcurrentEnergy() {
 		return currentEnergy;
+	}
+	
+	/** 
+	 * Charges up the battery in no time. 
+	 */
+	public void topUpBatteryEnergy() {
+		currentEnergy = maxCapacity;
 	}
 	
 	public double getLowPowerPercent() {

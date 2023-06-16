@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GenericContainer.java
- * @date 2021-10-13
+ * @date 2023-06-12
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.equipment;
@@ -32,6 +32,8 @@ class GenericContainer extends Equipment implements Container {
 	private int resourceHeld = -1;
 	private boolean reusable;
 
+	private EquipmentType type;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -44,15 +46,36 @@ class GenericContainer extends Equipment implements Container {
 	GenericContainer(String name, EquipmentType type, boolean reusable, Settlement base) {
 		// Use Equipment constructor
 		super(name, type, type.name(), base);
-
+		
+		this.type = type;
 		this.reusable = reusable;
-
-		// Sets the base mass of the bag.
-		setBaseMass(EquipmentFactory.getEquipmentMass(type));
-
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
+		
+		setBaseMass(type);
 	}
 
+//	/**
+//	 * Gets the base mass.
+//	 */
+//	@Override
+//	public double getBaseMass() {
+//		double mass = super.getBaseMass();
+//		if (mass == 0) {
+//			setBaseMass(type);
+//		}
+//		return super.getBaseMass();
+//	}
+	
+	/**
+	 * Sets the base mass of this container type.
+	 * 
+	 * @param type
+	 */
+	public void setBaseMass(EquipmentType type) {
+		// Sets the base mass of the bag.
+		setBaseMass(EquipmentFactory.getEquipmentMass(type));
+	}
+	
 	/**
 	 * Gets the total capacity of resource that this container can hold.
 	 *
@@ -65,7 +88,7 @@ class GenericContainer extends Equipment implements Container {
 
 
 	/**
-	 * Get the resource that is held
+	 * Get the resource that is held.
 	 */
 	@Override
 	public int getResource() {
@@ -73,7 +96,7 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Gets a list of supported resources
+	 * Gets a list of supported resources.
 	 *
 	 * @return a list of resource ids
 	 */
@@ -85,16 +108,29 @@ class GenericContainer extends Equipment implements Container {
 		return Set.of(resourceHeld);
 	}
 
+	
 	/**
-	 * Total mass held
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return getAmountResourceIDs();
+	}
+	
+	/**
+	 * Total mass held.
 	 */
 	@Override
 	public double getStoredMass() {
 		return amountStored;
 	}
 
+	
+	
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -120,7 +156,7 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -134,7 +170,18 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Stores the resource but only if it matches current resource or empty
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return getAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Stores the resource but only if it matches current resource or empty.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -171,8 +218,8 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Can this container hold a specific Amount Resources; this will look at
-	 * the Phase Type
+	 * Can this container hold a specific Amount Resources ? 
+	 * It will look at the Phase Type.
 	 */
 	private boolean canStore(int resourceId) {
 		AmountResource required = ResourceUtil.findAmountResource(resourceId);
@@ -180,7 +227,7 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -213,7 +260,7 @@ class GenericContainer extends Equipment implements Container {
 	
 	/**
 	 * Gets the capacity of a particular amount resource. Check if container
-	 * is unallocated
+	 * is unallocated.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -261,7 +308,7 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */

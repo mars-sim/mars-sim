@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @date 2021-09-20
+ * @date 2023-06-09
  * @author Scott Davis
  */
 
@@ -35,7 +35,6 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -57,11 +56,13 @@ class ExplorationSitesPanel extends WizardPanel {
 	private static final Logger logger = Logger.getLogger(ExplorationSitesPanel.class.getName());
 	
 	/** Wizard panel name. */
-	private final static String NAME = "Exploration Sites";
+	private static final String NAME = "Exploration Sites";
 
 	/** Range modifier. */
-	private final static double RANGE_MODIFIER = .95D;
+	private static final double RANGE_MODIFIER = .95D;
 
+	private static final int STANDARD_TIME_PER_SITE = 250;
+	
 	// Data members.
 	private MapPanel mapPane;
 	private EllipseLayer ellipseLayer;
@@ -336,7 +337,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * @return time (millisols)
 	 */
 	private double getTimePerSite() {
-		return Exploration.EXPLORING_SITE_TIME;
+		return STANDARD_TIME_PER_SITE;
 	}
 
 	/**

@@ -147,7 +147,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	private static Collection<Malfunctionable> getBuildingMalfunctionables(Settlement settlement) {
 		// Should get a collection of buildings only
-		return new ArrayList<>(settlement.getBuildingManager().getBuildings());
+		return new ArrayList<>(settlement.getBuildingManager().getBuildingSet());
 	}
 
 	/**
@@ -244,7 +244,7 @@ public final class MalfunctionFactory implements Serializable {
 
 				for (RepairPart p : m.getParts()) {
 					double partProbability = p.getProbability() / 100D;
-					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(p.getNumber());
+					double averageNumber = RandomUtil.getIntegerAverageValue(p.getNumber());
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 
 					int id = p.getPartID();
@@ -271,7 +271,7 @@ public final class MalfunctionFactory implements Serializable {
 		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
 			double prob = maintenance.getProbability() / 100D;
 			int partNumber = maintenance.getMaxNumber();
-			double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+			double averageNumber = RandomUtil.getIntegerAverageValue(partNumber);
 			double totalNumber = averageNumber * prob;
 
 			Integer id = maintenance.getPart().getID();

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Rover.java
- * @date 2023-04-16
+ * @date 2023-06-05
  * @author Scott Davis
  */
 
@@ -896,15 +896,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses as fuel.
-	 *
-	 * @return resource type id
-	 */
-	public int getFuelType() {
-		return METHANOL_ID;
-	}
-
-	/**
 	 * Sets unit's location coordinates
 	 *
 	 * @param newLocation the new location of the unit
@@ -918,7 +909,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Gets the range of the vehicle
+	 * Gets the range of the vehicle.
 	 *
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
@@ -1003,6 +994,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	
 	/**
 	 * Gets the time limit of the trip based on life support capacity.
+	 * Called by ExplorationSitePanel.
 	 * 
 	 * @param number of members
 	 * @param useBuffer use time buffer in estimation if true.

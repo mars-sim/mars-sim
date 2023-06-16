@@ -36,9 +36,33 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	private double processTimeRequired;
 	private double powerRequired;
 	
-	private List<ManufactureProcessItem> inputList;
-	private List<ManufactureProcessItem> outputList;
-
+	private List<ManufactureProcessItem> inputList = new ArrayList<>();
+	private List<ManufactureProcessItem> outputList = new ArrayList<>();
+	
+	/*
+	 * Constructor 1.
+	 */
+	public ManufactureProcessInfo() {
+	}
+	
+	/*
+	 * Copy constructor.
+	 */
+	public ManufactureProcessInfo(ManufactureProcessInfo another) {
+	    this.name = another.name;
+	    this.description = another.description;
+	    this.techLevelRequired = another.techLevelRequired;
+	    this.skillLevelRequired = another.skillLevelRequired;
+	    this.effortLevel = another.effortLevel;
+	    this.workTimeRequired = another.workTimeRequired;
+	    this.processTimeRequired = another.processTimeRequired;
+	    this.powerRequired = another.powerRequired;
+		
+	    // Warning: below is shallow copy only, NOT deep copy 
+	    this.inputList = List.copyOf(another.inputList);
+	    this.outputList = List.copyOf(another.outputList);
+	}
+	
 	/**
 	 * Gets the process name.
 	 * 

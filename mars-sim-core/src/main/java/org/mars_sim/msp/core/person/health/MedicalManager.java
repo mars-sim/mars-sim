@@ -63,38 +63,23 @@ public class MedicalManager implements Serializable {
 	private static MedicalConfig medicalConfig;
 
 	/**
-	 * Construct a new {@link MedicalManager}. This also constructs all the
+	 * Constructs a new {@link MedicalManager}. This also constructs all the
 	 * pre-defined Complaints and the user-defined ones in the XML configuration
 	 * file.
 	 */
 	public MedicalManager() {
-		if (medicalConfig == null)
-			medicalConfig = SimulationConfig.instance().getMedicalConfiguration();
-		environmentalComplaints = new ConcurrentHashMap<ComplaintType, Complaint>();
-		supportedTreatments = new ConcurrentHashMap<Integer, List<Treatment>>();
-		
 		awaitingPostmortemExam = new ConcurrentHashMap<>();
 		deathRegistry = new ConcurrentHashMap<>();
 		
-		initializeInstances();
-	}
-
-	/**
-	 * Initialize the Medical Complaints from the configuration.
-	 * 
-	 * @throws exception if not able to initialize complaints.
-	 */
-	public static void initializeInstances() {
-		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
-		medicalConfig = SimulationConfig.instance().getMedicalConfiguration();
-
 		setUpEnvironmentalComplaints();
 	}
 
-	/***
-	 * Create the pre-defined environmental complaints using person configuration.
+	/**
+	 * Creates the pre-defined environmental complaints using person configuration.
 	 */
 	private static void setUpEnvironmentalComplaints() {
+		environmentalComplaints = new ConcurrentHashMap<>();
+		supportedTreatments = new ConcurrentHashMap<>();
 		
 		// TODO: Why are these not created via the medical.xml and then lookup by a fixed name ?????
 		// Bad case of magic numbers.
@@ -128,13 +113,13 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Create an environment related Complaint. These are started by the simulation
+	 * Creates an environment related Complaint. These are started by the simulation
 	 * and not via randomness. The all result in death hence have no next phase and
 	 * no recovery period, when the environment changes, the complaint is resolved.
 	 */
 
-	/***
-	 * Create an environment related Complaint.
+	/**
+	 * Creates an environment related Complaint.
 	 * 
 	 * @param type
 	 * @param seriousness
@@ -183,7 +168,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a suffocation
+	 * Returns the pre-defined Medical Complaint that signifies a suffocation
 	 * complaint.
 	 * 
 	 * @return Medical complaint for shortage of oxygen.
@@ -193,7 +178,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Get the supported Treatments for a Medical Facility of a particular level.
+	 * Gets the supported Treatments for a Medical Facility of a particular level.
 	 * This will be a combination of all the Treatments of the specified level and
 	 * all those lower.
 	 * 
@@ -205,7 +190,7 @@ public class MedicalManager implements Serializable {
 			return supportedTreatments.get(level);
 		
 		List<Treatment> results = new ArrayList<>();
-		List<Treatment> list = SimulationConfig.instance().getMedicalConfiguration().getTreatmentList();
+		List<Treatment> list = medicalConfig.getTreatmentList() ; //SimulationConfig.instance().getMedicalConfiguration().getTreatmentList();
 
 		Iterator<Treatment> iter = list.iterator();
 		while (iter.hasNext()) {
@@ -220,7 +205,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a dehydration
+	 * Returns the pre-defined Medical Complaint that signifies a dehydration
 	 * complaint.
 	 * 
 	 * @return Medical complaint for shortage of water.
@@ -230,7 +215,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a starvation
+	 * Returns the pre-defined Medical Complaint that signifies a starvation
 	 * complaint.
 	 * 
 	 * @return Medical complaint for shortage of oxygen.
@@ -240,7 +225,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a Decompression
+	 * Returns the pre-defined Medical Complaint that signifies a Decompression
 	 * complaint.
 	 * 
 	 * @return Medical complaint for decompression.
@@ -250,7 +235,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a Freezing complaint.
+	 * Returns the pre-defined Medical Complaint that signifies a Freezing complaint.
 	 * 
 	 * @return Medical complaint for freezing.
 	 */
@@ -259,7 +244,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a Heat Stroke
+	 * Returns the pre-defined Medical Complaint that signifies a Heat Stroke
 	 * complaint.
 	 * 
 	 * @return Medical complaint for heat stroke.
@@ -314,7 +299,19 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Initializes the Medical Complaints from the configuration.
+	 * 
+	 * @throws exception if not able to initialize complaints.
+	 */
+	public void initializeInstances(MedicalConfig mc) {
+		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
+		medicalConfig = mc;
+
+		setUpEnvironmentalComplaints();
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 

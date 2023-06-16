@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -50,9 +49,6 @@ public class MissionManager implements Serializable {
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
 	private SolMetricDataLogger<String> historicalMissions;
-
-	/** Prob boost for Mission Types */
-	private transient Map<MissionType, Integer> missionBoost = new EnumMap<>(MissionType.class);
 
 	/**
 	 * Constructor.
@@ -198,7 +194,6 @@ public class MissionManager implements Serializable {
 		double totalProbCache = 0D;
 
 		Settlement startingSettlement = person.getAssociatedSettlement();
-		ReportingAuthority sponsor = startingSettlement.getSponsor();
 
 		// Determine probabilities.
 		for (MetaMission metaMission : List.copyOf(MetaMissionUtil.getMetaMissions())) {
@@ -210,20 +205,20 @@ public class MissionManager implements Serializable {
 				}
 				else if (baseProb > 0D) {
 					// Get any overriding ratio
-					int boost = missionBoost.getOrDefault(metaMission.getType(), 0);
-					double probability = baseProb + boost;
-
-					double sponsorRatio = sponsor.getMissionRatio(metaMission.getType());
-					probability *= sponsorRatio;
+					double probability = baseProb;
+					double settlementRatio = startingSettlement.getPreferenceModifier(
+										new PreferenceKey(PreferenceKey.Type.MISSION,
+														metaMission.getType().name()));
+					probability *= settlementRatio;
 
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
 							+ "' probability: " + Math.round(probability * 100.0)/100.0
 									+ " base prob: " + Math.round(baseProb * 100.0)/100.0
-									+ " boost: " + Math.round(boost * 100.0)/100.0
-									+ " sponsor: " + Math.round(sponsorRatio * 100.0)/100.0);
-
-					missionProbCache.put(metaMission, probability);
-					totalProbCache += probability;
+									+ " sponsor: " + settlementRatio);
+					if (probability > 0) {
+						missionProbCache.put(metaMission, probability);
+						totalProbCache += probability;
+					}
 				}
 			}
 		}
@@ -378,12 +373,6 @@ public class MissionManager implements Serializable {
 	 * Sets up any Mission configurations.
 	 */
 	public void initializeInstances(SimulationConfig simulationConfig) {
-		if (missionBoost == null) {
-			missionBoost = simulationConfig.getMissionBoosts();
-		}
-		else {
-			missionBoost.putAll(simulationConfig.getMissionBoosts());
-		}
 		EVAOperation.setMinSunlight(simulationConfig.getMinEVALight());
 	}
 	

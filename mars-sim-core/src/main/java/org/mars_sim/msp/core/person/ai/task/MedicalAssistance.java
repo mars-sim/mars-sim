@@ -372,7 +372,7 @@ public class MedicalAssistance extends Task {
 
 	private void produceMedicalWaste() {
 		Unit containerUnit = person.getContainerUnit();
-		if (containerUnit.getUnitType() != UnitType.PLANET) {
+		if (containerUnit.getUnitType() != UnitType.MARS) {
 			Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteID, containerUnit.getSettlement(),
 									"MedicalAssistence::produceMedicalWaste");
 		}

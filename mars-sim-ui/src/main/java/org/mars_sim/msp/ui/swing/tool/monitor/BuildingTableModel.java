@@ -97,7 +97,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 		selectedSettlement = filter;
  		BuildingManager bm = selectedSettlement.getBuildingManager();
-		resetEntities(bm.getBuildings());
+		resetEntities(bm.getBuildingSet());
 
 		selectedSettlement.addUnitListener(this);
 

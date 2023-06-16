@@ -28,7 +28,10 @@
 	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
 	<resource name="Carbon Dioxide" type="compound" phase="gas" life-support="true"/>
 
-	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich permafrost outside soil</resource>
+	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
+
+	<resource name="Brine Water" type="compound" phase="liquid">Brine water comes from melted mineral ice or from underground water reserve.</resource>
+
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
@@ -54,28 +57,33 @@
 	 in perfumes, vitamins, polymers, solvents and other materials due to its versatility and ease of
 	 reactive control in comparison to other gases. It combines nicely with a variety of elements and
 	 compounds, making it the most important of starting materials for organic synthesis.</resource>
-	<resource name="Sodium Carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
-		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
-	</resource>
+	 
+	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
+		The common name for the organic chemical compound propene. An alkene which is a 
+		colorless gaseous (at room temperature and pressure) hydrocarbon with the chemical
+		formula C3H6. It's a colorless gas with a faint petroleum-like odor and is 
+		flammable, and is often used as fuel.
+		</resource>
+
 	
 <!-- Elements -->
-	<resource name="Iron Powder" type="element" phase="solid" />
+	<resource name="Iron powder" type="element" phase="solid" />
 	<resource name="Manganese" type="element" phase="solid" />
 
 <!-- Wastes -->
 	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 	<resource name="Compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="Crop Waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="Crop waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
-	<resource name="Electronic Waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
-	<resource name="Food Waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
+	<resource name="Electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="Food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
 	<!-- <resource name="Manure" phase="solid">Human feces</resource> -->
 
-	<resource name="Solid Waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
-	<resource name="Toxic Waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+	<resource name="Solid waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="Toxic waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
-	<resource name="Grey Water" type="waste" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
-	<resource name="Black Water" type="waste" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
+	<resource name="Grey water" type="waste" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
+	<resource name="Black water" type="waste" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
 		Need special treatment to be useful.</resource>
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
@@ -250,8 +258,45 @@
 	<resource name="Epsom salt" type="chemical" phase="solid" demand=".5"> 
 		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
+	<resource name="Perchlorate" type="chemical" phase="solid" demand=".5"> 
+		Perchlorate salts such as magnesium perchlorate Mg(ClO4)2 is a powerful 
+		oxidizing agent. 
+		
+		The salt is also a superior desiccant (drying agent)  
+		to dry gas or air samples for gas analysis.  
+		
+		Perchlorates have been found on Mars. Being a drying agent, it retains 
+		water from the atmosphere and may release it when conditions are 
+		favorable and temperature is above 273 K. 
+		
+		Briny solutions that contain salts such as magnesium perchlorate 
+		have a lower melting point than that of pure water. 
+		
+		The abundance of perchlorate salts on Mars could support the theory 
+		that liquid aqueous solutions might exist on or below the surface, 
+		where temperature and pressure conditions would ordinarily cause
+		the water to freeze.
+		
+		However, when irradiated with a simulated Martian UV flux, 
+		perchlorates become bacteriocidal. It ensures the low probability of 
+		survival of biological contaminants released from robotic 
+		and human exploration missions.
+		</resource>		
+	
 		
 <!-- Chemical for utility -->
+
+
+	<resource name="Terephthalic acid"  type="chemical" phase="solid">
+		Terephthalic acid is an organic compound with formula C6H4(CO2H)2. 
+		This white solid is a commodity chemical, used principally as a precursor 
+		to the polyester PET, used to make clothing and plastic bottles. 
+	</resource>
+	<resource name="Dimethyl terephthalate"  type="chemical" phase="liquid">
+		Dimethyl terephthalate (DMT) is an organic compound with the formula C6H4(COOCH3)2. 
+		It is the diester formed from terephthalic acid and methanol.	
+		It is a white solid that melts to give a distillable colourless liquid.
+	</resource>
 	<resource name="Sodium hypochlorite" type="chemical" phase="liquid">
 		Sodium Hypochlorite is
 		one of the bleaching chemical for sanitizing soybean as well as pulp
@@ -279,7 +324,7 @@
 		raw materials such as soybean or vegetable oil. Polyurethanes are used
 		in the manufacturing of foot wears, solid plastic items, foams for
 		bedding and upholstery. </resource>
-	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015"> 
+	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015">
 		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
 	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
 	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
@@ -290,11 +335,26 @@
 	 of its easy application and durability, polyester resin is also applied to patch cracks 
 	 and holes that need to remain watertight. See comparison between polyester resin and 
 	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
-	</resource>
-	<resource name="Prophylene" type="chemical" phase="gas" demand=".01">
-		The common name for the organic chemical compound propene. An alkene which is a colorless gaseous
-		(at room temperature and pressure) hydrocarbon with the chemical formula C3H6.</resource>
-	<resource name="polypropylene" type="chemical" phase="solid" demand=".01">
+	</resource> 
+	<resource name="Ethylene glycol" type="compound" phase="liquid" demand=".1"> 
+		Ethylene glycol is a colorless, odorless, flammable, and viscous liquid.
+		
+		It's commonly used in various industrial and consumer products, including antifreeze, 
+		hydraulic brake fluids, some stamp pad inks, ballpoint pens, solvents, paints, 
+		plastics, films, cosmetics, and pharmaceutical vehicles.
+		
+		It is also used as a raw material in the manufacture of polyester fibers and
+		primarily used as a component of de-icer and anti-icer/anti-freeze fluid 
+		used in aircraft de-icing and anti-icing operations, and as an anti-freeze 
+		component in motor vehicles.
+		
+		Ethylene glycol is a popular refrigerants ingredient due to its excellent 
+		heat transfer properties and is used in a wide variety of heating and cooling
+		applications such as HVAC systems, plastic mould making, food, and pharmaceutical
+		processes.
+	</resource>	
+	
+	<resource name="Polypropylene" type="chemical" phase="solid" demand=".01">
 		A thermoplastic polymer stiffer than polyethylene. Characterized by a more transparent appearance 
 		and higher tensile strength, polypropylene bags offer a higher heat and chemical resistance than 
 		polyethylene bags, as well as rigid protective edges to prevent scratches. Polypropylene is a soft, 
@@ -415,13 +475,20 @@
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
 	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
+			 
+	<resource name="Sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
+		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
+	</resource>
 
 <!-- Utility items derived from crop harvest -->
-	<resource name="Fiber Cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="Polyester fiber" type="chemical" phase="solid" demand="0.015">
+		Polyester fiber are strong, heat resistant material for clothing and fabric.
+	</resource>
 	<resource name="Napkin" type="utility" phase="solid" />
 	<resource name="Paper" type="utility" phase="solid" />
 	<resource name="Pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
-	<resource name="Toilet Tissue" type="utility" phase="solid" />
+	<resource name="Toilet tissue" type="utility" phase="solid" />
 
 <!-- Utility items derived from compound -->
 	<resource name="Mylar" type="utility" phase="solid"> Mylar is paper that is coated with or made
@@ -504,7 +571,7 @@
 
 	<!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
 	<resource name="Rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="Columnar Basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock
+	<resource name="Columnar basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock
 	 composed mainly of plagioclase and pyroxene minerals. It most commonly forms as an
 	 extrusive rock, such as a lava flow.</resource>
 	<resource name="Granite" type="rock" phase="solid">The granitoid rocks on Mars may have formed when thick

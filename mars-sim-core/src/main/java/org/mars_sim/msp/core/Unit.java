@@ -39,13 +39,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Unit.class.getName());
 
-	public static final int OUTER_SPACE_UNIT_ID = Integer.MAX_VALUE;
+	public static final int MOON_UNIT_ID = -2;
+	public static final int OUTER_SPACE_UNIT_ID = -1;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
-	public static final Integer UNKNOWN_UNIT_ID = -1;
+	public static final Integer UNKNOWN_UNIT_ID = -3;
 
 	// Data members
 	/** The unit containing this unit. */
-	protected Integer containerID = MARS_SURFACE_UNIT_ID;
+	protected Integer containerID = UNKNOWN_UNIT_ID;
 
 	// Unique Unit identifier
 	private int identifer;
@@ -135,6 +136,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		this.baseMass = 0;
 		this.identifer = id;
 		this.containerID = containerId;
+		
+		// For now, set currentStateType to MARS_SURFACE
 		currentStateType = LocationStateType.MARS_SURFACE;
 	}
 
@@ -188,13 +191,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
-
 			
-		case PLANET:
+		case MARS:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			break;
 
+		case MOON:
+			currentStateType = LocationStateType.MOON;
+			containerID = (Integer) MOON_UNIT_ID;
+			break;
+			
 		default:
 			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
@@ -422,9 +429,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public Unit getTopContainerUnit() {
 		Unit topUnit = getContainerUnit();
-		if (!(topUnit.getUnitType() == UnitType.PLANET)) {
+		if (!(topUnit.getUnitType() == UnitType.MARS)) {
 			while (topUnit != null && topUnit.getContainerUnit() != null
-					&& !(topUnit.getContainerUnit().getUnitType() == UnitType.PLANET)) {
+					&& !(topUnit.getContainerUnit().getUnitType() == UnitType.MARS)) {
 				topUnit = topUnit.getContainerUnit();
 			}
 		}
@@ -462,7 +469,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 
 		// 1. Set Coordinates
-		if (newContainer == null || newContainer.getUnitType() == UnitType.PLANET) {
+		if (newContainer == null || newContainer.getUnitType() == UnitType.MARS) {
 			// Since it's on the surface of Mars,
 			// First set its initial location to its old parent's location as it's leaving its parent.
 			// Later it will move around and updates its coordinates by itself
@@ -474,12 +481,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 		
 		// 2. Set LocationStateType
-		if (getUnitType() == UnitType.PLANET) {
+		if (getUnitType() == UnitType.MARS) {
 			currentStateType = LocationStateType.OUTER_SPACE;
 			containerID = (Integer) OUTER_SPACE_UNIT_ID;
 		} else if (getUnitType() == UnitType.CONSTRUCTION) {
-			currentStateType = LocationStateType.OUTER_SPACE;
-			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+			currentStateType = LocationStateType.MARS_SURFACE;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		} else {
 			currentStateType = LocationStateType.UNKNOWN;
 			containerID = (Integer) UNKNOWN_UNIT_ID;
@@ -519,12 +526,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			return LocationStateType.INSIDE_VEHICLE;
 
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE; // or WITHIN_SETTLEMENT_VICINITY
 
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -559,7 +566,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public double getBaseMass() {
 		return baseMass;
 	}
-    
+	
 	/**
 	 * Checks if it has a unit listener.
 	 * 
@@ -838,7 +845,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * PrepareS object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		location = null;

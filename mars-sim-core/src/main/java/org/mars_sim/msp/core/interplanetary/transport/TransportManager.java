@@ -136,7 +136,7 @@ public class TransportManager implements Serializable, Temporal {
 	/**
 	 * Reset links to the managers classes after a reload. This also reinit's the TransportItems
 	 */
-	public void initalizeInstances(Simulation sim) {
+	public void reinitalizeInstances(Simulation sim) {
 		this.eventManager = sim.getEventManager();
 		Transportable.initalizeInstances(sim.getMasterClock().getMarsClock(), this);
 

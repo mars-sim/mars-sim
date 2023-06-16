@@ -45,6 +45,11 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
+    public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
+    public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
+    public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
+    public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 m/s2");
+    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 m/s");   
     public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL_KMH = new DecimalFormat("##0.00 km/h");
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
@@ -112,7 +117,7 @@ public class StyleManager {
         // Sub heading font used inside panels is BOLD & size +4
         Properties subHeadingProps = new Properties();
         subHeadingProps.setProperty(FONT_STYLE, "BOLD");
-        subHeadingProps.setProperty(FONT_SIZE, "+4");
+        subHeadingProps.setProperty(FONT_SIZE, "+3");
         styles.put(SUBHEADING_FONT_STYLE, subHeadingProps);
 
         // Default is the LAF with a Red accent colour
@@ -227,7 +232,7 @@ public class StyleManager {
     }
 
     /**
-     * Loads the styles defintions to use in this UI.
+     * Loads the styles definitions to use in this UI.
      * 
      * @param newStyles
      */

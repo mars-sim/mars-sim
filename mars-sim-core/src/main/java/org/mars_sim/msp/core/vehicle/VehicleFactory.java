@@ -37,7 +37,7 @@ public final class VehicleFactory {
      * @return
      */
     public static Vehicle createVehicle(UnitManager unitMgr, Settlement owner, String specName) {
-        ReportingAuthority sponsor = owner.getSponsor();
+        ReportingAuthority sponsor = owner.getReportingAuthority();
 
         Vehicle vehicle = null;
         VehicleSpec spec = vehicleConfig.getVehicleSpec(specName);

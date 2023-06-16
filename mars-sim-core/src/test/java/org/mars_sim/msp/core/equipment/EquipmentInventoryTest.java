@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * LoadVehicleTest
- * @date 2021-09-29
+ * EquipmentInventoryTest
+ * @date 2023-06-12
  * @author Scott Davis
  */
 
@@ -9,45 +9,34 @@ package org.mars_sim.msp.core.equipment;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 
-import junit.framework.TestCase;
-
 /**
- * Tests the EquipmentInventory
+ * Tests the EquipmentInventory.
  */
-public class EquipmentInventoryTest
-extends TestCase {
+public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 
 
 	private static final double CAPACITY_AMOUNT = 1000D;
 	private static final String PNEUMATIC_DRILL = "pneumatic drill";
 
-
 	private Settlement settlement = null;
 
-	@Override
-    public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
+    @Override
+    public void setUp() {
+		super.setUp();
 
-        UnitManager unitManager = Simulation.instance().getUnitManager();
-
-		// Create test settlement.
-		settlement = new MockSettlement();
-		unitManager.addUnit(settlement);
+		settlement = buildSettlement();
     }
 
 
 	/*
-	 * Test method loading Equipment
+	 * Test method loading Equipment.
 	 */
 	public void testAmountInEquipmentLoading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
@@ -87,7 +76,7 @@ extends TestCase {
 	}
 
 	/*
-	 * Test method loading Equipment
+	 * Test method loading Equipment.
 	 */
 	public void testAmountLoading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
@@ -105,20 +94,19 @@ extends TestCase {
 	}
 
 	/*
-	 * Test method loading Equipment
+	 * Test method loading Equipment.
 	 */
 	public void testItemOverloading() throws Exception {
 		Part drillPart = (Part) ItemResourceUtil.findItemResource(PNEUMATIC_DRILL);
-
-
 		int maxDrills = 2;
+		
 		EquipmentInventory inv = new EquipmentInventory(settlement, drillPart.getMassPerItem() * 2);
 
 		int returned = inv.storeItemResource(drillPart.getID(), maxDrills);
 
 		assertEquals("No excess on capacity load", 0, returned);
-		assertEquals("Stored drills after load", maxDrills, inv.getItemResourceStored(drillPart.getID()));
-		assertEquals("Stored mass after drill load", maxDrills * drillPart.getMassPerItem(),
+		assertEquals("Stored Pneumatic Drills after load", maxDrills, inv.getItemResourceStored(drillPart.getID()));
+		assertEquals("Stored mass after Pneumatic Drill load", maxDrills * drillPart.getMassPerItem(),
 													inv.getStoredMass());
 
 		// Try and load one more and should fail
@@ -127,7 +115,7 @@ extends TestCase {
 
 
 	/*
-	 * Test method loading Equipment
+	 * Test method loading Equipment.
 	 */
 	public void testAmountOverloading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
@@ -141,7 +129,7 @@ extends TestCase {
 	}
 
 	/*
-	 * Test method loading Equipment
+	 * Test method loading Equipment.
 	 */
 	public void testAmountUnloading() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
@@ -163,7 +151,7 @@ extends TestCase {
 	}
 
 	/*
-	 * Test method loading Amount Resources
+	 * Test method loading Amount Resources.
 	 */
 	public void testMultiples() throws Exception {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);

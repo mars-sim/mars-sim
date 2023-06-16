@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReviewMissionPlan.java
- * @date 2022-09-28
+ * @date 2022-12-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * This class is a task for reviewing mission plans
+ * The task for reviewing mission plans.
  */
 public class ReviewMissionPlan extends Task {
 

@@ -43,6 +43,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 /**
@@ -55,10 +56,14 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	public static final String NAME = "Mission Tool";
 	public static final String ICON = "mission";
 	
-	static final int WIDTH = 850;
+	private static final int PADDING = 20;
 	static final int LEFT_PANEL_WIDTH = 220;
-	static final int MAP_BOX_HEIGHT = 610;
-	static final int HEIGHT = 800;
+	static final int WIDTH = LEFT_PANEL_WIDTH + NavigatorWindow.MAP_BOX_WIDTH;
+	
+	static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_WIDTH;
+	static final int TABLE_HEIGHT = 160;
+	static final int HEIGHT = MAP_BOX_HEIGHT + TABLE_HEIGHT;
+	
 	private static final String MISSIONNAME_PROP = "selected";
 
 	// Private members
@@ -105,8 +110,9 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 			
 		});
 
+		setSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setMaximumSize(new Dimension(WIDTH, HEIGHT));
+//		setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
@@ -140,7 +146,11 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
         });
 
 		JScrollPane scroller = new JScrollPane(missionTree);
-		scroller.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - 10));
+		
+		scroller.setSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
+		scroller.setMinimumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
+//		scroller.setMaximumSize(new Dimension(LEFT_PANEL_WIDTH, HEIGHT - PADDING));
+		
 		treePanel.add(scroller, BorderLayout.CENTER);
 
 		for(Mission m : missionMgr.getMissions()) {
@@ -157,8 +167,11 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);
-		navpointPane.setPreferredSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, MAP_BOX_HEIGHT));
-		navpointPane.setMaximumSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, MAP_BOX_HEIGHT));
+		
+		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+//		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+		
 		tabPane.add("Navigation", navpointPane);
 
 		JSplitPane spliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, tabPane);

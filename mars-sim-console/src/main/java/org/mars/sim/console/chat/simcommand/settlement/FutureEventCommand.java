@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.events.ScheduledEventManager.ScheduledEvent;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * Command to display settlement crop
- * This is a singleton.
+ * Command to display settlement future scheduled events.
+ * Notes: this is a singleton.
  */
 public class FutureEventCommand extends AbstractSettlementCommand {
 
@@ -33,7 +33,7 @@ public class FutureEventCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("When", 24, "Event");
 							
-		// Display each farm seperately
+		// Display each farm separately
 		for (ScheduledEvent event : settlement.getFutureManager().getEvents()) {			
 			response.appendTableRow(event.getWhen().getTrucatedDateTimeStamp(), event.getDescription());
 		}

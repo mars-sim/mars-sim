@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -74,11 +73,11 @@ public class Mind implements Serializable, Temporal {
 	
 	private static MissionManager missionManager;
 
-	static {
-		Simulation sim = Simulation.instance();
-		// Load the mission manager
-		missionManager = sim.getMissionManager();
-	}
+//	static {
+//		Simulation sim = Simulation.instance();
+//		// Load the mission manager
+//		missionManager = sim.getMissionManager();
+//	}
 
 	/**
 	 * Constructor 1.

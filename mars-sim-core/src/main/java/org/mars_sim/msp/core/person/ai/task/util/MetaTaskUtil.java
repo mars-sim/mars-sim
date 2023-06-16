@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @date 2022-08-01
+ * @date 2023-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -81,13 +82,17 @@ import org.mars_sim.msp.core.robot.ai.task.ChargeMeta;
  */
 public class MetaTaskUtil {
 
+	private static final String EVA = "EVA";
+	private static final String INSIDE = "Inside";
+	private static final String GARAGE = "Garage";
+	
 	private static List<FactoryMetaTask> dutyHourTasks = null;
 	private static List<FactoryMetaTask> nonDutyHourTasks = null;
 
 	private static List<FactoryMetaTask> personMetaTasks;
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
-	private static Map<String,MetaTask> nameToMetaTask;
+	private static Map<String,MetaTask> idToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 
 	/**
@@ -101,7 +106,7 @@ public class MetaTaskUtil {
 	 */
 	public static synchronized void initializeMetaTasks() {
 
-		if (nameToMetaTask != null) {
+		if (idToMetaTask != null) {
 			// Created by another thread during the wait
 			return;
 		}
@@ -169,9 +174,9 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new YogaMeta());
 		
 		// Build the name lookup for later
-		nameToMetaTask = new HashMap<>();
+		idToMetaTask = new HashMap<>();
 		for(MetaTask t : allMetaTasks) {
-			nameToMetaTask.put(t.getClass().getSimpleName().toLowerCase(), t);
+			idToMetaTask.put(t.getID(), t);
 		}
 
 		// Pick put settlement tasks
@@ -208,6 +213,15 @@ public class MetaTaskUtil {
 		tasks.addAll(metaPerScope.get(TaskScope.ANY_HOUR));
 		tasks.addAll(metaPerScope.get(TaskScope.NONWORK_HOUR));
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);
+	}
+
+	/**
+	 * Gets all the known MetaTasks.
+	 * 
+	 * @return 
+	 */
+	public static Collection<MetaTask> getAllMetaTasks() {
+		return idToMetaTask.values(); 
 	}
 
 	/**
@@ -248,24 +262,27 @@ public class MetaTaskUtil {
     }
 
 	/**
-	 * Converts a task name in String to Metatask
+	 * Converts a task name in String to Metatask.
 	 * 
 	 * @return meta tasks.
 	 */
 	public static MetaTask getMetaTask(String name) {
-		return nameToMetaTask.get(name.toLowerCase());
+		return idToMetaTask.get(name.toUpperCase());
 	}
 
 	/**
-	 * Get a MetaTask instance that is assooicated wth a Task class.
-	 * This method logic ia fragile and needs a better solution.
+	 * Gets a MetaTask instance that is associated with a Task class.
+	 * Note: this method logic is fragile and needs a better solution.
+	 * 
+	 * @param task
+	 * @return
 	 */
 	public static MetaTask getMetaTypeFromTask(Task task) {
 		String s = task.getClass().getSimpleName();
-		String ss = s.replace("EVA", "")
-				.replace("Inside", "")
-				.replace("Garage", "");
-		String metaTaskName = ss.trim() + "Meta";
+		String ss = s.replace(EVA, "")
+				.replace(INSIDE, "")
+				.replace(GARAGE, "");
+		String metaTaskName = ss.trim();
 	
 		return getMetaTask(metaTaskName);
 	}
@@ -275,7 +292,7 @@ public class MetaTaskUtil {
 	}
 
 	/**
-	 * Load any references that MetaTasks need
+	 * Loads any references that MetaTasks need.
 	 */
     static void initialiseInstances(Simulation sim) {
 		MetaTask.initialiseInstances(sim);

@@ -10,7 +10,6 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -129,7 +128,7 @@ public class EquipmentGood extends Good {
 		double quantity = 0;
     	double factor = 0;
         if (equipmentType == EquipmentType.EVA_SUIT) {
-    		mass = EVASuit.emptyMass;
+    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
     		quantity = settlement.getNumEVASuit();
     		
             // Need to increase the value for EVA

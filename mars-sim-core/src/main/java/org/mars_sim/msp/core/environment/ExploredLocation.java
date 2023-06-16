@@ -37,7 +37,6 @@ public class ExploredLocation implements Serializable {
 	private int numEstimationImprovement;
 	private double totalMass;
 	private double remainingMass;
-	private double averageDensity;
 
 	private Settlement settlement;
 	private Coordinates location;
@@ -55,7 +54,7 @@ public class ExploredLocation implements Serializable {
 	 *                                       from.
 	 */
 	ExploredLocation(Coordinates location, int estimationImprovement, Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
-		this.location = new Coordinates(location);
+		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
 		mined = false;

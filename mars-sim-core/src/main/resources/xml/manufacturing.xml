@@ -13,6 +13,9 @@
 	<!ELEMENT outputs (resource*, part*, equipment*, vehicle*)>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource name1 CDATA #IMPLIED>
+	<!ATTLIST resource name2 CDATA #IMPLIED>
+	<!ATTLIST resource name3 CDATA #IMPLIED>	
 	<!ATTLIST resource amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part name CDATA #REQUIRED>
@@ -637,66 +640,36 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make steel barrel" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make plastic barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<equipment name="barrel" number="6" />
-		</outputs>
-	</process>
-
-	<process name="Make polyethylene barrel" tech="1" skill="1" work-time="10" process-time="10"
-			power-required="0.1">
-		<inputs>
-			<resource name="polyethylene" amount="7.8" />
-		</inputs>
-		<outputs>
-			<equipment name="barrel" number="6" />
-		</outputs>
-	</process>
-
-	<process name="Make polypropylene barrel" tech="1" skill="1" work-time="10" process-time="10"
-			power-required="0.1">
-		<inputs>
-			<resource name="polypropylene" amount="7.8" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
 		</inputs>
 		<outputs>
 			<equipment name="barrel" number="6" />
 		</outputs>
 	</process>
 	
-	<process name="Make polypropylene rope" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make Polypropylene rope" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<resource name="polypropylene" amount="2" />
+			<resource name="Polypropylene" amount="2" />
 		</inputs>
 		<outputs>
 			<part name="rope" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="Make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
-			power-required=".1">
-		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<equipment name="specimen box" number="12" />
 		</outputs>
 	</process>
 
 	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
-			<resource name="polyethylene" amount="7.8" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
 		</inputs>
 		<outputs>
 			<equipment name="specimen box" number="12" />
 		</outputs>
 	</process>
-
+	
 	<!-- Produces 10kg steel canister. -->
 	<process name="Make steel canister" tech="1" skill="1" work-time="10" process-time="10"
 			 power-required=".1">
@@ -759,30 +732,10 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make plastic pipe" tech="1" skill="1" work-time="100" process-time="400"
 			power-required=".1">
 		<inputs>
-			<resource name="polyethylene" amount="10.0" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="plastic pipe" number="10" />
-		</outputs>
-	</process>
-
-	<process name="Make plastic bottle" tech="1" skill="1" work-time="100" process-time="100"
-			power-required=".1">
-		<inputs>
-			<resource name="polyethylene" amount="1.0" />
-		</inputs>
-		<outputs>
-			<part name="Plastic Bottle" number="10" />
-		</outputs>
-	</process>
-
-	<process name="Make clear glass bottle" tech="2" skill="1" work-time="100" process-time="100"
-			power-required=".2">
-		<inputs>
-			<resource name="sand" amount="3.0" />
-		</inputs>
-		<outputs>
-			<part name="Glass Bottle" number="11" />
 		</outputs>
 	</process>
 
@@ -828,6 +781,99 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Produce ethylene glycol" tech="2" skill="1" work-time="10" process-time="40"
+			power-required="0.05">
+		<description>
+			This is to produce ethylene glycol (CH2OH)2. Ethylene glycol is produced from ethylene 
+			(ethene), via the intermediate ethylene oxide. 
+			
+			Ethylene oxide reacts with water to produce ethylene glycol according to the 
+			chemical equation:
+
+				C2H4O + H2O → HO−CH2CH2−OH
+				44 g   18 g    62 g
+		</description>
+		<inputs>
+			<resource name="Ethylene" amount="4.4" />
+			<resource name="Water" amount="1.8" />
+		</inputs>
+		<outputs>
+			<resource name="Ethylene glycol" amount="6.2" />
+		</outputs>
+	</process>
+	
+	<process name="Produce polyester fiber" tech="2" skill="1" work-time="10" process-time="40"
+			power-required="0.05">
+		<description>
+			This is to produce polyester fiber.
+			https://www.britannica.com/science/Polyethylene-terephthalate
+			
+			Ethylene glycol + C10H10O4 -> Polyester fiber (PET) + 2H2O
+			     62 g          194 g              220 g          36 g
+		</description>
+		<inputs>
+			<resource name="Ethylene glycol" amount="6.2" />
+			<resource name="Dimethyl terephthalate" amount="19.4" />
+		</inputs>
+		<outputs>
+			<resource name="Polyester fiber" amount="22.0" />
+			<resource name="water" amount="3.6" />
+		</outputs>
+	</process>
+
+	<process name="Produce dimethyl terephthalate" tech="2" skill="1" work-time="10" process-time="40"
+			power-required="0.05">
+		<description>
+			This is to produce dimethyl terephthalate. Molar mass : 194.186 
+			Dimethyl terephthalate (DMT) is an organic compound with the formula C6H4(COOCH3)2
+			or C10H10O4;
+			
+			It is the diester formed from terephthalic acid and methanol.
+			It is a white solid that melts to give a distillable colourless liquid.
+			
+			DMT can also be made by a different route, namely direct esterification of 
+			terephthalic acid with methanol. The dimethyl terephthalate that is formed is 
+			then purified by distillation. Even terephthalic acid of low purity may be used 
+			in this method.
+
+			C8H6O4 + 2CH3OH → C10H10O4 + 2 H2O
+			 16.6 g     64 g     194 g     36 g
+			in the presence of o-xylene at 250–300 °C.
+		</description>
+		<inputs>
+			<resource name="Methanol" amount="6.4" />
+			<resource name="Terephthalic acid" amount="1.66" />
+		</inputs>
+		<outputs>
+			<resource name="dimethyl terephthalate" amount="19.4" />
+			<resource name="water" amount="3.6" />			
+		</outputs>
+	</process>
+
+	<process name="Produce terephthalic acid" tech="2" skill="1" work-time="10" process-time="40"
+			power-required="0.05">
+		<description>
+			This is to produce terephthalic acid. C8H6O4 Molar mass : 166
+			In the Amoco process, which is widely adopted worldwide, terephthalic acid 
+			is produced by catalytic oxidation of p-Xylene (C8H10):
+			
+			C8H10 + 3O2  --> C8H6O4 + 2H2O
+			106 g    48 g    166 g   36 g
+			
+			The process uses a cobalt–manganese–bromide catalyst. The bromide source can 
+			be sodium bromide, hydrogen bromide or tetrabromoethane. 
+		</description>
+		<inputs>
+			<resource name="carbon" amount="9.6" />
+			<resource name="hydrogen" amount="5.0" />
+			<resource name="oxygen" amount="4.8" />
+		</inputs>
+		<outputs>
+			<resource name="Terephthalic acid" amount="16.6" />
+			<resource name="water" amount="3.6" />
+		</outputs>
+	</process>
+
 	<process name="Produce polyester resin" tech="2" skill="1" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
@@ -863,7 +909,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="polyester resin" amount="1.0" />
-			<resource name="polyethylene" amount="1.0" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="1.0" />
 		</inputs>
 		<outputs>
 			<resource name="mylar" amount="2.0" />
@@ -886,16 +932,26 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Epoxy uses bisphenol-a (C15H16O2) -->
-	<process name="Make Plastic bottle" tech="3" skill="1" work-time="20" process-time="300"
-			power-required="0.1">
+	<process name="Make plastic bottle" tech="1" skill="1" work-time="20" process-time="100"
+			power-required=".1">
 		<inputs>
-			<resource name="bisphenol-a" amount="1" />
+			<resource name="Polyethylene" name1="Polypropylene" name2="bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>
-			<part name="Plastic Bottle" number="5" />
+			<part name="Plastic Bottle" number="10" />
 		</outputs>
 	</process>
 
+	<process name="Make clear glass bottle" tech="2" skill="1" work-time="20" process-time="100"
+			power-required=".2">
+		<inputs>
+			<resource name="sand" amount="3.0" />
+		</inputs>
+		<outputs>
+			<part name="Glass Bottle" number="11" />
+		</outputs>
+	</process>
+	
 	<!-- Using polyester resin as a lubricant. -->
 	<process name="Make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
@@ -912,7 +968,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<description>
 		</description>
 		<inputs>
-			<resource name="polypropylene" amount="1" />
+			<resource name="Polypropylene" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="coolant bottle" number="5" />
@@ -990,7 +1046,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
-	<process name="maufacture bags" tech="1" skill="1" work-time="10" process-time="5"
+	<process name="manufacture bag" tech="1" skill="1" work-time="10" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="5" />
@@ -1002,7 +1058,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
-	<process name="maufacture large bags" tech="1" skill="1" work-time="20" process-time="5"
+	<process name="manufacture large bag" tech="1" skill="1" work-time="20" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="2" />
@@ -1013,7 +1069,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="maufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
+	<process name="manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="aluminum" amount="0.8" />			
@@ -1038,7 +1094,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="cane fiber" amount="0.2" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.2" />
 			<resource name="polyurethane" amount="0.1" />
 			<resource name="polyester resin" amount="1.0" />
 		</inputs>
@@ -1050,8 +1106,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
-			<resource name="cane fiber" amount="0.2" />
-			<resource name="polyethylene" amount="2.0" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.2" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="2.0" />
 			<part name="plastic tubing" number="2" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="10" />
@@ -1076,8 +1132,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make pressure suit" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
-			<resource name="polyethylene" amount="0.2" />
-			<resource name="cane fiber" amount="0.3" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="0.2" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.3" />
 			<resource name="aluminized mylar" amount="1.0" />
 			<resource name="polyester resin" amount="0.5" />
 		</inputs>
@@ -1089,7 +1145,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make coveralls" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="cane fiber" amount="0.2" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.2" />
 			<resource name="polyurethane" amount="0.1" />
 			<resource name="aluminized mylar" amount="1.0" />			
 			<part name="fiberglass cloth" number="4" />
@@ -1102,7 +1158,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva gloves" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="cane fiber" amount="0.1" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.1" />
 			<resource name="polyurethane" amount="0.05" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
@@ -1115,7 +1171,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva boots" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="cane fiber" amount="0.2" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.2" />
 			<resource name="polyurethane" amount="0.1" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="2" />
@@ -1129,7 +1185,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva pads" tech="3" skill="3" work-time="50" process-time="100"
 			power-required=".7">
 		<inputs>
-			<resource name="cane fiber" amount="0.1" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.1" />
 			<resource name="polyurethane" amount="0.05" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass" number="1" />
@@ -1143,8 +1199,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
-			<resource name="polyethylene" amount="5.0" />
-			<resource name="cane fiber" amount="0.5" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="5.0" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.5" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="electrical wire" number="2" />
@@ -1197,6 +1253,7 @@ Note: 1 kg of H2 is 14.13 liter
 			
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="10" />
+			<part name="biosensor" number="6" />
 		</inputs>
 		<outputs>
 			<equipment name="eva suit" number="1" />
@@ -1206,7 +1263,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make work gloves" tech="1" skill="1" work-time="50" process-time="100"
 			power-required=".05">
 		<inputs>
-			<resource name="cane fiber" amount="0.1" />
+			<resource name="cane fiber" name1="polyester fiber" amount="0.1" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1214,9 +1271,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="work gloves" number="2" />
 		</outputs>
 	</process>
-
+	
 	<!-- Small wheels are made with steel sheets and steel wires. -->
-	<process name="Make small wheels" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make small wheels" tech="2" skill="2" work-time="50" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -1432,7 +1489,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture rover control panel" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
-			<resource name="polyethylene" amount="3.0" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="3.0" />
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="polystyrene" amount="10.0" />			
 			<resource name="styrene" amount="2.0" />
@@ -1556,7 +1613,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture utility vehicle control panel" tech="3" skill="3" work-time="500" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="polyethylene" amount=".5" />
+			<resource name="Polyethylene" name1="Polypropylene" amount=".5" />
 			<resource name="polyester resin" amount="2.0" />
 			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
@@ -1616,7 +1673,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
-			<part name="propeller" number="4" />			
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
 		</inputs>
 		<outputs>
 			<vehicle name="delivery drone" number="1" />
@@ -1651,7 +1709,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />			
+			<part name="oxygen pump" number="1" />	
+			<part name="CMOS sensor" number="4" />						
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />
@@ -1674,7 +1733,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="3" />			
-			<part name="methane fuel cell stack" number="4" />
+			<part name="methanol fuel cell stack" number="4" />
 			<part name="battery module" number="2" />
 			<part name="gas tank" number="2" />	
 			<part name="fuel tank" number="2" />
@@ -1692,6 +1751,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="3" />
 			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />
+			<part name="CMOS sensor" number="6" />	
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
@@ -1715,13 +1775,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="4" />			
-			<part name="methane fuel cell stack" number="5" />
+			<part name="methanol fuel cell stack" number="5" />
 			<part name="battery module" number="4" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank" number="4" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="4" />
-			<part name="oxygen pump" number="4" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -1733,6 +1793,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="8" />
+			<part name="CMOS sensor" number="10" />				
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
@@ -1755,13 +1816,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="motor - large" number="5" />			
-			<part name="methane fuel cell stack" number="6" />
+			<part name="methanol fuel cell stack" number="6" />
 			<part name="battery module" number="5" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank" number="4" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="4" />
-			<part name="oxygen pump" number="3" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -1773,6 +1834,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="lubricant bottle" number="5" />
 			<part name="rover wheel" number="18" />
 			<part name="optical cable" number="10" />
+			<part name="CMOS sensor" number="8" />				
 		</inputs>
 		<outputs>
 			<vehicle name="cargo rover" number="1" />
@@ -2176,7 +2238,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount="2" />
 			<resource name="lithium" amount=".4" />			
 			<resource name="potash lye" amount="10.0" />
-			<resource name="polyethylene" amount="5.0" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="5.0" />
 			<part name="iron sheet" number="2" />
 			<part name="logic board" number="2" />
 			<part name="wire connector" number="2" />
@@ -2196,7 +2258,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="nickel" amount="3.0" />
 			<resource name="potash lye" amount="7.0" />
-			<resource name="polyethylene" amount="4.0" />
+			<resource name="Polyethylene" name1="Polypropylene" amount="4.0" />
 			<part name="iron sheet" number="1" />
 			<part name="logic board" number="1" />
 			<part name="wire connector" number="6" />
@@ -2548,6 +2610,32 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+
+	<process name="Make biosensor" tech="3" skill="3" work-time="80" process-time="20"
+			power-required=".01">
+		<inputs>
+			<resource name="cane fiber" name1="polyester fiber" amount="0.1" />
+			<part name="CMOS sensor" number="1" />
+			<part name="logic board" number="1" />
+			<part name="electrical wire" number="3" />			
+		</inputs>
+		<outputs>
+			<part name="biosensor" number="1" />
+		</outputs>
+	</process>
+	
+	
+	<process name="Make CMOS sensor" tech="3" skill="3" work-time="80" process-time="200"
+			power-required=".01">
+		<inputs>
+			<part name="semiconductor wafer" number="1" />
+			<part name="electrical wire" number="1" />			
+		</inputs>
+		<outputs>
+			<part name="CMOS sensor" number="20" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing semiconductor wafer. -->
 	<process name="Fabricate semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
 			power-required="1.0">
@@ -2793,7 +2881,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture flexible hose" tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
-			<resource name="polypropylene" amount=".5" />
+			<resource name="Polypropylene" amount=".5" />
 		</inputs>
 		<outputs>
 			<part name="flexible hose" number="5" />
@@ -3155,11 +3243,35 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="suit heating unit" number="1" />
 		<part-salvage name="electrical wire" number="3" />
 		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="2" work-time="600">
+		<part-salvage name="aerogel tile" number="2" />				
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="vehicle frame - small" number="1" />
+		<part-salvage name="aluminum sheet" number="1" />
+		<part-salvage name="rover chassis panel" number="1" />
+		<part-salvage name="motor - small" number="4" />
+		<part-salvage name="methanol fuel cell stack" number="2" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="plastic tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="fuel tank" number="1" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
-	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
+	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="2" work-time="800">
 		<part-salvage name="vehicle frame - small" number="1" />
 		<part-salvage name="motor - small" number="4" />
 		<part-salvage name="battery module" number="1" />
@@ -3174,10 +3286,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="1" />
 		<part-salvage name="aluminum scrap" number="2" />
 		<part-salvage name="optical cable" number="3" />
+		<part-salvage name="CMOS sensor" number="4" />			
 	</salvage>
 
 	<!-- Salvage process for an explorer rover. -->
-	<salvage item-name="explorer rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3186,13 +3299,13 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="motor - large" number="3" />
 		<part-salvage name="battery module" number="2" />
-		<part-salvage name="methane fuel cell stack" number="4" />
+		<part-salvage name="methanol fuel cell stack" number="4" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="2" />
+		<part-salvage name="gas tank" number="2" />
+		<part-salvage name="water tank" number="2" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />
@@ -3206,25 +3319,26 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="6" />			
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
-	<salvage item-name="transport rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="transport rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="methane fuel cell stack" number="5" />
+		<part-salvage name="methanol fuel cell stack" number="5" />
 		<part-salvage name="motor - large" number="4" />
-		<part-salvage name="battery module" number="3" />
+		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="gas tank" number="4" />
+		<part-salvage name="water tank" number="4" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />
@@ -3238,10 +3352,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="5" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="10" />		
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
-	<salvage item-name="cargo rover" type="vehicle" tech="3" skill="4" work-time="1000">
+	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="2" work-time="1000">
 		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3250,13 +3365,13 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="methane fuel cell stack" number="6" />
 		<part-salvage name="motor - large" number="5" />
-		<part-salvage name="battery module" number="4" />
+		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="gas tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="gas tank" number="4" />
+		<part-salvage name="water tank" number="4" />
+		<part-salvage name="fuel pump" number="2" />
+		<part-salvage name="oxygen pump" number="2" />
 		<part-salvage name="satellite dish" number="1" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="electrical wire" number="20" />
@@ -3270,22 +3385,23 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />
+		<part-salvage name="CMOS sensor" number="8" />		
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->
-	<salvage item-name="barrel" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="barrel" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="steel sheet" number="1" />
 	</salvage>
 
 	<!-- Salvage process for a gas canister. -->
-	<salvage item-name="gas canister" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="gas canister" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="steel canister" number="1" />
 		<part-salvage name="valve" number="2" />
 		<part-salvage name="gasket" number="4" />
 	</salvage>
 
 	<!-- Salvage process for a large bag. -->
-	<salvage item-name="large bag" type="equipment" tech="2" skill="1" work-time="100">
+	<salvage item-name="large bag" type="equipment" tech="1" skill="1" work-time="100">
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
 	</salvage>

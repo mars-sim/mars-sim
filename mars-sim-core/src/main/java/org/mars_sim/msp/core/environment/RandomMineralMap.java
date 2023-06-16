@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RandomMineralMap.java
- * @date 2021-09-20
+ * @date 2023-06-14
  * @author Scott Davis
  */
 
@@ -46,8 +46,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final int W = 300;
 	private static final int H = 150;
 	
-	private static final int NUM_REGIONS = 3300;
-	private static final int NUM_CONCONCENTRATIONS = 2500;
+	private static final int NUM_REGIONS = 1500;
+	private static final int NUM_CONCONCENTRATIONS = 2000;
 	
 	private static final float REGION_FACTOR = 5;
 	private static final float NON_REGION_FACTOR = 100F;
@@ -95,11 +95,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		
 		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
-		if (minerals == null)
-			// This happens during maven tests 
-			// determineMineralConcentrations() is not needed for any maven tests.
-			return;
-		
 		Collections.shuffle(minerals);
 		int size = minerals.size(); 
 		int remainingConc = 100;
@@ -122,12 +117,13 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						regionSet.addAll(sedimentaryRegionSet);
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
-//				System.out.println("regionArray: " + regionArray.length);
+				// Will have one region array for each of 10 types of minerals System.out.println("regionArray: " + regionArray.length);
 				
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
 					int concentrationNumber = Math
 							.round((float) regionArray.length / REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
+					// Test the generation of concentrationNumber System.out.println("1. concentrationNumber: " + concentrationNumber); // between 34-684 for diff minerals
 					for (int x = 0; x < concentrationNumber; x++) {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
@@ -149,6 +145,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				else {
 					// If no locales, randomly distribute mineral on surface.
 					int concentrationNumber = Math.round(NON_REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
+					// Test the generation of concentrationNumber System.out.println("2. concentrationNumber: " + concentrationNumber)
 					for (int x = 0; x < concentrationNumber; x++) {
 						// Get a rand lat
 						double phi = Coordinates.getRandomLatitude();
@@ -370,7 +367,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				Direction direction = startingLocation.getDirectionToPoint(concentration.getLocation());
 				result = startingLocation.getNewLocation(direction, range);
 			} else
-				result = new Coordinates(concentration.getLocation());
+				result = concentration.getLocation();
 		}
 
 		return result;

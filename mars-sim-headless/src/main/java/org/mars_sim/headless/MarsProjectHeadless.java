@@ -78,7 +78,8 @@ public class MarsProjectHeadless {
 		int serverPort = 18080;
 
 		SimulationBuilder builder = new SimulationBuilder();
-
+		builder.printJavaVersion();
+		
 		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);

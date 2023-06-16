@@ -39,7 +39,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		private boolean eva;
 
         public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Maintain " + (eva ? "via EVA " : "") + target.getName(), score);
+            super(owner, "Maintain " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
             this.target = target;
 			this.eva = eva;
         }

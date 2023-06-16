@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @date 2021-12-15
+ * @date 2023-06-07
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.core.structure.construction;
 
 import java.util.ArrayList;
@@ -13,11 +14,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.BoundedObject;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -36,6 +40,9 @@ implements  LocalBoundedObject {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
+	
     // Construction site events.
     public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
     public static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
@@ -47,7 +54,12 @@ implements  LocalBoundedObject {
     public static final String REMOVE_BUILDING_EVENT = "removing old building";
 
     // Data members
-
+    private boolean undergoingConstruction;
+    private boolean undergoingSalvage;
+    private boolean manual;
+    private boolean isSitePicked;
+    private boolean isMousePickedUp;
+    
 	/** construction skill for this site. */
     private int constructionSkill;
 
@@ -55,12 +67,6 @@ implements  LocalBoundedObject {
     private double length;
     private LocalPosition position;
     private double facing;
-
-    private boolean undergoingConstruction;
-    private boolean undergoingSalvage;
-    private boolean manual, isSitePicked;
-
-    private boolean isMousePickedUp;
 
     private transient List<ConstructionListener> listeners;
 
@@ -74,12 +80,14 @@ implements  LocalBoundedObject {
     private Settlement settlement;
     private ConstructionStageInfo stageInfo;
 
+    private MissionPhase phase;
+    
     /**
-     * Constructor
+     * Constructor.
      */
     public ConstructionSite(Settlement settlement) {
     	super("A Construction Site", settlement.getCoordinates());
-
+    	
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
 
@@ -145,6 +153,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if all construction is complete at the site.
+     * 
      * @return true if construction is complete.
      */
     public boolean isAllConstructionComplete() {
@@ -154,6 +163,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if all salvage is complete at the site.
+     * 
      * @return true if salvage is complete.
      */
     public boolean isAllSalvageComplete() {
@@ -166,6 +176,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if site is currently undergoing construction.
+     * 
      * @return true if undergoing construction.
      */
     public boolean isUndergoingConstruction() {
@@ -174,6 +185,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if site is currently undergoing salvage.
+     * 
      * @return true if undergoing salvage.
      */
     public boolean isUndergoingSalvage() {
@@ -182,6 +194,7 @@ implements  LocalBoundedObject {
 
     /**
      * Sets if site is currently undergoing construction.
+     * 
      * @param undergoingConstruction true if undergoing construction.
      */
     public void setUndergoingConstruction(boolean undergoingConstruction) {
@@ -192,6 +205,7 @@ implements  LocalBoundedObject {
 
     /**
      * Sets if site is currently undergoing salvage.
+     * 
      * @param undergoingSalvage true if undergoing salvage.
      */
     public void setUndergoingSalvage(boolean undergoingSalvage) {
@@ -202,6 +216,7 @@ implements  LocalBoundedObject {
 
     /**
      * Gets the current construction stage at the site.
+     * 
      * @return construction stage.
      */
     public ConstructionStage getCurrentConstructionStage() {
@@ -216,6 +231,7 @@ implements  LocalBoundedObject {
 
     /**
      * Gets the next construction stage type.
+     * 
      * @return next construction stage type or null if none.
      */
     public String getNextStageType() {
@@ -231,6 +247,7 @@ implements  LocalBoundedObject {
 
     /**
      * Adds a new construction stage to the site.
+     * 
      * @param stage the new construction stage.
      * @throws Exception if error adding construction stage.
      */
@@ -260,6 +277,7 @@ implements  LocalBoundedObject {
 
     /**
      * Updates the width and length dimensions to a construction stage.
+     * 
      * @param stage the construction stage.
      */
     private void updateDimensions(ConstructionStage stage) {
@@ -294,7 +312,8 @@ implements  LocalBoundedObject {
     }
 
     /**
-     * Remove a salvaged stage from the construction site.
+     * Removes a salvaged stage from the construction site.
+     * 
      * @param stage the salvaged construction stage.
      * @throws Exception if error removing the stage.
      */
@@ -316,6 +335,7 @@ implements  LocalBoundedObject {
 
     /**
      * Removes the current salvaged construction stage.
+     * 
      * @throws Exception if error removing salvaged construction stage.
      */
     public void removeSalvagedStage() {
@@ -368,6 +388,7 @@ implements  LocalBoundedObject {
 
     /**
      * Gets the building name the site will construct.
+     * 
      * @return building name or null if undetermined.
      */
     public String getBuildingName() {
@@ -377,6 +398,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if the site's current stage is unfinished.
+     * 
      * @return true if stage unfinished.
      */
     public boolean hasUnfinishedStage() {
@@ -386,6 +408,7 @@ implements  LocalBoundedObject {
 
     /**
      * Checks if this site contains a given stage.
+     * 
      * @param stage the stage info.
      * @return true if contains stage.
      */
@@ -401,7 +424,8 @@ implements  LocalBoundedObject {
     }
 
     /**
-     * Adds a listener
+     * Adds a listener.
+     * 
      * @param newListener the listener to add.
      */
     public final void addConstructionListener(ConstructionListener newListener) {
@@ -411,7 +435,8 @@ implements  LocalBoundedObject {
     }
 
     /**
-     * Removes a listener
+     * Removes a listener.
+     * 
      * @param oldListener the listener to remove.
      */
     public final void removeConstructionListener(ConstructionListener oldListener) {
@@ -421,7 +446,8 @@ implements  LocalBoundedObject {
     }
 
     /**
-     * Fire a construction update event.
+     * Fires a construction update event.
+     * 
      * @param updateType the update type.
      */
     final void fireConstructionUpdate(String updateType) {
@@ -429,7 +455,8 @@ implements  LocalBoundedObject {
     }
 
     /**
-     * Fire a construction update event.
+     * Fires a construction update event.
+     * 
      * @param updateType the update type.
      * @param target the event target or null if none.
      */
@@ -443,8 +470,15 @@ implements  LocalBoundedObject {
         }
     }
 
-	public void relocate() {
+    /**
+     * Relocates the construction site by changing its coordinates.
+     */
+	public void relocateSite() {
+		Coordinates coord = getCoordinates();
 		BuildingConstructionMission.positionNewSite(this);
+		logger.info(this, "Manually relocated by player from " 
+				+ coord.getFormattedString() + " to "
+				+ getCoordinates().getFormattedString());
 	}
 
     public ConstructionManager getConstructionManager() {
@@ -461,7 +495,7 @@ implements  LocalBoundedObject {
 	}
 
 	/**
-	 * Gets the settlement this unit is with
+	 * Gets the settlement this unit is with.
 	 *
 	 * @return the settlement
 	 */
@@ -510,7 +544,7 @@ implements  LocalBoundedObject {
 	}
 
 	// for triggering the alertDialog()
-	public boolean getSitePicked() {
+	public boolean isSitePicked() {
 		return isSitePicked;
 	}
 
@@ -532,7 +566,7 @@ implements  LocalBoundedObject {
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
@@ -557,5 +591,28 @@ implements  LocalBoundedObject {
 		}
 
 		return result.toString();
+	}
+	
+	public void setPhase(MissionPhase phase) {
+		this.phase = phase;
+	}
+	
+	public MissionPhase getPhase() {
+		return phase;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		position = null;
+	    members = null;
+	    vehicles = null;
+	    foundationStage = null;
+	    frameStage = null;
+	    buildingStage = null;
+	    constructionManager = null;
+	    settlement = null;
+	    stageInfo = null;
 	}
 }

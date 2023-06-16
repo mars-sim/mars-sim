@@ -345,8 +345,11 @@ public class SettlementTransparentPanel extends JComponent {
 	    roundPane.setPreferredSize(new Dimension(260, 185));
 	    sunPane.add(roundPane, BorderLayout.EAST);
   		
-	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
-
+	    double time[] = {0, 0, 0};
+	    if (mapPanel.getSettlement() != null) {
+	    	time = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
+	    }
+	    
 	    projectSunriseLabel = new JLabel(PROJECTED_SUNRISE 
 	    		+ Math.round(time[0] *10.0)/10.0 + MSOL);
 	    

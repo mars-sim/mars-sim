@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * Mission.java
- * @date 2022-08-10
+ * AbstractMission.java
+ * @date 2023-06-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -54,7 +54,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**
- * The Mission class represents a large multi-person task There is at most one
+ * The AbstractMission class represents a large multi-person task There is at most one
  * instance of a mission per person. A Mission may have one or more people
  * associated with it.
  */
@@ -492,7 +492,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @throws MissionException if newPhase is not in the mission's collection of
 	 *                          phases.
 	 */
-	protected final void setPhase(MissionPhase newPhase, String subjectOfPhase) {
+	protected void setPhase(MissionPhase newPhase, String subjectOfPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		}
@@ -697,12 +697,24 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 	}
 
+
+	/**
+	 * An internal problem has happened to end the mission.
+	 * 
+	 * @param source
+	 * @param reason
+	 */
+	protected void endMissionProblem(Loggable source, String reason) {
+		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
+		logger.severe(source, getName() + ": " + status.getName());
+		endMission(status);
+	}
+	
 	/**
 	 * Finalizes the mission. Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
 	 *
 	 * @param endStatus A status to add for the end of Mission
-	 *
 	 */
 	protected void endMission(MissionStatus endStatus) {
 		if (done) {
@@ -715,7 +727,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			missionStatus.add(endStatus);
 		}
 
-		// If no mission flags have been added then it was accomplised
+		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase;
 		if (missionStatus.isEmpty() && !aborted) {
@@ -763,6 +775,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If task is effort-driven and person too ill, do not assign task.
 
+		Task currentTask = person.getMind().getTaskManager().getTask();
+		
+		if (currentTask != null && currentTask.getName().equals(task.getName()))
+			// If the person has been doing this task, 
+			// then there is no need of adding it.
+			return true;
+		
         if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().addTask(task);
 		}
@@ -788,6 +807,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (!robot.getSystemCondition().isBatteryAbove(5))
 			return false;
 
+		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
+		
+		if (currentTask != null && currentTask.getName().equals(task.getName()))
+			// If the robot has been doing this task, 
+			// then there is no need of adding it.
+			return true;
+		
 		return robot.getBotMind().getBotTaskManager().addTask(task);
 	}
 
@@ -1260,15 +1286,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		fullMissionDesignation = buffer.toString();
 
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
-	}
-
-	/**
-	 * An internal problem has happened so end the mission.
-	 */
-	protected void endMissionProblem(Loggable source, String reason) {
-		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
-		logger.severe(source, getName() + ": " + status.getName());
-		endMission(status);
 	}
 
 	@Override

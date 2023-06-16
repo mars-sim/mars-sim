@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Drone.java
- * @date 2021-10-16
+ * @date 2023-06-05
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.vehicle;
@@ -95,16 +95,6 @@ public class Drone extends Flyer {
 
 
 		return true;
-	}
-
-	/**
-	 * Gets the resource type id that this vehicle uses as fuel
-	 *
-	 * @return resource type id
-	 */
-	@Override
-	public int getFuelType() {
-		return METHANOL_ID;
 	}
 
 	/**

@@ -96,8 +96,8 @@ class AmountResourceGood extends Good {
 	private static final double SOIL_VALUE_MODIFIER = .05;
 	private static final double SAND_VALUE_MODIFIER = .03;
 	private static final double ORES_VALUE_MODIFIER = .05;
-	private static final double CONCRETE_VALUE_MODIFIER = .5;
-	private static final double CEMENT_VALUE_MODIFIER = 8;
+	private static final double CONCRETE_VALUE_MODIFIER = .7;
+	private static final double CEMENT_VALUE_MODIFIER = 2;
 	private static final double MINERAL_VALUE_MODIFIER = .02;
 	private static final double ROCK_VALUE_MODIFIER = .02;
 	private static final double METEORITE_MODIFIER = 100;
@@ -129,7 +129,7 @@ class AmountResourceGood extends Good {
 	private static final double INSECT_FACTOR = .075;
 	private static final double OIL_FACTOR = .05;
 	
-	private static final double REGOLITH_TYPE_DEMAND_FACTOR = .1;
+	private static final double REGOLITH_TYPE_DEMAND_FACTOR = 1.2;
 	private static final double REGOLITH_DEMAND_FACTOR = .1;
 	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
 	private static final double REGOLITH_DEMAND_FACTOR_2 = .15;
@@ -167,7 +167,7 @@ class AmountResourceGood extends Good {
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
+	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 3000; 
@@ -427,12 +427,12 @@ class AmountResourceGood extends Good {
 					+ .3 * trade);
 		}
 		else {
-			// Intentionally loses a tiny percentage (e.g. 0.0004) of its value
+			// Intentionally loses a tiny percentage (e.g. 0.004) of its value
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					  .9990 * previousDemand 
-					+ .0004 * projected 
-					+ .0002 * trade); 
+					  .990 * previousDemand 
+					+ .004 * projected 
+					+ .002 * trade); 
 		}
 
 		// Save the goods demand
@@ -676,7 +676,7 @@ class AmountResourceGood extends Good {
 	 */
 	private static List<ResourceProcess> getResourceProcesses(Settlement settlement) {
 		List<ResourceProcess> processes = new ArrayList<>();
-		for(Building building : settlement.getBuildingManager().getBuildings()) {
+		for(Building building : settlement.getBuildingManager().getBuildingSet()) {
 			if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
 				ResourceProcessing processing = building.getResourceProcessing();
 				processes.addAll(processing.getProcesses());
@@ -957,17 +957,23 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceConstructionSiteDemand(Settlement settlement) {
 		double demand = 0D;
+		double amount = 0D;
 		int resource = getID();
 
 		// Add demand for resource required as remaining construction material on
 		// construction sites.
-		for(ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
+		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
 			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getRemainingResources().containsKey(resource)) {
 					double requiredAmount = stage.getRemainingResources().get(resource);
+					amount += requiredAmount;
 					demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
+				
+				logger.info(settlement, site, 20_000L, ResourceUtil.findAmountResourceName(resource) + " needs " 
+						+ Math.round(amount * 10.0)/10.0
+						+ " for constructions.  Raising demand to " + Math.round(demand * 10.0)/10.0);
 			}
 		}
 

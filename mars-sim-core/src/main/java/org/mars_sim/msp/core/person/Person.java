@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
-import java.util.Iterator;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -96,8 +96,12 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
+	
 	/** The maximum number of sols for storing stats. */
 	public static final int MAX_NUM_SOLS = 7;
+	/** The standard hand carrying capacity for food in a person. */
+	public static final int CARRYING_CAPACITY_FOOD = 1;
+	
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 
@@ -154,7 +158,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private Integer buriedSettlement = Integer.valueOf(-1);
 
 	/** The eating speed of the person [kg/millisol]. */
-	private double eatingSpeed = .1 + RandomUtil.getRandomDouble(-.05, .05);
+	private double eatingSpeed = .5 + RandomUtil.getRandomDouble(-.05, .05);
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -309,6 +313,16 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public void initializeForMaven() {
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+		// Create favorites
+		favorite = new Favorite(this);
+		// Create preferences
+		preference = new Preference(this);
+		
+		setupChromosomeMap();
+
+		eqmInventory.addCargoCapacity(carryingCapacity);
+		
+		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
 	}
 	
 	/**
@@ -350,6 +364,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+		
+//		eqmInventory.addCargoCapacity(carryingCapacity);
+		
+		eqmInventory.setResourceCapacity(ResourceUtil.foodID, .6);
 	}
 
 	/**
@@ -371,15 +389,15 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			setupHeight();
 			// Set up Weight
 			setupWeight();
-			// Set up personality traits: id 40 - 59
-			setupAttributeTrait();
+			// Set up carrying capacity and personality traits: id 40 - 59
+			setupCarryingCapAttributeTrait();
 		}
 	}
 
 	/**
-	 * Computes a person's attributes and its chromosome.
+	 * Computes a person's carrying capacity and attributes and its chromosome.
 	 */
-	private void setupAttributeTrait() {
+	private void setupCarryingCapAttributeTrait() {
 		// Note: set up a set of genes that was passed onto this person
 		// from two hypothetical parents
 		int id = 40;
@@ -426,7 +444,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Set inventory total mass capacity based on the person's weight and strength.
 		carryingCapacity = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
-
+		
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
 
 		Gene trait1G = new Gene(this, id, "Trait 1", true, dominant, "Introvert", score);
@@ -746,7 +764,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
+		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
 		Unit c = getContainerUnit();
@@ -1240,25 +1258,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		scientificAchievement.put(science, achievementCredit);
 	}
 
-	/**
-	 * Checks if one of the adjacent buildings has a certain function type.
-	 *
-	 * @param type
-	 * @return
-	 */
-	 public boolean isAdjacentBuilding(FunctionType type) {
-	 	Settlement s = getSettlement();
-	 	if (s != null) {
-	 		Building b = getBuildingLocation();
-
-	 		List<Building> list = s.createAdjacentBuildings(b);
-	 		for (Building bb : list) {
-	 			if (bb.hasFunction(type))
-	 				return true;
-	 		}
-	 	}
-	 	return false;
-	 }
 
 	/**
 	 * Computes the building the person is currently located at.
@@ -1699,6 +1698,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return eqmInventory.getEquipmentSet();
 	}
 
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
+	}
+	
 	/**
 	 * Finds all of the containers (excluding EVA suit).
 	 *
@@ -1870,13 +1873,34 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Gets all stored amount resources.
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return eqmInventory.getAllAmountResourceStored(resource);
+	}
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory.
 	 *
 	 * @return all stored amount resources.
 	 */
 	@Override
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
+	}
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return eqmInventory.getAllAmountResourceIDs();
 	}
 
 	/**
@@ -1978,7 +2002,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -2036,7 +2060,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -2050,7 +2074,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
@@ -2083,7 +2107,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (ut == UnitType.PLANET) {
+		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
 		else if (ut == UnitType.BUILDING) {
@@ -2109,7 +2133,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 					logger.warning(this + "Not possible to be stored into " + cu + ".");
 				}
 			}
-			else if (destination.getUnitType() == UnitType.PLANET) {
+			else if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addPerson(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {

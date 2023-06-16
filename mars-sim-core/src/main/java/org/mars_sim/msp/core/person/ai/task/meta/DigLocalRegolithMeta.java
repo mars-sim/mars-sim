@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @date 2022-06-24
+ * @date 2023-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -20,6 +20,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalRegolithMeta extends DigLocalMeta {
     
+	// can add back private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName())
+	
 	private static final int THRESHOLD_AMOUNT = 50;
 	
     /** Task name */
@@ -42,7 +44,8 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	}
     	
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-    	if (settlement.getRegolithCollectionRate() <= 0D) {
+    	double rate = settlement.getRegolithCollectionRate();
+    	if (rate <= 0D) {
     		return 0D;
     	}
     	
@@ -51,7 +54,12 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         	return 0;
         }
         
-    	return getProbability(ResourceUtil.regolithID, settlement, 
-    			person, settlement.getRegolithProbabilityValue());
+    	double result = getProbability(ResourceUtil.regolithID, settlement, 
+    			person, rate * settlement.getRegolithProbabilityValue());
+    	
+//    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
+//    			+ "  Final regolith: " + Math.round(result* 100.0)/100.0);
+        
+        return result;
     }
 }

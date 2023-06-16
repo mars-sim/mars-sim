@@ -94,7 +94,7 @@ public abstract class DataLogger<T> implements Serializable {
 		}
 		return results;
 	}
-
+	
 	/**
 	 * Gets the today's data value in double.
 	 * 

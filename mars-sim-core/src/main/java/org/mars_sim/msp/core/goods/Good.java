@@ -452,7 +452,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
 						// into new building.
-						Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+						Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
 						while (i.hasNext()) {
 							ConstructionStageInfo tempBuildingStage = ConstructionUtil
 									// TODO: reduce the utilization on this method. 3.5% of total cpu

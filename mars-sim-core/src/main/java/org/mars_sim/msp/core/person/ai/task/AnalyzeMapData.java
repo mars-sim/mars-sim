@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2022-10-01
+ * @date 2023-06-09
  * @author Manny Kung
  */
 
@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.function.Computation;
@@ -43,6 +42,7 @@ public class AnalyzeMapData extends Task {
 	private static final TaskPhase ANALYZING = new TaskPhase(Msg.getString("Task.phase.analyzing")); //$NON-NLS-1$
 
     // Data members.
+	private double siteTime = 250;
 	/** The number of estimation improvement made for a site. */	
 	private int numImprovement;
     /** Computing Units needed per millisol. */		
@@ -133,7 +133,7 @@ public class AnalyzeMapData extends Task {
 		 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
 		 		+ Math.round(seed * 1000.0)/1000.0 + ". "
 		 		+ num + " candidate sites identified. Final site selected: " 
-		 		+ site.getLocation().getCoordinateString() + ".");
+		 		+ site.getLocation().getFormattedString() + ".");
 		
        	// Add task phases
     	addPhase(ANALYZING);
@@ -246,7 +246,8 @@ public class AnalyzeMapData extends Task {
      * @param improvement
      */
 	private void improveMineralConcentrationEstimates(double time, double improvement) {
-		double probability = (time * Exploration.EXPLORING_SITE_TIME / 1000.0) * improvement;
+
+		double probability = (time * siteTime / 1000.0) * improvement;
 		if (probability > .9)
 			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {

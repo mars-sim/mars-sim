@@ -44,7 +44,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         private boolean eva;
 
         public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Unload " + (eva ? "via EVA " : "") + target.getName(), score);
+            super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
             this.target = target;
             this.eva = eva;
         }

@@ -211,7 +211,7 @@ public class RoboticStation extends Function {
 	public void addRobot(Robot robot) {
 		if (!robotOccupants.contains(robot)) {
 			// Remove robot from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildingSet().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {

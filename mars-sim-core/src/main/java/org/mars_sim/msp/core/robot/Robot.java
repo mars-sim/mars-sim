@@ -261,7 +261,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
+		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
 		Unit c = getContainerUnit();
@@ -912,6 +912,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return eqmInventory.getAllAmountResourceStored(resource);
+	}
+	
+	/**
 	 * Gets all stored amount resources
 	 *
 	 * @return all stored amount resources.
@@ -921,6 +932,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return eqmInventory.getAmountResourceIDs();
 	}
 
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return eqmInventory.getAllAmountResourceIDs();
+	}
+	
 	/**
 	 * Gets all stored item resources
 	 *
@@ -1012,7 +1033,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -1070,7 +1091,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -1084,7 +1105,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
@@ -1160,7 +1181,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
-		else if (ut == UnitType.PLANET) {
+		else if (ut == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
 		}
 		else if (ut == UnitType.BUILDING) {
@@ -1183,7 +1204,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 					logger.warning(this, "Not possible to be stored into " + cu + ".");
 				}
 			}
-			else if (destination.getUnitType() == UnitType.PLANET) {
+			else if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addRobot(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
@@ -1261,6 +1282,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public double getcurrentEnergy() {
 		return health.getcurrentEnergy();
+	}
+	
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
 	}
 	
 	/**

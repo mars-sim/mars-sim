@@ -40,7 +40,7 @@ public class AttributePanel extends JPanel {
 	 * @return The JLabel that can be updated.
 	 */
 	public JLabel addTextField(String label, String content, String tooltip) {
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		JPanel wrapper3 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
 		JLabel typeTF = new JLabel(content);
 		if (tooltip != null) {
 			typeTF.setToolTipText(tooltip);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementUnitWindow.java
- * @date 2022-10-21
+ * @date 2023-06-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -70,8 +71,11 @@ public class SettlementUnitWindow extends UnitWindow {
 		this.settlement = settlement;
 
 		// Create status panel
-		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
+		statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));//BorderLayout(5, 5));
+		statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		statusPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		statusPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		
 		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
 		initTopPanel(settlement);
@@ -83,18 +87,16 @@ public class SettlementUnitWindow extends UnitWindow {
 	
 	
 	public void initTopPanel(Settlement settlement) {
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
+		statusPanel.setPreferredSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT + 5));
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
 
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
-
 		JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
-		JPanel namePane = new JPanel(new BorderLayout(50, 0));
+		JPanel namePane = new JPanel(new BorderLayout(0, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
 		nameLabel.setToolTipText("Name of Settlement");
 		setImage(BASE, nameLabel);
@@ -106,7 +108,7 @@ public class SettlementUnitWindow extends UnitWindow {
 		nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
 		nameLabel.setHorizontalTextPosition(JLabel.CENTER);
 
-		statusPanel.add(namePane);
+		statusPanel.add(namePane, BorderLayout.WEST);
 
 		JLabel popIconLabel = new JLabel();
 		popIconLabel.setToolTipText("# of population : (indoor / total)");
@@ -158,15 +160,28 @@ public class SettlementUnitWindow extends UnitWindow {
 		templatePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel rowPanel = new JPanel(new GridLayout(2, 2, 0, 0));
+		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);	
+		
 		rowPanel.add(popPanel);
 		rowPanel.add(vehPanel);
 		rowPanel.add(sponsorPanel);
 		rowPanel.add(templatePanel);
 
-		statusPanel.add(rowPanel);
-		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);	
+		statusPanel.add(rowPanel, BorderLayout.CENTER);
 		
-		sponsorLabel.setText(TWO_SPACES + settlement.getSponsor().getName());
+		// Add space agency label and logo
+		JLabel agencyLabel = agencyLabel();
+		
+		JPanel agencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		agencyPanel.setSize(new Dimension(-1, UnitWindow.STATUS_HEIGHT - 5));
+		agencyPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		agencyPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		agencyPanel.add(agencyLabel);
+
+		statusPanel.add(agencyPanel, BorderLayout.EAST);
+		
+		
+		sponsorLabel.setText(TWO_SPACES + settlement.getReportingAuthority().getName());
 		templateLabel.setText(TWO_SPACES + settlement.getTemplate());
 	}
 	
@@ -205,6 +220,8 @@ public class SettlementUnitWindow extends UnitWindow {
 		
 		addTabPanel(new NotesTabPanel(settlement, desktop));
 
+		addTabPanel(new TabPanelPreferences(settlement, desktop));
+
 		addTabPanel(new TabPanelOrganization(settlement, desktop));
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
@@ -213,7 +230,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelScience(settlement, desktop));
 
-		addTabPanel(new SponsorTabPanel(settlement.getSponsor(), desktop));
+		addTabPanel(new SponsorTabPanel(settlement.getReportingAuthority(), desktop));
 		
 		addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 

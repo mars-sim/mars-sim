@@ -615,7 +615,7 @@ class ConstructionProjectPanel extends WizardPanel {
             result = false;
 
         // Check for LUV attachment parts.
-        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> attachmentParts = new HashMap<>();
         Iterator<ConstructionVehicleType> k = stageInfo.getVehicles()
                 .iterator();
         while (k.hasNext()) {
@@ -657,7 +657,7 @@ class ConstructionProjectPanel extends WizardPanel {
             // Use AbstractTableModel constructor.
             super();
 
-            materialsList = new ArrayList<ConstructionMaterial>();
+            materialsList = new ArrayList<>();
         }
 
         public int getColumnCount() {
@@ -760,7 +760,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         }
 
                         // Add vehicle attachment parts.
-                        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
+                        Map<Integer, Integer> attachmentParts = new HashMap<>();
                         Iterator<ConstructionVehicleType> k = info.getVehicles()
                                 .iterator();
                         while (k.hasNext()) {
@@ -822,7 +822,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         }
 
                         // Add vehicle attachment parts.
-                        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
+                        Map<Integer, Integer> attachmentParts = new HashMap<>();
                         Iterator<ConstructionVehicleType> k = info.getVehicles()
                                 .iterator();
                         while (k.hasNext()) {

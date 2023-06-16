@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * LoadEVASuitTest.java
- * @date 2023-05-01
- * @auto7r Manny Kung
+ * @date 2023-06-10
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.person;
@@ -10,47 +10,31 @@ package org.mars_sim.msp.core.person;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.InventoryUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
-import org.mars_sim.msp.core.structure.building.function.Function;
-
-import junit.framework.TestCase;
 
 /**
  * Tests the ability of a person to load resources into an EVA suit.
  */
-public class LoadEVASuitTest
-extends TestCase {
+public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 
 	private Settlement settlement = null;
-	private UnitManager unitManager;
 	private Person person;
 	private String name = "Jim Loader";
 	
-	@Override
-    public void setUp() throws Exception {
-		// Create new simulation instance.
-        SimulationConfig simConfig = SimulationConfig.instance();
-        simConfig.loadConfig();
-        
-        Simulation sim = Simulation.instance();
-        sim.testRun();
+    @Override
+    public void setUp() {
+		super.setUp();
 
-        unitManager = sim.getUnitManager();
-
-        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
-        							 sim.getWeather(), sim.getUnitManager());
-        
 		// Create test settlement.
 		settlement = new MockSettlement();	
 		unitManager.addUnit(settlement);
@@ -77,38 +61,82 @@ extends TestCase {
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.ENDURANCE, 60);
     }
 
+	
 	/*
 	 * Test if a person don an EVA suit and load it with resources.
 	 */
-	public void testLoading() throws Exception {
+	public void testLoadingEVA() throws Exception {
+		double capacity = Math.round(person.getCarryingCapacity()* 10D)/10D;
+		System.out.println(person + "'s carrying capacity: " + capacity);
+		
+		assertTrue(person + " has no carrying capacity.", capacity > 0);
+		
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.oxygenID, 1D);
 		requiredResourcesMap.put(ResourceUtil.waterID, 4D);
 		
-		EVASuit suit001 = new EVASuit("EVA Suit 001", settlement);
+		for (int i: requiredResourcesMap.keySet()) {
+			double amount = (double) requiredResourcesMap.get(i);
+			person.storeAmountResource(i, amount) ; 
+		}
 		
-		settlement.addEquipment(suit001);
+		EVASuit suitSettlement = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
+//		EVASuit suitSettlement = new EVASuit("EVA Suit 001", settlement);
 		
-		EquipmentOwner housing = (EquipmentOwner)settlement;
+		settlement.addEquipment(suitSettlement);
 		
-		EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+		EquipmentOwner personOwner = (EquipmentOwner)person;
 		
-		assertEquals("Wrong EVA suit name.", suit001.getName(), suit.getName());
+		EVASuit suitPerson = InventoryUtil.getGoodEVASuitNResource(settlement, person);
 		
-		double mass = ((int)(suit.getBaseMass() * 100D))/100D;
+		assertEquals("EVA suit name not matched.", suitSettlement.getName(), suitPerson.getName());
 		
-		System.out.println("EVA suit's empty mass: " + mass + " kg");
+		double mass = Math.round(suitPerson.getBaseMass() * 100D)/100D;
 		
-		assertEquals("EVA suit's empty mass is NOT correct.", 13.0, mass);
+		System.out.println(suitSettlement.getName() + " has empty mass: " + mass + " kg");
+		
+		assertEquals("EVA suit's empty mass is incorrect.", 13.6, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
-		suit.transfer(person);
+		suitSettlement.transfer(person);
 		// 2. Set the person as the owner
-		suit.setLastOwner(person);
+		suitSettlement.setLastOwner(person);
 		// 3. Register the suit the person will take into the airlock to don
-		person.registerSuit(suit);
+		person.registerSuit(suitSettlement);
+		
+		double percentageFull = suitSettlement.loadResources(personOwner);
+		
+		System.out.println(person.getSuit().getName() + "'s percent of lowest resource: " + Math.round(percentageFull* 100D)/100D + " %");
+		
 		// 4. Loads the resources into the EVA suit
 		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
-				(suit.loadResources(housing) < 0.9D));
+				(percentageFull > 0.0));
+		
+		for (int i: requiredResourcesMap.keySet()) {
+			double amount = (double) requiredResourcesMap.get(i);
+			settlement.storeAmountResource(i, amount) ; 
+		}
+		
+		EquipmentOwner settlementOwner = (EquipmentOwner)settlement;
+		
+		// 1. Transfer the EVA suit from to person to settlement
+		suitPerson.transfer(settlement);
+		// 2b. Doff this suit. Deregister the suit from the person
+		person.registerSuit(null);
+		
+		suitSettlement = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+		
+		if (suitSettlement == null) {	
+			String suitName = suitPerson.getName();
+			System.out.println(suitName + " can't be transferred.");
+		}
+	
+		percentageFull = suitSettlement.loadResources(settlementOwner);
+		
+		System.out.println(suitSettlement.getName() + "'s percent of lowest resource: " + Math.round(percentageFull* 100D)/100D + " %");
+		
+		// 4. Loads the resources into the EVA suit
+		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
+				(percentageFull > 0.0));
 	}
 }

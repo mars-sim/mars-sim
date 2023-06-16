@@ -189,6 +189,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private BuildingCategory category;
 	
 	private static HistoricalEventManager eventManager;
+	private static BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor 1. Constructs a Building object.
@@ -235,8 +236,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		this.loc = bounds.getPosition();
 		this.facing = bounds.getFacing();
-
-		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+		
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		
+		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 
 		construction = spec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
@@ -1300,16 +1303,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return getSettlement();
 	}
 
-	public void reinit() {
-		settlement = unitManager.getSettlementByID(settlementID);
-
-		// Get the building's functions
-		if (functions == null) {
-			BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
-			functions = buildFunctions(spec);
-		}
-	}
-
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
         return buildingType.contains(" Hab")
@@ -1355,6 +1348,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return getSettlement().getAmountResourceStored(resource);
 	}
 
+	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return getSettlement().getAllAmountResourceStored(resource);
+	}
+	
 	/**
 	 * Stores the amount resource
 	 *
@@ -1421,7 +1425,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public Set<Integer> getAmountResourceIDs() {
 		return getSettlement().getAmountResourceIDs();
 	}
-
+	
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return getSettlement().getAllAmountResourceIDs();
+	}
+	
 	/**
 	 * Sets the unit's container unit.
 	 *
@@ -1510,6 +1524,18 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return super.equals(obj);
 	}
 
+	public void reinit() {
+		settlement = unitManager.getSettlementByID(settlementID);
+
+		if (buildingConfig == null)
+			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		// Get the building's functions
+		if (functions == null) {
+			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+			functions = buildFunctions(spec);
+		}
+	}
+	
 	/**
 	 * Gets the hash code for this object.
 	 *

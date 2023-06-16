@@ -43,7 +43,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
         }
         
         /**
-         * Get the description of the target handler.
+         * Gets the description of the target handler.
          */
         public String getDescription() {
             return handler.getEventDescription();
@@ -71,7 +71,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
         }
 
         /**
-         * Compare the scheduled events according to when the event is scheduled
+         * Compares the scheduled events according to when the event is scheduled.
+         * 
          * @param o
          * @return
          */
@@ -89,8 +90,9 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * Add an event ti be executed in the future
-     * @param duration Duratin in miliisol until the event is executed
+     * Adds an event ti be executed in the future.
+     * 
+     * @param duration Duration in miliisols until the event is executed
      * @param handler Handler when the event expires
      */
     public ScheduledEvent addEvent(int duration, ScheduledEventHandler handler) {
@@ -102,7 +104,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * Add an event to be executed in the future at a specific time
+     * Adds an event to be executed in the future at a specific time.
+     * 
      * @param when Time on Mars this event will happen
      * @param handler Handler when the event expires
      */
@@ -125,7 +128,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * Remove a previously registered event against a handler
+     * Removes a previously registered event against a handler.
+     * 
      * @param handler Handler to be removed
      */
     public void removeEvent(ScheduledEventHandler handler) {
@@ -140,7 +144,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * What events are scheduled for the futureS
+     * Returns a list of events are scheduled for the future.
+     * 
      * @return
      */
     public List<ScheduledEvent> getEvents() {
@@ -148,7 +153,8 @@ public class ScheduledEventManager implements Serializable, Temporal {
     }
 
     /**
-     * Process any expired events
+     * Processes any expired events.
+     * 
      * @param clockPulse
      */
     @Override

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2023-05-17
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -74,6 +74,11 @@ public abstract class Vehicle extends Unit
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
 	
+	private static final double RANGE_FACTOR = 1.2;
+	private static final double MAXIMUM_RANGE = 10_000;
+	
+	private static final int MAX_NUM_SOLS = 14;
+	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
@@ -100,6 +105,12 @@ public abstract class Vehicle extends Unit
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
+	/** The average road load power of the vehicle [kph]. */
+	private double averageRoadLoadSpeed;
+
+	/** The average road load power of the vehicle [kW]. */
+	private double averageRoadLoadPower;
+			
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -115,7 +126,9 @@ public abstract class Vehicle extends Unit
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
 	/** The cumulative fuel usage of the vehicle [kg] */
-	private double fuelCumUsed;
+//	private double fuelCumUsed;
+	/** The cumulative energy usage of the vehicle [kWh] */
+	private double cumEnergyUsedKWH;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
 	private double iFuelEconomy;
 	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
@@ -145,7 +158,12 @@ public abstract class Vehicle extends Unit
 	private StatusType primaryStatus;
 
 	/** The vehicle's status log. */
-	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
+	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(MAX_NUM_SOLS);
+	/** The vehicle's road speed history. */
+	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	/** The vehicle's road power history. */	
+	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager;
 	/** Direction vehicle is traveling */
@@ -164,7 +182,7 @@ public abstract class Vehicle extends Unit
 	private VehicleSpec spec;
 
 	private Mission mission;
-
+	
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
@@ -702,7 +720,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getAveragePower() {
-		return spec.getAveragePower();
+		return spec.getBasePower();
 	}
 	
 	/**
@@ -750,7 +768,6 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets the current fuel range of the vehicle.
-	 * Note : this method will be overridden by Rover's getRange().
 	 *
 	 * @return the current fuel range of the vehicle (in km)
 	 */
@@ -761,12 +778,19 @@ public abstract class Vehicle extends Unit
 
         if ((mission == null) || (mission.getStage() == Stage.PREPARATION)) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = getInitialFuelEconomy() * getFuelCapacity() * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * getFuelCapacity()) * getMass() / getBeginningMass();// * fuel_range_error_margin
         }
         else {
-            double amountOfFuel = getAmountResourceStored(getFuelType());
-        	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = getInitialFuelEconomy() * amountOfFuel * getBaseMass() / getMass();
+        	
+    		int fuelTypeID = getFuelTypeID();
+    		if (fuelTypeID < 0) {
+    			range = MAXIMUM_RANGE;
+    		}
+    		else {
+                double amountOfFuel = getAmountResourceStored(fuelTypeID);
+            	// During the journey, the range would be based on the amount of fuel in the vehicle
+        		range = Math.min(getBaseRange() * RANGE_FACTOR, getEstimatedFuelEconomy() * amountOfFuel) * getMass() / getBeginningMass();
+    		}
         }
 
         return (int)range;
@@ -792,12 +816,51 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the cumulative fuel usage of the vehicle [kg].
-	 *
+	 * Sets the average road load speed of the vehicle [kph].
+	 * 
 	 * @return
 	 */
-	public double getFuelCumulativeUsage() {
-		return fuelCumUsed;
+	public void setAverageRoadLoadSpeed(int value) {
+		logger.info(this, 10_000L, " AverageRoadLoadSpeed: " + value);
+		roadSpeedHistory.addDataPoint(value);
+	}
+	
+	/**
+	 * Sets the average road load power of the vehicle [kW].
+	 * 
+	 * @return
+	 */
+	public void setAverageRoadLoadPower(int value) {
+		logger.info(this, 10_000L, " AverageRoadLoadPower: " + value);
+		roadPowerHistory.addDataPoint(value);
+	}
+	
+	/**
+	 * Gets the average road load power of the vehicle [kph].
+	 * 
+	 * @return
+	 */
+	public double getAverageRoadLoadSpeed() {
+		return averageRoadLoadSpeed;
+	}
+	
+	/**
+	 * Gets the average road load power of the vehicle [kW].
+	 * 
+	 * @return
+	 */
+	public double getAverageRoadLoadPower() {
+		return averageRoadLoadPower;
+	}
+	
+	
+	/**
+	 * Gets the cumulative energy usage of the vehicle [kWh].
+	 * 
+	 * @return
+	 */
+	public double getCumEnergyUsage() {
+		return cumEnergyUsedKWH;
 	}
 	
 	/**
@@ -824,7 +887,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getFuelConv() {
-		return spec.getFuelConv();
+		return spec.getFuel2DriveEnergy();
 	}
 	
 	/**
@@ -833,9 +896,10 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (fuelCumUsed == 0)
+//		return getFuelConv() / getCumFuelConsumption();
+		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return odometerMileage / fuelCumUsed;
+		return odometerMileage / cumEnergyUsedKWH / 1000 * getFuelConv();
 	}
 	
 	/**
@@ -844,11 +908,27 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0 || fuelCumUsed == 0)
+		if (odometerMileage == 0 || cumEnergyUsedKWH == 0)
 			return 0;
-		return VehicleSpec.METHANOL_WH_PER_KG * fuelCumUsed / odometerMileage;
+		return 1000 * cumEnergyUsedKWH / odometerMileage;
 	}
-
+	
+	/**
+	 * Gets the coefficient for converting cumulative FC to cumulative FE.
+	 * 
+	 * @return
+	 */
+	public double getCoeffCumFC2FE() {
+		double cumFE = getCumFuelEconomy();
+		double cumFC = getCumFuelConsumption();
+		
+		if (cumFE > 0 && cumFC > 0 && averageRoadLoadPower > 0 && averageRoadLoadSpeed >0)
+			return cumFE / cumFC * averageRoadLoadPower / averageRoadLoadSpeed ;
+		
+		return 0;
+	}
+	
+	
 	/**
 	 * Gets the base fuel economy of the vehicle [km/kg].
 	 * 
@@ -904,6 +984,14 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Mass of Equipment is the stored mass plus the base mass.
+	 */
+	@Override
+	public double getMass() {
+		return eqmInventory.getStoredMass() + getBaseMass();
+	}
+	
+	/**
 	 * Gets the estimated beginning mass [kg].
 	 */
 	public double getBeginningMass() {
@@ -939,14 +1027,17 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelEconomy() {
-		double cumFE = getCumFuelEconomy();
-		double initFE = getInitialFuelEconomy();
-		double ratio = cumFE / initFE;
-		if (cumFE == 0)
-			return initFE;
-		else if (ratio < 1)
-			return (cumFE + initFE) / 2;
-		return (cumFE + initFE) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
+		double base = getBaseFuelEconomy();
+		double cum = getCumFuelEconomy();
+		double init = getInitialFuelEconomy();
+		// Note: init < base always
+		// Note: if cum < base, then trip is less economical more than expected
+		// Note: if cum > base, then trip is more economical than expected
+		if (cum == 0)
+			return (.5 * base + .5 * init) * VehicleController.FUEL_ECONOMY_FACTOR;
+		else {
+			return (.3 * base + .3 * init + .4 * cum);
+		}
 	}
 
 	/**
@@ -964,14 +1055,17 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedFuelConsumption() {
-		double cumFC = getCumFuelConsumption();
-		double initFC = getInitialFuelConsumption();
-		double ratio = cumFC / initFC;
-		if (cumFC == 0)
-			return initFC;
-		else if (ratio < 1)
-			return (cumFC + initFC) / 2;
-		return (cumFC + initFC) / 2 / VehicleController.FUEL_ECONOMY_FACTOR;
+		double base = getBaseFuelConsumption();
+		double cum = getCumFuelConsumption();
+		double init = getInitialFuelConsumption();
+		// Note: init > base always
+		// Note: if cum > base, then vehicle consumes more than expected
+		// Note: if cum < base, then vehicle consumes less than expected		
+		if (cum == 0)
+			return (.5 * base + .5 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+		else {
+			return (.3 * base + .3 * init + .4 * cum);
+		}
 	}
 	
 	/**
@@ -1015,12 +1109,12 @@ public abstract class Vehicle extends Unit
 	 * and record the fuel used.
 	 *
 	 * @param distance the distance traveled traveled [km]
-	 * @param fuelUsed the fuel used [kg]
+	 * @param cumEnergyUsed the energy used [Wh]
 	 */
-	public void addOdometerMileage(double distance, double fuelUsed) {
-		odometerMileage += distance;
-		lastDistance = distance;
-		fuelCumUsed += fuelUsed;
+	public void addOdometerMileage(double distance, double cumEnergyUsed) {
+		this.odometerMileage += distance;
+		this.lastDistance = distance;
+		this.cumEnergyUsedKWH += cumEnergyUsed/1000;
 	}
 
 	public double getLastDistanceTravelled() {
@@ -1144,7 +1238,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Settlement getSettlement() {
 
-		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
+		if (getContainerID() <= Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 
 		Unit c = getContainerUnit();
@@ -1167,8 +1261,7 @@ public abstract class Vehicle extends Unit
 	public Building getGarage() {
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getGarages();
-			for (Building garageBuilding : list) {
+			for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null && garage.containsVehicle(this)) {
 					return garageBuilding;
@@ -1231,7 +1324,36 @@ public abstract class Vehicle extends Unit
 
 		// Add the location to the trail if outside on a mission
 		addToTrail(getCoordinates());
+		// Check once per msol (millisol integer)
+		if (pulse.isNewMSol()) {
+			int count = 0;
+			int sum = 0;
 
+			for (int sol: roadSpeedHistory.getHistory().keySet()) {
+				List<MSolDataItem<Integer>> speeds = roadSpeedHistory.getHistory().get(sol);
+				for (MSolDataItem<Integer> s: speeds) {
+					count++;
+					sum += s.getData();
+				}
+			}
+			
+			if (count > 0 && sum > 0)
+				averageRoadLoadSpeed = sum / count;
+			
+			count = 0;
+			sum = 0;
+			for (int sol: roadPowerHistory.getHistory().keySet()) {
+				List<MSolDataItem<Integer>> speeds = roadPowerHistory.getHistory().get(sol);
+				for (MSolDataItem<Integer> s: speeds) {
+					count++;
+					sum += s.getData();
+				}
+			}
+			
+			if (count > 0 && sum > 0)
+				averageRoadLoadPower = sum / count;
+		}
+		
 		return true;
 	}
 
@@ -1360,17 +1482,28 @@ public abstract class Vehicle extends Unit
 		} else if (trail.size() > 0) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
 			if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D))
-				trail.add(new Coordinates(location));
+				trail.add(location);
 		} else
-			trail.add(new Coordinates(location));
+			trail.add(location);
 	}
 
 	/**
-	 * Gets the resource type that this vehicle uses for fuel.
+	 * Gets the resource type id that this vehicle uses for fuel.
 	 *
-	 * @return resource type
+	 * @return resource type id
 	 */
-	public abstract int getFuelType();
+	public int getFuelTypeID() {
+		return spec.getFuelType();
+	}
+	
+	/**
+	 * Gets the fuel type of this vehicle.
+	 *
+	 * @return fuel type string
+	 */
+	public String getFuelTypeStr() {
+		return spec.getFuelTypeStr();
+	}
 	
 	/**
 	 * Gets the estimated distance traveled in one sol.
@@ -1543,15 +1676,6 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Unit getHolder() {
 		return this;
-	}
-
-	
-	/**
-	 * Mass of Equipment is the stored mass plus the base mass.
-	 */
-	@Override
-	public double getMass() {
-		return eqmInventory.getStoredMass() + getBaseMass();
 	}
 
 	/**
@@ -1754,7 +1878,17 @@ public abstract class Vehicle extends Unit
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
-
+	/**
+	 * Gets all the amount resource resource stored, including inside equipment.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	@Override
+	public double getAllAmountResourceStored(int resource) {
+		return eqmInventory.getAllAmountResourceStored(resource);
+	}
+	
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
@@ -1827,7 +1961,16 @@ public abstract class Vehicle extends Unit
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
 	}
-
+	/**
+	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 *
+	 * @return all stored amount resources.
+	 */
+	@Override
+	public Set<Integer> getAllAmountResourceIDs() {
+		return eqmInventory.getAllAmountResourceIDs();
+	}
+	
 	/**
 	 * Obtains the remaining general storage space
 	 *
@@ -1872,7 +2015,7 @@ public abstract class Vehicle extends Unit
 				return;
 			}
 			// 1. Set Coordinates
-			if (newContainer.getUnitType() == UnitType.PLANET) {
+			if (newContainer.getUnitType() == UnitType.MARS) {
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
@@ -1945,12 +2088,12 @@ public abstract class Vehicle extends Unit
 			return LocationStateType.INSIDE_VEHICLE;
 
 		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			return LocationStateType.MARS_SURFACE;
 
 		if (newContainer.getUnitType() == UnitType.PERSON)
 			return LocationStateType.ON_PERSON_OR_ROBOT;
 
-		if (newContainer.getUnitType() == UnitType.PLANET)
+		if (newContainer.getUnitType() == UnitType.MARS)
 			return LocationStateType.MARS_SURFACE;
 
 		return null;
@@ -1964,7 +2107,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean isInSettlement() {
 
-		if (containerID == MARS_SURFACE_UNIT_ID)
+		if (containerID <= MARS_SURFACE_UNIT_ID)
 			return false;
 
 		// if the vehicle is parked in a garage
@@ -1998,7 +2141,7 @@ public abstract class Vehicle extends Unit
 		// Set the old container unit
 		Unit cu = getContainerUnit();
 
-		if (cu.getUnitType() == UnitType.PLANET) {
+		if (cu.getUnitType() == UnitType.MARS) {
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
@@ -2008,7 +2151,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		if (transferred) {
-			if (destination.getUnitType() == UnitType.PLANET) {
+			if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
 			}
 			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
@@ -2055,6 +2198,14 @@ public abstract class Vehicle extends Unit
 	public VehicleController getController() {
 		return vehicleController;
 	}
+	
+	/** 
+	 * Gets the VehicleSpec instance. 
+	 */
+	public VehicleSpec getVehicleSpec() {
+		return spec;
+	}
+	
 	
 	/**
 	 * Compares if an object is the same as this unit

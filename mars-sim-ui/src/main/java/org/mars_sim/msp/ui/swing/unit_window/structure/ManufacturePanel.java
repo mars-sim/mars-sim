@@ -150,6 +150,7 @@ public class ManufacturePanel extends JPanel {
 
     /**
      * Gets the manufacture process.
+     * 
      * @return process
      */
     public ManufactureProcess getManufactureProcess() {
@@ -158,6 +159,7 @@ public class ManufacturePanel extends JPanel {
 
     /**
      * Gets a tool tip string for a manufacturing process.
+     * 
      * @param info the manufacture process info.
      * @param building the manufacturing building (or null if none).
      */
@@ -202,6 +204,7 @@ public class ManufacturePanel extends JPanel {
 
     /**
      * Gets a string representing an manufacture process item amount.
+     * 
      * @param item the manufacture process item.
      * @return amount string.
      */

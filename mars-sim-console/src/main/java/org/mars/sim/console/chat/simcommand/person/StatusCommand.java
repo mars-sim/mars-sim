@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StatusCommand.java
- * @date 2022-06-24
+ * @date 2023-06-14
  * @author Barry Evans
  */
 package org.mars.sim.console.chat.simcommand.person;
@@ -32,19 +32,23 @@ public class StatusCommand extends AbstractPersonCommand {
 
 	public static String getStatus(Person person) {
 		StringBuilder buffer = new StringBuilder();
+		buffer.append(System.lineSeparator());
 		buffer.append("Hi, My name is ");
 		buffer.append(person.getName());
 		buffer.append(" and I am a ");
-		buffer.append(person.getMind().getJob().getName());
+		buffer.append(person.getMind().getJob().getName().toLowerCase()).append(".");
+		buffer.append(System.lineSeparator());
 		
 		Settlement home = person.getAssociatedSettlement();
 		if (home != null) {
-			buffer.append(" based in ");
-			buffer.append(person.getAssociatedSettlement().getName());
-			buffer.append(" where I am the ");
-			buffer.append(person.getRole().getType().getName());
+			buffer.append("My home base is ");
+			buffer.append(person.getAssociatedSettlement().getName()).append(",");
+			buffer.append(System.lineSeparator());
+			buffer.append("where I am a/an ");
+			buffer.append(person.getRole().getType().getName()).append(".");
 		}
 		buffer.append(System.lineSeparator());
+		
 		PhysicalCondition condition = person.getPhysicalCondition();
 		if (person.isDeclaredDead()) {
 			DeathInfo death = condition.getDeathDetails();
@@ -52,14 +56,12 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(death.getTimeOfDeath());
 			buffer.append(" doing ");
 			buffer.append(death.getTask());
-			buffer.append(". Cause was ");
+			buffer.append(". Cause : ");
 			buffer.append(death.getCause());
 		}
 		else {
 			buffer.append("At the moment, I am ");
-			buffer.append(person.getTaskDescription());
-			buffer.append(System.lineSeparator());
-			buffer.append("I am ");
+			buffer.append(person.getTaskDescription().toLowerCase()).append(".");
 
 			double p = condition.getPerformanceFactor();
 			double h = condition.getHunger();
@@ -68,12 +70,20 @@ public class StatusCommand extends AbstractPersonCommand {
 			double s = condition.getStress();
 			double f = condition.getFatigue();
 
-			buffer.append(PhysicalCondition.getPerformanceStatus(p));
-			buffer.append(" in performance, ");
-			buffer.append(PhysicalCondition.getHungerStatus(h, e)).append(", ");
-			buffer.append(PhysicalCondition.getThirstyStatus(t)).append(", ");
-			buffer.append(PhysicalCondition.getStressStatus(s)).append(" and ");
-			buffer.append(PhysicalCondition.getFatigueStatus(f)).append(".");
+			buffer.append(System.lineSeparator());
+			buffer.append(System.lineSeparator());
+			buffer.append("Hunger: ").append(PhysicalCondition.getHungerStatus(h, e));
+			buffer.append(System.lineSeparator());
+			buffer.append("Thirst: ").append(PhysicalCondition.getThirstyStatus(t));
+			buffer.append(System.lineSeparator());
+			buffer.append("Stress: ").append(PhysicalCondition.getStressStatus(s));
+			buffer.append(System.lineSeparator());
+			buffer.append("Fatigue: ").append(PhysicalCondition.getFatigueStatus(f));
+			buffer.append(System.lineSeparator());
+			buffer.append(System.lineSeparator());
+			buffer.append("I am ");
+			buffer.append(PhysicalCondition.getPerformanceStatus(p).toLowerCase());
+			buffer.append(" in performance.");
 			buffer.append(System.lineSeparator());
 		}
 		return buffer.toString();

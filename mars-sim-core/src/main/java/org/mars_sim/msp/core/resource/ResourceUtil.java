@@ -20,6 +20,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 
 public class ResourceUtil implements Serializable {
 
@@ -27,7 +28,7 @@ public class ResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
 	
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
 	public static final int FIRST_ITEM_RESOURCE_ID = 500;
@@ -64,7 +65,7 @@ public class ResourceUtil implements Serializable {
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String CONCRETE = "concrete";
 	public static final String MORTAR = "mortar";
-	public static final String CEMENT = "mortar";
+	public static final String CEMENT = "cement";
 
 	public static final String SAND = "sand";
 
@@ -303,7 +304,7 @@ public class ResourceUtil implements Serializable {
 	}
 	
 	/**
-	 * Create a set of essential resources.
+	 * Creates a set of essential resources.
 	 */
 	private static void createEssentialResources() {
 		essentialResources = new HashSet<>();
@@ -352,15 +353,8 @@ public class ResourceUtil implements Serializable {
 		ResourceUtil.INSTANCE = instance;
 	}
 
-	public void initializeNewSim() {
-		// Create maps
-		createMaps();
-		// Map the static instances
-		mapInstances();
-	}
-
 	/**
-	 * Recreates the Amount Resource instances in all map
+	 * Recreates the Amount Resource instances in all map.
 	 */
 	public void initializeInstances() {
 		// Create maps
@@ -370,7 +364,7 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Creates maps of amount resources
+	 * Creates maps of amount resources.
 	 */
 	public static synchronized void createMaps() {
 		if (amountResourceMap == null) {
@@ -393,6 +387,9 @@ public class ResourceUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * Maps ids to amount resources.
+	 */
 	private static void mapInstances() {
 
 		// AmountResource instances as Integer
@@ -554,7 +551,12 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static int findIDbyAmountResourceName(String name) {
-		return findAmountResource(name).getID();
+		AmountResource ar = findAmountResource(name);
+		if (ar != null)
+			return ar.getID();
+		
+		logger.severe("The name '" + name + "' does not exist.");
+		return -1;
 	}
 
 	/**
@@ -576,7 +578,7 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * convenience method that calls {@link #getAmountResources()} and turns the
+	 * A convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
 	 *
 	 * @return {@link List}<{@link String}>

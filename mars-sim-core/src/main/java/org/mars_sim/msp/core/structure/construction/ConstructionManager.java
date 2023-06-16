@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionManager.java
- * @date 2021-12-15
+ * @date 2023-06-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -30,6 +33,9 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ConstructionManager.class.getName());
 
 	// Data members.
 	private Settlement settlement;
@@ -39,8 +45,11 @@ implements Serializable {
 	private SalvageValues salvageValues;
 	private List<ConstructedBuildingLogEntry> constructedBuildingLog;
 
+	private UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Constructor.
+	 * 
 	 * @param settlement the settlement.
 	 */
 	public ConstructionManager(Settlement settlement) {
@@ -53,6 +62,7 @@ implements Serializable {
 
 	/**
 	 * Gets all construction sites at the settlement.
+	 * 
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSites() {
@@ -61,6 +71,7 @@ implements Serializable {
 
 	/**
 	 * Returns the instance of all construction sites at the settlement.
+	 * 
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getSites() {
@@ -70,6 +81,7 @@ implements Serializable {
 
 	/**
 	 * Gets construction sites needing a construction mission.
+	 * 
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingConstructionMission() {
@@ -103,6 +115,7 @@ implements Serializable {
 
 	/**
 	 * Checks if the settlement has any construction materials needed for the stage.
+	 * 
 	 * @param stage the construction stage.
 	 * @return true if remaining materials available.
 	 */
@@ -139,6 +152,7 @@ implements Serializable {
 
 	/**
 	 * Gets construction sites needing a salvage mission.
+	 * 
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingSalvageMission() {
@@ -160,12 +174,17 @@ implements Serializable {
 
 	/**
 	 * Creates a new construction site.
+	 * 
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
 		ConstructionSite result = new ConstructionSite(settlement);
 		sites.add(result);
+    	unitManager.addUnit(result);
+    	
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
+		logger.info(result, "Just created and registered to ConstructionManager.");
+		
 		return result;
 	}
 
@@ -175,6 +194,7 @@ implements Serializable {
 
 	/**
 	 * Removes a construction site.
+	 * 
 	 * @param site the construction site to remove.
 	 * @throws Exception if site doesn't exist.
 	 */
@@ -187,6 +207,7 @@ implements Serializable {
 
 	/**
 	 * Gets the construction values.
+	 * 
 	 * @return construction values.
 	 */
 	public ConstructionValues getConstructionValues() {
@@ -195,6 +216,7 @@ implements Serializable {
 
 	/**
 	 * Gets the salvage values.
+	 * 
 	 * @return salvage values.
 	 */
 	public SalvageValues getSalvageValues() {
@@ -203,6 +225,7 @@ implements Serializable {
 
 	/**
 	 * Adds a building log entry to the constructed buildings list.
+	 * 
 	 * @param buildingName the building name to add.
 	 * @param builtTime the time stamp that construction was finished.
 	 */
@@ -218,6 +241,7 @@ implements Serializable {
 
 	/**
 	 * Gets a log of all constructed buildings at the settlement.
+	 * 
 	 * @return list of ConstructedBuildingLogEntry
 	 */
 	public List<ConstructedBuildingLogEntry> getConstructedBuildingLog() {
@@ -226,6 +250,7 @@ implements Serializable {
 
 	/**
 	 * Creates a new salvaging construction site to replace a building.
+	 * 
 	 * @param salvagedBuilding the building to be salvaged.
 	 * @return the construction site.
 	 * @throws Exception if error creating construction site.
@@ -298,7 +323,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		settlement = null;

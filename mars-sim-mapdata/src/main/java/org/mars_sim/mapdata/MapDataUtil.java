@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataUtil.java
- * @date 2023-04-28
+ * @date 2023-06-03
  * @author Scott Davis
  */
 
@@ -38,6 +38,11 @@ import java.util.Collection;
          width = reader.getWidth();
      }
      
+     /**
+      * Gets the elevation array.
+      * 
+      * @return
+      */
      public short[] getElevationArray() {
     	 
      	if (elevationArray == null)	
@@ -54,7 +59,7 @@ import java.util.Collection;
  	 * @return the elevation as an integer.
  	 */
  	public short getElevation(double phi, double theta) {
-	
+ 		// Note that row 0 and column 0 are at top left 
  		short row = (short) Math.round(phi * height / PI);
  		
  		if (row == height) 
@@ -71,8 +76,10 @@ import java.util.Collection;
  			index = height * width - 1;
  		
 
- 		short []data = getElevationArray();
+ 		short [] data = getElevationArray();
+ 		
         short result = 0;
+        
         if (data != null) {
             result = data[index];
         }
@@ -102,7 +109,8 @@ import java.util.Collection;
      }
 
      /**
-      * Get the map types available
+      * Gets the map types available.
+      * 
       * @return
       */
     public Collection<MapMetaData> getMapTypes() {

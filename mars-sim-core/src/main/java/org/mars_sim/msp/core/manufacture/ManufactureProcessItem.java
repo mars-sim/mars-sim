@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureProcessItem.java
- * @date 2022-07-26
+ * @date 2023-06-12
  * @author Scott Davis
  */
 
@@ -24,14 +24,15 @@ public class ManufactureProcessItem implements Serializable {
 	private ItemType type;
 	private double amount;
 
-	public String getName() {
-		return name;
-	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	public String getName() {
+		return name;
+	}
+	
+	
 	public ItemType getType() {
 		return type;
 	}

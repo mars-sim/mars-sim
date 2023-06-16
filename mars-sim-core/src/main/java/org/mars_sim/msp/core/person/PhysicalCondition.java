@@ -2209,11 +2209,19 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
-	 * Records the amount of food consumption in kg
+	 * Records the amount of food/water consumption in kg.
+	 * Types :
+	 * 0 = preserved food
+	 * 1 = meal
+	 * 2 = dessert
+	 * 3 = water
 	 * 
 	 * @param amount in kg
+	 * @param type
 	 */
 	public void recordFoodConsumption(double amount, int type) {
+//		if (type == 0)
+//			logger.info(person, "Eaten " + Math.round(amount * 1000D)/1000D + " kg preserved food.");
 		consumption.increaseDataPoint(type, amount);
 	}
 	

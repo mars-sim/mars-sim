@@ -32,10 +32,10 @@ If applicable, add screenshots to help explain your problem.
 **Stacktrace**
 Cut and paste the stacktrace or the log statement from your terminal/command prompt.
 
-**Specifications  (please complete the following information)**
- - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle Java 17, openjdk 17, etc.]
- - mars-sim build version : [e.g. 3.5.0 build 7907, etc.]
+**Specifications (please complete the following information)**
+- OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
+- Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17]
+- Major version and build : [e.g. 3.5.0 build 8103]
 
 **Additional context**
 - Add any other context about the problem here.

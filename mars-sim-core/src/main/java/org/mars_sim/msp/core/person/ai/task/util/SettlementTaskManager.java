@@ -11,13 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * This class is repsonsible for maintaining a list of sharable SettlementTasks that can be
+ * This class is responsible for maintaining a list of sharable SettlementTasks that can be
  * assigned to Workers from a shared pool.
  */
 public class SettlementTaskManager implements Serializable {
@@ -25,7 +24,7 @@ public class SettlementTaskManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
     /**
-     * Acts as a Proxy to a SettlementTask. The proxy ensures that the root Task which is shared
+     * Acts as a proxy to a SettlementTask. The proxy ensures that the root Task which is shared
      * is removed from the parent SettlemetTaskmanager when it is created if there is no more demand.
      * This avoids it being re-used.
      */
@@ -43,7 +42,7 @@ public class SettlementTaskManager implements Serializable {
         }
 
         /**
-         * A Worker has selected this to be work on so reduce the demand
+         * A Worker has selected this to be work on so reduce the demand.
          */
         private void reduceDemand() {
             // One demand taken, if none left remove from shared pool
@@ -65,7 +64,7 @@ public class SettlementTaskManager implements Serializable {
         }
     }
 
-	private static final SimLogger logger = SimLogger.getLogger(SettlementTaskManager.class.getName());
+//	Can add back private static final SimLogger logger = SimLogger.getLogger(SettlementTaskManager.class.getName())
 
     private Settlement owner;
     private transient List<SettlementTask> tasks;
@@ -80,7 +79,8 @@ public class SettlementTaskManager implements Serializable {
     }
     
     /**
-     * Remove a shared SettlementTask from the pool.
+     * Removes a shared SettlementTask from the pool.
+     * 
      * @param source Item to remove.
      */
     void removeTask(SettlementTask source) {
@@ -91,7 +91,7 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Get the current cached Settlement Tasks. If there is no cache or marked as refresh then a list is created.
+     * Gets the current cached Settlement Tasks. If there is no cache or marked as refresh then a list is created.
      */
     private List<SettlementTask> getTasks() {
         if (refreshTasks || (tasks == null)) {
@@ -110,7 +110,8 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Get the currently available SettlementTasks. This list maybe be null.
+     * Gets the currently available SettlementTasks. This list maybe be null.
+     * 
      * @return
      */
     public List<SettlementTask> getAvailableTasks() {
@@ -118,8 +119,9 @@ public class SettlementTaskManager implements Serializable {
     }
     
     /**
-     * Get a list of suitable TaskJob for a particualr Robot. This acts as binding the shared SettlementTasks
+     * Gets a list of suitable TaskJob for a particular Robot. This acts as binding the shared SettlementTasks
      * to the particular worker by applying their personal modifier to the score.
+     * 
      * @see SettlementMetaTask#getRobotSettlementModifier(Robot)
      * @return Custom list of jobs applicable
      */
@@ -142,8 +144,9 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * Get a list of suitable TaskJob for a particular Person. This acts as binding the shared SettlementTasks
+     * Gets a list of suitable TaskJob for a particular Person. This acts as binding the shared SettlementTasks
      * to the particular worker by applying their personal modifier. 
+     * 
      * @return Custom list of jobs applicable
      * @see SettlementMetaTask#getPersonSettlementModifier(Person)
      */
@@ -161,13 +164,14 @@ public class SettlementTaskManager implements Serializable {
     }
 
     /**
-     * How many tasks have beene xecuted out of the shared pool?
+     * How many tasks have been executed out of the shared pool?
      */
     public int getExecutedCount() {
         return executedCount;
     }
+    
     /**
-     * This is the reuse score of how many times a single Task list is reused by otehr Workers.
+     * This is the reuse score of how many times a single Task list is reused by other Workers.
      */
     public double getReuseScore() {
         return (double)callCount/buildCount;

@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class ExplorationMeta extends AbstractMetaMission {
 
 	/** Mission name */
-	private static final double VALUE = 1D;
+	private static final double VALUE = 2D;
 
 	private static final int MAX = 200;
 

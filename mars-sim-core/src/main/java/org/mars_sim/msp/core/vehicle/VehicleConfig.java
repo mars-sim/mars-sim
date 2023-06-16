@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleConfig.java
- * @date 2023-05-17
+ * @date 2023-06-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.vehicle;
@@ -38,15 +38,17 @@ public class VehicleConfig {
 	private static final String VEHICLE = "vehicle";
 	private static final String NAME = "name";
 	private static final String TYPE = "type";
+	private static final String FUEL = "fuel";
 	private static final String BASE_IMAGE = "base-image";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String DESCRIPTION = "description";
+	private static final String POWER_SOURCE = "power-source";	
 	private static final String BATTERY_MODULE = "battery-module";
 	private static final String FUEL_CELL_STACK = "fuel-cell-stack";
 	private static final String DRIVETRAIN_EFFICIENCY = "drivetrain-efficiency";
 	private static final String BASE_SPEED = "base-speed";
-	private static final String AVERAGE_POWER = "average-power";
+	private static final String BASE_POWER = "base-power";
 	private static final String EMPTY_MASS = "empty-mass";
 	private static final String CREW_SIZE = "crew-size";
 	private static final String CARGO = "cargo";
@@ -120,19 +122,32 @@ public class VehicleConfig {
 			if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
 				description = vehicleElement.getChildText(DESCRIPTION);
 			}
+			
+			String powerSourceType = "None";
+			String fuelTypeStr = "None";
+			double powerValue = 0;
+			
+			Element powerSourceElement = vehicleElement.getChild(POWER_SOURCE);
+			powerSourceType = powerSourceElement.getAttributeValue(TYPE);
+			fuelTypeStr = powerSourceElement.getAttributeValue(FUEL);
+			powerValue = Double.parseDouble(powerSourceElement.getAttributeValue(VALUE));
+			
 			int battery = Integer.parseInt(vehicleElement.getChild(BATTERY_MODULE).getAttributeValue(NUMBER));
 			int fuelCell = Integer.parseInt(vehicleElement.getChild(FUEL_CELL_STACK).getAttributeValue(NUMBER));
         	
 			double drivetrainEff = Double
 					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
-			double averagePower = Double.parseDouble(vehicleElement.getChild(AVERAGE_POWER).getAttributeValue(VALUE));
+			double basePower = Double.parseDouble(vehicleElement.getChild(BASE_POWER).getAttributeValue(VALUE));
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 			
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, battery, fuelCell, 
-					drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
+			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, 
+					powerSourceType, fuelTypeStr, powerValue,
+					battery, fuelCell, 
+					drivetrainEff, baseSpeed, basePower, emptyMass, 
+					crewSize);
 			
 			v.setWidth(width);
 			v.setLength(length);

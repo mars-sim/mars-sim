@@ -29,8 +29,10 @@ import org.mars_sim.msp.common.FileLocator;
 	private static final String SURF_MAP = "surface";
 	private static final String MAP_PROPERTIES = "/mapdata.properties";
 
-	private Map<String,MapMetaData> metaData = new HashMap<>();
+	private Map<String, MapMetaData> metaData = new HashMap<>();
 
+	private transient MapData mapData = null;
+	
  	/**
  	 * Constructor.
  	 */
@@ -46,7 +48,7 @@ import org.mars_sim.msp.common.FileLocator;
 				String hiRes = value[2];
 				String loRes = value[3];
 
-				// Locally avialable is based on hires image which will be bigger
+				// Locally available is based on hires image which will be bigger
 				boolean isLocal = FileLocator.isLocallyAvailable(hiRes);
 				metaData.put(id, new MapMetaData(id, value[0], isLocal, isColour, hiRes, loRes));
 			}
@@ -73,16 +75,25 @@ import org.mars_sim.msp.common.FileLocator;
 			return null;
 		};
 		
-
  		MapData result = null;
-		try {
-			result = new IntegerMapData(mt);
-			
-			// Patch the metadata to be locally available
-			mt.setLocallyAvailable(true);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Could not find the map file.", e);
+ 		
+		if (mapData == null 
+				|| !mapData.getMetaData().getName().equals(mt.getName())) {
+
+			try {
+				// Obtain a new MapData instance
+				result = new IntegerMapData(mt);
+				// Save the result into the mapData cache
+				this.mapData = result;
+				// Patch the metadata to be locally available
+				mt.setLocallyAvailable(true);
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "Could not find the map file.", e);
+			}
 		}
+		else
+			return mapData;
+		
 		return result;
  	}
 

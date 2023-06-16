@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @date 2021-12-20
+ * @date 2023-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -26,6 +26,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -88,26 +90,26 @@ public class InventoryTabPanel extends TabPanel {
 			inventoryContentPanel.add(resourcesPanel);
 
 			// Create resources table model
-			resourceTableModel = new ResourceTableModel(rHolder);
+			resourceTableModel = new ResourceTableModel(unit);
 
 			// Create resources table
 			JTable resourceTable = new JTable(resourceTableModel);
-
 			resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-			TableColumnModel resourceColumns = resourceTable.getColumnModel();
-			resourceColumns.getColumn(0).setPreferredWidth(140);
-			resourceColumns.getColumn(1).setPreferredWidth(30);
-			resourceColumns.getColumn(2).setPreferredWidth(30);
+
 
 			resourceTable.setRowSelectionAllowed(true);
 			resourcesPanel.setViewportView(resourceTable);
 
-			// Added sorting
+			// Add sorting
 			resourceTable.setAutoCreateRowSorter(true);
-
 
 			// Align the preference score to the right of the cell
 			rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+			
+			TableColumnModel resourceColumns = resourceTable.getColumnModel();
+			resourceColumns.getColumn(0).setPreferredWidth(140);
+			resourceColumns.getColumn(1).setPreferredWidth(30);
+			resourceColumns.getColumn(2).setPreferredWidth(30);
 			resourceColumns.getColumn(0).setCellRenderer(rightRenderer);
 			resourceColumns.getColumn(1).setCellRenderer(digit2Renderer);
 			resourceColumns.getColumn(2).setCellRenderer(digit2Renderer);
@@ -125,19 +127,19 @@ public class InventoryTabPanel extends TabPanel {
 			// Create item table
 			JTable itemTable = new JTable(itemTableModel);
 			itemTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+
+			itemTable.setRowSelectionAllowed(true);
+			itemPanel.setViewportView(itemTable);
+
+			// Add sorting
+			itemTable.setAutoCreateRowSorter(true);
+
 			TableColumnModel itemColumns = itemTable.getColumnModel();
 			itemColumns.getColumn(0).setPreferredWidth(110);
 			itemColumns.getColumn(1).setPreferredWidth(20);
 			itemColumns.getColumn(2).setPreferredWidth(30);
 			itemColumns.getColumn(3).setPreferredWidth(30);
 			itemColumns.getColumn(4).setPreferredWidth(30);
-
-			itemTable.setRowSelectionAllowed(true);
-			itemPanel.setViewportView(itemTable);
-
-			// Added sorting
-			itemTable.setAutoCreateRowSorter(true);
-
 			// Align the preference score to the right of the cell
 			itemColumns.getColumn(0).setCellRenderer(rightRenderer);
 			itemColumns.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
@@ -147,20 +149,24 @@ public class InventoryTabPanel extends TabPanel {
 		}
 
         // Create equipment panel
-        JScrollPane equipmentPanel = new JScrollPane();
-        equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        inventoryContentPanel.add(equipmentPanel);
-
         if (unit instanceof EquipmentOwner eo) {
+            JScrollPane equipmentPanel = new JScrollPane();
+            equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+            inventoryContentPanel.add(equipmentPanel);
+            
 	        // Create equipment table model
 	        equipmentTableModel = new EquipmentTableModel(eo);
 	
 	        // Create equipment table
 	        JTable equipmentTable = new JTable(equipmentTableModel);
 	        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+	        
 	        equipmentTable.setRowSelectionAllowed(true);
 	        equipmentPanel.setViewportView(equipmentTable);
 	
+			// Add sorting
+	        equipmentTable.setAutoCreateRowSorter(true);
+			
 	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 	
 			TableColumnModel equipmentColumns = equipmentTable.getColumnModel();
@@ -177,8 +183,6 @@ public class InventoryTabPanel extends TabPanel {
 			equipmentColumns.getColumn(2).setCellRenderer(renderer2);
 			equipmentColumns.getColumn(3).setCellRenderer(renderer2);
 	
-			// Added sorting
-	        equipmentTable.setAutoCreateRowSorter(true);
 	
 			// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
 	        equipmentTable.addMouseListener(new UnitTableLauncher(getDesktop()));
@@ -208,26 +212,67 @@ public class InventoryTabPanel extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Map<Resource, Double> resources = new HashMap<>();
+		private Map<Resource, Double> stored = new HashMap<>();
 		private Map<Resource, Double> capacity = new HashMap<>();
 		private List<Resource> keys = new ArrayList<>();
 
+		private Unit unit;
 		private ResourceHolder holder;
 
-        private ResourceTableModel(ResourceHolder unit) {
-        	this.holder = unit;
-        	loadResources(keys, resources, capacity);
+        private ResourceTableModel(Unit unit) {
+        	this.unit = unit;
+        	this.holder = (ResourceHolder) unit;
+        	loadResources(keys, stored, capacity);
         }
 
-        private void loadResources(List<Resource> kys, Map<Resource, Double> res, Map<Resource, Double> cap) {  
-			List<AmountResource> arItems = holder.getAmountResourceIDs().stream()
-							.map(ar -> ResourceUtil.findAmountResource(ar))
-							.filter(Objects::nonNull)
-							.toList();
+        private void loadResources(List<Resource> kys, Map<Resource, Double> stored, Map<Resource, Double> cap) {  
+        	List<AmountResource> arItems = //new ArrayList<>();
+        			holder.getAllAmountResourceIDs().stream()
+					.map(ar -> ResourceUtil.findAmountResource(ar))
+					.filter(Objects::nonNull)
+					.toList();
+ 
+//        	if (unit.getUnitType() == UnitType.PERSON) {
+//
+//        		List<AmountResource> ars = ((Person)unit).getEquipmentInventory()
+//        				.getAllAmountResourceIDs().stream()
+//    					.map(ar -> ResourceUtil.findAmountResource(ar))
+//    					.filter(Objects::nonNull)
+//    					.toList();
+//
+//        		kys.addAll(ars);	
+//        		
+//    			for (AmountResource resource : arItems) {
+//    				stored.put(resource, ((Person)unit).getAllAmountResourceStored(resource.getID()));
+//    				cap.put(resource, ((Person)unit).getAmountResourceCapacity(resource.getID()));
+//    			}
+//    			
+//        	}
+//        	else if (unit.getUnitType() == UnitType.ROBOT) {
+//        		List<AmountResource> ars = ((Robot)unit).getEquipmentInventory()
+//        				.getAllAmountResourceIDs().stream()
+//    					.map(ar -> ResourceUtil.findAmountResource(ar))
+//    					.filter(Objects::nonNull)
+//    					.toList();
+//
+//        		kys.addAll(ars);	
+//        		
+//    			for (AmountResource resource : arItems) {
+//    				stored.put(resource, ((Robot)unit).getAllAmountResourceStored(resource.getID()));
+//    				cap.put(resource, ((Robot)unit).getAmountResourceCapacity(resource.getID()));
+//    			}
+//            }
+//        	else {
+        		arItems = holder.getAllAmountResourceIDs().stream()
+				.map(ar -> ResourceUtil.findAmountResource(ar))
+				.filter(Objects::nonNull)
+				.toList();
+//        	}
 
 			kys.addAll(arItems);
+			
 			for (AmountResource resource : arItems) {
-				res.put(resource, holder.getAmountResourceStored(resource.getID()));
+				stored.put(resource, holder.getAllAmountResourceStored(resource.getID()));
 				cap.put(resource, holder.getAmountResourceCapacity(resource.getID()));
 			}
         }
@@ -262,7 +307,7 @@ public class InventoryTabPanel extends TabPanel {
             	return keys.get(row).getName();
             }
             else if (column == 1) {
-            	return resources.get(keys.get(row));
+            	return stored.get(keys.get(row));
             }
             else if (column == 2) {
             	return capacity.get(keys.get(row));
@@ -272,19 +317,18 @@ public class InventoryTabPanel extends TabPanel {
 
         public void update() {
     		List<Resource> newResourceKeys = new ArrayList<>();
-			Map<Resource, Double> newResources = new HashMap<>();
+			Map<Resource, Double> newStored = new HashMap<>();
     		Map<Resource, Double> newCapacity = new HashMap<>();
 
-    		loadResources(newResourceKeys, newResources, newCapacity);
+    		loadResources(newResourceKeys, newStored, newCapacity);
 
     		if (!keys.equals(newResourceKeys)
-    				|| !resources.equals(newResources)
+    				|| !stored.equals(newStored)
     				|| !capacity.equals(newCapacity)) {
-    			resources = newResources;
+    			stored = newStored;
     			capacity = newCapacity;
     			keys = newResourceKeys;
     			fireTableDataChanged();
-
     		}
     	}
     }

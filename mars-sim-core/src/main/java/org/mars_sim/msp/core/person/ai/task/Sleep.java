@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
@@ -238,8 +239,9 @@ public class Sleep extends Task {
 
 					//////////////////// Case 0 /////////////////////////
 					// Case 0 : if a person is in the astronomy observatory, no need of looking for a bed
-					if (person.getBuildingLocation().hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-						|| person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+					Building building = person.getBuildingLocation();
+					if (building != null && building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
+						|| BuildingManager.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION, person, building)) {
 						return;
 					}
 					

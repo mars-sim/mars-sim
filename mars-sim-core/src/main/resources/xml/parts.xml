@@ -858,10 +858,6 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="CMOS Camera" type="electronic" mass="0.5">
-		<description>Complementary Metal–Oxide–Semiconductor(CMOS) Camera has an array of CMOS sensors. Each sensor consists
-		of millions of pixel sensors, each of which includes a photodetector.</description>
-	</part>
 
 	<part name="Turbopump" type="utility" mass="50.0">
 		<description>This turbopump is compatible with delivering liquid methane. The purpose of a turbopump is
@@ -1034,7 +1030,21 @@
 		XPS is often lined with aluminium foil </description>
 	</part>
 
+	<part name="biosensor" type="electronic" mass="0.1">
+		<description>A biopolymer sensor that can be printed on a wide range of materials 
+		for sensing trace levels of pollutants/toxins or whatever airborne/waterborne bacteria 
+		and virus. It contains embedded molecular switches consisting of a protein that acts 
+		like a lock and key. A target molecule or pathogen binds to the switch, which opens
+		the 'lock' to combine to form an enzyme and emits a light indicating the presence and 
+		quantity of the target. Useful for pathogen detection, food analysis, medical monitoring,
+		and measurement of pollutants </description>
+	</part>
 	
+	<part name="CMOS sensor" type="electronic" mass="0.05">
+		<description>Complementary Metal–Oxide–Semiconductor(CMOS) consists
+		of millions of pixel sensors, each of which includes a photodetector.</description>
+	</part>	
+		
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

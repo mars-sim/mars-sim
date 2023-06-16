@@ -119,7 +119,8 @@ extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();

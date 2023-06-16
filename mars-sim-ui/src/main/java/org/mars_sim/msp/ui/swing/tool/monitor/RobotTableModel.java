@@ -200,6 +200,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		}
 		
 		this.settlement = filter;
+		if (settlement == null)
+			return false;
+		
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
 			resetEntities(settlement.getAllAssociatedRobots());

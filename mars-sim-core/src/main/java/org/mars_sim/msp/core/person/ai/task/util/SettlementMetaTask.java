@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task that create tasks specific to a Settlement. It doesn't have the ability to create Task 
  * instances itself. These are used but the ShiftTaskManager to maintain a shared pool of tasks.
+ * 
  * @see SettlementTaskManager
  */
 public interface SettlementMetaTask {
@@ -29,14 +30,16 @@ public interface SettlementMetaTask {
 	Set<RobotType> getPreferredRobot();
 
     /**
-     * Get the potential pending Tasks for a Settlment. These have no person/robot modifiers applied.
-     * @param settlement Swettlement to be scanned
+     * Gets the potential pending Tasks for a Settlement. These have no person/robot modifiers applied.
+     * 
+     * @param settlement Settlement to be scanned
      * @return List if SettlementTasks
      */
     List<SettlementTask> getSettlementTasks(Settlement settlement);
 
     /**
-     * Get the Person applicable modifiers for this  Meta Task.
+     * Gets the Person applicable modifiers for this  Meta Task.
+     * 
      * @param t The Settlement task being evaluated
      * @param p Person in question
      * @return Default returns 0 being no applicable Task
@@ -44,7 +47,8 @@ public interface SettlementMetaTask {
     double getPersonSettlementModifier(SettlementTask t, Person p);
 
     /**
-     * Get the Robot applicable modifiers for this  Meta Task.
+     * Gets the Robot applicable modifiers for this  Meta Task.
+     * 
      * @param t The Settlement task being evaluated
      * @param r Robot in question
      * @return Default returns 0 

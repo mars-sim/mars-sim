@@ -413,7 +413,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/**
 	 * Sets the current task to null.
 	 * 
-	 * @param reason May ebe used in an override method
+	 * @param reason May be used in an override method
 	 */
 	public void clearAllTasks(String reason) {
 		endCurrentTask();

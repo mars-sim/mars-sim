@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @date 2023-02-25
+ * @date 2023-06-06
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -63,17 +63,68 @@ public class TabPanelGeneral extends TabPanel {
 		svgPanel.add(svgLabel);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
+		int fuelTypeID = v.getFuelTypeID();
+		String fuelTypeStr = "None";
+		if (fuelTypeID < 0) {
+			fuelTypeStr = v.getFuelTypeStr();
+		}
+		else {
+			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
+		}
+		
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(8);
-		topPanel.add(infoPanel, BorderLayout.CENTER);
+		AttributePanel typePanel = new AttributePanel(2);
+		center.add(typePanel, BorderLayout.NORTH);
+		
+		typePanel.addTextField( "Type", v.getVehicleType().getName(), null);
+		typePanel.addTextField( "Specification", v.getSpecName(), null);
+		
+		AttributePanel labelGrid = new AttributePanel(15, 2);
+		center.add(labelGrid, BorderLayout.CENTER);
+	
+		labelGrid.addTextField( "Crew Size", v.getVehicleSpec().getCrewSize() + "", null);
+		labelGrid.addTextField( "Fuel Cell Stack", v.getFuellCellStack() + "", null);	
+		
+		labelGrid.addTextField( "Battery Module", v.getBatteryModule() + "", null);	
+		labelGrid.addTextField( "Fuel Type", fuelTypeStr, null);
+		
+		labelGrid.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
+		labelGrid.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
+		
+		labelGrid.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);	
+		labelGrid.addTextField( "Base FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()), null);
+		
+		labelGrid.addTextField( "Base Accel", StyleManager.DECIMAL_M_S2.format(v.getVehicleSpec().getBaseAccel()), null);	
+		labelGrid.addTextField( "Cum FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getCoeffCumFC2FE()), null);		
+		
+		labelGrid.addTextField( "Base Speed", StyleManager.DECIMAL_M_S.format(v.getVehicleSpec().getBaseSpeed()), null);
+		labelGrid.addTextField( "Base Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getBasePower()), null);
 
-		infoPanel.addTextField( "Type", v.getVehicleType().getName(), null);
-		infoPanel.addTextField( "Specification", v.getSpecName(), null);
-		infoPanel.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);
-		infoPanel.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
-		infoPanel.addTextField( "Fuel", ResourceUtil.findAmountResourceName(v.getFuelType()), null);
-		infoPanel.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
-		infoPanel.addTextField( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()), null);
-		infoPanel.addTextField( "Estimated Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);
+		labelGrid.addTextField( "Road Speed", StyleManager.DECIMAL_KM.format(v.getAverageRoadLoadSpeed()), null);
+		labelGrid.addTextField( "Road Power", StyleManager.DECIMAL_KW.format(v.getAverageRoadLoadPower()), null);
+		
+		labelGrid.addTextField( "Drivetrain Eff", StyleManager.DECIMAL_PERC.format(100*v.getVehicleSpec().getDrivetrainEfficiency()), null);
+		labelGrid.addTextField( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()), null);
+		
+		labelGrid.addTextField( "Drivetrain En", StyleManager.DECIMAL_KWH.format(v.getVehicleSpec().getDrivetrainEnergy()), null);
+		labelGrid.addTextField( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()), null);
+		
+		labelGrid.addTextField( "Drive Energy", StyleManager.DECIMAL_WH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()), null);
+		labelGrid.addTextField( "Current Range", StyleManager.DECIMAL_KM.format(v.getRange()), null);
+
+		labelGrid.addTextField( "Base FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getBaseFuelConsumption()), null);
+		labelGrid.addTextField( "Base FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getBaseFuelEconomy()), null);	
+		
+		labelGrid.addTextField( "Initial FC", StyleManager.DECIMAL_WH_KM.format(v.getVehicleSpec().getInitialFuelConsumption()), null);
+		labelGrid.addTextField( "Initial FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getInitialFuelEconomy()), null);			
+		
+		labelGrid.addTextField( "Cumulative FC", StyleManager.DECIMAL_WH_KM.format(v.getCumFuelConsumption()), null);
+		labelGrid.addTextField( "Cumulative FE", StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()), null);	
+		
+		labelGrid.addTextField( "Estimated FC", StyleManager.DECIMAL_WH_KM.format(v.getEstimatedFuelConsumption()), null);
+		labelGrid.addTextField( "Estimated FE", StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()), null);			
+		
+		labelGrid.addTextField( "Instant FC", StyleManager.DECIMAL_WH_KM.format(v.getIFuelConsumption()), null);
+		labelGrid.addTextField( "Instant FE", StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()), null);			
 	}
 }

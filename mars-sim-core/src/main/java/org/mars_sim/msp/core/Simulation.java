@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2022-11-02
+ * @date 2023-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
+import org.mars_sim.msp.core.environment.OuterSpace;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -47,6 +48,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.mission.MissionStep;
+import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -59,6 +61,7 @@ import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -67,7 +70,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -256,6 +258,17 @@ public class Simulation implements ClockListener, Serializable {
 		return isUpdating;
 	}
 
+	
+	public void loadSim() {
+		Simulation sim = instance();
+
+		// Destroy old simulation.
+		if (sim.initialSimulationCreated) {
+			sim.destroyOldSimulation();
+		}
+	}
+	
+	
 	/**
 	 * Creates a new simulation instance.
 	 */
@@ -276,11 +289,12 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize intransient data members.
 		sim.initializeIntransientData(timeRatio);
 
-		isUpdating = false;
-
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
 		unitManager.setOriginalBuild(Simulation.BUILD);
+		
+		// Set this flag to false
+		isUpdating = false;
 	}
 
 	public void runSocietySim() {
@@ -300,11 +314,17 @@ public class Simulation implements ClockListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures();
 	}
 		
+	/**
+	 * Initializes instance for the maven test.
+	 */
 	public void testRun() {
+		
+		ResourceUtil.getInstance().initializeInstances();
+		
 		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
 		
-		ResourceUtil.getInstance();
+		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 
 		// Should this method call the initialiseTransient method ?
 
@@ -312,6 +332,9 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock = new MasterClock(256);
 		MarsClock marsClock = masterClock.getMarsClock();
 
+		// Set instances for logging
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
+		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
@@ -320,32 +343,48 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
-		EquipmentFactory.initialise(unitManager);
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 
+		// Initialize OuterSpace instance
+		OuterSpace outerSpace = new OuterSpace();
+		// Add it to unitManager
+		unitManager.addUnit(outerSpace);
+		
+		// Initialize Moon instance
+		Moon moon = new Moon();
+		// Add it to unitManager
+		unitManager.addUnit(moon);
+		
 		// Build planetary objects
 		MarsSurface marsSurface = new MarsSurface();
+		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 	
         RoleUtil.initialize();
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
+		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+		
 		medicalManager = new MedicalManager();
+		medicalManager.initializeInstances(mc);
 
-		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
 		malfunctionFactory = new MalfunctionFactory();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 
-		missionManager = new MissionManager();
-		missionManager.initializeInstances(simulationConfig);
+		// Initialize ScientificStudy
+		ScientificStudy.initializeInstances(marsClock);
+		// Initialize ScientificStudyUtil
+		ScientificStudyUtil.initializeInstances(unitManager);
+
 
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+		
 		
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		// Initialize instances in Airlock
@@ -366,14 +405,15 @@ public class Simulation implements ClockListener, Serializable {
 	private void initializeIntransientData(int timeRatio) {
 
 		// Initialize resources
-		ResourceUtil.getInstance();
+		ResourceUtil.getInstance().initializeInstances();
 
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-
+		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
+		
 		// Clock is always first
 		masterClock = new MasterClock(timeRatio);
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -382,7 +422,7 @@ public class Simulation implements ClockListener, Serializable {
 		DataLogger.changeTime(marsClock);
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -391,65 +431,102 @@ public class Simulation implements ClockListener, Serializable {
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
 		weather = new Weather();
+		
 		Weather.initializeInstances(this, marsClock, orbitInfo);
+		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
+		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		missionManager.initializeInstances(simulationConfig);
 
 		medicalManager = new MedicalManager();
-		scientificStudyManager = new ScientificStudyManager();
+		medicalManager.initializeInstances(mc);
+		
 		eventManager = new HistoricalEventManager();
-
+		
+		transportManager = new TransportManager(this);
+		
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-		TaskManager.initializeInstances(this, simulationConfig);
 
-		EquipmentFactory.initialise(unitManager);
-
+		
+		// Initialize OuterSpace instance
+		OuterSpace outerSpace = new OuterSpace();
+		// Add it to unitManager
+		unitManager.addUnit(outerSpace);
+		
+		// Initialize Moon instance
+		Moon moon = new Moon();
+		// Add it to unitManager
+		unitManager.addUnit(moon);
+		
 		// Initialize MarsSurface instance
 		MarsSurface marsSurface = new MarsSurface();
-		// Build objects
+		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
-
-		// Initialize instances in Airlock
-		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-		AirComposition.initializeInstances(pc);
-
-		// Initialise the Building Functions
-		ResourceProcess.initializeInstances(marsClock);
 		
-		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
 		
-		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
-								     weather, unitManager);
-		Crop.initializeInstances(cc);
-		Job.initializeInstances(unitManager, missionManager);
+		// Initialize Unit
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+	
+		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 
-		// Initialize meta tasks
-		MetaTaskUtil.initializeMetaTasks();
-
-		transportManager = new TransportManager(this);
-
+		scientificStudyManager = new ScientificStudyManager();
+		// Re-initialize ScientificStudy
+		ScientificStudy.initializeInstances(marsClock);
+		// Re-initialize ScientificStudyUtil
+		ScientificStudyUtil.initializeInstances(unitManager);
+		
+	
         // Initialize ManufactureUtil
         new ManufactureUtil();
         // Initialize RoleUtil
         new RoleUtil();
-     // Initialize RoleUtil
+        // Initialize RoleUtil
         RoleUtil.initialize();
+        // Initialize RoleU
+		Role.initializeInstances(marsClock);
+		// Re-initialize Person/Robot related class
+		Mind.initializeInstances(missionManager);
+		
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
 
+		// Initialize instances in Airlock
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		
+		AirComposition.initializeInstances(pc);
+
+		ResourceProcess.initializeInstances(marsClock);
+		
+		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
+		
+		SolarHeatSource.initializeInstances(surfaceFeatures);
+		// Re-initialize Building function related class
+		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
+								     weather, unitManager);
+		
+		Crop.initializeInstances(cc);
+		// Initialize meta tasks
+		MetaTaskUtil.initializeMetaTasks();
+		
+		TaskManager.initializeInstances(this, simulationConfig);
+		
+		Job.initializeInstances(unitManager, missionManager);
+		
 		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
-		Relation.initializeInstances(unitManager);
-		CreditManager.initializeInstances(unitManager);	
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 
+		Relation.initializeInstances(unitManager);
+		
+		CreditManager.initializeInstances(unitManager);	
+		
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
 		//  Re-initialize the GameManager
@@ -462,9 +539,174 @@ public class Simulation implements ClockListener, Serializable {
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
+		// Initialize Unit related class
+		SalvageValues.initializeInstances(unitManager, marsClock);
+		
+		
 		doneInitializing = true;
+		
+		// Set this flag to false
+		isUpdating = false;
 	}
 
+	/**
+	 *  Recreates a few instances after loading from a saved sim.
+	 */
+	public void recreateSomeInstances(int userTimeRatio) {
+		// Initialize resources
+		ResourceUtil.getInstance().initializeInstances();
+		// Gets config file instances
+		simulationConfig = SimulationConfig.instance();
+		// Clock is always first
+		masterClock = new MasterClock(userTimeRatio);
+		// Initialize UnitManager instance
+		unitManager = new UnitManager();
+		// Initialize MissionManager instance
+		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+	}
+	
+	/**
+	 *  Re-initialize instances after loading from a saved sim
+	 */
+	public void reinitializeInstances() {		
+		// Re-initialize the resources for the saved sim
+		ResourceUtil.getInstance().initializeInstances();
+
+		// Gets config file instances
+		simulationConfig = SimulationConfig.instance();
+		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
+		PersonConfig pc = simulationConfig.getPersonConfig();
+		CropConfig cc = simulationConfig.getCropConfiguration();
+		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
+		
+		// Gets the MasterClock instance
+//		MasterClock masterClock = masterClock;
+
+		// Gets the MarsClock instance
+		MarsClock marsClock = masterClock.getMarsClock();
+		
+		// Re-initialize the data logger
+		DataLogger.changeTime(marsClock);
+		
+		// Set instances for logging
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
+		
+		// Re-initialize weather
+		Weather.initializeInstances(this, marsClock, orbitInfo);
+		
+		// Re-initialize surfacefeatures
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
+		
+		// Reload mission configs
+		missionManager.initializeInstances(simulationConfig);
+		
+		// Re-initialize medical manager
+		medicalManager.initializeInstances(mc);
+		
+		transportManager.reinitalizeInstances(this);
+	
+		
+		// Re-initialize OuterSpace instance
+		OuterSpace outerSpace = unitManager.getOuterSpace();
+		// Re-initialize OuterSpace instance
+		Moon moon = unitManager.getMoon();
+		// Re-initialize the MarsSurface instance
+		MarsSurface marsSurface = unitManager.getMarsSurface();
+		
+		
+		// Re-initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+
+		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
+
+		
+		// Re-nitialize ScientificStudy
+		ScientificStudy.initializeInstances(marsClock);
+		// Re-nitialize ScientificStudyUtil
+		ScientificStudyUtil.initializeInstances(unitManager);
+		
+		// Initialize ManufactureUtil
+        new ManufactureUtil();
+        // Initialize RoleUtil
+        new RoleUtil();
+        // Initialize RoleUtil
+        RoleUtil.initialize();
+        // Initialize RoleU
+		Role.initializeInstances(marsClock);
+		// Re-initialize Person/Robot related class
+		Mind.initializeInstances(missionManager);
+		
+		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
+		// Initialize instances in Airlock
+		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		
+		AirComposition.initializeInstances(pc);
+		
+		ResourceProcess.initializeInstances(marsClock);
+		
+		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
+		
+		SolarHeatSource.initializeInstances(surfaceFeatures);
+		// Re-initialize Building function related class
+		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
+		
+		Crop.initializeInstances(cc);
+		
+		// Re-initialize the utility class for getting lists of meta tasks.
+		MetaTaskUtil.initializeMetaTasks();
+		
+		TaskManager.initializeInstances(this, simulationConfig);
+		
+		Job.initializeInstances(unitManager, missionManager);
+		
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+				medicalManager, eventManager,
+				simulationConfig.getPartConfiguration());
+	
+		Relation.initializeInstances(unitManager);
+		
+		CreditManager.initializeInstances(unitManager);
+		
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		
+		RadiationExposure.initializeInstances(masterClock, marsClock);
+		
+		//  Re-initialize the GameManager
+		GameManager.initializeInstances(unitManager);
+		
+		// Re-initialize Mission related class
+		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+				surfaceFeatures, missionManager, pc);
+
+		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		
+		// Re-initialize Unit related class
+		SalvageValues.initializeInstances(unitManager, marsClock);
+		
+		///////////////////////////////////////////////////////////////
+		
+		// Rediscover the MissionControls
+		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
+		rf.discoverReportingAuthorities(unitManager);
+			
+		HealthProblem.initializeInstances(medicalManager, eventManager);
+
+		// Re-initialize Structure related class
+		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
+
+		
+		// Start a chain of calls to set instances
+		// Warning: must call this at the end of this method
+		// after all instances are set
+		unitManager.reinit();
+		
+		doneInitializing = true;
+
+		// Set this flag to false
+		isUpdating = false;
+	}
+		
 	/**
 	 * Starts the simulation.
 	 *
@@ -521,7 +763,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
     /**
-     * Deserialize to Object from given file.
+     * Deserializes to Object from given file.
      */
     private void deserialize(File file) throws IOException, ClassNotFoundException {
 
@@ -547,9 +789,18 @@ public class Simulation implements ClockListener, Serializable {
 			transportManager = (TransportManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
-
-			UnitSet.reinit(unitManager);
 			
+			UnitSet.reinit(unitManager);
+
+		} catch (ClassNotFoundException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't find class when loading " + file + " : " + e.getMessage());
+
+		} catch (ObjectStreamException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't read object stream when loading " + file + " : " + e.getMessage());
+	
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Input/Output problem when loading " + file + " : ", e.getMessage()); 
+
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());
 			
@@ -566,7 +817,7 @@ public class Simulation implements ClockListener, Serializable {
     }
 
     /**
-     * Computes the size of the file
+     * Computes the size of the file.
      *
      * @param file
      * @return the file size with unit in a string
@@ -603,20 +854,24 @@ public class Simulation implements ClockListener, Serializable {
 		// Deserialize the file
 		deserialize(file);
 
+		// Get the current build
+		String currentBuild = Simulation.BUILD;
+		// Load the previous saved sim's build
 		String loadBuild = unitManager.getOriginalBuild();
+		
 		if (loadBuild == null)
 			loadBuild = "unknown";
 
 		logger.config(" ");
-		logger.config("                   Info on The Saved Simulation                      ");
+		logger.config("                   Info on Saved Simulation                      ");
 		logger.config(DASHES);
 		logger.config("                   Filename : " + filename);
 		logger.config("                       Path : " + path);
 		logger.config("                       Size : " + computeFileSize(file));
 		logger.config("              Made in Build : " + loadBuild);
-		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
+		logger.config("  Current Core Engine Build : " + currentBuild);
 		if (lastSaveTimeStamp != null)
-			logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
+		logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthTime());
 		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
 
@@ -630,11 +885,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		initialSimulationCreated = true;
-
-		// Re-initialize instances
-		reinitializeInstances();
-		// Set this flag to false
-		isUpdating = false;
 	}
 
 	/**
@@ -646,95 +896,7 @@ public class Simulation implements ClockListener, Serializable {
 				+ lastSol
 				+ " (Cont') - - - - - - - - - - - - - - ");
 	}
-	
-	/**
-	 *  Re-initialize instances after loading from a saved sim
-	 */
-	private void reinitializeInstances() {
-		SimuLoggingFormatter.initializeInstances(masterClock);
-		// Re-initialize the utility class for getting lists of meta tasks.
-		MetaTaskUtil.initializeMetaTasks();
-		// Re-initialize the resources for the saved sim
-		ResourceUtil.getInstance().initializeInstances();
-		// Re-initialize the MarsSurface instance
-		MarsSurface marsSurface = unitManager.getMarsSurface();
 
-		// Gets config file instances
-		simulationConfig = SimulationConfig.instance();
-		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
-		PersonConfig pc = simulationConfig.getPersonConfig();
-		CropConfig cc = simulationConfig.getCropConfiguration();
-
-		// Reload mission configs
-		missionManager.initializeInstances(simulationConfig);
-		//  Re-initialize the GameManager
-		GameManager.initializeInstances(unitManager);
-		// Gets he MarsClock instance
-		MarsClock marsClock = masterClock.getMarsClock();
-		
-		Weather.initializeInstances(this, marsClock, orbitInfo);
-		// Initialize instances in Airlock
-		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
-
-		// Re-initialize the instances in LogConsolidated
-		DataLogger.changeTime(marsClock);
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
-		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-		EquipmentFactory.initialise(unitManager);
-		// Re-initialize Building function related class
-		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
-		// Rediscover the MissionControls
-		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
-		rf.discoverReportingAuthorities(unitManager);
-
-		transportManager.initalizeInstances(this);
-
-		Relation.initializeInstances(unitManager);
-		CreditManager.initializeInstances(unitManager);
-
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
-												medicalManager, eventManager,
-												simulationConfig.getPartConfiguration());
-		ScientificStudy.initializeInstances(marsClock);
-		ScientificStudyUtil.initializeInstances(unitManager);
-
-		// Re-initialize Unit related class
-		SalvageValues.initializeInstances(unitManager);
-
-		// Re-initialize Person/Robot related class
-		Mind.initializeInstances(missionManager);
-		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-		RadiationExposure.initializeInstances(masterClock, marsClock);
-		Role.initializeInstances(marsClock);
-		TaskManager.initializeInstances(this, simulationConfig);
-		HealthProblem.initializeInstances(medicalManager, eventManager);
-
-		// Re-initialize Structure related class
-		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
-		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
-
-		// Miscs.
-		AirComposition.initializeInstances(pc);
-		Crop.initializeInstances(simulationConfig.getCropConfiguration());
-		SolarHeatSource.initializeInstances(surfaceFeatures);
-		PowerSource.initializeInstances(surfaceFeatures, orbitInfo, weather);
-		ResourceProcess.initializeInstances(marsClock);
-		Job.initializeInstances(unitManager, missionManager);
-
-		LocalAreaUtil.initializeInstances(unitManager, marsClock);
-		
-		// Re-initialize Mission related class
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, missionManager, pc);
-		MissionStep.initializeInstances(marsClock, unitManager);
-
-		// Start a chain of calls to set instances
-		unitManager.reinit();
-		doneInitializing = true;
-	}
 
 	/**
 	 * Saves a simulation instance to a save file.

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitType.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-05
  * @author stpa
  */
 
@@ -9,7 +9,9 @@ package org.mars_sim.msp.core;
 
 public enum UnitType {
 
-	PLANET			("UnitType.planet"),
+	OUTER_SPACE		("UnitType.outerSpace"),
+	MARS			("UnitType.mars"),
+	MOON			("UnitType.moon"),
 	SETTLEMENT 		("UnitType.settlement"),
 	PERSON 			("UnitType.person"),
 	VEHICLE 		("UnitType.vehicle"),

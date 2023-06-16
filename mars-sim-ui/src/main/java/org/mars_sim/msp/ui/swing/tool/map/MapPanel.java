@@ -47,7 +47,7 @@ public class MapPanel extends JPanel {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = 600;
+	public static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_WIDTH;
 	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
 	private static int dragx, dragy;
 
@@ -60,6 +60,8 @@ public class MapPanel extends JPanel {
 
 	private String mapErrorMessage;
 
+	private String mapStringType;
+	
 	private List<MapLayer> mapLayers;
 
 	private Coordinates centerCoords;
@@ -90,6 +92,7 @@ public class MapPanel extends JPanel {
 
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
+		setSize(getPreferredSize());
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}
@@ -244,6 +247,10 @@ public class MapPanel extends JPanel {
 		return marsMap;
 	}
 
+	public MapData getMapData() {
+		return mapUtil.getMapData(mapStringType);
+	}
+	
 	/**
 	 * Sets the map type.
 	 * 
@@ -253,6 +260,7 @@ public class MapPanel extends JPanel {
 		
 		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
 			MapData data = mapUtil.getMapData(mapStringType);
+			this.mapStringType = mapStringType;
 			if (data == null) {
 				logger.warning("Map type cannot be loaded " + mapStringType);
 				return false;
@@ -403,6 +411,13 @@ public class MapPanel extends JPanel {
 		updateDisplay();
 	}
 
+    public Coordinates getMouseCoordinates(int x, int y) {
+		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
+		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
+		
+		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
+    }
+    
 	/**
 	 * Prepares map panel for deletion.
 	 */
@@ -419,10 +434,4 @@ public class MapPanel extends JPanel {
 		mapImage = null;
 	}
 
-    public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
-		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
-		
-		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
-    }
 }

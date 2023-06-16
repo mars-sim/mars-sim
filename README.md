@@ -124,8 +124,8 @@ by keeping track of the credits and deficit based on the VPs of the resources in
 
 ## Countries 
 
-It is an incredible understaking in that there are 29 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
-participating in this dream of making Mars as the second home for humanity. Altogether, there's 10 
+It is an incredible undertaking in that 30 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+are participating in this dream of making Mars as the second home for humanity. Altogether, there's a total of 9 
 possible space agencies to choose from as a sponsor to start a settlement. Notably, European Space Agency (ESA) 
 is a bloc that consists of 22 member nations willing to fund this space development effort. 
 

@@ -183,8 +183,6 @@ public class MasterClock implements Serializable {
 				+ ((maxMilliSolPerPulse - minMilliSolPerPulse) * desiredTR / MAX_TIME_RATIO);
 	}
 	
-
-	
 	/**
 	 * Returns the Martian clock.
 	 *

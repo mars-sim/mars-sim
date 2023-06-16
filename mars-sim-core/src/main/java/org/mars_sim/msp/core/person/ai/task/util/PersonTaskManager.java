@@ -230,6 +230,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 		return defaultOutsideTasks;
 	}
+	
 	/**
 	 * Start a new Task by first checking for pending tasks.
 	 */

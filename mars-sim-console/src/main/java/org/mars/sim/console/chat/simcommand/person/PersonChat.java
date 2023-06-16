@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonChat.java
- * @date 2022-08-24
+ * @date 2023-06-14
  * @author Barry Evans
  */
 
@@ -26,7 +26,7 @@ import org.mars.sim.console.chat.simcommand.unit.WorkerWorkCommand;
 import org.mars_sim.msp.core.person.Person;
 
 /**
- * A connect to a Person object
+ * A connect to a Person object.
  */
 public class PersonChat extends ConnectedUnitCommand {
 
@@ -36,6 +36,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																	new WorkerAttributeCommand(PERSON_GROUP),
 																	BedCommand.BED,
 																	ProfileCommand.PROFILE,
+																	LoadingCommand.LOADING,
 																	EvaCommand.EVA,
 																	FriendCommand.FRIEND,
 																	PersonReviveCommand.REVIVE,
@@ -64,7 +65,7 @@ public class PersonChat extends ConnectedUnitCommand {
 	}
 
 	/**
-	 * Repeat the status command
+	 * Repeats the status command.
 	 */
 	@Override
 	public String getIntroduction() {

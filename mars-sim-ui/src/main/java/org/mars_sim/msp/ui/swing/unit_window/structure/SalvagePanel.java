@@ -120,6 +120,7 @@ public class SalvagePanel extends JPanel {
     
     /**
      * Gets the salvage process.
+     * 
      * @return process
      */
     public SalvageProcess getSalvageProcess() {
@@ -128,6 +129,7 @@ public class SalvagePanel extends JPanel {
     
     /**
      * Gets a tool tip string for a salvage process.
+     * 
      * @param process the salvage process.
      * @param building the manufacturing building (or null if none).
      */
@@ -135,11 +137,11 @@ public class SalvagePanel extends JPanel {
             Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("Salvage Process: ").append(processInfo.toString()).append("<br>");
+        result.append("Salvage Process: ").append(processInfo.getName()).append("<br>");
         if (building != null) result.append("Manufacture Building: ").append(building.getBuildingType()).append("<br>");
-        result.append("Effort Time Required: ").append(processInfo.getWorkTimeRequired()).append(" millisols<br>");
-        result.append("Building Tech Level Required: ").append(processInfo.getTechLevelRequired()).append("<br>");
-        result.append("Materials Science Skill Level Required: ").append(processInfo.getSkillLevelRequired()).append("<br>");
+        result.append("Effort Time Req'd: ").append(processInfo.getWorkTimeRequired()).append(" millisols<br>");
+        result.append("Building Tech Level Req'd: ").append(processInfo.getTechLevelRequired()).append("<br>");
+        result.append("Materials Science Skill Level Req'd: ").append(processInfo.getSkillLevelRequired()).append("<br>");
         
         // Add salvaged item.
         if (process != null) result.append("Salvaged Item: ").append(process.getSalvagedUnit().getName()).append("<br>");
@@ -159,7 +161,7 @@ public class SalvagePanel extends JPanel {
     }
     
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		process = null;

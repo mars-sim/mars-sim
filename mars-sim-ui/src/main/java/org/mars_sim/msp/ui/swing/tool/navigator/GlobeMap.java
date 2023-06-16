@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GlobeMap.java
- * @date 2023-04-28
+ * @date 2023-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -11,17 +11,13 @@ import java.awt.MediaTracker;
 import java.awt.image.ImageObserver;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
-import java.io.File;
-import java.io.IOException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import org.mars_sim.mapdata.MapMetaData;
-import org.mars_sim.msp.common.FileLocator;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.tool.MoreMath;
@@ -36,7 +32,7 @@ public class GlobeMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	private static final int MAP_H = 600;
+	private static final int MAP_H = NavigatorWindow.MAP_BOX_WIDTH;
 	/** Width of map source image (pixels). */
 	private static final int MAP_W = MAP_H * 2;
 	private static final int HALF_MAP_HEIGHT = MAP_H / 2;
@@ -46,6 +42,7 @@ public class GlobeMap {
 	private static final double RHO = MAP_H / Math.PI;
 	private static final double COL_ARRAY_MODIFIER = 1 / PI_DOUBLE;
 
+	private int[] imageArray;
 
 	// Data members
 	/** Center position of globe. */
@@ -58,9 +55,11 @@ public class GlobeMap {
 	/** finished image of sphere with transparency. */
 	private Image globeImage;
 	/** true when image is done. */
-	private boolean imageDone;
+	private boolean mapImageDone;
 	/** parent display area. */
 	private JComponent displayArea;
+	
+	private GlobeDisplay globeDisplay;
 
 	/**
 	 * Constructs a MarsMap object.
@@ -68,19 +67,22 @@ public class GlobeMap {
 	 * @param mapType   the type of globe
 	 * @param displayArea the display component for the map
 	 */
-	public GlobeMap(MapMetaData mapType, JComponent displayArea) {
+	public GlobeMap(GlobeDisplay globeDisplay, MapMetaData mapType, JComponent displayArea) {
 
 		// Initialize Variables
+		this.globeDisplay = globeDisplay;
 		this.displayArea = displayArea;
 		centerCoords = new Coordinates(PI_HALF, 0);
 
+		cylindricalMapImage =  globeDisplay.getNavigatorWindow().getMapPanel().getMapData().getCylindricalMapImage();
+
 		// Locate the image file which may be downloaded from a remote site
-		File imageFile = FileLocator.locateFile(mapType.getLoResFile());
-		try {
-			cylindricalMapImage = ImageIO.read(imageFile);
-		} catch (IOException e) {
-			logger.severe("Can't read image file ");
-		}
+//		File imageFile = FileLocator.locateFile(mapType.getLoResFile());
+//		try {
+//			cylindricalMapImage = ImageIO.read(imageFile);
+//		} catch (IOException e) {
+//			logger.severe("Can't read image file ");
+//		}
 		// Prepare Sphere
 		setupSphere();
 	}
@@ -100,7 +102,7 @@ public class GlobeMap {
 		}
 
 		// Initialize variables
-		imageDone = false;
+		mapImageDone = false;
 
 		centerCoords = adjNewCenter;
 
@@ -131,7 +133,7 @@ public class GlobeMap {
 		double cos_offset = MoreMath.cos(phi + Math.PI);
 
 		// Create array to hold image
-		int[] buffer_array = new int[MAP_H * MAP_H];
+		imageArray = new int[MAP_H * MAP_H];
 
 		// Go through each row of the sphere
 		for (double row = start_row; (((north) && (row >= end_row))
@@ -209,24 +211,53 @@ public class GlobeMap {
 				int buff_y = (int) Math.round((temp_buff_y1 * MoreMath.sin(temp_col)) + temp_buff_y2) + HALF_MAP_HEIGHT;
 
 				// Put point in buffer array
-				buffer_array[buff_x + (MAP_H * buff_y)] = (int) sphereColor[array_y].elementAt(array_x);
+				imageArray[buff_x + (MAP_H * buff_y)] = (int) sphereColor[array_y].elementAt(array_x);
 				// buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray
 				// scale
 			}
 		}
-
+		
+		drawMap(newCenter);
+	}
+	
+//	/**
+//	 * NOTE: Do retain this method for future use
+//	 * 
+//	 * Creates a map image for a given center location.
+//	 * 
+//	 * @param center the center location of the map display.
+//	 * @return the map image.
+//	 */
+//	private Image createMapImage(Coordinates center) {
+//		return globeDisplay.getNavigatorWindow().getMapPanel().getMapData().getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
+//	}
+	
+	/**
+	 * Creates a 2D map at a given center point.
+	 * 
+	 * @param newCenter the new center location
+	 */
+	public void drawMap(Coordinates newCenter) {	
+		
 		// Create image out of buffer array
 		globeImage = displayArea
-				.createImage(new MemoryImageSource(MAP_H, MAP_H, buffer_array, 0, MAP_H));
+				.createImage(new MemoryImageSource(MAP_H, MAP_H, imageArray, 0, MAP_H));
 
-		// NOTE: Replace MediaTracker with faster method
-		// Use BufferedImage image = ImageIO.read() ? 
+//		globeImage = createMapImage(newCenter);
+		
+		if (displayArea == null) {
+			logger.severe("displayArea is null.");
+		}
+		
 		MediaTracker mt = new MediaTracker(displayArea);
+		if (globeImage == null) {
+			logger.severe("globeImage is null.");
+		}
 		mt.addImage(globeImage, 0);
 		try {
 			mt.waitForID(0);
 			// Indicate that image is complete
-			imageDone = true;
+			mapImageDone = true;
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 			// Restore interrupted state
@@ -255,29 +286,31 @@ public class GlobeMap {
 		double ih_d = (double) MAP_H;
 
 		// Initialize color arrays
-		int[] pixels_color = new int[MAP_H * MAP_W];
-		int[][] map_pixels = new int[MAP_W][MAP_H];
+		int[] pixelsColorArray = new int[MAP_H * MAP_W];
+		int[][] mapPixelsArray = new int[MAP_W][MAP_H];
 
 		// Grab mars_surface image into pixels_color array using PixelGrabber
 		// NOTE: Replace PixelGrabber with faster method
-		PixelGrabber pg_color = new PixelGrabber(cylindricalMapImage, 0, 0, MAP_W, MAP_H, pixels_color, 0, MAP_W);
+		
+		// Scale cylindricalMapImage down to MAP_H * MAP_W
+		PixelGrabber pixelGrabber = new PixelGrabber(cylindricalMapImage.getScaledInstance(MAP_W, MAP_H, 4), 0, 0, MAP_W, MAP_H, pixelsColorArray, 0, MAP_W);
 		
 		try {
-			pg_color.grabPixels();
+			pixelGrabber.grabPixels();
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.grabberError") + e); //$NON-NLS-1$
 			// Restore interrupted state
 		    Thread.currentThread().interrupt();
 		}
 		
-		if ((pg_color.status() & ImageObserver.ABORT) != 0)
+		if ((pixelGrabber.status() & ImageObserver.ABORT) != 0)
 			logger.info(Msg.getString("MarsMap.log.grabberError")); //$NON-NLS-1$
 
 		// Transfer contents of 1-dimensional pixels_color into 2-dimensional map_pixels
 		for (int x = 0; x < MAP_W; x++)
 			for (int y = 0; y < MAP_H; y++)
-				map_pixels[x][y] = pixels_color[x + (y * MAP_W)];
-
+				mapPixelsArray[x][y] = pixelsColorArray[x + (y * MAP_W)];
+		
 		// Initialize variables
 		offset = PI_HALF / ih_d;
 
@@ -296,7 +329,7 @@ public class GlobeMap {
 					map_col = MoreMath.floor((float)((theta / Math.PI) * ih_d));
 				}
 
-				sphereColor[row].addElement(map_pixels[map_col][row]);
+				sphereColor[row].addElement(mapPixelsArray[map_col][row]);
 			}
 		}
 	}
@@ -307,7 +340,7 @@ public class GlobeMap {
 	 * @return true if image is done
 	 */
 	public boolean isImageDone() {
-		return imageDone;
+		return mapImageDone;
 	}
 
 	/**
@@ -319,6 +352,7 @@ public class GlobeMap {
 		cylindricalMapImage = null;
 		globeImage = null;
 		displayArea = null;
-		imageDone = true;
+		mapImageDone = true;
+		imageArray = null;
 	}
 }

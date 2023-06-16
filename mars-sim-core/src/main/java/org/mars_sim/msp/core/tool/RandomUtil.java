@@ -241,7 +241,7 @@ public final class RandomUtil {
 	 * @param ceiling the maximum integer result, (ceiling > 0)
 	 * @return average value.
 	 */
-	public static double getRandomRegressionIntegerAverageValue(int ceiling) {
+	public static double getIntegerAverageValue(int ceiling) {
 
 		if (ceiling < 1) {
 			throw new IllegalArgumentException("Ceiling must be positive");

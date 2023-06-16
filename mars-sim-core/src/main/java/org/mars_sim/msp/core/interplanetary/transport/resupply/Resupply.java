@@ -190,9 +190,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		if (!orderedBuildings.isEmpty()) {
 
 			BuildingManager buildingManager = settlement.getBuildingManager();
-			
-			Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
-			settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
+
+			settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
 
 			Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 
@@ -534,10 +533,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			// until a location is found.
 			if (buildingManager.getNumBuildings() > 0) {
 				for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x = x + 2) {
-					List<Building> allBuildings = buildingManager.getACopyOfBuildings();
-
-					Collections.shuffle(allBuildings);
-					Iterator<Building> i = allBuildings.iterator();
+					Iterator<Building> i = buildingManager.getBuildingSet().iterator();
 					while (i.hasNext()) {
 						Building building = i.next();
 						newPosition = positionNextToBuilding(spec, building, (double) x, false);

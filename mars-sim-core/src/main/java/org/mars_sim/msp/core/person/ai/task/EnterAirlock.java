@@ -751,8 +751,13 @@ public class EnterAirlock extends Task {
 			else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
 				person.wearGarment(housing);
 			}
+			
 			// 2e. Unload any waste
 			suit.unloadWaste(housing);
+			
+			// 2f. Assign thermal bottle
+			person.assignThermalBottle();
+			
 			// Add experience
 			addExperience(time);
 

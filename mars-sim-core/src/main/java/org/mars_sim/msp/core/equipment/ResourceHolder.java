@@ -24,6 +24,15 @@ public interface ResourceHolder {
 	 */
 	double getAmountResourceStored(int resource);
 
+	
+	/**
+	 * Gets all the amount resource resource stored, including inside equipment
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	double getAllAmountResourceStored(int resource);
+	
 	/**
 	 * Stores the amount resource
 	 *
@@ -32,6 +41,7 @@ public interface ResourceHolder {
 	 * @return excess quantity that cannot be stored
 	 */
 	double storeAmountResource(int resource, double quantity);
+
 
 	/**
 	 * Retrieves the resource
@@ -72,6 +82,13 @@ public interface ResourceHolder {
 	 */
 	Set<Integer> getAmountResourceIDs();
 
+	/**
+	 * Gets a collection of all supported resources, including inside equipment
+	 *
+	 * @return a collection of resource ids
+	 */
+	Set<Integer> getAllAmountResourceIDs();
+	
 	/**
 	 * Gets the holder's unit instance
 	 *

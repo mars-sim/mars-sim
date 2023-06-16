@@ -62,9 +62,16 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + "");
 		buffer.appendLabeledString("# of Battery Modules", source.getBatteryModule() + "");
 
-		int id = source.getFuelType();
-		String fuelName = ResourceUtil.findAmountResourceName(id);
-		buffer.appendLabeledString("Power Source", fuelName);
+		int fuelTypeID = source.getFuelTypeID();
+		String fuelTypeStr = "None";
+		if (fuelTypeID < 0) {
+			fuelTypeStr = source.getFuelTypeStr();
+		}
+		else {
+			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
+		}
+		
+		buffer.appendLabeledString("Fuel Type", fuelTypeStr);
 		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
 		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 		buffer.appendLabeledString("Energy Capacity", String.format(KWH_FORMAT, source.getEnergyCapacity()));		
@@ -98,7 +105,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		if (isRover || isDrone) {
 			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, source.getCargoCapacity()));
 			buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
-			buffer.appendLabeledString("Cumulative Fuel Usage", String.format(CommandHelper.KG_FORMAT, source.getFuelCumulativeUsage()));	
+			buffer.appendLabeledString("Cumulative Energy Usage", String.format(CommandHelper.KWH_FORMAT, source.getCumEnergyUsage()));	
 		}
 
 		if (source instanceof Medical) {

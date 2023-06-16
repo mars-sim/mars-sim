@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2022-07-28
+ * @date 2023-06-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.commander;
@@ -302,163 +302,7 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
 
-	/**
-	 * Creates the person combo box.
-	 *
-	 * @param panel
-	 */
-	private void createPersonCombobox(JPanel panel) {
-      	// Set up combo box model.
-		setUpPersonComboBox(settlement);
 
-		JPanel comboBoxPanel = new JPanel(new BorderLayout());
-		comboBoxPanel.add(personComboBox);
-
-		JPanel crewPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		crewPanel.add(comboBoxPanel);
-
-		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
-		crewPanel.setToolTipText("Choose the crew member to give a task order");
-		personComboBox.setToolTipText("Choose the crew member to give a task order");
-
-	    panel.add(crewPanel, BorderLayout.NORTH);
-	}
-
-	/**
-	 * Creates the task combo box.
-	 *
-	 * @param panel
-	 */
-	private void createTaskCombobox(JPanel panel) {
-		DefaultComboBoxModel<FactoryMetaTask> taskComboBoxModel = new DefaultComboBoxModel<>();
-      	// Set up combo box model.
-		for(FactoryMetaTask n : MetaTaskUtil.getPersonMetaTasks()) {
-	    	taskComboBoxModel.addElement(n);
-		}
-
-		// Create comboBox.
-		JComboBoxMW<FactoryMetaTask> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);
-		taskComboBox.setMaximumRowCount(10);
-
-		JPanel comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		comboBoxPanel.add(taskComboBox);
-
-		JPanel taskPanel = new JPanel(new BorderLayout());
-		taskPanel.add(comboBoxPanel, BorderLayout.CENTER);
-
-		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
-		taskPanel.setToolTipText("Choose a task order to give");
-		taskComboBox.setToolTipText("Choose a task order to give");
-
-		// Create a button panel
-	    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    taskPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-		// Create the add button
-	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-		addButton.setPreferredSize(new Dimension(60, 25));
-		addButton.addActionListener(e -> {
-				Person selected = (Person) personComboBox.getSelectedItem();
-				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
-				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D), true);
-
-				logBookTA.append(marsClock.getTrucatedDateTimeStamp()
-						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");
-		        listUpdate();
-				repaint();
-		});
-		buttonPanel.add(addButton);
-		
-		// Create the delete button
-		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-		delButton.setPreferredSize(new Dimension(60, 25));
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					deleteATask();
-					listUpdate();
-	            	repaint();
-				}
-			}
-		});
-		buttonPanel.add(delButton);
-
-	    panel.add(taskPanel, BorderLayout.CENTER);
-	}
-
-	/**
-	 * Creates the task queue list.
-	 *
-	 * @param panel
-	 */
-	private void createTaskQueueList(JPanel panel) {
-
-	    JLabel label = new JLabel("Task Queue");
-		label.setUI(new VerticalLabelUI(false));
-		StyleManager.applySubHeading(label);
-		label.setBorder(new MarsPanelBorder());
-
-	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
-	    taskQueuePanel.add(label, BorderLayout.NORTH);
-
-	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		queueListPanel.add(taskQueuePanel);
-
-		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
-
-		// Create scroll panel for population list.
-		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
-		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
-		// Create list model
-		listModel = new ListModel();
-
-		// Create list
-		list = new JList<>(listModel);
-		listScrollPanel.setViewportView(list);
-		list.addListSelectionListener(event -> {
-		        if (!event.getValueIsAdjusting() && event != null){
-					deleteATask();
-		        }
-		});
-
-		queueListPanel.add(listScrollPanel);
-	}
-
-
-	/**
-	 * Creates the log book panel for recording task orders.
-	 *
-	 * @param panel
-	 */
-	private void createLogBookPanel(JPanel panel) {
-
-		JLabel logLabel = new JLabel("          Log Book          ");
-		logLabel.setUI(new VerticalLabelUI(false));
-		StyleManager.applySubHeading(logLabel);
-		logLabel.setBorder(new MarsPanelBorder());
-
-	    JPanel logPanel = new JPanel(new BorderLayout());
-	    logPanel.add(logLabel, BorderLayout.NORTH);
-
-		// Create an text area
-		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    textPanel.add(logPanel);
-
-	    panel.add(textPanel, BorderLayout.CENTER);
-
-		logBookTA = new JTextArea(14, 35);
-		logBookTA.setEditable(false);
-		JScrollPane scrollTextArea = new JScrollPane (logBookTA,
-				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-		// Monitor the vertical scroll of jta
-		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
-
-		textPanel.add(scrollTextArea);
-	}
 
 
 	/**
@@ -499,6 +343,166 @@ public class CommanderWindow extends ToolWindow {
 		createLogBookPanel(southPanel);
 	}
 
+	/**
+	 * Creates the person combo box.
+	 *
+	 * @param panel
+	 */
+	private void createPersonCombobox(JPanel panel) {
+      	// Set up combo box model.
+		setUpPersonComboBox(settlement);
+
+		JPanel comboBoxPanel = new JPanel(new BorderLayout());
+		comboBoxPanel.add(personComboBox);
+
+		JPanel crewPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		crewPanel.add(comboBoxPanel);
+
+		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
+		crewPanel.setToolTipText("Choose the crew member to give a task order");
+		personComboBox.setToolTipText("Choose the crew member to give a task order");
+
+	    panel.add(crewPanel, BorderLayout.WEST);
+	}
+
+	/**
+	 * Creates the task combo box.
+	 *
+	 * @param panel
+	 */
+	private void createTaskCombobox(JPanel panel) {
+		DefaultComboBoxModel<FactoryMetaTask> taskComboBoxModel = new DefaultComboBoxModel<>();
+      	// Set up combo box model.
+		for(FactoryMetaTask n : MetaTaskUtil.getPersonMetaTasks()) {
+	    	taskComboBoxModel.addElement(n);
+		}
+
+		// Create comboBox.
+		JComboBoxMW<FactoryMetaTask> taskComboBox = new JComboBoxMW<>(taskComboBoxModel);
+		taskComboBox.setMaximumRowCount(10);
+
+		JPanel comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		comboBoxPanel.add(taskComboBox);
+
+		JPanel taskPanel = new JPanel(new BorderLayout());
+		taskPanel.add(comboBoxPanel, BorderLayout.CENTER);
+
+		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
+		taskPanel.setToolTipText("Choose a task order to give");
+		taskComboBox.setToolTipText("Choose a task order to give");
+
+		// Create a button panel
+	    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    taskPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		// Create the add button
+	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		addButton.setPreferredSize(new Dimension(80, 25));
+		addButton.addActionListener(e -> {
+				Person selected = (Person) personComboBox.getSelectedItem();
+				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
+				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D), true);
+
+				logBookTA.append(marsClock.getTrucatedDateTimeStamp()
+						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");
+		        listUpdate();
+				repaint();
+		});
+		buttonPanel.add(addButton);
+		
+		// Create the delete button
+		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		delButton.setPreferredSize(new Dimension(80, 25));
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+					deleteATask();
+					listUpdate();
+	            	repaint();
+				}
+			}
+		});
+		buttonPanel.add(delButton);
+
+	    panel.add(taskPanel, BorderLayout.CENTER);
+	}
+
+	/**
+	 * Creates the task queue list.
+	 *
+	 * @param panel
+	 */
+	private void createTaskQueueList(JPanel panel) {
+
+	    JLabel label = new JLabel("Task Queue");
+		label.setUI(new VerticalLabelUI(false));
+		StyleManager.applySubHeading(label);
+		label.setBorder(new MarsPanelBorder());
+
+	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
+	    taskQueuePanel.add(label, BorderLayout.NORTH);
+
+	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		queueListPanel.add(taskQueuePanel);
+
+		// Create scroll panel for population list.
+		listScrollPanel = new JScrollPane();
+//		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
+		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+		// Create list model
+		listModel = new ListModel();
+
+		// Create list
+		list = new JList<>(listModel);
+		listScrollPanel.setViewportView(list);
+		list.addListSelectionListener(event -> {
+		        if (!event.getValueIsAdjusting() && event != null){
+					deleteATask();
+		        }
+		});
+
+		queueListPanel.add(listScrollPanel);
+		
+		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+	}
+
+
+	/**
+	 * Creates the log book panel for recording task orders.
+	 *
+	 * @param panel
+	 */
+	private void createLogBookPanel(JPanel panel) {
+
+		JLabel logLabel = new JLabel("          Log Book          ");
+		logLabel.setUI(new VerticalLabelUI(false));
+		StyleManager.applySubHeading(logLabel);
+		logLabel.setBorder(new MarsPanelBorder());
+
+	    JPanel logPanel = new JPanel(new BorderLayout());
+	    logPanel.add(logLabel, BorderLayout.NORTH);
+
+		// Create an text area
+		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    textPanel.add(logPanel);
+
+		logBookTA = new JTextArea(10, 48);
+		logBookTA.setOpaque(false);
+//		logBookTA.setBackground(new Color(0, 0, 0, 128));
+		logBookTA.setEditable(false);
+		JScrollPane scrollTextArea = new JScrollPane (logBookTA,
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+		// Monitor the vertical scroll of jta
+		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
+
+		textPanel.add(scrollTextArea);
+		
+	    panel.add(textPanel, BorderLayout.CENTER);
+	}
+	
 	/**
 	 * Creates the mission tab panel.
 	 */

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-05-27
+ * @date 2023-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEventType;
@@ -118,11 +119,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	private static final int GLOBAL_MAP_WIDTH = MapPanel.MAP_BOX_WIDTH;
+	public static final int MAP_BOX_WIDTH = 450;
 
 	private static final int HEIGHT_STATUS_BAR = 16;
 
-	private static final double RAD_PER_DEGREE = Math.PI / 180D;
+//	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
 	private static final String WHITESPACE = " ";
 	private static final String THETA = "\u03B8: "; //"Theta: ";
@@ -179,7 +180,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		super(NAME, desktop);
 
 		Simulation sim = desktop.getSimulation();
-		this.landmarks = sim.getSurfaceFeatures().getLandmarks();
+		this.landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 		this.unitManager = sim.getUnitManager();
 	
 		// Prepare content pane		
@@ -195,14 +196,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel mapPane = new JPanel(new GridLayout(1, 2));
 		wholePane.add(mapPane, BorderLayout.CENTER);
 	
-		// Build teh Map panel first as the globe is a slave
+		// Build the Map panel first as the globe is a slave
 		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		detailPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
+		detailPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
-		mapLayerPanel.setPreferredSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
+		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		mapLayerPanel.setDragger(this);
 		
 		mapLayerPanel.addMouseListener(new MouseListener());
@@ -228,7 +229,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		globePane.setOpaque(true);
 		globePane.add(globeNav);
-		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, GLOBAL_MAP_WIDTH));
+		globePane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
 
@@ -645,6 +646,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (mapLayerPanel.setMapType(newMapType)) {
 			// Update dependent panels
 			MapMetaData metaType = mapLayerPanel.getMapType();
+			// Gets a new GlobeMap if it's a different metaType
 			globeNav.setMapType(metaType);
 
 			if (metaType.isColourful()) {
@@ -827,7 +829,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Checks if the mouse is hovering over a map
+	 * Checks if the mouse is hovering over a map.
 	 * 
 	 * @param event
 	 */
@@ -851,7 +853,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				.append(Math.round(h0*1000.0)/1000.0)
 				.append(KM);
 			
-			coordSB.append(pos.getCoordinateString());
+			coordSB.append(pos.getFormattedString());
 			
 			updateStatusBarLabels(elevSB.toString(), coordSB.toString(), phi, theta);
 
