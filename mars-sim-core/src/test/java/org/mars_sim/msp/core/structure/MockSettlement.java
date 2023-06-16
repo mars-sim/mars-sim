@@ -22,7 +22,7 @@ public class MockSettlement extends Settlement {
 	 */
 	public MockSettlement()  {
 		// Use Settlement constructor.
-		super("Mock Settlement", 0, new Coordinates(0, 0));
+		super("Mock Settlement", 0, new Coordinates(Math.PI / 2D, 0));
 		
 		if (sim == null)
 			logger.severe("sim is null");

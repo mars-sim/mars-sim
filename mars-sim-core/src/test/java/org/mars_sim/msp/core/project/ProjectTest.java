@@ -31,13 +31,13 @@ public class ProjectTest extends TestCase {
         }
 
         @Override
-        void start() {
+        protected void start() {
             startCount++;
             super.start();
         }
 
         @Override
-        void complete() {
+        protected void complete() {
             endCount++;
             super.complete();
         }
@@ -85,14 +85,14 @@ public class ProjectTest extends TestCase {
         Worker worker = null;
         p.execute(worker);
         assertEquals("Stage is Active", Stage.ACTIVE, p.getStage());
-        assertEquals("Project 1st step", "Step 1", p.getStepName());
+        assertEquals("Project 1st step", "Step 1", p.getStep().getDescription());
         assertEquals("Number of step after starting", 2, p.getRemainingSteps().size());
 
 
         // Xecute second time
         p.execute(worker);
         assertEquals("Step1 stage is DONE", Stage.CLOSEDOWN, p.getStage());
-        assertEquals("Project 2nd step", "Step 2", p.getStepName());
+        assertEquals("Project 2nd step", "Step 2", p.getStep().getDescription());
         assertEquals("Step1 started once", 1, step1.startCount);
         assertEquals("Step1 ended once", 1, step1.endCount);
         assertEquals("Step1 fully expected", 0, step1.expectedCount);
@@ -161,7 +161,7 @@ public class ProjectTest extends TestCase {
         Worker worker = null;
         p.execute(worker);
         assertEquals("Stage is Active", Stage.PREPARATION, p.getStage());
-        assertEquals("Project step", "Step 1", p.getStepName());
+        assertEquals("Project step", "Step 1", p.getStep().getDescription());
 
 
         // Swap last step
@@ -171,7 +171,7 @@ public class ProjectTest extends TestCase {
         // Xecute end of first step, stage is new last step
         p.execute(worker);
         assertEquals("Process stage is Closedown", Stage.CLOSEDOWN, p.getStage());
-        assertEquals("Project step", "New Step", p.getStepName());
+        assertEquals("Project step", "New Step", p.getStep().getDescription());
 
         // Last step executed
         p.execute(worker);

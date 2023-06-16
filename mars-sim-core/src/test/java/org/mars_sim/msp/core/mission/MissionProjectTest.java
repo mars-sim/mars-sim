@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.mission;
 
-
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
@@ -28,14 +28,14 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
 
     class TestStep extends MissionStep {
 
-        private Map<Integer, Number> resources;
+        private double oxygen;
+        private double food;
 
-        public TestStep(TestMission testMission, int stepId, Number oxygen, Number food) {
+        public TestStep(TestMission testMission, int stepId, double oxygen, double food) {
             super(testMission, Stage.ACTIVE, Integer.toString(stepId));
 
-            resources = new HashMap<>();
-            resources.put(ResourceUtil.oxygenID, oxygen);
-            resources.put(ResourceUtil.foodID, food);
+            this.oxygen = oxygen;
+            this.food = food;
         }
 
         /**
@@ -51,27 +51,29 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
          * @return
          */
         @Override
-        Map<Integer, Number> getRequiredResources() {
-            return resources;
+        void getRequiredResources(MissionManifest manifest, boolean optionl) {
+            manifest.addResource(ResourceUtil.oxygenID, oxygen, true);
+            manifest.addResource(ResourceUtil.foodID, food, true);
         }
     }
 
     class TestMission extends MissionProject {
 
-        public TestMission(String name, Person leader) {
-            super(name, MissionType.AREOLOGY, 1, 1, leader);
+        public TestMission(String name, Person leader, int numSteps) {
+            super(name, MissionType.AREOLOGY, 1, 1, 1, leader);
+         
+            List<MissionStep> steps = new ArrayList<>();
+            for(int i = 0; i < numSteps; i++) {
+                steps.add(new TestStep(this, i, OXYGEN_VALUE, FOOD_VALUE));
+            }
+            setSteps(steps);
         }
-
-        public void addTestStep(int stepId, Number oxygen, Number food) {
-            addMissionStep(new TestStep(this, stepId, oxygen, food));
-        }
-
     }
 
     public void testCreation() {
         Settlement home = buildSettlement();
         Person leader = buildPerson("Leader", home);
-        MissionProject mp = new TestMission(MISSION_NAME, leader);
+        MissionProject mp = new TestMission(MISSION_NAME, leader, 0);
 
         assertEquals("Mission name", MISSION_NAME, mp.getName());
         assertEquals("Mission settlement", home, mp.getAssociatedSettlement());
@@ -81,16 +83,13 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
     public void testResources() {
         Settlement home = buildSettlement();
         Person leader = buildPerson("Leader", home);
-        TestMission mp = new TestMission(MISSION_NAME, leader);
+        int numSteps = 3;
+        TestMission mp = new TestMission(MISSION_NAME, leader, numSteps);
 
-        int steps = 3;
-        for(int i = 0; i < steps; i++) {
-            mp.addTestStep(i, OXYGEN_VALUE, FOOD_VALUE);
-        }
-
-        Map<Integer,Number> needed = mp.getResources();
-        assertEquals("Oxygen needed", steps * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
-        assertEquals("Food needed", steps * FOOD_VALUE, needed.get(ResourceUtil.foodID));
+        MissionManifest manifest = mp.getResources(true);
+        Map<Integer,Number> needed = manifest.getResources(true);
+        assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.oxygenID));
+        assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.foodID));
         assertEquals("Number of resources needed", 2, needed.size());
     }
 }

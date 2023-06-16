@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.List;
+
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -73,13 +75,6 @@ public interface VehicleMission extends Mission {
 	 */
 	NavPoint getCurrentDestination();
 
-	/**
-	 * Gets the number of navpoints on the trip.
-	 * 
-	 * @return number of navpoints
-	 */
-    int getNumberOfNavpoints();
-
     /**
 	 * Gets the navpoint at an index value.
 	 * 
@@ -87,14 +82,7 @@ public interface VehicleMission extends Mission {
 	 * @return navpoint
 	 * @throws IllegaArgumentException if no navpoint at that index.
 	 */
-    NavPoint getNavpoint(int i);
-
-    /**
-     * Gets the mission's next navpoint index.
-     * 
-     * @return navpoint index or -1 if none.
-     */
-    int getNextNavpointIndex();
+    List<NavPoint> getNavpoints();
 
     /**
      * Something has gone wrong so request help

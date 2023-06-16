@@ -182,7 +182,6 @@ public abstract class Vehicle extends Unit
 	private VehicleSpec spec;
 
 	private Mission mission;
-
 	
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
@@ -913,7 +912,6 @@ public abstract class Vehicle extends Unit
 			return 0;
 		return 1000 * cumEnergyUsedKWH / odometerMileage;
 	}
-
 	
 	/**
 	 * Gets the coefficient for converting cumulative FC to cumulative FE.
@@ -1326,7 +1324,6 @@ public abstract class Vehicle extends Unit
 
 		// Add the location to the trail if outside on a mission
 		addToTrail(getCoordinates());
-
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
 			int count = 0;
@@ -1582,11 +1579,11 @@ public abstract class Vehicle extends Unit
 		}
 	}
 
-	public double getFuelRangeErrorMargin() {
+	public static double getFuelRangeErrorMargin() {
 		return fuel_range_error_margin;
 	}
 
-	public double getLifeSupportRangeErrorMargin() {
+	public static double getLifeSupportRangeErrorMargin() {
 		return life_support_range_error_margin;
 	}
 
@@ -1881,7 +1878,6 @@ public abstract class Vehicle extends Unit
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
-
 	/**
 	 * Gets all the amount resource resource stored, including inside equipment.
 	 *
@@ -1965,7 +1961,6 @@ public abstract class Vehicle extends Unit
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
 	}
-
 	/**
 	 * Gets all stored amount resources in eqmInventory, including inside equipment
 	 *
@@ -2150,7 +2145,9 @@ public abstract class Vehicle extends Unit
 			transferred = ((MarsSurface)cu).removeVehicle(this);
 		}
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
-			transferred = ((Settlement)cu).removeParkedVehicle(this);
+			Settlement currentBase = (Settlement)cu;
+			transferred = currentBase.removeParkedVehicle(this);
+			this.setCoordinates(currentBase.getCoordinates());
 		}
 
 		if (transferred) {

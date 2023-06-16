@@ -223,7 +223,8 @@ public class TestCoordinates extends TestCase {
         double thetaError1 = Math.abs(loc1.getTheta() - 0D);
         assertTrue(phiError1 < ERROR_MARGIN_RAD);
         assertTrue(thetaError1 < ERROR_MARGIN_RAD);
-        
+
+    
         // Direction north-east.
         Direction direction2 = new Direction(Math.PI / 4D);
         Coordinates loc2 = locInit.getNewLocation(direction2, distance);

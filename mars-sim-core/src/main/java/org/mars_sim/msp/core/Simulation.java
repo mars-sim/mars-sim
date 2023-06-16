@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.logging.SimuLoggingFormatter;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.mission.MissionStep;
 import org.mars_sim.msp.core.moon.Moon;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -393,6 +394,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
+		MissionStep.initializeInstances(marsClock, unitManager);
 
 		doneInitializing = true;
 	}
@@ -532,7 +534,8 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for classes that extend Unit and Task and Mission
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, missionManager, pc);
+				surfaceFeatures, missionManager, pc);	
+		MissionStep.initializeInstances(marsClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		

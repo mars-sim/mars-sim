@@ -471,7 +471,7 @@ public class MissionTableModel extends AbstractTableModel
 
 				case NAVPOINT_NUM: {
 					if (mission instanceof VehicleMission vm) {
-						result = vm.getNumberOfNavpoints();
+						result = vm.getNavpoints().size();
 					} else
 						result = 0;
 				}

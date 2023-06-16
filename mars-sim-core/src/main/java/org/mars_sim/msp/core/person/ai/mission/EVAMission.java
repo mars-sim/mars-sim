@@ -322,7 +322,7 @@ abstract class EVAMission extends RoverMission {
 	 * @return number of sites.
 	 */
 	public final int getNumEVASites() {
-		return getNumberOfNavpoints() - 2;
+		return getNavpoints().size() - 2;
 	}
 
 	/**
@@ -333,7 +333,7 @@ abstract class EVAMission extends RoverMission {
 	 */
 	public final int getNumEVASitesVisited() {
 		int result = getCurrentNavpointIndex();
-		if (result == (getNumberOfNavpoints() - 1))
+		if (result == (getNavpoints().size() - 1))
 			result -= 1;
 		return result;
 	}

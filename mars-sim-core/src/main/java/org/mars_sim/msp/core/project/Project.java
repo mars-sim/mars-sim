@@ -10,12 +10,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * Represents a project that has a number of steps
  */
 public class Project implements Serializable {
+    private static final SimLogger logger = SimLogger.getLogger(Project.class.getName());
+
     private String name;
     private List<ProjectStep> steps = new ArrayList<>();
     private int currentStepIdx = -1; // Hold the index to make it easier
@@ -82,12 +85,21 @@ public class Project implements Serializable {
         
         if (currentStepIdx >= steps.size()) {
             isDone = true;
+            completed(true);
         }
         else {
             currentStep = steps.get(currentStepIdx);
+            logger.info(getName() + " started step " + currentStep);
             currentStep.start();
             stepStarted(currentStep);
         }
+    }
+
+    /**
+     * Callback that this project has completed
+     * @param successful
+     */
+    protected void completed(boolean successful) {
     }
 
     /**
@@ -110,9 +122,10 @@ public class Project implements Serializable {
     public void abort(String reason) {
         isAborted = true;
 
-        if (currentStep != null) {
+        if ((currentStep != null) && !currentStep.isCompleted()) {
             currentStep.complete();
         }
+        completed(false);
     }
 
     /** 
@@ -151,15 +164,15 @@ public class Project implements Serializable {
     }
 
     /**
-     * Get the description of the current project step
+     * What is active currently
      * @return
      */
-    public String getStepName() {
-        return (currentStep != null ? currentStep.getDescription() : null);
+    public ProjectStep getStep() {
+        return currentStep;
     }
 
     /**
-     * Is the project finoshed; either completed ot aborted
+     * Is the project finished; either completed ot aborted
      * @return Finsihed
      */
     public boolean isFinished() {
@@ -186,5 +199,12 @@ public class Project implements Serializable {
         if (!isAborted) {
             advanceStep();
         }
+    }
+
+    /**
+     * Abort the current step. Mark it as complete and advance
+     */
+    public void abortStep() {
+       currentStep.complete(); 
     }
 }

@@ -240,12 +240,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         remainingDistanceLabel = destinationSpringPanel.addTextField("Remaining Distance", distanceText, null);
  
         // Prepare ETA label.
-        if ((mission != null) && (mission instanceof VehicleMission) &&
-                (((VehicleMission) mission).getLegETA() != null)) {
-            etaCache = ((VehicleMission) mission).getLegETA().toString();
+        etaCache = "";
+        if (mission instanceof VehicleMission vm) {
+            MarsClock due = vm.getLegETA();
+            if (due != null) {
+                etaCache = due.toString();
+            }
         }
-        else 
-        	etaCache = "";
         etaLabel = destinationSpringPanel.addTextField("ETA", etaCache, null);
         
         // Prepare status label
@@ -374,10 +375,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update distance to destination if necessary.
-        if (mission instanceof VehicleMission) {
-            VehicleMission vehicleMission = (VehicleMission) mission;
-            if (remainingDistanceCache != vehicleMission.getTotalDistanceRemaining()) {
-                remainingDistanceCache = vehicleMission.getTotalDistanceRemaining();
+        if (mission instanceof VehicleMission vehicleMission) {
+            double remaining = vehicleMission.getTotalDistanceRemaining();
+            if (remainingDistanceCache != remaining) {
+                remainingDistanceCache = remaining;
                 remainingDistanceLabel.setText(StyleManager.DECIMAL_KM.format(remainingDistanceCache));
             }
 

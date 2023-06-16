@@ -18,6 +18,7 @@ public abstract class ProjectStep implements Serializable {
     private Project parent;
     private Stage stage;
     private String description;
+    private boolean completed = false;;
 
     protected ProjectStep(Stage stage, String description) {
         if ((stage == Stage.WAITING) || (stage == Stage.DONE) || (stage == Stage.ABORTED)) {
@@ -55,7 +56,7 @@ public abstract class ProjectStep implements Serializable {
     /**
      * A worker performs the current step
      * @param worker
-     * @return 
+     * @return True if the worker can act on the Project
      */
     protected abstract boolean execute(Worker worker);
 
@@ -64,7 +65,7 @@ public abstract class ProjectStep implements Serializable {
      * This step has just become the active step and is starting
      * @param worker Triggered the start
      */
-    void start() {
+    protected void start() {
         // Default requires no special start
     }
 
@@ -72,7 +73,16 @@ public abstract class ProjectStep implements Serializable {
      * This step has just completed and is stopping
      * @param worker Triggered the stop
      */
-    void complete() {
+    protected void complete() {
+        completed = true;
         parent.completeStep(this);
+    }
+
+    /**
+     * Is the step completed
+     * @return
+     */
+    boolean isCompleted() {
+        return completed;
     }
 }

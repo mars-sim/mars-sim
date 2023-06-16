@@ -7,12 +7,14 @@
 
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
+import org.mars_sim.msp.core.mission.predefined.TestDriveMetaMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
@@ -30,9 +32,14 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		// Get the user to select the Mission
-		List<MetaMission> missions = MetaMissionUtil.getMetaMissions().stream()
+		List<MetaMission> automissions = MetaMissionUtil.getMetaMissions().stream()
 						.filter(m -> settlement.isMissionEnable(m.getType()))
 						.collect(Collectors.toList());
+		
+		// Add the none auto missions
+		List<MetaMission> missions = new ArrayList<>(automissions);
+		missions.add(new TestDriveMetaMission());
+
 		List<String> names = missions.stream().map(MetaMission::getName).collect(Collectors.toList());				
 		int choice = CommandHelper.getOptionInput(context, names, "Pick a mission from above by entering a number");
 		if (choice < 0) {

@@ -98,7 +98,7 @@ public class MissionLog implements Serializable  {
         done = true;
     }
 
-    void setStarted() {
+    public void setStarted() {
         if (startDate == null) {
             startDate = new MarsClock(marsClock);
         }

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.PersonTaskManager;
@@ -143,6 +144,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 				.setAttribute(null)
 				.build();
 		person.initialize();
+		person.setJob(JobType.ENGINEER, "Test");
 		
 		unitManager.addUnit(person);
 		return person;
