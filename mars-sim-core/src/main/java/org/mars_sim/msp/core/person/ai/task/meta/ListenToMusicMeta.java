@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -34,7 +32,7 @@ public class ListenToMusicMeta extends FactoryMetaTask {
     private static final double WORK_SHIFT_MODIFIER = .2D;
 
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
+//  May bring back private static final Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName())
 
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

@@ -88,14 +88,14 @@ public final class JobUtil {
 		jobs.add(new ComputerScientist());
 		jobs.add(new Doctor());
 		jobs.add(new Engineer());
-		jobs.add(new Mathematician());
 		
+		jobs.add(new Mathematician());
 		jobs.add(new Meteorologist());
 		jobs.add(new Physicist());
 		jobs.add(new Pilot());
 		jobs.add(new Politician());
-		jobs.add(new Psychologist());
 		
+		jobs.add(new Psychologist());
 		jobs.add(new Reporter());
 		jobs.add(new Technician());
 		jobs.add(new Trader());

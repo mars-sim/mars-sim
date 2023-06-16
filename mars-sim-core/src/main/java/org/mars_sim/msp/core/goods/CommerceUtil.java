@@ -458,7 +458,7 @@ public final class CommerceUtil {
 			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
-			double lifeSupportMargin = delivery.getLifeSupportRangeErrorMargin();
+			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 					* lifeSupportMargin;

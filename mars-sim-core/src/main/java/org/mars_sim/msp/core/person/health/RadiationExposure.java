@@ -95,6 +95,9 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * Class models a dose of radiation over a time range
 	 */
 	public static class DoseHistory implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		
 		private double thirtyDay;
 		private double annual;
 		private double career;

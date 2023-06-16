@@ -13,7 +13,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;

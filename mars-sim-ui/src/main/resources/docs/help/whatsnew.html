@@ -8,28 +8,32 @@
 <BODY>
 <div id="my_message"><H2> What's New </H2></div>
 
-<H3> Version pre-3.6.0 (15 Jun 2023) </H3>
+<H3> Version pre-3.6.0 (16 Jun 2023) </H3>
 
 <H4>A. CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
-  <LI>Crop       : Add a new category herbs </LI>
-  <LI>Earth Time : Model using the standard Java LocalDateTime class</LI>
-  <LI>Elevation  : Adopt higher resolution height data</LI>  
-  <LI>Fuel       : Enable the use of methanol as fuel for vehicles</LI>
-  <LI>Power      : Model fission reactor with more parameters</LI>
-    
-  <LI>Resupplies : Define resupply missions with a repeating schedule</LI>
-  <LI>Vehicle    : Enable regen braking and encapsulate propulsion calculations in motor controller class</LI>
-  <LI>Vehicle    : Maintains own reference to assigned Mission.</LI>
+  <LI>Crop       : Add a new category herbs. </LI>
+  <LI>Earth Time : Model using the standard Java LocalDateTime class.</LI>
+  <LI>Elevation  : Adopt higher resolution height data.</LI>  
+  <LI>Fuel       : Enable the use of methanol as fuel for vehicles.</LI>
   <LI>Mission    : Retains reference to Vehicle after Mission completed.</LI>  
+  <LI>Power      : Model nuclear reactors with more parameters.</LI>
+    
+  <LI>Resupplies : Define resupply missions with a repeating schedule.</LI>
+  <LI>Resources  : Allow alternate resources for manufacturing.</LI>
+  <LI>Settlement : Keep track of settlement preference task/mission/science modifiers. </LI>
+  <LI>Vehicle    : Enable regen braking and encapsulate propulsion calculations in motor controller class.</LI>
+  <LI>Vehicle    : Maintains own reference to assigned Mission.</LI>
 </OL>
   
 <H4>B. UI IMPROVEMENT :</H4>
 <OL>
-  <LI>Resupply : Showcase resupply missions by settlements under a tree.</LI>
-  <LI>    Role : Restore previous role if change is not confirmed.</LI>
-  <LI>Mars Map : Use a variety of resolutions of surface maps.</LI>
-  <LI>Events   : Events in the Monitor Window are clickable to drill down into the details of the entity.</LI>
+  <LI>Events     : Events in the Monitor Window are clickable to drill down into the details of the entity.</LI>
+  <LI>Mars Map   : Use a variety of resolutions of surface maps.</LI>
+  <LI>Resupply   : Showcase resupply missions by settlements under a tree.</LI>
+  <LI>    Role   : Restore previous role if change is not confirmed.</LI>
+  <LI>Settlement : Display settlement preference task/mission/science modifiers and allow players to edit scores. </LI>
+
 </OL>  
 
 <H4>C. RUNTIME ENVIRONMENT :</H4>
@@ -38,6 +42,8 @@
 
 <H4>D. FIXES :</H4>
 <OL>
+	<LI>Resources : Correct displaying amount resources stored in Inventory Tab.</LI>
+
 <OL>
 
 <br>

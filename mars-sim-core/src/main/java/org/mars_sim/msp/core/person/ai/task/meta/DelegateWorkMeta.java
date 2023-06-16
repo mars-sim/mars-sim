@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * DelegateWorktMeta.java
+ * DelegateWorkMeta.java
  * @date 2023-06-16
  * @author Manny Kung
  */
@@ -19,13 +19,13 @@ import org.mars_sim.msp.core.structure.building.function.Administration;
 /**
  * The meta task for delegating work.
  */
-public class DelegateWorktMeta extends FactoryMetaTask {
+public class DelegateWorkMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.delegateWork"); //$NON-NLS-1$
     
-    public DelegateWorktMeta() {
+    public DelegateWorkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.ORGANIZATION, TaskTrait.LEADERSHIP);
 

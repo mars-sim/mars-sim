@@ -916,7 +916,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// If buffer, multiply by the the life support margin
 		if (useMargin) {
-			result *= vehicle.getLifeSupportRangeErrorMargin();
+			result *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		return result;
 	}

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.time.MarsClockFormat;
 /**
  * Simple table cell renderer that styles the values as Mars Clock according to the Stylemanager
  */
+@SuppressWarnings("serial")
 public class MarsTimeCellRenderer extends DefaultTableCellRenderer {
 
     /**

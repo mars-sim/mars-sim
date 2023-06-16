@@ -749,7 +749,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// Potential ClassCast but only temp. measure
 		FactoryMetaTask mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(taskName);
 		if (mt == null) {
-			logger.warning(worker, "Cannot find pending task called " + taskName);
+			logger.warning(worker, "Cannot find pending task '" + taskName + "'.");
 			return false;
 		}
 
@@ -767,20 +767,20 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a new task order of '" + task.getDescription() + "'.");
+			logger.info(worker, 20_000L, "Given a pending task order of '" + task.getDescription() + "'.");
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Deletes a pending task
+	 * Deletes a pending task.
 	 *
 	 * @param task
 	 */
 	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
-		logger.info(worker, "Removed the task order of '" + task + "'.");
+		logger.info(worker, "Removed the pending task order of '" + task + "'.");
 	}
 
 	/**

@@ -564,7 +564,7 @@
 				 // in case of getting stranded locally
 				 factor = - tripDistance / 50.0 + 3;
 			 }	
-			 factor *= vehicle.getFuelRangeErrorMargin();
+			 factor *= Vehicle.getFuelRangeErrorMargin();
 			 amountFuel *= factor;
 			 
 		 }

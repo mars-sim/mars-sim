@@ -81,18 +81,38 @@ public class ClockPulse {
 		return elapsed;
 	}
 
+	/**
+	 * Gets MarsClock instance.
+	 * 
+	 * @return
+	 */
 	public MarsClock getMarsTime() {
 		return marsTime;
 	}
 
+	/**
+	 * Gets MasterClock instance.
+	 * 
+	 * @return
+	 */
 	public MasterClock getMasterClock() {
 		return master;
 	}
 	
+	/**
+	 * Is this a new sol ?
+	 * 
+	 * @return
+	 */
 	public boolean isNewSol() {
 		return isNewSol;
 	}
 	
+	/**
+	 * Is this a new integer millisol ?
+	 * 
+	 * @return
+	 */
 	public boolean isNewMSol() {
 		return isNewIntMillisol;
 	}

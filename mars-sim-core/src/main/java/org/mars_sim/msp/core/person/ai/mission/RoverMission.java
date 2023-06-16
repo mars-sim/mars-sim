@@ -904,7 +904,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 												  int crewNum, double timeSols,
 												  boolean useBuffer) {
 
-		double lifeSupportRangeErrorMargin = getRover().getLifeSupportRangeErrorMargin();
+		double lifeSupportRangeErrorMargin = Vehicle.getLifeSupportRangeErrorMargin();
 		// Determine life support supplies needed for trip.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum ;
 		if (useBuffer)
@@ -1002,7 +1002,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Convert timeLimit into millisols and use error margin.
 		timeLimit = (timeLimit * 1000D);
 		if (useBuffer) {
-			timeLimit /= rover.getLifeSupportRangeErrorMargin();
+			timeLimit /= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		
 		return timeLimit;

@@ -22,7 +22,10 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public abstract class Transportable
 	implements Comparable<Transportable>, Entity, ScheduledEventHandler {
-		
+	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	
 	private MarsClock arrivalDate;
 	private MarsClock launchDate;
 	private TransitState state;

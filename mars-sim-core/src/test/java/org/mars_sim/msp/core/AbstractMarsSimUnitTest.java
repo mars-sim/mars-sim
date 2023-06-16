@@ -151,9 +151,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	/**
-	 * Build a psuedo vehcile mission that can be used in tests
+	 * Builds a pseudo vehicle mission that can be used in tests.
 	 */
-	protected VehicleMission  buildMission(Settlement starting, Person leader) {
+	protected VehicleMission buildMission(Settlement starting, Person leader) {
 		// Need a vehicle
 		Rover rover = buildRover(starting, "loader", null);
 
@@ -190,6 +190,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	/**
      * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
      * @param missionSol Sol in the current mission
      * @param mSol MSol throught the day
      * @param newSol Is the new Sol flag set
@@ -201,7 +202,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	/**
-	 * Create a clock pulse by advancing the simuaktino clock a certain duration.
+	 * Creates a clock pulse by advancing the simulation clock a certain duration.
+	 * 
 	 * @param duration Millisols to advanced the clock 
 	 */
 	protected ClockPulse createPulse(int duration) {

@@ -42,6 +42,7 @@ import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
  * Creates a JPanel that will render a list of ResourceProcesses in a JTable.
  * This includes creating a dynamic tooltip.
  */
+@SuppressWarnings("serial")
 public class ResourceProcessPanel extends JPanel {
     private static final Icon RED_DOT = ImageLoader.getIconByName("dot/red");
     private static final Icon GREEN_DOT = ImageLoader.getIconByName("dot/green");

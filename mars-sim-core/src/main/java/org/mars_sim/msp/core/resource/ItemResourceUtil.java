@@ -40,12 +40,6 @@ public class ItemResourceUtil implements Serializable {
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
-	/** 
-	 * Parts for creating an EVA Suit. 
-	 */
-	private static List<String> evaSuitParts;
-
-	
 	// 3-D printer
 	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 

@@ -87,7 +87,7 @@ public class MasterClock implements Serializable {
 	/** Sol day on the last fireEvent. */
 	private int lastSol = -1;
 	/** The last millisol integer on the last fireEvent. */
-	private int lastMSol = 0;
+	private int lastIntMillisol = 0;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
 	
@@ -666,19 +666,19 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	private void fireClockPulse(double time) {
-		// Identify if it's a new Millisol integer
-		int currentMSol = marsClock.getMillisolInt();
-		boolean isNewMSol = false;
-		if (lastMSol != currentMSol) {
-			lastMSol = currentMSol;
-			isNewMSol = true;
+
+		int currentIntMillisol = marsClock.getMillisolInt();
+		// Checks if this pulse starts a new integer millisol
+		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol;
+		if (isNewIntMillisol) {
+			lastIntMillisol = currentIntMillisol;
 		}
-		
+	
 		// Identify if it's a new Sol
 		int currentSol = marsClock.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
 		lastSol = currentSol;
-		
+
 		// Print the current sol banner
 		if (isNewSol)
 			printNewSol(currentSol);
@@ -688,7 +688,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsClock, this, isNewSol, isNewMSol);
+		currentPulse = new ClockPulse(newPulseId, time, marsClock, this, isNewSol, isNewIntMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 

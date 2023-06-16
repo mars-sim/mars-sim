@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.DelegateWorkMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
@@ -118,55 +119,67 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ChargeMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
 		allMetaTasks.add(new ConnectWithEarthMeta());
+		
 		allMetaTasks.add(new ConsolidateContainersMeta());
 		allMetaTasks.add(new ConstructBuildingMeta());
 		allMetaTasks.add(new CookMealMeta());
+		allMetaTasks.add(new DelegateWorkMeta());		
 		allMetaTasks.add(new DigLocalIceMeta());
+		
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
 		allMetaTasks.add(new ExamineBodyMeta());
 		allMetaTasks.add(new ConversationMeta());
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
+		
 		allMetaTasks.add(new ListenToMusicMeta());
 		allMetaTasks.add(new LoadVehicleMeta());
 		allMetaTasks.add(new MaintainVehicleMeta());
 		allMetaTasks.add(new MaintainBuildingMeta());
 		allMetaTasks.add(new ManufactureConstructionMaterialsMeta());
+		
 		allMetaTasks.add(new ManufactureGoodMeta());
 		allMetaTasks.add(new MeetTogetherMeta());
 		allMetaTasks.add(new ObserveAstronomicalObjectsMeta());
 		allMetaTasks.add(new OptimizeSystemMeta());
 		allMetaTasks.add(new PeerReviewStudyPaperMeta());
+		
 		allMetaTasks.add(new PerformLaboratoryExperimentMeta());
 		allMetaTasks.add(new PerformLaboratoryResearchMeta());
 		allMetaTasks.add(new PerformMathematicalModelingMeta());
 		allMetaTasks.add(new PlanMissionMeta());
 		allMetaTasks.add(new PlayHoloGameMeta());
+		
 		allMetaTasks.add(new PrepareDessertMeta());
 		allMetaTasks.add(new PrescribeMedicationMeta());
 		allMetaTasks.add(new ProduceFoodMeta());
 		allMetaTasks.add(new ProposeScientificStudyMeta());
 		allMetaTasks.add(new ReadMeta());
+		
 		allMetaTasks.add(new RecordActivityMeta());
 		allMetaTasks.add(new RelaxMeta());
 		allMetaTasks.add(new RepairMalfunctionMeta());
 		allMetaTasks.add(new ReportMissionControlMeta());
 		allMetaTasks.add(new RequestMedicalTreatmentMeta());
+		
 		allMetaTasks.add(new RestingMedicalRecoveryMeta());
 		allMetaTasks.add(new RespondToStudyInvitationMeta());
 		allMetaTasks.add(new ReturnLightUtilityVehicleMeta());
 		allMetaTasks.add(new ReviewJobReassignmentMeta());
 		allMetaTasks.add(new ReviewMissionPlanMeta());
+		
 		allMetaTasks.add(new SalvageBuildingMeta());
 		allMetaTasks.add(new SalvageGoodMeta());
 		allMetaTasks.add(new SelfTreatHealthProblemMeta());
 		allMetaTasks.add(new SleepMeta()); 
 		allMetaTasks.add(new StudyFieldSamplesMeta());
+		
 		allMetaTasks.add(new TeachMeta());
 		allMetaTasks.add(new TendFishTankMeta());
 		allMetaTasks.add(new TendGreenhouseMeta());
 		allMetaTasks.add(new ToggleFuelPowerSourceMeta());
 		allMetaTasks.add(new ToggleResourceProcessMeta());
+		
 		allMetaTasks.add(new TreatMedicalPatientMeta());
 		allMetaTasks.add(new UnloadVehicleMeta());
 		allMetaTasks.add(new WorkoutMeta());

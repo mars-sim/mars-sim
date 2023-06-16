@@ -35,7 +35,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -101,8 +100,6 @@ public class MainWindow
 	/** WebSwitch for the control of play or pause the simulation */
 	private JToggleButton pauseSwitch;
 	private JCheckBox blockingSwitch;
-
-	private JLabel blockingImage;
 
 	private Dimension selectedSize;
 
