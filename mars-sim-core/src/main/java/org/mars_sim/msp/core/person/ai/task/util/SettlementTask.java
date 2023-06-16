@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTask.java
- * @date 2022-11-28
+ * @date 2023-06-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -25,7 +25,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * Set a specific level of demand for this job.
+     * Sets a specific level of demand for this job.
+     * 
      * @param demand New demand value.
      */
     protected void setDemand(int demand) {
@@ -33,7 +34,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * How much demand is there for this Task
+     * Returns how much demand is there for this Task.
+     * 
      * @return
      */
     public int getDemand() {
@@ -42,6 +44,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
 
     /**
      * This task has been used by a Worker so decrease the demand. 
+     * 
      * @return True if no more demand is needed.
      */
     boolean reduceDemand() {
@@ -50,7 +53,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     }
 
     /**
-     * What is the parent meta task.
+     * Returns the parent meta task.
+     * 
      * @return
      */
     SettlementMetaTask getMeta() {

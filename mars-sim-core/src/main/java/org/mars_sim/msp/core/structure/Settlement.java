@@ -364,10 +364,11 @@ public class Settlement extends Structure implements Temporal,
 		robotsWithin = new UnitSet<>();
 
 		final double GEN_MAX = 1_000_000;
+		
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-
+		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(marsClock);
 
 		creditManager = new CreditManager(this, unitManager);
@@ -477,6 +478,7 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildings());
 
+		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(marsClock);
 
 		// Get the rotation about the planet and convert that to a fraction of the Sol.
@@ -502,9 +504,10 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
 
-		// Added thermal control system
+		// Initialize thermal control system
 		thermalSystem = new ThermalSystem(this);
 
+		// Initialize settlement task manager
 		taskManager = new SettlementTaskManager(this);
 
 		// Initialize scientific achievement.
@@ -932,7 +935,7 @@ public class Settlement extends Structure implements Temporal,
 		// Update citizens
 		timePassingCitizens(pulse);
 
-		// Updateremaining Units
+		// Update remaining Units
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, ownedRobots);
 
@@ -3436,6 +3439,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Gets the EquipmentInventory instance.
+	 * 
 	 * @return
 	 */
 	public EquipmentInventory getEquipmentInventory() {
@@ -3443,7 +3447,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the task manager that controls the backlog for the Settlement
+	 * Gets the task manager that controls the backlog for the Settlement.
 	 */
     public SettlementTaskManager getTaskManager() {
         return taskManager;
@@ -3458,12 +3462,17 @@ public class Settlement extends Structure implements Temporal,
 		return creditManager;
 	}
 	
+	/**
+	 * Sets the credit manager.
+	 * 
+	 * @param cm
+	 */
 	public void setCreditManager(CreditManager cm) {
 		creditManager = cm;
 	}
 	
 	/**
-	 * Get the manager of future scheduled events for this Settlemetn
+	 * Gets the manager of future scheduled events for this settlement.
 	 */
 	public ScheduledEventManager getFutureManager() {
 		return futureEvents;
