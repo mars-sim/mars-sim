@@ -87,8 +87,8 @@ public class MarsClock implements Serializable {
 	private int solOfMonth;
 	/** The mission sol since the start of the sim. */
 	private int missionSol;
-	/** The rounded millisol of the day. */
-	private int msolInt;
+	/** The truncated integer millisols (NOT a rounded millisol) of the day. */
+	private int intMillisol;
 	/** The millisol of the day. */
 	private double millisol;
 	/** The total Millisols */
@@ -235,7 +235,7 @@ public class MarsClock implements Serializable {
 		this.millisol = millisol;
 		this.missionSol = missionSol;
 		this.totalMillisols = calculateTotalMillisols(orbit, month, sol, millisol);
-		this.msolInt = (int) millisol;
+		this.intMillisol = (int) millisol;
 	}
 
 	/**
@@ -250,7 +250,7 @@ public class MarsClock implements Serializable {
 		this.millisol = marsClock.getMillisol();
 		this.missionSol = marsClock.getMissionSol();
 		this.totalMillisols = MarsClock.calculateTotalMillisols(orbit, month, solOfMonth, millisol);
-		this.msolInt = marsClock.getMillisolInt();		
+		this.intMillisol = marsClock.getMillisolInt();		
 	}
 	
 	/**
@@ -335,7 +335,7 @@ public class MarsClock implements Serializable {
 			}
 		}
 
-		msolInt = (int) millisol;
+		intMillisol = (int) millisol;
 	}
 
 	/**
@@ -474,12 +474,12 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the rounded millisols.
+	 * Returns the truncated integer millisols (NOT a rounded millisol).
 	 *
 	 * @return the millisol as an int
 	 */
 	public int getMillisolInt() {
-		return msolInt;
+		return intMillisol;
 	}
 
 	/**
