@@ -1421,7 +1421,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					Building building = buildingList.get(buildingIndex);
 
-					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+					if (robot.getSettlement().getAdjacentBuildings(building).size() > 0) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						walkToActivitySpotInBuilding(building, fct, allowFail);
 					}
@@ -1460,7 +1460,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					Building building = buildingList.get(buildingIndex);
 
-					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+					if (robot.getSettlement().getAdjacentBuildings(building).size() > 0) {
 						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						canWalk = walkToActivitySpotInBuilding(building, fct, allowFail);
 						if(canWalk)

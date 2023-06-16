@@ -724,7 +724,7 @@ extends Function {
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
 			// Note : time = .121 at x128
 
-			adjacentBuildings = new ArrayList<>(building.getSettlement().getBuildingConnectors(building));
+			adjacentBuildings = new ArrayList<>(building.getSettlement().getAdjacentBuildings(building));
 			
 			int size = adjacentBuildings.size();
 			//area_factor = Math.sqrt(Math.sqrt(floorArea));

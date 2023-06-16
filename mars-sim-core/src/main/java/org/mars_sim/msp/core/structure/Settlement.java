@@ -183,11 +183,6 @@ public class Settlement extends Structure implements Temporal,
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-
-	/** The cache for the number of building connectors. */
-	private transient int numConnectorsCache = 0;
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -478,6 +473,9 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildings());
 
+		// Create adjacent building map
+		buildingManager.createAdjacentBuildingMap();
+		
 		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(marsClock);
 
@@ -559,63 +557,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public ReportingAuthority getReportingAuthority() {
 		return sponsor;
-	}
-
-	/**
-	 * Creates a map of buildings with their lists of building connectors attached to
-	 * it.
-	 *
-	 * @return a map
-	 */
-	private Map<Building, Set<Building>> createAdjacentBuildingMap() {
-		if (adjacentBuildingMap == null)
-			adjacentBuildingMap = new HashMap<>();
-		for (Building b : buildingManager.getBuildingSet()) {
-			Set<Building> connectors = createAdjacentBuildings(b);
-			adjacentBuildingMap.put(b, connectors);
-		}
-
-		return adjacentBuildingMap;
-	}
-
-	/**
-	 * Gets a set of building connectors attached to this building.
-	 *
-	 * @param building
-	 * @return
-	 */
-	public Set<Building> getBuildingConnectors(Building building) {
-		if (adjacentBuildingMap == null) {
-			adjacentBuildingMap = createAdjacentBuildingMap();
-		}
-		
-		if (!adjacentBuildingMap.containsKey(building)) {
-			return new UnitSet<>();
-		}
-
-		return adjacentBuildingMap.get(building);
-	}
-
-	/**
-	 * Creates a set of adjacent buildings attached to this building.
-	 *
-	 * @param building
-	 * @return a set of adjacent buildings
-	 */
-	public Set<Building> createAdjacentBuildings(Building building) {
-		Set<Building> buildings = new UnitSet<>();
-
-		for (BuildingConnector c : buildingConnectorManager.getConnectionsToBuilding(building)) {
-			Building b1 = c.getBuilding1();
-			Building b2 = c.getBuilding2();
-			if (b1 != building) {
-				buildings.add(b1);
-			} else if (b2 != building) {
-				buildings.add(b2);
-			}
-		}
-
-		return buildings;
 	}
 
 	/**
@@ -949,9 +890,6 @@ public class Settlement extends Structure implements Temporal,
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
 
-		if (pulse.isNewMSol())
-			createBuildingMap();
-
 		return true;
 	}
 
@@ -969,21 +907,6 @@ public class Settlement extends Structure implements Temporal,
 		return 0;
 	}
 
-	/**
-	 * Create a building map and adjacent building map.
-	 */
-	private void createBuildingMap() {
-		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
-			int numConnectors = adjacentBuildingMap.size();
-
-			if (numConnectorsCache != numConnectors) {
-				numConnectorsCache = numConnectors;
-				createAdjacentBuildingMap();
-			}
-		} else {
-			createAdjacentBuildingMap();
-		}
-	}
 
 	/**
 	 * Keeps track of things based on msol.
@@ -1428,6 +1351,16 @@ public class Settlement extends Structure implements Temporal,
 		return buildingManager;
 	}
 
+	/**
+	 * Gets a set of adjacent buildings.
+	 *
+	 * @param building
+	 * @return 
+	 */
+	public Set<Building> getAdjacentBuildings(Building building) {
+		return buildingManager.getAdjacentBuildings(building);
+	}
+	
 	/**
 	 * Gets the settlement's building connector manager.
 	 *
@@ -3549,8 +3482,6 @@ public class Settlement extends Structure implements Temporal,
 		
 		if (terrainElevation == null) 
 			terrainElevation = surfaceFeatures.getTerrainElevation();
-		
-		createBuildingMap();
 		
 		buildingManager.reinit();
 	}

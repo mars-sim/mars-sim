@@ -1258,22 +1258,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		scientificAchievement.put(science, achievementCredit);
 	}
 
-	/**
-	 * Checks if one of the adjacent buildings has a certain function type.
-	 *
-	 * @param type
-	 * @return
-	 */
-	 public boolean isAdjacentBuilding(FunctionType type) {
-	 	Settlement s = getSettlement();
-	 	if (s != null) {
-	 		for (Building bb : s.createAdjacentBuildings(getBuildingLocation())) {
-	 			if (bb.hasFunction(type))
-	 				return true;
-	 		}
-	 	}
-	 	return false;
-	 }
 
 	/**
 	 * Computes the building the person is currently located at.

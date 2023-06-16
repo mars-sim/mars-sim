@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -115,7 +116,9 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Double> vPOldCache = new HashMap<>();
 	private transient Map<FunctionType, List<Building>> buildingFunctionsMap;
 	private transient Map<String, Integer> buildingTypeIDMap;
-
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
+	
 	private transient Settlement settlement;
 	private transient Meteorite meteorite;
 	
@@ -130,7 +133,9 @@ public class BuildingManager implements Serializable {
 	
 	/** The id of the settlement. */
 	private int settlementID;
-
+	/** The cache for the number of building connectors. */
+	private transient int numConnectorsCache = 0;
+	
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
 	private static Simulation sim = Simulation.instance();
@@ -177,7 +182,7 @@ public class BuildingManager implements Serializable {
 
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
-
+		
 		// Make use of Guice for Meteorite
 		meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
 	}
@@ -196,7 +201,7 @@ public class BuildingManager implements Serializable {
 		unitManager = sim.getUnitManager();
 
 		// Construct all buildings in the settlement.
-		buildings = new UnitSet<Building>();
+		buildings = new UnitSet<>();
 	}
 
 
@@ -391,14 +396,17 @@ public class BuildingManager implements Serializable {
 			unitManager.addUnit(newBuilding);
 
 			buildings.add(newBuilding);
-
+			
 			// Insert this new building into buildingFunctionsMap
 			addNewBuildingtoBFMap(newBuilding);
 
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 			
 			if (createBuildingConnections) {
+				// Note: at the star of the sim, BuildingConnectorManager is still null
 				settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
+				// Create an adjacent building map
+				createAdjacentBuildingMap();
 			}
 		}
 	}
@@ -946,10 +954,9 @@ public class BuildingManager implements Serializable {
 			buildingFunctionsMap = new EnumMap<>(FunctionType.class);
 			setupBuildingFunctionsMap();
 		}
-
-
-		if (pulse.isNewSol()) {
-
+		
+		if (pulse.isNewSol()) {		
+			
 			if (meteorite == null) {
 				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
 			}
@@ -2306,7 +2313,7 @@ public class BuildingManager implements Serializable {
 		if (getEVAAttachedBuilding(airlockBuilding).hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 			return true;
 
- 		for (Building bb : airlockBuilding.getSettlement().createAdjacentBuildings(airlockBuilding)) {
+ 		for (Building bb : createAdjacentBuildings(airlockBuilding)) {
  			if (bb.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
  				return true;
  			}
@@ -2314,8 +2321,84 @@ public class BuildingManager implements Serializable {
  		
 		return false;
 	}
-	
 
+	/**
+	 * Creates a set of adjacent buildings attached to this building.
+	 *
+	 * @param building
+	 * @return a set of adjacent buildings
+	 */
+	public Set<Building> createAdjacentBuildings(Building building) {
+		Set<Building> buildings = new UnitSet<>();
+
+		for (BuildingConnector c : settlement.getBuildingConnectorManager().getConnectionsToBuilding(building)) {
+			Building b1 = c.getBuilding1();
+			Building b2 = c.getBuilding2();
+			if (b1 != building) {
+				buildings.add(b1);
+			} else if (b2 != building) {
+				buildings.add(b2);
+			}
+		}
+
+		return buildings;
+	}
+
+
+
+	/**
+	 * Creates a map of buildings with their lists of building connectors attached to
+	 * it.
+	 *
+	 * @return a map
+	 */
+	public Map<Building, Set<Building>> createAdjacentBuildingMap() {
+		if (adjacentBuildingMap == null)
+			adjacentBuildingMap = new HashMap<>();
+		for (Building b : getBuildingSet()) {
+			Set<Building> connectors = createAdjacentBuildings(b);
+			adjacentBuildingMap.put(b, connectors);
+		}
+
+		return adjacentBuildingMap;
+	}
+
+	
+	/**
+	 * Gets a set of buildings attached to this building.
+	 *
+	 * @param building
+	 * @return
+	 */
+	public Set<Building> getAdjacentBuildings(Building building) {
+		if (adjacentBuildingMap == null) {
+			adjacentBuildingMap = createAdjacentBuildingMap();
+		}
+		
+		if (!adjacentBuildingMap.containsKey(building)) {
+			return new UnitSet<>();
+		}
+
+		return adjacentBuildingMap.get(building);
+	}
+
+	/**
+	 * Checks if one of the adjacent buildings has a certain function type.
+	 *
+	 * @param type
+	 * @return
+	 */
+	 public static boolean isAdjacentBuilding(FunctionType type, Unit unit, Building building) {
+	 	Settlement s = unit.getSettlement();
+	 	if (s != null) {
+	 		for (Building bb : s.getAdjacentBuildings(building)) {
+	 			if (bb.hasFunction(type))
+	 				return true;
+	 		}
+	 	}
+	 	return false;
+	 }
+	 
 	/**
 	 * Sets the probability of impact per square meter per sol. 
 	 * Called by MeteoriteImpactImpl.
@@ -2408,6 +2491,9 @@ public class BuildingManager implements Serializable {
 		
 		// Re-initializes maps and meteorite instance
 		initialize();
+		
+		// Re-create adjacent building map
+		createAdjacentBuildingMap();
 	}
 
 
