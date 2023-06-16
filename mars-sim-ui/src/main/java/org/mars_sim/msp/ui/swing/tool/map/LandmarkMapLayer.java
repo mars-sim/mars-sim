@@ -16,6 +16,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.Landmark;
 
 /**
@@ -52,7 +53,7 @@ public class LandmarkMapLayer implements MapLayer {
 	/** Horizontal offset for artificial objects. */
 	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
-	private static final List<Landmark> landmarks = Simulation.instance().getSurfaceFeatures().getLandmarks();
+	private static final List<Landmark> landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 
 	private static final double HALF_MAP_ANGLE = Map.HALF_MAP_ANGLE;
 

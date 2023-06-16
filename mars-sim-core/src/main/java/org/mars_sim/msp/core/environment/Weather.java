@@ -993,7 +993,7 @@ public class Weather implements Serializable, Temporal {
 //	 * @throws ClassNotFoundException
 //	 */
 //	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		System.out.println("Weather's readObjects");
+//		in.defaultReadObject();
 //	}
 	
 	/**

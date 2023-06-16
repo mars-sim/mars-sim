@@ -288,11 +288,12 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize intransient data members.
 		sim.initializeIntransientData(timeRatio);
 
-		isUpdating = false;
-
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
 		unitManager.setOriginalBuild(Simulation.BUILD);
+		
+		// Set this flag to false
+		isUpdating = false;
 	}
 
 	public void runSocietySim() {
@@ -331,7 +332,7 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
@@ -341,8 +342,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
@@ -420,7 +420,7 @@ public class Simulation implements ClockListener, Serializable {
 		DataLogger.changeTime(marsClock);
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -434,9 +434,9 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
+		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		missionManager.initializeInstances(simulationConfig);
 
@@ -450,6 +450,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 
+		
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
 		// Add it to unitManager
@@ -464,6 +465,8 @@ public class Simulation implements ClockListener, Serializable {
 		MarsSurface marsSurface = new MarsSurface();
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
+		
+		
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
@@ -521,7 +524,7 @@ public class Simulation implements ClockListener, Serializable {
 		CreditManager.initializeInstances(unitManager);	
 		
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
-
+		
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
 		//  Re-initialize the GameManager
@@ -536,13 +539,34 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, marsClock);
 		
+		
 		doneInitializing = true;
+		
+		// Set this flag to false
+		isUpdating = false;
 	}
 
 	/**
+	 *  Recreates a few instances after loading from a saved sim.
+	 */
+	public void recreateSomeInstances(int userTimeRatio) {
+		// Initialize resources
+		ResourceUtil.getInstance().initializeInstances();
+		// Gets config file instances
+		simulationConfig = SimulationConfig.instance();
+		// Clock is always first
+		masterClock = new MasterClock(userTimeRatio);
+		// Initialize UnitManager instance
+		unitManager = new UnitManager();
+		// Initialize MissionManager instance
+		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+	}
+	
+	/**
 	 *  Re-initialize instances after loading from a saved sim
 	 */
-	private void reinitializeInstances() {
+	public void reinitializeInstances() {		
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 
@@ -553,21 +577,23 @@ public class Simulation implements ClockListener, Serializable {
 		CropConfig cc = simulationConfig.getCropConfiguration();
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
-		// Gets he MarsClock instance
+		// Gets the MasterClock instance
+//		MasterClock masterClock = masterClock;
+
+		// Gets the MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		
 		// Re-initialize the data logger
 		DataLogger.changeTime(marsClock);
 		
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
+		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
 		
 		// Re-initialize weather
 		Weather.initializeInstances(this, marsClock, orbitInfo);
 		
 		// Re-initialize surfacefeatures
-		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-				marsClock, orbitInfo, weather);
+		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
 		// Reload mission configs
 		missionManager.initializeInstances(simulationConfig);
@@ -577,9 +603,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		transportManager.reinitalizeInstances(this);
 	
-		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
-
 		
 		// Re-initialize OuterSpace instance
 		OuterSpace outerSpace = unitManager.getOuterSpace();
@@ -587,6 +610,13 @@ public class Simulation implements ClockListener, Serializable {
 		Moon moon = unitManager.getMoon();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
+		
+		
+		// Re-initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+
+		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
+
 		
 		// Re-nitialize ScientificStudy
 		ScientificStudy.initializeInstances(marsClock);
@@ -618,7 +648,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
 		
-		Crop.initializeInstances(simulationConfig.getCropConfiguration());
+		Crop.initializeInstances(cc);
 		
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
@@ -669,6 +699,9 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.reinit();
 		
 		doneInitializing = true;
+
+		// Set this flag to false
+		isUpdating = false;
 	}
 		
 	/**
@@ -818,7 +851,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Deserialize the file
 		deserialize(file);
 
+		// Get the current build
+		String currentBuild = Simulation.BUILD;
+		// Load the previous saved sim's build
 		String loadBuild = unitManager.getOriginalBuild();
+		
 		if (loadBuild == null)
 			loadBuild = "unknown";
 
@@ -829,7 +866,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("                       Path : " + path);
 		logger.config("                       Size : " + computeFileSize(file));
 		logger.config("              Made in Build : " + loadBuild);
-		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
+		logger.config("  Current Core Engine Build : " + currentBuild);
 		if (lastSaveTimeStamp != null)
 		logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthTime());
@@ -845,10 +882,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		initialSimulationCreated = true;
-		// Re-initialize instances
-		reinitializeInstances();
-		// Set this flag to false
-		isUpdating = false;
 	}
 
 	/**

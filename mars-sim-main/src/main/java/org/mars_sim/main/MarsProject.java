@@ -120,7 +120,8 @@ public class MarsProject {
 		logger.config("List of input args : " + s);
 		
 		SimulationBuilder builder = new SimulationBuilder();
-
+		builder.printJavaVersion();
+		
 		checkOptions(builder, args);
 
 		// Do it
@@ -411,7 +412,7 @@ public class MarsProject {
 	public void setupMainWindow(boolean cleanUI) {
 		while (true) {
 	        try {
-				TimeUnit.MILLISECONDS.sleep(250);
+				TimeUnit.MILLISECONDS.sleep(1000);
 				if (!sim.isUpdating()) {
 					logger.config("Starting the Main Window...");
 					new MainWindow(cleanUI, sim);

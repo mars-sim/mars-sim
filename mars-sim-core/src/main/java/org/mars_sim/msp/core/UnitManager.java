@@ -720,7 +720,7 @@ public class UnitManager implements Serializable, Temporal {
 //	 * @throws ClassNotFoundException
 //	 */
 //	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		reinit();
+//		in.defaultReadObject();
 //	}
 	
 	/**
@@ -776,7 +776,7 @@ public class UnitManager implements Serializable, Temporal {
 
 		marsSurface = null;
 
-		listeners.clear();
+//		listeners.clear();
 		listeners = null;
 	}
 

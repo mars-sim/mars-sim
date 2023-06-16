@@ -12,6 +12,8 @@ import java.lang.Runtime.Version;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -264,7 +266,6 @@ public class SimulationBuilder {
 	 * @return The new simulation started
 	 */
 	public Simulation start() {
-		printJavaVersion();
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
@@ -279,13 +280,14 @@ public class SimulationBuilder {
 			
 		boolean loaded = false;
 		if (simFile != null) {
-			loaded  = loadSimulation();
+			loaded = loadSimulation();
 		}
 		
 		InitialSettlement spec = null;
 		if (template != null) {
 			spec = loadSettlementTemplate(simConfig);
 		}
+		
 		if (!loaded) {
 			// Create a new simulation
 			sim.createNewSimulation(userTimeRatio); 
@@ -319,7 +321,21 @@ public class SimulationBuilder {
 			sim.getTransportManager().init();
 		}
 
-		sim.startClock(false);
+		while (true) {
+	        try {
+				TimeUnit.MILLISECONDS.sleep(1000);
+				if (!sim.isUpdating()) {
+					logger.config("Starting the Master Clock...");		
+					sim.startClock(false);
+					break;
+				}
+	        } catch (InterruptedException e) {
+				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); 
+				// Restore interrupted state...
+			    Thread.currentThread().interrupt();
+	        }
+		}
+
 		
 		return sim;
 	}
@@ -352,15 +368,19 @@ public class SimulationBuilder {
 			logger.config("Loading from " + simFile.getAbsolutePath());
 
 			Simulation sim = Simulation.instance();
+					
+//			sim.createNewSimulation(userTimeRatio);
 			
-			// Question : Why does it have to create all class instances, 
-			// only later be rewritten in loadSimulation() ?
-			sim.createNewSimulation(userTimeRatio);
-
-			// Note: if skipping createNewSimulation(), UnitManager would not be deserialized correctly
 //			sim.loadSim();
 			
+			// Question : Why does it have to create some of the class instances in recreateSomeInstances(), 
+			// only later be rewritten in loadSimulation() ?
+			sim.recreateSomeInstances(userTimeRatio);
+			// Note: if skipping createNewSimulation(), it would not be deserialized correctly
 			sim.loadSimulation(simFile);		
+			
+			// Re-initialize instances
+			sim.reinitializeInstances();
 			
 			result  = true;			
 			// initialize ResupplyUtil.
