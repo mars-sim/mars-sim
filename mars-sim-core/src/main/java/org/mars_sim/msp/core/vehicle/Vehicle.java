@@ -1263,8 +1263,7 @@ public abstract class Vehicle extends Unit
 	public Building getGarage() {
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getGarages();
-			for (Building garageBuilding : list) {
+			for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null && garage.containsVehicle(this)) {
 					return garageBuilding;

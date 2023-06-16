@@ -170,7 +170,7 @@ implements SettlementMapLayer {
 			double yDiff = scale / 2.5;
 			int yOffset = (int)yDiff;
 			
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				String name = building.getNickName();

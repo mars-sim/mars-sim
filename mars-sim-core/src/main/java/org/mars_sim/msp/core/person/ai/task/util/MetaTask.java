@@ -133,8 +133,9 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Get a unique non-internalised key for this task.
-	 * Note getName is an internationalised value
+	 * Gets a unique non-internalised key for this task.
+	 * Note getName is an internationalised value.
+	 * 
 	 * @return the MetaTask class name with "meta" removed
 	 */
 	public String getID() {
@@ -195,7 +196,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Add a type of robot as preferred.
+	 * Adds a type of robot as preferred.
+	 * 
 	 * @param rt New robotType
 	 */
 	protected void addPreferredRobot(RobotType rt) {

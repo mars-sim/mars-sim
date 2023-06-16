@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
@@ -69,8 +68,8 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -184,11 +183,6 @@ public class Settlement extends Structure implements Temporal,
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-
-	/** The cache for the number of building connectors. */
-	private transient int numConnectorsCache = 0;
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -365,10 +359,11 @@ public class Settlement extends Structure implements Temporal,
 		robotsWithin = new UnitSet<>();
 
 		final double GEN_MAX = 1_000_000;
+		
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-
+		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(marsClock);
 
 		creditManager = new CreditManager(this, unitManager);
@@ -473,9 +468,15 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building manager
 		buildingManager = new BuildingManager(this, sTemplate.getBuildings());
 		
+		buildingManager.initialize();
+		
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this, sTemplate.getBuildings());
 
+		// Create adjacent building map
+		buildingManager.createAdjacentBuildingMap();
+		
+		// Initialize schedule event manager
 		futureEvents = new ScheduledEventManager(marsClock);
 
 		// Get the rotation about the planet and convert that to a fraction of the Sol.
@@ -501,9 +502,10 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
 
-		// Added thermal control system
+		// Initialize thermal control system
 		thermalSystem = new ThermalSystem(this);
 
+		// Initialize settlement task manager
 		taskManager = new SettlementTaskManager(this);
 
 		// Initialize scientific achievement.
@@ -555,64 +557,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public ReportingAuthority getReportingAuthority() {
 		return sponsor;
-	}
-
-	/**
-	 * Creates a map of buildings with their lists of building connectors attached to
-	 * it.
-	 *
-	 * @return a map
-	 */
-	private Map<Building, List<Building>> createAdjacentBuildingMap() {
-		if (adjacentBuildingMap == null)
-			adjacentBuildingMap = new HashMap<>();
-		for (Building b : buildingManager.getBuildings()) {
-			List<Building> connectors = createAdjacentBuildings(b);
-			adjacentBuildingMap.put(b, connectors);
-		}
-
-		return adjacentBuildingMap;
-	}
-
-	/**
-	 * Gets a list of building connectors attached to this building.
-	 *
-	 * @param building
-	 * @return
-	 */
-	public List<Building> getBuildingConnectors(Building building) {
-		if (adjacentBuildingMap == null) {
-			adjacentBuildingMap = createAdjacentBuildingMap();
-		}
-		
-		if (!adjacentBuildingMap.containsKey(building)) {
-			return new ArrayList<>();
-		}
-
-		return adjacentBuildingMap.get(building);
-	}
-
-	/**
-	 * Creates a list of adjacent buildings attached to this building.
-	 *
-	 * @param building
-	 * @return a list of adjacent buildings
-	 */
-	public List<Building> createAdjacentBuildings(Building building) {
-		List<Building> buildings = new ArrayList<>();
-
-		Set<BuildingConnector> connectors = buildingConnectorManager.getConnectionsToBuilding(building);
-		for (BuildingConnector c : connectors) {
-			Building b1 = c.getBuilding1();
-			Building b2 = c.getBuilding2();
-			if (b1 != building) {
-				buildings.add(b1);
-			} else if (b2 != building) {
-				buildings.add(b2);
-			}
-		}
-
-		return buildings;
 	}
 
 	/**
@@ -900,15 +844,15 @@ public class Settlement extends Structure implements Temporal,
 		return currentTemperature;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 *
-	 * @param clock
-	 * @param w
-	 */
-	public static void initializeInstances(UnitManager u) {
-		unitManager = u;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 *
+//	 * @param clock
+//	 * @param w
+//	 */
+//	public static void initializeInstances(UnitManager u) {
+//		unitManager = u;
+//	}
 
 	/**
 	 * Perform time-related processes
@@ -932,7 +876,7 @@ public class Settlement extends Structure implements Temporal,
 		// Update citizens
 		timePassingCitizens(pulse);
 
-		// Updateremaining Units
+		// Update remaining Units
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, ownedRobots);
 
@@ -945,8 +889,6 @@ public class Settlement extends Structure implements Temporal,
 
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
-
-		createBuildingMap();
 
 		return true;
 	}
@@ -965,24 +907,9 @@ public class Settlement extends Structure implements Temporal,
 		return 0;
 	}
 
-	/**
-	 * Create a building map and adjacent building map
-	 */
-	private void createBuildingMap() {
-		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
-			int numConnectors = adjacentBuildingMap.size();
-
-			if (numConnectorsCache != numConnectors) {
-				numConnectorsCache = numConnectors;
-				createAdjacentBuildingMap();
-			}
-		} else {
-			createAdjacentBuildingMap();
-		}
-	}
 
 	/**
-	 * Keeps track of things based on msol
+	 * Keeps track of things based on msol.
 	 *
 	 * @param pulse
 	 */
@@ -1424,6 +1351,16 @@ public class Settlement extends Structure implements Temporal,
 		return buildingManager;
 	}
 
+	/**
+	 * Gets a set of adjacent buildings.
+	 *
+	 * @param building
+	 * @return 
+	 */
+	public Set<Building> getAdjacentBuildings(Building building) {
+		return buildingManager.getAdjacentBuildings(building);
+	}
+	
 	/**
 	 * Gets the settlement's building connector manager.
 	 *
@@ -3435,6 +3372,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Gets the EquipmentInventory instance.
+	 * 
 	 * @return
 	 */
 	public EquipmentInventory getEquipmentInventory() {
@@ -3442,7 +3380,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the task manager that controls the backlog for the Settlement
+	 * Gets the task manager that controls the backlog for the Settlement.
 	 */
     public SettlementTaskManager getTaskManager() {
         return taskManager;
@@ -3457,12 +3395,17 @@ public class Settlement extends Structure implements Temporal,
 		return creditManager;
 	}
 	
+	/**
+	 * Sets the credit manager.
+	 * 
+	 * @param cm
+	 */
 	public void setCreditManager(CreditManager cm) {
 		creditManager = cm;
 	}
 	
 	/**
-	 * Get the manager of future scheduled events for this Settlemetn
+	 * Gets the manager of future scheduled events for this settlement.
 	 */
 	public ScheduledEventManager getFutureManager() {
 		return futureEvents;

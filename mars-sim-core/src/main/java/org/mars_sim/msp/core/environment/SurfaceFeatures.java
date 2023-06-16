@@ -73,7 +73,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final double THREE_HALF_PI = 1.5 * Math.PI;
 	
-	private static final double SQUARED_SEMI_MAJOR_AXIS = OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
+//	private static final double SQUARED_SEMI_MAJOR_AXIS = OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
 	
 //	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * SQUARED_SEMI_MAJOR_AXIS;
 
@@ -96,8 +96,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static TerrainElevation terrainElevation;
 	private static Weather weather;
 	private static OrbitInfo orbitInfo;
-	
-	private static List<Landmark> landmarks = null;
 
 	/**
 	 * Constructor.
@@ -107,11 +105,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public SurfaceFeatures() {
 		// Initialize instances.
 		sim = Simulation.instance();
+		
 		terrainElevation = new TerrainElevation();
+		
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new ArrayList<>(); 
-		// will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
+		
 	}
 
 	/**
@@ -122,13 +122,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param oi
 	 * @param w
 	 */
-	public static void initializeInstances(Simulation s, LandmarkConfig landmarkConfig, 
-			MarsClock mc, OrbitInfo oi, Weather w) {
+	public static void initializeInstances(Simulation s, MarsClock mc, OrbitInfo oi, Weather w) {
 		sim = s;
-		landmarks = landmarkConfig.getLandmarkList();
 		orbitInfo = oi;
 		weather = w;
 		currentTime = mc;
+		
+		terrainElevation = new TerrainElevation();
 	}
 
 	/**
@@ -675,15 +675,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets a list of landmarks on Mars.
-	 *
-	 * @return list of landmarks.
-	 */
-	public List<Landmark> getLandmarks() {
-		return landmarks;
-	}
-
-	/**
 	 * Gets the mineral map.
 	 *
 	 * @return mineral map.
@@ -858,8 +849,5 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		weather = null;
 		orbitInfo = null;
-
-		landmarks.clear();
-		landmarks = null;
 	}
 }

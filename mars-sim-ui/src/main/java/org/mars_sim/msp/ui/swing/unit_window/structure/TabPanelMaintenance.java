@@ -87,7 +87,7 @@ public class TabPanelMaintenance extends TabPanel {
 		List<Building> buildings;
 
 		public BuildingMaintModel(Settlement settlement) {
-			this.buildings = new ArrayList<>(settlement.getBuildingManager().getBuildings());
+			this.buildings = new ArrayList<>(settlement.getBuildingManager().getBuildingSet());
 		}
 
 		public void update() {

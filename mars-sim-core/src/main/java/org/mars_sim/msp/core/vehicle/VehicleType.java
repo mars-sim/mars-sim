@@ -24,7 +24,7 @@ public enum VehicleType {
 	//Note: the vehicle types used in message.properties must match those in vehicles.xml.
 	
 	private String name;
-
+	
 	private static Set<Integer> idSet;
 	
 	private VehicleType(String name) {
@@ -111,9 +111,10 @@ public enum VehicleType {
 	 * @return
 	 */
 	public static boolean isRover(VehicleType type) {
-		if (type == EXPLORER_ROVER) return true;
-		if (type == TRANSPORT_ROVER) return true;
-		if (type == CARGO_ROVER) return true;
+		if (type == EXPLORER_ROVER
+				|| type == TRANSPORT_ROVER
+				|| type == CARGO_ROVER) 
+			return true;
 		return false;
-	}
+	}	
 }

@@ -31,6 +31,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
@@ -94,7 +95,7 @@ implements MissionListener {
 		Simulation sim = missionWindow.getDesktop().getSimulation();
 
 		unitManager = sim.getUnitManager();
-		landmarks = sim.getSurfaceFeatures().getLandmarks();
+		landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 
 		// Set the layout.
 		setLayout(new BorderLayout());

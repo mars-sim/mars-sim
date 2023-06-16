@@ -35,7 +35,7 @@ public class BuildingCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		BuildingManager bm = settlement.getBuildingManager();
-		List<Building> i = new ArrayList<>(bm.getBuildings());
+		List<Building> i = new ArrayList<>(bm.getBuildingSet());
 		Collections.sort(i);
 		
 		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Category", 12, "Power", 10,

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task that create tasks specific to a Settlement. It doesn't have the ability to create Task 
  * instances itself. These are used but the ShiftTaskManager to maintain a shared pool of tasks.
+ * 
  * @see SettlementTaskManager
  */
 public interface SettlementMetaTask {

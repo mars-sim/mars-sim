@@ -229,6 +229,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		this.settlement = filter;
+		if (settlement == null)
+			return false;
+		
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 			resetEntities(settlement.getAllAssociatedPeople());
 			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,

@@ -13,11 +13,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
- * THis represents a MetaTask onstance that creates a single Task per evualaton. These
- * tasksjob will have no context and rely on the Task to idnetify the actual target when they start.
+ * THis represents a MetaTask instance that creates a single Task per evaluaton. These
+ * tasks will have no context and rely on the Task to identify the actual target when they start.
  * 
  * The side effect is these instances can support creating contextless Task instances with the need
- * for any extra information to be passed. Henc ethese are a Factory for their associated Task object.
+ * for any extra information to be passed. Hence these are a Factory for their associated Task object.
  */
 public abstract class FactoryMetaTask extends MetaTask {
     
@@ -94,10 +94,11 @@ public abstract class FactoryMetaTask extends MetaTask {
 	
 	/**
 	 * Creates a TaskJob instance delegate where this instance handles Task creation.
+	 * 
 	 * @param score Score to the job to create.
 	 */
 	private List<TaskJob> createTaskJob(double score) {
-		// This is a convience to avoid a massive rework in the subclasses.
+		// This is to avoid a massive rework in the subclasses.
 		if (score <= 0) {
 			return null;
 		}

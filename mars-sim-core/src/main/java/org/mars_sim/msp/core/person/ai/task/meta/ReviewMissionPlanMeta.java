@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReviewMissionPlanMeta.java
- * @date 2022-09-28
+ * @date 2022-12-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -26,11 +26,11 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * The Meta task for the ReviewMissionPlan task.
+ * The meta task for reviewing mission plans.
  */
 public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTask {
 	/**
-     * Represents a Job to review a specific Mission plan
+     * Represents a Job to review a specific mission plan
      */
     private static class ReviewMissionPlanJob extends SettlementTask {
 
@@ -66,9 +66,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	}
 
 	/**
-     * Get the score for a Settlement task for a person to review a mission.
+     * Gets the score for a Settlement task for a person to review a mission.
+     * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -101,8 +102,9 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	}
 
 	/**
-	 * Scan the Settlement for any Mission that need reviewing
-	 * @param settlement Settlemnt to scan.
+	 * Scans the Settlement for any Mission that need reviewing.
+	 * 
+	 * @param settlement Settlement to scan.
 	 */
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
@@ -138,8 +140,9 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     }
 
 	/**
-	 * Robots can not do review missions
-	 * @param t Task to bew reviewed
+	 * Robots can not do review missions.
+	 * 
+	 * @param t Task to be reviewed
 	 * @param r Robot asking
 	 */
 	@Override

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @date 2022-08-01
+ * @date 2023-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -82,6 +82,10 @@ import org.mars_sim.msp.core.robot.ai.task.ChargeMeta;
  */
 public class MetaTaskUtil {
 
+	private static final String EVA = "EVA";
+	private static final String INSIDE = "Inside";
+	private static final String GARAGE = "Garage";
+	
 	private static List<FactoryMetaTask> dutyHourTasks = null;
 	private static List<FactoryMetaTask> nonDutyHourTasks = null;
 
@@ -212,7 +216,8 @@ public class MetaTaskUtil {
 	}
 
 	/**
-	 * Get all the known MetaTasks
+	 * Gets all the known MetaTasks.
+	 * 
 	 * @return 
 	 */
 	public static Collection<MetaTask> getAllMetaTasks() {
@@ -257,7 +262,7 @@ public class MetaTaskUtil {
     }
 
 	/**
-	 * Converts a task name in String to Metatask
+	 * Converts a task name in String to Metatask.
 	 * 
 	 * @return meta tasks.
 	 */
@@ -266,14 +271,17 @@ public class MetaTaskUtil {
 	}
 
 	/**
-	 * Get a MetaTask instance that is assooicated wth a Task class.
-	 * This method logic ia fragile and needs a better solution.
+	 * Gets a MetaTask instance that is associated with a Task class.
+	 * Note: this method logic is fragile and needs a better solution.
+	 * 
+	 * @param task
+	 * @return
 	 */
 	public static MetaTask getMetaTypeFromTask(Task task) {
 		String s = task.getClass().getSimpleName();
-		String ss = s.replace("EVA", "")
-				.replace("Inside", "")
-				.replace("Garage", "");
+		String ss = s.replace(EVA, "")
+				.replace(INSIDE, "")
+				.replace(GARAGE, "");
 		String metaTaskName = ss.trim();
 	
 		return getMetaTask(metaTaskName);
@@ -284,7 +292,7 @@ public class MetaTaskUtil {
 	}
 
 	/**
-	 * Load any references that MetaTasks need
+	 * Loads any references that MetaTasks need.
 	 */
     static void initialiseInstances(Simulation sim) {
 		MetaTask.initialiseInstances(sim);

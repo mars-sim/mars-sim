@@ -354,7 +354,7 @@ public class LocalAreaUtil {
 			if (settlement.getCoordinates().equals(coordinates)) {
 
 				// Add all buildings at settlement.
-				Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+				Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 				while (j.hasNext()) {
 					Building b = j.next();
 					// 2016-03-07 Added checking for getInTransport()
@@ -399,7 +399,7 @@ public class LocalAreaUtil {
 			if (settlement.getCoordinates().equals(coordinates)) {
 
 				// Add all buildings at settlement.
-				Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+				Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
 				while (j.hasNext()) {
 					result.add(j.next());
 				}

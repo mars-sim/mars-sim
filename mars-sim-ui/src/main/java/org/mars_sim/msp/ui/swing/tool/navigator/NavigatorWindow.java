@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEventType;
@@ -179,7 +180,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		super(NAME, desktop);
 
 		Simulation sim = desktop.getSimulation();
-		this.landmarks = sim.getSurfaceFeatures().getLandmarks();
+		this.landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 		this.unitManager = sim.getUnitManager();
 	
 		// Prepare content pane		

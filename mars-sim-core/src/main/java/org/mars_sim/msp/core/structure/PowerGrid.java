@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -384,7 +385,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			// If still not having sufficient power, reduce power to some buildings
 			
-			List<Building> buildings = manager.getBuildings();// getACopyOfBuildings();
+			Set<Building> buildings = manager.getBuildingSet();
 
 			// Reduce each building's power mode to low power until
 			// required power reduction is met.
@@ -429,7 +430,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param neededPower
 	 * @param buildings
 	 */
-	private double turnOnLowPower(double neededPower, List<Building> buildings) {
+	private double turnOnLowPower(double neededPower, Set<Building> buildings) {
 		double newPower = 0;
 		if (powerMode != PowerMode.POWER_DOWN) {
 			Iterator<Building> iLowPower = buildings.iterator();
@@ -456,7 +457,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param neededPower
 	 * @param buildings
 	 */
-	private double turnOffNoninhabitable(double neededPower, List<Building> buildings) {
+	private double turnOffNoninhabitable(double neededPower, Set<Building> buildings) {
 		double newPower = 0;
 		Iterator<Building> iNoPower = buildings.iterator();
 		while (iNoPower.hasNext()) {
@@ -481,7 +482,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param neededPower
 	 * @param buildings
 	 */
-	private double turnOffInhabitable(double neededPower, List<Building> buildings) {
+	private double turnOffInhabitable(double neededPower, Set<Building> buildings) {
 		double newPower = 0;
 		Iterator<Building> iNoPower = buildings.iterator();
 		while (iNoPower.hasNext()) {
@@ -549,8 +550,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private void updateTotalRequiredPower() {
 		double power = 0D;
 		boolean powerUp = powerMode == PowerMode.POWER_UP;
-		List<Building> buildings = manager.getBuildings();
-		Iterator<Building> iUsed = buildings.iterator();
+		Iterator<Building> iUsed = manager.getBuildingSet().iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
 			if (powerUp) {

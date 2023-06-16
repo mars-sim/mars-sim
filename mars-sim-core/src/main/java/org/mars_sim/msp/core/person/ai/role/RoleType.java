@@ -77,4 +77,8 @@ public enum RoleType {
 	public boolean isCouncil() {
 		return level == RoleLevel.COUNCIL;
 	}
+	
+	public boolean isLeadership() {
+		return isChief() || isCouncil();
+	}
 }
