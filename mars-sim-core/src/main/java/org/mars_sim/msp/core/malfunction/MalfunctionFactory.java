@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
@@ -43,8 +43,9 @@ public final class MalfunctionFactory implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
-
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(MalfunctionFactory.class.getName());
+	
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
 	// Data members

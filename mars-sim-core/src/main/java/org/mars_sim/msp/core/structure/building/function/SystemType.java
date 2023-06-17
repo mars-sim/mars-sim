@@ -1,10 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * SystemType.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-16
  * @author stpa				
  */
 package org.mars_sim.msp.core.structure.building.function;
+
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 
@@ -16,6 +18,16 @@ public enum SystemType {
     ROVER			(Msg.getString("SystemType.rover")), //$NON-NLS-1$
 	VEHICLE			(Msg.getString("SystemType.vehicle")), //$NON-NLS-1$
     ;
+	
+	/**
+	 * Returns a set of all system types.
+	 */
+	public static final Set<SystemType> ALL_SYSTEMS =
+				Set.of(SystemType.BUILDING,
+						SystemType.EVA_SUIT,
+						SystemType.ROBOT,
+						SystemType.ROVER,
+						SystemType.VEHICLE);
 	
 	private String name;
 

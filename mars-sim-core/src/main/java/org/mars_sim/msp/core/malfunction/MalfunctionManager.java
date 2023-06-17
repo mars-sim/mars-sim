@@ -86,7 +86,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = 10;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .25;
+	private static final double WEAR_MALFUNCTION_FACTOR = .05;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -146,7 +146,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
 	private boolean supportsInside = true;
-
+	
 	private static MasterClock masterClock;
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
@@ -208,6 +208,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			scopes.add(scopeString);
 	}
 
+	/**
+	 * Returns a set of scopes.
+	 * 
+	 * @return
+	 */
 	public Set<String> getScopes() {
 		return scopes;
 	}
@@ -348,9 +353,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 			registerAMalfunction(malfunction, actor);
 		}
 
-		if (malfunction.getRepairParts().isEmpty() || m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
-			logger.info("'" + malfunction.getName() + "' needs no repair parts.");	
+		if (malfunction.getRepairParts().isEmpty()) { 
+			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	
 		}
+//		else if (m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
+//			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	
+//		}
 		
 		else {
 			calculateNewReliability(malfunction);

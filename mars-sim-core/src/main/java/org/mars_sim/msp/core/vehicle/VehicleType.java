@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleType.java
- * @date 2023-04-24
+ * @date 2023-06-16
  * @author Manny Kung
  *
  */
@@ -26,6 +26,16 @@ public enum VehicleType {
 	private String name;
 	
 	private static Set<Integer> idSet;
+	
+	/**
+	 * Returns a set of all vehicle types.
+	 */
+	public static final Set<VehicleType> ALL_VEHICLES =
+				Set.of(VehicleType.LUV,
+						VehicleType.DELIVERY_DRONE,
+						VehicleType.EXPLORER_ROVER,
+						VehicleType.TRANSPORT_ROVER,
+						VehicleType.CARGO_ROVER);
 	
 	private VehicleType(String name) {
 		this.name = name;

@@ -115,10 +115,12 @@ public class MaintenanceTabPanel extends TabPanel {
 		partsPane.setViewportView(table);
 
 		TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(160);
-        columnModel.getColumn(2).setPreferredWidth(120);
-		columnModel.getColumn(2).setPreferredWidth(40);
-		columnModel.getColumn(3).setPreferredWidth(40);		
+        columnModel.getColumn(0).setPreferredWidth(140);
+        columnModel.getColumn(1).setPreferredWidth(140);
+		columnModel.getColumn(2).setPreferredWidth(25);
+		columnModel.getColumn(3).setPreferredWidth(30);	
+		
+		// Add percentage format
 		columnModel.getColumn(3).setCellRenderer(new PercentageCellRenderer(false));
 
 		// Add sorting

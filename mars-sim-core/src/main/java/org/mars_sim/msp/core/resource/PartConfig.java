@@ -20,6 +20,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.goods.GoodType;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
+import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
+import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 
 /**
@@ -31,6 +36,9 @@ public final class PartConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	// May add back private static SimLogger logger = SimLogger.getLogger(PartConfig.class.getName())
+	
 	// Element names
 	public static final String PART = "part";
 	public static final String DESCRIPTION = "description";
@@ -50,8 +58,11 @@ public final class PartConfig implements Serializable {
 	/** The map of maintenance scopes. */
 	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
 
+	/** The collection of standard scopes. */
+	private static Set<String> STANDARD_SCOPES = new TreeSet<>();
+	
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param itemResourceDoc the item resource XML document.
 	 * @throws Exception if error reading XML document
@@ -59,17 +70,58 @@ public final class PartConfig implements Serializable {
 	public PartConfig(Document itemResourceDoc) {
 		// Pick up from the last resource id
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
+
 		loadItemResources(itemResourceDoc);
 	}
 
+	/**
+	 * Creates a set of standard scopes.
+	 */
+	private void createStandardScope() {
+		for (VehicleType type: VehicleType.values()) {
+			if (!STANDARD_SCOPES.contains(type.getName()))
+				STANDARD_SCOPES.add(type.getName());
+		}
+		
+		for (SystemType type: SystemType.values()) {
+			if (!STANDARD_SCOPES.contains(type.getName()))
+				STANDARD_SCOPES.add(type.getName());
+		}
+		
+		for (FunctionType type: FunctionType.values()) {
+			if (!STANDARD_SCOPES.contains(type.getName()))
+				STANDARD_SCOPES.add(type.getName());
+		}
+		
+		for (PowerSourceType type: PowerSourceType.values()) {
+			if (!STANDARD_SCOPES.contains(type.getName()))
+				STANDARD_SCOPES.add(type.getName());
+		}
+		
+		for (HeatSourceType type: HeatSourceType.values()) {
+			if (!STANDARD_SCOPES.contains(type.getName()))
+				STANDARD_SCOPES.add(type.getName());
+		}
+	}
+	
 	/**
 	 * Loads item resources from the parts.xml config document.
 	 *
 	 * @param itemResourceDoc the configuration XML document.
 	 * @throws Exception if error loading item resources.
 	 */
-	private void loadItemResources(Document itemResourceDoc) {
+	private synchronized void loadItemResources(Document itemResourceDoc) {
+//		if (partSet != null) {
+//			// just in case if another thread is being created
+//			return;
+//		}
 
+		// First build a standard scope set for scope comparison
+		createStandardScope();
+		
+		// Build the global list in a temp to avoid access before it is built
+//		Set<Part> newPartSet = new TreeSet<>();
+		
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);
 		for (Element partElement : partNodes) {
@@ -101,29 +153,25 @@ public final class PartConfig implements Serializable {
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			
 			// Get storable
 			
-			String storableString = partElement.getAttributeValue(STORABLE);
-			
-			boolean isStorable = Boolean.parseBoolean(storableString);
+//			String storableString = partElement.getAttributeValue(STORABLE);
+//			boolean isStorable = Boolean.parseBoolean(storableString);
 			
 			Part p = null;
 			
-			if (isStorable) {
-				p = new StorableItem(name, nextID, description, goodType, mass, 1);
-			}
-			else {
+//			if (isStorable) {
+//				p = new StorableItem(name, nextID, description, goodType, mass, 1);
+//			}
+//			else {
 				p = new Part(name, nextID, description, goodType, mass, 1);
-			}
+//			}
 
 			for (Part pp: partSet) {
 				if (pp.getName().equalsIgnoreCase(name))
 					throw new IllegalStateException(
 						"PartConfig detected an duplicated part entry in parts.xml : " + name);
 			}
-			
-			partSet.add(p);
 
 			// Add maintenance entities for part.
 			Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
@@ -131,16 +179,43 @@ public final class PartConfig implements Serializable {
 				List<Element> entityNodes = entityListElement.getChildren(ENTITY);
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
-					double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
-					int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-
-					MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
-					addPartScope(entityName, newMaintenance);
+					boolean validName = false;
+					for (String s: STANDARD_SCOPES) {
+						if (s.equalsIgnoreCase(entityName) ) {
+							validName = true;
+							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
+							int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
+	
+							MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
+							addPartScope(entityName, newMaintenance);
+						}
+					}
+					
+					if (!validName) {
+//						logger.severe(entityName + " is not being clear defined in mars-sim.");
+						throw new IllegalArgumentException(entityName + " is not being clear defined in mars-sim.");
+					}	
 				}
 			}
+			
+
+			// Add part to newPartSet.
+//			newPartSet.add(p);
+			partSet.add(p);
+			
 		}
+		
+		// Assign the partSet now built
+//		partSet = Collections.unmodifiableSet(newPartSet);
+		
 	}
 
+	/**
+	 * Adds to a list of MaintenanceScope.
+	 * 
+	 * @param scope
+	 * @param newMaintenance
+	 */
 	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
 
 		String key = scope.toLowerCase();
