@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MEGDRMapReader.java
- * @date 2023-04-28
+ * @date 2023-06-17
  * @author Manny Kung
  */
 
@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.common.FileLocator;
 
@@ -29,7 +30,9 @@ import com.google.common.io.ByteStreams;
  * @See https://pds-geosciences.wustl.edu/missions/mgs/megdr.html.
  */
 public class MEGDRMapReader {
-
+	
+	private static final Logger logger = Logger.getLogger(MEGDRMapReader.class.getName());
+	
 //	NOTE: (Do not delete)
 //	
 // `megt90n000cb.img` provides 
@@ -46,20 +49,24 @@ public class MEGDRMapReader {
 //	map resolution of 11520x5760
 //	32 pixels per degree (or 0.03125 by 0.03125 degrees)
 //	map scale of 1.853 km per pixel		
-	
-	
-	
 	 
-//	private static final String IMG_FILE = "megt90n000cb.img";
+	/** meg004 is Low resolutions. */
+	private static final String meg004 = "megt90n000cb.img";
 //	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 
-	private static final String IMG_FILE = "megt90n000eb.img";
+	/** meg004 is mid resolutions. */
+	private static final String meg016 = "megt90n000eb.img";
 //	private static final String COMPRESSED = "2880x5760_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "2880x5760_uncompressed";
 	
+	/** meg032 is high resolutions. */
+	private static final String meg032 = "megt90n000fb.img";
+	
 	private static final String PATH = "/maps/";
-	static final String FILE = PATH + IMG_FILE;
+	static final String FILE = PATH + meg004;
+	
+	private String[] maps = {PATH + meg004, PATH + meg016, PATH + meg032};
 	
 	// Each number occupies 2 bytes
 	private static final int BUFFER_SIZE = 2;
@@ -77,7 +84,8 @@ public class MEGDRMapReader {
 	private static short width;
 	
 	public static void main(String[] args) throws IOException {
-		new MEGDRMapReader().loadElevation();
+		int level = 1;
+		new MEGDRMapReader(level).loadElevation(level);
 	}
 	
 	/**
@@ -85,11 +93,17 @@ public class MEGDRMapReader {
 	 * 
 	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">mars-sim Issue #225</a>
 	 */
-	public MEGDRMapReader() {
-		loadElevation();
+	public MEGDRMapReader(int level) {
+		loadElevation(level);
 	}
 	
-	private short convert2ByteToInt(byte[] data) {
+	/**
+	 * Converts two bytes to a short int.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	private short convert2ByteToShortInt(byte[] data) {
 	    if (data == null || data.length != 2) return 0x0;
 	    // ----------
 	    return (short)( // NOTE: type cast not necessary for int
@@ -112,7 +126,7 @@ public class MEGDRMapReader {
         
         for (int i = 0; i < shorts.length; i++) {
         	
-        	shorts[i]  = convert2ByteToInt(new byte[] {
+        	shorts[i]  = convert2ByteToShortInt(new byte[] {
                     data[(i*2)],
                     data[(i*2)+1]
             	});
@@ -125,19 +139,21 @@ public class MEGDRMapReader {
 	 * 
 	 * @return
 	 */
-	public short[] loadElevation() {	 
+	public short[] loadElevation(int level) {
+		// Select the map resolution
+		String file = maps[level];
 		
-	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(FILE))) {
+	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(file))) {
 
 			// Use ByteStreams to convert to byte array
 			byte[] bytes = ByteStreams.toByteArray(inputStream);
 			
 			elevation = convertByteArrayToShortIntArray(bytes);
-
 			
 			height = (short) Math.sqrt(elevation.length / 2);
 			width = (short) (height * 2);
 			
+			logger.info("Reading '" + file + "' - height is " + height + "; width is " + width);
 	            
 		} catch (Exception e) {
 			 System.out.println("Problems in inputStream: " + e.getMessage());

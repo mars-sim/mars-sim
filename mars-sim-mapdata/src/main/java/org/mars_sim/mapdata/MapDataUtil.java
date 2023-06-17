@@ -32,7 +32,7 @@ import java.util.Collection;
       */
      private MapDataUtil() {
          mapDataFactory = new MapDataFactory();
-         reader = new MEGDRMapReader();
+         reader = new MEGDRMapReader(0);
          
          height = reader.getHeight();
          width = reader.getWidth();
@@ -46,13 +46,13 @@ import java.util.Collection;
      public short[] getElevationArray() {
     	 
      	if (elevationArray == null)	
-     		elevationArray = reader.loadElevation();
+     		elevationArray = reader.loadElevation(0);
   
  		return elevationArray;
  	}
  	
     /**
- 	 * Gets the elevation as an short integer at a given location.
+ 	 * Gets the elevation as a short integer at a given location.
  	 * 
  	 * @param phi   the phi location.
  	 * @param theta the theta location.
