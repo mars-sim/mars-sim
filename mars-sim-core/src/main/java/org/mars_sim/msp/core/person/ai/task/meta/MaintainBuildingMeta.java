@@ -82,7 +82,8 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
     }
 
 	/**
-     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * 
 	 * @param t Task being scored
 	 * @parma p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
@@ -105,6 +106,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
+     * 
 	 * @param t Task being scored
 	 * @parma r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable

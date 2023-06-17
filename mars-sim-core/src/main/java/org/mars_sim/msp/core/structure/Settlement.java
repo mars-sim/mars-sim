@@ -324,6 +324,7 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
+	/** The settlement's preference modifiers map. */
 	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
@@ -3032,6 +3033,8 @@ public class Settlement extends Structure implements Temporal,
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
+	
+
 	
 	/**
 	 * Returns the ice collection rate in the vicinity of this settlement.

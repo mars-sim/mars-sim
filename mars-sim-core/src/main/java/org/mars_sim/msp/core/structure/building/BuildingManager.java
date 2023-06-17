@@ -34,10 +34,14 @@ import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -58,7 +62,6 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -72,6 +75,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -118,6 +122,8 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap;
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
+	/** The settlement's maintenance parts map. */
+	private Map<Malfunctionable, Map<Integer, Integer>> partsMaint = new HashMap<>();
 	
 	private transient Settlement settlement;
 	private transient Meteorite meteorite;
@@ -966,6 +972,12 @@ public class BuildingManager implements Serializable {
 			meteorite.startMeteoriteImpact(this);
 		}
 
+		if (pulse.isNewMSol()) {
+			// Check if there are any maintenance parts to be submitted
+			retrieveMaintenanceParts();
+		}
+		
+		
 		for (Building b : buildings) {
 			try {
 				b.timePassing(pulse);
@@ -2398,7 +2410,115 @@ public class BuildingManager implements Serializable {
 	 	}
 	 	return false;
 	 }
+		
+	 /**
+	  * Retrieves maintenance parts from all entities associated with this settlement. 
+	  */
+	private void retrieveMaintenanceParts() {
+		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			if (entity.getUnitType() == UnitType.BUILDING) {
+				Building building = (Building) entity;
+				if (!partsMaint.containsKey(building)) {			 		
+					Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+					// Submits the need to the building manager
+					partsMaint.put(entity, parts);
+					// Close out the submitted order 
+					entity.getMalfunctionManager().closeoutMaintenanceParts();
+				}
+			}
+		}			
+	}
 	 
+	/**
+	 * Gets the parts needed for maintenance of an entity.
+	 *
+	 * @return map of parts and their number.
+	 */
+	public Map<Integer, Integer> getMaintenanceParts(Malfunctionable requestEntity) {
+		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			if (requestEntity.equals(entity)) {
+				return partsMaint.get(entity);
+			}
+		}
+		return new HashMap<>();
+	}
+	
+	/**
+	 * Updates the needed maintenance parts for a entity.
+	 * 
+	 * @param requestEntity
+	 */
+	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<Integer, Integer> newParts) {
+		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			if (requestEntity.equals(entity)) {
+				if (newParts == null || newParts.isEmpty()) {
+					i.remove();
+					logger.info(entity, "All maintenance parts installed.");
+				}
+				else {
+					partsMaint.put(entity, newParts);
+					logger.info(entity, "Just updated maintenance parts: " + newParts);
+				}
+			}
+		}
+	}
+
+	
+	/**
+	 * Gets the demand of the parts needed for maintenance.
+	 *
+	 * @return map of parts and their number.
+	 */
+	public Map<Integer, Integer> getMaintenancePartsDemand() {
+		Map<Integer, Integer> partsList = new HashMap<>();
+		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			Map<Integer, Integer> partMap = partsMaint.get(entity);
+			
+			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+				Integer part = entry.getKey();
+				int number = entry.getValue();
+				if (!settlement.getItemResourceIDs().contains(part)) {
+					if (partsList.containsKey(part)) {
+						number += partsList.get(part).intValue();
+					}
+					partsList.put(part, number);
+				}
+			}
+		}
+		
+		return partsList;
+	}
+	
+	/**
+	 * Gets the number of maintenance parts from a particular settlement.
+	 * 
+	 * @param settlement
+	 * @param part
+	 */
+	public double getMaintenanceDemand(Part part) {
+		double numRequest = 0;
+		Map<Integer, Integer> partMap = getMaintenancePartsDemand();
+		
+		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+			Integer p = entry.getKey();
+			int number = entry.getValue();
+			Part pp = ItemResourceUtil.findItemResource(p);
+			if (part.equals(pp)) {
+				numRequest += number;
+			}
+		}
+		
+		return numRequest;
+	}
+	
 	/**
 	 * Sets the probability of impact per square meter per sol. 
 	 * Called by MeteoriteImpactImpl.

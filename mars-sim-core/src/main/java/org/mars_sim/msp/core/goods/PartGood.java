@@ -47,6 +47,11 @@ class PartGood extends Good {
 	private static final String GLASS_TUBE = "glass";
 	private static final String GLASS_SHEET = "glass sheet";
 	private static final String DRILL = "drill";
+	private static final String STACK = "stack";
+	private static final String FUEL_CELL = "fuel cell";
+	private static final String BOARD = "board";
+	private static final String MICROCONTROLLER = "microcontroller";
+	private static final String WAFER = "semiconductor wafer";
 
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
@@ -70,6 +75,8 @@ class PartGood extends Good {
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	
 	private static final double ITEM_DEMAND = 1;
+	
+	private static final double PARTS_MAINTENANCE_VALUE = 100;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
@@ -163,17 +170,17 @@ class PartGood extends Good {
         if (type == GoodType.ELECTRONIC)
             return ELECTRONIC_COST;      
         if (type == GoodType.INSTRUMENT)
-            return INSTRUMENT_COST;  
+            return INSTRUMENT_COST;
         
-        if (name.equalsIgnoreCase("stack"))
+        if (name.equalsIgnoreCase(STACK))
             return FC_STACK_COST;
-        else if (name.equalsIgnoreCase("fuel cell"))
+        else if (name.equalsIgnoreCase(FUEL_CELL))
             return FC_COST;
-        else if (name.contains("board"))
+        else if (name.contains(BOARD))
             return BOARD_COST;
-        else if (name.equalsIgnoreCase("microcontroller"))
+        else if (name.equalsIgnoreCase(MICROCONTROLLER))
             return CPU_COST;
-        else if (name.equalsIgnoreCase("semiconductor wafer"))
+        else if (name.equalsIgnoreCase(WAFER))
             return WAFER_COST;
 
         return ITEM_COST;
@@ -255,9 +262,11 @@ class PartGood extends Good {
 			// Calculate vehicle part demand.
 			+ getVehiclePartDemand(owner)
 			// Calculate battery cell part demand.
-			+ geFuelCellDemand(owner);
+			+ geFuelCellDemand(owner)
+			// Calculate maintenance part demand.
+			+ getMaintenancePartsDemand(settlement, part);
 
-			
+		
 		projected = projected
 			// Flatten raw part demand.
 			* flattenRawDemand
@@ -268,9 +277,7 @@ class PartGood extends Good {
 		double trade = owner.determineTradeDemand(this);
 
 		// Recalculate the partsDemandCache
-        // TODO Why is this doing it for ALL Parts if just a single Part is being processed; that means
-        // it becomes N*N calculations
-		//determineRepairPartsDemand();
+
 
 		// Gets the repair part demand
 		double repair = owner.getDemandValue(this);
@@ -857,6 +864,19 @@ class PartGood extends Good {
 		return demand;
 	}
 
+	
+	/**
+	 * Gets the demand from maintenance parts from a particular settlement.
+	 * 
+	 * @param settlement
+	 * @param part
+	 */
+	private double getMaintenancePartsDemand(Settlement settlement, Part part) {
+		double number = settlement.getBuildingManager().getMaintenanceDemand(part);
+		return number * PARTS_MAINTENANCE_VALUE;
+	}
+	
+	
 //    /**
 //	 * Determines the number demand for all parts at the settlement.
 //	 *

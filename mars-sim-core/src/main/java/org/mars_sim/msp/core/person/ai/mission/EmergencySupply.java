@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
@@ -819,15 +820,16 @@ public class EmergencySupply extends RoverMission {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 
-			// Determine parts needed but not available for repairs.
+			// Determine parts needed to see if they are available from resource storage. 
+			// Save them if they are not available for repairs.
 			Iterator<Malfunction> j = entity.getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext()) {
 				Malfunction malfunction = j.next();
 				Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-				Iterator<Integer> k = repairParts.keySet().iterator();
-				while (k.hasNext()) {
-					Integer part = k.next();
-					int number = repairParts.get(part);
+				
+				for (Entry<Integer, Integer> entry: repairParts.entrySet()) {
+					Integer part = entry.getKey();
+					int number = entry.getValue();
 					if (!settlement.getItemResourceIDs().contains(part)) {
 						if (result.containsKey(part)) {
 							number += result.get(part).intValue();
@@ -837,12 +839,14 @@ public class EmergencySupply extends RoverMission {
 				}
 			}
 
-			// Determine parts needed but not available for maintenance.
+			// Determine parts needed to see if they are available from resource storage.
+			// Save them if they are not available for repairs.
 			Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
-			Iterator<Integer> l = maintParts.keySet().iterator();
-			while (l.hasNext()) {
-				Integer part = l.next();
-				int number = maintParts.get(part);
+			
+			for (Entry<Integer, Integer> entry: maintParts.entrySet()) {
+				Integer part = entry.getKey();
+				int number = entry.getValue();
+	
 				if (!settlement.getItemResourceIDs().contains(part)) {
 					if (result.containsKey(part)) {
 						number += result.get(part).intValue();

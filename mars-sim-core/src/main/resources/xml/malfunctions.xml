@@ -808,7 +808,7 @@
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
 			<part name="lubricant bottle" number="1" probability="20" />
-			<part name="motor - large" number="1" probability="5" />
+			<part name="motor large" number="1" probability="5" />
 			<part name="work gloves" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -829,7 +829,7 @@
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
 			<part name="lubricant bottle" number="1" probability="20" />
-			<part name="motor - small" number="1" probability="5" />
+			<part name="motor small" number="1" probability="5" />
 			<part name="work gloves" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -918,7 +918,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
-			<part name="motor - small" number="1" probability="10" />
+			<part name="motor small" number="1" probability="10" />
 			<part name="ventilation fan" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -1084,7 +1084,7 @@
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="5" />
-			<part name="stepper motor - small" number="1" probability="5" />
+			<part name="stepper motor small" number="1" probability="5" />
 			<part name="timing belt" number="1" probability="5" />
 			<part name="optical prism" number="1" probability="5" />
 			<part name="Laser Sintering 3D Printer" number="1" probability="1" />

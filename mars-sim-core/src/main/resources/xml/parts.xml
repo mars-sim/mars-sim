@@ -96,7 +96,8 @@
 
 	<part name="Satellite Dish" type="electronic" mass="4.0">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="1" />
+			<entity name="rover" probability="5" max-number="1" />
+			<entity name="delivery drone" probability="5" max-number="1" />			
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -332,10 +333,12 @@
 	</part>
 
 	
-	<part name="Rover Chassis Panel" type="vehicle" mass="20.0" >
+	<part name="Vehicle Chassis Panel" type="vehicle" mass="20.0" >
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="10" />
+			<entity name="rover" probability="5" max-number="2" />
+			<entity name="delivery drone" probability="5" max-number="1" />	
+			<entity name="light utility vehicle" probability="5" max-number="1" />						
 		</maintenance-entity-list>
 	</part>
 
@@ -388,7 +391,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor - Large" type="vehicle" mass="40.0" >
+	<part name="Motor Large" type="vehicle" mass="40.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 			<entity name="wind power source" probability="1" max-number="1" />
@@ -462,7 +465,7 @@
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
 	</part>
 
-	<part name="Motor - small" type="electrical" mass="10.0" >
+	<part name="Motor small" type="electrical" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="robot" probability="1" max-number="1" />
 			<entity name="light utility vehicle" probability="1" max-number="4" />
@@ -766,7 +769,7 @@
 			roofing for greenhouses</description>
 	</part>
 
-	<part name="Stepper Motor - small" type="electrical" mass="2">
+	<part name="Stepper Motor small" type="electrical" mass="2">
 		<description>precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="1" max-number="2" />

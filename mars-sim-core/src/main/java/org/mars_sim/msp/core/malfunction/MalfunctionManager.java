@@ -947,31 +947,56 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 		if (!partsNeededForMaintenance.isEmpty())
-			logger.info(entity, "A maintenance event was triggered. Generated a list of parts needed for maintenance work."); 
+			logger.info(entity, "Maintenance event triggered with maintenance parts: " + partsNeededForMaintenance); 
 	}
 
 	/**
-	 * Gets the parts needed for maintenance on this entity.
+	 * Looks at the parts needed for maintenance on this entity.
 	 *
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts() {
-		if (partsNeededForMaintenance == null)
-			partsNeededForMaintenance = new HashMap<>();
-		return Collections.unmodifiableMap(partsNeededForMaintenance);
+		return entity.getAssociatedSettlement().getBuildingManager().getMaintenanceParts(entity);
 	}
 
 	/**
-	 * Checks any of the maintenance parts are available in a part store. Only at least one
-	 * part is required to trigger some level of maintenance. 
+	 * Retrieves the parts needed for maintenance on this entity.
+	 * Note: it doesn't automatically clear out partsNeededForMaintenance
+	 * until closeoutMaintenanceParts() is being called.
+	 *
+	 * @return map of parts and their number.
+	 */
+	public Map<Integer, Integer> retrieveMaintenancePartsFromManager() {
+		if (partsNeededForMaintenance == null)
+			partsNeededForMaintenance = new HashMap<>();
+		logger.info(entity, "Just retrieved maintenance parts: " + partsNeededForMaintenance);
+		return Collections.unmodifiableMap(partsNeededForMaintenance);
+	}
+	
+	/**
+	 * Closes out the parts needed for maintenance on this entity
+	 * after being submitted to the building manager.
+	 */
+	public void closeoutMaintenanceParts() {
+		logger.info(entity, "Closed out submitted maintenance parts: " + partsNeededForMaintenance);
+		partsNeededForMaintenance.clear();
+	}
+	
+	/**
+	 * Call to check if any maintenance parts have been posted and also see if 
+	 * they are available in a particular resource storage. 
+	 * Note: only at least one part is required to trigger some level of maintenance. 
 	 * 
 	 * @param partStore Store to provide parts
 	 */
 	public boolean hasMaintenanceParts(EquipmentOwner partStore) {
-		if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty())
+		Map<Integer, Integer> parts = getMaintenanceParts();
+		
+		// Call building manager to check if the maintenance parts have been submitted	
+		if (parts == null || parts.isEmpty())
 			return false;
 		
-		for( Entry<Integer, Integer> entry: partsNeededForMaintenance.entrySet()) {
+		for (Entry<Integer, Integer> entry: parts.entrySet()) {
 			Integer part = entry.getKey();
 			int number = entry.getValue();
 			if (partStore.getItemResourceStored(part) >= number) {
@@ -988,7 +1013,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public void transferMaintenanceParts(EquipmentOwner partStore) {
 		Map<Integer,Integer> newParts = new HashMap<>();
-		for( Entry<Integer, Integer> entry: partsNeededForMaintenance.entrySet()) {
+		for (Entry<Integer, Integer> entry: getMaintenanceParts().entrySet()) {
 			Integer part = entry.getKey();
 			int number = entry.getValue();
 			int numMissing = partStore.retrieveItemResource(part, number);
@@ -999,7 +1024,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}        
 		}
 
-		partsNeededForMaintenance = newParts;
+//		partsNeededForMaintenance = newParts;
+		entity.getAssociatedSettlement().getBuildingManager().updateMaintenancePartsMap(entity, newParts);
 	}
 
 	/**
