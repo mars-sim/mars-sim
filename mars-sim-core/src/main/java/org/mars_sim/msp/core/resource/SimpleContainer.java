@@ -8,9 +8,6 @@ package org.mars_sim.msp.core.resource;
 
 public class SimpleContainer {
 	
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-	
 	private int ownerId;
 	private Resource resource;
 	private double quantity;

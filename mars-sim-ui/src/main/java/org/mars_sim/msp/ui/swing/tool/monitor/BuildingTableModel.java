@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -24,9 +22,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 @SuppressWarnings("serial")
 public class BuildingTableModel extends UnitTableModel<Building> {
 
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(BuildingTableModel.class.getName());
-	
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = 1;

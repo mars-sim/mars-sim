@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.robot.ai.task;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -19,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
  */
 public class ChargeMeta extends FactoryMetaTask {
 
-	private static SimLogger logger = SimLogger.getLogger(ChargeMeta.class.getName());
+	// Can add back private static SimLogger logger = SimLogger.getLogger(ChargeMeta.class.getName())
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.charge"); //$NON-NLS-1$

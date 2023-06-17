@@ -524,7 +524,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			
 			double maintFactor = (effTimeSinceLastMaint/maintPeriod) + 1D;
-			double wearFactor = (100 - currentWearCond) * WEAR_MALFUNCTION_FACTOR * 100;
+			double wearFactor = (100 - currentWearCond) * WEAR_MALFUNCTION_FACTOR;
 			
 			double malfunctionChance = time * maintFactor * wearFactor;
 //			logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");

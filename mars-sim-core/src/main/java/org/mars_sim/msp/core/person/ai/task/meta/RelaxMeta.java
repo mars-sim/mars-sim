@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Relax;
@@ -27,9 +25,6 @@ public class RelaxMeta extends FactoryMetaTask{
 
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .25D;
-
-    /** default logger. */
-    private static final Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
     public RelaxMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

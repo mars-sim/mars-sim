@@ -52,7 +52,7 @@ public class UnloadVehicleGarage extends Task {
 	private static final int METHANOL_ID = ResourceUtil.methanolID;
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
+//	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$

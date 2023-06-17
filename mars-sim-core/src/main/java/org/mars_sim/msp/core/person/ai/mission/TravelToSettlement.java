@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -40,7 +39,7 @@ public class TravelToSettlement extends RoverMission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
+//	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;

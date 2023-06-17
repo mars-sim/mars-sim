@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -66,7 +65,6 @@ public class TabPanelOrganization extends TabPanel {
 	/** Default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelOrganization.class.getName());
 
-	
 	private static final String ORG_ICON = "organisation";
 	
 	/** The Settlement instance. */
@@ -127,7 +125,7 @@ public class TabPanelOrganization extends TabPanel {
 
 	private LocalUnitManagerListener unitManagerListener;
 
-	private Font labelFont;
+//	private Font labelFont;
 	
 	/**
 	 * Constructor.
@@ -145,7 +143,7 @@ public class TabPanelOrganization extends TabPanel {
 
 		settlement = unit;
 		
-		labelFont = StyleManager.getLabelFont();
+//		labelFont = StyleManager.getLabelFont();
 	}
 
 	@Override
@@ -153,10 +151,6 @@ public class TabPanelOrganization extends TabPanel {
 		UnitManager unitManager = getSimulation().getUnitManager();
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(UnitType.PERSON, unitManagerListener);
-
-		// Prepare info panel.
-//		infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); //new GridLayout(1, 2, 0, 0));
-//		content.add(infoPanel, BorderLayout.NORTH);
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

@@ -88,10 +88,6 @@ public class TabPanelPowerGrid extends TabPanel {
 	
 	private JTable powerTable;
 
-	private JLabel powerGeneratedTF;
-	private JLabel powerUsedTF;
-	private JLabel energyStorageCapacityTF;
-	private JLabel energyStoredTF;
 	private JLabel solarCellEfficiencyTF;
 	private JLabel percentPowerLabel;
 	private JLabel percentEnergyLabel;
@@ -509,10 +505,6 @@ public class TabPanelPowerGrid extends TabPanel {
 		super.destroy();
 		
 		powerTable = null;
-		powerGeneratedTF = null;
-		powerUsedTF = null;
-		energyStorageCapacityTF = null;
-		energyStoredTF = null;
 		solarCellEfficiencyTF = null;
 		powerScrollPane = null;
 
