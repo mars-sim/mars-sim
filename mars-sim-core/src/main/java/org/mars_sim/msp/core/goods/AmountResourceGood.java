@@ -65,7 +65,7 @@ class AmountResourceGood extends Good {
 	private static final double GREY_WATER_VALUE = 1;
 	private static final double BLACK_WATER_VALUE = .5;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
-	
+
 	// Cost modifiers
 	private static final double CH4_COST = 0.1;
 	private static final double METHANOL_COST = 0.11;
@@ -93,6 +93,8 @@ class AmountResourceGood extends Good {
 	// modifiers
     private static final double ICE_VALUE_MODIFIER = .1;
 	private static final double WATER_VALUE_MODIFIER = .07;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = .4;
+	
 	private static final double SOIL_VALUE_MODIFIER = .05;
 	private static final double SAND_VALUE_MODIFIER = .03;
 	private static final double ORES_VALUE_MODIFIER = .05;
@@ -1403,6 +1405,10 @@ class AmountResourceGood extends Good {
 	private double modifyWasteResource() {
 		int resource = getID();
 
+		if (resource == ResourceUtil.brineWaterID) {
+			return BRINE_WATER_VALUE_MODIFIER;
+		}
+		
 		if (resource == ResourceUtil.greyWaterID) {
 			return GREY_WATER_VALUE;
 		}

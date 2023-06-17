@@ -77,8 +77,10 @@ public class ResourceUtil implements Serializable {
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
 
+	public static final String BRINE_WATER = "brine water";
 	public static final String GREY_WATER = "grey water";
 	public static final String BLACK_WATER = "black water";
+	
 	public static final String TABLE_SALT = "table salt";
 	public static final String ROCK_SALT = "rock salt";
 	public static final String EPSOM_SALT = "epsom salt";
@@ -173,6 +175,8 @@ public class ResourceUtil implements Serializable {
 
 	public static int blackWaterID;
 	public static int greyWaterID;
+	
+	public static int brineWaterID;
 
 	public static int mortarID;
 	public static int concreteID;
@@ -414,7 +418,8 @@ public class ResourceUtil implements Serializable {
 
 		blackWaterID = findIDbyAmountResourceName(BLACK_WATER);
 		greyWaterID = findIDbyAmountResourceName(GREY_WATER);
-
+		brineWaterID = findIDbyAmountResourceName(BRINE_WATER);
+		
 		cropWasteID = findIDbyAmountResourceName(CROP_WASTE);
 		foodWasteID = findIDbyAmountResourceName(FOOD_WASTE);
 		toxicWasteID = findIDbyAmountResourceName(TOXIC_WASTE);

@@ -180,7 +180,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of item to be excluded in a buying negotiation
+	 * Gets a list of item to be excluded in a buying negotiation.
 	 *
 	 * @return
 	 */
@@ -556,7 +556,8 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Get the current list of items on this Settlement wants to buy
+	 * Gets the current list of items on this Settlement wants to buy.
+	 * 
 	 * @return Mapping from Good to the item
 	 */
 	public Map<Good, ShoppingItem> getBuyList() {
@@ -564,7 +565,8 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Get the current list of items on this Settlement is willing to sell
+	 * Gets the current list of items on this Settlement is willing to sell.
+	 * 
 	 * @return Mapping from Good to the item
 	 */
 	public Map<Good, ShoppingItem> getSellList() {
@@ -572,7 +574,7 @@ public class GoodsManager implements Serializable {
     }
 
 	/**
-	 * Gets the price per item for a good
+	 * Gets the price per item for a good.
 	 *
 	 * @param id the good id
 	 * @return
@@ -582,7 +584,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the price for a good
+	 * Gets the price for a good.
 	 *
 	 * @param good the good
 	 * @return
@@ -708,7 +710,7 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param s  {@link SimulationConfg}
 	 * @param m  {@link MissionManager}
@@ -742,7 +744,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * The owning Settlement of this manager
+	 * Returns the owning Settlement of this manager.
 	 */
 	Settlement getSettlement() {
 		return settlement;
@@ -774,6 +776,9 @@ public class GoodsManager implements Serializable {
 		deals.remove(commerce);
 	}
 	
+	/**
+	 * Calculates the sell list.
+	 */
 	private void calculateSellList() {
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newSell = new HashMap<>();

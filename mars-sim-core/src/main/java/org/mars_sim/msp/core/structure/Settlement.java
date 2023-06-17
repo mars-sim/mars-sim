@@ -134,14 +134,20 @@ public class Settlement extends Structure implements Temporal,
 
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
 	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int METHANOL_ID = ResourceUtil.methanolID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int ICE_ID = ResourceUtil.iceID;
+	private static final int BRINE_WATER_ID = ResourceUtil.brineWaterID;
+
 	private static final int REGOLITH_ID = ResourceUtil.regolithID;
 	private static final int SAND_ID = ResourceUtil.sandID;
 	private static final int CONCRETE_ID = ResourceUtil.concreteID;
 	private static final int CEMENT_ID = ResourceUtil.cementID;
-	private static final int ICE_ID = ResourceUtil.iceID;
+	
+
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
@@ -156,11 +162,16 @@ public class Settlement extends Structure implements Temporal,
 				HYDROGEN_ID,
 				CO2_ID,
 				METHANE_ID,
+				METHANOL_ID,
+				BRINE_WATER_ID,
 				WATER_ID,
+				
+				ICE_ID,
+				BRINE_WATER_ID,
 				GREY_WATER_ID,
 				BLACK_WATER_ID,
 				ROCK_SAMPLES_ID,
-				ICE_ID,
+
 				REGOLITH_ID };
 	}
 	
@@ -2714,19 +2725,30 @@ public class Settlement extends Structure implements Temporal,
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
+		double brineWaterDemand = goodsManager.getDemandValueWithID(BRINE_WATER_ID);
+		brineWaterDemand = brineWaterDemand * waterRationLevel / 10;
+		if (waterDemand > WATER_MAX)
+			waterDemand = WATER_MAX;
+		if (waterDemand < 1)
+			waterDemand = 1;
+		
 		// Compare the available amount of water and ice reserve
 		double iceSupply = goodsManager.getSupplyValue(ICE_ID);
 		double waterSupply = goodsManager.getSupplyValue(WATER_ID);
-
+		double brineWaterSupply = goodsManager.getSupplyValue(BRINE_WATER_ID);
+		
 		int pop = numCitizens;
 		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
 
-		if (iceSupply + waterSupply > reserve + iceDemand + waterDemand) {
-			result = reserve + iceDemand + waterDemand - iceSupply - waterSupply;
+		double totalSupply = iceSupply + waterSupply + brineWaterSupply;
+		double totalDemand = iceDemand + waterDemand + brineWaterDemand;
+		
+		if (totalSupply > reserve + totalDemand) {
+			result = reserve + totalDemand - totalSupply;
 		}
 		
-		else if (iceSupply + waterSupply > reserve) {
-			result = reserve - iceSupply - waterSupply;
+		else if (totalSupply > reserve) {
+			result = reserve - totalSupply;
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
