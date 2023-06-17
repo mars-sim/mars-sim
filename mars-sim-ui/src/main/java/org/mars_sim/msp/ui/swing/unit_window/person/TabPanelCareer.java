@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCareer.java
- * @date 2023-04-08
+ * @date 2023-06-17
  * @author Manny KUng
  */
 
@@ -32,10 +32,10 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.job.util.Assignment;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.util.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentHistory;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -79,7 +79,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private RoleType roleCache;
 	private String dateTimeRatingSubmitted;
 
-	private JobAssignmentType statusCache = JobAssignmentType.APPROVED;// PENDING;
+	private AssignmentType statusCache = AssignmentType.APPROVED;// PENDING;
 
 	private JTable table;
 
@@ -172,7 +172,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		attrPanel.addLabelledItem(Msg.getString("TabPanelCareer.roleType"), roleComboBox);
 
 		// Create ratings
-		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
+		List<Assignment> list = person.getJobHistory().getJobAssignmentList();
 		aveRater = new StarRater(5, calculateAveRating(list));
 		aveRater.setEnabled(false);
 		aveRater.setToolTipText(Msg.getString("TabPanelCareer.aveRater.tooltip"));
@@ -193,7 +193,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 					int size = list.size();
 					// check if a new job reassignment has just been submitted
-					if (list.get(size - 1).getStatus() == JobAssignmentType.PENDING) {
+					if (list.get(size - 1).getStatus() == AssignmentType.PENDING) {
 						list.get(size - 2).setJobRating(selection);
 						list.get(size - 2).setSolRatingSubmitted(sol);
 					} else {
@@ -283,12 +283,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 *
 	 * @param list
 	 */
-	public void checkingJobRating(List<JobAssignment> list) {
+	public void checkingJobRating(List<Assignment> list) {
 		int size = list.size();
 		if (solRatingSubmitted == -1) {
 			// the TabPanelCareer was closed and retrieve the saved value of
 			// solRatingSubmitted from JobAssignment
-			if (list.get(size - 1).getStatus() == JobAssignmentType.PENDING) {
+			if (list.get(size - 1).getStatus() == AssignmentType.PENDING) {
 				solRatingSubmitted = list.get(size - 2).getSolRatingSubmitted();
 			} else {
 				solRatingSubmitted = list.get(size - 1).getSolRatingSubmitted();
@@ -346,7 +346,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Calculates the cumulative career performance score of a person.
 	 */
-	public int calculateAveRating(List<JobAssignment> list) {
+	public int calculateAveRating(List<Assignment> list) {
 		double score = 0;
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
@@ -362,7 +362,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * Checks for any role change or reassignment.
 	 * Note that change in population affects the list of role types.
 	 */
-	@SuppressWarnings("unchecked")
 	public void checkRoleChange() {
 		List<String> names = RoleUtil.getRoleNames(settlement.getNumCitizens());
 
@@ -392,17 +391,17 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Checks for the status of job reassignment.
 	 */
-	public void checkJobReassignment(Person person, List<JobAssignment> list) {
+	public void checkJobReassignment(Person person, List<Assignment> list) {
 		int pop = settlement.getNumCitizens();
 
 		int last = list.size() - 1;
 
-		JobAssignmentType status = list.get(last).getStatus();
+		AssignmentType status = list.get(last).getStatus();
 
 		if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 
-			if (status == JobAssignmentType.PENDING) {
-				statusCache = JobAssignmentType.PENDING;
+			if (status == AssignmentType.PENDING) {
+				statusCache = AssignmentType.PENDING;
 				jobComboBox.setEnabled(false);
 				
 				String s = "Job Reassignment submitted on " + list.get(last).getTimeSubmitted();
@@ -415,12 +414,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			}
 
 			// detects a change of status from pending to approved
-			else if (statusCache == JobAssignmentType.PENDING) {
-				if (status.equals(JobAssignmentType.APPROVED)) {
-					statusCache = JobAssignmentType.APPROVED;
+			else if (statusCache == AssignmentType.PENDING) {
+				if (status.equals(AssignmentType.APPROVED)) {
+					statusCache = AssignmentType.APPROVED;
 					logger.info(person, "Job reassignment reviewed and approved.");
 					
-					JobType selectedJob = list.get(last).getJobType();
+					JobType selectedJob = JobType.getJobTypeByName(list.get(last).getType());
 
 					if (jobCache != selectedJob) {
 						jobCache = selectedJob;
@@ -432,18 +431,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 					person.getMind().setJobLock(true);
 
-				} else if (status == JobAssignmentType.NOT_APPROVED) {
-					statusCache = JobAssignmentType.NOT_APPROVED;
+				} else if (status == AssignmentType.NOT_APPROVED) {
+					statusCache = AssignmentType.NOT_APPROVED;
 					logger.info(person, "Job reassignment reviewed and NOT approved.");
 
-					JobType selectedJob = list.get(last - 1).getJobType();
+					JobType selectedJob = JobType.getJobTypeByName(list.get(last - 1).getType());
 	
 					if (jobCache != selectedJob) {
 						jobCache = selectedJob;
 						// Note: must update the jobCache prior to calling setSelectedItem
 						// or else a new job reassignment will be submitted
 						jobComboBox.setSelectedItem(selectedJob.getName());
-						changeNotice.setText("Job just changed to " + selectedJob);
+						changeNotice.setText("Job just restored back to " + selectedJob);
 					}
 				}
 
@@ -474,7 +473,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else {
 			// Update the jobComboBox if pop is less than
 			// POPULATION_WITH_COMMANDER
-			JobType selectedJob = list.get(last).getJobType();
+			JobType selectedJob = JobType.getJobTypeByName(list.get(last).getType());
 			
 			if (jobCache != selectedJob) {
 				jobCache = selectedJob;
@@ -510,7 +509,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Check for the role change
 			checkRoleChange();
 
-			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
+			List<Assignment> list = person.getJobHistory().getJobAssignmentList();
 
 			// Added checking if user submitted a job rating
 			checkingJobRating(list);
@@ -630,11 +629,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				logger.info(person, s);
 				firstNotification = true;
 
-				JobHistory jh = person.getJobHistory();
+				AssignmentHistory jh = person.getJobHistory();
 
-				statusCache = JobAssignmentType.PENDING;
+				statusCache = AssignmentType.PENDING;
 
-				jh.savePendingJob(selectedJob, JobUtil.USER, statusCache, null, true);
+				jh.savePendingJob(selectedJob.getName(), JobUtil.USER, statusCache, null, true);
 				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
 				jobComboBox.setSelectedItem(jobCache.getName());
@@ -649,7 +648,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				displayNotice("", false);
 				jobComboBox.setSelectedItem(selectedJob.getName());
 				// pop is small, things need to be flexible. Thus automatic approval
-				statusCache = JobAssignmentType.APPROVED;
+				statusCache = AssignmentType.APPROVED;
 				person.getMind().reassignJob(selectedJob, true, JobUtil.USER, statusCache,
 						JobUtil.USER);
 
@@ -682,10 +681,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		private static final long serialVersionUID = 1L;
 
-		private JobHistory jobHistory;
-		private JobAssignment ja;
+		private AssignmentHistory jobHistory;
+		private Assignment ja;
 
-		private List<JobAssignment> jobAssignmentList;
+		private List<Assignment> jobAssignmentList;
 
 		/**
 		 * hidden constructor.
@@ -749,7 +748,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			if (column == 0)
 				return ja.getTimeSubmitted(); // MarsClock.getDateTimeStamp(ja.getTimeSubmitted());
 			else if (column == 1)
-				return ja.getJobType();
+				return ja.getType();
 			else if (column == 2)
 				return ja.getInitiator();
 			else if (column == 3)

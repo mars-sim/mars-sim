@@ -12,8 +12,8 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.Assignment;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -68,12 +68,12 @@ public class ReviewJobReassignmentMeta extends FactoryMetaTask {
 	                while (i.hasNext()) {
 	                	// Get the job history of the candidate not the caller
 	                    Person p = i.next();
-	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-	                    JobAssignment ja = list.get(list.size()-1);
+	                    List<Assignment> list = p.getJobHistory().getJobAssignmentList();
+	                    Assignment ja = list.get(list.size()-1);
 	                    
-	                    JobAssignmentType status = ja.getStatus();
+	                    AssignmentType status = ja.getStatus();
 
-	                    if (status != null && status == JobAssignmentType.PENDING) {
+	                    if (status != null && status == AssignmentType.PENDING) {
 
 	                    	result += 100D;
 	                    	

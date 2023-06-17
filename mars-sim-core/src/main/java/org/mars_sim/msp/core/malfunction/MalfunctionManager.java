@@ -354,7 +354,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		if (malfunction.getRepairParts().isEmpty()) { 
-			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	
+			logger.info(actor, 20_000L, "'" + malfunction.getName() + "' needs no repair parts.");	
 		}
 //		else if (m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
 //			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	
@@ -623,7 +623,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// compare from previous modifier
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
-			logger.log(entity, Level.WARNING, 5_000, "The oxygen flow retrictor had been fixed");
+			logger.log(entity, Level.WARNING, 20_000L, "The oxygen flow retrictor had been fixed");
 		}
 	}
 
@@ -633,7 +633,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	void removeFixedMalfunction(Malfunction fixed) {
 		if (!malfunctions.remove(fixed)) {
-			logger.warning(entity, "Fixed malfunction is unknown " + fixed.getName());
+			logger.warning(entity, 20_000L, "Fixed malfunction is unknown " + fixed.getName());
 		}
 		else {
 			Map<String, Double> effects = fixed.getLifeSupportEffects();
@@ -652,7 +652,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			eventManager.registerNewEvent(newEvent);
 
-			logger.log(entity, Level.INFO, 0,"The malfunction '" + fixed.getName() + "' had been dealt with.");
+			logger.log(entity, Level.INFO, 20_000L, "The malfunction '" + fixed.getName() + "' had been dealt with.");
 		}
 	}
 
@@ -778,7 +778,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 
 			// More generic simplifed log message
-			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred. " + CAUSED_BY
+			logger.log(entity, Level.WARNING, 20_000L, "Accident " + aType + " occurred. " + CAUSED_BY
 						 + actor.getName() + "'.");
 
 			// Add stress to people affected by the accident.
@@ -947,7 +947,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 		if (!partsNeededForMaintenance.isEmpty())
-			logger.info(entity, "Maintenance event triggered with maintenance parts: " + partsNeededForMaintenance); 
+			logger.info(entity, 20_000L, "Maintenance event triggered with maintenance parts: " + partsNeededForMaintenance); 
 	}
 
 	/**
@@ -969,7 +969,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public Map<Integer, Integer> retrieveMaintenancePartsFromManager() {
 		if (partsNeededForMaintenance == null)
 			partsNeededForMaintenance = new HashMap<>();
-		logger.info(entity, "Just retrieved maintenance parts: " + partsNeededForMaintenance);
+		if (!partsNeededForMaintenance.isEmpty())
+			logger.info(entity, 20_000L, "Just retrieved maintenance parts: " + partsNeededForMaintenance);
 		return Collections.unmodifiableMap(partsNeededForMaintenance);
 	}
 	
@@ -978,7 +979,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * after being submitted to the building manager.
 	 */
 	public void closeoutMaintenanceParts() {
-		logger.info(entity, "Closed out submitted maintenance parts: " + partsNeededForMaintenance);
+		logger.info(entity, 20_000L, "Closed out submitted maintenance parts: " + partsNeededForMaintenance);
 		partsNeededForMaintenance.clear();
 	}
 	
@@ -1071,7 +1072,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			orbitCache = orbit;
 			numberMalfunctions = 0;
 		}
-		logger.info(entity, "avgMalfunctionsPerOrbit: " + Math.round(avgMalfunctionsPerOrbit * 100.0)/100.0);
+		logger.info(entity, 20_000L, "avgMalfunctionsPerOrbit: " + Math.round(avgMalfunctionsPerOrbit * 100.0)/100.0);
 		return avgMalfunctionsPerOrbit;
 	}
 
@@ -1091,7 +1092,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		} else {
 			avgMaintenancesPerOrbit = (1 + numberMaintenances) / totalTimeOrbits;
 		}
-		logger.info(entity, "avgMaintenancesPerOrbit: " + Math.round(avgMaintenancesPerOrbit * 100.0)/100.0);
+		logger.info(entity, 20_000L, "avgMaintenancesPerOrbit: " + Math.round(avgMaintenancesPerOrbit * 100.0)/100.0);
 		return avgMaintenancesPerOrbit;
 	}
 

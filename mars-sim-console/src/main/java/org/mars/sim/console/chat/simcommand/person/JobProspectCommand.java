@@ -13,8 +13,8 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
-import org.mars_sim.msp.core.person.ai.job.util.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.util.Assignment;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentHistory;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 
@@ -47,10 +47,10 @@ public class JobProspectCommand extends AbstractPersonCommand {
 		response.appendBlankLine();
 		response.appendTableHeading("Date", 18, "New Job", CommandHelper.JOB_WIDTH,
 									"Application", "Approved By");
-		JobHistory jh = person.getJobHistory();
-		for(JobAssignment j : jh.getJobAssignmentList()) {
+		AssignmentHistory jh = person.getJobHistory();
+		for(Assignment j : jh.getJobAssignmentList()) {
 			response.appendTableRow(j.getTimeSubmitted(),
-					j.getJobType().getName(),
+					j.getType(),
 					j.getStatus().getName(),
 					j.getAuthorizedBy());
 		}

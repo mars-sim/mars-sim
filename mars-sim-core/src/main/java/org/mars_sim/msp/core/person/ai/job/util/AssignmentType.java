@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * JobAssignmentType.java
- * @date 2022-07-06
+ * AssignmentType.java
+ * @date 2023-07-17
  * @author Manny Kung
  */
 
@@ -9,16 +9,16 @@ package org.mars_sim.msp.core.person.ai.job.util;
 
 import org.mars_sim.msp.core.Msg;
 
-public enum JobAssignmentType {
+public enum AssignmentType {
 
-	PENDING					(Msg.getString("JobAssignmentType.pending")), //$NON-NLS-1$
-	APPROVED				(Msg.getString("JobAssignmentType.approved")), //$NON-NLS-1$
-	NOT_APPROVED			(Msg.getString("JobAssignmentType.notApproved")); //$NON-NLS-1$
+	PENDING					(Msg.getString("AssignmentType.pending")), //$NON-NLS-1$
+	APPROVED				(Msg.getString("AssignmentType.approved")), //$NON-NLS-1$
+	NOT_APPROVED			(Msg.getString("AssignmentType.notApproved")); //$NON-NLS-1$
 
 	private String name;
 
 	/** hidden constructor. */
-	private JobAssignmentType(String name) {
+	private AssignmentType(String name) {
 		this.name = name;
 	}
 

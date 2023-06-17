@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -497,7 +497,7 @@ public final class SettlementBuilder {
 					JobType job = JobType.getJobTypeByName(jobName);
 					if (job != null) {
 						// Designate a specific job to a person
-						person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
+						person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, AssignmentType.APPROVED,
 								JobUtil.MISSION_CONTROL);
 					}
 				}

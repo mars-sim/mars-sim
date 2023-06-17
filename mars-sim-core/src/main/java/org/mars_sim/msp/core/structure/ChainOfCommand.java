@@ -11,8 +11,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -521,65 +523,96 @@ public class ChainOfCommand implements Serializable {
 		List<SkillType> requiredSkills = null;
 		switch(role) {
 		case CHIEF_OF_AGRICULTURE:
-			requiredSkills = List.of(SkillType.BOTANY,
+			requiredSkills = List.of(
+									SkillType.BOTANY,
 									SkillType.BIOLOGY,
 									SkillType.CHEMISTRY,
 									SkillType.COOKING,
-									SkillType.TRADING);
+									SkillType.TRADING
+									);
 			break;
 
 		case CHIEF_OF_COMPUTING:
-			requiredSkills = List.of(SkillType.COMPUTING,
+			requiredSkills = List.of(
+									SkillType.ASTRONOMY,
+									SkillType.COMPUTING,
+									SkillType.CHEMISTRY,
 									SkillType.MATHEMATICS,
-									SkillType.PHYSICS,
-									SkillType.ASTRONOMY);
+									SkillType.PHYSICS
+									);
 			break;
 
 		case CHIEF_OF_ENGINEERING:
-			requiredSkills = List.of(SkillType.MATERIALS_SCIENCE,
+			requiredSkills = List.of(
+									SkillType.MATERIALS_SCIENCE,
 									SkillType.COMPUTING,
 									SkillType.PHYSICS,
 									SkillType.MECHANICS,
-									SkillType.CONSTRUCTION);
+									SkillType.CONSTRUCTION
+									);
 			break;
 
 		case CHIEF_OF_LOGISTICS_N_OPERATIONS:
-			requiredSkills = List.of(SkillType.PILOTING,
+			requiredSkills = List.of(
+									SkillType.COMPUTING,
+									SkillType.EVA_OPERATIONS,
+									SkillType.MATHEMATICS,					
 									SkillType.METEOROLOGY,
 									SkillType.MECHANICS,
-									SkillType.MATHEMATICS,
-									SkillType.COMPUTING);
+									SkillType.PILOTING,
+									SkillType.TRADING									
+									);
 			break;
 
 		case CHIEF_OF_MISSION_PLANNING:
-			requiredSkills = List.of(SkillType.MATHEMATICS,
-									SkillType.PILOTING,
-									SkillType.MANAGEMENT,
+			requiredSkills = List.of(
+									SkillType.AREOLOGY,
+									SkillType.COMPUTING,
 									SkillType.EVA_OPERATIONS,
-									SkillType.COMPUTING);
+									SkillType.MATHEMATICS,
+									SkillType.MANAGEMENT,									
+									SkillType.PILOTING,									
+									SkillType.PSYCHOLOGY,
+									SkillType.TRADING									
+									);
 			break;
 
 		case CHIEF_OF_SAFETY_N_HEALTH:
-			requiredSkills = List.of(SkillType.EVA_OPERATIONS,
-									SkillType.MEDICINE,
+			requiredSkills = List.of(
+									SkillType.AREOLOGY,
+									SkillType.BIOLOGY,
 									SkillType.CONSTRUCTION,
-									SkillType.BIOLOGY);
+									SkillType.EVA_OPERATIONS,
+									SkillType.MEDICINE,
+									SkillType.PSYCHOLOGY,
+									SkillType.TRADING
+									);
 			break;
 
 		case CHIEF_OF_SCIENCE:
-			requiredSkills = List.of(SkillType.AREOLOGY,
-									SkillType.CHEMISTRY,
-									SkillType.PHYSICS,
+			requiredSkills = List.of(
+									SkillType.AREOLOGY,
+									SkillType.ASTRONOMY,
 									SkillType.BIOLOGY,
+									SkillType.BOTANY,									
+									SkillType.CHEMISTRY,
+									SkillType.COMPUTING,
+									SkillType.MATERIALS_SCIENCE,
 									SkillType.MATHEMATICS,
-									SkillType.COMPUTING);
+									SkillType.MEDICINE,
+									SkillType.PHYSICS,
+									SkillType.PSYCHOLOGY
+									);
 			break;
 
 		case CHIEF_OF_SUPPLY_N_RESOURCES:
-			requiredSkills = List.of(SkillType.TRADING,
+			requiredSkills = List.of(
+									SkillType.COOKING,
 									SkillType.MATHEMATICS,
 									SkillType.MANAGEMENT,
-									SkillType.COOKING);
+									SkillType.MATERIALS_SCIENCE,
+									SkillType.TRADING
+									);
 			break;
 
 		default:
@@ -620,6 +653,72 @@ public class ChainOfCommand implements Serializable {
 		}
 	}
 
+	public static Set<JobType> getJobsFromole(RoleType roleType) {
+		Set<JobType> jobTypes = new HashSet<>();
+
+		switch(roleType) {
+			case AGRICULTURE_SPECIALIST:
+				jobTypes = Set.of(
+					JobType.BOTANIST,
+					JobType.BIOLOGIST,
+					JobType.CHEMIST,
+					JobType.CHEF,
+					JobType.TRADER
+					);
+			break;
+
+			case COMPUTING_SPECIALIST:
+				jobTypes = Set.of(
+					JobType.ASTRONOMER,
+					JobType.COMPUTER_SCIENTIST,
+					JobType.CHEMIST,
+					JobType.MATHEMATICIAN,
+					JobType.PHYSICIST
+					);
+			break;
+			
+			// Will continue to work out the rest of the cases
+			
+			default:
+				throw new IllegalStateException("Cannot process " + roleType);
+		}
+
+		return jobTypes;
+	}
+	
+			
+	public static Set<RoleType> getRolesFromJob(JobType jobType) {
+		Set<RoleType> roleTypes = new HashSet<>();
+		
+		switch(jobType) {
+			case ARCHITECT:
+				roleTypes = Set.of(
+						RoleType.COMPUTING_SPECIALIST,
+						RoleType.ENGINEERING_SPECIALIST,
+						RoleType.MISSION_SPECIALIST,
+						RoleType.RESOURCE_SPECIALIST,
+						RoleType.SAFETY_SPECIALIST
+						);
+				break;
+
+			case AREOLOGIST:
+				roleTypes = Set.of(
+						RoleType.MISSION_SPECIALIST,
+						RoleType.RESOURCE_SPECIALIST,
+						RoleType.SAFETY_SPECIALIST,
+						RoleType.SCIENCE_SPECIALIST						
+						);
+				break;		
+				
+				// Will continue to work out the rest of the cases
+
+		default:
+			throw new IllegalStateException("Cannot process " + jobType);
+		}
+		
+		return roleTypes;
+	}
+	
 	/**
 	 * Finds a list of people with a particular role
 	 *

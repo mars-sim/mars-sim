@@ -2422,10 +2422,20 @@ public class BuildingManager implements Serializable {
 				Building building = (Building) entity;
 				if (!partsMaint.containsKey(building)) {			 		
 					Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
-					// Submits the need to the building manager
-					partsMaint.put(entity, parts);
-					// Close out the submitted order 
-					entity.getMalfunctionManager().closeoutMaintenanceParts();
+					if (!parts.isEmpty()) {
+						// Submits the need to the building manager
+						partsMaint.put(entity, parts);
+						// Close out the submitted order 
+						entity.getMalfunctionManager().closeoutMaintenanceParts();
+					}
+				}
+				else {
+					logger.info(entity, 20_000L, "Another set of maintenance parts are incoming.");
+					// if partsMaint already contains an entry, it means the previous maint 
+					// repair task order has not been accomplished yet. 
+					// This will allow time for settlers to work on the problem and get the 
+					// previous maint repair done first, before moving onto the next repair task order
+					// Or else updateMaintenancePartsMap() may not be done correctly.
 				}
 			}
 		}			
@@ -2459,11 +2469,11 @@ public class BuildingManager implements Serializable {
 			if (requestEntity.equals(entity)) {
 				if (newParts == null || newParts.isEmpty()) {
 					i.remove();
-					logger.info(entity, "All maintenance parts installed.");
+					logger.info(entity, 20_000L, "All maintenance parts installed.");
 				}
 				else {
 					partsMaint.put(entity, newParts);
-					logger.info(entity, "Just updated maintenance parts: " + newParts);
+					logger.info(entity, 20_000L, "Just updated maintenance parts: " + newParts);
 				}
 			}
 		}

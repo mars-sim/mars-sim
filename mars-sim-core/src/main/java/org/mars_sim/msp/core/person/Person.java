@@ -52,8 +52,8 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.fav.Preference;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.util.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentHistory;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -191,7 +191,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/** Person's Favorite instance. */
 	private Favorite favorite;
 	/** Person's JobHistory instance. */
-	private JobHistory jobHistory;
+	private AssignmentHistory jobHistory;
 	/** Person's Role instance. */
 	private Role role;
 	/** Person's Preference instance. */
@@ -349,7 +349,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Initialize field data in circadian clock
 		circadian.initialize();
 		// Create job history
-		jobHistory = new JobHistory();
+		jobHistory = new AssignmentHistory();
 		// Create the role
 		role = new Role(this);
 		// Create shift schedule
@@ -634,7 +634,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// In case of the role of the Mayor, his job must be set to Politician instead.
 		if (type == RoleType.MAYOR) {
 			// Set the job as Politician
-			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
+			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
 	}
 
@@ -645,7 +645,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @param authority
 	 */
 	public void setJob(JobType job, String authority) {
-		mind.assignJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, authority);
+		mind.assignJob(job, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, authority);
 	}
 
 	/**
@@ -658,7 +658,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Gets the instance of JobHistory for a person.
 	 */
-	public JobHistory getJobHistory() {
+	public AssignmentHistory getJobHistory() {
 		return jobHistory;
 	}
 
