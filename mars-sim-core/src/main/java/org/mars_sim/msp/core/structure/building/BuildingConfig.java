@@ -97,6 +97,8 @@ public class BuildingConfig {
 
 	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
+	private static Set<String> buildingTypes = new HashSet<>(); 
+	
 	/**
 	 * Constructor.
 	 *
@@ -119,7 +121,10 @@ public class BuildingConfig {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		return buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
+		if (buildingTypes.isEmpty()) {
+			buildingTypes = buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
+		}
+		return buildingTypes;
 	}
 
 	/**

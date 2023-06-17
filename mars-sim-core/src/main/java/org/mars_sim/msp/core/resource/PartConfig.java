@@ -104,6 +104,14 @@ public final class PartConfig implements Serializable {
 		}
 	}
 	
+	public static void addScopes(Set<String> newScopes) {
+		STANDARD_SCOPES.addAll(newScopes);
+	}
+	
+	public static void addScopes(String newScope) {
+		STANDARD_SCOPES.add(newScope);
+	}
+	
 	/**
 	 * Loads item resources from the parts.xml config document.
 	 *

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -285,8 +286,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		malfunctionManager = new MalfunctionManager(this, spec.getWearLifeTime(), totalMaintenanceTime);
 		// Add 'Building' to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
-		// Add building's type to malfunction manager.
+		
+		// Add building type to the standard scope
+		PartConfig.addScopes(spec.getBuildingType());
+		
+		// Add building type to malfunction manager.
 		malfunctionManager.addScopeString(spec.getBuildingType());
+		
 		
 		// Add each function to the malfunction scope.
 		for (Function sfunction : functions) {

@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -135,7 +136,19 @@ public class EVASuit extends Equipment
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		
+		// Add "EVA" to the standard scope
+		PartConfig.addScopes("EVA");
+
+		// Add TYPE to the standard scope
+		PartConfig.addScopes(TYPE);
+
+		// Add "EVA" to malfunction manager scope
+		malfunctionManager.addScopeString("EVA");
+		
+		// Add TYPE to malfunction manager scope
 		malfunctionManager.addScopeString(TYPE);
+		
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Compute maintenance needed parts prior to starting

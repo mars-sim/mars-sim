@@ -585,8 +585,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// of having needed repair parts and doesn't necessarily result in generating parts 
 				// that need maintenance
 				
-				// Updates the repair parts 
-				determineNewMaintenanceParts();
+				// Generates the repair parts 
+				generateNewMaintenanceParts();
 //				logger.info(entity, "Checking if repair parts are needed due to wear-and-tear. "
 //						+ "Condition: " + Math.round(currentWearCondition*100.0)/100.0 + " %.");
 			}
@@ -921,10 +921,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines a new set of required repair parts for maintenance.
+	 * Generates a new set of required repair parts for maintenance.
 	 * Note: may or may not result in parts needed.
 	 */
-	public void determineNewMaintenanceParts() {
+	public void generateNewMaintenanceParts() {
 		if (partsNeededForMaintenance == null) {
 			partsNeededForMaintenance = new ConcurrentHashMap<>();
 		}
