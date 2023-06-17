@@ -15,22 +15,19 @@
 ]>
 
 <part-list>
+	<part name="Airleak Patch" type="utility" mass=".2">
 		<!--  Note: mass in kg can be a decimal number. -->
 		<!--  Note: both probability and max-number must be a whole integer and without decimal places. -->
-	<part name="Airleak Patch" type="utility" mass=".2">
 		<description>Plastic and adhesive patch for airleak.</description>
-
-<!-- 		<maintenance-entity-list>
-			<entity name="life support" probability="5" max-number="4" />
-			<entity name="rover" probability="5" max-number="2" />
-			<entity name="eva suit" probability="5" max-number="1" />
-			<entity name="farming" probability="5" max-number="4" />
-		</maintenance-entity-list>
--->
 	</part>
+	
 	<part name="Fire Extinguisher" type="utility" mass="3" />
 
 	<part name="Gasket" type="utility" mass=".1">
+		<!-- entity denotes the system name or the malfunction/maintenance scope. -->
+		<!-- probability denotes a % maintenance probability, i.e. how likely it will be triggered as maintenance item. 
+		     Note that this probability is not related to part reliability %, MTBF or failure rate of this item.  -->		
+		<!-- max-number denotes the maximum number of this part needed in that system scope. -->			
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 			<entity name="farming" probability="5" max-number="6" />

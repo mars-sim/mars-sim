@@ -77,7 +77,8 @@ public class MaintainBuilding extends Task  {
 	}
 
 	/**
-	 * Setup the maintenance activity.
+	 * Sets up the maintenance activity.
+	 * 
 	 * @param entity Target for work.
 	 */
 	private void init(Building building) {

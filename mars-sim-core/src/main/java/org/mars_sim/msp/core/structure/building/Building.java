@@ -192,7 +192,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private static BuildingConfig buildingConfig;
 
 	/**
-	 * Constructor 1. Constructs a Building object.
+	 * Constructor 1 : Constructs a Building object.
 	 *
 	 * @param template the building template.
 	 * @param manager  the building's building manager.
@@ -214,7 +214,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Constructor 2 Constructs a Building object.
+	 * Constructor 2 : Constructs a Building object.
 	 *
 	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
@@ -296,13 +296,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			}
 		}
 
+		// Compute maintenance needed parts prior to starting
+//		malfunctionManager.determineNewMaintenanceParts();
+		
 		// If no life support then no internal repairs
 		malfunctionManager.setSupportsInside(hasFunction(FunctionType.LIFE_SUPPORT));
 	}
 
 
 	/**
-	 * Constructor 3 (for use by Mock Building in Unit testing)
+	 * Constructor 3 : (for use by Mock Building in Unit testing).
 	 *
 	 * @return manager
 	 */
@@ -317,7 +320,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Constructor 4 (for use by Unit testing)
+	 * Constructor 4 : (for use by Unit testing).
 	 *
 	 * @return manager
 	 */
@@ -336,7 +339,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Get the category of this building
+	 * Gets the category of this building.
 	 */
 	public BuildingCategory getCategory() {
 		return category;
@@ -543,7 +546,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets a function type that has with openly available (empty) activity spot
+	 * Gets a function type that has with openly available (empty) activity spot.
 	 *
 	 * @return FunctionType
 	 */
@@ -556,7 +559,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets a function that has with openly available (empty) activity spot
+	 * Gets a function that has with openly available (empty) activity spot.
 	 *
 	 * @return FunctionType
 	 */
@@ -745,7 +748,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Remove the building's functions from the settlement.
+	 * Removes the building's functions from the settlement.
 	 */
 	public void removeFunctionsFromSettlement() {
 
@@ -756,7 +759,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Remove a building function
+	 * Removes a building function.
 	 *
 	 * @param function
 	 */
@@ -800,7 +803,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Returns the volume of the building in liter
+	 * Returns the volume of the building in liter.
 	 *
 	 * @return volume in liter
 	 */
@@ -847,9 +850,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		for (Function function : functions) {
 			double power = function.getFullPowerRequired();
 			if (power > 0) {
-//				System.out.println(nickName + " : "
+//			Test for System.out.println(nickName + " : "
 //					+ function.getFunctionType().toString() + " : "
-//					+ Math.round(power * 10.0)/10.0 + " kW");
+//					+ Math.round(power * 10.0)/10.0 + " kW")
 				result += power;
 			}
 		}
@@ -903,7 +906,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Sets the value of the heat generated
+	 * Sets the value of the heat generated.
 	 *
 	 * @param heatGenerated
 	 */
@@ -914,7 +917,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Sets the required power for heating
+	 * Sets the required power for heating.
 	 *
 	 * @param powerReq
 	 */
@@ -969,7 +972,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Calculates the number of people in the airlock
+	 * Calculates the number of people in the airlock.
 	 *
 	 * @return number of people
 	 */
@@ -987,7 +990,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 
 	/**
-	 * Gets the number of people
+	 * Gets the number of people.
 	 *
 	 * @return
 	 */
@@ -1004,7 +1007,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 
 	/**
-	 * Gets a collection of inhabitants
+	 * Gets a collection of inhabitants.
 	 *
 	 * @return
 	 */
@@ -1017,7 +1020,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets a collection of robots
+	 * Gets a collection of robots.
 	 *
 	 * @return
 	 */
@@ -1105,7 +1108,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/*
-	 * Checks for possible meteorite impact for this building
+	 * Checks for possible meteorite impact for this building.
 	 */
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
 		// Reset the impact time
@@ -1372,7 +1375,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1384,7 +1387,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -1395,7 +1398,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1417,7 +1420,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets all stored amount resources
+	 * Gets all stored amount resources.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -1427,7 +1430,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 	
 	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 * Gets all stored amount resources in eqmInventory, including inside equipment.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -1473,7 +1476,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -1499,7 +1502,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Gets the remaining quantity of an item resource
+	 * Gets the remaining quantity of an item resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1547,7 +1550,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		functions = null;

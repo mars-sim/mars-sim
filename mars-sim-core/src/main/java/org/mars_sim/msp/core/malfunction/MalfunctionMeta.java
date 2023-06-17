@@ -47,7 +47,10 @@ public class MalfunctionMeta implements Serializable {
 
 	// Data members
 	private int severity;
-
+	
+	/**
+	 * The malfunction probability
+	 */
 	private double probability;
 
 	private String name;
@@ -81,8 +84,6 @@ public class MalfunctionMeta implements Serializable {
 		this.parts = parts;
 	}
 
-
-
 	/**
 	 * Returns the name of the malfunction.
 	 *
@@ -102,7 +103,7 @@ public class MalfunctionMeta implements Serializable {
 	}
 
 	/**
-	 * Returns the probability of failure of the malfunction
+	 * Returns the probability of failure of the malfunction.
 	 *
 	 * @return probability in %
 	 */
@@ -111,7 +112,7 @@ public class MalfunctionMeta implements Serializable {
 	}
 
 	/**
-	 * Sets the probability of failure
+	 * Sets the probability of failure.
 	 *
 	 * @param p
 	 */
@@ -122,7 +123,7 @@ public class MalfunctionMeta implements Serializable {
 	/**
 	 * Returns the effort required to repair the malfunction.
 	 *
-	 * @return Effort is borken down by the type of work.
+	 * @return Effort is broken down by the type of work.
 	 */
 	public Map<MalfunctionRepairWork, EffortSpec> getRepairEffort() {
 		return repairEffort;
@@ -177,7 +178,7 @@ public class MalfunctionMeta implements Serializable {
 	}
 
 	/**
-	 * Get the parts required to fix this malfunction
+	 * Gets the parts required to fix this malfunction.
 	 * @return
 	 */
 	public List<RepairPart> getParts() {

@@ -42,7 +42,7 @@ public interface Malfunctionable extends Loggable, Serializable {
 	
 	
 	/**
-	 * Gets the unit type
+	 * Gets the unit type.
 	 * 
 	 * @return
 	 */

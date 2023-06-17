@@ -138,6 +138,9 @@ public class EVASuit extends Equipment
 		malfunctionManager.addScopeString(TYPE);
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
+		// Compute maintenance needed parts prior to starting
+//		malfunctionManager.determineNewMaintenanceParts();
+
 		// Create MicroInventory instance
 		microInventory = new MicroInventory(this, CAPACITY);
 

@@ -210,6 +210,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		super.setupScopeString();
 		
 		malfunctionManager.addScopeString(SystemType.ROVER.getName());
+		
+		// Compute maintenance needed parts prior to starting
+		malfunctionManager.determineNewMaintenanceParts();
 	}
 
 	/**

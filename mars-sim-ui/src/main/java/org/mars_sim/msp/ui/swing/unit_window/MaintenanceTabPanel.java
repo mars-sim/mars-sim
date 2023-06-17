@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @date 2022-07-10
+ * @date 2023-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -33,13 +34,12 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 
 /**
- * The MaintenanceTabPanel is a tab panel for unit maintenance information.
+ * The MaintenanceTabPanel is a tab panel for maintenance information.
  */
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
-
 
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
@@ -57,8 +57,8 @@ public class MaintenanceTabPanel extends TabPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param malfunctionable the malfunctionable building the panel is for.
-	 * @param desktop         The main desktop.
+	 * @param malfunctionable the malfunctionable instance of the unit
+	 * @param desktop         The main desktop
 	 */
 	public MaintenanceTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 		super(
@@ -185,7 +185,7 @@ public class MaintenanceTabPanel extends TabPanel {
             for (MaintenanceScope maintenance : partConfig.getMaintenance(mm.getScopes())) {
 
                 parts.add(maintenance.getPart());
-                functions.add(maintenance.getName());
+                functions.add(Conversion.capitalize(maintenance.getName()));
                 max.add(maintenance.getMaxNumber());
                 probability.add(maintenance.getProbability());
             }	

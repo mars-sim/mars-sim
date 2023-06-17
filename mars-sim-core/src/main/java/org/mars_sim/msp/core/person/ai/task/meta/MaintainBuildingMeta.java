@@ -119,8 +119,9 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	}
 
 	/**
-	 * Scan the Settlement for any Building that need maintenance.
-	 * @param settlement Settlemnt to scan.
+	 * Scans the Settlement for any Building that need maintenance.
+	 * 
+	 * @param settlement Settlement to scan.
 	 */
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
@@ -139,10 +140,11 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	}
 
 	/**
-	 * Score the entity in terms of need for maintenance. Considers malfunction, condition & time
+	 * Scores the entity in terms of need for maintenance. Considers malfunction, condition & time
 	 * since last maintenance.
+	 * 
 	 * @param entity
-	 * @return A score on teh need for maintenance
+	 * @return A score on the need for maintenance
 	 */
 	public static double scoreMaintenance(Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();

@@ -26,7 +26,7 @@ public class MaintenanceScope implements Serializable {
 	private int maxNumber;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param part		  Part of the maintenance
 	 * @param scope        scope of the maintenance.

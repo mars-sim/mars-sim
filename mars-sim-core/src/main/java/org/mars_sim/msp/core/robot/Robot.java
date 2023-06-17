@@ -187,6 +187,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
+		// Compute maintenance needed parts prior to starting
+//		malfunctionManager.determineNewMaintenanceParts();
+
 		// Set up the time stamp for the robot
 		createBirthDate();
 

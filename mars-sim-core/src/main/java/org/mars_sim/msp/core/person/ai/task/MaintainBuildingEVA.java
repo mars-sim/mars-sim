@@ -49,6 +49,7 @@ extends EVAOperation {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public MaintainBuildingEVA(Person person, Building target) {

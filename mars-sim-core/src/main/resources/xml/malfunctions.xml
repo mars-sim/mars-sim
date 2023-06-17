@@ -97,10 +97,14 @@
 		<repair-parts-list>
 			<!-- A part required for repairing this malfunction. -->
 			<!-- number - the number of the part needed. -->
-			<!-- probability - the probability of need : the part will be
-			     needed for repair if this malfunction were to occur.
-			     Note that this probability has nothing to do with the
-			     reliability or failure rate of this item. -->
+			<!-- probability - the % probability that a new part will be
+			     needed when swapping out the old part in a repair 
+			     triggered by a malfunction.
+			     Ideally speaking, all probability should sum up to be 
+			     around 100%. Don't need to be exactly 100%
+			     Note that this malfunction probability is apart from 
+			     and not related to part reliability %, MTBF or 
+			     failure rate of this item. -->
 			<part name="airleak patch" number="2" probability="75" />
 			<part name="work gloves" number="1" probability="10" />
 			<part name="fiberglass cloth" number="1" probability="10" />
@@ -183,8 +187,8 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" probability="45" />
-			<part name="gas tank" number="1" probability="25" />
-			<part name="aluminum sheet" number="1" probability="10" />
+			<part name="gas tank" number="1" probability="5" />
+			<part name="aluminum sheet" number="1" probability="5" />
 			<part name="plastic sheet" number="1" probability="5" />
 			<part name="fiberglass" number="1" probability="5" />
 			<part name="plastic pipe" number="2" probability="5" />
@@ -220,9 +224,9 @@
 			<part name="power cable" number="2" probability="5" />
 			<part name="aluminum sheet" number="2" probability="5" />
 			<part name="heating element" number="2" probability="5" />
-			<part name="logic board" number="3" probability="10" />
+			<part name="logic board" number="3" probability="1" />
 			<part name="valve" number="4" probability="5" />
-			<part name="electrical wire" number="5" probability="20" />
+			<part name="electrical wire" number="5" probability="10" />
 			<part name="wire connector" number="5" probability="20" />
 			<part name="work gloves" number="1" probability="10" />
 			<part name="transformer" number="1" probability="1" />			

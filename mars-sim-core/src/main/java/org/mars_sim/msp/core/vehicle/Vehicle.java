@@ -277,6 +277,9 @@ public abstract class Vehicle extends Unit
 	
 		// Add its vehicle type as scope
 		malfunctionManager.addScopeString(vehicleType.name());
+		
+		// Compute maintenance needed parts prior to starting
+//		malfunctionManager.determineNewMaintenanceParts();
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMaintenance.java
- * @date 2022-08-01
+ * @date 2023-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -29,6 +29,9 @@ import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 import org.mars_sim.msp.ui.swing.utils.UnitModel;
 import org.mars_sim.msp.ui.swing.utils.UnitTableLauncher;
 
+/**
+ * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
+ */
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
@@ -39,7 +42,7 @@ public class TabPanelMaintenance extends TabPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit    the unit to display.
+	 * @param unit    the unit (currently for settlements only)
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) {
@@ -123,7 +126,7 @@ public class TabPanelMaintenance extends TabPanel {
 				case 1:
 					return "Condition";
 				case 2:
-					return "Last Maint.";
+					return "Sols Last Maint.";
 				case 3:
 					return "Completed";
 				default:
