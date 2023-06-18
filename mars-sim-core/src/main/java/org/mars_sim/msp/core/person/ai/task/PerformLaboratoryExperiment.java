@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -244,8 +246,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
     private static Lab getSettlementLab(Person person, ScienceType science) {
         Lab result = null;
 
-        BuildingManager manager = person.getSettlement().getBuildingManager();
-        List<Building> labBuildings = manager.getBuildings(FunctionType.RESEARCH);
+        Set<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
         labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -269,9 +270,9 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
      * @return research buildings with available lab space.
      * @throws BuildingException if building list contains buildings without research function.
      */
-    private static List<Building> getSettlementLabsWithAvailableSpace(
-            List<Building> buildingList) {
-        List<Building> result = new ArrayList<Building>();
+    private static Set<Building> getSettlementLabsWithAvailableSpace(
+    		Set<Building> buildingList) {
+    	Set<Building> result = new UnitSet<>();
 
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
@@ -292,9 +293,9 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
      * @return research buildings with science specialty.
      * @throws BuildingException if building list contains buildings without research function.
      */
-    private static List<Building> getSettlementLabsWithSpecialty(ScienceType science,
-            List<Building> buildingList) {
-        List<Building> result = new ArrayList<Building>();
+    private static Set<Building> getSettlementLabsWithSpecialty(ScienceType science,
+    		Set<Building> buildingList) {
+    	Set<Building> result = new UnitSet<>();
 
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {

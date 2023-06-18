@@ -6,13 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -23,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -132,59 +135,49 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param person the person
 	 * @return available manufacturing building
 	 */
-	public static Building getAvailableManufacturingBuilding(Person person) {
+	public static Building getAvailableManufacturingBuilding(Worker worker) {
 
 		Building result = null;
 
-		SkillManager skillManager = person.getSkillManager();
+		SkillManager skillManager = worker.getSkillManager();
 		
 		// Note: Allow a low material science skill person to have access to 
 		// do the next 2 levels of skill process or else difficult 
 		// tasks are not learned.		
-		int skill = 2 + skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
+		if (worker.getUnitType() == UnitType.PERSON) {
+			skill = skill + 2;
+		}
+		
+		if (worker.isInSettlement()) {
+			BuildingManager manager = worker.getSettlement().getBuildingManager();
+			Set<Building> manufacturingBuildings = manager.getBuildingSet(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
 			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
 
-			if (manufacturingBuildings.size() > 0) {
-				Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
+			Map<Building, Double> manufacturingBuildingProbs = null;
+			
+			if (worker.getUnitType() == UnitType.PERSON) {
+				manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings((Person)worker,
 						manufacturingBuildings);
+			}
+			
+			if (manufacturingBuildingProbs == null) {
+				return null;
+			}
+			
+			else if (manufacturingBuildingProbs.size() > 0) {
 				result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
 			}
 		}
 
 		return result;
 	}
-
-	public static Building getAvailableManufacturingBuilding(Robot robot) {
-
-		Building result = null;
-
-		SkillManager skillManager = robot.getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-
-		if (robot.isInSettlement()) {
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
-			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
-			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
-			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
-			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
-
-			if (manufacturingBuildings.size() > 0) {
-				result = manufacturingBuildings.get(RandomUtil.getRandomInt(manufacturingBuildings.size() - 1));
-			}
-		}
-
-		return result;
-	}
+	
 
 	/**
 	 * Gets a list of manufacturing buildings needing work from a list of buildings
@@ -194,10 +187,10 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param skill        the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
 	 */
-	private static List<Building> getManufacturingBuildingsNeedingWork(
-			List<Building> buildingList, int skill) {
+	private static Set<Building> getManufacturingBuildingsNeedingWork(
+			Set<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -219,10 +212,10 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @return subset list of buildings with processes requiring work, or original
 	 *         list if none found.
 	 */
-	private static List<Building> getBuildingsWithProcessesRequiringWork(
-			List<Building> buildingList, int skill) {
+	private static Set<Building> getBuildingsWithProcessesRequiringWork(
+			Set<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -285,9 +278,9 @@ public class ManufactureConstructionMaterials extends Task {
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @return subset list of highest tech level buildings.
 	 */
-	private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) {
+	private static Set<Building> getHighestManufacturingTechLevelBuildings(Set<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		Set<Building> result = new UnitSet<Building>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();

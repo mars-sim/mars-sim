@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -133,12 +135,12 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
 		boolean done = false;
 		// Pick an administrative building for remote access to the resource building
-		List<Building> mgtBuildings = person.getSettlement().getBuildingManager()
-				.getBuildings(FunctionType.MANAGEMENT);
+		Set<Building> mgtBuildings = person.getSettlement().getBuildingManager()
+				.getBuildingSet(FunctionType.MANAGEMENT);
 
 		if (!mgtBuildings.isEmpty()) {
 
-			List<Building> notFull = new ArrayList<>();
+			Set<Building> notFull = new HashSet<>();
 
 			for (Building b : mgtBuildings) {
 				if (b.hasFunction(FunctionType.ADMINISTRATION)) {
@@ -153,8 +155,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
 			if (!done) {
 				if (!notFull.isEmpty()) {
-					int rand = RandomUtil.getRandomInt(mgtBuildings.size()-1);
-					walkToMgtBldg(mgtBuildings.get(rand));
+					walkToMgtBldg(RandomUtil.getARandSet(mgtBuildings));
 				}
 				else {
 					end(powerSource.getType().getName() + ": Management space unavailable.");

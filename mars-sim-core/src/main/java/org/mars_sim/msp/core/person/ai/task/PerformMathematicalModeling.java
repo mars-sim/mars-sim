@@ -9,9 +9,11 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -199,7 +201,7 @@ implements ResearchScientificStudy {
         Lab result = null;
 
         //BuildingManager manager = person.getSettlement().getBuildingManager();
-        List<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
+        Set<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -221,9 +223,9 @@ implements ResearchScientificStudy {
      * @param buildingList list of buildings with research function.
      * @return research buildings with available lab space.
      */
-    private static List<Building> getSettlementLabsWithAvailableSpace(
-            List<Building> buildingList) {
-        List<Building> result = new ArrayList<>();
+    private static Set<Building> getSettlementLabsWithAvailableSpace(
+    		Set<Building> buildingList) {
+    	Set<Building> result = new UnitSet<>();
         for (Building building : buildingList) {
             Research lab = building.getResearch();
             if (lab.getResearcherNum() < lab.getLaboratorySize()) {
@@ -241,9 +243,9 @@ implements ResearchScientificStudy {
      * @param buildingList list of buildings with research function.
      * @return research buildings with mathematics specialty.
      */
-    private static List<Building> getSettlementLabsWithMathematicsSpeciality(
-            List<Building> buildingList) {
-        List<Building> result = new ArrayList<>();
+    private static Set<Building> getSettlementLabsWithMathematicsSpeciality(
+    		Set<Building> buildingList) {
+    	Set<Building> result = new UnitSet<>();
 
         for (Building building : buildingList) {
             Research lab = building.getResearch();

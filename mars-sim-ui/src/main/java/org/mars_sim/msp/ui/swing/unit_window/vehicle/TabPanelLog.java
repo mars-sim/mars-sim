@@ -32,7 +32,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;

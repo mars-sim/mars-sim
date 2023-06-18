@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.robot.ai.task;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -157,10 +157,10 @@ public class Charge extends Task {
 	public static Building getAvailableRoboticStationBuilding(Robot robot) {
 		if (robot.isInSettlement()) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> buildings0 = manager.getBuildings(FunctionType.ROBOTIC_STATION);
-			List<Building> buildings1 = BuildingManager.getNonMalfunctioningBuildings(buildings0);
-			List<Building> buildings2 = getRoboticStationsWithEmptySlots(buildings1);
-			List<Building> buildings3 = null;
+			Set<Building> buildings0 = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
+			Set<Building> buildings1 = BuildingManager.getNonMalfunctioningBuildings(buildings0);
+			Set<Building> buildings2 = getRoboticStationsWithEmptySlots(buildings1);
+			Set<Building> buildings3 = null;
 			if (!buildings2.isEmpty()) {
 				// robot is not as inclined to move around
 				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings2);
@@ -188,13 +188,8 @@ public class Charge extends Task {
 			
 			int size = buildings3.size();
 
-			int selected = 0;
-			if (size == 1) {
-				 return buildings3.get(0);
-			}
-			else if (size > 1) {
-				selected = RandomUtil.getRandomInt(size - 1);
-				return buildings3.get(selected);
+			if (size >= 1) {
+				return RandomUtil.getARandSet(buildings3);
 			}
 		}
 
@@ -202,15 +197,15 @@ public class Charge extends Task {
 	}
 
 	/**
-	 * Gets a list of robotic stations with empty spots
+	 * Gets a set of robotic stations with empty spots
 	 *
 	 * @param buildingList
 	 * @return
 	 */
-	private static List<Building> getRoboticStationsWithEmptySlots(List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
+	private static Set<Building> getRoboticStationsWithEmptySlots(Set<Building> buildings) {
+		Set<Building> result = new UnitSet<Building>();
 
-		Iterator<Building> i = buildingList.iterator();
+		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			RoboticStation station = building.getRoboticStation();

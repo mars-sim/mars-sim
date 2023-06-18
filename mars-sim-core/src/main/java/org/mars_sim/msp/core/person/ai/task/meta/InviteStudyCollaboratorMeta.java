@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -87,7 +88,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
                         }
                         
                         // Crowding modifier
-                        Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
+                        Building adminBuilding = BuildingManager.getAvailableAdminBuilding(person);
                         result *= getBuildingModifier(adminBuilding, person);
 
 

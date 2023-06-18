@@ -9,9 +9,9 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -1352,14 +1352,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			Settlement s = person.getSettlement();
 			if (s != null) {
 				
-				List<Building> buildingList = s.getBuildingManager()
+				Set<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 				
 				buildingList = buildingList.stream().filter(b -> !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
-						.collect(Collectors.toList());
-				
-				// Randomize its order
-				Collections.shuffle(buildingList);	
+						.collect(Collectors.toSet());	
 
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {

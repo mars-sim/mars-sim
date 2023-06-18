@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelPower.java
- * @date 2022-07-10
+ * @date 2023-06-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -97,9 +97,11 @@ extends BuildingFunctionPanel {
 			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
-				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+
 				if (powerSource.getType() == PowerSourceType.FISSION_POWER
 						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
+					
+					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
 					loadCapacityLabel = springPanel.addTextField(Msg.getString("BuildingPanelPower.loadCapacity"),
 							Math.round(loadCapacity *10.0)/10.0 + " %", null);
 				}
@@ -140,9 +142,11 @@ extends BuildingFunctionPanel {
 			Iterator<PowerSource> iP = generator.getPowerSources().iterator();
 			while (iP.hasNext()) {
 				PowerSource powerSource = iP.next();
-				double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
+
 				if (powerSource.getType() == PowerSourceType.FISSION_POWER
 						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
+					
+					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
 					loadCapacityLabel.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
 				}
 			}
@@ -167,12 +171,11 @@ extends BuildingFunctionPanel {
 	@Override
 	public void destroy() {
 		super.destroy();
-		
-		// take care to avoid null exceptions
 		statusTF = null;
 		producedTF = null;
 		usedTF = null;
 		powerStatusCache = null;
 		generator = null;
+		loadCapacityLabel = null;
 	}
 }

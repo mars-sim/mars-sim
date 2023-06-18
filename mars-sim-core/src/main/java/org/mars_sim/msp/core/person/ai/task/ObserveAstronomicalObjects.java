@@ -8,9 +8,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -120,7 +122,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		if (observer.isInSettlement()) {
 
 			BuildingManager manager = observer.getSettlement().getBuildingManager();
-			List<Building> observatoryBuildings = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION);
+			Set<Building> observatoryBuildings = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION);
 			observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
 			observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
 			observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
@@ -165,10 +167,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * @param buildingList list of buildings with astronomical observation function.
 	 * @return observatory buildings with available observatory space.
 	 */
-	private static List<Building> getObservatoriesWithAvailableSpace(List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
+	private static Set<Building> getObservatoriesWithAvailableSpace(Set<Building> buildings) {
+		Set<Building> result = new HashSet<>();
 
-		Iterator<Building> i = buildingList.iterator();
+		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();

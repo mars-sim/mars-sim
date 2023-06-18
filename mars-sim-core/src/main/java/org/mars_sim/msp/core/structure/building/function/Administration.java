@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -100,10 +100,10 @@ public class Administration extends Function {
 		// If person is in a settlement, try to find a building with )an office.
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
+			Set<Building> offices = buildingManager.getBuildingSet(FunctionType.ADMINISTRATION);
 			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
 			
-			List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
+			Set<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
 
 			if (!comfortOffices.isEmpty()) {				
 				offices = comfortOffices;			

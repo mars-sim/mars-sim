@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.core.tool;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.mars_sim.msp.core.Msg;
@@ -56,6 +59,30 @@ public final class RandomUtil {
 		return random;
 	}
 
+
+	/**
+	 * Returns a random element from a set.
+	 * 
+	 * @param <E>
+	 * @param set
+	 * @return
+	 */
+	public static <E> E getARandSet(Set<E> set) {
+		return set.stream()
+//				.skip(new Random().nextInt(set.size() - 1))
+				.skip(getRandomInt(set.size() - 1))
+				.findFirst()
+				.orElse(null);
+	}
+    
+    public static <E> Optional<E> getRandomElement(Collection<E> collection) {
+        return collection
+                .stream()
+//                .skip(ThreadLocalRandom.current().nextInt(collection.size()))
+                .skip(getRandomInt(collection.size()))
+                .findAny();
+    }
+    
 	/**
 	 * Returns true if given number is less than a random percentage.
 	 *

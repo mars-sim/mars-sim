@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -400,7 +400,7 @@ public class CookMeal extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
+			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.COOKING);
 			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
 			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(getKitchensNeedingCooks(kitchenBuildings));
 
@@ -424,13 +424,12 @@ public class CookMeal extends Task {
 
 		if (robot.isInSettlement()) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
+			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.COOKING);
 			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
 			kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(getKitchensNeedingCooks(kitchenBuildings));
 
 			if (kitchenBuildings.size() > 0) {
-				int selected = RandomUtil.getRandomInt(kitchenBuildings.size() - 1);
-				result = kitchenBuildings.get(selected);
+				return RandomUtil.getARandSet(kitchenBuildings);
 			}
 		}
 
@@ -444,8 +443,8 @@ public class CookMeal extends Task {
 	 * @return list of kitchen buildings
 	 * @throws BuildingException if error
 	 */
-	private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) {
-		List<Building> result = new ArrayList<>();
+	private static Set<Building> getKitchensNeedingCooks(Set<Building> kitchenBuildings) {
+		Set<Building> result = new UnitSet<>();
 
 		if (kitchenBuildings != null) {
 			Iterator<Building> i = kitchenBuildings.iterator();

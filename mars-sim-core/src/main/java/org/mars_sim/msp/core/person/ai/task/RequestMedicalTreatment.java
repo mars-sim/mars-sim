@@ -152,7 +152,7 @@ public class RequestMedicalTreatment extends Task {
         List<MedicalAid> goodMedicalAids = new ArrayList<>();
 
         // Check all medical care buildings.
-        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(
                 FunctionType.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();

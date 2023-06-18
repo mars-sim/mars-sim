@@ -1057,13 +1057,11 @@ public class Settlement extends Structure implements Temporal,
 		Building result = null;
 
 		if (person.isInSettlement()) {
-			List<Building> b = person.getSettlement().getBuildingManager()
-					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+			Set<Building> b = person.getSettlement().getBuildingManager()
+					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
 			b = BuildingManager.getNonMalfunctioningBuildings(b);
 			b = getQuartersWithEmptyBeds(b, unmarked);
-			if (b.size() == 1) {
-				return b.get(0);
-			}
+
 			if (b.size() > 0) {
 				b = BuildingManager.getLeastCrowdedBuildings(b);
 			}
@@ -1073,9 +1071,9 @@ public class Settlement extends Structure implements Temporal,
 						b);
 				result = RandomUtil.getWeightedRandomObject(probs);
 			}
-			else if (b.size() == 1) {
-				return b.get(0);
-			}
+//			else if (b.size() == 1) {
+//				return b.get(0);
+//			}
 		}
 
 		return result;
@@ -1091,8 +1089,8 @@ public class Settlement extends Structure implements Temporal,
 	 *                     or not.
 	 * @return list of buildings with empty beds.
 	 */
-	private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean unmarked) {
-		List<Building> result = new ArrayList<>();
+	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
+		Set<Building> result = new UnitSet<>();
 
 		for (Building building : buildingList) {
 			LivingAccommodations quarters = building.getLivingAccommodations();
@@ -1457,7 +1455,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
-		List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.EVA);
+		Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EVA);
 
 		Iterator<Building> i = bldgs.iterator();
 		while (i.hasNext()) {
@@ -1594,10 +1592,10 @@ public class Settlement extends Structure implements Temporal,
 	 * Checks for available airlocks.
 	 */
 	private void checkAvailableAirlocks() {
-		List<Building> pressurizedBldgs = new ArrayList<>();
-		List<Building> depressurizedBldgs = new ArrayList<>();
+		Set<Building> pressurizedBldgs = new HashSet<>();
+		Set<Building> depressurizedBldgs = new HashSet<>();
 
-		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
+		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();
 			if (airlock.isPressurized()	|| airlock.isPressurizing())
 				pressurizedBldgs.add(airlockBdg);
@@ -1620,7 +1618,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param bldgs
 	 * @param pressurized
 	 */
-	public void trackAirlocks(List<Building> bldgs, boolean pressurized) {	
+	public void trackAirlocks(Set<Building> bldgs, boolean pressurized) {	
 		for (Building building : bldgs) {
 			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();

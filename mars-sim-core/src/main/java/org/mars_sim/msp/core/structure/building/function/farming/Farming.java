@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -1014,7 +1015,7 @@ public class Farming extends Function {
 
 		else {
 			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = building.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
+			Set<Building> laboratoryBuildings = building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();

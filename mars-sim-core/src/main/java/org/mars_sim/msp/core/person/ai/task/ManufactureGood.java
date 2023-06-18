@@ -6,13 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -141,9 +142,9 @@ public class ManufactureGood extends Task {
 				}
 			}
 
-			for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
+			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 				Manufacture manufacturingFunction = building.getManufacture();
-				List<ManufactureProcess> processes = new ArrayList<>(
+				Set<ManufactureProcess> processes = new HashSet<>(
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
@@ -173,7 +174,7 @@ public class ManufactureGood extends Task {
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (worker.isInSettlement()) {
-			List<Building> manufacturingBuildings = worker.getSettlement().getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
+			Set<Building> manufacturingBuildings = worker.getSettlement().getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
@@ -181,8 +182,7 @@ public class ManufactureGood extends Task {
 			manufacturingBuildings = BuildingManager.getLeastCrowded4BotBuildings(manufacturingBuildings);
 
 			if (manufacturingBuildings.size() > 0) {
-				int selected = RandomUtil.getRandomInt(manufacturingBuildings.size() - 1);
-				result = manufacturingBuildings.get(selected);
+				result = RandomUtil.getARandSet(manufacturingBuildings);
 			}
 		}
 
@@ -197,9 +197,9 @@ public class ManufactureGood extends Task {
 	 * @param skill        the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
 	 */
-	private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList, int skill) {
+	private static Set<Building> getManufacturingBuildingsNeedingWork(Set<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -220,9 +220,9 @@ public class ManufactureGood extends Task {
 	 * @return subset list of buildings with processes requiring work, or original
 	 *         list if none found.
 	 */
-	private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList, int skill) {
+	private static Set<Building> getBuildingsWithProcessesRequiringWork(Set<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -270,9 +270,9 @@ public class ManufactureGood extends Task {
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @return subset list of highest tech level buildings.
 	 */
-	private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) {
+	private static Set<Building> getHighestManufacturingTechLevelBuildings(Set<Building> buildingList) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();

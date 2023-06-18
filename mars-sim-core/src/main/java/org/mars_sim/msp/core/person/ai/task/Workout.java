@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -130,7 +130,7 @@ public class Workout extends Task {
 		// If person is in a settlement, try to find a building with a gym.
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> gyms = buildingManager.getBuildings(FunctionType.EXERCISE);
+			Set<Building> gyms = buildingManager.getBuildingSet(FunctionType.EXERCISE);
 			gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
 
 			if (RandomUtil.getRandomInt(1) == 0)

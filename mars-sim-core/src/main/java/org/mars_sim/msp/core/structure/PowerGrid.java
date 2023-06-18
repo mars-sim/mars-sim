@@ -623,7 +623,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Stores any excess power grid in energy storage buildings if possible.
+	 * Stores any excess energy into the power grid via battery storage systems in buildings if possible.
 	 * 
 	 * @param excessEnergy excess grid energy (in kW hr).
 	 * @throws BuildingException if error storing excess energy.
@@ -681,7 +681,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Delivers stored energy from a battery.
+	 * Receives energy from the grid to charge up a single battery storage system.
 	 * 
 	 * @param storage PowerStorage
 	 * @param excess  energy
@@ -751,7 +751,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Retrieves stored energy from the grid.
+	 * Retrieves stored energy from many grid-connected batteries.
 	 * 
 	 * @param needed the energy needed (kWh)
 	 * @param time the time (h)
@@ -793,7 +793,8 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Delivers stored energy from a battery.
+	 * Delivers stored energy from a battery storage system to the grid.
+	 * Called by retrieveStoredEnergy
 	 * 
 	 * @param storage PowerStorage
 	 * @param needed  energy

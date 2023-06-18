@@ -638,7 +638,7 @@ public class BuildingConnectorManager implements Serializable {
 		boolean goodConnection = false;
 		BuildingManager manager = settlement.getBuildingManager();
 		
-		Iterator<Building> i = manager.getBuildings(FunctionType.LIFE_SUPPORT).iterator();
+		Iterator<Building> i = manager.getBuildingSet(FunctionType.LIFE_SUPPORT).iterator();
 		while (i.hasNext() && !goodConnection) {
 			Building building = i.next();
 			if (!building.equals(newBuilding)

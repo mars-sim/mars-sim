@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
@@ -309,9 +311,9 @@ public class MedicalAssistance extends Task {
 		if (person.isInSettlement()) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> medicalBuildings = manager.getBuildings(FunctionType.MEDICAL_CARE);
+			Set<Building> medicalBuildings = manager.getBuildingSet(FunctionType.MEDICAL_CARE);
 
-			List<Building> needyMedicalBuildings = new ArrayList<Building>();
+			Set<Building> needyMedicalBuildings = new UnitSet<>();
 			Iterator<Building> i = medicalBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
@@ -321,7 +323,7 @@ public class MedicalAssistance extends Task {
 				}
 			}
 
-			List<Building> bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
+			Set<Building> bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
 
 			if (bestMedicalBuildings.size() > 0) {

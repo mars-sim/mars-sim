@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -126,7 +127,7 @@ public class RespondToStudyInvitation extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
+			Set<Building> administrationBuildings = manager.getBuildingSet(FunctionType.ADMINISTRATION);
 			administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
 			administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
 

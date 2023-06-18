@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -423,12 +422,11 @@ public abstract class DigLocal extends EVAOperation {
      */
     private LocalPosition determineBinLocation() {
 		// Find any Storage function that can hold the resource being collected but
-		// group by Buildings that are catogised as Storage
-		Map<Boolean, List<Building>> binMap = worker.getSettlement().getBuildingManager()
-			.getBuildings(FunctionType.STORAGE).stream()
-			.filter(b -> b.getStorage().getResourceStorageCapacity().containsKey(resourceID))
-			.collect(Collectors.groupingBy(x -> (x.getCategory() == BuildingCategory.STORAGE)));
-	
+		// group by Buildings that are categorised as Storage
+		Map<Boolean, List<Building>> binMap = BuildingManager
+				.findStorageBuildings(worker, resourceID, 
+				BuildingCategory.STORAGE);
+		
 		// Preference is Storage buildings
 		List<Building> binList = binMap.get(true);
 		if (binList.isEmpty()) {

@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
@@ -143,12 +142,12 @@ public class ProduceFood extends Task {
 		if (settlement != null) {
 		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				FoodProduction foodProductionFunction = building.getFoodProduction();
-				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<>(
-						foodProductionFunction.getProcesses());
+				Set<FoodProductionProcess> processes = ConcurrentHashMap.newKeySet();
+				processes.addAll(foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
 				while (k.hasNext()) {
 					FoodProductionProcess process = k.next();
@@ -221,7 +220,7 @@ public class ProduceFood extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
+			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -245,7 +244,7 @@ public class ProduceFood extends Task {
 
 		if (robot.isInSettlement()) {
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
+			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -254,9 +253,7 @@ public class ProduceFood extends Task {
 				foodProductionBuildings = BuildingManager.getLeastCrowded4BotBuildings(foodProductionBuildings);
 
 			if (foodProductionBuildings.size() > 0) {
-
-              	int selected = RandomUtil.getRandomInt(foodProductionBuildings.size()-1);
-            	result = foodProductionBuildings.get(selected);
+            	result = RandomUtil.getARandSet(foodProductionBuildings);
 			}
 		}
 
@@ -270,10 +267,10 @@ public class ProduceFood extends Task {
 	 * @param skill the materials science skill level of the person.
 	 * @return list of food production buildings needing work.
 	 */
-	private static List<Building> getFoodProductionBuildingsNeedingWork(
-		List<Building> buildingList, int skill) {
+	private static Set<Building> getFoodProductionBuildingsNeedingWork(
+			Set<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 		
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -296,10 +293,10 @@ public class ProduceFood extends Task {
 	 * @return subset list of buildings with processes requiring work, or
 	 *         original list if none found.
 	 */
-	private static List<Building> getBuildingsWithProcessesRequiringWork(
-			List<Building> buildingList, int skill) {
+	private static Set<Building> getBuildingsWithProcessesRequiringWork(
+			Set<Building> buildingList, int skill) {
 
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		Set<Building> result = new UnitSet<>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -346,10 +343,10 @@ public class ProduceFood extends Task {
 	 * @param buildingList list of buildings with the food production function.
 	 * @return subset list of highest tech level buildings.
 	 */
-	private static List<Building> getHighestFoodProductionTechLevelBuildings(
-			List<Building> buildingList) {
+	private static Set<Building> getHighestFoodProductionTechLevelBuildings(
+			Set<Building> buildingList) {
 
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		Set<Building> result = new UnitSet<>();
 
 		int highestTechLevel = 0;
 		for (Building building : buildingList) {

@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -239,7 +241,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		Lab result = null;
 
 		BuildingManager manager = person.getSettlement().getBuildingManager();
-		List<Building> labBuildings = manager.getBuildings(FunctionType.RESEARCH);
+		Set<Building> labBuildings = manager.getBuildingSet(FunctionType.RESEARCH);
 		labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
 		labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
 		labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -260,8 +262,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 	 * @param buildingList list of buildings with research function.
 	 * @return research buildings with available lab space.
 	 */
-	private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
+	private static Set<Building> getSettlementLabsWithAvailableSpace(Set<Building> buildingList) {
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -283,8 +285,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 	 * @param buildingList list of buildings with research function.
 	 * @return research buildings with science specialty.
 	 */
-	private static List<Building> getSettlementLabsWithSpecialty(ScienceType science, List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
+	private static Set<Building> getSettlementLabsWithSpecialty(ScienceType science, Set<Building> buildingList) {
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {

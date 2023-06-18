@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
@@ -173,7 +173,7 @@ public class SalvageGood extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
+			Set<Building> manufacturingBuildings = manager.getBuildingSet(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingSalvageWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithSalvageProcessesRequiringWork(manufacturingBuildings, skill);
@@ -197,10 +197,10 @@ public class SalvageGood extends Task {
 	 * @param skill the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
 	 */
-	private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList,
+	private static Set<Building> getManufacturingBuildingsNeedingSalvageWork(Set<Building> buildingList,
 			int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -220,10 +220,10 @@ public class SalvageGood extends Task {
 	 * @param skill the materials science skill level of the person.
 	 * @return subset list of buildings with processes requiring work, or original list if none found.
 	 */
-	private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList,
+	private static Set<Building> getBuildingsWithSalvageProcessesRequiringWork(Set<Building> buildingList,
 			int skill) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -273,10 +273,10 @@ public class SalvageGood extends Task {
 	 * @param buildingList list of buildings with the manufacture function.
 	 * @return subset list of highest tech level buildings.
 	 */
-	private static List<Building> getHighestManufacturingTechLevelBuildings(
-			List<Building> buildingList) {
+	private static Set<Building> getHighestManufacturingTechLevelBuildings(
+			Set<Building> buildingList) {
 
-		List<Building> result = new ArrayList<>();
+		Set<Building> result = new UnitSet<>();
 
 		int highestTechLevel = 0;
 		Iterator<Building> i = buildingList.iterator();

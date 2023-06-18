@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -136,7 +136,7 @@ public class OptimizeSystem extends Task {
 		// If person is in a settlement, try to find a building with a function type.
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> bldgs = buildingManager.getBuildings(functionType); 
+			Set<Building> bldgs = buildingManager.getBuildingSet(functionType); 
 			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
 			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
 

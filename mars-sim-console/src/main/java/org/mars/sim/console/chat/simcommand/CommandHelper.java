@@ -85,7 +85,8 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Prompt teh user to select an option from a list of choices
+	 * Prompts the user to select an option from a list of choices.
+	 * 
 	 * @param context
 	 * @param names
 	 * @param string
@@ -109,7 +110,8 @@ public class CommandHelper {
 	}
 	
 	/**
-	 * Display the status of a Scientific Study
+	 * Displays the status of a Scientific Study.
+	 * 
 	 * @param response
 	 * @param study
 	 */
@@ -158,7 +160,8 @@ public class CommandHelper {
 	}
 	
 	/**
-	 * Display a list of Collalorators
+	 * Displays a list of Collaborators.
+	 * 
 	 * @param response
 	 * @param study
 	 */
@@ -199,7 +202,8 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Display the details of a list of Airlocks
+	 * Displays the details of a list of Airlocks.
+	 * 
 	 * @param response Output for details.
 	 * @param airlocks
 	 */
@@ -220,7 +224,8 @@ public class CommandHelper {
 	}
 	
 	/**
-	 * Display the details of a list of Airlocks
+	 * Displays the details of a list of Airlocks.
+	 * 
 	 * @param response Output for details.
 	 * @param airlocks
 	 */
@@ -261,7 +266,8 @@ public class CommandHelper {
 	}
 	
 	/**
-	 * This generates the details of a mission.
+	 * Generates the details of a mission.
+	 * 
 	 * @param response Output destination
 	 * @param mission Mission in question
 	 */
@@ -360,6 +366,13 @@ public class CommandHelper {
 		}
 	}
 
+	/**
+	 * Outputs the equipment in use.
+	 * 
+	 * @param title
+	 * @param response
+	 * @param manifest
+	 */
 	private static void outputEquipment(String title, StructuredResponse response,
 			Map<Integer, Integer> manifest) {
 		if (!manifest.isEmpty()) {
@@ -374,6 +387,13 @@ public class CommandHelper {
 		}
 	}
 
+	/**
+	 * Outputs the resources in use.
+	 * 
+	 * @param title
+	 * @param response
+	 * @param resourcesManifest
+	 */
 	private static void outputResources(String title, StructuredResponse response,
 			Map<Integer, Number> resourcesManifest) {
 		if (!resourcesManifest.isEmpty()) {
@@ -400,7 +420,8 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Output the details of Malfunction
+	 * Outputs the details of Malfunction.
+	 * 
 	 * @param response Destination for output
 	 * @param source Source of the malfunction
 	 * @param m Malfunction to describe
@@ -456,7 +477,8 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Get the a Coordinates from user input. 
+	 * Gets the coordinates from user input. 
+	 * 
 	 * @param desc A prompt for the user explaining the purpose
 	 * @param context COntext of the conversation
 	 */
@@ -504,7 +526,8 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Output the processes that a Resource Processor is running. Put these in a table.
+	 * Outputs the processes that a Resource Processor is running. Put these in a table.
+	 * 
 	 * @param response Output destination
 	 * @param processType The name of the process type column
 	 * @param currentMSol The current mars time
