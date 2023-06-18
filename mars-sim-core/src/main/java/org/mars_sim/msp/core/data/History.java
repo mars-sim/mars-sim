@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.time.MasterClock;
  * Represents the history a value that changes over time.
  * Whenever a value is added it is timestamped with teh current marian time.
  */
-public class History<T> {
+public class History<T> implements Serializable {
     /**
      * Something happened in the history of this object.
      */
