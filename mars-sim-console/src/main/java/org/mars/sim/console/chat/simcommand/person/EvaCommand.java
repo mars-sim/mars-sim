@@ -31,7 +31,7 @@ public class EvaCommand extends AbstractPersonCommand {
 		response.appendTableHeading("Sol", 5, "Millisols");
 
 		Map<Integer, Double> eVATime = person.getTotalEVATaskTimeBySol();
-		int currentDay = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+		int currentDay = context.getSim().getMasterClock().getMarsTime().getMissionSol();
 		for (int i = (currentDay - eVATime.size()); i <= currentDay; i++) {
 			if (eVATime.containsKey(i)) {
 				double milliSol = eVATime.get(i);

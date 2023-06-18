@@ -14,8 +14,7 @@ import java.time.format.FormatStyle;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
-import org.mars_sim.msp.core.time.MarsClockFormat;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 
 /**
@@ -25,8 +24,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 public class DateCommand extends ChatCommand {
 
 	public static final ChatCommand DATE = new DateCommand();
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private DateCommand() {
 		super(TopLevel.SIMULATION_GROUP, "d", "date", "What is the date?");
@@ -41,13 +39,11 @@ public class DateCommand extends ChatCommand {
 		StructuredResponse responseText = new StructuredResponse();
 		MasterClock clock = context.getSim().getMasterClock();
 		LocalDateTime earthClock = clock.getEarthTime();
-		MarsClock marsClock = clock.getMarsClock();
+		MarsTime marsClock = clock.getMarsTime();
 
 		responseText.appendLabelledDigit("Mission Sol", marsClock.getMissionSol());
-		responseText.appendLabeledString("Mars Date", MarsClockFormat.getDateString(marsClock));
-		responseText.appendLabeledString("Mars Time", MarsClockFormat.getDecimalTimeString(marsClock));
+		responseText.appendLabeledString("Mars Date", marsClock.getTruncatedDateTimeStamp());
 		responseText.appendLabeledString("Earth Date", earthClock.format(DATE_FORMAT));
-		responseText.appendLabeledString("Earth Time", earthClock.format(TIME_FORMAT));
 		responseText.appendLabeledString("Uptime", clock.getUpTimer().getUptime());
 
 		if (context.getRoles().contains(ConversationRole.ADMIN)) {

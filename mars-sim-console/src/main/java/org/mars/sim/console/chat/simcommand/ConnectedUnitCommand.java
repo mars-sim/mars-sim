@@ -49,7 +49,7 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 	@Override
 	public String getPrompt(Conversation context) {
 		StringBuilder prompt = new StringBuilder();
-		prompt.append(context.getSim().getMasterClock().getMarsClock().getTrucatedDateTimeStamp());
+		prompt.append(context.getSim().getMasterClock().getMarsTime().getTruncatedDateTimeStamp());
 		prompt.append(' ').append(unitName);
 		return prompt.toString();
 	}

@@ -22,7 +22,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 
@@ -51,9 +50,6 @@ public abstract class TabPanel extends JScrollPane {
 	
 	private Unit unit;
 	private MainDesktopPane desktop;
-
-	public static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
 	
 	/**
 	 * Constructor.

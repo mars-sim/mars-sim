@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -183,8 +184,8 @@ public class TabPanelLog extends TabPanel {
 	 * 
 	 * @return
 	 */
-	private MarsClock getMarsClock() {
-		return getSimulation().getMasterClock().getMarsClock();
+	private MarsTime getMarsClock() {
+		return getSimulation().getMasterClock().getMarsTime();
 	}
 
 

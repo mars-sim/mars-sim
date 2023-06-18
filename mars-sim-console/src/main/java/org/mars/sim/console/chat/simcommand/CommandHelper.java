@@ -62,7 +62,7 @@ public class CommandHelper {
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
 	// Width of a truncated timestamp 
-	private static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
+	public static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
 	// Width of a Coordinate
 	public static final int COORDINATE_WIDTH = 24;
     public static final int GOOD_WIDTH = 30;

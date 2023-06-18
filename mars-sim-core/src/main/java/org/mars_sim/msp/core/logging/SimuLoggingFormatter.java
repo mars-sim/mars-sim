@@ -15,8 +15,7 @@ import java.time.format.FormatStyle;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -44,7 +43,6 @@ public class SimuLoggingFormatter extends Formatter {
 						= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     
 	private static MasterClock masterClock;
-	private static MarsClock marsClock;
 	
     public SimuLoggingFormatter() {
 		super();
@@ -134,11 +132,12 @@ public class SimuLoggingFormatter extends Formatter {
 	 * @return
 	 */
     private static String getMarsTimestamp() {
-    	double millisols = marsClock.getTotalMillisols();
+		MarsTime mTime = masterClock.getMarsTime();
+    	double millisols = mTime.getTotalMillisols();
 		// Let's cache the format to save processing of recreating the timestamp as text
 		if ((lastMarsTimestamp == null) || (lastClock != millisols)) {
 			lastClock = millisols;
-			lastMarsTimestamp = MarsClockFormat.getDateTimeStamp(marsClock);
+			lastMarsTimestamp = mTime.getDateTimeStamp();
 		}
 		
 		return lastMarsTimestamp;
@@ -170,8 +169,7 @@ public class SimuLoggingFormatter extends Formatter {
      * 
      * @param mc
      */
-	public static void initializeInstances(MasterClock masterC, MarsClock marsC) {
+	public static void initializeInstances(MasterClock masterC) {
 		masterClock = masterC;
-		marsClock = marsC;
 	}
 }

@@ -23,7 +23,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MarsTimeFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -121,7 +122,7 @@ public class TimeWindow extends ToolWindow {
 		// Initialize data members
 		Simulation sim = desktop.getSimulation();
 		MasterClock masterClock = sim.getMasterClock();
-		MarsClock marsTime = masterClock.getMarsClock();
+		MarsTime marsTime = masterClock.getMarsTime();
 		orbitInfo = sim.getOrbitInfo();
 		
 		// Get content pane
@@ -139,7 +140,6 @@ public class TimeWindow extends ToolWindow {
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		martianTimeLabel.setFont(arialFont);
 		martianTimeLabel.setForeground(new Color(135, 100, 39));
-		martianTimeLabel.setText(marsTime.getDisplayDateTimeStamp() + UMT);
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
 		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
@@ -225,11 +225,14 @@ public class TimeWindow extends ToolWindow {
 		// Pack window
 		pack();
 
+
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
 		setSize(new Dimension((int) windowSize.getWidth() + 10, (int) windowSize.getHeight()));
 
 		// Update the two time labels
+		updateFastLabels(masterClock);
+		updateDateLabels(masterClock);
 		updateRateLabels(masterClock);
 		// Update season labels
 		updateSeason();
@@ -318,7 +321,7 @@ public class TimeWindow extends ToolWindow {
 	 */
 	private void updateDateLabels(MasterClock mc) {
 		// Update the calender
-		calendarDisplay.update(mc.getMarsClock());
+		calendarDisplay.update(mc.getMarsTime());
 		// Update areocentric longitude
 		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 1_000.0)/1_000.0 + "");	
 		
@@ -332,7 +335,8 @@ public class TimeWindow extends ToolWindow {
 	 * Updates date and time in Time Tool via clock pulse
 	 */
 	private void updateFastLabels(MasterClock mc) {
-		String ts = mc.getMarsClock().getDisplayDateTimeStamp() + UMT;
+		MarsTime mTime = mc.getMarsTime();
+		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekName(mTime) + UMT;
 		martianTimeLabel.setText(ts);
 
 		ts = mc.getEarthTime().format(DATE_TIME_FORMATTER);

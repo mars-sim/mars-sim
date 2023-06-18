@@ -509,7 +509,7 @@ public class TabPanelCooking extends TabPanel {
 			// 2. remove any expired meals from all 3 maps
 			// 3. call cookingTableModel.update()
 
-			int currentDay = marsClock.getSolOfMonth();
+			int currentDay = getDesktop().getSimulation().getMasterClock().getMarsTime().getSolOfMonth();
 
 			if (dayCache != currentDay) {
 				if (!allTimeMap.isEmpty())

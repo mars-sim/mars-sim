@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 
 /**
@@ -46,7 +46,7 @@ public abstract class DataLogger<T> implements Serializable {
 	 * 
 	 * @param pulse
 	 */
-	public static void changeTime(MarsClock time) {
+	public static void changeTime(MarsTime time) {
 		currentSol = time.getMissionSol();
 		currentMsol = time.getMillisolInt();
 	}

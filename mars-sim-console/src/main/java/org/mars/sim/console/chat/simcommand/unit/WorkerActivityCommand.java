@@ -43,7 +43,7 @@ public class WorkerActivityCommand extends AbstractUnitCommand {
 		}
 		
 		// TODO allow optional inout to choose a day
-		int sol = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+		int sol = context.getSim().getMasterClock().getMarsTime().getMissionSol();
 		Map<Integer, List<OneActivity>> tasks = tManager.getAllActivities();
 		if (input != null) {
 			sol = Integer.parseInt(input);

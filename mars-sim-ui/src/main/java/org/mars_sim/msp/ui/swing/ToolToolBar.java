@@ -30,7 +30,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
@@ -141,7 +141,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		add(marsTime);
 		addSeparator();
 
-		calendarPane = setupCalendarPanel(masterClock.getMarsClock());	
+		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
 		addToolButton(MARSCAL, "Open the Mars Calendar", "schedule");
 
 		addToolButton(OrbitViewer.NAME, "Open the Orbit Viewer", OrbitViewer.ICON);
@@ -172,7 +172,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		return label;
 	}
 
-	private JPanel setupCalendarPanel(MarsClock marsClock) {
+	private JPanel setupCalendarPanel(MarsTime marsClock) {
 		JPanel innerPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 
 		calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
@@ -215,11 +215,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * Increment the label of both the earth and mars clocks
 	 */
 	public void incrementClocks(MasterClock master) {
-		MarsClock marsClock = master.getMarsClock();
+		MarsTime marsClock = master.getMarsTime();
 		missionSol.setText("Sol : " + marsClock.getMissionSol());
 
 		earthDate.setText(master.getEarthTime().format(DATE_TIME_FORMATTER));
-		marsTime.setText(marsClock.getDisplayTruncatedTimeStamp());
+		marsTime.setText(marsClock.getTruncatedDateTimeStamp());
 	}
 
 	/** 
@@ -242,7 +242,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				break;
 			
 			case MARSCAL:
-				MarsClock mc = masterClock.getMarsClock();
+				MarsTime mc = masterClock.getMarsTime();
 				calendarDisplay.update(mc);
 		
 				String mn = "Month of " + mc.getMonthName();

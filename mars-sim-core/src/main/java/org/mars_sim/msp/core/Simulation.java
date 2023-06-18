@@ -32,6 +32,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
@@ -333,7 +334,7 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
+		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
@@ -419,10 +420,10 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 
 		// Set log data
-		DataLogger.changeTime(marsClock);
+		DataLogger.changeTime(masterClock.getMarsTime());
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
+		SimuLoggingFormatter.initializeInstances(masterClock);
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -488,7 +489,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
         // Initialize RoleU
-		Role.initializeInstances(marsClock);
+		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		
@@ -587,10 +588,10 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		
 		// Re-initialize the data logger
-		DataLogger.changeTime(marsClock);
+		DataLogger.changeTime(masterClock.getMarsTime());
 		
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock, marsClock);
+		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Re-initialize weather
 		Weather.initializeInstances(this, marsClock, orbitInfo);
@@ -633,7 +634,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
         // Initialize RoleU
-		Role.initializeInstances(marsClock);
+		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		
@@ -1417,7 +1418,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void clockPulse(ClockPulse pulse) {
 		if (doneInitializing && !clockOnPause) {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
-			DataLogger.changeTime(pulse.getMarsTime());
+			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
 			orbitInfo.timePassing(pulse);
 

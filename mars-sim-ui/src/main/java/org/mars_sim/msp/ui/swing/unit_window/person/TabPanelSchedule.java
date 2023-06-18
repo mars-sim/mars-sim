@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Shift;
 import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -83,7 +83,7 @@ public class TabPanelSchedule extends TabPanel {
 	private ShiftSlot taskSchedule;
 	private TaskManager taskManager;
 	
-	private static MarsClock marsClock;
+	private MasterClock masterClock;
 
 	/**
 	 * Constructor.
@@ -106,13 +106,11 @@ public class TabPanelSchedule extends TabPanel {
 		} else {
 			robot = (Robot) unit;
 		}
+		masterClock = getSimulation().getMasterClock();
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-		
-		if (marsClock == null)
-			marsClock = getSimulation().getMasterClock().getMarsClock();
 
 		isRealTimeUpdate = true;
 
@@ -152,7 +150,7 @@ public class TabPanelSchedule extends TabPanel {
 		content.add(topPanel, BorderLayout.NORTH);
 		topPanel.add(buttonPane, BorderLayout.NORTH);
 
-		today = marsClock.getMissionSol();
+		today = masterClock.getMarsTime().getMissionSol();
 		
 		todayInteger = (Integer) today;
 		solList = new CopyOnWriteArrayList<Integer>();
@@ -283,7 +281,7 @@ public class TabPanelSchedule extends TabPanel {
 			shiftTF.setText(shiftDesc);
 		}
 
-		today = marsClock.getMissionSol();
+		today = masterClock.getMarsTime().getMissionSol();
 		
 		todayInteger = (Integer) today;
 		selectedSol = (Integer) solBox.getSelectedItem(); 
