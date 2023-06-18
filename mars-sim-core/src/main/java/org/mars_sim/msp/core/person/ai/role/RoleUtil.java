@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -197,19 +196,6 @@ public class RoleUtil implements Serializable {
 
 		return trainingScore;
 
-	}
-
-	/**
-	 * Records the role change and fire the unit update.
-	 *
-	 * @param person
-	 * @param roleType
-	 */
-	public static void recordNewRole(Person person, RoleType roleType) {
-		// Save the new role in roleHistory
-		person.getRole().addRoleHistory(roleType);
-		// Fire the role event
-		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
 	}
 
 	/**

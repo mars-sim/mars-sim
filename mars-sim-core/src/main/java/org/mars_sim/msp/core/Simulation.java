@@ -32,6 +32,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
@@ -488,7 +489,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
         // Initialize RoleU
-		Role.initializeInstances(marsClock);
+		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		
@@ -633,7 +634,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
         // Initialize RoleU
-		Role.initializeInstances(marsClock);
+		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		

@@ -35,6 +35,7 @@ public class PersonChat extends ConnectedUnitCommand {
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(
 																	new WorkerAttributeCommand(PERSON_GROUP),
 																	BedCommand.BED,
+																	CareerCommand.FRIEND,														
 																	ProfileCommand.PROFILE,
 																	LoadingCommand.LOADING,
 																	EvaCommand.EVA,
