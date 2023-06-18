@@ -19,7 +19,7 @@
 		<!--  Note: mass in kg can be a decimal number. -->
 		<!--  Note: both probability and max-number must be a whole integer and without decimal places. -->
 		<description>Plastic and adhesive patch for airleak.</description>
-	</part>
+	</part> 
 	
 	<part name="Fire Extinguisher" type="utility" mass="3" />
 
@@ -46,7 +46,9 @@
 			<entity name="manufacture" probability="5" max-number="3" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="areothermal power source" probability="5" max-number="1" />
-			<entity name="thermal generation" probability="5" max-number="1" />			
+			<entity name="thermal generation" probability="5" max-number="1" />		
+			<entity name="resource processing" probability="5" max-number="1" />	
+			<entity name="waste processing" probability="5" max-number="1" />				
 		</maintenance-entity-list>
 	</part>
 
@@ -57,12 +59,14 @@
 			<entity name="living accommodations" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
+			<entity name="resource processing" probability="5" max-number="5" />	
+			<entity name="waste processing" probability="5" max-number="5" />				
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Spark Plug" type="electrical" mass=".1">
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="2" />
+			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -74,15 +78,16 @@
 
 	<part name="Plastic Tubing" type="utility" mass=".1">
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="4" />
-			<entity name="farming" probability="5" max-number="10" />
-			<entity name="manufacture" probability="5" max-number="10" />
+			<entity name="rover" probability="5" max-number="2" />
+			<entity name="farming" probability="5" max-number="5" />
+			<entity name="manufacture" probability="5" max-number="5" />
+			<entity name="resource processing" probability="5" max-number="5" />			
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Lubricant Bottle" type="utility" mass=".2">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="4" />
+			<entity name="vehicle" probability="5" max-number="2" />
 			<entity name="manufacture" probability="5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
@@ -118,6 +123,7 @@
 	<part name="Navigation Circuit Board" type="electronic" mass=".5">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
+			<entity name="communication" probability="5" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -185,6 +191,7 @@
 			<entity name="vehicle" probability="5" max-number="6" />
 			<entity name="power generation" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="4" />
+			<entity name="life support" probability="5" max-number="4" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -194,6 +201,8 @@
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="manufacture" probability="1" max-number="2" />
 			<entity name="rover" probability="1" max-number="1" />
+			<entity name="resource processing" probability="5" max-number="2" />
+			<entity name="waste processing" probability="5" max-number="2" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -203,6 +212,8 @@
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="manufacture" probability="1" max-number="2" />
 			<entity name="rover" probability="1" max-number="1" />
+			<entity name="resource processing" probability="5" max-number="3" />
+			<entity name="waste processing" probability="5" max-number="3" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -212,6 +223,8 @@
 			<entity name="living accommodations" probability="2" max-number="1" />
 			<entity name="farming" probability="2" max-number="2" />
 			<entity name="manufacture" probability="2" max-number="2" />
+			<entity name="resource processing" probability="5" max-number="3" />
+			<entity name="waste processing" probability="5" max-number="3" />				
 		</maintenance-entity-list>
 	</part>
 
@@ -221,6 +234,8 @@
 			<entity name="farming" probability="5" max-number="4" />
 			<entity name="manufacture" probability="5" max-number="2" />
 			<entity name="rover" probability="5" max-number="1" />
+			<entity name="resource processing" probability="5" max-number="4" />
+			<entity name="waste processing" probability="5" max-number="4" />						
 		</maintenance-entity-list>
 	</part>
 
@@ -324,11 +339,11 @@
 	</part>
 
 
-	<part name="Vehicle Frame - small" type="vehicle" mass="15.0" >
+	<part name="Vehicle Frame small" type="vehicle" mass="15.0" >
 		<description>Small steel frame</description>
 	</part>
 		
-	<part name="Vehicle Frame - large" type="vehicle" mass="50.0">
+	<part name="Vehicle Frame large" type="vehicle" mass="50.0">
 		<description>Heavy steel frame</description>
 	</part>
 
@@ -413,6 +428,7 @@
 			<entity name="fuel heating source" probability="3" max-number="1" />
 			<entity name="cooking" probability="3" max-number="1" />
 			<entity name="farming" probability="3" max-number="5" />
+			<entity name="storage" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -429,7 +445,7 @@
 	<part name="Fuel Tank" type="utility" mass="10.0" >
 	<description>for storing methane</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="vehicle" probability="5" max-number="1" />
 			<entity name="life support" probability="1" max-number="1" />
 			<entity name="fuel heating source" probability="5" max-number="1" />
 			<entity name="cooking" probability="5" max-number="1" />
@@ -441,6 +457,7 @@
 		electrical element embedded in a thin Kapton substrate.</description>
 		<maintenance-entity-list>
 			<entity name="life support" probability="1" max-number="1" />
+			<entity name="cooking" probability="1" max-number="1" />
 			<entity name="rover" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -480,7 +497,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Wheel - small" type="vehicle"  mass="4.45" >
+	<part name="Wheel small" type="vehicle"  mass="4.45" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="5" max-number="2" />
 		</maintenance-entity-list>
@@ -582,8 +599,14 @@
 	<!-- 2014-11-19 Added an air compressor. -->
 	<part name="Air Compressor" type="electrical" mass="2.0" >
 	 	<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="3" />
-			<entity name="cooking" probability="5" max-number="3" />
+			<entity name="farming" probability="5" max-number="2" />
+			<entity name="fishery" probability="5" max-number="2" />			
+			<entity name="rover" probability="5" max-number="1" />			
+			<entity name="resource processing" probability="5" max-number="1" />
+			<entity name="eva" probability="5" max-number="4" />			
+			<entity name="cooking" probability="5" max-number="1" />
+			<entity name="computation" probability="1" max-number="1" />			
+			<entity name="vehicle maintenance" probability="5" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
 
@@ -598,6 +621,8 @@
 		<maintenance-entity-list>
 		<entity name="farming" probability="1" max-number="2" />
 		<entity name="vehicle" probability="1" max-number="2" />
+		<entity name="astronomical observations" probability="1" max-number="1" />			
+		<entity name="communication" probability="1" max-number="1" />		
 		<entity name="manufacture" probability="1" max-number="2" />
 		<entity name="living accommodations" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -610,6 +635,9 @@
 		<entity name="farming" probability="1" max-number="1" />
 		<entity name="vehicle" probability="1" max-number="1" />
 		<entity name="manufacture" probability="1" max-number="1" />
+		<entity name="astronomical observations" probability="1" max-number="1" />
+		<entity name="communication" probability="1" max-number="1" />	
+		<entity name="computation" probability="1" max-number="1" />	
 		<entity name="living accommodations" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -620,6 +648,9 @@
 		<entity name="farming" probability="3" max-number="1" />
 		<entity name="vehicle" probability="3" max-number="1" />
 		<entity name="manufacture" probability="3" max-number="2" />
+		<entity name="astronomical observations" probability="1" max-number="1" />
+		<entity name="communication" probability="1" max-number="1" />	
+		<entity name="computation" probability="1" max-number="1" />			
 		<entity name="living accommodations" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -709,32 +740,59 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Carbon Dioxide laser" type="electronic" mass="5.0"/>
-
-	<part name="Helium Neon laser" type="electronic" mass="1.0"/>
-
+	<part name="Carbon Dioxide laser" type="electronic" mass="5.0">
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Helium Neon laser" type="electronic" mass="1.0">
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="Optical Lens" type="electronic" mass=".1" >
 			<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />
+			<entity name="manufacture" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Optical Prism" type="electronic" mass=".1"/>
+	<part name="Optical Prism" type="electronic" mass=".1">
+			<maintenance-entity-list>
+			<entity name="communication" probability="2" max-number="2" />
+			<entity name="manufacture" probability="3" max-number="1" />			
+		</maintenance-entity-list>
+	</part>
 
 	<part name="Pathogen filter" type="utility" mass="3.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
 			<entity name="living accommodations" probability="2" max-number="2" />
-			<entity name="eva" probability="3" max-number="3" />
+			<entity name="eva" probability="3" max-number="2" />
 			<entity name="exercise" probability="1" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="2" />
+			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="medical care" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Charcoal filter" type="utility" mass="1"/>
+	<part name="Charcoal filter" type="utility" mass="1">
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="dining" probability="2" max-number="2" />
+			<entity name="living accommodations" probability="2" max-number="2" />
+			<entity name="eva" probability="3" max-number="2" />
+			<entity name="exercise" probability="1" max-number="1" />
+			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
 
 	<part name="Electrostatic Precipitator" type="utility" mass=".7">
 		<description>A filterless device that removes fine particles,
@@ -747,6 +805,7 @@
 			<entity name="living accommodations" probability="2" max-number="1" />
 			<entity name="eva" probability="3" max-number="1" />
 			<entity name="waste processing" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="medical care" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -767,12 +826,17 @@
 	<part name="Polycarbonate roofing" type="utility" mass="1">
 		<description>highly transparent, "bullet-resistant" plastic cladding
 			roofing for greenhouses</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="2" max-number="2" />
+		</maintenance-entity-list>			
 	</part>
 
 	<part name="Stepper Motor small" type="electrical" mass="2">
 		<description>precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="solar heating source" probability="1" max-number="2" />
+			<entity name="solar power source" probability="1" max-number="2" />						
 		</maintenance-entity-list>
 	</part>
 
@@ -780,6 +844,10 @@
 		<description>Assume each solid oxide fuel cell (SOFC) can generate 200W
 		with the achievement of 1kWh/kg. Weight: 200W * 1kWh/kg = 0.2 kg
 		</description>
+		<maintenance-entity-list>
+			<entity name="Fuel Heating Source" probability="1" max-number="3" />
+			<entity name="fuel power source" probability="1" max-number="3" />				
+		</maintenance-entity-list>
 	</part>
 
 	<part name="Methane Fuel cell stack" type="electronic" mass="15">
@@ -855,7 +923,8 @@
 			<entity name="Living Accommodations" probability="5" max-number="1" />
 			<entity name="Life Support" probability="5" max-number="1" />
 			<entity name="Farming" probability="5" max-number="1" />
-			<entity name="thermal generation" probability="1" max-number="15" />
+			<entity name="thermal generation" probability="1" max-number="2" />
+			<entity name="areothermal power source" probability="1" max-number="2" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -866,17 +935,20 @@
 	</part>
 
 	<!-- An large electric water pump. -->
-	<part name="Water Pump - large" type="utility" mass="5.0" >
+	<part name="Water Pump large" type="utility" mass="5.0" >
 		<maintenance-entity-list>
+			<entity name="farming" probability="3" max-number="1" />			
 			<entity name="thermal generation" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
 	<!-- 2014-11-19 Added a small water pump for greenhouse. -->
-	<part name="Water Pump - small" type="utility" mass="1.0" >
+	<part name="Water Pump small" type="utility" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="farming" probability="3" max-number="5" />
-			<entity name="vehicle" probability="3" max-number="1" />			
+			<entity name="farming" probability="3" max-number="2" />
+			<entity name="vehicle" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -884,28 +956,36 @@
 	<part name="Carbon Dioxide pump" type="utility" mass="1.0" >
 		<maintenance-entity-list>
 			<entity name="farming" probability="3" max-number="5" />
+			<entity name="resource processing" probability="3" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Fuel pump" type="utility" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="3" max-number="1" />
+			<entity name="fuel power source" probability="1" max-number="1" />	
+			<entity name="fuel heating source" probability="1" max-number="1" />				
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Oxygen pump" type="utility" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="3" max-number="1" />
+			<entity name="farming" probability="3" max-number="5" />
+			<entity name="resource processing" probability="3" max-number="1" />
+			<entity name="fuel power source" probability="1" max-number="1" />	
+			<entity name="fuel heating source" probability="1" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Heat pump" type="utility" mass="1.0">
 		<maintenance-entity-list>
-			<entity name="farming" probability="3" max-number="2" />
+			<entity name="farming" probability="3" max-number="1" />
 			<entity name="vehicle" probability="3" max-number="1" />
 			<entity name="manufacture" probability="3" max-number="2" />
 			<entity name="Areothermal Power Source" probability="1" max-number="2" />
-			<entity name="living accommodations" probability="3" max-number="2" />
+			<entity name="living accommodations" probability="3" max-number="1" />
+			<entity name="resource processing" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -921,7 +1001,8 @@
 			<entity name="manufacture" probability="1" max-number="1" />
 			<entity name="living accommodations" probability="3" max-number="2" />		
 			<entity name="thermal generation" probability="1" max-number="1" />
-			<entity name="vehicle" probability="1" max-number="1" />			
+			<entity name="vehicle" probability="1" max-number="1" />		
+			<entity name="resource processing" probability="3" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
 
@@ -976,6 +1057,9 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability=".1" max-number="1" />
 			<entity name="communication" probability=".1" max-number="1" />
+			<entity name="manufacture" probability="5" max-number="1" />
+			<entity name="computation" probability="5" max-number="1" />
+			<entity name="research" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 

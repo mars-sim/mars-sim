@@ -33,8 +33,12 @@ import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.goods.Good;
+import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.msp.core.goods.PartGood;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
@@ -139,8 +143,6 @@ public class BuildingManager implements Serializable {
 	
 	/** The id of the settlement. */
 	private int settlementID;
-	/** The cache for the number of building connectors. */
-	private transient int numConnectorsCache = 0;
 	
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
@@ -974,7 +976,7 @@ public class BuildingManager implements Serializable {
 
 		if (pulse.isNewMSol()) {
 			// Check if there are any maintenance parts to be submitted
-			retrieveMaintenanceParts();
+			retrieveMaintPartsFromMalfunctionMgrs();
 		}
 		
 		
@@ -2414,28 +2416,56 @@ public class BuildingManager implements Serializable {
 	 /**
 	  * Retrieves maintenance parts from all entities associated with this settlement. 
 	  */
-	private void retrieveMaintenanceParts() {
+	private void retrieveMaintPartsFromMalfunctionMgrs() {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
 		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			if (entity.getUnitType() == UnitType.BUILDING) {
-				Building building = (Building) entity;
-				if (!partsMaint.containsKey(building)) {			 		
-					Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
-					if (!parts.isEmpty()) {
-						// Submits the need to the building manager
+			Malfunctionable entity = i.next(); 		
+			Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+			
+			if (!parts.isEmpty()) {
+			
+				if (!partsMaint.isEmpty()) {
+					Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+//					logger.info(entity, 30_000L, "partsMaintEntry: " + partsMaintEntry);
+					if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+						// Post it
 						partsMaint.put(entity, parts);
-						// Close out the submitted order 
-						entity.getMalfunctionManager().closeoutMaintenanceParts();
+//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
+						for (int id: parts.keySet()) {							
+							int num = parts.get(id);		
+							Good good = GoodsUtil.getGood(id);						
+							Part part = ItemResourceUtil.findItemResource(id);					
+							// Inject the demand onto this part
+							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+						}
+					}
+					if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+//						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
+					}
+					else {
+						// Post it
+						partsMaint.put(entity, parts);
+//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
+						for (int id: parts.keySet()) {							
+							int num = parts.get(id);		
+							Good good = GoodsUtil.getGood(id);						
+							Part part = ItemResourceUtil.findItemResource(id);					
+							// Inject the demand onto this part
+							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+						}
 					}
 				}
 				else {
-					logger.info(entity, 20_000L, "Another set of maintenance parts are incoming.");
-					// if partsMaint already contains an entry, it means the previous maint 
-					// repair task order has not been accomplished yet. 
-					// This will allow time for settlers to work on the problem and get the 
-					// previous maint repair done first, before moving onto the next repair task order
-					// Or else updateMaintenancePartsMap() may not be done correctly.
+					// Post it
+					partsMaint.put(entity, parts);
+					logger.info(parts + " was posted in empty partsMaint.");
+					for (int id: parts.keySet()) {							
+						int num = parts.get(id);		
+						Good good = GoodsUtil.getGood(id);						
+						Part part = ItemResourceUtil.findItemResource(id);					
+						// Inject the demand onto this part
+						((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+					}
 				}
 			}
 		}			
@@ -2447,12 +2477,24 @@ public class BuildingManager implements Serializable {
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts(Malfunctionable requestEntity) {
+		if (partsMaint.isEmpty())
+			return new HashMap<>();
+//		logger.info(settlement, 10_000L, "1. partsMaint size: " + partsMaint.size());
 		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
-			if (requestEntity.equals(entity)) {
-				return partsMaint.get(entity);
-			}
+//			Map<Integer, Integer> partMap = partsMaint.get(entity);
+//			
+//			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+//				Integer part = entry.getKey();
+//				int number = entry.getValue();
+			
+//				logger.info(entity, 10_000L, "2. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
+				if (requestEntity.equals(entity)) {
+//					logger.info(entity, 10_000L, "3. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
+					return partsMaint.get(entity);
+				}
+//			}
 		}
 		return new HashMap<>();
 	}
@@ -2463,17 +2505,27 @@ public class BuildingManager implements Serializable {
 	 * @param requestEntity
 	 */
 	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<Integer, Integer> newParts) {
-		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
-		while (i.hasNext()) {
-			Malfunctionable entity = i.next();
-			if (requestEntity.equals(entity)) {
-				if (newParts == null || newParts.isEmpty()) {
-					i.remove();
-					logger.info(entity, 20_000L, "All maintenance parts installed.");
-				}
-				else {
-					partsMaint.put(entity, newParts);
-					logger.info(entity, 20_000L, "Just updated maintenance parts: " + newParts);
+		if (partsMaint.isEmpty()) {
+			partsMaint.put(requestEntity, newParts);
+			logger.info(requestEntity, 20_000L, "Maintenance parts updated: " 
+					+ MalfunctionManager.getPartsString(newParts));	
+		}
+		else {
+			Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+			while (i.hasNext()) {
+				Malfunctionable entity = i.next();
+				if (requestEntity.equals(entity)) {
+					if (newParts == null || newParts.isEmpty()) {
+						// This means that this part has been consumed
+						i.remove();
+						logger.info(entity, 20_000L, "Maintenance parts installed.");
+					}
+					else {
+						// Overwrite with the parts that are still in shortfall
+						partsMaint.put(entity, newParts);
+						logger.info(entity, 20_000L, "Maintenance parts updated: " 
+								+ MalfunctionManager.getPartsString(newParts));
+					}
 				}
 			}
 		}
@@ -2486,6 +2538,8 @@ public class BuildingManager implements Serializable {
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenancePartsDemand() {
+		if (partsMaint.isEmpty())
+			return new HashMap<>();
 		Map<Integer, Integer> partsList = new HashMap<>();
 		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
 		while (i.hasNext()) {
@@ -2513,15 +2567,15 @@ public class BuildingManager implements Serializable {
 	 * @param settlement
 	 * @param part
 	 */
-	public double getMaintenanceDemand(Part part) {
-		double numRequest = 0;
+	public int getMaintenanceDemand(Part part) {
+		int numRequest = 0;
 		Map<Integer, Integer> partMap = getMaintenancePartsDemand();
 		
 		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
-			Integer p = entry.getKey();
+			int p = entry.getKey();
 			int number = entry.getValue();
-			Part pp = ItemResourceUtil.findItemResource(p);
-			if (part.equals(pp)) {
+//			Part pp = ItemResourceUtil.findItemResource(p);
+			if (part.getID() == p) {
 				numRequest += number;
 			}
 		}

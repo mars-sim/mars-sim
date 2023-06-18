@@ -496,7 +496,7 @@
 			<part name="steel pipe" number="10" />
 			<part name="stepper motor small" number="2" />
 			<part name="heat pump" number="1" />
-			<part name="water pump - large" number="2" />
+			<part name="water pump large" number="2" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 			<part name="water tank" number="1" />
@@ -949,7 +949,7 @@
 			<resource name="water" amount="500.0" />
 			<part name="condenser coil" number="1" />
 			<part name="steel pipe" number="10" />
-			<part name="water pump - large" number="1" />
+			<part name="water pump large" number="1" />
 			<part name="turbine generator" number="1" />
 			<part name="valve" number="5" />
 			<part name="gasket" number="5" />
@@ -969,7 +969,7 @@
 			<resource name="water" amount="1500.0" />
 			<part name="condenser coil" number="2" />
 			<part name="steel pipe" number="20" />
-			<part name="water pump - large" number="3" />
+			<part name="water pump large" number="3" />
 			<part name="turbine generator" number="2" />
 			<part name="valve" number="15" />
 			<part name="gasket" number="15" />

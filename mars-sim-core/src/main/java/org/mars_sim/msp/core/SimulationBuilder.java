@@ -423,8 +423,8 @@ public class SimulationBuilder {
 			settlementName = settlementNames.get(rand);
 		}
 		
-		logger.info("Starting a single Settlement sim using template "+ template
-				+ " with settlement name = " + settlementName);
+		logger.info("Starting a single settlement sim using template '" + template
+				+ "' with settlement name '" + settlementName + "'.");
 		return new InitialSettlement(settlementName, authority.getName(), template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),

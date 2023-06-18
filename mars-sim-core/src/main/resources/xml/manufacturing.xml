@@ -1280,7 +1280,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel wire" number="20" />
 		</inputs>
 		<outputs>
-			<part name="wheel - small" number="4" />
+			<part name="wheel small" number="4" />
 		</outputs>
 	</process>
 
@@ -1304,7 +1304,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel ingot" number="3" />
 		</inputs>
 		<outputs>
-			<part name="vehicle frame - small" number="1" />
+			<part name="vehicle frame small" number="1" />
 		</outputs>
 	</process>
 
@@ -1315,7 +1315,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel ingot" number="10" />
 		</inputs>
 		<outputs>
-			<part name="vehicle frame - large" number="1" />
+			<part name="vehicle frame large" number="1" />
 		</outputs>
 	</process>
 
@@ -1634,7 +1634,7 @@ Note: 1 kg of H2 is 14.13 liter
 			process-time="0"
 			power-required="0.0">
 		<inputs>
-			<part name="vehicle frame - small" number="1" />
+			<part name="vehicle frame small" number="1" />
 			<part name="motor large" number="1" />
 			<part name="battery module" number="1" />
 			<part name="utility vehicle control panel" number="1" />
@@ -1642,7 +1642,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="10" />
 			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="wheel - small" number="4" />
+			<part name="wheel small" number="4" />
 			<part name="radio antenna" number="1" />
 			<part name="satellite dish" number="1" />
 		</inputs>
@@ -1659,7 +1659,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
-			<part name="vehicle frame - small" number="1" />
+			<part name="vehicle frame small" number="1" />
 			<part name="aluminum sheet" number="1" />
 			<part name="vehicle chassis panel" number="2" />
 			<part name="motor small" number="4" />
@@ -1689,7 +1689,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="5" />	
 			<part name="aerogel tile" number="4" />
 			<part name="utility vehicle control panel" number="1" />		
-			<part name="vehicle frame - small" number="2" />
+			<part name="vehicle frame small" number="2" />
 			<part name="vehicle chassis panel" number="3" />
 			<part name="aluminum sheet" number="5" />			
 			<part name="motor small" number="4" />
@@ -1701,7 +1701,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="plastic pipe" number="2" />
 			<part name="plastic bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="wheel - small" number="4" />
+			<part name="wheel small" number="4" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="gas tank" number="1" />	
@@ -1723,7 +1723,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="15" />			
 			<part name="aerogel tile" number="8" />					
 			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame - large" number="3" />
+			<part name="vehicle frame large" number="3" />
 			<part name="vehicle chassis panel" number="6" />
 			<part name="rover windshield" number="2" />
 			<part name="rover window" number="4" />
@@ -1763,7 +1763,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="20" />	
 			<part name="aerogel tile" number="12" />
 			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame - large" number="5" />
+			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="10" />
 			<part name="rover windshield" number="3" />
 			<part name="rover window" number="8" />
@@ -1802,7 +1802,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="30" />	
 			<part name="aerogel tile" number="12" />
 			<part name="rover control panel" number="1" />
-			<part name="vehicle frame - large" number="5" />
+			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="12" />
 			<part name="rover windshield" number="3" />
 			<part name="rover window" number="8" />
@@ -2341,7 +2341,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="10" />
 		</inputs>
 		<outputs>
-			<part name="water pump - large" number="1" />
+			<part name="water pump large" number="1" />
 		</outputs>
 	</process>
 
@@ -2390,7 +2390,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="6" />
 		</inputs>
 		<outputs>
-			<part name="water pump - small" number="3" />
+			<part name="water pump small" number="3" />
 		</outputs>
 	</process>
 
@@ -2519,7 +2519,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
-			<part name="water pump - small" number="2" />
+			<part name="water pump small" number="2" />
 			<part name="heat pump" number="1" />
 		</inputs>
 		<outputs>
@@ -2536,7 +2536,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
-			<part name="water pump - small" number="2" />
+			<part name="water pump small" number="2" />
 			<part name="heating element" number="6" />
 			<part name="microcontroller" number="1" />
 			<part name="ventilation fan" number="1" />
@@ -2763,7 +2763,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="10" />
 			<part name="plastic sheet" number="2" />
-			<part name="water pump - small" number="2" />
+			<part name="water pump small" number="2" />
 			<part name="heating element" number="2" />
 			<part name="heat pipe" number="2" />
 			<part name="microcontroller" number="2" />
@@ -3244,7 +3244,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
 		<part-salvage name="optical lens" number="2" />
-		<part-salvage name="vehicle frame - small" number="1" />
+		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="aluminum sheet" number="1" />
 		<part-salvage name="vehicle chassis panel" number="2" />
 		<part-salvage name="motor small" number="4" />
@@ -3265,7 +3265,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="2" work-time="800">
-		<part-salvage name="vehicle frame - small" number="1" />
+		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="motor small" number="4" />
 		<part-salvage name="battery module" number="1" />
 		<part-salvage name="methane fuel cell stack" number="1" />		
@@ -3274,7 +3274,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="wire connector" number="10" />
 		<part-salvage name="plastic bottle" number="1" />
 		<part-salvage name="lubricant bottle" number="1" />
-		<part-salvage name="wheel - small" number="8" />
+		<part-salvage name="wheel small" number="8" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="steel scrap" number="1" />
 		<part-salvage name="aluminum scrap" number="2" />
@@ -3284,16 +3284,16 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Salvage process for an explorer rover. -->
 	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="2" work-time="1000">
-		<part-salvage name="vehicle frame - large" number="1" />
+		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
+		<part-salvage name="methanol fuel cell stack" number="4" />		
 		<part-salvage name="motor large" number="3" />
 		<part-salvage name="battery module" number="2" />
-		<part-salvage name="methanol fuel cell stack" number="4" />
-		<part-salvage name="rover control panel" number="1" />
+		<part-salvage name="rover control panel" number="1" />		
 		<part-salvage name="fuel tank" number="2" />
 		<part-salvage name="gas tank" number="2" />
 		<part-salvage name="water tank" number="2" />
@@ -3317,7 +3317,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Salvage process for a transport rover. -->
 	<salvage item-name="transport rover" type="vehicle" tech="2" skill="2" work-time="1000">
-		<part-salvage name="vehicle frame - large" number="1" />
+		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
@@ -3350,13 +3350,13 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Salvage process for a cargo rover. -->
 	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="2" work-time="1000">
-		<part-salvage name="vehicle frame - large" number="1" />
+		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="methane fuel cell stack" number="6" />
+		<part-salvage name="methanol fuel cell stack" number="6" />
 		<part-salvage name="motor large" number="5" />
 		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />

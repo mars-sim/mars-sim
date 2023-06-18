@@ -201,7 +201,7 @@ public final class PartConfig implements Serializable {
 					
 					if (!validName) {
 //						logger.severe(entityName + " is not being clear defined in mars-sim.");
-						throw new IllegalArgumentException(entityName + " is not being clear defined in mars-sim.");
+						throw new IllegalArgumentException(entityName + " is not being clearly defined in mars-sim.");
 					}	
 				}
 			}

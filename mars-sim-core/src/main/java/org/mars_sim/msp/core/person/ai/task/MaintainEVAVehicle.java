@@ -151,11 +151,8 @@ public class MaintainEVAVehicle extends EVAOperation {
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
 
-        // Add repair parts if necessary.
-        if (manager.hasMaintenanceParts(settlement)) {
-            manager.transferMaintenanceParts(settlement);
-        }
-        else {
+		int shortfall = manager.transferMaintenanceParts(settlement);
+		if (shortfall == -1) {
         	checkLocation();
 			return remainingTime;
         }

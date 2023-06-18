@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,11 +40,12 @@ import org.mars_sim.msp.ui.swing.utils.PercentageCellRenderer;
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
     private static final String SPANNER_ICON = "maintenance";
-	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
+	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
 
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
 	
+	private AttributePanel labelPanel;
 	private JProgressBar wearCondition;
 	private JLabel lastCompletedLabel;
 	private JLabel partsLabel;
@@ -80,7 +82,7 @@ public class MaintenanceTabPanel extends TabPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 	
-		AttributePanel labelPanel = new AttributePanel(4, 1);
+		labelPanel = new AttributePanel(4, 1);
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
@@ -153,11 +155,18 @@ public class MaintenanceTabPanel extends TabPanel {
 		double total = manager.getMaintenanceWorkTime();
 		currentMaintenance.setValue((int)(100.0 * completed / total));
 
+		Map<Integer, Integer> parts = manager.getMaintenanceParts();
+		int size = parts.size();
+		
 		// Update parts label.
-		partsLabel.setText(Integer.toString(manager.getMaintenanceParts().size()));
+		partsLabel.setText(Integer.toString(size));
 
+		String tooltip = "<html>" + getPartsString(parts, true) + "</html>";
+		
+		// TODO: compare what parts are missing
+		
 		// Update tool tip.
-		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
+		labelPanel.setToolTipText(tooltip);
 	}
 
 	/**
@@ -165,8 +174,8 @@ public class MaintenanceTabPanel extends TabPanel {
 	 * 
 	 * @return string.
 	 */
-	private String getPartsString(boolean useHtml) {
-		return MalfunctionTabPanel.getPartsString(REPAIR_PARTS_NEEDED, manager.getMaintenanceParts(), useHtml).toString();
+	private String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
+		return MalfunctionTabPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, useHtml).toString();
 	}
 
 	/**

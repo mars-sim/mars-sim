@@ -161,13 +161,11 @@ public class MaintainBuilding extends Task  {
 			return time;
 		}
 			
-		if (manager.hasMaintenanceParts((EquipmentOwner) containerUnit)) {
-			manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
-		}
-
-		else {
-			endTask();
-			return time * .75;
+		int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
+		
+		if (shortfall == -1) {
+			clearTask("No spare parts for maintenance");
+			return 0;
 		}
 
 		// Add work to the maintenance

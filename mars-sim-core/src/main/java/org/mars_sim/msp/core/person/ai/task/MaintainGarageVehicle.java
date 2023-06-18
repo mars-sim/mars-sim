@@ -177,13 +177,11 @@ public class MaintainGarageVehicle extends Task {
 			return time;
 		}
 
-		// Add repair parts if necessary.
 		Settlement settlement = worker.getSettlement();
-		if (manager.hasMaintenanceParts(settlement)) {	
-			manager.transferMaintenanceParts(settlement);
-		}
-		else {
-			endTask();
+		
+		int shortfall = manager.transferMaintenanceParts(settlement);
+		if (shortfall == -1) {
+			clearTask("No spare parts for maintenance");
 			return time;
 		}
 

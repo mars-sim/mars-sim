@@ -50,7 +50,7 @@ public class MalfunctionTabPanel extends TabPanel {
 	private static final int INSIDE_WORK = 3;
 	private static final int COMPLETED = 4;
 
-	private static final String NONE = "None.";
+	private static final String NONE = " None.";
 	private static final String ONE_SPACE = " ";
 	private static final String COMMA = ", ";
 	private static final String DOT = ".";
@@ -245,11 +245,11 @@ public class MalfunctionTabPanel extends TabPanel {
 		this.settlement = settlement;
 
 		this.showSource = true;
-		List<Malfunction> malfunctions = createSettlementMalfunction(settlement);
+		List<Malfunction> malfunctions = getSettlementMalfunctions(settlement);
 		this.model = new MalfunctionTableModel(malfunctions, showSource);
 	}
 
-	private static List<Malfunction> createSettlementMalfunction(Settlement s) {
+	private static List<Malfunction> getSettlementMalfunctions(Settlement s) {
 		List<Malfunction> active = new ArrayList<>();
 		for(Building b : s.getBuildingManager().getBuildingSet()) {
 			active.addAll(b.getMalfunctionManager().getMalfunctions());
@@ -346,6 +346,8 @@ public class MalfunctionTabPanel extends TabPanel {
 	 */
 	public static String getPartsString(String title, Map<Integer, Integer> parts, boolean useHTML) {
 
+		// TODO: compare what parts are missing
+		
 		StringBuilder buf = new StringBuilder(title);
 		if (!parts.isEmpty()) {
 			boolean first = true;
@@ -374,7 +376,7 @@ public class MalfunctionTabPanel extends TabPanel {
 			newMalfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
 		}
 		else if (settlement != null) {
-			newMalfunctions = createSettlementMalfunction(settlement);
+			newMalfunctions = getSettlementMalfunctions(settlement);
 		}
 		else {
 			// Shouldn't be here

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -31,10 +32,14 @@ import org.mars_sim.msp.core.time.MarsClock;
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
  */
-class PartGood extends Good {
+public class PartGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
     
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
+
+	
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String SCRAP = "scrap";
 	private static final String INGOT = "ingot";
@@ -76,7 +81,7 @@ class PartGood extends Good {
 	
 	private static final double ITEM_DEMAND = 1;
 	
-	private static final double PARTS_MAINTENANCE_VALUE = 100;
+	private static final double PARTS_MAINTENANCE_VALUE = 1000;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
@@ -872,8 +877,75 @@ class PartGood extends Good {
 	 * @param part
 	 */
 	private double getMaintenancePartsDemand(Settlement settlement, Part part) {
-		double number = settlement.getBuildingManager().getMaintenanceDemand(part);
-		return number * PARTS_MAINTENANCE_VALUE;
+		double demand = 0;
+		int number = settlement.getBuildingManager().getMaintenanceDemand(part);
+		if (number > 0) {
+			demand = number * PARTS_MAINTENANCE_VALUE;
+			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
+					+" good demand from " + number + " " + part.getName() + ".");
+		}
+		return demand;
+	}
+	
+	/**
+	 * Injects an individual part demand immediately without waiting for goods manager to update it.
+	 * 
+	 * @param part
+	 * @param good
+	 * @param owner
+	 */
+	public void injectPartsDemand(Part part, GoodsManager owner, int needNum) {
+		double previousDemand = owner.getDemandValue(this);
+		
+		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
+		
+		double previousTotalDemand = previousDemand * previousNum;
+		
+		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part);
+
+		double newAddedTotalDemand = newAddedDemand * needNum;
+		
+		double diff = previousTotalDemand - newAddedTotalDemand;
+		
+		double finalDemand = (previousTotalDemand + newAddedTotalDemand) / (previousNum + needNum);
+		
+		if (diff < 0) {
+			if (finalDemand < previousDemand) {
+				finalDemand = previousDemand + newAddedDemand;
+			}
+			
+			owner.setDemandValue(this, finalDemand);
+			
+			logger.info(owner.getSettlement(), 30_000L, "Injecting demand for " 
+					+ part.getName()
+					+ "  Previous demand: "
+					+ Math.round(previousDemand * 10.0)/10.0 
+					+ " (Quantity: " + previousNum + ")"
+					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
+					+ " (Quantity: " + needNum + ")"
+					);
+			
+			// Recalculate settlement good value for this part.
+			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
+			
+//			finalDemand = owner.getDemandValue(this);
+//			
+//			logger.info(owner.getSettlement(), 30_000L, "Stabilizing demand for " 
+//					+ part.getName() + "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 + ".");
+		}
+		else {
+			// previousTotalDemand is already large enough and
+			// there should be no need to inject more good demand
+			
+			logger.info(owner.getSettlement(), 30_000L, "No change for "
+					+ part.getName()
+					+ "  Previous demand: "
+					+ Math.round(previousDemand * 10.0)/10.0 
+					+ " (Quantity: " + previousNum + "}"
+					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
+					+ " (Quantity: " + needNum + "}"
+					);
+		}	
 	}
 	
 	
