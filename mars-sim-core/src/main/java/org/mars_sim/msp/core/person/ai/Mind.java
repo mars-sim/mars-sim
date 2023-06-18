@@ -12,8 +12,8 @@ import java.util.List;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.util.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentHistory;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -155,7 +155,7 @@ public class Mind implements Serializable, Temporal {
 		// Note: getNewJob() also checks if existing job is "good enough"/ or has good prospect
 		JobType newJob = JobUtil.getNewJob(person);
 		if (newJob != null)
-			assignJob(newJob, bypassingJobLock, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+			assignJob(newJob, bypassingJobLock, assignedBy, AssignmentType.APPROVED, assignedBy);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class Mind implements Serializable, Temporal {
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
 	 */
-	public void reassignJob(JobType newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
+	public void reassignJob(JobType newJob, boolean bypassingJobLock, String assignedBy, AssignmentType status,
 			String approvedBy) {
 		assignJob(newJob, bypassingJobLock, assignedBy, status, approvedBy);
 	}
@@ -349,8 +349,8 @@ public class Mind implements Serializable, Temporal {
 	 * @param approvedBy
 	 */
 	public void assignJob(JobType newJob, boolean bypassingJobLock, String assignedBy,
-			JobAssignmentType status, String approvedBy) {
-		JobHistory jh = person.getJobHistory();
+			AssignmentType status, String approvedBy) {
+		AssignmentHistory jh = person.getJobHistory();
 
 		// Future: check if the initiator's role allows the job to be changed
 		if (newJob != job) {

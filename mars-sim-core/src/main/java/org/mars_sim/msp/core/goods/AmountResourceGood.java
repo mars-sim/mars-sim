@@ -93,7 +93,7 @@ class AmountResourceGood extends Good {
 	// modifiers
     private static final double ICE_VALUE_MODIFIER = .1;
 	private static final double WATER_VALUE_MODIFIER = .07;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = .4;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = .04;
 	
 	private static final double SOIL_VALUE_MODIFIER = .05;
 	private static final double SAND_VALUE_MODIFIER = .03;

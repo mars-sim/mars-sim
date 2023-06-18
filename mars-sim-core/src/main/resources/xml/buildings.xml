@@ -2476,7 +2476,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
-				<heat-source type="Electric Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="2.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3001,7 +3001,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="1.0" />
-				<heat-source type="Electric Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="2.0" />
 			</thermal-generation>
 		</functions>
 	</building>

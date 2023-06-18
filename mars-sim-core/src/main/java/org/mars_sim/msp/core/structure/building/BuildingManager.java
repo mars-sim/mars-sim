@@ -33,11 +33,19 @@ import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.goods.Good;
+import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.msp.core.goods.PartGood;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -58,7 +66,6 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -72,6 +79,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -118,6 +126,8 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap;
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
+	/** The settlement's maintenance parts map. */
+	private Map<Malfunctionable, Map<Integer, Integer>> partsMaint = new HashMap<>();
 	
 	private transient Settlement settlement;
 	private transient Meteorite meteorite;
@@ -133,8 +143,6 @@ public class BuildingManager implements Serializable {
 	
 	/** The id of the settlement. */
 	private int settlementID;
-	/** The cache for the number of building connectors. */
-	private transient int numConnectorsCache = 0;
 	
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
@@ -966,6 +974,12 @@ public class BuildingManager implements Serializable {
 			meteorite.startMeteoriteImpact(this);
 		}
 
+		if (pulse.isNewMSol()) {
+			// Check if there are any maintenance parts to be submitted
+			retrieveMaintPartsFromMalfunctionMgrs();
+		}
+		
+		
 		for (Building b : buildings) {
 			try {
 				b.timePassing(pulse);
@@ -2398,7 +2412,177 @@ public class BuildingManager implements Serializable {
 	 	}
 	 	return false;
 	 }
+		
+	 /**
+	  * Retrieves maintenance parts from all entities associated with this settlement. 
+	  */
+	private void retrieveMaintPartsFromMalfunctionMgrs() {
+		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next(); 		
+			Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+			
+			if (!parts.isEmpty()) {
+			
+				if (!partsMaint.isEmpty()) {
+					Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+//					logger.info(entity, 30_000L, "partsMaintEntry: " + partsMaintEntry);
+					if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+						// Post it
+						partsMaint.put(entity, parts);
+//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
+						for (int id: parts.keySet()) {							
+							int num = parts.get(id);		
+							Good good = GoodsUtil.getGood(id);						
+							Part part = ItemResourceUtil.findItemResource(id);					
+							// Inject the demand onto this part
+							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+						}
+					}
+					if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+//						logger.info(entity, 30_000L, "Both are equal : " + partsMaintEntry + " and " + parts);
+					}
+					else {
+						// Post it
+						partsMaint.put(entity, parts);
+//						logger.info(entity, 30_000L, parts + " was posted in partsMaint.");
+						for (int id: parts.keySet()) {							
+							int num = parts.get(id);		
+							Good good = GoodsUtil.getGood(id);						
+							Part part = ItemResourceUtil.findItemResource(id);					
+							// Inject the demand onto this part
+							((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+						}
+					}
+				}
+				else {
+					// Post it
+					partsMaint.put(entity, parts);
+					logger.info(parts + " was posted in empty partsMaint.");
+					for (int id: parts.keySet()) {							
+						int num = parts.get(id);		
+						Good good = GoodsUtil.getGood(id);						
+						Part part = ItemResourceUtil.findItemResource(id);					
+						// Inject the demand onto this part
+						((PartGood)good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+					}
+				}
+			}
+		}			
+	}
 	 
+	/**
+	 * Gets the parts needed for maintenance of an entity.
+	 *
+	 * @return map of parts and their number.
+	 */
+	public Map<Integer, Integer> getMaintenanceParts(Malfunctionable requestEntity) {
+		if (partsMaint.isEmpty())
+			return new HashMap<>();
+//		logger.info(settlement, 10_000L, "1. partsMaint size: " + partsMaint.size());
+		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+//			Map<Integer, Integer> partMap = partsMaint.get(entity);
+//			
+//			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+//				Integer part = entry.getKey();
+//				int number = entry.getValue();
+			
+//				logger.info(entity, 10_000L, "2. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
+				if (requestEntity.equals(entity)) {
+//					logger.info(entity, 10_000L, "3. " + MalfunctionManager.getPartsString(partsMaint.get(entity)));
+					return partsMaint.get(entity);
+				}
+//			}
+		}
+		return new HashMap<>();
+	}
+	
+	/**
+	 * Updates the needed maintenance parts for a entity.
+	 * 
+	 * @param requestEntity
+	 */
+	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<Integer, Integer> newParts) {
+		if (partsMaint.isEmpty()) {
+			partsMaint.put(requestEntity, newParts);
+			logger.info(requestEntity, 20_000L, "Maintenance parts updated: " 
+					+ MalfunctionManager.getPartsString(newParts));	
+		}
+		else {
+			Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+			while (i.hasNext()) {
+				Malfunctionable entity = i.next();
+				if (requestEntity.equals(entity)) {
+					if (newParts == null || newParts.isEmpty()) {
+						// This means that this part has been consumed
+						i.remove();
+						logger.info(entity, 20_000L, "Maintenance parts installed.");
+					}
+					else {
+						// Overwrite with the parts that are still in shortfall
+						partsMaint.put(entity, newParts);
+						logger.info(entity, 20_000L, "Maintenance parts updated: " 
+								+ MalfunctionManager.getPartsString(newParts));
+					}
+				}
+			}
+		}
+	}
+
+	
+	/**
+	 * Gets the demand of the parts needed for maintenance.
+	 *
+	 * @return map of parts and their number.
+	 */
+	public Map<Integer, Integer> getMaintenancePartsDemand() {
+		if (partsMaint.isEmpty())
+			return new HashMap<>();
+		Map<Integer, Integer> partsList = new HashMap<>();
+		Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			Map<Integer, Integer> partMap = partsMaint.get(entity);
+			
+			for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+				Integer part = entry.getKey();
+				int number = entry.getValue();
+				if (!settlement.getItemResourceIDs().contains(part)) {
+					if (partsList.containsKey(part)) {
+						number += partsList.get(part).intValue();
+					}
+					partsList.put(part, number);
+				}
+			}
+		}
+		
+		return partsList;
+	}
+	
+	/**
+	 * Gets the number of maintenance parts from a particular settlement.
+	 * 
+	 * @param settlement
+	 * @param part
+	 */
+	public int getMaintenanceDemand(Part part) {
+		int numRequest = 0;
+		Map<Integer, Integer> partMap = getMaintenancePartsDemand();
+		
+		for (Entry<Integer, Integer> entry: partMap.entrySet()) {
+			int p = entry.getKey();
+			int number = entry.getValue();
+//			Part pp = ItemResourceUtil.findItemResource(p);
+			if (part.getID() == p) {
+				numRequest += number;
+			}
+		}
+		
+		return numRequest;
+	}
+	
 	/**
 	 * Sets the probability of impact per square meter per sol. 
 	 * Called by MeteoriteImpactImpl.

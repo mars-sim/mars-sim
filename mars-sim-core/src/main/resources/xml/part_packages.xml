@@ -52,8 +52,8 @@
 		<part type="microcontroller" number="60" />
 		<part type="microwave" number="3" />
 		<part type="water tank" number="5" />
-		<part type="water pump - small" number="3" />
-		<part type="water pump - large" number="1" />
+		<part type="water pump small" number="3" />
+		<part type="water pump large" number="1" />
 		<part type="carbon dioxide pump" number="3" />
 		<part type="transformer" number="5" />
 		<part type="power transistor" number="60" />
@@ -106,11 +106,11 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="motor - small" number="2" />
-		<part type="motor - large" number="4" />
-		<part type="stepper motor - small" number="4"/>
+		<part type="motor small" number="2" />
+		<part type="motor large" number="4" />
+		<part type="stepper motor small" number="4"/>
 		<part type="propeller" number="4"/>
-		<part type="rover chassis panel" number="4" />
+		<part type="vehicle chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
 		<part type="fuel tank" number="20" />
@@ -123,7 +123,7 @@
 		<part type="bulldozer blade" number="2" />
 		<part type="soil compactor" number="2" />
 		<part type="crane boom" number="2" />
-		<part type="wheel - small" number="2" />
+		<part type="wheel small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="2" />
 		<part type="bore drill bit" number="1" />
@@ -169,8 +169,8 @@
 		<part type="microcontroller" number="120" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="10" />
-		<part type="water pump - small" number="6" />
-		<part type="water pump - large" number="2" />
+		<part type="water pump small" number="6" />
+		<part type="water pump large" number="2" />
 		<part type="carbon dioxide pump" number="10" />
 		<part type="transformer" number="10" />
 		<part type="power transistor" number="120" />
@@ -223,11 +223,11 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="motor - small" number="2" />
-		<part type="motor - large" number="4" />
-		<part type="stepper motor - small" number="4"/>
+		<part type="motor small" number="2" />
+		<part type="motor large" number="4" />
+		<part type="stepper motor small" number="4"/>
 		<part type="propeller" number="4"/>		
-		<part type="rover chassis panel" number="4" />
+		<part type="vehicle chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
 		<part type="fuel tank" number="20" />
@@ -240,7 +240,7 @@
 		<part type="bulldozer blade" number="2" />
 		<part type="soil compactor" number="2" />
 		<part type="crane boom" number="2" />
-		<part type="wheel - small" number="2" />
+		<part type="wheel small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="6" />
 		<part type="bore drill bit" number="2" />
@@ -288,8 +288,8 @@
 		<part type="microcontroller" number="160" />
 		<part type="microwave" number="15" />
 		<part type="water tank" number="15" />
-		<part type="water pump - small" number="9" />
-		<part type="water pump - large" number="3" />
+		<part type="water pump small" number="9" />
+		<part type="water pump large" number="3" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="transformer" number="15" />
 		<part type="power transistor" number="160" />
@@ -342,11 +342,11 @@
 		<part type="rover windshield" number="4" />
 		<part type="rover window" number="8" />
 		<part type="winch" number="4" />
-		<part type="motor - small" number="3" />
-		<part type="motor - large" number="6" />
-		<part type="stepper motor - small" number="6"/>
+		<part type="motor small" number="3" />
+		<part type="motor large" number="6" />
+		<part type="stepper motor small" number="6"/>
 		<part type="propeller" number="6"/>			
-		<part type="rover chassis panel" number="8" />
+		<part type="vehicle chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
 		<part type="fuel tank" number="40" />
@@ -359,7 +359,7 @@
 		<part type="bulldozer blade" number="4" />
 		<part type="soil compactor" number="4" />
 		<part type="crane boom" number="4" />
-		<part type="wheel - small" number="2" />
+		<part type="wheel small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="8" />
 		<part type="bore drill bit" number="4" />
@@ -407,8 +407,8 @@
 		<part type="microcontroller" number="400" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="25" />
-		<part type="water pump - small" number="12" />
-		<part type="water pump - large" number="4" />
+		<part type="water pump small" number="12" />
+		<part type="water pump large" number="4" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="transformer" number="25" />
 		<part type="power transistor" number="400" />
@@ -461,11 +461,11 @@
 		<part type="rover windshield" number="8" />
 		<part type="rover window" number="12" />
 		<part type="winch" number="8" />
-		<part type="motor - small" number="6" />
-		<part type="motor - large" number="12" />
-		<part type="stepper motor - small" number="12"/>
+		<part type="motor small" number="6" />
+		<part type="motor large" number="12" />
+		<part type="stepper motor small" number="12"/>
 		<part type="propeller" number="12"/>			
-		<part type="rover chassis panel" number="14" />
+		<part type="vehicle chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />
 		<part type="fuel tank" number="80" />
@@ -478,7 +478,7 @@
 		<part type="bulldozer blade" number="6" />
 		<part type="soil compactor" number="6" />
 		<part type="crane boom" number="6" />
-		<part type="wheel - small" number="4" />
+		<part type="wheel small" number="4" />
 		<part type="utility vehicle control panel" number="4" />
 		<part type="solar panel" number="8" />
 		<part type="bore drill bit" number="6" />

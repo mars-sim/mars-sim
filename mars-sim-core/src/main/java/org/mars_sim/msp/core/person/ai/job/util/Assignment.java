@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * JobAssignment.java
- * @date 2022-07-06
+ * Assignment.java
+ * @date 2023-07-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job.util;
@@ -13,9 +13,9 @@ import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The JobAssignment class represents the characteristics of a job type
+ * This class represents an entry of a job or role assignment.
  */
-public class JobAssignment implements Serializable {
+public class Assignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,20 +25,19 @@ public class JobAssignment implements Serializable {
     private double jobRating = 5; // has a score of 5 if unrated 
     	
     private String initiator;
-    private JobType jobType;
+    private String type;
     private String timeSubmitted;
     private String authorizedBy;
       
-    private JobAssignmentType status; // JobAssignmentType.PENDING or JobAssignmentType.APPROVED
+    private AssignmentType status;
     
-	public JobAssignment(JobType jobType, String initiator, JobAssignmentType status, String authorizedBy) {
-		// Change the first parameter of JobAssignment.java from MarsClock to String.
-		
+	public Assignment(String type, String initiator, AssignmentType status, String authorizedBy) {
+	
 		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 				
 		this.timeSubmitted = MarsClockFormat.getDateTimeStamp(clock);
 		this.sol = clock.getMissionSol();
-		this.jobType = jobType;
+		this.type = type;
 		this.initiator = initiator;
 		this.status = status;
 		this.authorizedBy = authorizedBy;
@@ -53,8 +52,8 @@ public class JobAssignment implements Serializable {
 		return sol;
 	}
 
-	public JobType getJobType() {
-		return jobType;
+	public String getType() {
+		return type;
 	}
 
 	public String getInitiator() {
@@ -69,11 +68,11 @@ public class JobAssignment implements Serializable {
 		authorizedBy = name;
 	}
 
-	public JobAssignmentType getStatus() {
+	public AssignmentType getStatus() {
 		return status;
 	}
 
-	public void setStatus(JobAssignmentType status) {
+	public void setStatus(AssignmentType status) {
 		this.status = status;
 	}
 

@@ -145,17 +145,17 @@ extends EVAOperation {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}
 		
-		if (manager.hasMaintenanceParts(settlement)) {
-			manager.transferMaintenanceParts(settlement);
+		int shortfall = manager.transferMaintenanceParts(settlement);
 			
-			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-			setDescription(des);
-			logger.info(worker, 4_000, des + ".");
+		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+		setDescription(des);
+		logger.info(worker, 4_000, des + ".");
 			
-        }
-		else {
-			clearTask("No spare parts for maintenance");
+        if (shortfall == -1) {
+        	checkLocation();
+        	return 0;
 		}
+        
         // Add work to the maintenance
 		manager.addMaintenanceWorkTime(workTime);
 		

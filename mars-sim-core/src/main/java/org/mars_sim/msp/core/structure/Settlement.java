@@ -51,7 +51,7 @@ import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -324,6 +324,7 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
+	/** The settlement's preference modifiers map. */
 	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
@@ -2904,7 +2905,7 @@ public class Settlement extends Structure implements Temporal,
 		Person p0 = JobUtil.findBestFit(settlement, job);
 		// Designate a specific job to a person
 		if (p0 != null) {
-			p0.getMind().assignJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
+			p0.getMind().assignJob(job, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
 	}
 
@@ -2934,13 +2935,13 @@ public class Settlement extends Structure implements Temporal,
 			if ((numEngs == 0) && (bestEng != null)) {
 				bestEng.getMind().assignJob(JobType.ENGINEER, true,
 						JobUtil.SETTLEMENT,
-						JobAssignmentType.APPROVED,
+						AssignmentType.APPROVED,
 						JobUtil.SETTLEMENT);
 			}
 			if ((numTechs == 0) && (bestTech != null)) {
 				bestTech.getMind().assignJob(JobType.TECHNICIAN, true,
 						JobUtil.SETTLEMENT,
-						JobAssignmentType.APPROVED,
+						AssignmentType.APPROVED,
 						JobUtil.SETTLEMENT);
 			}
 		}
@@ -3032,6 +3033,8 @@ public class Settlement extends Structure implements Temporal,
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
+	
+
 	
 	/**
 	 * Returns the ice collection rate in the vicinity of this settlement.

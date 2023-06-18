@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
+import org.mars_sim.msp.core.person.ai.job.util.Assignment;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -217,7 +217,7 @@ public class ReviewMissionPlan extends Task {
 	    
 		Person leader = m.getStartingPerson();
     	
-		List<JobAssignment> list = leader.getJobHistory().getJobAssignmentList();
+		List<Assignment> list = leader.getJobHistory().getJobAssignmentList();
 		int last = list.size() - 1;
 		
 		// 1. Reviews requester's cumulative job rating

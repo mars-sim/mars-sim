@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReviewJobReassignment.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,8 +15,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.Assignment;
+import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The ReviewJobReassignment class is a task for reviewing job reassignment
- * submission in an office space
+ * This class is a task for reviewing job reassignment
+ * submission in an office space.
  */
 public class ReviewJobReassignment extends Task {
 
@@ -96,7 +96,7 @@ public class ReviewJobReassignment extends Task {
 //					}				
 				}
 				
-				// TODO: if administration building is not available, go to 
+				// if administration building is not available, go to 
 
 			} // end of roleType
 			else {
@@ -124,7 +124,7 @@ public class ReviewJobReassignment extends Task {
 	}
 
 	/**
-	 * Performs the reviewingPhasephase.
+	 * Performs the reviewing phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
@@ -134,17 +134,17 @@ public class ReviewJobReassignment extends Task {
 		Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person tempPerson = i.next();
-			List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
+			List<Assignment> list = tempPerson.getJobHistory().getJobAssignmentList();
 			int last = list.size() - 1;
-			JobAssignmentType status = list.get(last).getStatus();
+			AssignmentType status = list.get(last).getStatus();
 
-			if (status != null && status == JobAssignmentType.PENDING) {
-				JobType pendingJob = list.get(last).getJobType();
+			if (status != null && status == AssignmentType.PENDING) {
+				JobType pendingJob = JobType.getJobTypeByName(list.get(last).getType());
 				JobType lastJob = null;
 				if (last == 0)
 					lastJob = pendingJob;
 				else
-					lastJob = list.get(last - 1).getJobType();
+					lastJob = JobType.getJobTypeByName(list.get(last - 1).getType());
 				String approvedBy = person.getRole().getType() + " " + person.getName();
 
 				// 1. Reviews requester's cumulative job rating
@@ -164,7 +164,7 @@ public class ReviewJobReassignment extends Task {
 								
 				if (rating < 2.5 || cumulative_rating < 2.5) {
 					tempPerson.getMind().reassignJob(lastJob, true, JobUtil.USER,
-							JobAssignmentType.NOT_APPROVED, approvedBy);
+							AssignmentType.NOT_APPROVED, approvedBy);
 
 					logger.log(worker, Level.INFO, 3000, "Did NOT approve " + tempPerson
 							+ "'s job reassignment as " + pendingJob);
@@ -173,7 +173,7 @@ public class ReviewJobReassignment extends Task {
 
 					// Updates the job
 					tempPerson.getMind().reassignJob(pendingJob, true, JobUtil.USER,
-							JobAssignmentType.APPROVED, approvedBy);
+							AssignmentType.APPROVED, approvedBy);
 					logger.log(worker, Level.INFO, 3000, "Approved " + tempPerson
 							+ "'s job reassignment as " + pendingJob);
 				}
@@ -201,7 +201,7 @@ public class ReviewJobReassignment extends Task {
 	}
 
 	/**
-	 * Release Office space
+	 * Releases Office space.
 	 */
 	@Override
 	protected void clearDown() {

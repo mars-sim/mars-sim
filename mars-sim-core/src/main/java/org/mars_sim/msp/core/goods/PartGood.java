@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -31,10 +32,14 @@ import org.mars_sim.msp.core.time.MarsClock;
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
  */
-class PartGood extends Good {
+public class PartGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
     
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
+
+	
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String SCRAP = "scrap";
 	private static final String INGOT = "ingot";
@@ -47,6 +52,11 @@ class PartGood extends Good {
 	private static final String GLASS_TUBE = "glass";
 	private static final String GLASS_SHEET = "glass sheet";
 	private static final String DRILL = "drill";
+	private static final String STACK = "stack";
+	private static final String FUEL_CELL = "fuel cell";
+	private static final String BOARD = "board";
+	private static final String MICROCONTROLLER = "microcontroller";
+	private static final String WAFER = "semiconductor wafer";
 
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
@@ -70,6 +80,8 @@ class PartGood extends Good {
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	
 	private static final double ITEM_DEMAND = 1;
+	
+	private static final double PARTS_MAINTENANCE_VALUE = 1000;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
@@ -163,17 +175,17 @@ class PartGood extends Good {
         if (type == GoodType.ELECTRONIC)
             return ELECTRONIC_COST;      
         if (type == GoodType.INSTRUMENT)
-            return INSTRUMENT_COST;  
+            return INSTRUMENT_COST;
         
-        if (name.equalsIgnoreCase("stack"))
+        if (name.equalsIgnoreCase(STACK))
             return FC_STACK_COST;
-        else if (name.equalsIgnoreCase("fuel cell"))
+        else if (name.equalsIgnoreCase(FUEL_CELL))
             return FC_COST;
-        else if (name.contains("board"))
+        else if (name.contains(BOARD))
             return BOARD_COST;
-        else if (name.equalsIgnoreCase("microcontroller"))
+        else if (name.equalsIgnoreCase(MICROCONTROLLER))
             return CPU_COST;
-        else if (name.equalsIgnoreCase("semiconductor wafer"))
+        else if (name.equalsIgnoreCase(WAFER))
             return WAFER_COST;
 
         return ITEM_COST;
@@ -255,9 +267,11 @@ class PartGood extends Good {
 			// Calculate vehicle part demand.
 			+ getVehiclePartDemand(owner)
 			// Calculate battery cell part demand.
-			+ geFuelCellDemand(owner);
+			+ geFuelCellDemand(owner)
+			// Calculate maintenance part demand.
+			+ getMaintenancePartsDemand(settlement, part);
 
-			
+		
 		projected = projected
 			// Flatten raw part demand.
 			* flattenRawDemand
@@ -268,9 +282,7 @@ class PartGood extends Good {
 		double trade = owner.determineTradeDemand(this);
 
 		// Recalculate the partsDemandCache
-        // TODO Why is this doing it for ALL Parts if just a single Part is being processed; that means
-        // it becomes N*N calculations
-		//determineRepairPartsDemand();
+
 
 		// Gets the repair part demand
 		double repair = owner.getDemandValue(this);
@@ -857,6 +869,86 @@ class PartGood extends Good {
 		return demand;
 	}
 
+	
+	/**
+	 * Gets the demand from maintenance parts from a particular settlement.
+	 * 
+	 * @param settlement
+	 * @param part
+	 */
+	private double getMaintenancePartsDemand(Settlement settlement, Part part) {
+		double demand = 0;
+		int number = settlement.getBuildingManager().getMaintenanceDemand(part);
+		if (number > 0) {
+			demand = number * PARTS_MAINTENANCE_VALUE;
+			logger.info(settlement, 30_000L, "Triggering " + Math.round(demand * 10.0)/10.0 
+					+" good demand from " + number + " " + part.getName() + ".");
+		}
+		return demand;
+	}
+	
+	/**
+	 * Injects an individual part demand immediately without waiting for goods manager to update it.
+	 * 
+	 * @param part
+	 * @param good
+	 * @param owner
+	 */
+	public void injectPartsDemand(Part part, GoodsManager owner, int needNum) {
+		double previousDemand = owner.getDemandValue(this);
+		
+		int previousNum = owner.getSettlement().getItemResourceStored(part.getID());
+		
+		double previousTotalDemand = previousDemand * previousNum;
+		
+		double newAddedDemand = getMaintenancePartsDemand(owner.getSettlement(), part);
+
+		double newAddedTotalDemand = newAddedDemand * needNum;
+		
+		double diff = previousTotalDemand - newAddedTotalDemand;
+		
+		double finalDemand = (previousTotalDemand + newAddedTotalDemand) / (previousNum + needNum);
+		
+		if (diff < 0) {
+			if (finalDemand < previousDemand) {
+				finalDemand = previousDemand + newAddedDemand;
+			}
+			
+			owner.setDemandValue(this, finalDemand);
+			
+			logger.info(owner.getSettlement(), 30_000L, "Injecting demand for " 
+					+ part.getName()
+					+ "  Previous demand: "
+					+ Math.round(previousDemand * 10.0)/10.0 
+					+ " (Quantity: " + previousNum + ")"
+					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
+					+ " (Quantity: " + needNum + ")"
+					);
+			
+			// Recalculate settlement good value for this part.
+			owner.determineGoodValue(GoodsUtil.getGood(part.getID()));
+			
+//			finalDemand = owner.getDemandValue(this);
+//			
+//			logger.info(owner.getSettlement(), 30_000L, "Stabilizing demand for " 
+//					+ part.getName() + "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 + ".");
+		}
+		else {
+			// previousTotalDemand is already large enough and
+			// there should be no need to inject more good demand
+			
+			logger.info(owner.getSettlement(), 30_000L, "No change for "
+					+ part.getName()
+					+ "  Previous demand: "
+					+ Math.round(previousDemand * 10.0)/10.0 
+					+ " (Quantity: " + previousNum + "}"
+					+ "  Proposed demand: " + Math.round(finalDemand * 10.0)/10.0 
+					+ " (Quantity: " + needNum + "}"
+					);
+		}	
+	}
+	
+	
 //    /**
 //	 * Determines the number demand for all parts at the settlement.
 //	 *

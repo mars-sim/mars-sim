@@ -721,7 +721,7 @@ public class GoodsManager implements Serializable {
 		Good.initializeInstances(sc, m);
 		CommerceUtil.initializeInstances(m, u);
 	}
-
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -780,6 +780,7 @@ public class GoodsManager implements Serializable {
 	 * Calculates the sell list.
 	 */
 	private void calculateSellList() {
+		
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newSell = new HashMap<>();
 		List<Good> excluded = GoodsManager.getExclusionBuyList();
