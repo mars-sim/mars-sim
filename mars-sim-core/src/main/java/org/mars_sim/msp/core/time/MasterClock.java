@@ -112,6 +112,8 @@ public class MasterClock implements Serializable {
 	private double optMilliSolPerPulse;
 
 	/** The Martian Clock. */
+	private MarsTime marsTime;
+	/** The Martian Clock. */
 	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsClock initialMarsTime;
@@ -134,6 +136,7 @@ public class MasterClock implements Serializable {
 	
 		// Create a martian clock
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
+		marsTime = MarsTimeFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
 		initialMarsTime = new MarsClock(marsClock);
@@ -190,6 +193,15 @@ public class MasterClock implements Serializable {
 	 */
 	public MarsClock getMarsClock() {
 		return marsClock;
+	}
+
+	/**
+	 * Returns the current Martian time.
+	 *
+	 * @return Martian time
+	 */
+	public MarsTime getMarsTime() {
+		return marsTime;
 	}
 
 	/**
@@ -522,6 +534,7 @@ public class MasterClock implements Serializable {
 
 					// Add time pulse to Mars clock.
 					marsClock.addTime(lastPulseTime);
+					marsTime = marsTime.addTime(lastPulseTime);
 
 					// Run the clock listener tasks that are in other package
 					fireClockPulse(lastPulseTime);

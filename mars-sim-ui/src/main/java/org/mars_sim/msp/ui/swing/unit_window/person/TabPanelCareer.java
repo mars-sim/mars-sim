@@ -43,8 +43,9 @@ import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MarsTimeFormat;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -95,7 +96,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private Person person;
 	private Settlement settlement;
 
-	private MarsClock marsClock;
+	private MasterClock masterClock;
 
 	private JLabel changeNotice;
 
@@ -115,7 +116,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		);
 
 		person = unit;
-		marsClock = getSimulation().getMasterClock().getMarsClock();
+		masterClock = getSimulation().getMasterClock();
 
 		if (person.getAssociatedSettlement() != null) {
 			settlement = person.getAssociatedSettlement();
@@ -185,8 +186,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			public void handleSelection(int selection) {
 				if (starRater.isEnabled()) {
 
-					int sol = marsClock.getMissionSol();
-					dateTimeRatingSubmitted = MarsClockFormat.getTruncatedDateTimeStamp(marsClock);
+					MarsTime mTime = masterClock.getMarsTime();
+					int sol = mTime.getMissionSol();
+					dateTimeRatingSubmitted = mTime.getTruncatedDateTimeStamp();
 					printLog = true;
 					displayNotice("Job Rating submitted on " + dateTimeRatingSubmitted, false);
 					starRater.setRating(selection);
@@ -301,7 +303,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			starRater.setSelection(0);
 			displayNotice("", false);
 		} else {
-			int solElapsed = marsClock.getMissionSol();
+			int solElapsed = masterClock.getMarsTime().getMissionSol();
 
 			if (solElapsed > solRatingSubmitted + RATING_DAYS) {
 				// if 7 days have passed since the rating submitted, re-enable the star rater
@@ -362,7 +364,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * Checks for any role change or reassignment.
 	 * Note that change in population affects the list of role types.
 	 */
-	@SuppressWarnings("unchecked")
 	public void checkRoleChange() {
 		List<String> names = RoleUtil.getRoleNames(settlement.getNumCitizens());
 
@@ -519,7 +520,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			checkJobReassignment(person, list);
 
 			// check for the passing of each day
-			int solElapsed = marsClock.getMissionSol();
+			int solElapsed = masterClock.getMarsTime().getMissionSol();
 
 			// If the rating or job reassignment request is at least one day ago
 			if (solCache != solElapsed) {
@@ -625,7 +626,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			// if the population is beyond 4
 			if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
-				String s = "Job Reassignment submitted on " + MarsClockFormat.getTruncatedDateTimeStamp(marsClock);
+				String s = "Job Reassignment submitted on " + MarsTimeFormat.getTruncatedDateTimeStamp(
+											masterClock.getMarsTime());
 				displayNotice(s, false);
 				logger.info(person, s);
 				firstNotification = true;

@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -78,9 +77,6 @@ public class CommanderWindow extends ToolWindow {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
-
-	/** Tool name. */
-	private static final int LIST_WIDTH = 300;
 
 	public static final String NAME = "Commander Dashboard";
 	public static final String ICON = "dashboard";
@@ -129,7 +125,6 @@ public class CommanderWindow extends ToolWindow {
 	//private List<String> taskCache;
 
 	/** The MarsClock instance. */
-	private MarsClock marsClock;
 	private MasterClock masterClock;
 	private UnitManager unitManager;
 
@@ -146,7 +141,6 @@ public class CommanderWindow extends ToolWindow {
 		super(NAME, desktop);
 
 		this.masterClock = desktop.getSimulation().getMasterClock();
-		this.marsClock = masterClock.getMarsClock();
 		unitManager = desktop.getSimulation().getUnitManager();
 
 		List<Settlement> settlementList = new ArrayList<>(unitManager.getSettlements());
@@ -403,7 +397,7 @@ public class CommanderWindow extends ToolWindow {
 				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D), true);
 
-				logBookTA.append(marsClock.getTrucatedDateTimeStamp()
+				logBookTA.append(masterClock.getMarsTime().getTruncatedDateTimeStamp()
 						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");
 		        listUpdate();
 				repaint();

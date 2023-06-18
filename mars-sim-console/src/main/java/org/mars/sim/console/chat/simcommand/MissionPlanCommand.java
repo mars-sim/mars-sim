@@ -43,7 +43,7 @@ public class MissionPlanCommand extends ChatCommand {
 		int newObj = context.getIntInput("Select an option ");
 		int max = 0;
 		boolean totals = false;
-		int today = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+		int today = context.getSim().getMasterClock().getMarsTime().getMissionSol();
 
 		switch (newObj) {
 		case 1:

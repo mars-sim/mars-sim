@@ -91,6 +91,9 @@ public class MarsTime implements Serializable {
 	/** The total Millisols */
 	private final double totalMillisols;
 
+	private transient String dateTimeString = null;
+	private transient String dateTimeTruncString = null;
+
 	/**
 	 * Constructor 2 : create a MarsTime instance with the given mission sol.
 	 * Note that time will NOT increment in this clock.
@@ -335,7 +338,11 @@ public class MarsTime implements Serializable {
 	 * @return formatted time stamp string
 	 */
 	public String getDateTimeStamp() {
-		return MarsTimeFormat.getDateTimeStamp(this);
+		if (dateTimeString == null) {
+			dateTimeString = MarsTimeFormat.getDateTimeStamp(this);
+		}
+
+		return dateTimeString;
 	}
 
 	/**
@@ -343,37 +350,13 @@ public class MarsTime implements Serializable {
 	 *
 	 * @return formatted time stamp string
 	 */
-	public String getTrucatedDateTimeStamp() {
-		return MarsTimeFormat.getTruncatedDateTimeStamp(this);
-	}
+	public String getTruncatedDateTimeStamp() {
+		if (dateTimeTruncString == null) {
+			dateTimeTruncString = MarsTimeFormat.getTruncatedDateTimeStamp(this);
+		}
 
-	/**
-	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol".
-	 *
-	 * @return formatted time stamp string
-	 */
-	public String getDisplayTruncatedTimeStamp() {
-		return MarsTimeFormat.getTruncatedDateTimeStamp(this) + " " + MarsTimeFormat.getSolOfWeekName(this);
+		return dateTimeTruncString;
 	}
-
-	/**
-	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol".
-	 *
-	 * @return formatted time stamp string
-	 */
-	public String getDisplayDateTimeStamp() {
-		return MarsTimeFormat.getDateTimeStamp(this) + " " + MarsTimeFormat.getSolOfWeekName(this);
-	}
-
-	/**
-	 * Gets the current date string in the format of e.g. "03-Adir-05".
-	 *
-	 * @return current date string
-	 */
-	public String getDateString() {
-		return MarsTimeFormat.getDateString(this);
-	}
-
 
 	/**
 	 * Returns the total number of millisols of a given time.
