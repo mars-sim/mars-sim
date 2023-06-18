@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.stream.Collectors;
 
@@ -79,9 +80,11 @@ public class SponsorTabPanel extends TabPanel {
 		// Prepare info panel.
 		AttributePanel infoPanel = new AttributePanel(3);
 		mainPanel.add(infoPanel, BorderLayout.CENTER);
-		
+
 		// Prepare sponsor name label
-		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsor"), ra.getDescription(), null);
+//		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsor"), ra.getDescription(), null);
+		// Prepare sponsor name label
+		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsorShort"), ra.getName(), null);
 		// Prepare country name label
 		infoPanel.addTextField(Msg.getString("SponsorTabPanel.country"), ra.getDefaultCountry(), null);
 		// Prepare agenda name label
@@ -90,15 +93,22 @@ public class SponsorTabPanel extends TabPanel {
 		JPanel subPanel = new JPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.SOUTH);
 	
-		JPanel panelNorth = new JPanel(new BorderLayout());
+		JPanel panelNorth = new JPanel(new GridLayout(4, 1));
 		subPanel.add(panelNorth, BorderLayout.NORTH);
 		
-		JPanel panelCenter = new JPanel(new BorderLayout());
-		subPanel.add(panelCenter, BorderLayout.CENTER);
+		//////////////////////////////////////////////////
+		
+		JPanel panel00 = new JPanel(new FlowLayout());// BorderLayout());
+		panelNorth.add(panel00);// BorderLayout.NORTH);
+		
+		addBorder(panel00, Msg.getString("SponsorTabPanel.sponsor"));
+		
+		// Add the long name to the text area.
+		createTA(panel00).append(ra.getDescription());
 		
 		
-		JPanel panel0 = new JPanel(new BorderLayout());
-		panelNorth.add(panel0, BorderLayout.NORTH);
+		JPanel panel0 = new JPanel(new FlowLayout());// BorderLayout());
+		panelNorth.add(panel0);// BorderLayout.NORTH);
 		
 		addBorder(panel0, Msg.getString("SponsorTabPanel.objective"));
 		
@@ -106,8 +116,8 @@ public class SponsorTabPanel extends TabPanel {
 		createTA(panel0).append(ra.getMissionAgenda().getObjectiveName());
 		
 		
-		JPanel panel1 = new JPanel(new BorderLayout());
-		panelNorth.add(panel1, BorderLayout.CENTER);
+		JPanel panel1 = new JPanel(new FlowLayout());// BorderLayout());
+		panelNorth.add(panel1);// BorderLayout.CENTER);
 		
 		addBorder(panel1, Msg.getString("SponsorTabPanel.report"));
 		
@@ -115,18 +125,21 @@ public class SponsorTabPanel extends TabPanel {
 		createTA(panel1).append(ra.getMissionAgenda().getReports());
 		
 		
-		JPanel panel2 = new JPanel(new BorderLayout());
-		panelNorth.add(panel2, BorderLayout.SOUTH);
+		JPanel panel2 = new JPanel(new FlowLayout());// BorderLayout());
+		panelNorth.add(panel2);// BorderLayout.SOUTH);
 		
 		addBorder(panel2, Msg.getString("SponsorTabPanel.data"));
 		
 		// For each phase, add to the text area.
 		createTA(panel2).append(ra.getMissionAgenda().getData());
 		
+		/////////////////////////////////////////////////////////
 		
+		JPanel panelCenter = new JPanel(new BorderLayout());
+		subPanel.add(panelCenter, BorderLayout.CENTER);
 		
-		JPanel panelCap = new JPanel(new BorderLayout());
-		panelCenter.add(panelCap, BorderLayout.SOUTH);
+		JPanel panelCap = new JPanel(new FlowLayout());//
+		panelCenter.add(panelCap);// BorderLayout.SOUTH);
 		
 		addBorder(panelCap, Msg.getString("SponsorTabPanel.capability"));
 		

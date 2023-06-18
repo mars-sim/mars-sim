@@ -200,7 +200,7 @@ extends TabPanel {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                1, 2, //rows, cols
-		                                50, 10,        //initX, initY
+		                                10, 10,        //initX, initY
 		                                5, 3);       //xPad, yPad
 	
 		content.add(northPanel, BorderLayout.NORTH);
