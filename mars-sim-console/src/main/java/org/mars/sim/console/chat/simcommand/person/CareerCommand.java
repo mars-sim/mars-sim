@@ -7,21 +7,14 @@
 
 package org.mars.sim.console.chat.simcommand.person;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.Job;
-import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 
 /** 
  * Display details about Person's job & roles
@@ -40,8 +33,7 @@ public class CareerCommand extends AbstractPersonCommand {
 
 		Role r = person.getRole();
 		response.appendLabeledString("Current Role", r.getType().getName());
-		// Jobs have been renamed so pick up later on Master branch
-		//response.appendLabeledString("Current Job", person.getMind().getJob().getName());
+		response.appendLabeledString("Current Job", person.getMind().getJob().getName());
 
 		response.appendHeading("Role History");
 		response.appendTableHeading("When", CommandHelper.TIMESTAMP_TRUNCATED_WIDTH,
