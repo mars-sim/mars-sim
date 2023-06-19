@@ -45,11 +45,13 @@ public class MaintenanceTabPanel extends TabPanel {
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
 	
-	private AttributePanel labelPanel;
 	private JProgressBar wearCondition;
+	private JProgressBar currentMaintenance;
+	
 	private JLabel lastCompletedLabel;
 	private JLabel partsLabel;
-	private JProgressBar currentMaintenance;
+	private JLabel malPLabel;
+	private JLabel maintPLabel;
 
 	/** The parts table model. */
 	private PartTableModel tableModel;
@@ -82,8 +84,11 @@ public class MaintenanceTabPanel extends TabPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 	
-		labelPanel = new AttributePanel(4, 1);
-		center.add(labelPanel, BorderLayout.NORTH);
+		JPanel topPanel = new JPanel(new BorderLayout());
+		center.add(topPanel, BorderLayout.NORTH);
+		
+		AttributePanel labelPanel = new AttributePanel(4, 1);
+		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
 
@@ -101,10 +106,18 @@ public class MaintenanceTabPanel extends TabPanel {
 		currentMaintenance.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentMaintenance"), currentMaintenance);
 
-		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", 
-						   null);
-
-
+		
+		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);
+		
+		topPanel.add(new JPanel(), BorderLayout.CENTER);
+		
+		AttributePanel dataPanel = new AttributePanel(2, 1);
+		topPanel.add(dataPanel, BorderLayout.SOUTH);
+	
+		malPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.malfunctionProbaility"), "", null);	
+		maintPLabel = dataPanel.addTextField(Msg.getString("MaintenanceTabPanel.maintenanceProbaility"), "", null);
+		
+		
 		// Create the parts panel
 		JScrollPane partsPane = new JScrollPane();
 		partsPane.setPreferredSize(new Dimension(160, 80));
@@ -144,7 +157,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		// Update last completed label.
 		StringBuilder text = new StringBuilder();
 		text.append(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
-		text.append(" (cycle ");
+		text.append(" (Per Cycle: ");
 		text.append(StyleManager.DECIMAL_SOLS.format(manager.getMaintenancePeriod()/1000D));
 		text.append(")");
 
@@ -155,18 +168,21 @@ public class MaintenanceTabPanel extends TabPanel {
 		double total = manager.getMaintenanceWorkTime();
 		currentMaintenance.setValue((int)(100.0 * completed / total));
 
+		// TODO: compare what parts are missing and what parts are 
+		// available for swapping out (just need time)
 		Map<Integer, Integer> parts = manager.getMaintenanceParts();
 		int size = parts.size();
 		
 		// Update parts label.
 		partsLabel.setText(Integer.toString(size));
-
+		// Generate tool tip.
 		String tooltip = "<html>" + getPartsString(parts, true) + "</html>";
-		
-		// TODO: compare what parts are missing
-		
 		// Update tool tip.
-		labelPanel.setToolTipText(tooltip);
+		partsLabel.setToolTipText(tooltip);
+		
+		malPLabel.setText(Math.round(manager.getMalfunctionProbabilityPerOrbit() * 1000.0)/1000.0 + " % Per Orbit");
+		
+		maintPLabel.setText(Math.round(manager.getMaintenanceProbabilityPerOrbit() * 1000.0)/1000.0 + " % Per Orbit");
 	}
 
 	/**

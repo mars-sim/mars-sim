@@ -67,6 +67,7 @@ public class MarsClock implements Serializable {
 	public static final double HOURS_PER_MILLISOL  = SECONDS_PER_MILLISOL / 3600D;
 	/** Number of millisols per hour. */
 	public static final double MILLISOLS_PER_HOUR  = 3600D / SECONDS_PER_MILLISOL;
+	/** Number of millisols per day. */	
 	public static final double MILLISOLS_PER_DAY = MILLISOLS_PER_HOUR * 24;
 
 	// Mars is near perihelion when it is summer in the southern hemisphere and
