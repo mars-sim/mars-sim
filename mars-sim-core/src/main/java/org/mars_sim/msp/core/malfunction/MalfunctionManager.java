@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -65,6 +66,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
+	
+	/** The upper limit factor for both malfunction and maintenance that will result in 100% certainty. */
+	private static final double UPPER_LIMIT = 1.000_335_221_5;
+	/** The lower limit factor for malfunction that will result in 1 % certainty. */	
+	private static final double MALFUNCTION_LOWER_LIMIT = 1.000_003_351_695;
+	/** The lower limit factor for maintenance that will result in 10 % certainty. */	
+	private static final double MAINTENANCE_LOWER_LIMIT = 1.000_033_516_95;
+
+	
 	/** Wear-and-tear points earned from a low quality inspection. */
 	private static final double LOW_QUALITY_INSPECTION = 200;
 	/** Wear-and-tear points earned from a high quality inspection. */
@@ -86,7 +96,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = 10;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .025;
+	private static final double WEAR_MALFUNCTION_FACTOR = .0015;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -105,6 +115,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private int numberMaintenances;
 	/** The number of orbits. */
 	private int orbitCache = MarsClock.FIRST_ORBIT;
+	
+	/** The overall probability that a maintenance event is triggered by active use on this entity. */
+	private double maintenanceProbability;	
+	/** The overall probability that a malfunction is triggered by active use on this entity. */
+	private double malfunctionProbability;
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaintenance;
 	/**
@@ -532,31 +547,25 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			
 			double maintFactor = (effTimeSinceLastMaint/maintPeriod) + 1D;
-//			logger.info(entity, "maintFactor: " + maintFactor + " %");	
-			double wearFactor = (100 - currentWearCond) * WEAR_MALFUNCTION_FACTOR;
-//			logger.info(entity, "wearFactor: " + wearFactor + " %");			
+			double wearFactor = (100 - currentWearCond) * WEAR_MALFUNCTION_FACTOR;		
 			double malfunctionChance = time * maintFactor * wearFactor;
-//			logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");
-			malfunctionChance = Math.min(500, 1.1 + malfunctionChance);
-//			logger.info(entity, "MalfunctionChance min: " + malfunctionChance + " %");
-			// log10 (1000) is 2.7. This effectively limits the change to no more than 2.7% per millisol on a unit 
-			malfunctionChance = Math.log10(malfunctionChance);
-//			logger.info(entity, "MalfunctionChance log10: " + malfunctionChance + " %");
-						
+//			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
+			
+			// For one orbit, log10 (1.000001) * 1000 * 687 is 0.2984. 
+			// This results in ~0.3%, a reasonable lower limit. 
+			// Or use 1.000003351695 to result in 1 %
+			
+			// If log10 (1.0003352215) * 1000 * 687 is 100.0000
+			// This results in 100 % certainty (the upper limit) that it will have a malfunction.
+			malfunctionProbability = Math.log10(Math.min(UPPER_LIMIT, Math.max(MALFUNCTION_LOWER_LIMIT, malfunctionChance)));
+//			logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
+				
 			boolean hasMal = false;
 			// Check for malfunction due to lack of maintenance and wear condition.
-			if (time > 0 && RandomUtil.lessThanRandPercent(malfunctionChance)) {
+			if (time > 0 && RandomUtil.lessThanRandPercent(malfunctionProbability)) {
 				// Reset delay back to MAX_DELAY. 
 				delay = MAX_DELAY;
-				
-//				logger.info(entity, "currentWearCondition: " + currentWearCondition);
-//				logger.info(entity, "maintFactor: " + maintFactor);
-//				logger.info(entity, "wearFactor: " + wearFactor);
-//				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
-//				logger.info(entity, "Checking for malfunction if it's warranted due to wear-and-tear. "
-//						+ solsLastMaint + " sols since last check-up. Condition: " 
-//						+ Math.round(currentWearCondition*100.0)/100.0 + " %.");
-				
+	
 				// Note: call selectMalfunction is just checking for the possibility 
 				// of having malfunction and doesn't necessarily mean it has to result in a malfunction
 				hasMal = selectMalfunction((Unit)entity);
@@ -575,10 +584,17 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// numberMaintenances increases the chance of having maintenance again
 			// because indicates how many times it has been "patched" up
 			double maintenanceChance = malfunctionChance * Math.log10(10 + numberMaintenances) * MAINTENANCE_FACTOR;
-//			logger.info(entity, "maintenanceChance: " + maintenanceChance + " %");
+//			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
+			// For one orbit, log10 (1.00003351695) * 1000 * 687 is 10.0000. 10 %
+			// Use 1.00003351695 to get 10% as a reasonable lower limit
+
+			// If log10 (1.0003352215) * 1000 * 687 is 100.0000. 100 %
+			// This results in 100 % certainty (the upper limit) that it will have a malfunction.
+			maintenanceProbability = Math.log10(Math.min(UPPER_LIMIT, Math.max(MAINTENANCE_LOWER_LIMIT, maintenanceChance)));
+//			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			
 			// Check for repair items needed due to lack of maintenance and wear condition.
-			if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceChance)) {
+			if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {
 				// Reset delay back to MAX_DELAY. 
 				delay = MAX_DELAY;
 
@@ -592,13 +608,29 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty()) {			
 					// Generates the repair parts 
 					generateNewMaintenanceParts();
-//					logger.info(entity, "Checking if repair parts are needed due to wear-and-tear. "
-//							+ "Condition: " + Math.round(currentWearCond * 100.0)/100.0 + " %.");
 				}
 			}
 		}
 	}
 
+	/**
+	 * Gets the malfunction probability per orbit.
+	 * 
+	 * @return
+	 */
+	public double getMalfunctionProbabilityPerOrbit() {
+		return malfunctionProbability * 1000 * MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+	}
+	
+	/**
+	 * Gets the maintenance probability per orbit.
+	 * 
+	 * @return
+	 */
+	public double getMaintenanceProbabilityPerOrbit() {
+		return maintenanceProbability * 1000 * MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+	}
+	
 	/**
 	 * Time passing for unit.
 	 *
