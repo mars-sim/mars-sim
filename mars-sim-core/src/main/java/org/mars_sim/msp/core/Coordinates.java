@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.core;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
+import org.mars_sim.mapdata.IntegerMapData;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -477,36 +479,8 @@ public final class Coordinates implements Serializable {
 	 * @param rho            radius (in km) or map box height divided by pi (# of pixels)
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
-
-		double sinPhi = Math.sin(this.phi);
-		double sinTheta = Math.sin(this.theta);
-		double cosPhi = Math.cos(this.phi);
-		double cosTheta = Math.cos(this.theta);
-
-		double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
-
-		double x2 = x;
-		double y2 = (y * cosPhi) + (z * sinPhi);
-		double z2 = (z * cosPhi) - (y * sinPhi);
-
-		double x3 = (x2 * cosTheta) + (y2 * sinTheta);
-		double y3 = (y2 * cosTheta) - (x2 * sinTheta);
-		double z3 = z2;
-
-		double phiNew = Math.acos(z3 / rho);
-		double thetaNew = Math.asin(x3 / (rho * Math.sin(phiNew)));
-
-		if (x3 >= 0) {
-			if (y3 < 0)
-				thetaNew = Math.PI - thetaNew;
-		} else {
-			if (y3 < 0)
-				thetaNew = Math.PI - thetaNew;
-			else
-				thetaNew = TWO_PI + thetaNew;
-		}
-
-		return new Coordinates(phiNew, thetaNew);
+		Point2D point = IntegerMapData.convertRectToSpherical(x, y, phi, theta, rho);
+		return new Coordinates(point.getX(), point.getY());
 	}
 
 	/**

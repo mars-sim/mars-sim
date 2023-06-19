@@ -9,6 +9,7 @@
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -183,96 +184,78 @@ import org.mars_sim.msp.common.FileLocator;
  	 * Gets the map image based on the center phi and theta coordinates given.
  	 * 
  	 * @param centerPhi Center phi value on the image
- 	 * @param centerTheta
+ 	 * @param centerTheta Center theta value on the image
 	 * @param mapBoxWidth The Width of the requested image
 	 * @param mapBoxHeight The Height of the requested image
  	 */
  	@Override
  	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight) {
-
-		double phiRange = Math.PI * PHI_PADDING * (1.0 * mapBoxHeight / pixelHeight);
-		double phiIterationAngle = Math.PI / (pixelHeight * PHI_ITERATION_PADDING);
-		double thetaIterationFactor = pixelWidth * THETA_ITERATION_PADDING;
-		double minThetaDisplay = TWO_PI * (1.0 * mapBoxWidth / pixelWidth) * MIN_THETA_PADDING;
-		// lower edge = pixel height / 2 - map box height / 2
-		int lowEdge = (pixelHeight/2) - (mapBoxHeight / 2);
-
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_4BYTE_ABGR);
-
- 		// The map data is PI offset from the center theta.
- 		double correctedTheta = centerTheta - Math.PI;
- 		while (correctedTheta < 0D)
- 			correctedTheta += TWO_PI;
- 		while (correctedTheta > TWO_PI)
- 			correctedTheta -= TWO_PI;
 
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
- 		// Determine starting and ending phi values.
- 		double startPhi = centerPhi - (phiRange / 2);
- 		if (startPhi < 0D)
- 			startPhi = 0D;
- 		double endPhi = centerPhi + (phiRange / 2);
- 		if (endPhi > Math.PI)
- 			endPhi = Math.PI;
- 		
- 		// Loop through each phi value.
- 		for (double x = startPhi; x <= endPhi; x += phiIterationAngle) {
- 			// Determine theta iteration angle.
- 			double thetaIterationAngle = TWO_PI / (thetaIterationFactor * Math.sin(x) + 1);
+		int halfWidth = mapBoxWidth / 2;
+		int halfHeight = mapBoxHeight / 2;
 
- 			double thetaRange = ((1 - Math.sin(x)) * TWO_PI) + minThetaDisplay;
- 			
- 			if ((x < POLAR_CAP_PI_ANGLE) || (x > (POLAR_CAP_RANGE)))
- 				thetaRange = TWO_PI;
- 			if (thetaRange > TWO_PI)
- 				thetaRange = TWO_PI;
+		for(int y = 0; y < mapBoxHeight; y++) {
+			for(int x = 0; x < mapBoxWidth; x++) {
+				int index = x + (y * mapBoxWidth);
 
- 			// Determine the theta starting and ending values.
- 			double startTheta = centerTheta - (thetaRange / 2);
- 			double endTheta = centerTheta + (thetaRange / 2);
-
- 			// Loop through each theta value.
- 			for (double y = startTheta; y <= endTheta; y += thetaIterationAngle) {
-
- 				// Correct y value to make sure it is within bounds. (0 to 2PI)
- 				double yCorrected = y;
- 				while (yCorrected < 0)
- 					yCorrected += TWO_PI;
- 				while (yCorrected > TWO_PI)
- 					yCorrected -= TWO_PI;
- 				
- 				// Determine the rectangular offset of the pixel in the image.
- 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, lowEdge);
-
- 				// Determine the display x and y coordinates for the pixel in the image.
- 				int displayX = mapBoxWidth - location.x;
- 				int displayY = mapBoxHeight - location.y;
-
- 				// Check that the x and y coordinates are within the display area.
- 				boolean leftBounds = displayX >= 0;
- 				boolean rightBounds = displayX < mapBoxWidth;
- 				boolean topBounds = displayY >= 0;
- 				boolean bottomBounds = displayY < mapBoxHeight;
- 				if (leftBounds && rightBounds && topBounds && bottomBounds) {
-
- 					// Determine array index for the display location.
- 					int index = (mapBoxWidth - displayX) + ((mapBoxHeight - displayY) * mapBoxWidth);
-
- 					// Put color in array at index.
- 					if ((index >= 0) && (index < mapArray.length))
- 						mapArray[index] = getRGBColorInt(x, yCorrected);
- 				}
- 			}
- 		}
+				Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
+				mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
+			}
+		}
 
  		// Create new map image.
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 
  		return result;
  	}
+
+
+	 /**
+	  * Converts linear rectangular XY position change to spherical coordinates with
+	  * rho value for map.
+	  *
+	  * @param x              change in x value (# of pixels or km)
+	  * @param y              change in y value (# of pixels or km)
+	  * @param phi			  center phi value (radians)
+	  * @param theta		  center theta value (radians)
+	  * @param rho            radius (in km) or map box height divided by pi (# of pixels)
+	  */
+	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
+		 double sinPhi = Math.sin(phi);
+		 double sinTheta = Math.sin(theta);
+		 double cosPhi = Math.cos(phi);
+		 double cosTheta = Math.cos(theta);
+
+		 double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
+
+		 double x2 = x;
+		 double y2 = (y * cosPhi) + (z * sinPhi);
+		 double z2 = (z * cosPhi) - (y * sinPhi);
+
+		 double x3 = (x2 * cosTheta) + (y2 * sinTheta);
+		 double y3 = (y2 * cosTheta) - (x2 * sinTheta);
+		 double z3 = z2;
+
+		 double phiNew = Math.acos(z3 / rho);
+		 double thetaNew = Math.asin(x3 / (rho * Math.sin(phiNew)));
+
+		 if (x3 >= 0) {
+			 if (y3 < 0)
+				 thetaNew = Math.PI - thetaNew;
+		 } else {
+			 if (y3 < 0)
+				 thetaNew = Math.PI - thetaNew;
+			 else
+				 thetaNew = TWO_PI + thetaNew;
+		 }
+
+		 return new Point2D.Double(phiNew, thetaNew);
+	 }
 
  	@Override
  	public Color getRGBColor(double phi, double theta) {
