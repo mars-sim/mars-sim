@@ -265,13 +265,13 @@ public class MarsTime implements Serializable {
 	}
 
 	/**
-	 * Returns the time difference to reach the other time.
+	 * Returns the time difference between a base time and this time. 
 	 *
-	 * @param laterTime Later time
+	 * @param earlierTime Earlier time, used as base
 	 * @return time difference in millisols
 	 */
-	public double getTimeDiff(MarsTime laterTime) {
-		return laterTime.getTotalMillisols() - getTotalMillisols();
+	public double getTimeDiff(MarsTime earlierTime) {
+		return getTotalMillisols() - earlierTime.getTotalMillisols();
 	}
 
 
