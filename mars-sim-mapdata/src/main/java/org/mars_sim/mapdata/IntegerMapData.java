@@ -6,6 +6,16 @@
  */
  package org.mars_sim.mapdata;
 
+import static com.jogamp.opencl.CLMemory.Mem.WRITE_ONLY;
+import static org.mars_sim.mapdata.OpenCL.getGlobalSize;
+import static org.mars_sim.mapdata.OpenCL.getKernel;
+import static org.mars_sim.mapdata.OpenCL.getLocalSize;
+import static org.mars_sim.mapdata.OpenCL.getProgram;
+import static org.mars_sim.mapdata.OpenCL.getQueue;
+
+import com.jogamp.opencl.CLBuffer;
+import com.jogamp.opencl.CLKernel;
+import com.jogamp.opencl.CLProgram;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
@@ -14,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -27,6 +38,8 @@ import org.mars_sim.msp.common.FileLocator;
 
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
+
+	 private static boolean HARDWARE_ACCELERATION = true;
 
  	private static final double TWO_PI = Math.PI * 2;
 
@@ -58,6 +71,11 @@ import org.mars_sim.msp.common.FileLocator;
 	private MapMetaData meta;
 	
 	private BufferedImage cylindricalMapImage;
+
+	 private CLBuffer<IntBuffer> rowBuffer;
+	 private CLBuffer<IntBuffer> colBuffer;
+	 private final CLProgram program;
+	 private final CLKernel kernel;
  	
  	/**
  	 * Constructor.
@@ -71,6 +89,11 @@ import org.mars_sim.msp.common.FileLocator;
 		// Load data files
 		pixels = loadMapData(newMeta.getHiResFile());
 		rho =  pixelHeight / Math.PI;
+
+		program = getProgram("MapDataFast.cl");
+		kernel = getKernel(program, "getMapImage")
+				.setArg(11, TWO_PI)
+				.setArg(12, getScale());
 		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
@@ -196,17 +219,12 @@ import org.mars_sim.msp.common.FileLocator;
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
-		int halfWidth = mapBoxWidth / 2;
-		int halfHeight = mapBoxHeight / 2;
-
-		for(int y = 0; y < mapBoxHeight; y++) {
-			for(int x = 0; x < mapBoxWidth; x++) {
-				int index = x + (y * mapBoxWidth);
-
-				Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
-				mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
-			}
-		}
+		 if(HARDWARE_ACCELERATION) {
+			 gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
+		 }
+		 else {
+			 cpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
+		 }
 
  		// Create new map image.
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
@@ -215,16 +233,71 @@ import org.mars_sim.msp.common.FileLocator;
  	}
 
 
-	 /**
-	  * Converts linear rectangular XY position change to spherical coordinates with
-	  * rho value for map.
-	  *
-	  * @param x              change in x value (# of pixels or km)
-	  * @param y              change in y value (# of pixels or km)
-	  * @param phi			  center phi value (radians)
-	  * @param theta		  center theta value (radians)
-	  * @param rho            radius (in km) or map box height divided by pi (# of pixels)
-	  */
+	 private void cpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+		 int halfWidth = mapBoxWidth / 2;
+		 int halfHeight = mapBoxHeight / 2;
+
+		 for(int y = 0; y < mapBoxHeight; y++) {
+			 for(int x = 0; x < mapBoxWidth; x++) {
+				 int index = x + (y * mapBoxWidth);
+
+				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
+				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
+			 }
+		 }
+	 }
+
+	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+
+		 int size = mapArray.length;
+		 int globalSize = getGlobalSize(size);
+
+		 if(colBuffer == null || colBuffer.getElementSize() != globalSize) {
+			 colBuffer = OpenCL.getContext().createIntBuffer(globalSize, WRITE_ONLY);
+			 kernel.setArg(9, colBuffer);
+		 }
+		 if(rowBuffer == null || rowBuffer.getElementSize() != globalSize) {
+			 rowBuffer = OpenCL.getContext().createIntBuffer(globalSize, WRITE_ONLY);
+			 kernel.setArg(10, rowBuffer);
+		 }
+
+		 kernel.rewind();
+		 kernel.putArg(centerPhi)
+				 .putArg(centerTheta)
+				 .putArg(mapBoxWidth)
+				 .putArg(mapBoxHeight)
+				 .putArg(pixelWidth)
+				 .putArg(pixelHeight)
+				 .putArg(mapBoxWidth/2)
+				 .putArg(mapBoxHeight/2)
+				 .putArg(size);
+
+		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
+				 .putReadBuffer(rowBuffer, false)
+				 .putReadBuffer(colBuffer, true);
+
+		 int[] rows = new int[size];
+		 rowBuffer.getBuffer().get(rows);
+		 int[] cols = new int[size];
+		 colBuffer.getBuffer().get(cols);
+
+		 for(int i = 0; i < size; i++) {
+			 mapArray[i] = pixels[rows[i]][cols[i]];
+		 }
+	 }
+
+
+
+		 /**
+          * Converts linear rectangular XY position change to spherical coordinates with
+          * rho value for map.
+          *
+          * @param x              change in x value (# of pixels or km)
+          * @param y              change in y value (# of pixels or km)
+          * @param phi			  center phi value (radians)
+          * @param theta		  center theta value (radians)
+          * @param rho            radius (in km) or map box height divided by pi (# of pixels)
+          */
 	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
 		 double sinPhi = Math.sin(phi);
 		 double sinTheta = Math.sin(theta);
