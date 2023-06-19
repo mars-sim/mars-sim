@@ -115,9 +115,10 @@ implements MissionListener {
 		
 		
 		// Create the navpoint table panel.
-		JPanel navpointTablePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		JPanel navpointTablePane = new JPanel(new BorderLayout());
 		navpointTablePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		navpointTablePane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		navpointTablePane.setPreferredSize(new Dimension(-1, -1)); 
 		navpointTablePane.setBorder(new MarsPanelBorder());
 
 		
@@ -155,9 +156,7 @@ implements MissionListener {
 		mapPanel.addMapLayer(trailLayer, 4);
 		mapPanel.addMapLayer(navpointLayer, 5);
   
-//        mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
-        mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//        mapPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));  
         
         mapPane.add(mapPanel);
         
@@ -232,6 +231,7 @@ implements MissionListener {
         
         // Create the navpoint table.
         navpointTable = new JTable(navpointTableModel);
+        navpointTable.setPreferredSize(new Dimension(-1, -1)); 
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(e -> {

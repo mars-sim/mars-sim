@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionWindow.java
- * @date 2023-05-28
+ * @date 2023-06-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -168,7 +168,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);
 //		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
-		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+//		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 //		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		
 		tabPane.add("Navigation", navpointPane);
