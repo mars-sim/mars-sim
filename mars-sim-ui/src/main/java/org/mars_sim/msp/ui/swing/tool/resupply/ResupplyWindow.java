@@ -195,7 +195,7 @@ public class ResupplyWindow extends ToolWindow
 			Enumeration<TreeNode> existing = sNode.children();
 			while(existing.hasMoreElements()) {
 				Transportable n = (Transportable) ((DefaultMutableTreeNode)existing.nextElement()).getUserObject();
-				if (MarsClock.getTimeDiff(at.getArrivalDate(), n.getArrivalDate()) < 0D) {
+				if (at.getArrivalDate().getTimeDiff(n.getArrivalDate()) < 0D) {
 					// Found the Transportable arriving later than the target
 					break;
 				} 
@@ -379,7 +379,7 @@ public class ResupplyWindow extends ToolWindow
 				else if (t instanceof ArrivingSettlement a) {
 					name.append(a.getTemplate());
 				}				
-				name.append(" @ ").append(t.getArrivalDate().getDateString());
+				name.append(" @ ").append(t.getArrivalDate().getTruncatedDateTimeStamp());
 				this.setText(name.toString());
 			}
 			return this;

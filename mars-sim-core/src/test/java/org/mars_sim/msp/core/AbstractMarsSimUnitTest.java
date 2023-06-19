@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import junit.framework.TestCase;
@@ -197,7 +198,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
      * @return
      */
     protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol) {
-        MarsClock marsTime = new MarsClock(1, 1, missionSol, mSol, missionSol);
+        MarsTime marsTime = new MarsTime(1, 1, missionSol, mSol, missionSol);
 		return createPulse(marsTime, newSol);
 	}
 
@@ -212,7 +213,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
         return createPulse(marsTime, false);
     }
 
+	/**
+	 * This method will be removed ocne MarsClock is deleted.
+	 */
 	protected ClockPulse createPulse(MarsClock marsTime, boolean newSol) {
-        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, null, null, newSol, true);
+    }
+
+	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol) {
+		sim.getMasterClock().setMarsTime(marsTime);
+        return new ClockPulse(pulseID++, 1D, null, marsTime, null, newSol, true);
     }
 }

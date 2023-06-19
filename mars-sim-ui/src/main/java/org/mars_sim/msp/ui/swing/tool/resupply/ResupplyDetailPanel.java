@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplySchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
@@ -129,11 +129,11 @@ public class ResupplyDetailPanel extends JPanel {
 											+ " (every " + schedule.getFrequency() + " sols)" : ""));
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(resupply.getTransitState().getName());
-		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());
-		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateTimeStamp());
+		launchDateValueLabel.setText(resupply.getLaunchDate().getTruncatedDateTimeStamp());
+		arrivalDateValueLabel.setText(resupply.getArrivalDate().getTruncatedDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
 		
-		updateTimeToArrival(desktop.getSimulation().getMasterClock().getMarsClock());
+		updateTimeToArrival(desktop.getSimulation().getMasterClock().getMarsTime());
 		suppliesPanel.show(resupply);
 
 		validate();
@@ -143,10 +143,10 @@ public class ResupplyDetailPanel extends JPanel {
 	 * Updates the time to arrival label.
 	 * @param currentTime 
 	 */
-	private void updateTimeToArrival(MarsClock currentTime) {
+	private void updateTimeToArrival(MarsTime currentTime) {
 		String timeArrival = "---";
 		solsToArrival = -1;
-		double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
+		double timeDiff = resupply.getArrivalDate().getTimeDiff(currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
 			timeArrival = Integer.toString(solsToArrival) + " Sols";
@@ -154,10 +154,10 @@ public class ResupplyDetailPanel extends JPanel {
 		timeArrivalValueLabel.setText(timeArrival);
 	}
 
-	private void updateArrival(MarsClock currentTime) {
+	private void updateArrival(MarsTime currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((resupply != null) && (solsToArrival >= 0)) {
-			double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
+			double timeDiff = resupply.getArrivalDate().getTimeDiff(currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
 				if (resupply != null) {
@@ -168,6 +168,6 @@ public class ResupplyDetailPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		updateArrival(pulse.getMarsTime());
+		updateArrival(pulse.getNewMarsTime());
 	}
 }

@@ -15,7 +15,8 @@ import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * An class for an item that is transported between planets/moons/etc.
@@ -26,14 +27,14 @@ public abstract class Transportable
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private MarsClock arrivalDate;
-	private MarsClock launchDate;
+	private MarsTime arrivalDate;
+	private MarsTime launchDate;
 	private TransitState state;
 	private Coordinates landingSite;
 	private String name;
 
 	protected static TransportManager tm;
-	protected static MarsClock now;
+	protected static MasterClock master;
 
 	public Transportable(String name, Coordinates landingSite) {
 		this.name = name;
@@ -63,8 +64,8 @@ public abstract class Transportable
 		return state;
 	}
 
-	public MarsClock getLaunchDate() {
-		return new MarsClock(launchDate);
+	public MarsTime getLaunchDate() {
+		return launchDate;
 	}
 
 	/**
@@ -77,10 +78,10 @@ public abstract class Transportable
 	/**
 	 * Gets the arrival date at the destination.
 	 * 
-	 * @return arrival date as a MarsClock instance.
+	 * @return arrival date as a MarsTime instance.
 	 */
-	public MarsClock getArrivalDate() {
-		return new MarsClock(arrivalDate);
+	public MarsTime getArrivalDate() {
+		return arrivalDate;
 	}
 
 	/**
@@ -88,20 +89,20 @@ public abstract class Transportable
 	 * 
 	 * @param arrivalDate the arrival date.
 	 */
-	public void setArrivalDate(MarsClock arrivalDate) {
-		this.arrivalDate = new MarsClock(arrivalDate);
+	public void setArrivalDate(MarsTime arrivalDate) {
+		this.arrivalDate = arrivalDate;
 
 		// Determine launch date.
-		launchDate = new MarsClock(arrivalDate);
-		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
+		launchDate = arrivalDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
 
 		// Set resupply state based on launch and arrival time.
-		MarsClock nextScheduledEvent = launchDate;
+		MarsTime now = master.getMarsTime();
+		MarsTime nextScheduledEvent = launchDate;
 		state = TransitState.PLANNED;
-		if (MarsClock.getTimeDiff(now, launchDate) > 0D) {
+		if (now.getTimeDiff(launchDate) > 0D) {
 			state = TransitState.IN_TRANSIT;
 			nextScheduledEvent = arrivalDate;
-			if (MarsClock.getTimeDiff(now, arrivalDate) > 0D) {
+			if (now.getTimeDiff(arrivalDate) > 0D) {
 				// Should have already arrived
 				nextScheduledEvent = now;
 			}
@@ -155,14 +156,14 @@ public abstract class Transportable
 	 * @param now Current time
 	 * @return return the milliosols to the next phase
 	 */
-	public int execute(MarsClock now) {
+	public int execute(MarsTime now) {
 		int nextEvent = 0;
 		switch(state) {
 			case PLANNED:
 				// Launch has arrived
 				state = TransitState.IN_TRANSIT;
 				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
-				nextEvent = (int) MarsClock.getTimeDiff(arrivalDate, now);
+				nextEvent = (int) arrivalDate.getTimeDiff(now);
 				break;
 			case IN_TRANSIT:
 				// Arrvived
@@ -180,7 +181,7 @@ public abstract class Transportable
 	public int compareTo(Transportable o) {
 		int result = 0;
 
-		double arrivalTimeDiff = MarsClock.getTimeDiff(getArrivalDate(), o.getArrivalDate());
+		double arrivalTimeDiff = getArrivalDate().getTimeDiff(o.getArrivalDate());
 		if (arrivalTimeDiff < 0D) {
 			result = -1;
 		} else if (arrivalTimeDiff > 0D) {
@@ -193,8 +194,8 @@ public abstract class Transportable
 		return result;
 	}
 
-	static void initalizeInstances(MarsClock mc, TransportManager transportManager) {
-		now = mc;
+	static void initalizeInstances(MasterClock mc, TransportManager transportManager) {
+		master = mc;
 		tm = transportManager;
 	}
 }

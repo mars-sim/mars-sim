@@ -35,7 +35,7 @@ public class FutureEventCommand extends AbstractSettlementCommand {
 							
 		// Display each farm separately
 		for (ScheduledEvent event : settlement.getFutureManager().getEvents()) {			
-			response.appendTableRow(event.getWhen().getTrucatedDateTimeStamp(), event.getDescription());
+			response.appendTableRow(event.getWhen().getTruncatedDateTimeStamp(), event.getDescription());
 		}
 		context.println(response.getOutput());
 		return true;

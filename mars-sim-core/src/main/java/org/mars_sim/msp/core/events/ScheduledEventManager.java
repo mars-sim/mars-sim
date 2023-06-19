@@ -12,7 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -29,16 +30,16 @@ public class ScheduledEventManager implements Serializable, Temporal {
 
 		private static final long serialVersionUID = 1L;
 		
-        private MarsClock when;
+        private MarsTime when;
         private ScheduledEventHandler handler;
 
 
-        public ScheduledEvent(MarsClock when, ScheduledEventHandler handler) {
+        public ScheduledEvent(MarsTime when, ScheduledEventHandler handler) {
             this.when = when;
             this.handler = handler;
         }
 
-        public MarsClock getWhen() {
+        public MarsTime getWhen() {
             return when;
         }
         
@@ -82,11 +83,11 @@ public class ScheduledEventManager implements Serializable, Temporal {
         }
     }
 
-    private MarsClock marsClock;
+    private MasterClock master;
     private List<ScheduledEvent> eventQueue = new ArrayList<>();
 
-    public ScheduledEventManager(MarsClock clock) {
-        this.marsClock = clock;
+    public ScheduledEventManager(MasterClock clock) {
+        this.master = clock;
     }
 
     /**
@@ -96,10 +97,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
      * @param handler Handler when the event expires
      */
     public ScheduledEvent addEvent(int duration, ScheduledEventHandler handler) {
-        // I hate he MarsCLock imlementation not being immutable
-        MarsClock when = new MarsClock(marsClock);
-        when.addTime(duration);
-
+        MarsTime when = master.getMarsTime().addTime(duration);
         return addEvent(when, handler);
     }
 
@@ -109,10 +107,11 @@ public class ScheduledEventManager implements Serializable, Temporal {
      * @param when Time on Mars this event will happen
      * @param handler Handler when the event expires
      */
-    public ScheduledEvent addEvent(MarsClock when, ScheduledEventHandler handler) {
-        if (MarsClock.getTimeDiff(when, marsClock) < 0) {
+    public ScheduledEvent addEvent(MarsTime when, ScheduledEventHandler handler) {
+        MarsTime now = master.getMarsTime();
+        if (when.getTimeDiff(now) < 0) {
             // Event time has already past so set it to now
-            when = new MarsClock(marsClock);
+            when = now;
         }
         ScheduledEvent result = new ScheduledEvent(when, handler);
         addEvent(result);
@@ -160,8 +159,9 @@ public class ScheduledEventManager implements Serializable, Temporal {
     @Override
     public boolean timePassing(ClockPulse clockPulse) {
         synchronized(eventQueue) {
+            MarsTime currentTime = clockPulse.getNewMarsTime();
+
             if (!eventQueue.isEmpty()) {
-                MarsClock currentTime = clockPulse.getMarsTime();
                 ScheduledEvent next = eventQueue.get(0);
 
                 // Keep executing events that have past
@@ -170,7 +170,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
                     int repeatInterval = next.handler.execute(currentTime);
                     if (repeatInterval > 0) {
                         // Update the when and add back intot he queue
-                        next.when.addTime(repeatInterval);
+                        next.when = next.when.addTime(repeatInterval);
                         addEvent(next);
                     }
 

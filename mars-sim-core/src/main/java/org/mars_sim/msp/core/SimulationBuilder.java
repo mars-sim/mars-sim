@@ -318,7 +318,7 @@ public class SimulationBuilder {
 
 		if (!loaded) {
 			// initialize getTransportManager	
-			sim.getTransportManager().init();
+			sim.getTransportManager().init(sim);
 		}
 
 		while (true) {

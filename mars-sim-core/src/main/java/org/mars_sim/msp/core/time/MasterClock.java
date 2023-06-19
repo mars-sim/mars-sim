@@ -205,6 +205,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
+	 * Override the mars time. This must be used with caution
+	 * @param newTime New Mars time
+	 */
+    public void setMarsTime(MarsTime newTime) {
+		marsTime = newTime;
+    }
+	
+	/**
 	 * Gets the initial Mars time at the start of the simulation.
 	 *
 	 * @return initial Mars time.
@@ -701,7 +709,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsClock, this, isNewSol, isNewIntMillisol);
+		currentPulse = new ClockPulse(newPulseId, time, marsClock, marsTime, this, isNewSol, isNewIntMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
@@ -975,4 +983,5 @@ public class MasterClock implements Serializable {
 		clockThreadTask = null;
 		listenerExecutor = null;
 	}
+
 }

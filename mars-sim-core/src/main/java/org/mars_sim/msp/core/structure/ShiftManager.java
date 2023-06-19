@@ -10,7 +10,7 @@ import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -36,7 +36,7 @@ public class ShiftManager implements Serializable {
          * @param now Current time not used
          */
         @Override
-        public int execute(MarsClock now) {
+        public int execute(MarsTime now) {
             rotateShift();
             return rotationSols * 1000;
         }

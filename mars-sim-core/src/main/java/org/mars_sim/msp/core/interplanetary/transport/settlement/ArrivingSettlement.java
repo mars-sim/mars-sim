@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -177,7 +177,7 @@ public class ArrivingSettlement extends Transportable {
 		StringBuffer buff = new StringBuffer();
 		buff.append(getName());
 		buff.append(": ");
-		buff.append(getArrivalDate().getDateString());
+		buff.append(getArrivalDate().getDateTimeStamp());
 		return buff.toString();
 	}
 
@@ -198,8 +198,7 @@ public class ArrivingSettlement extends Transportable {
 	 */
 	public void scheduleLaunch(ScheduledEventManager futures) {
 		// Determine the arrival date
-		MarsClock proposedArrival = new MarsClock(now);
-		proposedArrival.addTime(
+		MarsTime proposedArrival = master.getMarsTime().addTime(
 					(arrivalSols - 1) * 1000D
 					+ 100 
 					+ RandomUtil.getRandomDouble(890));
