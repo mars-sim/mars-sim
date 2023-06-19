@@ -110,7 +110,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 			
 		});
 
-		setSize(new Dimension(WIDTH, HEIGHT));
+//		setSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //		setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		
@@ -167,8 +167,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);
-		
-		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
+//		navpointPane.setSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		navpointPane.setPreferredSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 //		navpointPane.setMaximumSize(new Dimension(NavigatorWindow.MAP_BOX_WIDTH, HEIGHT));
 		

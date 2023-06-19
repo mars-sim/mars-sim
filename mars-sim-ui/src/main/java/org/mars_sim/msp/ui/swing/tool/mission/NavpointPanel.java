@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2023-06-03
+ * @date 2023-06-18
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -67,11 +68,9 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 public class NavpointPanel
 extends JPanel
 implements MissionListener {
+	
 	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
-//	private static final int PADDING = 0;
-	private static final int TABLE_HEIGHT = MissionWindow.TABLE_HEIGHT;
-	
 	private static final double TWO_PI = Math.PI * 2D;
 	
 	// Private members.
@@ -102,33 +101,39 @@ implements MissionListener {
 		
 		// Create the main panel.
 		JPanel mainPane = new JPanel(new BorderLayout(0, 0));	
-
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.setAlignmentY(Component.CENTER_ALIGNMENT);
-		
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
-		
-//		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
-//		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-//		mapDisplayPane.setMaximumSize(new Dimension(WIDTH, HEIGHT));
-		
-		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
-
 		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		
 		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapPane.setAlignmentY(Component.CENTER_ALIGNMENT);
-		
-//		mapPane.setSize(new Dimension(WIDTH, HEIGHT));
-//		mapPane.setPreferredSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
-//		mapPane.setMaximumSize(new Dimension(WIDTH, HEIGHT)); //WIDTH + 5, HEIGHT + 5));
-		
+		mapPane.setAlignmentY(Component.TOP_ALIGNMENT);
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
+		
+		// Create the navpoint table panel.
+		JPanel navpointTablePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		navpointTablePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		navpointTablePane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		navpointTablePane.setBorder(new MarsPanelBorder());
+
+		
+		///////////////////////////////////////////////////////////
+		
+		
+		// Define splitPane to house mapDisplayPane and ..
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapDisplayPane, navpointTablePane);
+	    splitPane.setOneTouchExpandable(true);
+	    splitPane.setDividerLocation(HEIGHT + 10);
+	    mainPane.add(splitPane, BorderLayout.CENTER);
+		
+	    
+		///////////////////////////////////////////////////////////
+
+	    
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop(), 500L);
 		// Set up mouse control
@@ -150,9 +155,9 @@ implements MissionListener {
 		mapPanel.addMapLayer(trailLayer, 4);
 		mapPanel.addMapLayer(navpointLayer, 5);
   
-        mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
+//        mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
         mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        mapPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+//        mapPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));
         
         mapPane.add(mapPanel);
         
@@ -213,16 +218,14 @@ implements MissionListener {
 			}
 		});
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
+			
+
+		///////////////////////////////////////////////////////////
 		
-		// Create the navpoint table panel.
-		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
-		navpointTablePane.setBorder(new MarsPanelBorder());
-//		navpointTablePane.setPreferredSize(new Dimension(-1, TABLE_HEIGHT));
-		add(navpointTablePane, BorderLayout.SOUTH);
 		
 		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
-        navpointTablePane.add(navpointScrollPane, BorderLayout.SOUTH);
+        navpointTablePane.add(navpointScrollPane);
         
         // Create the navpoint table model.
         navpointTableModel = new NavpointTableModel();
