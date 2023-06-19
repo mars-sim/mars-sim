@@ -11,14 +11,14 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * Represents a Slot on a specific Shift for work.
+ * This class represents a slot on a specific shift for work.
  */
 public class ShiftSlot implements ScheduledEventHandler {
 
 	private static final long serialVersionUID = 1L;
 	
     /**
-     * The work status of this Slot.
+     * The work status of this slot.
      */
     public enum WorkStatus {
         ON_DUTY, OFF_DUTY, ON_CALL, ON_LEAVE;
@@ -36,7 +36,8 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Update the OnCall override flag.
+     * Updates the OnCall override flag.
+     * 
      * @return Previous OnCall.
      */
     public boolean setOnCall(boolean newOnCall) {
@@ -46,7 +47,8 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Set this worker on a leave day.
+     * Sets this worker on a leave day.
+     * 
      * @param duration Duration of the leave
      */
     public void setOnLeave(int duration) {
@@ -57,7 +59,7 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Extract the status of this slot in terms of active work.
+     * Extracts the status of this slot in terms of active work.
      */
     public WorkStatus getStatus() {
         if (onCall) {
@@ -73,14 +75,14 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Get the parent Shift of this slot.
+     * Gets the parent shift of this slot.
      */
     public Shift getShift() {
         return shift;
     }
 
     /**
-     * Change the assigned shift
+     * Changes the assigned shift.
      */
     void setShift(Shift newShift) {
         shift.leaveShift();
@@ -94,7 +96,8 @@ public class ShiftSlot implements ScheduledEventHandler {
     }
 
     /**
-     * Time on leave comes to an end
+     * Time on leave comes to an end.
+     * 
      * @param now Current time not used
      */
     @Override

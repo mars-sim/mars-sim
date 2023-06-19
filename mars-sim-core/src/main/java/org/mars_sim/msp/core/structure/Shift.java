@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.events.ScheduledEventHandler;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * This is an activeShift that has a numebr of Slots forworks allocated.
+ * This class represents an active work shift that has a number of slots for works allocated.
  */
 public class Shift implements ScheduledEventHandler {
 
@@ -20,18 +20,19 @@ public class Shift implements ScheduledEventHandler {
     private int start;
     private int end;
     private String name;
-    private boolean onDuty= false;
+    private boolean onDuty = false;
     private int targetPercentage;
     private int members = 0;
 
     /**
-     * Create an active Shift defined by a shared specification
+     * Creates an active Shift defined by a shared specification.
+     * 
      * @param spec The Specification of the Shift
      * @param offset MSols offset 
      */
     Shift(ShiftSpec spec, int offset) {
-        // The Shift Spec assumes standard timezie; but an offset has to be applied to
-        // keep the Shift aligned with Sunrise/Sunset
+        // The ShiftSpec assumes standard time zone; but an offset has to be applied to
+        // keep the shift aligned with Sunrise/Sunset
         this.start = (spec.getStart() + offset)%1000;
         this.end = (spec.getEnd() + offset)%1000;
         this.name = spec.getName();
@@ -47,9 +48,10 @@ public class Shift implements ScheduledEventHandler {
     }
 
     /**
-     * Initialise the Shift to the current msol.
+     * Initialises the Shift to the current msol.
+     * 
      * @param mSol The time in the day to check for.
-     * @return Duratino millisols to the next shift change
+     * @return Duration millisols to the next shift change
      */
     int initialize(int mSol) {
         if (start < end) {
@@ -57,7 +59,7 @@ public class Shift implements ScheduledEventHandler {
             onDuty = (start <= mSol) && (mSol <  end);
         }
         else {
-            // Ends on the following Sol so 2 seperate segments
+            // Ends on the following Sol so 2 separate segments
             onDuty = (start <= mSol) || (mSol <  end);
         }
 
@@ -75,7 +77,8 @@ public class Shift implements ScheduledEventHandler {
     }
 
     /**
-     * What is the target percentage of the population that should use this Shift
+     * Gets the target percentage of the population that should use this Shift.
+     * 
      * @return
      */
     public int getPopPercentage() {
@@ -87,28 +90,28 @@ public class Shift implements ScheduledEventHandler {
     }
     
     /**
-     * Increase how many shots have been allocationed to the Shift
+     * Increases how many shots have been allocated to the shift.
      */
     void joinShift() {
         members++;
     }
 
     /**
-     * Someone has left the Shift
+     * Leaves the shift.
      */
     public void leaveShift() {
         members--;
     }
 
     /**
-     * When does the shift start
+     * Gets when the shift starts.
      */
     public int getStart() {
         return start;
     }
 
     /**
-     * When does the shift end
+     * Gets when the shift ends.
      */
     public int getEnd() {
         return end;
@@ -120,7 +123,8 @@ public class Shift implements ScheduledEventHandler {
     }
 
     /**
-     * Time to switch over the shift
+     * Time to switch over the shift.
+     * 
      * @param now Time now when the handler was called; not used
      */
     @Override

@@ -7,7 +7,7 @@
 package org.mars_sim.msp.core.structure;
 
 /**
- * A specificatino of a single Shift that belongs to a ShiftPattern.
+ * A specification of a single Shift that belongs to a ShiftPattern.
  */
 public class ShiftSpec {
 

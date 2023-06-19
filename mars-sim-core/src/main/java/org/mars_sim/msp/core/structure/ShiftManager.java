@@ -14,12 +14,12 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * This class manages a set of Shifts. This invovles the initial allocation and the changing
- * of On/Off Duty as the daya progresses.
+ * This class manages a set of Shifts. This involves the initial allocation and the changing
+ * of On/Off Duty as the day progresses.
  */
 public class ShiftManager implements Serializable { 
     /**
-     * Handles rotating the shifts
+     * Handles rotating the shifts.
      */
     private class RotationHandler implements ScheduledEventHandler {
 
@@ -31,7 +31,8 @@ public class ShiftManager implements Serializable {
         }
 
         /**
-         * Time to rotated the shift allocation
+         * Time to rotate the shift allocation.
+         * 
          * @param now Current time not used
          */
         @Override
@@ -42,13 +43,13 @@ public class ShiftManager implements Serializable {
 
     }
 
-    	/** default serial id. */
+    /** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ShiftManager.class.getName());
     
     /**
-     * Default leave duration after a shift rotation
+     * Default leave duration after a shift rotation.
      */
     static final int ROTATION_LEAVE = 1000;   
 
@@ -60,10 +61,11 @@ public class ShiftManager implements Serializable {
     private int offset;
 
     /**
-     * Create a SHift Manager based on a shared ShiftPattern
-     * @param settlement Owning Settlment
+     * Creates a Shift Manager based on a shared ShiftPattern.
+     * 
+     * @param settlement Owning Settlement
      * @param shiftDefinition Definition of the shift pattern
-     * @param sunRiseOffset Offet to Sunrise at this location
+     * @param sunRiseOffset Offset to Sunrise at this location
      * @param mSol Current millisol
      */
     public ShiftManager(Settlement settlement, ShiftPattern shiftDefinition, int sunriseOffset, int mSol) {
@@ -95,7 +97,8 @@ public class ShiftManager implements Serializable {
     }
 
     /**
-     * Allocation a Shift slot to a worker. This is based on looking at the percentage currently allocated.
+     * Allocates a Shift slot to a worker. This is based on looking at the percentage currently allocated.
+     * 
      * @param worker 
      * @return
      */
@@ -118,7 +121,8 @@ public class ShiftManager implements Serializable {
     }
 
     /**
-     * Find a suitable shift for a new allocation. Potentially exclude a Shift from the search
+     * Finds a suitable shift for a new allocation. Potentially exclude a Shift from the search.
+     * 
      * @param exclude
      * @return
      */
@@ -140,8 +144,8 @@ public class ShiftManager implements Serializable {
     }
 
     /**
-     * Look to see if any Shift reallocations ca be done. Any holidayers come off leave
-     * and some are selected to change Shift
+     * Looks to see if any Shift reallocations can be done. Any holidayers come off leave
+     * and some are selected to change Shift.
      */
 	private void rotateShift() {
         logger.info(settlement, "Rotating shifts");
@@ -175,7 +179,8 @@ public class ShiftManager implements Serializable {
     }
 
     /**
-     * Get the available Shifts
+     * Gets the available Shifts.
+     * 
      * @return
      */
     public List<Shift> getShifts() {
@@ -183,14 +188,15 @@ public class ShiftManager implements Serializable {
 	}
 
     /**
-     * Get the time mSol offset for this shift.
+     * Gets the time mSol offset for this shift.
      */
     public int getOffset() {
         return offset;
     }
 
     /**
-     * How often does shifts get changes in terms of Sols.
+     * Gets how often does shifts get changes in terms of Sols.
+     * 
      * @return
      */
     public int getRotationSols() {
@@ -198,7 +204,7 @@ public class ShiftManager implements Serializable {
     }
 
     /**
-     * Get the percetnage of people allowed on leave
+     * Gets the percentage of people allowed on leave.
      */
     public int getMaxOnLeave() {
         return leavePercentage;

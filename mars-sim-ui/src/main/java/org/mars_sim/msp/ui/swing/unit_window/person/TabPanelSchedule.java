@@ -57,6 +57,7 @@ public class TabPanelSchedule extends TabPanel {
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
+	private String shiftDescCache; 
 	
 	private Integer selectedSol;
 	private Integer todayInteger;
@@ -130,20 +131,19 @@ public class TabPanelSchedule extends TabPanel {
 		if (unit instanceof Person) {
 
 			shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
-
 			shiftLabel.setToolTipText(Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
 			buttonPane.add(shiftLabel);
 
+			shiftDescCache = getShiftDescription(taskSchedule);	
+			
 			shiftTF = new JTextField();
-			String shiftDesc = getShiftDescription(taskSchedule);
-			shiftTF.setText(shiftDesc);
+			shiftTF.setText(shiftDescCache);
 			
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(15);
-
+			shiftTF.setColumns(20);
 			shiftTF.setHorizontalAlignment(JTextField.CENTER);
+			
 			buttonPane.add(shiftTF);
-
 		}
 
 		JPanel topPanel = new JPanel(new BorderLayout());
@@ -175,13 +175,14 @@ public class TabPanelSchedule extends TabPanel {
 		solBox.setPreferredSize(new Dimension(80, 25));
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setSelectedItem(todayInteger);
-		solBox.setWide(true);
+		solBox.setWide(false);
 		
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 
-		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
-		solPanel.add(solBox);
+		JPanel solPanel = new JPanel(new BorderLayout());//FlowLayout.CENTER));	
+		solPanel.setPreferredSize(new Dimension(80, 25));
+		solPanel.add(solBox, BorderLayout.CENTER);
 
 		topPanel.add(solPanel, BorderLayout.CENTER);
 
@@ -252,20 +253,32 @@ public class TabPanelSchedule extends TabPanel {
 			scheduleTableModel.update(selectedSol);
 	}
 
+	/**
+	 * Gets the shift description.
+	 * 
+	 * @param shift
+	 * @return
+	 */
 	public static String getShiftDescription(ShiftSlot shift) {
 		WorkStatus status = shift.getStatus();
 		
 		Shift s = shift.getShift();
+		int start = s.getStart();
+		int end = s.getEnd();
+		String shiftName = s.getName();
+		
 		switch(status) {
 			case ON_CALL:
 				return "On Call";
 			case ON_DUTY:
-				return s.getName() + " : OnDuty ends @ " + s.getEnd();
+				return shiftName + " : On Duty ends @ " + end + " mols (" + start + " - " + end + ")";
 			case OFF_DUTY:
-				return s.getName() + " : Off Duty start @ " + s.getStart();
+				return shiftName + " : Off Duty starts @ " + start + " mols (" + start + " - " + end + ")";
 			case ON_LEAVE:
-				return s.getName() + " : On Leave";
+				return shiftName + " : On Leave";
 		}
+
+		
 		return "";
 	}
 
@@ -277,8 +290,11 @@ public class TabPanelSchedule extends TabPanel {
 	public void update() {
 
 		if (person != null) {
-			String shiftDesc = getShiftDescription(person.getShiftSlot());		
-			shiftTF.setText(shiftDesc);
+			
+			String shiftDesc = getShiftDescription(taskSchedule);
+			
+			if (shiftDescCache.equalsIgnoreCase(shiftDesc))
+				shiftTF.setText(shiftDesc);
 		}
 
 		today = masterClock.getMarsTime().getMissionSol();
