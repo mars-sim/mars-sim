@@ -25,6 +25,7 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -43,22 +44,6 @@ import org.mars_sim.msp.common.FileLocator;
 
  	private static final double TWO_PI = Math.PI * 2;
 
- 	// The value of PHI_ITERATION_PADDING is derived from testing.
- 	private static final double PHI_ITERATION_PADDING = 1.26;
- 	// The value of PHI_PADDING is derived from testing.
- 	private static final double PHI_PADDING = 1.46; 	 	
- 	
- 	// The value of THETA_ITERATION_PADDING is derived from testing.
- 	private static final double THETA_ITERATION_PADDING = 1.46;
- 	
- 	// The value of MIN_THETA_PADDING is derived from testing.
- 	private static final double MIN_THETA_PADDING = 1.02;
-
- 	// The value of POLAR_CAP_FACTOR is derived from testing.
- 	private static final double POLAR_CAP_FACTOR = 6.54;
- 	private static final double POLAR_CAP_PI_ANGLE = Math.PI / POLAR_CAP_FACTOR;
- 	private static final double POLAR_CAP_RANGE = Math.PI - POLAR_CAP_PI_ANGLE;
- 	 	
  	// Data members.
  	private int[][] pixels = null;
  	// # of pixels in the width of the map image
@@ -72,10 +57,8 @@ import org.mars_sim.msp.common.FileLocator;
 	
 	private BufferedImage cylindricalMapImage;
 
-	 private CLBuffer<IntBuffer> rowBuffer;
-	 private CLBuffer<IntBuffer> colBuffer;
-	 private final CLProgram program;
-	 private final CLKernel kernel;
+	 private CLProgram program;
+	 private CLKernel kernel;
  	
  	/**
  	 * Constructor.
@@ -90,10 +73,16 @@ import org.mars_sim.msp.common.FileLocator;
 		pixels = loadMapData(newMeta.getHiResFile());
 		rho =  pixelHeight / Math.PI;
 
-		program = getProgram("MapDataFast.cl");
-		kernel = getKernel(program, "getMapImage")
-				.setArg(11, TWO_PI)
-				.setArg(12, getScale());
+		try {
+			program = getProgram("MapDataFast.cl");
+			kernel = getKernel(program, "getMapImage")
+					.setArg(11, (float) TWO_PI)
+					.setArg(12, (float) getScale());
+		} catch(Exception e) {
+		 HARDWARE_ACCELERATION = false;
+		 logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while compiling: " + e.getMessage());
+			e.printStackTrace();
+		}
 		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
@@ -219,8 +208,16 @@ import org.mars_sim.msp.common.FileLocator;
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
-		 if(HARDWARE_ACCELERATION) {
-			 gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
+		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
+
+		 if(HARDWARE_ACCELERATION || program == null || kernel == null) {
+			 try {
+				 gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
+			 } catch(Exception e) {
+				 HARDWARE_ACCELERATION = false;
+				 logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while rendering: " + e.getMessage());
+				e.printStackTrace();
+			 }
 		 }
 		 else {
 			 cpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
@@ -248,29 +245,23 @@ import org.mars_sim.msp.common.FileLocator;
 	 }
 
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
-
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);
 
-		 if(colBuffer == null || colBuffer.getElementSize() != globalSize) {
-			 colBuffer = OpenCL.getContext().createIntBuffer(globalSize, WRITE_ONLY);
-			 kernel.setArg(9, colBuffer);
-		 }
-		 if(rowBuffer == null || rowBuffer.getElementSize() != globalSize) {
-			 rowBuffer = OpenCL.getContext().createIntBuffer(globalSize, WRITE_ONLY);
-			 kernel.setArg(10, rowBuffer);
-		 }
+		 CLBuffer<IntBuffer> rowBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
+		 CLBuffer<IntBuffer> colBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
 
 		 kernel.rewind();
-		 kernel.putArg(centerPhi)
-				 .putArg(centerTheta)
+		 kernel.putArg((float)centerPhi)
+				 .putArg((float)centerTheta)
 				 .putArg(mapBoxWidth)
 				 .putArg(mapBoxHeight)
 				 .putArg(pixelWidth)
 				 .putArg(pixelHeight)
 				 .putArg(mapBoxWidth/2)
 				 .putArg(mapBoxHeight/2)
-				 .putArg(size);
+				 .putArg(size)
+				 .putArgs(colBuffer, rowBuffer);
 
 		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
 				 .putReadBuffer(rowBuffer, false)
@@ -284,6 +275,9 @@ import org.mars_sim.msp.common.FileLocator;
 		 for(int i = 0; i < size; i++) {
 			 mapArray[i] = pixels[rows[i]][cols[i]];
 		 }
+
+		 rowBuffer.release();
+		 colBuffer.release();
 	 }
 
 

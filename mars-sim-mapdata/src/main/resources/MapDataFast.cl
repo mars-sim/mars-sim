@@ -22,10 +22,10 @@ float2 rectToSphere(int2 pos, float2 coord, float rho, float TWO_PI) {
 
 		 if (x3 >= 0) {
 			 if (y3 < 0)
-				 thetaNew = M_PI - thetaNew;
+				 thetaNew = M_PI_F - thetaNew;
 		 } else {
 			 if (y3 < 0)
-				 thetaNew = M_PI - thetaNew;
+				 thetaNew = M_PI_F - thetaNew;
 			 else
 				 thetaNew = TWO_PI + thetaNew;
 		 }
@@ -33,14 +33,14 @@ float2 rectToSphere(int2 pos, float2 coord, float rho, float TWO_PI) {
 		 return (float2)(phiNew, thetaNew);
 }
 
-int2 getRGBColorInt(float phi, float theta, int pixelWidth, int pixelHeight, double TWO_PI) {
+int2 getRGBColorInt(float phi, float theta, int pixelWidth, int pixelHeight, float TWO_PI) {
     // Make sure phi is between 0 and PI.
 
     float2 aa = (float2)(fabs(phi - M_PI_F), pixelHeight) * M_1_PI_F;
     float2 bb = (float2)(fabs(theta), pixelWidth) * TWO_1_PI;
 
     float t = M_PI_F * ceil(aa.x);
-    phi -= (phi < 0 - phi > M_PI) * t;
+    phi -= (phi < 0 - phi > M_PI_F) * t;
 
     // Adjust theta with PI for the map offset.
     // Note: the center of the map is when theta = 0
@@ -62,8 +62,8 @@ int2 getRGBColorInt(float phi, float theta, int pixelWidth, int pixelHeight, dou
 
 kernel
 void getMapImage(
-double centerPhi,
-double centerTheta,
+float centerPhi,
+float centerTheta,
 int mapBoxWidth,
 int mapBoxHeight,
 int pixelWidth,
@@ -73,11 +73,11 @@ int halfHeight,
 int numElements,
 global int* colOut,
 global int* rowOut,
-double TWO_PI,
-double rho) {
+float TWO_PI,
+float rho) {
   int iGID = get_global_id(0);
 
-  if(iGID > numElements) {
+  if(iGID >= numElements) {
     return;
   }
 
