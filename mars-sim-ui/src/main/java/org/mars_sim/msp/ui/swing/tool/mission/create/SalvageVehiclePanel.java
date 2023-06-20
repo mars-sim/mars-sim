@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,6 +27,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -43,6 +45,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  */
 @SuppressWarnings("serial")
 public class SalvageVehiclePanel extends WizardPanel {
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(SalvageVehiclePanel.class.getName());
 
     // The wizard panel name.
     private final static String NAME = "Salvage Vehicles";
@@ -191,7 +195,7 @@ public class SalvageVehiclePanel extends WizardPanel {
                 salvageInfo = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
             }
             catch (Exception e) {
-                e.printStackTrace(System.err);
+				logger.log(Level.SEVERE, "Issues with salvaging a building: " + e.getMessage());
             }
         }
         else {

@@ -21,6 +21,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -32,6 +33,8 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 @SuppressWarnings("serial")
 public class SupplyTableModel
 extends AbstractTableModel {
+
+ 	private static SimLogger logger = SimLogger.getLogger(SupplyTableModel.class.getName());
 
 	// Supply categories.
 	public final static String BUILDING = "Building";
@@ -216,7 +219,7 @@ extends AbstractTableModel {
 					item.number = (Integer) value;
 				}
 				catch (NumberFormatException e) {
-					e.printStackTrace(System.err);
+					logger.severe("SupplyTableModel Quantity invalid: " + e.getMessage());
 				}
 			}
 			fireTableCellUpdated(row, col);

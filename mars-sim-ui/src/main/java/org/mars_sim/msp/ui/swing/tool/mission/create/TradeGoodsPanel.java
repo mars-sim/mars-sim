@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -45,7 +47,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 @SuppressWarnings("serial")
 class TradeGoodsPanel extends WizardPanel {
-
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(TradeGoodsPanel.class.getName());
+	
 	private boolean buyGoods;
 	private JLabel errorMessageLabel;
 	private JTable goodsTable;
@@ -245,7 +249,8 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		boolean result = false;
@@ -261,7 +266,7 @@ class TradeGoodsPanel extends WizardPanel {
 			}
 		}
 		catch (Exception e) {
-//			e.printStackTrace(System.err);
+			logger.log(Level.SEVERE, "Issues with getting the goods from tradeTableModel: " + e.getMessage());
 		}
 		return result;
 	}
@@ -438,7 +443,7 @@ class TradeGoodsPanel extends WizardPanel {
 					goodsMap.put(good, amount);
 				}
 				catch (Exception e) {
-//					e.printStackTrace(System.err);
+					logger.log(Level.SEVERE, "Issues with updating the goods map: " + e.getMessage());
 				}
 			}
 			fireTableDataChanged();

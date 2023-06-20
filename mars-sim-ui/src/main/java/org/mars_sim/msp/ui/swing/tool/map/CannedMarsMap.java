@@ -35,11 +35,12 @@ public class CannedMarsMap extends JComponent implements Map {
 	private boolean mapImageDone = false;
 	
 	private transient Image mapImage = null;
+	
 	private transient MapData mapData;
 	
 	private JComponent displayArea = null;
 
-	private Coordinates centerCoords = null;
+//	private Coordinates centerCoords = null;
 	
 	/**
 	 * Constructor.
@@ -64,11 +65,12 @@ public class CannedMarsMap extends JComponent implements Map {
 	/**
 	 * Creates a map image for a given center location.
 	 * 
-	 * @param center the center location of the map display.
+	 * @param center 	The center location of the map display.
+	 * @param scale 	The map scale
 	 * @return the map image.
 	 */
-	private Image createMapImage(Coordinates center) {
-		return mapData.getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT);
+	private Image createMapImage(Coordinates center, double scale) {
+		return mapData.getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, scale);
 	}
 	
 	/**
@@ -76,12 +78,15 @@ public class CannedMarsMap extends JComponent implements Map {
 	 * 
 	 * @param newCenter the new center location
 	 */
-	public void drawMap(Coordinates newCenter) {
-		if ((newCenter != null && centerCoords == null)
-			|| (newCenter != null && centerCoords != null && !newCenter.equals(centerCoords))) {
+	public void drawMap(Coordinates newCenter, double scale) {
+//		if (scale != getScale()) {
+//			|| centerCoords == null
+//			|| !newCenter.equals(centerCoords)) {
 			
-			mapImage = createMapImage(newCenter);
-
+			// FUTURE: need to find ways to reduce calling drawMap when only vehicle markers are being update 
+		
+			mapImage = createMapImage(newCenter, scale);
+			
 			if (displayArea == null) {
 				logger.severe("displayArea is null.");
 			}
@@ -101,10 +106,10 @@ public class CannedMarsMap extends JComponent implements Map {
 			    Thread.currentThread().interrupt();
 			}
 
-			centerCoords = newCenter;
+//			centerCoords = newCenter;
 			// Prepare and buffer the map
 			bufferMap();
-		}
+//		}
 	}
 	
 	/**
@@ -146,6 +151,9 @@ public class CannedMarsMap extends JComponent implements Map {
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		if (mapImage != null)
 			g2d.drawImage(mapImage, 0, 0, this);
+		
+		// Get rid of the copy
+		g2d.dispose();
 	}
 	
 	/**
@@ -169,7 +177,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
-	 * Gets the scale of pixel to Mars surface degree.
+	 * Gets the scale of the Mars surface map.
 	 * 
 	 * @return
 	 */
@@ -178,6 +186,15 @@ public class CannedMarsMap extends JComponent implements Map {
 		return mapData.getScale();
 	}
 
+	/**
+	 * Sets the scale of the Mars surface map.
+	 * 
+	 * @return
+	 */
+	public void setMapScale(double value) {
+		mapData.setMapScale(value);
+	}
+	   
 	/**
 	 * Gets the height of this map in pixels.
 	 * 
@@ -205,6 +222,6 @@ public class CannedMarsMap extends JComponent implements Map {
 		mapImage = null;
 		mapData = null;	
 		displayArea = null;
-		centerCoords = null;
+//		centerCoords = null;
 	}
 }

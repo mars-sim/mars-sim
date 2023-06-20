@@ -135,9 +135,10 @@ implements MissionListener {
 
 	    
 		// Create the map panel.
-		mapPanel = new MapPanel(missionWindow.getDesktop(), 500L);
+		mapPanel = new MapPanel(missionWindow.getDesktop(), this);
 		// Set up mouse control
-		mapPanel.setNavpointPanel(this);
+//		mapPanel.setNavpointPanel(this);
+		mapPanel.setMouseDragger(false);
 		mapPanel.addMouseListener(new MapListener());
 		mapPanel.addMouseMotionListener(new MouseMotionListener());
 		

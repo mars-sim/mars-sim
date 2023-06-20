@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -57,7 +58,9 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
  */
 @SuppressWarnings("serial")
 public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
-	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ArrivingSettlementEditingPanel.class.getName());
+
 	private static final int MAX_FUTURE_ORBITS = 10;
 	
 	// Data members
@@ -976,7 +979,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 				result = new MarsClock(orbit, month, sol, millisols, -1);
 			} catch (NumberFormatException e) {
-				e.printStackTrace(System.err);
+				logger.severe("Selecting arrivalDateRB but MarsClock is invalid: " + e.getMessage());
 			}
 		} else if (timeUntilArrivalRB.isSelected()) {
 			// Determine arrival date from time until arrival text field.
@@ -988,7 +991,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 					result.addTime(marsClock.getMillisol());
 				}
 			} catch (NumberFormatException e) {
-				e.printStackTrace(System.err);
+				logger.severe("Selecting timeUntilArrivalRB but MarsClock is invalid: " + e.getMessage());
 			}
 		}
 

@@ -68,7 +68,6 @@ public class SVGLoader {
 				svgCache.put(name, found);
 			} catch (IOException e) {
 				System.err.println("getSVGImage error: " + fileName);
-				e.printStackTrace(System.err);
 			}
 		}
 

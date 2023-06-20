@@ -43,6 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.mapdata.MapDataUtil;
@@ -139,11 +140,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JComboBoxMW<?> latCB;
 	/** The longitude combox. */
 	private JComboBoxMW<?> lonCB;
-	/** The map panel class for holding all the map layers. */
-	private MapPanel mapLayerPanel;
-	/** Globe navigation. */
-	private GlobeDisplay globeNav;
-
 	/** Settlement Combo box */
 	private JComboBox<Settlement> settlementComboBox;
 	/** Latitude direction choice. */
@@ -152,6 +148,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JComboBoxMW<?> lonCBDir;
 	/** Minerals button. */
 	private JButton mineralsButton;
+	
+	private JRadioButton r0;
+	
+	private JRadioButton r1;
+	
+	private JButton goThere;
+	
 	/** The info label on the status bar. */
 	private JLabel heightLabel;
 	private JLabel coordLabel;
@@ -162,6 +165,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	private List<Landmark> landmarks;
 	
+	/** The map panel class for holding all the map layers. */
+	private MapPanel mapLayerPanel;
+	/** Globe navigation. */
+	private GlobeDisplay globeNav;
+
 	private MineralMapLayer mineralLayer;
 	
 	private UnitManager unitManager;
@@ -202,13 +210,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
-		mapLayerPanel = new MapPanel(desktop, 500L);
+		mapLayerPanel = new MapPanel(desktop, this);
 		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
-		mapLayerPanel.setDragger(this);
 		
+		mapLayerPanel.setMouseDragger(true);
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
-
+		
 		// Create map layers.
 		createMapLayer(DAYLIGHT_LAYER, 0, new ShadingMapLayer(mapLayerPanel));
 		mineralLayer = new MineralMapLayer(mapLayerPanel);
@@ -225,6 +233,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
+		// Update the width
+//		double scale = getMapPanel().getScale();
+//		int width = getMapPanel().getMap().getPixelWidth();
+//		globeNav.updateWidth(width, scale);
+		
 		globeNav.setMapType(mapLayerPanel.getMapType());
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		globePane.setOpaque(true);
@@ -235,17 +248,84 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapPane.add(globePane);
 		mapPane.add(detailPane);
-		///////////////////////////////////////////////////////////////////////////
-		JPanel controlPane = new JPanel();
-		wholePane.add(controlPane, BorderLayout.SOUTH);
+		
+		///////////////////////////////
+		
+		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
+		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
+		
+		JPanel coordControlPane = new JPanel(new BorderLayout());
+		wholeBottomPane.add(coordControlPane, BorderLayout.CENTER);
+		
+		JPanel coord2LayersPane = new JPanel(new BorderLayout());
+		coordControlPane.add(coord2LayersPane, BorderLayout.CENTER);
+		
+		JPanel westPane = new JPanel(new BorderLayout());
+		coordControlPane.add(westPane, BorderLayout.WEST);
+		
+		// Create a button panel
+		JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
+		westPane.add(buttonPanel, BorderLayout.EAST);
 
-		// Prepare position coordination entry panel on the left pane
-		JPanel coordPane = new JPanel();
-		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("POI"));
+		buttonPanel.setToolTipText("Select your point of Interest");
 
+		ButtonGroup group = new ButtonGroup();
+
+		r0 = new JRadioButton("Coordinate", true);
+		r1 = new JRadioButton("Settlement");
+
+		r0.setSelected(true);	
+			
+		group.add(r0);
+		group.add(r1);
+
+		buttonPanel.add(r0);
+		buttonPanel.add(r1);
+		
+		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
+	
+		r0.addActionListener(actionListener);
+		r1.addActionListener(actionListener);
+		
+		////////////////////////////////////////////
+			
+		JPanel latLonPane = new JPanel(new GridLayout(2, 1));
+		coord2LayersPane.add(latLonPane, BorderLayout.CENTER);
+		
+		JPanel topPane = new JPanel(new FlowLayout());
+		latLonPane.add(topPane);
+
+		JPanel bottomPane = new JPanel(new FlowLayout());
+		latLonPane.add(bottomPane);
+		
+		// Prepare location entry submit button
+		goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
+		goThere.setToolTipText("Go to the location with your specified coordinates");
+		goThere.setActionCommand(GO_THERE_ACTION);
+		goThere.addActionListener(this);
+
+		bottomPane.add(goThere);
+		
+		////////////////////////////////////////////
+		
+		// Create the settlement combo box
+        buildSettlementNameComboBox(setupSettlements());
+        
+        JPanel settlementPane = new JPanel(new FlowLayout());
+        settlementPane.add(settlementComboBox);
+		
+        bottomPane.add(settlementPane);
+        
+        settlementComboBox.setEnabled(false);
+		settlementComboBox.setVisible(false);
+		
+		////////////////////////////////////////////
+		
+		
 		// Prepare latitude entry components
 		JLabel latLabel = new JLabel("Lat :", JLabel.RIGHT);
-		coordPane.add(latLabel);
+		topPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
 		Integer[] lat_degrees = new Integer[91];
@@ -264,7 +344,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
 		latCB.setPreferredSize(new Dimension(70, 25));
 		latCB.setSelectedItem(0);
-		coordPane.add(latCB);
+		topPane.add(latCB);
 
 		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -272,17 +352,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		latCBDir = new JComboBoxMW<Object>(latStrings);
 		latCBDir.setPreferredSize(new Dimension(50, 25));
 		latCBDir.setEditable(false);
-		coordPane.add(latCBDir);
+		topPane.add(latCBDir);
 
 		// Prepare longitude entry components
 		JLabel longLabel = new JLabel("Lon :", JLabel.RIGHT);
-		coordPane.add(longLabel);
+		topPane.add(longLabel);
 
 		// Switch to using ComboBoxMW for longitude
 		lonCB = new JComboBoxMW<Integer>(lon_degrees);
 		lonCB.setPreferredSize(new Dimension(70, 25));
 		lonCB.setSelectedItem(0);
-		coordPane.add(lonCB);
+		topPane.add(lonCB);
 
 		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -290,34 +370,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		lonCBDir = new JComboBoxMW<Object>(longStrings);
 		lonCBDir.setPreferredSize(new Dimension(50, 25));
 		lonCBDir.setEditable(false);
-		coordPane.add(lonCBDir);
+		topPane.add(lonCBDir);
 
-//		Settlement initialSettlement = desktop.getMainWindow().
-		
-		// Create the settlement combo box
-        buildSettlementNameComboBox(setupSettlements());
-        
-        JPanel settlementPane = new JPanel(new FlowLayout());
-        settlementPane.add(settlementComboBox);
-		
-        coordPane.add(settlementPane);
-		
-		controlPane.add(coordPane);
+
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		JPanel optionsPane = new JPanel();
-
-		controlPane.add(optionsPane);
-		optionsPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		
-		// Prepare location entry submit button
-		JButton goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-		goThere.setToolTipText("Go to the location with your specified coordinates");
-		goThere.setActionCommand(GO_THERE_ACTION);
-		goThere.addActionListener(this);
-
-		optionsPane.add(goThere);
+		JPanel optionsPane = new JPanel(new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER, 5, 5));
+		optionsPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		coordControlPane.add(optionsPane, BorderLayout.EAST);
 
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
@@ -425,6 +486,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	}
 
+	
 	/**
 	 * Sets up a list of settlements.
 	 *
@@ -654,6 +716,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				setMapLayer(false, DAYLIGHT_LAYER);
 				// turn off mineral layer
 				setMapLayer(false, MINERAL_LAYER);
+				
 				mineralsButton.setEnabled(false);
 			}
 		}
@@ -695,7 +758,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(mapType.getName()
 															+ (!loaded ? " (not loaded)" : ""),
 															mapType.equals(mapLayerPanel.getMapType()));
-			// Different actino for unloaded maps
+			// Different action for unloaded maps
 			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_UNLOAD_ACTION)
 										+ mapType.getId());
 			mapItem.addActionListener(this);
@@ -920,6 +983,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
+	public GlobeDisplay getGlobeDisplay() {
+		return globeNav;
+	}
 	 	
 	/** 
 	 * Gets the map panel class.
@@ -928,28 +994,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		return mapLayerPanel;
 	}
 	
-	
-	/**
-	 * Prepares tool window for deletion.
-	 */	
-	@Override
-	public void destroy() {
-		if (mapLayerPanel != null)
-			mapLayerPanel.destroy();
-		if (globeNav != null)
-			globeNav.destroy();
-
-		latCB = null;
-		lonCB = null;
-		mapLayerPanel = null;
-		globeNav = null;
-
-		latCBDir = null;
-		lonCBDir = null;
-		
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
-	}
-
 	@Override
 	public Properties getUIProps() {
 		Properties results = new Properties();
@@ -971,5 +1015,62 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			results.setProperty(MINERAL_ACTION + mineralName, Boolean.toString(mineralLayer.isMineralDisplayed(mineralName)));
 		}
 		return results;
+	}
+	
+	/**
+	 * Prepares tool window for deletion.
+	 */	
+	@Override
+	public void destroy() {
+		if (mapLayerPanel != null)
+			mapLayerPanel.destroy();
+		if (globeNav != null)
+			globeNav.destroy();
+
+		latCB = null;
+		lonCB = null;
+		mapLayerPanel = null;
+		globeNav = null;
+
+		latCBDir = null;
+		lonCBDir = null;
+		
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
+	}
+	
+	class PolicyRadioActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JRadioButton button = (JRadioButton) event.getSource();
+
+	        if (button == r0) {
+//				logger.config("r0 selected");
+	        	// Enable Go button
+				goThere.setEnabled(true);
+				goThere.setVisible(true);
+				// Enable all lat lon controls
+				latCB.setEnabled(true);
+				latCBDir.setEnabled(true);
+				lonCB.setEnabled(true);
+				lonCBDir.setEnabled(true);
+				// Disable settlement combobox
+				settlementComboBox.setEnabled(false);
+				settlementComboBox.setVisible(false);
+				
+	        } else if (button == r1) {
+//	        	logger.config("r1 selected");
+	        	// Enable settlement combobox
+	        	settlementComboBox.setEnabled(true);
+	        	settlementComboBox.setVisible(true);
+	        	// Disable Go button
+	        	goThere.setEnabled(false);
+	        	goThere.setVisible(false);
+				// Disable all lat lon controls
+				latCB.setEnabled(false);
+				latCBDir.setEnabled(false);
+				lonCB.setEnabled(false);
+				lonCBDir.setEnabled(false);
+	        }
+	    }
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2023-06-03
+ * @date 2023-06-19
  * @author Scott Davis
  */
  package org.mars_sim.mapdata;
@@ -37,28 +37,36 @@ import org.mars_sim.msp.common.FileLocator;
   */
  public class IntegerMapData implements MapData {
 
- 	// Static members.
+	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
-	 private static boolean HARDWARE_ACCELERATION = true;
+	private static boolean HARDWARE_ACCELERATION = true;
+
+ 	public final double MAX_RHO;
+
+ 	public final double MIN_RHO;
 
  	private static final double TWO_PI = Math.PI * 2;
-
+	// The default rho at the start of the sim
+ 	private final double RHO_DEFAULT;
+	
  	// Data members.
  	private int[][] pixels = null;
  	// # of pixels in the width of the map image
 	private int pixelWidth;
  	// # of pixels in the height of the map image
 	private int pixelHeight;
-	// height pixels divided by pi
+	// height pixels divided by pi (equals to pixelHeight / Math.PI)
 	private double rho;
+
 	// Name of the map
 	private MapMetaData meta;
 	
 	private BufferedImage cylindricalMapImage;
 
-	 private CLProgram program;
-	 private CLKernel kernel;
+	private CLProgram program;
+	
+	private CLKernel kernel;
  	
  	/**
  	 * Constructor.
@@ -69,21 +77,34 @@ import org.mars_sim.msp.common.FileLocator;
  	 */
  	IntegerMapData(MapMetaData newMeta) throws IOException {
 		this.meta = newMeta;
+		
 		// Load data files
 		pixels = loadMapData(newMeta.getHiResFile());
+		
 		rho =  pixelHeight / Math.PI;
-
+		RHO_DEFAULT = rho;
+		MAX_RHO = RHO_DEFAULT * 4;
+		MIN_RHO = RHO_DEFAULT / 4;
+		
+		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
+		
+		setKernel();
+ 	}
+ 	
+ 	/**
+ 	 * Sets up the JOCL kernel program.
+ 	 */
+	private void setKernel() {
+ 
 		try {
 			program = getProgram("MapDataFast.cl");
 			kernel = getKernel(program, "getMapImage")
 					.setArg(11, (float) TWO_PI)
 					.setArg(12, (float) getScale());
 		} catch(Exception e) {
-		 HARDWARE_ACCELERATION = false;
-		 logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while compiling: " + e.getMessage());
-			e.printStackTrace();
+			HARDWARE_ACCELERATION = false;
+			logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while compiling: " + e.getMessage());
 		}
-		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
  	}
 
 	/**
@@ -97,7 +118,7 @@ import org.mars_sim.msp.common.FileLocator;
 	}
 	
 	/**
-	 * Gets the scale of pixel to Mars surface degree.
+	 * Gets the scale of the Mars surface map.
 	 * 
 	 * @return
 	 */
@@ -105,7 +126,28 @@ import org.mars_sim.msp.common.FileLocator;
 	public double getScale() {
 		return rho;
 	}
+	
+	/**
+	 * Sets the scale of the Mars surface map.
+	 * 
+	 * @param value
+	 */
+	public void setMapScale(double value) {
+		double newRho = value;
+		if (newRho > MAX_RHO) {
+			newRho = MAX_RHO;
+		}
+		else if (newRho < MIN_RHO) {
+			newRho = MIN_RHO;
+		}
+		
+		if (rho != newRho) {
+			rho = newRho;
+//	 		logger.info("rho: " + rho + "  newRho: " + newRho);
+		}
+	}	
 
+	
 	/**
      * Gets the number of pixels width.
      * 
@@ -201,7 +243,11 @@ import org.mars_sim.msp.common.FileLocator;
 	 * @param mapBoxHeight The Height of the requested image
  	 */
  	@Override
- 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight) {
+ 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale) {
+
+		// Set the new map scale
+		setMapScale(scale);
+ 		
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_4BYTE_ABGR);
 
@@ -209,14 +255,17 @@ import org.mars_sim.msp.common.FileLocator;
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
 		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
+		 if (invalid) {
+			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
+		 }
 
+		 
 		 if(HARDWARE_ACCELERATION || program == null || kernel == null) {
 			 try {
 				 gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 			 } catch(Exception e) {
 				 HARDWARE_ACCELERATION = false;
 				 logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while rendering: " + e.getMessage());
-				e.printStackTrace();
 			 }
 		 }
 		 else {
@@ -230,6 +279,16 @@ import org.mars_sim.msp.common.FileLocator;
  	}
 
 
+ 	/**
+ 	 * Constructs a map array for display with CPU.
+ 	 * 
+ 	 * @param centerPhi
+ 	 * @param centerTheta
+ 	 * @param mapBoxWidth
+ 	 * @param mapBoxHeight
+ 	 * @param mapArray
+ 	 * @param scale
+ 	 */
 	 private void cpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
 		 int halfWidth = mapBoxWidth / 2;
 		 int halfHeight = mapBoxHeight / 2;
@@ -238,13 +297,27 @@ import org.mars_sim.msp.common.FileLocator;
 			 for(int x = 0; x < mapBoxWidth; x++) {
 				 int index = x + (y * mapBoxWidth);
 
-				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, rho);
+				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getScale());
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
 			 }
 		 }
 	 }
 
+	 /**
+	  * Constructs a map array for display with GPU via JOCL.
+	  * 
+	  * @param centerPhi
+	  * @param centerTheta
+	  * @param mapBoxWidth
+	  * @param mapBoxHeight
+	  * @param mapArray
+	  * @param scale
+	  */
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+		 
+		 // Set the new scale arg again
+		 kernel.setArg(12, (float) getScale());
+		 
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);
 
@@ -282,16 +355,16 @@ import org.mars_sim.msp.common.FileLocator;
 
 
 
-		 /**
-          * Converts linear rectangular XY position change to spherical coordinates with
-          * rho value for map.
-          *
-          * @param x              change in x value (# of pixels or km)
-          * @param y              change in y value (# of pixels or km)
-          * @param phi			  center phi value (radians)
-          * @param theta		  center theta value (radians)
-          * @param rho            radius (in km) or map box height divided by pi (# of pixels)
-          */
+	 /**
+      * Converts linear rectangular XY position change to spherical coordinates with
+      * rho value for map.
+      *
+      * @param x              change in x value (# of pixels or km)
+      * @param y              change in y value (# of pixels or km)
+      * @param phi			  center phi value (radians)
+      * @param theta		  center theta value (radians)
+      * @param rho            radius (in km) or map box height divided by pi (# of pixels)
+      */
 	 public static Point2D convertRectToSpherical(double x, double y, double phi, double theta, double rho) {
 		 double sinPhi = Math.sin(phi);
 		 double sinTheta = Math.sin(theta);
@@ -380,10 +453,10 @@ import org.mars_sim.msp.common.FileLocator;
  	private Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, int lowEdge) {
 
  		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
- 		final double temp_buff_x = rho * Math.sin(newPhi);
+ 		final double temp_buff_x = getScale() * Math.sin(newPhi);
  		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (pixelHeight/2)) - lowEdge;
  		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (pixelHeight/2)) - lowEdge;
+ 				+ (getScale() * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (pixelHeight/2)) - lowEdge;
  		return new Point(buff_x, buff_y);
  	}
  	
@@ -402,6 +475,8 @@ import org.mars_sim.msp.common.FileLocator;
 	 	pixels = null;
 	 	meta = null;
 		cylindricalMapImage = null;
+		program = null;
+		kernel = null;
 	}
  	
  }

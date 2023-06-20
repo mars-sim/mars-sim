@@ -64,7 +64,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	protected Unit unit;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param desktop        the main desktop panel.
 	 * @param unit           the unit for this window.
@@ -97,6 +97,9 @@ public abstract class UnitWindow extends ModalInternalFrame
 		initializeUI();
 	}
 
+	/**
+	 * Initializes the UI elements.
+	 */
 	private void initializeUI() {
 
 		tabPanels = new ArrayList<>();
@@ -129,7 +132,7 @@ public abstract class UnitWindow extends ModalInternalFrame
 	}
 
 	/**
-	 * Sets the image on the label
+	 * Sets the image on the label.
 	 *
 	 * @param imageLocation
 	 * @param label
@@ -208,7 +211,7 @@ public abstract class UnitWindow extends ModalInternalFrame
     }
 
 	/**
-	 * Return the currently selected tab.
+	 * Returns the currently selected tab.
 	 *
 	 * @return Monitor tab being displayed.
 	 */
@@ -249,7 +252,8 @@ public abstract class UnitWindow extends ModalInternalFrame
     }
 
 	/**
-	 * Find a Unit from a previously generated UI Settings instance.
+	 * Finds a Unit from a previously generated UI Settings instance.
+	 * 
 	 * @see #getUIProps()
 	 * @param uMgr
 	 * @param settings

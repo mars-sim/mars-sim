@@ -12,6 +12,8 @@ import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -38,7 +40,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 @SuppressWarnings("serial")
 public class SalvageProjectPanel
 extends WizardPanel {
-
+	// Static members.
+ 	private static Logger logger = Logger.getLogger(SalvageProjectPanel.class.getName());
+ 	
 	/** The wizard panel name. */
     private final static String NAME = "Salvage Project";
     
@@ -262,7 +266,7 @@ extends WizardPanel {
                     info = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
                 }
                 catch (Exception e) {
-                    e.printStackTrace(System.err);
+        			logger.log(Level.SEVERE, "Issues with updating PartsTableModel: " + e.getMessage());
                 }
             }
             else if (project instanceof ConstructionSite) {

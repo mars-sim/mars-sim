@@ -37,10 +37,11 @@ public interface Map {
 	/**
 	 * Creates a 2D map at a given center point.
 	 * 
-	 * @param newCenter the new center location
+	 * @param newCenter 	The new center location
+	 * @param scale 		The new map scale
 	 * @throws Exception if error in drawing map.
 	 */
-	public void drawMap(Coordinates newCenter);
+	public void drawMap(Coordinates newCenter, double scale);
 
 	/**
 	 * Checks if a requested map is complete.
@@ -57,13 +58,19 @@ public interface Map {
 	public Image getMapImage();
 
 	/**
-	 * Gets the scale of pixel to Mars surface degree (height pixels divided by pi).
-	
+	 * Gets the scale of the Mars surface map (height pixels divided by pi).
 	 * 
 	 * @return
 	 */
 	public double getScale();
 
+	/**
+	 * Gets the scale of the Mars surface map.
+	 * 
+	 * @param value
+	 */
+ 	public void setMapScale(double value);
+ 	
 	/**
 	 * Gets the name type of this map.
 	 * 

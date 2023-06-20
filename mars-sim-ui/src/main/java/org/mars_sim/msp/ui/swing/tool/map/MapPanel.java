@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapPanel.java
- * @date 2023-05-28
+ * @date 2023-06-19
  * @author Scott Davis
  */
 
@@ -18,6 +18,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,13 +35,14 @@ import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 @SuppressWarnings("serial")
-public class MapPanel extends JPanel {
+public class MapPanel extends JPanel implements MouseWheelListener {
 
 	public static final String DEFAULT_MAPTYPE = "surface";
 
@@ -56,14 +59,16 @@ public class MapPanel extends JPanel {
 	// Data members
 	private boolean mapError;
 	private boolean wait;
-	private boolean update;
-
+//	private boolean update;
+	private boolean recreateMap = false;
+	
+	private double RHO_DEFAULT;
+	private final double ZOOM_STEP = 16;
+	private double multiplier;
+	
 	private String mapErrorMessage;
-
 	private String mapStringType;
 	
-	private List<MapLayer> mapLayers;
-
 	private Coordinates centerCoords;
 
 	private Image mapImage;
@@ -72,13 +77,65 @@ public class MapPanel extends JPanel {
 	
 	private MainDesktopPane desktop;
 
-	private boolean recreateMap = false;
-	private static final MapDataUtil mapUtil = MapDataUtil.instance();
+	private NavigatorWindow navwin;
+	
+	private NavpointPanel navPanel;
+	
+	private Image starfield;
+	
+	private List<MapLayer> mapLayers;
 
+	private static final MapDataUtil mapUtil = MapDataUtil.instance();
+	
+	/**
+	 * Constructor 1.
+	 * 
+	 * @param desktop
+	 * @param navwin
+	 */
+	public MapPanel(MainDesktopPane desktop, NavigatorWindow navwin) {
+		this(desktop);
+		this.navwin = navwin;
+	}
+	
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param desktop
+	 * @param navPanel
+	 */
+	public MapPanel(MainDesktopPane desktop, NavpointPanel navPanel) {
+		this(desktop);
+		this.navPanel = navPanel;
+	}
+	
+	/**
+	 * Constructor 3.
+	 * 
+	 * @param desktop
+	 * @param refreshRate
+	 */
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
+		this(desktop);
+		this.desktop = desktop;
+	}
+	
+	/**
+	 * Constructor 4.
+	 * 
+	 * @param desktop
+	 */
+	public MapPanel(MainDesktopPane desktop) {
 		super();
 		this.desktop = desktop;
-
+		
+		init();
+	}
+	
+	public void init() {
+		
+		starfield = ImageLoader.getImage("map/starfield");
+		
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map instance as surf map
@@ -87,21 +144,64 @@ public class MapPanel extends JPanel {
 		mapError = false;
 		wait = false;
 		mapLayers = new CopyOnWriteArrayList<>();
-		update = true;
+//		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
-
+	
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
 		setSize(getPreferredSize());
 		setBackground(Color.BLACK);
 		setOpaque(true);
+		
+		RHO_DEFAULT = getScale();
+		multiplier = RHO_DEFAULT / ZOOM_STEP;
+		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
+	
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		// Gets the latest scale
+		double oldRho = getScale();
+
+		// May use this if (e.isControlDown()) {} to add ctrl key
+        // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
+		
+		double delta = e.getWheelRotation();
+    	double rhoDelta = - multiplier * delta;
+    	double newRho = oldRho + rhoDelta;
+    	
+//      Note 1:: Scroll up to zoom in or magnify map
+//    	Note 2:Scroll down to zoom out or shrink the map
+
+		if (newRho > RHO_DEFAULT * 4) {
+			newRho = RHO_DEFAULT * 4;
+		}
+		else if (newRho < RHO_DEFAULT / 4) {
+			newRho = RHO_DEFAULT / 4;
+		}
+ 
+		if (newRho != oldRho) {
+			
+	    	// Update the map scale
+	    	setMapScale(newRho);
+
+			// Call showMap
+	    	// which in turns calls updateDisplay()
+	    	// which in turns calls MapTask thread
+	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
+			showMap(centerCoords, newRho);
+		}
+    }
+	
 	/*
 	 * Sets up the mouse dragging capability.
 	 */
-	public void setDragger(NavigatorWindow navwin) {
+	public void setMouseDragger(boolean isNavigator) {
 
+		// List to the mouse scroll
+		addMouseWheelListener(this);
+		
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
 			@Override
@@ -116,7 +216,7 @@ public class MapPanel extends JPanel {
 					 && y > 0 && y < MAP_BOX_HEIGHT) {
 					
 					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
-					marsMap.drawMap(centerCoords);
+					marsMap.drawMap(centerCoords, getScale());
 					repaint();
 				}
 
@@ -137,60 +237,18 @@ public class MapPanel extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				dragx = 0;
 				dragy = 0;
-				navwin.updateCoordsMaps(centerCoords);
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
-	}
-
-	/*
-	 * Sets up the mouse dragging capability.
-	 */
-	public void setNavpointPanel(NavpointPanel panel) {
-
-		// Note: need navWin prior to calling addMouseMotionListener()
-		addMouseMotionListener(new MouseAdapter() {
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				// setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				int dx, dy, x = e.getX(), y = e.getY();
-
-				dx = dragx - x;
-				dy = dragy - y;
-
-				if ((dx != 0 || dy != 0)
-					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
-
-					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
-					marsMap.drawMap(centerCoords);
-					repaint();
+				if (isNavigator) {
+					navwin.updateCoordsMaps(centerCoords);
+				}
+				else {
+					navPanel.updateCoords(centerCoords);
 				}
 
-				dragx = x;
-				dragy = y;
-			}
-		});
-
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				dragx = e.getX();
-				dragy = e.getY();
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				dragx = 0;
-				dragy = 0;
-				panel.updateCoords(centerCoords);
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
-
 	}
-	
+
 	/**
 	 * Adds a new map layer.
 	 * 
@@ -269,7 +327,7 @@ public class MapPanel extends JPanel {
 			recreateMap = true;
 		}
 			
-		showMap(centerCoords);
+		showMap(centerCoords, getScale());
 		return true;
 	}
 
@@ -277,12 +335,16 @@ public class MapPanel extends JPanel {
 		return centerCoords;
 	}
 	
+	public void showMap(Coordinates newCenter) {
+		showMap(newCenter, getScale());
+	}
+	
 	/**
 	 * Displays map at given center, regenerating if necessary.
 	 *
 	 * @param newCenter the center location for the globe
 	 */
-	public void showMap(Coordinates newCenter) {
+	public void showMap(Coordinates newCenter, double scale) {
 		if (centerCoords == null) {
 			if (newCenter != null) {
 				recreateMap = true;
@@ -297,24 +359,30 @@ public class MapPanel extends JPanel {
 
 		if (recreateMap) {
 			wait = true;
-			updateDisplay();
+			updateDisplay(scale);
 			recreateMap = false;
 		}
 	}
 
-
 	public void updateDisplay() {
+		updateDisplay(getScale());
+	}
+
+	public void updateDisplay(double scale) {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
-			|| desktop.isToolWindowOpen(MissionWindow.NAME))
-			&& update 
-			&& (!executor.isTerminated() || !executor.isShutdown())) {
-				executor.execute(new MapTask());
+			|| desktop.isToolWindowOpen(MissionWindow.NAME)) ) {
+//			&& update 
+//			&& (!executor.isTerminated() || !executor.isShutdown())) {
+				executor.execute(new MapTask(scale));
 		}
 	}
 
 	class MapTask implements Runnable {
 
-		private MapTask() {
+		private double scale;
+		
+		private MapTask(double scale) {
+			this.scale = scale;
 		}
 
 		@Override
@@ -327,7 +395,7 @@ public class MapPanel extends JPanel {
 					centerCoords = new Coordinates(HALF_PI, 0);
 				}
 				
-				marsMap.drawMap(centerCoords);
+				marsMap.drawMap(centerCoords, scale);
 				wait = false;
 				repaint();
 				
@@ -363,12 +431,16 @@ public class MapPanel extends JPanel {
         	else {
         		// Paint black background
                 g.setColor(Color.black);
+                
                 g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
+                g.drawImage(starfield, 0, 0, Color.black, null);
+                
                 if (centerCoords != null) {
                 	if (marsMap != null && marsMap.isImageDone()) {
                 		mapImage = marsMap.getMapImage();
                 		g.drawImage(mapImage, 0, 0, this);
+//                		logger.log(Level.INFO, "g.drawImage");
                 	}
 
                 	// Display map layers.
@@ -419,6 +491,30 @@ public class MapPanel extends JPanel {
     }
     
 	/**
+	 * Gets the scale of the Mars surface map.
+	 * 
+	 * @param value
+	 */
+    public void setMapScale(double value) {
+    	marsMap.setMapScale(value);
+//    	navwin.getGlobeDisplay().setMapScale(value);
+    }
+    
+//    public void drawMarsMap(double value) {
+//		marsMap.drawMap(centerCoords, value);
+//		logger.log(Level.INFO, "drawMarsMap()");
+//    }
+
+    /**
+     * Gets the scale of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getScale() {
+    	return marsMap.getScale();
+    }
+    
+	/**
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
@@ -430,7 +526,7 @@ public class MapPanel extends JPanel {
 		}
 		executor = null;
 		marsMap = null;
-		update = false;
+//		update = false;
 		mapImage = null;
 	}
 

@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -49,7 +51,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  */
 @SuppressWarnings("serial")
 public class EmergencySupplyPanel extends WizardPanel {
-
+	// Static members.
+ 	private static Logger logger = Logger.getLogger(EmergencySupplyPanel.class.getName());
+ 	
 	// Data members.
 	private JLabel errorMessageLabel;
 	private JTable supplyTable;
@@ -237,7 +241,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 				result = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.log(Level.SEVERE, "Issues with commiting emergency goods from cargo goods: " + e.getMessage());
 		}
 
 		return result;
@@ -421,7 +425,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 						amount--;
 					goodsMap.put(good, amount);
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
+					logger.log(Level.SEVERE, "Issues updating a good in SupplyTableModel table: " + e.getMessage());
 				}
 			}
 			fireTableDataChanged();

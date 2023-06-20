@@ -46,22 +46,45 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  */
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
-
-	private int surfaceMapHeight = 1440;
+	
+//	private static final Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
+	
+	// Data members
+	/** <code>true</code> if globe needs to be regenerated */
+	private boolean recreate;
+	
+	private int surfaceMapWidth = 1440;
 	
 	private final int STANDARD_GLOBE_BOX_HEIGHT = 300;
+	
 	private final int NEW_GLOBE_BOX_HEIGHT = MapPanel.MAP_BOX_HEIGHT; // 450
 
+//	private final double BLACK_PADDING_RATIO = 0.6;
+	
 	private final double RATIO_EXPANSION = 1.0 * NEW_GLOBE_BOX_HEIGHT / STANDARD_GLOBE_BOX_HEIGHT; // 1.5
-	
-	private double projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
-	private double projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5; // 261.92
-	private double projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
-	private double projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
-
-	private int widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT * RATIO_EXPANSION / projectedRatioMap2Box); // 140.57
-	private int paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
-	
+	// The radius of the standard old surface map
+	private double RHO_SURFACE = surfaceMapWidth / Math.PI / 2; // 458.37
+	// The standard rho ratio for the old surface map
+//	private double RHO_STANDARD_RATIO;
+//	// The scale of the old surface map
+//	private double rhoSurfaceCache = RHO_SURFACE; // 458.37
+//	// The width on the surface map outside of the zoom box
+//	private double outsideZoomBoxWidth; 
+//	// The measured black padding width of the empty space around the mars globe. Based on surfaceMapHeight of 1440.
+//	private double blackPaddingWidth;
+//	// The globe length ratio. Based on surfaceMapHeight of 1440.
+//	private double globeFullLength;
+//	// The globe height ratio. Based on surfaceMapHeight of 1440.
+//	private double globeBoxRatio;
+//	// The scale of the globe map. It's height pixels divided by pi
+	private double rhoGlobe = NEW_GLOBE_BOX_HEIGHT / Math.PI;
+//	// The ratio of the new surface map scale to the old. This number will change when zooming in and out of surface map
+//	private double rhoMapRatio = rhoSurfaceCache / RHO_SURFACE;
+//	
+//	// The width of the zoom box over the globe
+//	private int widthZoomBox;
+//	// The padding space before the zoom box over the globe	
+//	private int paddingZoomBox;
 	// Half of the map pixel height / 2 
 	private final int halfMap = NEW_GLOBE_BOX_HEIGHT / 2;
 	// lower edge = pixel height / 2 - map box height / 2
@@ -70,17 +93,12 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private final double HALF_PI = Math.PI / 2;
 
 	private int dragx;
+	
 	private int dragy;
-
-	// Data members
-	/** <code>true</code> if globe needs to be regenerated */
-	private boolean recreate;
+	
 	/** The Map type. 0: surface, 1: topo, 2: geology, 3: regional, 4: viking */
 	private MapMetaData mapType;
 
-	// height pixels divided by pi
-	private double rho = NEW_GLOBE_BOX_HEIGHT / Math.PI;
-	
 	private GlobeMap globeMap;
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
@@ -134,10 +152,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	public GlobeDisplay(final NavigatorWindow navwin) {
 		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-		
+
 		starfield = ImageLoader.getImage("map/starfield");
-		//marsMap = new MarsMap(mapType, this);
-		
+	
 		// Set component size
 		setPreferredSize(new Dimension(NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
@@ -146,16 +163,75 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		centerCoords = new Coordinates(HALF_PI, 0D);
 		recreate = true;
 		
-		setDragger(navwin);
+		// Set the mouse dragger
+		setMouseDragger(navwin);
 
 		// Add listener once fully constructed
 		desktop.getSimulation().getMasterClock().addClockListener(this, 1000L);
 	}
 	
+//	public void updateWidth(int width, double scale) {
+//		surfaceMapWidth = width;
+//		updateMapScale(scale);
+//		computeZoomBox();
+//	}
+//	
+//	/**
+//	 * Gets the scale of the Mars surface map.
+//	 * 
+//	 * @param value
+//	 */
+//    public void setMapScale(double value) {
+//    	rhoSurfaceCache = value;
+//    	rhoMapRatio = rhoSurfaceCache / RHO_SURFACE / RHO_STANDARD_RATIO;
+//    }
+//    
+//	/**
+//	 * Gets the scale of the Mars surface map.
+//	 * 
+//	 * @param value
+//	 */
+//    public void updateMapScale(double value) {
+//    	rhoSurfaceCache = value;
+//    	RHO_STANDARD_RATIO = rhoSurfaceCache / RHO_SURFACE;
+//       	rhoMapRatio = rhoSurfaceCache / RHO_SURFACE / RHO_STANDARD_RATIO;
+//    }
+    
+//	public void computeZoomBox() {
+//		blackPaddingWidth =  BLACK_PADDING_RATIO * rhoGlobe ;/// BLACK_PADDING_RATIO; // 261.92
+//		outsideZoomBoxWidth = blackPaddingWidth surfaceMapWidth / rhoMapRatio * 0.1;
+//		globeFullLength = 2 * (surfaceMapWidth * rhoMapRatio + outsideZoomBoxWidth); // 1440.58
+//		globeBoxRatio = globeFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
+//
+//		widthZoomBox = (int) (2 * NEW_GLOBE_BOX_HEIGHT * RATIO_EXPANSION / globeBoxRatio); // 140.57
+//		paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72
+//		
+//		logger.info("rRatio: " + Math.round(rhoMapRatio * 10.0)/10.0
+////				+ "  BLACK_PADDING_RATIO: " + Math.round(BLACK_PADDING_RATIO * 10.0)/10.0
+////				+ "  rhoSurfaceCache: " + Math.round(rhoSurfaceCache * 10.0)/10.0
+//				+ "  B: " + Math.round(blackPaddingWidth  * 10.0)/10.0
+//				+ "  O: " + Math.round(outsideZoomBoxWidth * 10.0)/10.0
+//				+ "  globeFullLength: " + Math.round(globeFullLength * 10.0)/10.0
+//				+ "  globeBoxRatio: " + Math.round(globeBoxRatio * 10.0)/10.0
+//				+ "  widthZoomBox: " + Math.round(widthZoomBox * 10.0)/10.0
+//				+ "  paddingZoomBox: " + Math.round(paddingZoomBox * 10.0)/10.0
+//				);
+//	}
+//
+//	/**
+//	 * Updates the position of the zoom box.
+//	 */
+//	public void updateZoomBox() {
+//		if (navwin.getMapPanel() != null) {
+//			surfaceMapWidth = navwin.getMapPanel().getMap().getPixelWidth();	
+//			computeZoomBox();
+//		}
+//	}
+    
 	/*
 	 * Sets up the mouse dragging capability.
 	 */
-	public void setDragger(NavigatorWindow navwin) {
+	public void setMouseDragger(NavigatorWindow navwin) {
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
@@ -170,7 +246,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 					 && x > 0 && x < NEW_GLOBE_BOX_HEIGHT 
 					 && y > 0 && y < NEW_GLOBE_BOX_HEIGHT) {
 					
-					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rhoGlobe);
 					navwin.updateCoordsMaps(centerCoords);				
 					recreate = false;
 					// Regenerate globe if recreate is true, then display
@@ -212,6 +288,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		showGlobe(centerCoords);
 	}
 	
+	
 	/**
 	 * Displays globe at given center regardless of mode, regenerating if necessary.
 	 *
@@ -235,33 +312,15 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			}
 		
 			// Updates the position of the zoom box
-			updateZoomBox();
+//			updateZoomBox();
 			
 			// Regenerate globe
 			drawSphere();
 		}
 	}
-
-	/**
-	 * Updates the position of the zoom box.
-	 */
-	public void updateZoomBox() {
-		if (navwin.getMapPanel() != null) {
-			surfaceMapHeight = navwin.getMapPanel().getMap().getPixelWidth();	
-			
-			projectedGlobeRadius = surfaceMapHeight / Math.PI; // 458.37
-			projectedGlobeBlackPadding = projectedGlobeRadius * 2 / 3.5; // 261.92
-			projectedGlobe2DFullLength = 2 * (projectedGlobeRadius + projectedGlobeBlackPadding); // 1440.58
-			projectedRatioMap2Box = projectedGlobe2DFullLength / NEW_GLOBE_BOX_HEIGHT; // 3.20
-
-			widthZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT * RATIO_EXPANSION / projectedRatioMap2Box); // 140.57
-			paddingZoomBox = (int) (NEW_GLOBE_BOX_HEIGHT - widthZoomBox) / 2; // 154.72 
-		}
-	}
 	
 	public void drawSphere() {
 		globeMap.drawSphere(centerCoords);
-//		globeMap.drawMap(centerCoords);
 		paintDoubleBuffer();
 		repaint();
 	}
@@ -384,16 +443,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		
 //		g.setColor(Color.black);
 
-		g.drawRect(paddingZoomBox, paddingZoomBox, widthZoomBox, widthZoomBox);
-
-		// Draw a diagonal line from top left of the zoom box to top left of the right panel	
-		drawDashedLine(g, paddingZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
-		// Draw a diagonal line from top right of the zoom box to top left of the right panel	
-		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
-		// Draw a diagonal line from bottom left of the zoom box to bottom left of the right panel	
-		drawDashedLine(g, paddingZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
-		// Draw a diagonal line from bottom right of the zoom box to bottom left of the right panel	
-		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
+//		g.drawRect(paddingZoomBox, paddingZoomBox, widthZoomBox, widthZoomBox);
+//
+//		// Draw a diagonal line from top left of the zoom box to top left of the right panel	
+//		drawDashedLine(g, paddingZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
+//		// Draw a diagonal line from top right of the zoom box to top left of the right panel	
+//		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox, NEW_GLOBE_BOX_HEIGHT, 0);
+//		// Draw a diagonal line from bottom left of the zoom box to bottom left of the right panel	
+//		drawDashedLine(g, paddingZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
+//		// Draw a diagonal line from bottom right of the zoom box to bottom left of the right panel	
+//		drawDashedLine(g, paddingZoomBox + widthZoomBox, paddingZoomBox + widthZoomBox, NEW_GLOBE_BOX_HEIGHT, NEW_GLOBE_BOX_HEIGHT);
 	}
 
 	public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2){
@@ -419,9 +478,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * @return x, y position on globe panel
 	 */
 	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {	
-		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, halfMap, lowEdge);
+		return Coordinates.findRectPosition(unitCoords, centerCoords, rhoGlobe, halfMap, lowEdge);
 	}
-
+    
 	/**
 	 * Gets the center coordinates of the globe.
 	 * 
