@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementSupplies;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
@@ -139,7 +139,7 @@ extends JPanel
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateTimeStamp());
 
-		MarsClock marsTime = desktop.getSimulation().getMasterClock().getMarsClock();
+		MarsTime marsTime = desktop.getSimulation().getMasterClock().getMarsTime();
 		updateTimeToArrival(marsTime);
 
 		templateValueLabel.setText(arrivingSettlement.getTemplate());
@@ -153,10 +153,10 @@ extends JPanel
 	 * Update the time to arrival label.
 	 * @param currentTime
 	 */
-	private void updateTimeToArrival(MarsClock currentTime) {
+	private void updateTimeToArrival(MarsTime currentTime) {
 		String timeArrival = Msg.getString("ArrivingSettlementDetailPanel.noTime"); //$NON-NLS-1$
 		solsToArrival = -1;
-		double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
+		double timeDiff = arrivingSettlement.getArrivalDate().getTimeDiff(currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
 			timeArrival = Msg.getString(
@@ -167,10 +167,10 @@ extends JPanel
 		timeArrivalValueLabel.setText(timeArrival);
 	}
 
-	private void updateArrival(MarsClock currentTime) {
+	private void updateArrival(MarsTime currentTime) {
 		// Determine if change in time to arrival display value.
 		if ((arrivingSettlement != null) && (solsToArrival >= 0)) {
-			double timeDiff = MarsClock.getTimeDiff(arrivingSettlement.getArrivalDate(), currentTime);
+			double timeDiff = arrivingSettlement.getArrivalDate().getTimeDiff(currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
 				// Update time to arrival label.
@@ -184,6 +184,6 @@ extends JPanel
 	 * @param pulse Amount of clock movement
 	 */	
 	void update(ClockPulse pulse) {
-		updateArrival(pulse.getMarsTime());			
+		updateArrival(pulse.getNewMarsTime());			
 	}
 }

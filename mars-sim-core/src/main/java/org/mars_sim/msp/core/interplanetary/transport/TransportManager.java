@@ -51,16 +51,16 @@ public class TransportManager implements Serializable, Temporal {
 	public TransportManager(Simulation sim) {
 		this.eventManager = sim.getEventManager();
 
-		Transportable.initalizeInstances(sim.getMasterClock().getMarsClock(), this);
+		Transportable.initalizeInstances(sim.getMasterClock(), this);
 
 		// Initialize data
 		transportItems = new ArrayList<>();
 
-		this.futures = new ScheduledEventManager(sim.getMasterClock().getMarsClock());
+		this.futures = new ScheduledEventManager(sim.getMasterClock());
 	}
 	
-	public void init() {
-		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions());
+	public void init(Simulation sim) {
+		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions(sim));
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public class TransportManager implements Serializable, Temporal {
 			
 			a.scheduleLaunch(futures);
 			logger.config("Scheduling a new settlement called '" + a.getName() + "' to arrive at Sol "
-						+ a.getArrivalDate().getTrucatedDateTimeStamp());
+						+ a.getArrivalDate().getTruncatedDateTimeStamp());
 			transportItems.add(a);
 		}
 	}
@@ -138,7 +138,7 @@ public class TransportManager implements Serializable, Temporal {
 	 */
 	public void reinitalizeInstances(Simulation sim) {
 		this.eventManager = sim.getEventManager();
-		Transportable.initalizeInstances(sim.getMasterClock().getMarsClock(), this);
+		Transportable.initalizeInstances(sim.getMasterClock(), this);
 
 		UnitManager um = sim.getUnitManager();
 		for(Transportable t : transportItems) {

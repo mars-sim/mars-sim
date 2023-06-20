@@ -47,8 +47,9 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MarsTimeFormat;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -98,7 +99,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
 
-	private MarsClock marsClock;
+	private MasterClock master;
 
 	private TransportManager transportManager;
 	private UnitManager unitManager;
@@ -120,7 +121,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Initialize data members.
 		this.settlement = settlement;
 		Simulation sim = resupplyWindow.getDesktop().getSimulation();
-		this.marsClock = sim.getMasterClock().getMarsClock();
+		this.master = sim.getMasterClock();
 		this.transportManager = sim.getTransportManager();
 		this.unitManager = sim.getUnitManager();
 
@@ -278,7 +279,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 
 		// Get default arriving settlement Martian time.
-		MarsClock arrivingTime = marsClock;
+		MarsTime arrivingTime = master.getMarsTime();
 		if (settlement != null) {
 			arrivingTime = settlement.getArrivalDate();
 		}
@@ -298,7 +299,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(monthLabel);
 
 		// Create month combo box.
-		monthCB = new JComboBoxMW<>(MarsClockFormat.getMonthNames());
+		monthCB = new JComboBoxMW<>(MarsTimeFormat.getMonthNames());
 		monthCB.setSelectedItem(arrivingTime.getMonthName());
 		monthCB.addActionListener(e -> {
 			// Update the solCB based on orbit and month
@@ -360,8 +361,8 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(timeUntilArrivalLabel);
 
 		// Create sols text field.
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+		MarsTime currentTime = master.getMarsTime();
+		int solsDiff = (int) Math.round((arrivingTime.getTimeDiff(currentTime) / 1000D));
 		solsTF = new JTextField(4);
 		solsTF.setText(Integer.toString(solsDiff));
 		solsTF.setHorizontalAlignment(JTextField.RIGHT);
@@ -776,17 +777,17 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				// 		if (transportItem instanceof Resupply) {
 				// 			// Create modify resupply mission dialog.
 				// 			Resupply resupply = (Resupply) transportItem;
-				// 			MarsClock arrivingTime = resupply.getArrivalDate();
-				// 			int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+				// 			MarsTime arrivingTime = resupply.getArrivalDate();
+				// 			int solsDiff = (int) Math.round((MarsTime.getTimeDiff(arrivingTime, MarsTime) / 1000D));
 				// 			sols.add(solsDiff);
 
 				// 		} else if (transportItem instanceof ArrivingSettlement) {
 				// 			// Create modify arriving settlement dialog.
 				// 			ArrivingSettlement newS = (ArrivingSettlement) transportItem;
 				// 			if (!newS.equals(settlement)) {
-				// 				MarsClock arrivingTime = newS.getArrivalDate();
+				// 				MarsTime arrivingTime = newS.getArrivalDate();
 				// 				int solsDiff = (int) Math
-				// 						.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+				// 						.round((MarsTime.getTimeDiff(arrivingTime, MarsTime) / 1000D));
 				// 				sols.add(solsDiff);
 				// 			}
 				// 		}
@@ -938,7 +939,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		settlement.setSponsorCode((String) sponsorCB.getSelectedItem());
 
 		// Populate arrival date.
-		MarsClock arrivalDate = getArrivalDate();
+		MarsTime arrivalDate = getArrivalDate();
 		settlement.setArrivalDate(arrivalDate);
 
 		// Set population number.
@@ -957,11 +958,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	/**
 	 * Gets the arrival date from the UI values.
 	 * 
-	 * @return arrival date as MarsClock instance.
+	 * @return arrival date as MarsTime instance.
 	 */
-	private MarsClock getArrivalDate() {
+	private MarsTime getArrivalDate() {
 
-		MarsClock result = new MarsClock(marsClock);
+		MarsTime result = master.getMarsTime();
 
 		if (arrivalDateRB.isSelected()) {
 			// Determine arrival date from arrival date combo boxes.
@@ -972,12 +973,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 				// Set millisols to current time if resupply is current date, otherwise 0.
 				double millisols = 0D;
-				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth())
-						&& (orbit == marsClock.getOrbit())) {
-					millisols = marsClock.getMillisol();
+				if ((sol == result.getSolOfMonth()) && (month == result.getMonth())
+						&& (orbit == result.getOrbit())) {
+					millisols = result.getMillisol();
 				}
 
-				result = new MarsClock(orbit, month, sol, millisols, -1);
+				result = new MarsTime(orbit, month, sol, millisols, -1);
 			} catch (NumberFormatException e) {
 				logger.severe("Selecting arrivalDateRB but MarsClock is invalid: " + e.getMessage());
 			}
@@ -986,9 +987,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			try {
 				int solsDiff = Integer.parseInt(solsTF.getText());
 				if (solsDiff > 0) {
-					result.addTime(solsDiff * 1000D);
+					result = result.addTime(solsDiff * 1000D);
 				} else {
-					result.addTime(marsClock.getMillisol());
+					result = result.addTime(master.getMarsTime().getMillisol());
 				}
 			} catch (NumberFormatException e) {
 				logger.severe("Selecting timeUntilArrivalRB but MarsClock is invalid: " + e.getMessage());

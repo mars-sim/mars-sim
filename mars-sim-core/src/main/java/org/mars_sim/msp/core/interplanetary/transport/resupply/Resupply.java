@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -100,7 +100,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param arrivalDate the arrival date of the supplies.
 	 * @param settlement  the settlement receiving the supplies.
 	 */
-	public Resupply(ResupplySchedule template, int cycle, MarsClock arrivalDate, Settlement settlement) {
+	public Resupply(ResupplySchedule template, int cycle, MarsTime arrivalDate, Settlement settlement) {
 		this(template.getName() + " #" + cycle, arrivalDate, settlement);
 
 		// Initialize data members.
@@ -120,7 +120,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Bespoke resupply mission.
 	 */
-	public Resupply(String name, MarsClock arrivalDate, Settlement destination) {
+	public Resupply(String name, MarsTime arrivalDate, Settlement destination) {
 		super(name, destination.getCoordinates());
 
 		this.settlement = destination;
@@ -171,8 +171,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// If a schedule then create the next one
 		if (template.getFrequency() > 0) {
 			// Scheduled the follow on
-			MarsClock newArrival = new MarsClock(getArrivalDate());
-			newArrival.addTime(template.getActiveMissions() * template.getFrequency() * 1000.0);
+			MarsTime newArrival = getArrivalDate().addTime(template.getActiveMissions() * template.getFrequency() * 1000.0);
 			Resupply followOn = new Resupply(this.getTemplate(), cycle + template.getActiveMissions(),
 												newArrival, settlement);
 			tm.addNewTransportItem(followOn);
@@ -1240,7 +1239,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	@Override
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
-		buff.append(getArrivalDate().getDateString());
+		buff.append(getArrivalDate().getDateTimeStamp());
 		buff.append(" : ");
 		buff.append(getSettlement().getName());
 		return buff.toString();

@@ -11,49 +11,28 @@ public class ClockPulse {
 	 * The sols passed since last pulse.
 	 */
 	private double elapsed;
-	
-	/**
-	 * The last integer millisol.
-	 */
 	private int lastIntMillisol;
-	
-	/**
-	 * Updated Mars time for this simulation.
-	 */
-	private MarsClock marsTime;
-
-	/**
-	 * Master clock.
-	 */
+	private MarsTime marsTime;
 	private MasterClock master;
-	
-	/**
-	 * Has this pulse crossed into a new Sol.
-	 */
 	private boolean isNewSol;
-
-	/**
-	 * Has this pulse crossed into a new integer millisol 
-	 */
 	private boolean isNewIntMillisol;
-
-	/**
-	 * Pulse id
-	 */
 	private long id;
+	private MarsClock oldMarsTime;
 	
 	/**
 	 * Creates a pulse defining a step forward in the simulation.
 	 * 
 	 * @param id Unique pulse ID. Sequential.
 	 * @param elapsed This must be a final & positive number.
+	 * @param oldMarsTime This is a deprecated argument and will be dropped once MarsClock is removed
 	 * @param marsTime
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 * @param newMSol Does this pulse start a new msol (an integer millisol) ?
 	 */
-	public ClockPulse(long id, double elapsed, MarsClock marsTime, MasterClock master, 
-			boolean newSol, boolean newMSol) {
+	public ClockPulse(long id, double elapsed, MarsClock oldMarsTime,
+					MarsTime marsTime, MasterClock master, 
+					boolean newSol, boolean newMSol) {
 		super();
 		
 		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
@@ -63,6 +42,7 @@ public class ClockPulse {
 		this.id = id;
 		this.elapsed = elapsed;
 		this.marsTime = marsTime;
+		this.oldMarsTime = oldMarsTime;
 		this.master = master;
 		this.isNewSol = newSol;
 		this.isNewIntMillisol = newMSol;
@@ -87,8 +67,19 @@ public class ClockPulse {
 	 * @return
 	 */
 	public MarsClock getMarsTime() {
+		return oldMarsTime;
+	}
+
+	/**
+	 * Gets MarsTime when this pulse fires.
+	 * This will be renamed once the old MarsClock is removed 
+	 * 
+	 * @return
+	 */
+	public MarsTime getNewMarsTime() {
 		return marsTime;
 	}
+
 
 	/**
 	 * Gets MasterClock instance.
@@ -137,6 +128,6 @@ public class ClockPulse {
 			lastIntMillisol = thisIntMillisol;
 		}
 		
-		return new ClockPulse(id, actualElapsed, marsTime, master, actualNewSol, isNewIntMillisol);
+		return new ClockPulse(id, actualElapsed, oldMarsTime, marsTime, master, actualNewSol, isNewIntMillisol);
 	}
 }

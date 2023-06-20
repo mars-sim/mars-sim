@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.structure;
 
 
 import org.mars_sim.msp.core.events.ScheduledEventHandler;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * This class represents an active work shift that has a number of slots for works allocated.
@@ -128,7 +128,7 @@ public class Shift implements ScheduledEventHandler {
      * @param now Time now when the handler was called; not used
      */
     @Override
-    public int execute(MarsClock now) {
+    public int execute(MarsTime now) {
         // Flip the on duty flag
         onDuty = !onDuty;
 

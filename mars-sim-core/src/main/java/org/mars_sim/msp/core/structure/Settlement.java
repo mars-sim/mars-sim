@@ -375,7 +375,7 @@ public class Settlement extends Structure implements Temporal,
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
 		// Initialize schedule event manager
-		futureEvents = new ScheduledEventManager(marsClock);
+		futureEvents = new ScheduledEventManager(masterClock);
 
 		creditManager = new CreditManager(this, unitManager);
 
@@ -488,7 +488,7 @@ public class Settlement extends Structure implements Temporal,
 		buildingManager.createAdjacentBuildingMap();
 		
 		// Initialize schedule event manager
-		futureEvents = new ScheduledEventManager(marsClock);
+		futureEvents = new ScheduledEventManager(masterClock);
 
 		// Get the rotation about the planet and convert that to a fraction of the Sol.
 		double fraction = getCoordinates().getTheta()/(Math.PI * 2D); 
