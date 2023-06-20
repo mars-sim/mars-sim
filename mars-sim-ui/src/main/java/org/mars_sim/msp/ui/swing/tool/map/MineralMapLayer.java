@@ -1,23 +1,27 @@
 /*
  * Mars Simulation Project
  * MineralMapLayer.java
- * @date 2022-08-28
+ * @date 2023-06-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.environment.MineralMap;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.environment.MineralMap;
 
 /**
  * A map layer showing mineral concentrations.
@@ -39,6 +43,7 @@ public class MineralMapLayer implements MapLayer {
 	private Coordinates mapCenterCache;
 	private MineralMap mineralMap;
 
+	private java.util.Map<String, Color> mineralColorMap;
 	private java.util.Map<String, Boolean> mineralsDisplayedMap;
 
 	/**
@@ -76,16 +81,19 @@ public class MineralMapLayer implements MapLayer {
 			double rho = baseMap.getScale();
 
 			java.util.Map<String, Color> mineralColors = getMineralColors();
-			updateMineralsDisplayed();
+			
+//			updateMineralsDisplayed();
 
 			for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
 				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
-					Coordinates location = mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho);
+					
 					java.util.Map<String, Double> mineralConcentrations = mineralMap
-							.getAllMineralConcentrations(location);
-					if (mineralConcentrations.size() == 0) {
+							.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho));
+					
+					if (mineralConcentrations.isEmpty()) {
 						continue;
 					}
+					
 					Iterator<String> i = mineralConcentrations.keySet().iterator();
 					while (i.hasNext()) {
 						String mineralType = i.next();
@@ -106,6 +114,7 @@ public class MineralMapLayer implements MapLayer {
 							}
 						}
 					}
+					
 				}
 			}
 
@@ -148,24 +157,32 @@ public class MineralMapLayer implements MapLayer {
 	 * @return map of names and colors.
 	 */
 	public java.util.Map<String, Color> getMineralColors() {
-		// MineralMap mineralMap =
-		// Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
-		String[] mineralNames = mineralMap.getMineralTypeNames();
-		java.util.Map<String, Color> result = new HashMap<>(mineralNames.length);
-		for (int x = 0; x < mineralNames.length; x++) {
-			String mineralTypeName = mineralMap.getMineralTypeNames()[x];
-			int mineralColor = Color.HSBtoRGB(((float) x / (float) mineralNames.length), 1F, 1F);
-			result.put(mineralTypeName, new Color(mineralColor));
+		
+		if (mineralColorMap == null || mineralColorMap.isEmpty()) {
+			String[] mineralNames = mineralMap.getMineralTypeNames();
+			java.util.Map<String, Color> map = new HashMap<>(mineralNames.length);
+			for (int x = 0; x < mineralNames.length; x++) {
+				String mineralTypeName = mineralMap.getMineralTypeNames()[x];
+				// Determine color of a mineral
+				int mineralColor = Color.HSBtoRGB(((float) x / (float) mineralNames.length), .9F, .9F);
+				map.put(mineralTypeName, new Color(mineralColor));
+			}
+			
+			mineralColorMap = map;
+			return map;
 		}
-		return result;
+		return mineralColorMap;
 	}
 
 	/**
-	 * Update which minerals to display on the map if they've changed.
+	 * Updates which minerals to display on the map if they've changed.
 	 */
 	private void updateMineralsDisplayed() {
-		// MineralMap mineralMap =
-		// Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		// Q: Why would the names in mineralsDisplayedMap be changed in the first place ?
+		// A: Players may turn on and off any mineral names in the Map Option menu
+		
+		// Each time it was changed, call this method once to update the content
+		// No need to keep calling this method
 		String[] mineralNames = mineralMap.getMineralTypeNames();
 		Arrays.sort(mineralNames);
 		if (mineralsDisplayedMap == null)

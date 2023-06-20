@@ -252,12 +252,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		///////////////////////////////
 		
 		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
+		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
+		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
+		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
 		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
 		
 		JPanel coordControlPane = new JPanel(new BorderLayout());
 		wholeBottomPane.add(coordControlPane, BorderLayout.CENTER);
 		
-		JPanel coord2LayersPane = new JPanel(new BorderLayout());
+		JPanel coord2LayersPane = new JPanel(new BorderLayout(5, 5));
 		coordControlPane.add(coord2LayersPane, BorderLayout.CENTER);
 		
 		JPanel westPane = new JPanel(new BorderLayout());
@@ -290,29 +293,40 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		////////////////////////////////////////////
 			
-		JPanel latLonPane = new JPanel(new GridLayout(2, 1));
-		coord2LayersPane.add(latLonPane, BorderLayout.CENTER);
+		JPanel twoLevelPane = new JPanel(new GridLayout(2, 1));
+		coord2LayersPane.add(twoLevelPane, BorderLayout.CENTER);
 		
-		JPanel topPane = new JPanel(new FlowLayout());
-		latLonPane.add(topPane);
+		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		twoLevelPane.add(topPane);
 
-		JPanel bottomPane = new JPanel(new FlowLayout());
-		latLonPane.add(bottomPane);
-		
+		JPanel bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topPane.setAlignmentY(CENTER_ALIGNMENT);
+		twoLevelPane.add(bottomPane);
+        
 		// Prepare location entry submit button
 		goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
 		goThere.setToolTipText("Go to the location with your specified coordinates");
 		goThere.setActionCommand(GO_THERE_ACTION);
 		goThere.addActionListener(this);
 
-		bottomPane.add(goThere);
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		buttonPane.setPreferredSize(new Dimension(120, 30));
+		buttonPane.setMinimumSize(new Dimension(120, 30));
+		buttonPane.setMaximumSize(new Dimension(120, 30));
+		buttonPane.add(goThere);
+		
+		bottomPane.add(buttonPane);
 		
 		////////////////////////////////////////////
 		
 		// Create the settlement combo box
         buildSettlementNameComboBox(setupSettlements());
         
-        JPanel settlementPane = new JPanel(new FlowLayout());
+        JPanel settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        settlementPane.setPreferredSize(new Dimension(120, 30));
+        settlementPane.setMinimumSize(new Dimension(120, 30));
+        settlementPane.setMaximumSize(new Dimension(120, 30));
         settlementPane.add(settlementComboBox);
 		
         bottomPane.add(settlementPane);
@@ -376,26 +390,44 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		JPanel optionsPane = new JPanel(new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER, 5, 5));
+		JPanel optionsPane = new JPanel(new BorderLayout(5, 5));// FlowLayout(FlowLayout.CENTER, 5, 5)); //new GridLayout(2, 1, 10, 10));
 		optionsPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		coordControlPane.add(optionsPane, BorderLayout.EAST);
 
+		JPanel topOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topOptionPane.setPreferredSize(new Dimension(120, 30));
+		topOptionPane.setMinimumSize(new Dimension(120, 30));
+		topOptionPane.setMaximumSize(new Dimension(120, 30));
+		optionsPane.add(topOptionPane, BorderLayout.NORTH);
+        
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
+//		optionsButton.setPreferredSize(new Dimension(120, 30));
+//		optionsButton.setMinimumSize(new Dimension(120, 30));
+//		optionsButton.setMaximumSize(new Dimension(120, 30));
 		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				SwingUtilities.invokeLater(() -> {
-					JPopupMenu optionsMenu = createOptionsMenu();
+					JPopupMenu optionsMenu = createMapOptionsMenu();
 					optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
 				});
 			}
 		});
 		
-		optionsPane.add(optionsButton);
+		topOptionPane.add(optionsButton);
 
+		JPanel bottomOptionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomOptionPane.setPreferredSize(new Dimension(120, 30));
+		bottomOptionPane.setMinimumSize(new Dimension(120, 30));
+		bottomOptionPane.setMaximumSize(new Dimension(120, 30));
+		optionsPane.add(bottomOptionPane, BorderLayout.CENTER);
+		
 		// Prepare minerals button.0
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+//		mineralsButton.setPreferredSize(new Dimension(120, 30));
+//		mineralsButton.setMinimumSize(new Dimension(120, 30));
+//		mineralsButton.setMaximumSize(new Dimension(120, 30));
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(new ActionListener() {
@@ -406,7 +438,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				});
 			}
 		});
-		optionsPane.add(mineralsButton);
+		
+		bottomOptionPane.add(mineralsButton);
 
 		// Create the status bar
 		JStatusBar statusBar = new JStatusBar(3, 3, HEIGHT_STATUS_BAR);
@@ -744,9 +777,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 
 	/**
-	 * Create the map options menu.
+	 * Creates the map options menu.
 	 */
-	private JPopupMenu createOptionsMenu() {
+	private JPopupMenu createMapOptionsMenu() {
 		// Create options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
@@ -797,22 +830,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		MineralMapLayer mineralMapLayer = (MineralMapLayer) mineralLayer;
 		java.util.Map<String, Color> mineralColors = mineralMapLayer.getMineralColors();
 		Iterator<String> i = mineralColors.keySet().iterator();
+	
 		while (i.hasNext()) {
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
+			
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
 
 			// TODO Re-use existing Action listener with a prefix pattern
-			mineralItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
+			mineralItem.addActionListener(e ->  {
 					SwingUtilities.invokeLater(() -> {
-						JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
+						JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) e.getSource();
 						((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(),
 								checkboxItem.isSelected());
 					});
-				}
 			});
 			mineralsMenu.add(mineralItem);
 		}
@@ -1005,13 +1038,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());
 
 		// Additional layers
-		for( Entry<String, MapOrder> e : mapLayers.entrySet()) {
+		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 			results.setProperty(LAYER_ACTION + e.getKey(),
 							Boolean.toString(mapLayerPanel.hasMapLayer(e.getValue().layer)));
 		}
 
 		// Mineral Layers
-		for(String mineralName : mineralLayer.getMineralColors().keySet()) {
+		for (String mineralName : mineralLayer.getMineralColors().keySet()) {
 			results.setProperty(MINERAL_ACTION + mineralName, Boolean.toString(mineralLayer.isMineralDisplayed(mineralName)));
 		}
 		return results;
