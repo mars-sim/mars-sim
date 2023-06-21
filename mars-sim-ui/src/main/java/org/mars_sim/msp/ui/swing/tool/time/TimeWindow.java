@@ -13,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -50,8 +49,9 @@ public class TimeWindow extends ToolWindow {
 	
 	    
     private static final DateTimeFormatter DATE_TIME_FORMATTER = 
-                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
-
+//                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+    								DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS");
+    
 	/** the execution time label string */
 	private static final String EXEC = "Execution";
 	/** the sleep time label string */

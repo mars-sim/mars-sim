@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsTime;
 
 /**

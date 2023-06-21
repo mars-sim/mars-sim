@@ -195,7 +195,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			MineralType mineralType = i.next();
 
 			// For now start with a random concentration between 0 to 100
-			int conc = RandomUtil.getRandomInt(30);
+			int conc = RandomUtil.getRandomInt(20);
 
 			int concentrationNumber = (int)Math.round(
 					RandomUtil.getRandomDouble(NON_REGION_FACTOR *.25, NON_REGION_FACTOR * 1.25) 

@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;

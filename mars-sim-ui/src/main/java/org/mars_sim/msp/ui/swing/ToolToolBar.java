@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -64,8 +63,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String MARSCAL = "MARS-CAL";
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER
-								= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-
+//								= DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+								= DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
+	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 
