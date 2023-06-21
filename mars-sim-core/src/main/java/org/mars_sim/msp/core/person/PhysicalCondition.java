@@ -18,8 +18,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -35,7 +33,6 @@ import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.person.health.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -113,13 +110,12 @@ public class PhysicalCondition implements Serializable {
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 	
-	private static final double O2_CONSUMPTION;
-	private static final double H2O_CONSUMPTION;
-	private static final double MIN_AIR_PRESSURE;
-	private static final double MIN_TEMPERATURE;
-	private static final double MAX_TEMPERATURE;
-	private static final double FOOD_CONSUMPTION;
-	private static final double DESSERT_CONSUMPTION;
+	private static  double O2_CONSUMPTION;
+	private static  double H2O_CONSUMPTION;
+	private static  double MIN_AIR_PRESSURE;
+	private static  double MIN_TEMPERATURE;
+	private static  double MAX_TEMPERATURE;
+	private static  double FOOD_CONSUMPTION;
 
 	private static final String WELL = "Well";
 	private static final String DEAD_COLON = "Dead : ";
@@ -145,8 +141,6 @@ public class PhysicalCondition implements Serializable {
 
 	private int endurance;
 	private int strength;
-	private int resilience;
-	private int emotStability;
 	private int agility;
 
 	/**
@@ -182,11 +176,8 @@ public class PhysicalCondition implements Serializable {
 	
 	/**  The amount of water this person would consume each time (assuming drinking water 10 times a day). */
 	private double waterConsumedPerServing;
-	/**  The amount of food this person would consume each time (assuming 3 meals a day). */
-	private double foodDryMassPerServing;
 	
 	private double waterConsumedPerSol;
-	private double foodConsumedPerSol;
 
 	/** Person owning this physical. */
 	private Person person;
@@ -224,56 +215,12 @@ public class PhysicalCondition implements Serializable {
 	/** Most serious problem. */
 	private HealthProblem serious;
 
-	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
-	private static MasterClock masterClock;
 
 	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
-	private static Complaint radiationPoisoning;
-
-	private static Complaint dehydration;
-	private static Complaint starvation;
-	private static Complaint freezing;
-	private static Complaint heatStroke;
-	private static Complaint decompression;
-	private static Complaint suffocation;
 
 	private static PersonConfig personConfig;
-
-	/**
-	 * Loads the values
-	 */
-	static {
-		masterClock = sim.getMasterClock();
-		if (masterClock != null)  // check for null in order to pass maven test
-			marsClock = masterClock.getMarsClock();
-
-		personConfig = SimulationConfig.instance().getPersonConfig();
-
-		H2O_CONSUMPTION = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-		O2_CONSUMPTION = personConfig.getNominalO2ConsumptionRate();
-
-		MIN_AIR_PRESSURE = personConfig.getMinAirPressure();
-		MIN_TEMPERATURE = personConfig.getMinTemperature();
-		MAX_TEMPERATURE = personConfig.getMaxTemperature();
-		FOOD_CONSUMPTION = personConfig.getFoodConsumptionRate();
-		DESSERT_CONSUMPTION = personConfig.getDessertConsumptionRate();
-
-		medicalManager = sim.getMedicalManager();
-
-		// Set health instances
-		if (medicalManager != null) {
-			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-			dehydration = medicalManager.getDehydration();
-			starvation = medicalManager.getStarvation();
-
-			freezing = medicalManager.getFreezing();
-			heatStroke = medicalManager.getHeatStroke();
-			decompression = medicalManager.getDecompression();
-			suffocation = medicalManager.getSuffocation();
-		}
-	}
 
 	/**
 	 * Constructor 1.
@@ -299,8 +246,6 @@ public class PhysicalCondition implements Serializable {
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
 		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
-		resilience = naturalAttributeManager.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-		emotStability = naturalAttributeManager.getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 		agility = naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY);
 
 		// Computes the adjustment from a person's natural attributes
@@ -326,10 +271,6 @@ public class PhysicalCondition implements Serializable {
 		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation ;
 		// waterConsumedPerServing is ~ 0.19 kg
 		waterConsumedPerServing = waterConsumedPerSol / 10; 
-
-		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation;
-		// foodDryMassPerServing is ~ 0.13 kg
-		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
 
 		double sTime = personConfig.getStarvationStartTime();
 		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.3, bodyMassDeviation / 5);
@@ -948,13 +889,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkStarvation(double hunger) {
 
-		starved = getStarvationProblem();
+		starved = getProblemByType(ComplaintType.STARVATION);
 		
 		if (!isStarving && hunger > starvationStartTime) {
 
 			// if problems doesn't have starvation, execute the following
 			if (starved == null || !problems.contains(starved)) {
-				addMedicalComplaint(starvation);
+				addMedicalComplaint(medicalManager.getStarvation());
 				isStarving = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
@@ -987,7 +928,6 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Recovering from hunger. "
 						 + "  Hunger: " + (int)hunger
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0
-						 + ";  Complaint: " + starvation
 						 + ";  isStarving: " + isStarving
 						 + ";  Status: " + status);
 			}
@@ -1000,19 +940,6 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets the starvation health problem instance.
-	 *
-	 * @return
-	 */
-	private HealthProblem getStarvationProblem() {
-		for (HealthProblem p: problems) {
-			if (p.getType() == starvation.getType()) {
-				return p;
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * Checks if a person is dehydrated.
@@ -1021,13 +948,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkDehydration(double thirst) {
 
-		dehydrated = getDehydrationProblem();
+		dehydrated = getProblemByType(ComplaintType.DEHYDRATION);
 		
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
 
 			if (dehydrated == null || !problems.contains(dehydrated)) {
-				addMedicalComplaint(dehydration);
+				addMedicalComplaint(medicalManager.getDehydration());
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
@@ -1055,7 +982,6 @@ public class PhysicalCondition implements Serializable {
 
 				logger.log(person, Level.INFO, 20_000, "Recovering from dehydration. "
 						 + "  Thirst: " + (int)thirst
-						 + ";  Complaint: " + dehydration
 						 + ";  isDehydrated: " + isDehydrated
 						 + ";  Status: " + status);
 			}
@@ -1068,32 +994,19 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the dehydrated health problem.
+	 * Gets the health problem by a certian complaint type
 	 *
-	 * @return dehydrated
+	 * @return Health problem or null if the Person does not have it
 	 */
-	private HealthProblem getDehydrationProblem() {
+	private HealthProblem getProblemByType(ComplaintType type) {
 		for (HealthProblem p: problems) {
-			if (p.getType() == dehydration.getType()) {
+			if (p.getType() == type) {
 				return p;
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * Gets the radiation poisoning health problem.
-	 *
-	 * @return radiationPoisoning
-	 */
-	private HealthProblem getRadiationProblem() {
-		for (HealthProblem p: problems) {
-			if (p.getType() == radiationPoisoning.getType()) {
-				return p;
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * Checks if person has very high fatigue.
@@ -1102,12 +1015,12 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkRadiationPoisoning(double time) {
 		
-		radiationPoisoned = getRadiationProblem();
+		radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
 		if (!isRadiationPoisoned && radiation.isSick()) {
 
 			if (radiationPoisoned == null || !problems.contains(radiationPoisoned)) {
-				addMedicalComplaint(radiationPoisoning);
+				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS));
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 				logger.log(person, Level.INFO, 3000, "Collapsed because of radiation poisoning.");
@@ -1139,7 +1052,7 @@ public class PhysicalCondition implements Serializable {
 			else if (hasMedication(RadioProtectiveAgent.NAME)) {
 
 				if (radiationPoisoned == null)
-					radiationPoisoned = getStarvationProblem();
+					radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
 
 				String status = "Unknown";
 				if (radiationPoisoned != null) {
@@ -1150,7 +1063,6 @@ public class PhysicalCondition implements Serializable {
 				}
 
 				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
-						 + ";  Complaint: " + radiationPoisoning
 						 + ";  isRadiationPoisoned: " + radiationPoisoned
 						 + ";  Status: " + status);
 			}
@@ -1378,7 +1290,7 @@ public class PhysicalCondition implements Serializable {
 				// Assume one half as the bare minimum
 				double required = amount / 2D;
 
-				return checkResourceConsumption(received, required, MIN_VALUE, suffocation);
+				return checkResourceConsumption(received, required, MIN_VALUE, ComplaintType.SUFFOCATION);
 			}
 		}
 
@@ -1395,7 +1307,8 @@ public class PhysicalCondition implements Serializable {
 	 * @param complaint Problem associated to this resource.
 	 * @return Has a new problem been added.
 	 */
-	private boolean checkResourceConsumption(double actual, double required, int bounds, Complaint complaint) {
+	private boolean checkResourceConsumption(double actual, double required, int bounds,
+					ComplaintType complaint) {
 
 		boolean newProblem = false;
 		if (actual - required > 0.000_1 || required - actual > 0.000_1)
@@ -1409,57 +1322,49 @@ public class PhysicalCondition implements Serializable {
 			String reading = "";
 			String unit = "";
 			double decimals = 10.0;
-			ComplaintType ct = complaint.getType();
-			if (ct == ComplaintType.SUFFOCATION) {
-				reading = "Oxygen";
-				unit = " kg";
-				decimals = 10000.0;
-			}
-			else if (ct == ComplaintType.DECOMPRESSION) {
-				reading = "Pressure";
-				unit = " kPa";
-			}
-			if (ct == ComplaintType.FREEZING) {
-				reading = "Low Temperature";
-				unit = " " + Msg.getString("temperature.sign.degreeCelsius");
-			}
-			if (ct == ComplaintType.HEAT_STROKE) {
-				reading = "High Temperature";
-				unit = " " + Msg.getString("temperature.sign.degreeCelsius");
+			switch (complaint) {
+				case SUFFOCATION: 
+					reading = "Oxygen";
+					unit = " kg";
+					decimals = 10000.0;
+					break;
+				
+				case DECOMPRESSION:
+					reading = "Pressure";
+					unit = " kPa";
+					break;
+
+				case FREEZING:
+					reading = "Low Temperature";
+					unit = " " + Msg.getString("temperature.sign.degreeCelsius");
+					break;
+
+				case HEAT_STROKE:
+					reading = "High Temperature";
+					unit = " " + Msg.getString("temperature.sign.degreeCelsius");
+					break;
+					
+				default:
 			}
 			String s = reading + " sensor triggered. "
 					+ "  Actual: " + Math.round(actual*decimals)/decimals + unit
 					+ "  Required: " + Math.round(required*decimals)/decimals + unit;
 			logger.log(person, Level.SEVERE, 60_000, s);
 
-			addMedicalComplaint(complaint);
+			addMedicalComplaint(medicalManager.getComplaintByName(complaint));
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 		}
 
 		else {
 			// Is the person suffering from the illness, if so recovery
 			// as the amount has been provided
-			HealthProblem illness = getProblem(complaint);
+			HealthProblem illness = getProblemByType(complaint);
 			if (illness != null) {
 				illness.startRecovery();
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 		}
 		return newProblem;
-	}
-
-	/**
-	 * Converts a complaint object to a health problem object
-	 *
-	 * @param complaint
-	 * @return
-	 */
-	private HealthProblem getProblem(Complaint complaint) {
-		for (HealthProblem hp: problems) {
-			if (hp.getType() == complaint.getType())
-				return hp;
-		}
-		return null;
 	}
 
 	/**
@@ -1470,7 +1375,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 */
 	private boolean badAirPressure(LifeSupportInterface support, double pressure) {
-		return checkResourceConsumption(support.getAirPressure(), pressure, MIN_VALUE, decompression);
+		return checkResourceConsumption(support.getAirPressure(), pressure, MIN_VALUE, ComplaintType.DECOMPRESSION);
 	}
 
 	/**
@@ -1481,8 +1386,8 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 */
 	private boolean badTemperature(LifeSupportInterface support, double minTemperature, double maxTemperature) {
-		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, freezing);
-		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, heatStroke);
+		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, ComplaintType.FREEZING);
+		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, ComplaintType.HEAT_STROKE);
 		return freeze || hot;
 	}
 
@@ -1534,13 +1439,6 @@ public class PhysicalCondition implements Serializable {
 		person.getMind().setInactive();
 		// Add the person's death info to the postmorten exam waiting list
 		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
-	}
-
-
-
-
-	public double getMassPerServing() {
-		return foodDryMassPerServing;
 	}
 
 	/**
@@ -1967,15 +1865,6 @@ public class PhysicalCondition implements Serializable {
 		return FOOD_CONSUMPTION;
 	}
 
-	/**
-	 * Gets the dessert consumption rate per Sol.
-	 *
-	 * @return dessert consumed (kg/Sol)
-	 * @throws Exception if error in configuration.
-	 */
-	public static double getDessertConsumptionRate() {
-		return DESSERT_CONSUMPTION;
-	}
 
 	public RadiationExposure getRadiationExposure() {
 		return radiation;
@@ -2090,15 +1979,7 @@ public class PhysicalCondition implements Serializable {
 			soreness = 100;
 		musculoskeletal[2] = soreness;
 	}
-	
-	public double getStarvationStartTime() {
-		return starvationStartTime;
-	}
 
-
-	public double getDehydrationStartTime() {
-		return dehydrationStartTime;
-	}
 
 	/**
 	 * Checks if it passes the hunger threshold
@@ -2140,20 +2021,12 @@ public class PhysicalCondition implements Serializable {
 		return (endurance * .6 - strength * .4) / 100D;
 	}
 
-	public double getRemainingPrebreathingTime() {
-		return remainingPrebreathingTime;
-	}
-
 	public void reduceRemainingPrebreathingTime(double time) {
 		remainingPrebreathingTime -= time;
 	}
 
 	public boolean isDonePrebreathing() {
         return remainingPrebreathingTime <= 0;
-    }
-
-	public boolean isAtLeastThreeQuarterDonePrebreathing() {
-        return remainingPrebreathingTime <= .25 * STANDARD_PREBREATHING_TIME;
     }
 
 	public boolean isAtLeastHalfDonePrebreathing() {
@@ -2276,11 +2149,19 @@ public class PhysicalCondition implements Serializable {
 	 * @param c1
 	 * @param m
 	 */
-	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
-		sim = s;
-		masterClock = c0;
+	public static void initializeInstances(MasterClock c0, MarsClock c1, MedicalManager m,
+											PersonConfig pc) {
 		marsClock = c1;
 		medicalManager = m;
+		personConfig = pc;
+
+		H2O_CONSUMPTION = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+		O2_CONSUMPTION = personConfig.getNominalO2ConsumptionRate();
+
+		MIN_AIR_PRESSURE = personConfig.getMinAirPressure();
+		MIN_TEMPERATURE = personConfig.getMinTemperature();
+		MAX_TEMPERATURE = personConfig.getMaxTemperature();
+		FOOD_CONSUMPTION = personConfig.getFoodConsumptionRate();
 	}
 
 	public void reinit() {
@@ -2303,16 +2184,6 @@ public class PhysicalCondition implements Serializable {
 		dehydrated = null;
 		medicalManager = null;
 		marsClock = null;
-		dehydration = null;
-		starvation = null;
-		freezing = null;
-		heatStroke = null;
-		decompression = null;
-		suffocation = null;
-//		depression = null;
-//		panicAttack = null;
-//		highFatigue = null;
-		radiationPoisoning = null;
 		medicationList = null;
 	}
 }

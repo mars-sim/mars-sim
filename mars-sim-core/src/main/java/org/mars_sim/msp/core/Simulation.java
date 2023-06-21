@@ -371,6 +371,8 @@ public class Simulation implements ClockListener, Serializable {
 		
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
+		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+								simulationConfig.getPersonConfig());
 
 		malfunctionFactory = new MalfunctionFactory();
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
@@ -472,7 +474,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
-		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
+		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+										simulationConfig.getPersonConfig());
 
 		scientificStudyManager = new ScientificStudyManager();
 		// Re-initialize ScientificStudy
@@ -618,7 +621,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 
-		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
+		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+								simulationConfig.getPersonConfig());
 
 		
 		// Re-nitialize ScientificStudy
