@@ -34,6 +34,14 @@ public interface MineralMap {
 	public Map<String, Double> getAllMineralConcentrations(Coordinates location);
 
 	/**
+	 * Creates mineral concentrations at a given location.
+	 * 
+	 * @param location the coordinate location.
+	 * @return map of mineral types and percentage concentration (0 to 100.0)
+	 */
+	public Map<String, Double> createConcentration(Coordinates location);
+	
+	/**
 	 * Gets an array of all mineral type names.
 	 * 
 	 * @return array of name strings.

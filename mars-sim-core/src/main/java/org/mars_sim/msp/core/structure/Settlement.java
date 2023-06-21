@@ -462,9 +462,14 @@ public class Settlement extends Structure implements Temporal,
 		logger.config(this, " iceCollectionRate: " + Math.round(iceCollectionRate * 100.0)/100.0);
 		logger.config(this, " regolithCollectionRate: " + Math.round(regolithCollectionRate * 100.0)/100.0);
 		
+		Map<String, Double> mineralConcentrations = surfaceFeatures.getMineralMap().createConcentration(location);
+		logger.config(this, "Mineral profile: " + mineralConcentrations);
+		
 		double areoThermalPot = surfaceFeatures.getAreothermalPotential(location);
 		
 		logger.config(this, " Areothermal Potential: " + Math.round(areoThermalPot * 1000.0)/1000.0);
+		
+		
 		
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance

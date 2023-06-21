@@ -49,7 +49,7 @@ import org.mars_sim.msp.common.FileLocator;
  	private static final double TWO_PI = Math.PI * 2;
 	// The default rho at the start of the sim
  	private final double RHO_DEFAULT;
-	
+
  	// Data members.
  	private int[][] pixels = null;
  	// # of pixels in the width of the map image
@@ -84,7 +84,7 @@ import org.mars_sim.msp.common.FileLocator;
 		rho =  pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
 		MAX_RHO = RHO_DEFAULT * 4;
-		MIN_RHO = RHO_DEFAULT / 4;
+		MIN_RHO = RHO_DEFAULT / 6;
 		
 		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
 		

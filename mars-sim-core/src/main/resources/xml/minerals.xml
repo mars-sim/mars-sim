@@ -16,6 +16,37 @@
 	<!-- http://en.wikipedia.org/wiki/Hematite -->
 	<!-- frequency - how common are the mineral concentrations? -->
 	<!-- Valid values: "common", "uncommon", "rare", "very_rare" -->
+	<!-- 
+		1. https://science.nasa.gov/science-news/science-at-nasa/2001/ast28mar_1
+		
+		In 1998, an infrared spectrometer on NASA's Mars Global Surveyor (MGS) spacecraft 
+		detected a substantial deposit of gray hematite near the Martian equator, in a 500 
+		km-wide region called Sinus Meridiani. 
+		
+		The discovery raised the tantalizing possibility that hot springs were once active
+		on Mars.
+		
+		Gray hematite has the same chemical formula (Fe2O3) as its rusty-red cousin, but 
+		a different crystalline structure. Red rust is fine and powdery; typical grains 
+		are hundreds of nanometers to a few microns across. Gray hematite crystals are 
+		larger, like grains of sand.
+
+		Red and gray iron oxides on Mars are different forms of the same 
+		mineral. 
+		
+		Ground up the gray hematite into a fine powder it would turn red because the 
+		smaller grains scatter red light.
+
+		The coarse-grained structure of gray hematite is important because "to get that 
+		kind of coarsening of the crystallinity, you would need to have a reasonable 
+		amount of water available" where the hematite formed.
+		
+		Some of them, like carbonates, would also indicate that standing bodies of 
+		water were present on the surface.
+		
+		Hematite minerals, on the other hand, might have been formed by hydrothermal
+		water deep underground.
+	-->
 	<mineral name="Hematite" frequency="common">
 		<locale-list>
 			<!-- locale topographical regions the mineral is located. -->
@@ -43,7 +74,28 @@
 	</mineral>
 	
 	<!-- Olivine is a magnesium iron silicate found in meteorites. -->
- 	<!-- http://en.wikipedia.org/wiki/Olivine -->
+ 	<!-- 
+ 		1. https://zenodo.org/record/1230836
+ 		
+ 		30,000-square-kilometer area rich in olivine in the Nili Fossae region of Mars. 
+ 		Nili Fossae has been interpreted as a complex of grabens and fractures related to 
+ 		the formation of the Isidis impact basin.
+ 	
+ 		2. http://en.wikipedia.org/wiki/Olivine 
+ 	
+ 		Mg-rich olivine has also been discovered in meteorites, on the Moon and Mars, falling 
+ 		into infant stars, as well as on asteroid 25143 Itokawa.
+ 		
+ 		3. https://en.wikipedia.org/wiki/Composition_of_Mars
+ 		
+     	The mineral olivine occurs all over the planet, but some of the largest concentrations 
+     	are in Nili Fossae, an area containing Noachian-aged rocks. Another large olivine-rich
+     	outcrop is in Ganges Chasma, an eastern side chasm of Valles Marineris. 
+     	
+     	Olivine weathers rapidly into clay minerals in the presence of liquid water. 
+     	Therefore, areas with large outcroppings of olivine-bearing rock indicate that liquid 
+     	water has not been abundant since the rocks formed.
+ 	-->
 	<mineral name="Olivine" frequency="uncommon">
 		<locale-list>
 			<locale name="crater" />
@@ -100,7 +152,8 @@
 		</locale-list>
 	</mineral>
 	
-	<!-- jarosite -->
+	<!-- jarosite, Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
+    Amphibole, Silicates -->
 	
 	
 </mineral-concentrations>

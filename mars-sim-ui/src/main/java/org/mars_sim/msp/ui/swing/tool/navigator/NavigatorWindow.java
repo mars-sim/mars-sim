@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -101,7 +102,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 	
-//	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
+	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
@@ -835,7 +836,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
-			
+			logger.info("mineralName : " + isMineralDisplayed);
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
 
@@ -960,10 +961,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {
 				Unit unit = i.next();
-
 				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
+						logger.info("The mouse cursor is hovering over " + unit);
 					}
 					else 
 						continue;
@@ -971,11 +972,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
-					Coordinates unitCoords = unit.getCoordinates();
-					double clickRange = Coordinates.computeDistance(unitCoords, pos);
+					double clickRange = Coordinates.computeDistance(unit.getCoordinates(), pos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						// System.out.println("you're on a settlement or vehicle");
+						logger.info("The mouse cursor is hovering over " + unit);
 						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						onTarget = true;
 					}
@@ -988,11 +988,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			Iterator<Landmark> j = landmarks.iterator();
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
-
-				Coordinates unitCoords = landmark.getLandmarkCoord();
-				double clickRange = Coordinates.computeDistance(unitCoords, pos);
+				logger.info("The mouse cursor is hovering over " + landmark);
+				double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
 				double unitClickRange = 40D;
-
 				if (clickRange < unitClickRange) {
 					onTarget = true;
 				}
