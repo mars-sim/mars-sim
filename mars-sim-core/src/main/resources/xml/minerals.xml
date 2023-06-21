@@ -46,6 +46,37 @@
 		
 		Hematite minerals, on the other hand, might have been formed by hydrothermal
 		water deep underground.
+		
+		2. https://www.psi.edu/sites/default/files/newsletter/winter02/Winter2002.pdf
+			
+		The mineral the TES instrument unequivocally identified is gray hematite 
+		(Fe2O3), an oxide mineral that occurs on Earth as well as Mars, whose 
+		chemistry is similar to that of common rust. 
+		
+		The hematite found on Mars occurs in both fine-grained and coarse-grained 
+		varieties.  Fine-grained hematite (whose grain diameters are <5-10 microns)
+		gives Mars its red color, which is why Mars is called the “Red Planet”.  
+		 
+		This fine-grained hematite is dispersed within the copious dust that gets 
+		blown around the planet during the seasonal Martian dust storms and is 
+		seen as the lighter-colored regions on Mars.  In contrast, coarser-grained
+		hematite (>10 micron-diameter grains) is gray, not red like the finer-
+		grained hematite in the Martian dust, since the finer grains scatter the
+		red end of the solar spectrum.
+		  
+		A global investigation of Mars by the TES instrument has led to 
+		identification of only three main areas of gray hematite exposed at the 
+		surface of the entire planet.  
+		
+		These gray hematite deposits all occur in darker regions on Mars near 
+		the equator including an area called Sinus Meridiani, in a large impact
+		crater called Aram, and within the Valles Marineris canyon system.  
+		
+		It is possible that the finegrained hematite originated through weathering
+		of gray hematite like those three areas near the equator.
+		
+		It is a common rock-forming mineral found in sedimentary, metamorphic, 
+		and igneous rocks at locations throughout the world.
 	-->
 	<mineral name="Hematite" frequency="common">
 		<locale-list>
@@ -58,6 +89,29 @@
 	
 	<!-- Magnetite is an iron ore with volcanic and metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Magnetite -->
+	<!-- 
+		1. https://www.nature.com/articles/s41561-018-0203-8
+		
+		Experiments show that pH variations within anoxic basaltic waters trigger 
+		a series of mineral transformations that rapidly generate magnetite and 
+		H2(aq). Magnetite continues to form through this mechanism despite high 
+		partial pressure of carbon dioxide (pCO2) and supersaturation with respect
+		to Fe-carbonate minerals. Reactive transport simulations that incorporate 
+		these experimental data show that groundwater infiltration into a lake 
+		equilibrated with a CO2-rich atmosphere can trigger the production of 
+		both magnetite and H2(aq) in the mudstones. H2(aq), generated at 
+		concentrations that would readily exsolve from solution, is capable of 
+		increasing annual mean surface temperatures above freezing in CO2-dominated
+		atmospheres. We therefore suggest that magnetite authigenesis could have
+		provided a short-term feedback for stabilizing liquid water, as well as
+		a principal feedstock for biologically relevant chemical reactions, at 
+		the early Martian surface.
+		  
+		2. https://www.pnas.org/doi/10.1073/pnas.241387898
+		
+		The case for former Martian life now rests on the identification of a small
+		subset of the magnetite crystals in ALH84001 as biogenic in origin. 
+	-->
 	<mineral name="Magnetite" frequency="rare">
 		<locale-list>
 			<locale name="volcanic" />
@@ -67,6 +121,26 @@
 	
 	<!-- Magnesite is a magnesium carbonate with metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Magnesite -->
+	<!-- 
+		Magnesite is a mineral with the chemical formula MgCO3 
+		(magnesium carbonate). Iron, manganese, cobalt, and nickel may occur 
+		as admixtures, but only in small amounts.
+	
+		1. http://en.wikipedia.org/wiki/Magnesite 
+		
+	    Magnesite was detected in meteorite ALH84001 and on planet Mars itself. 
+	    Magnesite was identified on Mars using infrared spectroscopy from satellite 
+	    orbit. Near Jezero Crater, Mg-carbonates have been detected and reported to
+	    have formed in lacustrine environment prevailing there.[28] Controversy 
+	    still exists over the temperature of formation of these carbonates. 
+	    
+	    Low-temperature formation has been suggested for the magnesite from the 
+	    Mars-derived ALH84001 meteorite.
+
+		Magnesium-rich olivine (forsterite) favors production of magnesite from 
+		peridotite. Iron-rich olivine (fayalite) favors production of magnetite-
+		magnesite-silica compositions.
+	-->
 	<mineral name="Magnesite" frequency="rare">
 		<locale-list>
 			<locale name="sedimentary" />
@@ -144,7 +218,7 @@
 		</locale-list>
 	</mineral>
 	
-	<!-- Sylvite is a salt concentration of potasium chloride. -->
+	<!-- Sylvite is a salt concentration of potassium chloride. -->
 	<!-- http://en.wikipedia.org/wiki/Sylvite -->
 	<mineral name="Sylvite" frequency="common">
 		<locale-list>

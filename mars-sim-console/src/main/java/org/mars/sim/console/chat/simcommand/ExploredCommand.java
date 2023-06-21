@@ -81,8 +81,9 @@ public class ExploredCommand extends ChatCommand {
 	}
 
 	/**
-	 * Display a table of the explored location for this Unit
-	 * @param context Context of conersation
+	 * Displays a table of the explored location for this Unit.
+	 * 
+	 * @param context Context of conversation
 	 * @param surface Mars Surface features
 	 */
 	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {

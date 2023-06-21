@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
@@ -29,7 +30,7 @@ import org.mars_sim.msp.core.environment.MineralMap;
 public class MineralMapLayer implements MapLayer {
 
  	private static final Logger logger = Logger.getLogger(MineralMapLayer.class.getName());
-	
+
 	// Domain members
 	private boolean updateLayer;
 
@@ -42,7 +43,7 @@ public class MineralMapLayer implements MapLayer {
 
 	private Coordinates mapCenterCache;
 	private MineralMap mineralMap;
-
+	
 	private java.util.Map<String, Color> mineralColorMap;
 	private java.util.Map<String, Boolean> mineralsDisplayedMap;
 
@@ -55,9 +56,10 @@ public class MineralMapLayer implements MapLayer {
 		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
 		mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
+		 
 		updateMineralsDisplayed();
 	}
-
+	
 	/**
 	 * Displays the layer on the map image.
 	 * 
@@ -66,7 +68,10 @@ public class MineralMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		
 		String mapType = baseMap.getType().getId();
+		
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
 			mapCenterCache = mapCenter;
 			mapTypeCache = mapType;
@@ -81,15 +86,14 @@ public class MineralMapLayer implements MapLayer {
 			double rho = baseMap.getScale();
 
 			java.util.Map<String, Color> mineralColors = getMineralColors();
-			
-//			updateMineralsDisplayed();
-
+	
 			for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
+				
 				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
-					
+					 
 					java.util.Map<String, Double> mineralConcentrations = mineralMap
-							.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho));
-					
+									.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho));
+											
 					if (mineralConcentrations.isEmpty()) {
 						continue;
 					}
@@ -98,6 +102,7 @@ public class MineralMapLayer implements MapLayer {
 					while (i.hasNext()) {
 						String mineralType = i.next();
 						if (isMineralDisplayed(mineralType)) {
+							logger.info(mineralType + " is Displayed.");
 							double concentration = mineralConcentrations.get(mineralType);
 							if (concentration <= 0) {
 								continue;
@@ -113,8 +118,7 @@ public class MineralMapLayer implements MapLayer {
 										concentration);
 							}
 						}
-					}
-					
+					}	
 				}
 			}
 
@@ -134,9 +138,60 @@ public class MineralMapLayer implements MapLayer {
 		}
 
 		// Draw the mineral concentration image
-		g.drawImage(mineralConcentrationMap, 0, 0, displayComponent);
+		g2d.drawImage(mineralConcentrationMap, 0, 0, displayComponent);
 	}
 
+//	 /**
+//	  * Constructs a map array for display with GPU via JOCL.
+//	  * 
+//	  * @param centerPhi
+//	  * @param centerTheta
+//	  * @param mapBoxWidth
+//	  * @param mapBoxHeight
+//	  * @param mapArray
+//	  * @param scale
+//	  */
+//	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
+//		 
+//		 // Set the new scale arg again
+//		 kernel.setArg(12, (float) getScale());
+//		 
+//		 int size = mapArray.length;
+//		 int globalSize = getGlobalSize(size);
+//
+//		 CLBuffer<IntBuffer> rowBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
+//		 CLBuffer<IntBuffer> colBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
+//
+//		 kernel.rewind();
+//		 kernel.putArg((float)centerPhi)
+//				 .putArg((float)centerTheta)
+//				 .putArg(mapBoxWidth)
+//				 .putArg(mapBoxHeight)
+//				 .putArg(pixelWidth)
+//				 .putArg(pixelHeight)
+//				 .putArg(mapBoxWidth/2)
+//				 .putArg(mapBoxHeight/2)
+//				 .putArg(size)
+//				 .putArgs(colBuffer, rowBuffer);
+//
+//		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
+//				 .putReadBuffer(rowBuffer, false)
+//				 .putReadBuffer(colBuffer, true);
+//
+//		 int[] rows = new int[size];
+//		 rowBuffer.getBuffer().get(rows);
+//		 int[] cols = new int[size];
+//		 colBuffer.getBuffer().get(cols);
+//
+//		 for(int i = 0; i < size; i++) {
+//			 mapArray[i] = pixels[rows[i]][cols[i]];
+//		 }
+//
+//		 rowBuffer.release();
+//		 colBuffer.release();
+//	 }
+
+	 
 	/**
 	 * Adds a color to the mineral concentration array.
 	 * 

@@ -42,6 +42,8 @@ public class ShadingMapLayer implements MapLayer {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 
+		// Need to determine which side of Mars is facing the sun
+		
         // sunlight normalized between 0 and 1 
         double sunlight = surfaceFeatures.getSunlightRatio(mapCenter);
         int sunlightInt = (int) (LIGHT_THRESHOLD * sunlight);

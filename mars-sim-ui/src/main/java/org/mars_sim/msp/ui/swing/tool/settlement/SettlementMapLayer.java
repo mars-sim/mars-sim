@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -45,10 +45,4 @@ public interface SettlementMapLayer {
 	 * Destroy the map layer.
 	 */
 	public void destroy();
-//	{
-//		sim = null;
-//		unitManager = null;
-//		missionManager = null;
-//		surfaceFeatures = null;
-//	}
 }

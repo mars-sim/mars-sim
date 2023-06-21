@@ -836,7 +836,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
-			logger.info("mineralName : " + isMineralDisplayed);
+			logger.info(mineralName + ": " + isMineralDisplayed);
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
 
@@ -964,7 +964,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
-						logger.info("The mouse cursor is hovering over " + unit);
+//						logger.info("The mouse cursor is hovering over " + unit);
 					}
 					else 
 						continue;
@@ -975,7 +975,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					double clickRange = Coordinates.computeDistance(unit.getCoordinates(), pos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						logger.info("The mouse cursor is hovering over " + unit);
+//						logger.info("The mouse cursor is hovering over " + unit);
 						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						onTarget = true;
 					}
@@ -988,7 +988,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			Iterator<Landmark> j = landmarks.iterator();
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
-				logger.info("The mouse cursor is hovering over " + landmark);
+//				logger.info("The mouse cursor is hovering over " + landmark);
 				double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
 				double unitClickRange = 40D;
 				if (clickRange < unitClickRange) {

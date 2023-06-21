@@ -40,6 +40,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements MouseWheelListener {
@@ -410,44 +411,53 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (wait) {
-        	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
-        	String message = "Generating Map";
-        	drawCenteredMessage(message, g);
-        }
-        else {
-        	if (mapError) {
-            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
-                // Display previous map image
-                if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
-
-                // Draw error message
-                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
-                drawCenteredMessage(mapErrorMessage, g);
-            }
-        	else {
-        		// Paint black background
-                g.setColor(Color.black);
-                
-                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-
-                g.drawImage(starfield, 0, 0, Color.black, null);
-                
-                if (centerCoords != null) {
-                	if (marsMap != null && marsMap.isImageDone()) {
-                		mapImage = marsMap.getMapImage();
-                		g.drawImage(mapImage, 0, 0, this);
-//                		logger.log(Level.INFO, "g.drawImage");
-                	}
-
-                	// Display map layers.
-                	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
-                }
-        	}
+        if (desktop != null && isShowing() && 
+        		(desktop.isToolWindowOpen(NavigatorWindow.NAME)
+        		|| desktop.isToolWindowOpen(MissionWindow.NAME))) {
+	        
+        	Graphics2D g2d = (Graphics2D) g;
+	        
+        	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+			
+	        if (wait) {
+	        	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+	        	String message = "Generating Map";
+	        	drawCenteredMessage(message, g);
+	        }
+	        else {
+	        	if (mapError) {
+	            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
+	                // Display previous map image
+	                if (mapImage != null) g2d.drawImage(mapImage, 0, 0, this);
+	
+	                // Draw error message
+	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
+	                drawCenteredMessage(mapErrorMessage, g);
+	            }
+	        	else {
+	        		// Paint black background
+	                g.setColor(Color.black);
+	                
+	                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+	
+	                g.drawImage(starfield, 0, 0, Color.black, null);
+	                
+	                if (centerCoords != null) {
+	                	if (marsMap != null && marsMap.isImageDone()) {
+	                		mapImage = marsMap.getMapImage();
+	                		g.drawImage(mapImage, 0, 0, this);
+	//                		logger.log(Level.INFO, "g.drawImage");
+	                	}
+	
+	                	// Display map layers.
+	                	Iterator<MapLayer> i = mapLayers.iterator();
+	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
+	                }
+	        	}
+	        }
         }
     }
 

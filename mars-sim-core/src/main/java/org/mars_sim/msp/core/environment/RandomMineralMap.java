@@ -52,6 +52,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final float REGION_FACTOR = 5;
 	private static final float NON_REGION_FACTOR = 100;
 	
+	private static final String IMAGES_FOLDER = "/images/";
+	
 	// Topographical Region Strings
 	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
 	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
@@ -181,11 +183,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		
 		List<MineralConcentration> localMinerals = new ArrayList<>();
 		
-		// Load topographical regions.
-		Set<Coordinates> craterRegionSet = getTopoRegionSet(CRATER_IMG);
-		Set<Coordinates> volcanicRegionSet = getTopoRegionSet(VOLCANIC_IMG);
-		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet(SEDIMENTARY_IMG);
-
 		if (mineralMapConfig == null)
 			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		
@@ -285,7 +282,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<>(3000);
 //		[landrus, 26.11.09]: don't use the system classloader in a webstart env.
-		URL imageMapURL = getClass().getResource("/images/" + imageMapName);
+		URL imageMapURL = getClass().getResource(IMAGES_FOLDER + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 
@@ -350,7 +347,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			allMineralsByLocation.put(location, map);
 			return map;	
 		}
-		
+
 		return allMineralsByLocation.get(location);
 	}
 
