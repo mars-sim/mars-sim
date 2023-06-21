@@ -66,6 +66,8 @@ public abstract class Function implements Serializable, Temporal {
 	protected static Weather weather;
 
 	protected static MarsClock marsClock;
+	protected static MasterClock masterClock;
+
 
 	/**
 	 * Constructor.
@@ -437,9 +439,10 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
 	 */
-	public static void initializeInstances(BuildingConfig bc, MarsClock c1, PersonConfig pc, CropConfig cc,
+	public static void initializeInstances(BuildingConfig bc, MasterClock c1, PersonConfig pc, CropConfig cc,
 			SurfaceFeatures sf, Weather w, UnitManager u) {
-		marsClock = c1;
+		marsClock = c1.getMarsClock();
+		masterClock = c1;
 		personConfig = pc;
 		buildingConfig = bc;
 		cropConfig = cc;

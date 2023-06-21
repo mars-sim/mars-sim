@@ -75,7 +75,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
@@ -1199,9 +1198,7 @@ public class SettlementTransparentPanel extends JComponent {
 			displaySunData(s.getCoordinates());
 		}
 		
-		// This can be removed once uiPulse is collapsed into timePulse
-		MarsClock marsClock = pulse.getMarsTime();
-		if (marsClock.isStable() && bannerBar != null) {
+		if (bannerBar != null) {
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// When loading from a saved sim, s may be initially null
 			if (s == null) 

@@ -32,7 +32,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         Simulation sim = Simulation.instance();
         sim.testRun();
         
-        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
+        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
         							 sim.getWeather(), sim.getUnitManager());
 	}

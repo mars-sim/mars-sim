@@ -184,6 +184,6 @@ extends JPanel
 	 * @param pulse Amount of clock movement
 	 */	
 	void update(ClockPulse pulse) {
-		updateArrival(pulse.getNewMarsTime());			
+		updateArrival(pulse.getMarsTime());			
 	}
 }

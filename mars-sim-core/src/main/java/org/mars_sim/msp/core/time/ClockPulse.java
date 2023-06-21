@@ -66,20 +66,9 @@ public class ClockPulse {
 	 * 
 	 * @return
 	 */
-	public MarsClock getMarsTime() {
-		return oldMarsTime;
-	}
-
-	/**
-	 * Gets MarsTime when this pulse fires.
-	 * This will be renamed once the old MarsClock is removed 
-	 * 
-	 * @return
-	 */
-	public MarsTime getNewMarsTime() {
+	public MarsTime getMarsTime() {
 		return marsTime;
 	}
-
 
 	/**
 	 * Gets MasterClock instance.

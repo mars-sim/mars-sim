@@ -159,7 +159,7 @@ public class ScheduledEventManager implements Serializable, Temporal {
     @Override
     public boolean timePassing(ClockPulse clockPulse) {
         synchronized(eventQueue) {
-            MarsTime currentTime = clockPulse.getNewMarsTime();
+            MarsTime currentTime = clockPulse.getMarsTime();
 
             if (!eventQueue.isEmpty()) {
                 ScheduledEvent next = eventQueue.get(0);

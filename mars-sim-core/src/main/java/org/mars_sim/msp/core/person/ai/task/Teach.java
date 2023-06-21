@@ -147,8 +147,6 @@ public class Teach extends Task {
 							teachingTask = candidateTask;
 							taskSkill = candidateSkill;
 							student = candidate;
-							logger.log(worker, Level.INFO, 30_000, "Teaching " + student.getName() 
-										+ " on '" + teachingTask.getName(false) + "'.");
 							
 							setDescription(
 								Msg.getString("Task.description.teach.detail", 

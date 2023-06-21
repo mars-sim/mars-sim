@@ -168,6 +168,6 @@ public class ResupplyDetailPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		updateArrival(pulse.getNewMarsTime());
+		updateArrival(pulse.getMarsTime());
 	}
 }

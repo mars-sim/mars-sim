@@ -84,6 +84,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -1220,8 +1221,8 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Provides the daily reports for the settlement
 	 */
-	private void performEndOfDayTasks(MarsClock marsNow) {
-		int solElapsed = marsNow.getMissionSol();
+	private void performEndOfDayTasks(MarsTime marsTime) {
+		int solElapsed = marsTime.getMissionSol();
 
 		removeAllReservations();
 

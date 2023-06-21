@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * This class represents servings of prepared dessert from a kitchen.
@@ -17,9 +17,6 @@ public class PreparedDessert implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	// private static final Logger logger = Logger.getLogger(PreparedDessert.class.getName());
 
 	/**
 	 * The time (millisols) between when the dessert is made and when it expires.
@@ -32,7 +29,7 @@ public class PreparedDessert implements Serializable {
 
 	private String name;
 
-	private MarsClock expirationTime;
+	private MarsTime expirationTime;
 
 	/**
 	 * Constructor.
@@ -40,12 +37,11 @@ public class PreparedDessert implements Serializable {
 	 * @param quality      the quality of the dessert
 	 * @param creationTime the time the dessert was cooked.
 	 */
-	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime) {
+	public PreparedDessert(String name, double quality, double dryMass, MarsTime creationTime) {
 		this.quality = quality;
 		this.name = name;
 		this.dryMass = dryMass;
-		expirationTime = new MarsClock(creationTime);
-		expirationTime.addTime(SHELF_LIFE);
+		expirationTime = creationTime.addTime(SHELF_LIFE);
 	}
 
 	/**
@@ -80,7 +76,7 @@ public class PreparedDessert implements Serializable {
 	 * 
 	 * @return expiration time
 	 */
-	public MarsClock getExpirationTime() {
+	public MarsTime getExpirationTime() {
 		return expirationTime;
 	}
 }

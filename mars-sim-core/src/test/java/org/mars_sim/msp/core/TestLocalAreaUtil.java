@@ -221,7 +221,7 @@ public class TestLocalAreaUtil extends TestCase {
             unitManager.removeUnit(i.next());
         }
 		
-        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
+        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
         							 sim.getWeather(), unitManager);
 	}

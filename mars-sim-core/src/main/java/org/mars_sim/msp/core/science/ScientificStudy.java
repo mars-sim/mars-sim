@@ -29,7 +29,8 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -44,7 +45,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 		double acheivementEarned = 0D;
 		double paperWorkTime = 0D;
 		double reseachWorkTime = 0D;
-		MarsClock lastContribution = null;
+		MarsTime lastContribution = null;
 		ScienceType contribution;
 		
 		CollaboratorStats(ScienceType contribution) {
@@ -107,7 +108,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	private String name;
 	private ScienceType science;
 
-	private MarsClock peerReviewStartTime;
+	private MarsTime peerReviewStartTime;
 
 	private CollaboratorStats primaryStats;
 	
@@ -121,7 +122,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	/** A major topics this scientific study is aiming at. */
 	private List<String> topics;
 
-	private static MarsClock marsClock;
+	private static MasterClock masterClock;
 	private static ScienceConfig scienceConfig;
 
 	/**
@@ -546,7 +547,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 		}
 		
 		// Update last primary work time.
-		primaryStats.lastContribution = new MarsClock(marsClock);
+		primaryStats.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
@@ -605,7 +606,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 			c.reseachWorkTime = requiredWorkTime;
 
 		// Update last collaborative work time.
-		c.lastContribution = new MarsClock(marsClock);
+		c.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
@@ -750,7 +751,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * Start the peer review phase of the study.
 	 */
 	private void startingPeerReview() {
-		peerReviewStartTime = new MarsClock(marsClock);
+		peerReviewStartTime = masterClock.getMarsTime();
 	}
 
 	/**
@@ -761,7 +762,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	private boolean isPeerReviewTimeFinished() {
 		boolean result = false;
 		if (peerReviewStartTime != null) {
-			double peerReviewTime = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
+			double peerReviewTime = masterClock.getMarsTime().getTimeDiff(peerReviewStartTime);
 			if (peerReviewTime >= basePeerReviewTime)
 				result = true;
 		}
@@ -776,7 +777,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	public double getPeerReviewTimeCompleted() {
 		double result = 0D;
 		if (peerReviewStartTime != null) {
-			result = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
+			result = masterClock.getMarsTime().getTimeDiff(peerReviewStartTime);
 		}
 		return result;
 	}
@@ -843,7 +844,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * 
 	 * @return last time or null if none.
 	 */
-	public MarsClock getLastPrimaryResearchWorkTime() {
+	public MarsTime getLastPrimaryResearchWorkTime() {
 		return primaryStats.lastContribution;
 	}
 
@@ -1014,11 +1015,9 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	
 	/**
 	 * Initializes instances after loading from a saved sim.
-	 * 
-	 * @param {{@link MarsClock}
-	 */
-	public static void initializeInstances(MarsClock c) {	
-		marsClock = c;
+	 * 	 */
+	public static void initializeInstances(MasterClock c) {	
+		masterClock = c;
 	}
 	
 	/**
@@ -1098,12 +1097,14 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 				logger.log(primaryResearcher, Level.INFO, 0,
 					"Finished the research work on " 
 					+ getName() + " study. Starting to compile data results.");
-			} else {
+			}
+			else {
+				MarsTime now = masterClock.getMarsTime();
 
 				// Check primary researcher downtime.
 				if (!isPrimaryResearchCompleted()) {
-					MarsClock lastPrimaryWork = getLastPrimaryResearchWorkTime();
-					if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
+					MarsTime lastPrimaryWork = getLastPrimaryResearchWorkTime();
+					if ((lastPrimaryWork != null) && now.getTimeDiff(
 							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
 						setCompleted(CANCELED);
 						logger.log(primaryResearcher, Level.INFO, 0,
@@ -1117,8 +1118,8 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 				for (Entry<Integer, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
 					CollaboratorStats c = e.getValue();
 					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
-						MarsClock lastCollaborativeWork = c.lastContribution;
-						if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
+						MarsTime lastCollaborativeWork = c.lastContribution;
+						if ((lastCollaborativeWork != null) && now.getTimeDiff(
 								lastCollaborativeWork) > collaborativeWorkDownTimeAllowed) {
 							Person researcher = um.getPersonByID(e.getKey());
 							removeCollaborativeResearcher(researcher);
@@ -1199,7 +1200,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 			case PROPOSAL_PHASE:
 				return proposalWorkTime / baseProposalTime;
 			case INVITATION_PHASE:
-				return (double)maxCollaborators / collaborators.size();
+				return (double)collaborators.size()/ maxCollaborators;
 			case PAPER_PHASE: {
 				double total = getTotalPrimaryPaperWorkTimeRequired() + (collaborators.size() * baseCollaborativePaperWritingTime);
 				double completed = getPrimaryPaperWorkTimeCompleted()

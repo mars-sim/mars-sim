@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -184,10 +184,6 @@ public class PreparingDessert extends Function {
 		}
 		return null;
 	}
-
-//    public void setChef(String name) {
-//    	this.producerName = name;
-//    }
 
 	/**
 	 * Gets the value of the function for a named building.
@@ -567,7 +563,7 @@ public class PreparingDessert extends Function {
 
 			// Create a serving of dessert and add it into the list
 			servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing,
-					new MarsClock(marsClock)));
+					masterClock.getMarsTime()));
 
 			dessertCounterPerSol++;
 
@@ -595,13 +591,15 @@ public class PreparingDessert extends Function {
 			if (hasFreshDessert()) {
 				double rate = building.getSettlement().getDessertsReplenishmentRate();
 	
+				MarsTime now = pulse.getMarsTime();
+
 				// Handle expired prepared desserts.
 				Iterator<PreparedDessert> i = servingsOfDessert.iterator();
 				while (i.hasNext()) {
 	
 					PreparedDessert dessert = i.next();
 	
-					if (MarsClock.getTimeDiff(dessert.getExpirationTime(), pulse.getMarsTime()) < 0D) {
+					if (dessert.getExpirationTime().getTimeDiff(now) < 0D) {
 						servingsOfDessert.remove(dessert);
 	
 						// Check if prepared dessert has gone bad and has to be thrown out.
@@ -617,9 +615,7 @@ public class PreparingDessert extends Function {
 	
 							log.append(getDryMass(dessert.getName())).append(" kg ")
 									.append(dessert.getName()).append(DISCARDED);
-	
-							logger.log(building, Level.INFO, 30_000, log.toString());
-	
+		
 						} else {
 							// Refrigerate prepared dessert.
 							refrigerateFood(dessert);
@@ -627,9 +623,9 @@ public class PreparingDessert extends Function {
 							log.append(REFRIGERATE).append(getDryMass(dessert.getName())).append(" kg ")
 									.append(dessert.getName() + ".");
 	
-							logger.log(building, Level.INFO, 30_000, log.toString());
 						}
-	
+						logger.log(building, Level.FINE, 30_000, log.toString());
+
 						// Adjust the rate to go down for each dessert that wasn't eaten.
 						if (rate > 0) {
 							rate -= DOWN;

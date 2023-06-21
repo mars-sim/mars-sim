@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import java.io.Serializable;
 
 /**
@@ -25,11 +25,7 @@ public class CookedMeal implements Serializable, Cloneable {
 	private double dryMass;
 
 	private String mealName;
-	private String producerName;
-	private String consumerName;
-
-	private Cooking kitchen;
-	private MarsClock expirationTime;
+	private MarsTime expirationTime;
 
 	/**
 	 * Constructor.
@@ -37,30 +33,11 @@ public class CookedMeal implements Serializable, Cloneable {
 	 * @param quality      the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String mealName, double quality, double dryMass, MarsClock creationTime, String producerName,
-			Cooking kitchen) {
+	public CookedMeal(String mealName, double quality, double dryMass, MarsTime creationTime) {
 		this.quality = quality;
 		this.mealName = mealName;
 		this.dryMass = dryMass;
-		expirationTime = new MarsClock(creationTime);
-		expirationTime.addTime(SHELF_LIFE);
-		this.producerName = producerName;
-		this.kitchen = kitchen;
-	}
-
-	// constructor
-	public CookedMeal(CookedMeal cookedMeal, String consumerName) {
-		this.quality = cookedMeal.quality;
-		this.mealName = cookedMeal.mealName;
-		this.expirationTime = cookedMeal.expirationTime;
-		this.consumerName = consumerName;
-	}
-
-	// copy constructor
-	public CookedMeal(CookedMeal cookedMeal) {
-		this.quality = cookedMeal.quality;
-		this.mealName = cookedMeal.mealName;
-		this.expirationTime = cookedMeal.expirationTime;
+		expirationTime = creationTime.addTime(SHELF_LIFE);
 	}
 
 	public String getName() {
@@ -90,11 +67,7 @@ public class CookedMeal implements Serializable, Cloneable {
 	 * 
 	 * @return expiration time
 	 */
-	public MarsClock getExpirationTime() {
+	public MarsTime getExpirationTime() {
 		return expirationTime;
-	}
-
-	public void setConsumerName(String consumerName) {
-		this.consumerName = consumerName;
 	}
 }

@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -102,7 +102,7 @@ public class Cooking extends Function {
 	/** The quality history of each meal.  */
 	private Multimap<String, Double> qualityMap;
 	/** The creation time of each meal.  */
-	private Multimap<String, MarsClock> timeMap;
+	private Multimap<String, MarsTime> timeMap;
 
 	private static List<Integer> oilMenu;
 
@@ -209,8 +209,8 @@ public class Cooking extends Function {
 		return qualityMapCache;
 	};
 
-	public Multimap<String, MarsClock> getTimeMap() {
-		Multimap<String, MarsClock> timeMapCache = ArrayListMultimap.create(timeMap);
+	public Multimap<String, MarsTime> getTimeMap() {
+		Multimap<String, MarsTime> timeMapCache = ArrayListMultimap.create(timeMap);
 		// Empty out the map so that the next read by TabPanelCooking.java will be brand
 		// new cookedMeal
 		if (!timeMap.isEmpty()) {
@@ -625,9 +625,9 @@ public class Cooking extends Function {
 
 		String nameOfMeal = hotMeal.getMealName();
 
-		MarsClock currentTime = new MarsClock(marsClock);
-
-		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, theCook.getName(), this);
+		MarsTime currentTime = masterClock.getMarsTime();
+		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing,
+										currentTime);
 		cookedMeals.add(meal);
 		mealCounterPerSol++;
 
@@ -801,9 +801,10 @@ public class Cooking extends Function {
 			if (hasCookedMeal()) {
 				double rate = building.getSettlement().getMealsReplenishmentRate();
 
+				MarsTime now = masterClock.getMarsTime();
 				// Handle expired cooked meals.
 				for (CookedMeal meal : cookedMeals) {
-					if (MarsClock.getTimeDiff(meal.getExpirationTime(), pulse.getMarsTime()) < 0D) {
+					if (meal.getExpirationTime().getTimeDiff(now) < 0D) {
 
 						// Note: turn this into a task
 						cookedMeals.remove(meal);

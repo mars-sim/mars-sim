@@ -41,7 +41,7 @@ extends TestCase {
 
         unitManager = sim.getUnitManager();
 
-        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
+        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
         							 sim.getWeather(), sim.getUnitManager());
         

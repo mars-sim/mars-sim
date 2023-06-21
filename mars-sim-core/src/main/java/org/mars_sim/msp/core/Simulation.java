@@ -378,7 +378,7 @@ public class Simulation implements ClockListener, Serializable {
 												simulationConfig.getPartConfiguration());
 
 		// Initialize ScientificStudy
-		ScientificStudy.initializeInstances(marsClock);
+		ScientificStudy.initializeInstances(masterClock);
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
@@ -476,7 +476,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		scientificStudyManager = new ScientificStudyManager();
 		// Re-initialize ScientificStudy
-		ScientificStudy.initializeInstances(marsClock);
+		ScientificStudy.initializeInstances(masterClock);
 		// Re-initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 		
@@ -505,7 +505,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		// Re-initialize Building function related class
-		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
+		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures,
 								     weather, unitManager);
 		
 		Crop.initializeInstances(cc);
@@ -622,7 +622,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		
 		// Re-nitialize ScientificStudy
-		ScientificStudy.initializeInstances(marsClock);
+		ScientificStudy.initializeInstances(masterClock);
 		// Re-nitialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 		
@@ -649,7 +649,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		// Re-initialize Building function related class
-		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
+		Function.initializeInstances(bc, masterClock, pc, cc, surfaceFeatures, weather, unitManager);
 		
 		Crop.initializeInstances(cc);
 		

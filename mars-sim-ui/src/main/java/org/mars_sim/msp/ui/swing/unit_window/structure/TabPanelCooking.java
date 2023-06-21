@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -186,7 +186,7 @@ public class TabPanelCooking extends TabPanel {
 
 			public String getToolTipText(java.awt.event.MouseEvent e) {
 				String personName = null;
-				MarsClock time = null;
+				MarsTime time = null;
 
 				StringBuilder result = new StringBuilder("<html>");
 
@@ -334,11 +334,11 @@ public class TabPanelCooking extends TabPanel {
 		private Multimap<String, Double> qualityMap;
 		private Multimap<String, Double> allQualityMap;
 
-		private Multimap<String, MarsClock> timeMap;
-		private Multimap<String, MarsClock> allTimeMap;
+		private Multimap<? extends String, ? extends MarsTime> timeMap;
+		private Multimap<String, MarsTime> allTimeMap;
 
 		private Collection<Map.Entry<String, Double>> allQualityMapE;
-		private Collection<Entry<String, MarsClock>> allTimeMapE;
+		private Collection<Entry<String, MarsTime>> allTimeMapE;
 
 
 		private String[] columnNames = { "Meal", "# Servings",

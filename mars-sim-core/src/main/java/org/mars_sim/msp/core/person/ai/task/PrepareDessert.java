@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -182,7 +181,6 @@ public class PrepareDessert extends Task {
 		
 		if (nameOfDessert != null) {
 			// if nameOfDessert is done
-			logger.log(worker, Level.INFO, 4_000, Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert));
 			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
 			endTask();
 		}

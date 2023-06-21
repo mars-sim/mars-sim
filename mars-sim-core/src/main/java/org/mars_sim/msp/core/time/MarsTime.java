@@ -458,16 +458,6 @@ public class MarsTime implements Serializable {
 	}
 
 	/**
-	 * Checks if the mars clock becomes stable enough at the start of the sim.
-	 * 
-	 * @return
-	 */
-	public boolean isStable() {
-		// Note: for now, after 10 millisols, the clock seems to become stable
-        return millisol > 15;
-    }
-
-	/**
 	 * Displays the string version of the clock.
 	 *
 	 * @return time stamp string.
