@@ -102,7 +102,7 @@ public class MineralMapLayer implements MapLayer {
 					while (i.hasNext()) {
 						String mineralType = i.next();
 						if (isMineralDisplayed(mineralType)) {
-							logger.info(mineralType + " is Displayed.");
+//							logger.info(mineralType + " is Displayed.");
 							double concentration = mineralConcentrations.get(mineralType);
 							if (concentration <= 0) {
 								continue;

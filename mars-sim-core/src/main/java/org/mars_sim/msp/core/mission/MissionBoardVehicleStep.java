@@ -30,9 +30,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Get all Members ready to depart on the mission
  */
 public class MissionBoardVehicleStep extends MissionStep {
+
+	private static final long serialVersionUID = 1L;
+
 	private static final SimLogger logger = SimLogger.getLogger(MissionBoardVehicleStep.class.getName());
 
-	/* Howlong do Worker have to complete departure */
+	/* How long do Worker have to complete departure */
 	private static final int DEPARTURE_DURATION = 150;
 	private static final int DEPARTURE_PREPARATION = 15;
 

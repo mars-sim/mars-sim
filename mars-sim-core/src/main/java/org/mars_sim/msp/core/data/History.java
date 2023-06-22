@@ -18,11 +18,17 @@ import org.mars_sim.msp.core.time.MasterClock;
  * Whenever a value is added it is timestamped with teh current marian time.
  */
 public class History<T> implements Serializable {
-    /**
+
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Something happened in the history of this object.
      */
     public static class HistoryItem<T> implements Serializable {
-        private MarsTime when;
+    
+		private static final long serialVersionUID = 1L;
+		
+		private MarsTime when;
         private T what;
 
         public HistoryItem(MarsTime when, T what) {
