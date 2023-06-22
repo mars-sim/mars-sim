@@ -106,7 +106,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 			for(DeathInfo pm : deaths) {
 				if (!pm.getExamDone()) {
 					double score = DEFAULT_SCORE +
-							((marsClock.getMissionSol() - pm.getMissionSol()) * SOL_SCORE);
+							((getMarsTime().getMissionSol() - pm.getMissionSol()) * SOL_SCORE);
 					tasks.add(new ExamineBodyJob(this, pm, score));
 				}
 			}

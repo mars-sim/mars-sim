@@ -11,7 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * This class represents a time based event that has occurred in the simulation.
@@ -36,7 +36,7 @@ public abstract class HistoricalEvent implements Serializable {
 	private EventType type;
 
 	/** Time event occurred. */
-	private MarsClock timestamp;
+	private MarsTime timestamp;
 	/** Source of event may be null. */
 	private Object source;
 	private String whatCause;
@@ -97,10 +97,10 @@ public abstract class HistoricalEvent implements Serializable {
 	/**
 	 * Set the timestamp for this event.
 	 * 
-	 * @param timestamp
+	 * @param marsTime
 	 */
-	void setTimestamp(MarsClock timestamp) {
-		this.timestamp = timestamp;
+	void setTimestamp(MarsTime marsTime) {
+		this.timestamp = marsTime;
 	}
 	
 	/**
@@ -162,7 +162,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * 
 	 * @return Time the event happened
 	 */
-	public MarsClock getTimestamp() {
+	public MarsTime getTimestamp() {
 		return timestamp;
 	}
 

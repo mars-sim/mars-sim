@@ -11,9 +11,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 
 /**
@@ -40,14 +39,15 @@ public class HistoricalEventManager implements Serializable {
 	// Static list - don't want to be serialized
 	private static List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
 
-	// Note : marsClock CAN'T be initialized until the simulation start
-	private MarsClock marsClock;
+	private MasterClock masterClock;
 
 	/**
 	 * Creates a new EventManager that represents a particular simulation.
+	 * @param masterClock
 	 */
-	public HistoricalEventManager() {
+	public HistoricalEventManager(MasterClock masterClock) {
 		listeners = new CopyOnWriteArrayList<>();
+		this.masterClock = masterClock;
 	}
 
 	/**
@@ -113,10 +113,7 @@ public class HistoricalEventManager implements Serializable {
 		else if (isSameEvent(newEvent))
 			return;
 
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		newEvent.setTimestamp(new MarsClock(marsClock));
+		newEvent.setTimestamp(masterClock.getMarsTime());
 
 		if (lastEvents == null)
 			lastEvents = new CopyOnWriteArrayList<>();

@@ -146,7 +146,7 @@ public class SleepMeta extends FactoryMetaTask {
                result = result / 100D;
             }
 
-        	int sol = marsClock.getMissionSol();
+        	int sol = getMarsTime().getMissionSol();
         	
         	// Skip the first sol since the sleep time pattern has not been established
             if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
@@ -168,7 +168,7 @@ public class SleepMeta extends FactoryMetaTask {
 	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	// is now falling two of the best sleep time ?
 	    	for (int time : bestSleepTime) {
-	        	int now = marsClock.getMillisolInt();
+	        	int now = getMarsTime().getMillisolInt();
 		    	int diff = time - now;
 		    	if (diff < 30 || diff > -30) {
 		    		result = result*5;

@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -65,7 +64,6 @@ public abstract class Function implements Serializable, Temporal {
 	protected static UnitManager unitManager;
 	protected static Weather weather;
 
-	protected static MarsClock marsClock;
 	protected static MasterClock masterClock;
 
 
@@ -436,12 +434,10 @@ public abstract class Function implements Serializable, Temporal {
 	 *
 	 * @param bc {@link BuildingConfig}
 	 * @param c0 {@link MasterClock}
-	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
 	 */
 	public static void initializeInstances(BuildingConfig bc, MasterClock c1, PersonConfig pc, CropConfig cc,
 			SurfaceFeatures sf, Weather w, UnitManager u) {
-		marsClock = c1.getMarsClock();
 		masterClock = c1;
 		personConfig = pc;
 		buildingConfig = bc;

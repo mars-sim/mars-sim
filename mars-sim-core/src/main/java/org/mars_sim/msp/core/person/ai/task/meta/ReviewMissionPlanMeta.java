@@ -117,7 +117,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
 				// Add adjustment based on how many sol the request has since been submitted
 				// if the job assignment submitted date is > 1 sol
-				int sol = marsClock.getMissionSol();
+				int sol = getMarsTime().getMissionSol();
 				int solRequest = mp.getMissionSol();
 				int diff = sol - solRequest;
 

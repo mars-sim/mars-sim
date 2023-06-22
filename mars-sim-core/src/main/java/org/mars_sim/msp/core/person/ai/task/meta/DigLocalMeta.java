@@ -148,7 +148,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         double result = 1D;
         if (person.isOnDuty()) {
             Shift shift = person.getShiftSlot().getShift();
-            int shiftPast = marsClock.getMillisolInt() - shift.getStart();
+            int shiftPast = getMarsTime().getMillisolInt() - shift.getStart();
             if (shiftPast < 0) {
                 shiftPast += 1000;
             }

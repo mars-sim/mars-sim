@@ -392,7 +392,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 
-		eventManager = new HistoricalEventManager();
+		eventManager = new HistoricalEventManager(masterClock);
 
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
@@ -447,7 +447,7 @@ public class Simulation implements ClockListener, Serializable {
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
 		
-		eventManager = new HistoricalEventManager();
+		eventManager = new HistoricalEventManager(masterClock);
 		
 		transportManager = new TransportManager(this);
 		
@@ -877,7 +877,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (lastSaveTimeStamp != null)
 		logger.config("          System Time Stamp : " + DateFormat.getDateTimeInstance().format(lastSaveTimeStamp));
 		logger.config("           Earth Time Stamp : " + masterClock.getEarthTime());
-		logger.config("         Martian Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+		logger.config("         Martian Time Stamp : " + masterClock.getMarsTime().getDateTimeStamp());
 
 		logger.config(DASHES);
 		if (Simulation.BUILD.equals(loadBuild)) {
@@ -894,8 +894,8 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Prints the last saved sol if reloading from a saved sim.
 	 */
-	public void printLastSavedSol() {
-		int lastSol = masterClock.getMarsClock().getMissionSol();
+	private void printLastSavedSol() {
+		int lastSol = masterClock.getMarsTime().getMissionSol();
 		logger.config(" - - - - - - - - - - - - - - Sol " 
 				+ lastSol
 				+ " (Cont') - - - - - - - - - - - - - - ");
@@ -1384,10 +1384,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	public void setJustSaved(boolean value) {
 		justSaved = value;
-	}
-
-	public int getMissionSol() {
-		return masterClock.getMarsClock().getMissionSol();
 	}
 
 	/**

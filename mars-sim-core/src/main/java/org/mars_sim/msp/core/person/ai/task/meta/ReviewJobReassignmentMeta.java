@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.Assignment;
 import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -32,8 +30,6 @@ public class ReviewJobReassignmentMeta extends FactoryMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.reviewJobReassignment"); //$NON-NLS-1$
-
-    public static MarsClock marsClock;
     
     public ReviewJobReassignmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -110,10 +106,8 @@ public class ReviewJobReassignmentMeta extends FactoryMetaTask {
 	                    	//result = result + result * preference / 10D ;
 	                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
-                            if (marsClock == null)
-                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
                             // if the job assignment submitted date is > 1 sol
-                            int sol = marsClock.getMissionSol();
+                            int sol = getMarsTime().getMissionSol();
                             int solRequest = ja.getSolSubmitted();
                             if (sol - solRequest == 1)
                                 result += 50D;

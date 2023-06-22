@@ -21,7 +21,8 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Class for a meta task, responsible for determining task probability and
@@ -53,9 +54,8 @@ public abstract class MetaTask {
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
-	/** The static instance of the mars clock. */
-	protected static MarsClock marsClock;
 	protected static SurfaceFeatures surfaceFeatures;
+	private static MasterClock masterClock;
 	
 	private boolean effortDriven = true;
 	private String name;
@@ -327,12 +327,20 @@ public abstract class MetaTask {
 	}
 
 	/**
+	 * Get the currnt martian time
+	 * @return MarsTime from master clock
+	 */
+	protected static MarsTime getMarsTime() {
+		return masterClock.getMarsTime();
+	}
+
+	/**
 	 * Attaches to the common controlling classes.
 	 * 
 	 * @param sim
 	 */
 	static void initialiseInstances(Simulation sim) {
-		marsClock = sim.getMasterClock().getMarsClock();
+		masterClock = sim.getMasterClock();
 		surfaceFeatures = sim.getSurfaceFeatures();
 	}
 }
