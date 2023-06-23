@@ -74,7 +74,7 @@ public class MealConfig implements Serializable {
 	}
 
 	/**
-	 * Gets average amount of cleaning agent per sol
+	 * Gets average amount of cleaning agent per sol.
 	 * 
 	 * @return rate (kg/sol)
 	 * @throws Exception if rate could not be found.
@@ -84,10 +84,10 @@ public class MealConfig implements Serializable {
 	}
 
 	/*
-	 * Gets the value of an element as a double
+	 * Gets the value of an element as a double.
 	 * 
-	 * @param an element
-	 * 
+	 * @param mealDoc
+	 * @param child an element string
 	 * @return a double
 	 */
 	private double getValueAsDouble(Document mealDoc, String child) {
@@ -97,7 +97,7 @@ public class MealConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the all dishes list
+	 * Gets the all dishes list.
 	 * 
 	 * @return a list of all dishes 
 	 */
@@ -108,7 +108,7 @@ public class MealConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the main dish meal list
+	 * Gets the main dish meal list.
 	 * 
 	 * @return a list of main dish meals
 	 */
@@ -117,7 +117,7 @@ public class MealConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the side dish meal list
+	 * Gets the side dish meal list.
 	 * 
 	 * @return a list of side dish meals
 	 */
@@ -143,7 +143,6 @@ public class MealConfig implements Serializable {
 
 		Element root = mealDoc.getRootElement();
 		Element mealListElement = root.getChild(MEAL_LIST);
-		
 		
 		// Main Dishes
 		List<HotMeal> mainDishMeals = new ArrayList<>();
@@ -172,8 +171,7 @@ public class MealConfig implements Serializable {
 			mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
 
 			// Create meal
-
-			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
+			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory);
 
 			// Modify to ingredients = meal.getChildren(INGREDIENT);
 			List<Element> ingredients = mainDish.getChildren(INGREDIENT);
@@ -229,7 +227,7 @@ public class MealConfig implements Serializable {
 
 			// Create meal
 
-			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
+			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); 
 
 			// Modify to ingredients = meal.getChildren(INGREDIENT);
 			List<Element> ingredients = sideDish.getChildren(INGREDIENT);
@@ -248,7 +246,7 @@ public class MealConfig implements Serializable {
 				String proportionStr = ingredient.getAttributeValue(PROPORTION);
 				double proportion = Double.parseDouble(proportionStr);
 
-				aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
+				aMeal.addIngredient(ingredientId, ingredientID, proportion);
 
 			}
 
@@ -259,7 +257,7 @@ public class MealConfig implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		if (mainDishList != null) {

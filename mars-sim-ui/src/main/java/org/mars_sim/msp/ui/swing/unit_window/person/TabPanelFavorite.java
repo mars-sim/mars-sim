@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @date 2022-07-09
+ * @date 2023-06-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -23,10 +23,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.fav.Preference;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -52,10 +52,10 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
+	 * @param person the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelFavorite(Person unit, MainDesktopPane desktop) {
+	public TabPanelFavorite(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			null,
@@ -64,28 +64,28 @@ extends TabPanel {
 			desktop
 		);
 
-		person = unit;
+		this.person = person;
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-		JPanel topPanel = new JPanel();
+		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 		content.add(topPanel, BorderLayout.NORTH);
 		
 		// Prepare SpringLayout for info panel.
 		AttributePanel infoPanel = new AttributePanel(4);
-		topPanel.add(infoPanel);
+		topPanel.add(infoPanel, BorderLayout.NORTH);
 
 		Favorite fav = person.getFavorite();
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.mainDish"), fav.getFavoriteMainDish(), null);
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.sideDish"), fav.getFavoriteSideDish(), null);
-		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dessert"), fav.getFavoriteDessert(), null);
+		infoPanel.addTextField(Msg.getString("TabPanelFavorite.dessert"), Conversion.capitalize(fav.getFavoriteDessert()), null);
 		infoPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
 
 		// Create label panel.
-		JPanel labelPanel = new JPanel(new BorderLayout(0, 0));
-		topPanel.add(labelPanel);
+		JPanel labelPanel = new JPanel(new BorderLayout(5, 5));
+		content.add(labelPanel, BorderLayout.CENTER);
 		
 		// Create preference title label
 		JLabel preferenceLabel = new JLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -96,7 +96,7 @@ extends TabPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		topPanel.add(scrollPane, BorderLayout.CENTER);
+		labelPanel.add(scrollPane, BorderLayout.CENTER);
 		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
@@ -106,11 +106,12 @@ extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(120);
+		table.setPreferredScrollableViewportSize(new Dimension(225, 200));
+		table.getColumnModel().getColumn(0).setPreferredWidth(150);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
 		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
@@ -131,21 +132,12 @@ extends TabPanel {
 		private List<String> scoreStringList;
 		private Map<String, Integer> scoreStringMap;
 
-		private PreferenceTableModel(Unit unit) {
+		private PreferenceTableModel(Person person) {
 
-			Person person = null;
-//	        Robot robot = null;
-
-	        if (unit instanceof Person) {
-	         	person = (Person) unit;
-				manager = person.getPreference();
-	        }
-//	        else if (unit instanceof Robot) {
-//	        }
+			manager = person.getPreference();
 
 	        scoreStringList = manager.getTaskStringList();
 	        scoreStringMap = manager.getScoreStringMap();
-
 		}
 
 		public int getRowCount() {
@@ -159,7 +151,7 @@ extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = Double.class; //String.class, Integer.class;
+			if (columnIndex == 1) dataType = Double.class;
 			return dataType;
 		}
 
