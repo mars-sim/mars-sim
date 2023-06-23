@@ -196,7 +196,7 @@ public class MissionManager implements Serializable {
 		Settlement startingSettlement = person.getAssociatedSettlement();
 
 		// Determine probabilities.
-		for (MetaMission metaMission : List.copyOf(MetaMissionUtil.getMetaMissions())) {
+		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
 				double baseProb = metaMission.getProbability(person);
 				if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
