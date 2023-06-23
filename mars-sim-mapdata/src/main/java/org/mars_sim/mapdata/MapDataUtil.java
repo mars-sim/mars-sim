@@ -10,7 +10,7 @@
 import java.util.Collection;
 
 /**
-  * Static utility class for accessing Mars map data.
+  * A singleton static utility class for accessing Mars map data.
   */
  public final class MapDataUtil {
  	
@@ -19,20 +19,31 @@ import java.util.Collection;
 
 	// Singleton instance.
 	private static MapDataUtil instance;
+	
 	private static MapDataFactory mapDataFactory;
 	private static MEGDRMapReader reader;
-
- 	private static short[] elevationArray;
- 	
+	
  	private static short height;
  	private static short width;
  	
+    /**
+     * Gets the singleton instance of MapData.
+     * 
+     * @return instance.
+     */
+    public static MapDataUtil instance() {
+        if (instance == null) {
+            instance = new MapDataUtil();
+        }
+        return instance;
+    }
+    
      /**
       * Private constructor for static utility class.
       */
      private MapDataUtil() {
          mapDataFactory = new MapDataFactory();
-         reader = new MEGDRMapReader(0);
+         reader = new MEGDRMapReader(MEGDRMapReader.LEVEL);
          
          height = reader.getHeight();
          width = reader.getWidth();
@@ -43,12 +54,8 @@ import java.util.Collection;
       * 
       * @return
       */
-     public short[] getElevationArray() {
-    	 
-     	if (elevationArray == null)	
-     		elevationArray = reader.loadElevation(0);
-  
- 		return elevationArray;
+     public short[] elevationArray() {
+     	return reader.getElevationArray();
  	}
  	
     /**
@@ -74,30 +81,9 @@ import java.util.Collection;
  		
  		if (index > height * width)
  			index = height * width - 1;
- 		
 
- 		short [] data = getElevationArray();
- 		
-        short result = 0;
-        
-        if (data != null) {
-            result = data[index];
-        }
-
-        return result;
+ 		return elevationArray()[index];
  	}
- 	
-     /**
-      * Gets the singleton instance of MapData.
-      * 
-      * @return instance.
-      */
-     public static MapDataUtil instance() {
-         if (instance == null) {
-             instance = new MapDataUtil();
-         }
-         return instance;
-     }
      
      /**
       * Gets the surface map data.

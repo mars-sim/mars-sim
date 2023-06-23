@@ -7,7 +7,6 @@
 
 package org.mars_sim.mapdata;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,18 +32,23 @@ public class MEGDRMapReader {
 	
 	private static final Logger logger = Logger.getLogger(MEGDRMapReader.class.getName());
 	
+	static final int LEVEL = 1;
+	
 //	NOTE: (Do not delete)
 //	
+//	LEVEL 0 :
 // `megt90n000cb.img` provides 
 //	map resolution of 1440x720
 //	4 pixels per degree (or 0.25 by 0.25 degrees)
 //	map scale of 14.818 km per pixel
 //	
+//	LEVEL 1 :
 // `megt90n000eb.img` provides
 //	map resolution of 5760x2880
 //	16 pixels per degree (or 0.0625by 0.0625 degrees)
 //	map scale of 3.705 km per pixel	
 //	
+//	LEVEL 2 :
 // `megt90n000fb.img` provides
 //	map resolution of 11520x5760
 //	32 pixels per degree (or 0.03125 by 0.03125 degrees)
@@ -52,40 +56,27 @@ public class MEGDRMapReader {
 	 
 	/** meg004 is Low resolutions. */
 	private static final String meg004 = "megt90n000cb.img";
-//	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
-//	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 
 	/** meg004 is mid resolutions. */
 	private static final String meg016 = "megt90n000eb.img";
-//	private static final String COMPRESSED = "2880x5760_JavaFastPFOR_compressed";
-//	private static final String UNCOMPRESSED = "2880x5760_uncompressed";
-	
+
 	/** meg032 is high resolutions. */
 	private static final String meg032 = "megt90n000fb.img";
 	
 	private static final String PATH = "/maps/";
+	
 	static final String FILE = PATH + meg004;
 	
 	private String[] maps = {PATH + meg004, PATH + meg016, PATH + meg032};
 	
-	// Each number occupies 2 bytes
-	private static final int BUFFER_SIZE = 2;
-	
-	// Each number occupies ? bytes
-	private static final int COMPRESSED_BUFFER_SIZE = 4;
-	private static final byte[] cBuffer = new byte[COMPRESSED_BUFFER_SIZE]; 
-	
-	private static int COMPRESSED_N;
-	
 	// Future: switch to using JavaFastPFOR to save memory.
 	private short[] elevation;
 	
-	private static short height;
-	private static short width;
+	private static short mapHeight;
+	private static short mapWidth;
 	
 	public static void main(String[] args) throws IOException {
-		int level = 1;
-		new MEGDRMapReader(level).loadElevation(level);
+		new MEGDRMapReader(LEVEL);
 	}
 	
 	/**
@@ -95,6 +86,34 @@ public class MEGDRMapReader {
 	 */
 	public MEGDRMapReader(int level) {
 		loadElevation(level);
+	}
+	
+	/**
+	 * Loads the elevation data into short array.
+	 * 
+	 * @return
+	 */
+	public short[] loadElevation(int level) {
+		// Select the map resolution
+		String file = maps[level];
+		
+	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(file))) {
+
+			// Use ByteStreams to convert to byte array
+			byte[] bytes = ByteStreams.toByteArray(inputStream);
+			
+			elevation = convertByteArrayToShortIntArray(bytes);
+			
+			mapHeight = (short) Math.sqrt(elevation.length / 2);
+			mapWidth = (short) (mapHeight * 2);
+			
+			logger.info("Reading elevation dataset from '" + file + "' (" + mapWidth + " by " + mapHeight + ").");
+	            
+		} catch (Exception e) {
+			 System.out.println("Problems in inputStream: " + e.getMessage());
+		}
+	    
+        return elevation;
 	}
 	
 	/**
@@ -134,35 +153,6 @@ public class MEGDRMapReader {
         return shorts;
     }
 	
-	/**
-	 * Loads the elevation data into short array.
-	 * 
-	 * @return
-	 */
-	public short[] loadElevation(int level) {
-		// Select the map resolution
-		String file = maps[level];
-		
-	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(file))) {
-
-			// Use ByteStreams to convert to byte array
-			byte[] bytes = ByteStreams.toByteArray(inputStream);
-			
-			elevation = convertByteArrayToShortIntArray(bytes);
-			
-			height = (short) Math.sqrt(elevation.length / 2);
-			width = (short) (height * 2);
-			
-			logger.info("Reading '" + file + "' - height is " + height + "; width is " + width);
-	            
-		} catch (Exception e) {
-			 System.out.println("Problems in inputStream: " + e.getMessage());
-		}
-	    
-        return elevation;
-	}
-	
-
 	public int[] getIndex() {
 		int min = 0;
 		int max = 0; 
@@ -218,7 +208,6 @@ public class MEGDRMapReader {
 
         return data;
     }
-    
 
     /**
      * Writes the byte array {@code data} to the file {@code file}. After 
@@ -265,276 +254,12 @@ public class MEGDRMapReader {
     	  outputWriter.close();  
     	}
     }
-    
-//    /**
-//     * Uses Java Fast PFOR library to compress and uncompress arrays of integers. 
-//     * See https://github.com/lemire/JavaFastPFOR.
-//     */
-//    public void useJavaFastPFOR() {
-////        int ChunkSize = 8192 ; //16384; //32768; // size of each chunk, choose a multiple of 128
-//        final int N = elevation.length;
-////        final int TotalSize = N; // some arbitrary number
-//        int[] data = elevation;
-//        
-//        // output vector should be large enough...
-////      int [] compressed = new int[TotalSize + 4096];//1024]; 
-//        int[] compressed = new int [N+1024];// could need more
-//
-//        System.out.println("Compressing " + elevation.length + " integers using friendly interface");
-//   
-//        IntWrapper inputoffset = new IntWrapper(0);
-//        IntWrapper outputoffset = new IntWrapper(0);
-//        
-//        // CODEC type 1
-//        IntegerCODEC codec =  new Composition(
-//            new FastPFOR(),
-//            new VariableByte());
-//        
-//        // Compressing
-//        codec.compress(data,inputoffset,data.length,compressed,outputoffset);
-//
-////        // CODEC type 2
-////        System.out.println("Compressing "+TotalSize+" integers using chunks of "+ChunkSize+" integers ("+ChunkSize*4/1024+"KB)");
-////        System.out.println("(It is often better for applications to work in chunks fitting in CPU cache.)");
-////        
-////        // Most of the processing
-////        // will be done with binary packing, and leftovers will
-////        // be processed using variable byte, using variable byte
-////        // only for the last chunk!
-////        IntegratedIntegerCODEC regularcodec =  new IntegratedBinaryPacking();
-////        IntegratedVariableByte ivb = new IntegratedVariableByte();
-////        IntegratedIntegerCODEC lastcodec =  new IntegratedComposition(regularcodec,ivb);
-////        
-////        // Compressing
-////        for(int k = 0; k < TotalSize / ChunkSize; ++k)
-////            regularcodec.compress(data,inputoffset,ChunkSize,compressed,outputoffset);
-////        
-////        lastcodec.compress(data, inputoffset, TotalSize % ChunkSize, compressed, outputoffset);
-//            
-//        System.out.println("Reduce size of unsorted integers from "
-//        		+ data.length*4/1024+"KB to " 
-//        		+ outputoffset.intValue()*4/1024+"KB");
-//        System.out.println("compressed.length : " + compressed.length + "    N + 1024 : " + (N + 1024));
-//
-//        // we can repack the data: (optional)
-//        compressed = Arrays.copyOf(compressed,outputoffset.intValue());
-//        
-//        COMPRESSED_N = compressed.length;
-//        System.out.println("Repacking compressed int[], size of COMPRESSED_N : " + COMPRESSED_N);
-//
-//        // CODEC type 1
-//        int[] recovered = new int[N];
-//        IntWrapper recoffset = new IntWrapper(0);
-//        codec.uncompress(compressed,
-//        		new IntWrapper(0),
-//        		compressed.length,
-//        		recovered,
-//        		recoffset);
-//        
-////        // CODEC type 2
-////        // We are *not* assuming that the original array length is known, however
-////        // we assume that the chunk size (ChunkSize) is known.
-////        int[] recovered = new int[ChunkSize]; // TotalSize];//
-////        IntWrapper compoff = new IntWrapper(0);
-////        IntWrapper recoffset;
-////        int currentpos = 0;
-////
-////        while(compoff.get()<compressed.length) {
-////            recoffset = new IntWrapper(0);
-////            regularcodec.uncompress(compressed,compoff,compressed.length - compoff.get(),recovered,recoffset);
-////
-////            if(recoffset.get() < ChunkSize) {// last chunk detected
-////                ivb.uncompress(compressed,compoff,compressed.length - compoff.get(),recovered,recoffset);
-////            }
-////            for(int i = 0; i < recoffset.get(); ++i) {
-////                if(data[currentpos+i] != recovered[i]) throw new RuntimeException("bug"); // could use assert
-////            }
-////            currentpos += recoffset.get();
-////        }
-//        
-//        System.out.println("recovered.length : " + recovered.length);
-//        
-//        if(Arrays.equals(data, recovered)) {
-//            System.out.println("Elevation data is recovered in memory without loss");
-//            write4ByteArray(COMPRESSED, compressed);
-//        }
-//        else
-//            throw new RuntimeException("bug"); // could use assert
-//  
-////        IntWrapper outputoffset2 = new IntWrapper(0);
-//        
-//        int[] compressed2 = read4ByteArray(COMPRESSED);
-//        System.out.println("compressed2.length : " + compressed2.length);
-//        		
-//        // we can repack the data: (optional)
-////        compressed2 = Arrays.copyOf(compressed2, outputoffset2.intValue());
-////        System.out.println("Repacking compressed2, compressed2.length : " + compressed2.length);
-//        
-//        int[] recovered2 = new int[N];
-//        IntWrapper recoffset2 = new IntWrapper(0);
-//        codec.uncompress(compressed2,
-//        		new IntWrapper(0),
-//        		compressed2.length,
-//        		recovered2,
-//        		recoffset2);
-//        
-////        // CODEC type 2
-////        // We are *not* assuming that the original array length is known, however
-////        // we assume that the chunk size (ChunkSize) is known.
-////        int[] recovered2 = new int[ChunkSize];
-////        IntWrapper compoff2 = new IntWrapper(0);
-////        IntWrapper recoffset2;
-////        int currentpos2 = 0;
-////
-////        while(compoff.get( )< compressed2.length) {
-////            recoffset2 = new IntWrapper(0);
-////            regularcodec.uncompress(compressed2,
-////            		compoff2,
-////            		compressed2.length - compoff2.get(),
-////            		recovered2,
-////            		recoffset2);
-////
-////            if(recoffset2.get() < ChunkSize) {// last chunk detected
-////                ivb.uncompress(compressed2,
-////                		compoff2,
-////                		compressed2.length - compoff2.get(),
-////                		recovered2,
-////                		recoffset2);
-////            }
-////            for(int i = 0; i < recoffset2.get(); ++i) {
-////                if(data[currentpos2+i] != recovered2[i]) throw new RuntimeException("bug"); // could use assert
-////            }
-////            currentpos2 += recoffset2.get();
-////        }
-//         
-//        System.out.println("recovered2.length : " + recovered2.length);
-//        
-////        if(Arrays.equals(recovered, recovered2)) {       
-//        if(Arrays.equals(data, recovered2)) {
-//            System.out.println("Elevation data is recovered from the file without loss");
-//        }
-//        else
-//            throw new RuntimeException("bug"); // could use assert
-//
-//    }
-    
-    public void write4ByteArray(String filename, int[] array) {
-    	int size = array.length;
-    	
-    	byte[] data = new byte[size * COMPRESSED_BUFFER_SIZE];
-    	
-        System.out.println("byte[] to be written. length : " + data.length + "   (4 * COMPRESSED_N : " + 4 * COMPRESSED_N + ")");
-        
-    	for (int i=0; i<size; i++) {
-
-//    		data[i*2]     = (byte)((array[i] >> 8) & 0xff);
-//    		data[i*2 + 1] = (byte)((array[i] >> 0) & 0xff);
- 		
-    		data[i*4]     = (byte)((array[i] >> 24) & 0xff);
-    		data[i*4 + 1] = (byte)((array[i] >> 16) & 0xff);
-    		data[i*4 + 2] = (byte)((array[i] >> 8) & 0xff);
-    		data[i*4 + 3] = (byte)((array[i] >> 0) & 0xff);
-  		
-//    	    ByteBuffer bb = ByteBuffer.allocate(4); 
-//    	    bb.putInt(i); 
-//    	    data[i*4] = bb.array()[0];
-//    	    data[i*4 + 1] = bb.array()[1];
-//    	    data[i*4 + 2] = bb.array()[2];
-//    	    data[i*4 + 3] = bb.array()[3];
-    	}
-
-    	try (BufferedOutputStream stream = new BufferedOutputStream(
-                new FileOutputStream(filename))) {
-    		stream.write(data);
-		} catch (IOException e) {
-			 System.out.println("Problems in write4ByteArray's FileOutputStream: " + e.getMessage());
-		}
-    }
-    
-    public void write2ByteArray(String filename, int[] array) {
-    	int size = array.length;
-    	
-    	byte[] data = new byte[size * BUFFER_SIZE];
-    	
-        System.out.println("byte[] to be written. length : " + data.length);// + "   (2 * COMPRESSED_N : " + 2 * COMPRESSED_N + ")");
-         		
-    	for (int i=0; i<size; i++) {
-//    		elevation[i] =  (buffer[0] << 8) | (0xff & buffer[1]);
-    		
-    		data[i*2]     = (byte)((array[i] >> 8) & 0xff);
-//    		data[i*2]     = (byte)((array[i] >> 8));
-    		data[i*2 + 1] = (byte)((array[i]) & 0xff);
- 		
-//    		data[i*4]     = (byte)((array[i] >> 24) & 0xff);
-//    		data[i*4 + 1] = (byte)((array[i] >> 16) & 0xff);
-//    		data[i*4 + 2] = (byte)((array[i] >> 8) & 0xff);
-//    		data[i*4 + 3] = (byte)((array[i] >> 0) & 0xff);
-  		
-//    	    ByteBuffer bb = ByteBuffer.allocate(4); 
-//    	    bb.putInt(i); 
-//    	    data[i*4] = bb.array()[0];
-//    	    data[i*4 + 1] = bb.array()[1];
-//    	    data[i*4 + 2] = bb.array()[2];
-//    	    data[i*4 + 3] = bb.array()[3];
-    	}
-
-    	try (BufferedOutputStream stream = new BufferedOutputStream(
-                new FileOutputStream(filename))) {
-    		stream.write(data);
-		} catch (IOException e) {
-			 System.out.println("Problems in write2ByteArray's FileOutputStream: " + e.getMessage());
-		}
-    }
-
-    
-    public int[] read4ByteArray(String filename) {
-
-    	int[] compressed = new int[COMPRESSED_N];
-//    	byte[] data = new byte[compressed.length * 4];
-//    	int size = data.length;
-    	
-		try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filename))) {
-		
-			int i = 0;
-	    
-			while (inputStream.read(cBuffer) != -1) {
-				// Combine the ? bytes into a 16-bit integer
-//				compressed[i] =  (0xff & cBuffer[0] << 8) | (0xff & cBuffer[1] );
-				
-				// NOTE: type cast not necessary for int
-				compressed[i] =  
-		            (0xff & cBuffer[0]) << 24  |
-		            (0xff & cBuffer[1]) << 16  |
-		            (0xff & cBuffer[2]) << 8   |
-		            (0xff & cBuffer[3]) << 0;
-				
-//				if (i % WIDTH == 0) System.out.println();
-//				System.out.print(compressed[i] + " " + cBuffer[0] + " " + cBuffer[1] + " " + el2[i]);
-				i++;
-			}
-			
-	        inputStream.close();
-	        
-		}
-        catch (IOException e) {
-			 System.out.println("Problems in read4ByteArray's FileInputStream: " + e.getMessage());
-		}
-   
-        System.out.println("int[] reassembled from file. length : " + compressed.length);
-        
-        return compressed;
-    }
 
 	public short getHeight() {
-		return height;
+		return mapHeight;
 	}
 
 	public short getWidth() {
-		return width;
+		return mapWidth;
 	}
-    
-//    static IntegratedIntCompressor iic = new IntegratedIntCompressor(
-//            new SkippableIntegratedComposition(
-//                new IntegratedBinaryPacking(),
-//                new IntegratedVariableByte()));
 }
