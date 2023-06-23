@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.mission.meta.AbstractMetaMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -327,7 +328,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	private void registerHistoricalEvent(Worker member, EventType type, String message) {
 		Unit container = null;
-		String hometown = null;
 		Coordinates coordinates = null;
 		if (member.isInSettlement()) {
 			Building workPlace = member.getBuildingLocation();
@@ -1367,5 +1367,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		MissionLog.initialise(c);
 		MissionUtil.initializeInstances(u, m);
+		AbstractMetaMission.initializeInstances(si.getMasterClock(), m);
 	}
 }

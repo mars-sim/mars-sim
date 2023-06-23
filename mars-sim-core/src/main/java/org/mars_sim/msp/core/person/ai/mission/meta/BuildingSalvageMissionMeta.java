@@ -46,7 +46,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
         double missionProbability = 0D;
   
       
-        if (marsClock.getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
+        if (getMarsTime().getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
 
         // Check if person is in a settlement.

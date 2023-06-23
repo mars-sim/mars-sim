@@ -6,14 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -22,11 +18,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 public interface MetaMission {
 
     public static final double LIMIT = 200D;
-    
-	static Simulation sim = Simulation.instance();
-    static MissionManager missionManager = sim.getMissionManager();
-    static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-    static ScientificStudyManager studyManager = sim.getScientificStudyManager();
 	
 	/**
 	 * Type of Mission created by this Meta object

@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -72,16 +71,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 
-				int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
-				int pop = settlement.getNumCitizens();
-				
-		   		// Check for # of embarking missions.
-	    		if (Math.max(1, pop / 8.0) < numEmbarked + numThisMission) {
-	    			return 0;
-	    		}
-
-	    		if (numThisMission > Math.max(1, pop / 8.0)) {
+				missionProbability = getSettlementPopModifier(settlement, 8);
+				if (missionProbability == 0) {
 	    			return 0;
 	    		}
 
@@ -100,11 +91,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 					logger.log(Level.SEVERE, "Error exploring mineral values.", e);
 					return 0;
 				}
-
-				int f1 = numEmbarked + 1;
-				int f2 = numThisMission + 1;
-
-				missionProbability *= (double)pop / f1 / f2;
 
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)
