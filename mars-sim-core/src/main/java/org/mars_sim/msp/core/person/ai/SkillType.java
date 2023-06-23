@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.Msg;
  */
 public enum SkillType {
 
+// The following is the alphabetical listing of skills : 
+//	
 //	AREOLOGY			(Msg.getString("SkillType.areology")), //$NON-NLS-1$
 //	ASTRONOMY			(Msg.getString("SkillType.astronomy")), //$NON-NLS-1$
 //	BIOLOGY				(Msg.getString("SkillType.biology")), //$NON-NLS-1$
@@ -39,6 +41,7 @@ public enum SkillType {
 //  PSYCHOLOGY			(Msg.getString("SkillType.psychology")), //$NON-NLS-1$
 //	REPORTING			(Msg.getString("SkillType.reporting")), //$NON-NLS-1$
 //	TRADING				(Msg.getString("SkillType.trading")), //$NON-NLS-1$
+	
 	
 // The following is organized in accordance with the subject matter affinity : 
 	
@@ -69,6 +72,11 @@ public enum SkillType {
 	REPORTING			(Msg.getString("SkillType.reporting")) //$NON-NLS-1$
 	;
 
+	// Future skils:
+	
+	// See https://en.wikipedia.org/wiki/Areography 
+
+	
 	private String name;
 
 	static Map<Integer, SkillType> lookup = null;

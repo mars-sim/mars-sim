@@ -3,13 +3,15 @@
 	<!ELEMENT landmark-list (landmark*)>
 	<!ELEMENT landmark EMPTY>
 	<!ATTLIST landmark name CDATA #REQUIRED>
-	<!ATTLIST landmark location CDATA #IMPLIED>
-	<!ATTLIST landmark longitude CDATA #REQUIRED>
-	<!ATTLIST landmark latitude CDATA #REQUIRED>
-	<!ATTLIST landmark approvaldate CDATA #REQUIRED>
-	<!ATTLIST landmark diameter CDATA #REQUIRED>
 	<!ATTLIST landmark origin CDATA #REQUIRED>
 	<!ATTLIST landmark type CDATA #REQUIRED>
+	<!ATTLIST landmark location CDATA #IMPLIED>
+	<!ATTLIST landmark description CDATA #IMPLIED>	
+	<!ATTLIST landmark approvaldate CDATA #REQUIRED>
+	<!ATTLIST landmark diameter CDATA #REQUIRED>	
+	<!ATTLIST landmark latitude CDATA #REQUIRED>	
+	<!ATTLIST landmark longitude CDATA #REQUIRED>
+
 ]>
 
   <!-- Landmark coordinates from USGS Astrogeology Research Program -->
@@ -19,27 +21,59 @@
   <!-- https://planetarynames.wr.usgs.gov/Page/MARS/system -->
   <!--  -->
   <!-- To be read by LandmarkConfig in mars-sim-core submodule -->
-  <!-- type : AA = crater, MO = Mons, TH = Tholus-->
+  <!-- type : use types from International Astronomical Union (IAU) Working Group for Planetary System Nomenclature (WGPSN)	
+  				Chasma, chasmata (CM)
+  				Chaos, chaoses (CH)
+  				Crater, craters (AA) 
+  				Fossa, fossae (FO)
+   				Landing site name (LF) 				
+  				Mare, maria (ME)
+  				Mons, montes (MO) 
+  				Planitia, planitiae (PL)
+  				Tholus, tholi (TH) 
+  				Vallis, valles (VA)
+  				-->
 	<landmark-list>
-		<landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" name="Albor Tholus" origin="Classical albedo feature name." type="TH"/>
-	  	<landmark approvaldate="1991" diameter="52.51" latitude="29.81 S" longitude="86.65 E" name="Anseris Mons" origin="From albedo feature Anseris Fons." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="400.95" latitude="21.38 N" longitude="60.83 E" name="Antoniadi" origin="Eugène Michael; Turkish-born French astronomer (1870-1944)." type="AA"/>
-	  	<landmark approvaldate="1997" diameter="32.39" latitude="17.64 S" longitude="175.75 E" name="Apollinaris Tholus" origin="Albedo feature name." type="TH"/>
-	  	<landmark approvaldate="1973" diameter="470" latitude="8.26 S" longitude="120.09 W" name="Arsia Mons" origin="Arsia Silva-classical albedo feature name." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="456.4" latitude="11.92 N" longitude="104.08 W" name="Ascraeus Mons" origin="Ascraeus Lacus-classical albedo feature name." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="181.31" latitude="22.76 N" longitude="65.48 E" name="Baldet" origin="Fernand; French astronomer (1885-1964)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="165.23" latitude="21.89 N" longitude="7.94 W" name="Becquerel" origin="Antoine H.; French physicist (1852-1908)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="408.23" latitude="23.35 N" longitude="32.11 E" name="Cassini" origin="Giovanni; Italian astronomer (1625-1712)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="128.58" latitude="24 N" longitude="97.25 W" name="Ceraunius Tholus" origin="Classical albedo feature name." type="TH"/>
-	  	<landmark approvaldate="1973" diameter="301.83" latitude="48.84 S" longitude="168.83 W" name="Copernicus" origin="Nicolaus; Polish astronomer (1473-1543)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="176.38" latitude="56.97 S" longitude="19.15 W" name="Darwin" origin="Charles R.; British naturalist (1809-1882) and George H.; British astronomer (1845-1912)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="185.32" latitude="9.11 S" longitude="38.06 E" name="Dawes" origin="William R.; British astronomer (1799-1868)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="159.71" latitude="17.43 S" longitude="33.52 E" name="Denning" origin="William F.; British astronomer (1848-1931)." type="AA"/>
-	  	<landmark approvaldate="1973" diameter="401" latitude="25.02 N" longitude="147.21 E" name="Elysium Mons" origin="Classical albedo feature name." type="MO"/>
-	  	<landmark approvaldate="1991" diameter="4.6" latitude="35.92 N" longitude="85.13 W" name="E. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
-	  	<landmark approvaldate="2003" diameter="88.91" latitude="44.82 S" longitude="105.18 E" name="Euripus Mons" origin="Albedo feature name." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="173.7" latitude="25.22 N" longitude="48.28 E" name="Flammarion" origin="Camille; French astronomer (1842-1925)." type="AA"/>
+		<!-- https://planetarynames.wr.usgs.gov/Feature/114 -->
+		<landmark name="Airy" origin="Great Britain" type="AA" 
+			description="George Biddell Airy; British astronomer (1801-1892)"
+			approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E"  />
+	  	<landmark name="Albor Tholus" origin="Classical albedo feature name." type="TH"
+	  		approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" />
+	  	<landmark name="Anseris Mons" origin="From albedo feature Anseris Fons." type="MO"
+	  		approvaldate="1991" diameter="52.51" latitude="29.81 S" longitude="86.65 E" />
+	  	<landmark name="Antoniadi" origin="Eugène Michael; Turkish-born French astronomer (1870-1944)." type="AA"
+	  		approvaldate="1973" diameter="400.95" latitude="21.38 N" longitude="60.83 E" />
+	  	<landmark name="Apollinaris Tholus" origin="Albedo feature name." type="TH"
+	  		approvaldate="1997" diameter="32.39" latitude="17.64 S" longitude="175.75 E" />
+	  	<landmark name="Arsia Mons" origin="Arsia Silva-classical albedo feature name." type="MO"
+	  		approvaldate="1973" diameter="470" latitude="8.26 S" longitude="120.09 W" />
+	  	<landmark name="Ascraeus Mons" origin="Ascraeus Lacus-classical albedo feature name." type="MO"
+	  		approvaldate="1973" diameter="456.4" latitude="11.92 N" longitude="104.08 W" />
+	  	<landmark name="Baldet" origin="Fernand; French astronomer (1885-1964)." type="AA"
+	  		approvaldate="1973" diameter="181.31" latitude="22.76 N" longitude="65.48 E" />
+	  	<landmark name="Becquerel" origin="Antoine H.; French physicist (1852-1908)." type="AA"
+	  		approvaldate="1973" diameter="165.23" latitude="21.89 N" longitude="7.94 W" />
+	  	<landmark name="Cassini" origin="Giovanni; Italian astronomer (1625-1712)." type="AA"
+	  		approvaldate="1973" diameter="408.23" latitude="23.35 N" longitude="32.11 E" />
+	  	<landmark name="Ceraunius Tholus" origin="Classical albedo feature name." type="TH"
+	  		approvaldate="1973" diameter="128.58" latitude="24 N" longitude="97.25 W" />
+	  	<landmark name="Copernicus" origin="Nicolaus; Polish astronomer (1473-1543)." type="AA"
+	  		approvaldate="1973" diameter="301.83" latitude="48.84 S" longitude="168.83 W" />
+	  	<landmark name="Darwin" origin="Charles R.; British naturalist (1809-1882) and George H.; British astronomer (1845-1912)." type="AA"
+	  		approvaldate="1973" diameter="176.38" latitude="56.97 S" longitude="19.15 W" />
+	  	<landmark name="Dawes" origin="William R.; British astronomer (1799-1868)." type="AA"
+	  		approvaldate="1973" diameter="185.32" latitude="9.11 S" longitude="38.06 E" />
+	  	<landmark name="Denning" origin="William F.; British astronomer (1848-1931)." type="AA"
+	  		approvaldate="1973" diameter="159.71" latitude="17.43 S" longitude="33.52 E" />
+	  	<landmark name="Elysium Mons" origin="Classical albedo feature name." type="MO"
+	  		approvaldate="1973" diameter="401" latitude="25.02 N" longitude="147.21 E" />
+	  	<landmark name="E. Mareotis Tholus" origin="Classical albedo name." type="TH"
+	  		approvaldate="1991" diameter="4.6" latitude="35.92 N" longitude="85.13 W" />
+	  	<landmark name="Euripus Mons" origin="Albedo feature name." type="MO"
+	  		approvaldate="2003" diameter="88.91" latitude="44.82 S" longitude="105.18 E" />
+	  	<landmark name="Flammarion" origin="Camille; French astronomer (1842-1925)." type="AA"
+	  		approvaldate="1973" diameter="173.7" latitude="25.22 N" longitude="48.28 E" />
 	  	<landmark approvaldate="1973" diameter="236.06" latitude="16.8 S" longitude="19.22 E" name="Flaugergues" origin="Honore; French astronomer (1755-1835)." type="AA"/>
 	  	<landmark approvaldate="1991" diameter="154.08" latitude="5.37 S" longitude="137.81 E" name="Gale" origin="Walter F.; Australian astronomer (1865-1945)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="223.53" latitude="50.63 S" longitude="31 W" name="Galle" origin="Johann G.; German astronomer (1812-1910)." type="AA"/>
@@ -67,8 +101,11 @@
 	  	<landmark approvaldate="1973" diameter="299.94" latitude="40.5 S" longitude="158.03 W" name="Newton" origin="Isaac; British physicist (1643-1727)." type="AA"/>
 	  	<landmark approvaldate="1985" diameter="33.39" latitude="54.93 S" longitude="41.23 W" name="Oceanidum Mons" origin="Name change from Charitum Tholus." type="MO"/>
 	  	<landmark approvaldate="1991" diameter="19.09" latitude="55.26 S" longitude="42.85 W" name="Octantis Mons" origin="Albedo name." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="610.13" latitude="18.65 N" longitude="133.8 W" name="Olympus Mons" origin="Classical albedo feature name." type="MO"/>
-	  	<landmark approvaldate="1973" diameter="366.53" latitude="1.48 N" longitude="112.96 W" name="Pavonis Mons" origin="Classical albedo feature name." type="MO"/>
+	  	<landmark name="Olympus Mons" origin="Classical albedo feature name." type="MO"
+	  		description="Olympus Mons: highest point in the solar system at 88,500ft"  	
+	  		approvaldate="1973" diameter="610.13" latitude="18.65 N" longitude="133.8 W" />
+	  	<landmark name="Pavonis Mons" origin="Classical albedo feature name." type="MO"
+	  		approvaldate="1973" diameter="366.53" latitude="1.48 N" longitude="112.96 W" />
 	  	<landmark approvaldate="1991" diameter="14.94" latitude="31.08 S" longitude="86.11 E" name="Peraea Mons" origin="Albedo feature name." type="MO"/>
 	  	<landmark approvaldate="1973" diameter="185.45" latitude="66.34 S" longitude="44.89 W" name="Phillips" origin="John; British geologist (1800-1874). Theodore E.; British astronomer (1868-1942)." type="AA"/>
 	  	<landmark approvaldate="1991" diameter="16.3" latitude="39.47 N" longitude="88.52 W" name="Pindus Mons" origin="Mountains near Vale of Tempe." type="MO"/>
@@ -92,41 +129,68 @@
 	  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
 	  	
 	  	<!-- Jezero in USGS  https://planetarynames.wr.usgs.gov/Feature/14300?__fsk=-1615191775 -->
-		<landmark approvaldate="2007" diameter="47.52" latitude="18.41 N" longitude="77.69 E" name="Jezero Crater" origin="Name after a town in Bosnia and Herzegovina." type="AA"/>
+		<landmark name="Jezero Crater" origin="Name after a town in Bosnia and Herzegovina." type="AA"
+			approvaldate="2007" diameter="47.52" latitude="18.41 N" longitude="77.69 E" />
+
+		<!-- Airy-0 in USGS https://planetarynames.wr.usgs.gov/Feature/115 -->
+		<!-- https://en.wikipedia.org/wiki/Airy-0 -->
+		<!-- Note that Airy crater is 43.5 km in diameter while Airy-0 is .79 km -->
+		<landmark name="Airy-0" origin="Great Britain" type="AA"
+			description="Small crater within crater Airy that defines zero degrees longitude on Mars"
+			approvaldate="2003" diameter=".79" latitude="5.075 S" longitude="0.00 E" />
 	
 	  	<!--Artificial Objects-->
 	  	<!-- TODO: add memorial station names from https://www.giss.nasa.gov/tools/mars24/help/landers.html  -->
-	  	<landmark name="Beagle 2 Lander" approvaldate="N/A" diameter="0.1" location="Isidis Planitia" latitude="10.6 N" longitude="90.0 E" origin="ESA" type="AO"/>
+	  	<landmark name="Beagle 2 Lander" origin="ESA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" location="Isidis Planitia" latitude="10.6 N" longitude="90.0 E" />
 	  	<!-- https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-045D -->
-	  	<landmark name="Mars 2 Lander" approvaldate="N/A" diameter="0.1" location="Hellas Planitia" latitude="45.0 S" longitude="47.0 E" origin="Soviet" type="AO"/>
+	  	<landmark name="Mars 2 Lander" location="Hellas Planitia" origin="Soviet" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="47.0 E" />
 	  	<!-- https://en.wikipedia.org/wiki/Mars_3 -->
-	  	<landmark name="Mars 3 Lander" approvaldate="N/A" diameter="0.1" location="Ptolemaeus Crater" latitude="45.0 S" longitude="158.0 W" origin="Soviet" type="AO"/>
+	  	<landmark name="Mars 3 Lander" location="Ptolemaeus Crater" origin="Soviet" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="158.0 W" />
 	  	<!-- Mars 6 : https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1973-052A -->
-	  	<landmark name="Mars 6 Lander" approvaldate="N/A" diameter="0.1" location="Margaritifer Sinus" latitude="23.90 S" longitude="19.42 W" origin="Soviet" type="AO"/>
+	  	<landmark name="Mars 6 Lander" location="Margaritifer Sinus"  origin="Soviet" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="23.90 S" longitude="19.42 W"/>
 	  	
-	  	<landmark name="Mars Pathfinder Rover" approvaldate="N/A" diameter="0.1" location="Ares Vallis, Chryse Planitia, Oxia Palus quadrangle" latitude="19.3 N" longitude="33.3 W" origin="NASA" type="AO"/>
+	  	<landmark name="Mars Pathfinder Rover" location="Ares Vallis, Chryse Planitia, Oxia Palus quadrangle" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="19.3 N" longitude="33.3 W"/>
 	  	
-	  	<landmark name="Mars Polar Lander" approvaldate="N/A" diameter="0.1" location="Ultimi Scopuli (projected), Southern polar area" latitude="76.7 S" longitude="164.7 E" origin="NASA" type="AO"/>
+	  	<landmark name="Mars Polar Lander" location="Ultimi Scopuli (projected), Southern polar area" origin="NASA" type="AO"
+	  		 approvaldate="N/A" diameter="0.1" latitude="76.7 S" longitude="164.7 E" />
 	  	
-	  	<landmark name="MSL Curiosity Rover" approvaldate="N/A" diameter="0.1" location="Quad 51 (Yellowknife), Aeolis Palus, crater Gale" latitude="4.59 S" longitude="137.44 E" origin="NASA" type="AO"/>
+	  	<landmark name="MSL Curiosity Rover" location="Quad 51 (Yellowknife), Aeolis Palus, crater Gale" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="4.59 S" longitude="137.44 E" />
 	  	
-	  	<landmark name="MER Spirit Rover" approvaldate="N/A" diameter="0.1" location="impact crater Gusev" latitude="14.57 S" longitude="175.47 E" origin="NASA" type="AO"/>
+	  	<landmark name="MER Spirit Rover" location="impact crater Gusev" origin="NASA" type="AO"
+	  		 approvaldate="N/A" diameter="0.1" latitude="14.57 S" longitude="175.47 E" />
 	  	
-	  	<landmark name="MER Opportunity Rover" approvaldate="N/A" diameter="0.1" location="West of Endeavour crater, Meridiani Planum" latitude="1.95 S" longitude="354.47 E" origin="NASA" type="AO"/>
+	  	<landmark name="MER Opportunity Rover" location="West of Endeavour crater, Meridiani Planum" origin="NASA" type="AO"
+	  		 approvaldate="N/A" diameter="0.1" latitude="1.95 S" longitude="354.47 E" />
 	  	
-	  	<landmark name="Phoenix Lander" approvaldate="N/A" diameter="0.1" location="Green Valley, Vastitas Borealis" latitude="68.22 N" longitude="125.7 W" origin="NASA" type="AO"/>
+	  	<landmark name="Phoenix Lander" location="Green Valley, Vastitas Borealis" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" />
 	  	
-	  	<landmark name="Viking Lander 1" approvaldate="N/A" diameter="0.1" location="Western Chryse Planitia" latitude="22.5 N" longitude="48.0 W" origin="NASA" type="AO"/>
+	  	<landmark name="Viking Lander 1" location="Western Chryse Planitia" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" />
 	  	
-	  	<landmark name="Viking Lander 2" approvaldate="N/A" diameter="0.1" location="West of Mie crater, Utopia Planitia" latitude="47.64 N" longitude="225.71 W" origin="NASA" type="AO"/>
+	  	<landmark name="Viking Lander 2" location="West of Mie crater, Utopia Planitia" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="47.64 N" longitude="225.71 W" />
 	  	
-	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="ESA" type="AO"/>  
+	  	<landmark name="Schiaparelli EDM Lander" location="Meridiani Planum" origin="ESA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="2.05 S" longitude="6.21 W" />  
 	  	
-	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.5024 N" longitude="135.6234 E" origin="NASA" type="AO"/>  
+	  	<landmark name="InSight Lander" location="Western Elysium Planitia" origin="NASA" type="AO"
+	  		approvaldate="N/A" diameter="0.1" latitude="4.5024 N" longitude="135.6234 E" />  
 	
-	  	<landmark name="Perseverance Rover" approvaldate="N/A" diameter="0.1" location="Octavia E. Butler Landing, Jezero Crater" latitude="18.44 N" longitude="77.45 E" origin="NASA" type="AO"/>  
+	  	<landmark name="Perseverance Rover" origin="NASA" type="AO" location="Octavia E. Butler Landing, Jezero Crater" 
+	  		approvaldate="N/A" diameter="0.1" latitude="18.44 N" longitude="77.45 E" />  
 
-	  	<landmark name="Tianwen-1" approvaldate="N/A" diameter="0.1" location="Southern portion of Utopia Planitia" latitude="25.1 N" longitude="109.9 E" origin="CNSA" type="AO"/>
+	  	<landmark name="Tianwen-1" origin="CNSA" type="AO" location="Southern portion of Utopia Planitia" 
+	  		approvaldate="N/A" diameter="0.1" latitude="25.1 N" longitude="109.9 E" />
 
+		<landmark name="Tianzhushan" origin="CNSA" type="AA" location="Southern portion of Utopia Planitia" 
+			description="https://planetarynames.wr.usgs.gov/Feature/16022"
+	  		approvaldate="Dec 03, 2021" diameter="0.23" latitude="25.07 N" longitude="109.93 E" />
 	
 	</landmark-list>

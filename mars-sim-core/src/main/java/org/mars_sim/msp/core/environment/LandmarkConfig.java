@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LandmarkConfig.java
- * @date 2021-09-04
+ * @date 2023-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -29,6 +29,7 @@ public class LandmarkConfig implements Serializable {
 	private static final String LANDMARK = "landmark";
 	private static final String NAME = "name";
 	private static final String LOCATION = "location";
+	private static final String DESCRIPTION = "description";	
 	private static final String LATITUDE = "latitude";
 	private static final String LONGITUDE = "longitude";
 	private static final String DIAMETER = "diameter";
@@ -38,7 +39,7 @@ public class LandmarkConfig implements Serializable {
 	private transient List<Landmark> landmarkList;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param landmarkDoc DOM document of landmark configuration.
 	 */
@@ -57,7 +58,7 @@ public class LandmarkConfig implements Serializable {
 	}
 	
 	/**
-	 * Build the landmark list
+	 * Builds the landmark list.
 	 * 
 	 * @param landmarkDoc
 	 */
@@ -83,6 +84,9 @@ public class LandmarkConfig implements Serializable {
 			// Get location.
 			String locationString = landmark.getAttributeValue(LOCATION);
 			
+			// Get description.
+			String description = landmark.getAttributeValue(DESCRIPTION);
+			
 			// Get diameter.
 			int diameter = (int) Float.parseFloat(landmark.getAttributeValue(DIAMETER));
 
@@ -92,7 +96,6 @@ public class LandmarkConfig implements Serializable {
 			// Get longitude.
 			String longitude = landmark.getAttributeValue(LONGITUDE).toUpperCase();
 
-			// TODO : need to account for other international system of coordinates
 			latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 			latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 			longitude = longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -108,7 +111,7 @@ public class LandmarkConfig implements Serializable {
 			String type = landmark.getAttributeValue(TYPE).toUpperCase();
 
 			// Create landmark.
-			newList.add(new Landmark(name, locationString, location, diameter, origin, type));
+			newList.add(new Landmark(name, description, locationString, location, diameter, origin, type));
 		}
 		
 		// Assign the newList now built
@@ -116,7 +119,7 @@ public class LandmarkConfig implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		if (landmarkList != null) {

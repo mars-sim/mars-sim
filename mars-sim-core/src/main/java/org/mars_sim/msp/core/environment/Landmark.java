@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Landmark.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-22
  * @author Dalen Kruse
  */
 
@@ -23,6 +23,8 @@ public class Landmark implements Serializable {
 	// Data members
 	/** Name of the landmark. */
 	private String landmarkName;
+	/** Description of the landmark. */
+	private String description;
 	/** Landing location of the landmark. */
 	private String landingLocation;
 	/** Coordinates of the landmark. */
@@ -38,15 +40,17 @@ public class Landmark implements Serializable {
 	 * Constructs a landmark object with the given name at the given location.
 	 * 
 	 * @param name
+	 * @param description
 	 * @param landingLocation
 	 * @param coord
 	 * @param diameter
 	 * @param origin
 	 * @param type
 	 */
-	public Landmark(String name, String landingLocation, Coordinates coord, int diameter, String origin, String type) {
+	public Landmark(String name, String description, String landingLocation, Coordinates coord, int diameter, String origin, String type) {
 
 		this.landmarkName = name;
+		this.description = description;
 		this.landingLocation = landingLocation;
 		this.coord = coord;
 		this.landmarkDiameter = diameter;
@@ -64,6 +68,15 @@ public class Landmark implements Serializable {
 		this.landmarkName = landmarkName;
 	}
 
+	/**
+	 * Sets the description name.
+	 * 
+	 * @param description description of the landmark
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	/**
 	 * Sets the landmark landing location.
 	 * 
@@ -118,6 +131,15 @@ public class Landmark implements Serializable {
 		return landmarkName;
 	}
 
+	/**
+	 * Gets the description.
+	 * 
+	 * @return  description of the landmark
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
 	/**
 	 * Gets the landmark landing location.
 	 * 
