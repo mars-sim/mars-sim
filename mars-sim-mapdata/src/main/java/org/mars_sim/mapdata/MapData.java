@@ -7,7 +7,6 @@
 
  package org.mars_sim.mapdata;
 
- import java.awt.Color;
  import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -28,23 +27,7 @@ import java.io.IOException;
 	 * @return Image		The map image
 	 */
 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
-	 
-//	/**
-//	 * Gets the RGB map color at a given location.
-//	 * 
-//	 * @param phi the phi location.
-//	 * @param theta the theta location.
-//	 * @return the RGB map color.
-//	 */
-//	public Color getRGBColor(double phi, double theta);
-
-	/**
-	 * Gets the scale of the Mars surface map.
-	 * 
-	 * @param value
-	 */
- 	public void setMapScale(double value);
- 	
+	
     /**
      * Gets the scale of the Mars surface map.
      * 

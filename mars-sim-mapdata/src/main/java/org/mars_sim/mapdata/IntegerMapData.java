@@ -20,8 +20,6 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,7 +63,7 @@ import com.jogamp.opencl.CLProgram;
 	private double centerThetaCache;
 	
     /** A list of locations, each having phi and theta. */
-	private static List<Point2D> locations = new ArrayList<>();
+//	private static List<Point2D> locations = new ArrayList<>();
 	
 	// Name of the map
 	private MapMetaData meta;
@@ -254,7 +252,7 @@ import com.jogamp.opencl.CLProgram;
  	 */
  	@Override
  	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale) {
-
+	
  		if (mapImage != null 
  				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && scale == rho)) {
  			return mapImage;
@@ -280,7 +278,7 @@ import com.jogamp.opencl.CLProgram;
 		 }
 	 
 		 // Clear all the saved point2d locations
-		 locations.clear();
+//		 locations.clear();
 		 
 		 if(HARDWARE_ACCELERATION || program == null || kernel == null) {
 			 try {
@@ -324,11 +322,11 @@ import com.jogamp.opencl.CLProgram;
 				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getScale());
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
 
-				 locations.add(loc);
+//				 locations.add(loc);
 			 }
 		 }
 		 
-		 logger.info("locations: " + locations.size());
+//		 logger.info("locations: " + locations.size());
 	 }
 
 	 /**
@@ -477,9 +475,9 @@ import com.jogamp.opencl.CLProgram;
  		return pixels;
  	}
  	
- 	public static List<Point2D> getLocations() {
- 		return locations;
- 	}
+// 	public static List<Point2D> getLocations() {
+// 		return locations;
+// 	}
  	
 	/**
 	 * Prepares map panel for deletion.

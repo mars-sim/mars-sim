@@ -185,12 +185,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		if (newRho != oldRho) {
 			
 	    	// Update the map scale
-	    	setMapScale(newRho);
+//	    	setMapScale(newRho);
 
 			// Call showMap
 	    	// which in turns calls updateDisplay()
 	    	// which in turns calls MapTask thread
 	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
+
 			showMap(centerCoords, newRho);
 		}
     }
@@ -346,18 +347,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param newCenter the center location for the globe
 	 */
 	public void showMap(Coordinates newCenter, double scale) {
-		if (centerCoords == null) {
-			if (newCenter != null) {
+		if (newCenter == null) 
+			return;
+		
+		if (centerCoords == null
+			|| !centerCoords.equals(newCenter)
+			|| scale != getScale()) {
 				recreateMap = true;
 				centerCoords = newCenter;
-			}
-		} else if (!centerCoords.equals(newCenter)) {
-			if (newCenter != null) {
-				recreateMap = true;
-				centerCoords = newCenter;
-			} 
 		}
-
+		else {
+			recreateMap = false;
+		}
+			
 		if (recreateMap) {
 			wait = true;
 			updateDisplay(scale);
@@ -371,9 +373,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	public void updateDisplay(double scale) {
 		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
-			|| desktop.isToolWindowOpen(MissionWindow.NAME)) ) {
+			|| desktop.isToolWindowOpen(MissionWindow.NAME))
 //			&& update 
-//			&& (!executor.isTerminated() || !executor.isShutdown())) {
+			&& (!executor.isTerminated() || !executor.isShutdown())) {
 				executor.execute(new MapTask(scale));
 		}
 	}
@@ -395,7 +397,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					logger.severe("centerCoords is null.");
 					centerCoords = new Coordinates(HALF_PI, 0);
 				}
-				
+
 				marsMap.drawMap(centerCoords, scale);
 				wait = false;
 				repaint();
@@ -439,7 +441,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	            }
 	        	else {
 
-//	        		g2d.setBackground(Color.WHITE);
+	        		g2d.setBackground(Color.BLACK);
+	        		
 	        		// Clear the background with white
 	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
@@ -514,16 +517,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
     }
-    
-	/**
-	 * Gets the scale of the Mars surface map.
-	 * 
-	 * @param value
-	 */
-    public void setMapScale(double value) {
-    	marsMap.setMapScale(value);
-    }
-
 
     /**
      * Gets the scale of the Mars surface map.

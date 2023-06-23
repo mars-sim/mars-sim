@@ -65,13 +65,6 @@ public interface Map {
 	public double getScale();
 
 	/**
-	 * Gets the scale of the Mars surface map.
-	 * 
-	 * @param value
-	 */
- 	public void setMapScale(double value);
- 	
-	/**
 	 * Gets the name type of this map.
 	 * 
 	 * @return

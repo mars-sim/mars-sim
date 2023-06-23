@@ -64,8 +64,8 @@ public class CannedMarsMap extends JComponent implements Map {
 	 * @param newCenter the new center location
 	 */
 	public void drawMap(Coordinates newCenter, double scale) {	
-			mapImage = createMapImage(newCenter, scale);
-			mapImageDone = true;
+		mapImage = createMapImage(newCenter, scale);
+		mapImageDone = true;
 	}
 	
 	/**
@@ -96,15 +96,6 @@ public class CannedMarsMap extends JComponent implements Map {
 	@Override
 	public double getScale() {
 		return mapData.getScale();
-	}
-
-	/**
-	 * Sets the scale of the Mars surface map.
-	 * 
-	 * @return
-	 */
-	public void setMapScale(double value) {
-		mapData.setMapScale(value);
 	}
 	   
 	/**

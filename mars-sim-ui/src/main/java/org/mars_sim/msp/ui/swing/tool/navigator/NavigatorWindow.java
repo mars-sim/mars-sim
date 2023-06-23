@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-06-21
+ * @date 2023-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -102,7 +101,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 	
-	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
+	// Can add back private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName())
 
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
@@ -124,8 +123,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final int MAP_BOX_WIDTH = 600;
 
 	private static final int HEIGHT_STATUS_BAR = 16;
-
-//	private static final double RAD_PER_DEGREE = Math.PI / 180D;
 
 	private static final String WHITESPACE = " ";
 	private static final String THETA = "\u03B8: "; //"Theta: ";
@@ -154,8 +151,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private JRadioButton r1;
 	
-	private JButton goThere;
-	
 	private JPanel settlementPane;
 	
 	private JPanel goPane;
@@ -174,8 +169,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapLayerPanel;
-	/** Globe navigation. */
-//	private GlobeDisplay globeNav;
 
 	private MineralMapLayer mineralLayer;
 	
@@ -217,6 +210,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
+		mapPane.add(detailPane);
+		
 		mapLayerPanel = new MapPanel(desktop, this);
 		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
@@ -237,21 +232,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		detailPane.add(mapLayerPanel);
-		
-		// Prepare globe display
-//		globeNav = new GlobeDisplay(this);
-//		globeNav.setMapType(mapLayerPanel.getMapType());
-//		
-//		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-//		globePane.setOpaque(true);
-//		globePane.add(globeNav);
-//		globePane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
-//		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
-//
-//		mapPane.add(globePane);
-		
-		mapPane.add(detailPane);
 		
 		///////////////////////////////
 		
@@ -297,28 +277,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		////////////////////////////////////////////
 			
-		JPanel twoLevelPane = new JPanel(new BorderLayout(0, 0));//GridLayout(2, 1));
+		JPanel twoLevelPane = new JPanel(new BorderLayout(0, 0));
 		centerPane.add(twoLevelPane, BorderLayout.CENTER);
 		
 		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topPane.setAlignmentY(BOTTOM_ALIGNMENT);
-		twoLevelPane.add(topPane, BorderLayout.NORTH);
+		twoLevelPane.add(topPane, BorderLayout.CENTER);
 
 		bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPane.setAlignmentY(TOP_ALIGNMENT);
-		twoLevelPane.add(bottomPane, BorderLayout.CENTER);
+		twoLevelPane.add(bottomPane, BorderLayout.SOUTH);
         
 		// Prepare location entry submit button
-		goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-		goThere.setToolTipText("Go to the location with your specified coordinates");
-		goThere.setActionCommand(GO_THERE_ACTION);
-		goThere.addActionListener(this);
+		JButton goButton = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
+		goButton.setToolTipText("Go to the location with your specified coordinate");
+		goButton.setActionCommand(GO_THERE_ACTION);
+		goButton.addActionListener(this);
 
 		goPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		goPane.setPreferredSize(new Dimension(120, 30));
-//		goPane.setMinimumSize(new Dimension(120, 30));
-//		goPane.setMaximumSize(new Dimension(120, 30));
-		goPane.add(goThere);
+		goPane.add(goButton);
 		
 		bottomPane.add(goPane);
 		
@@ -328,22 +305,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         buildSettlementNameComboBox(setupSettlements());
         
         settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//        settlementPane.setPreferredSize(new Dimension(120, 30));
-//        settlementPane.setMinimumSize(new Dimension(120, 30));
-//        settlementPane.setMaximumSize(new Dimension(120, 30));
-        
+  
         JLabel label = new JLabel("Select a settlement: ");
         settlementPane.add(label);
         settlementPane.add(settlementComboBox);
 		
-//        bottomPane.add(settlementPane);
-        
-//        settlementComboBox.setEnabled(false);
-//		settlementComboBox.setVisible(false);
-		
 		////////////////////////////////////////////
-		
-		
+			
 		// Prepare latitude entry components
 		JLabel latLabel = new JLabel("Lat :", JLabel.RIGHT);
 		topPane.add(latLabel);
@@ -393,11 +361,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		lonCBDir.setEditable(false);
 		topPane.add(lonCBDir);
 
-
 		///////////////////////////////////////////////////////////////////////////
 		
 		// Prepare options panel on the right pane
-		JPanel optionsPane = new JPanel(new BorderLayout(5, 5));// FlowLayout(FlowLayout.CENTER, 5, 5)); //new GridLayout(2, 1, 10, 10));
+		JPanel optionsPane = new JPanel(new BorderLayout(0, 0));
 		optionsPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		coordControlPane.add(optionsPane, BorderLayout.EAST);
 
@@ -409,9 +376,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         
 		// Prepare options button.
 		JButton optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
-//		optionsButton.setPreferredSize(new Dimension(120, 30));
-//		optionsButton.setMinimumSize(new Dimension(120, 30));
-//		optionsButton.setMaximumSize(new Dimension(120, 30));
 		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(e -> {
 				SwingUtilities.invokeLater(() -> {
@@ -429,9 +393,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		// Prepare minerals button.0
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
-//		mineralsButton.setPreferredSize(new Dimension(120, 30));
-//		mineralsButton.setMinimumSize(new Dimension(120, 30));
-//		mineralsButton.setMaximumSize(new Dimension(120, 30));
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(e -> {
@@ -521,7 +482,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		setVisible(true);
 		// Pack window
 		pack();
-
 	}
 
 	
@@ -647,11 +607,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newCoords the new center location
 	 */
 	public void updateCoordsMaps(Coordinates newCoords) {
-		
 		updateCoordsBox(newCoords);
-
 		mapLayerPanel.showMap(newCoords);
-//		globeNav.showGlobe(newCoords);
 	}
 	
 	/**
@@ -660,9 +617,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newCoords the new center location
 	 */
 	public void updateMaps(Coordinates newCoords) {
-		
 		mapLayerPanel.showMap(newCoords);
-//		globeNav.showGlobe(newCoords);
 	}
 	
 	/** ActionListener method overridden */
@@ -763,9 +718,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		if (mapLayerPanel.setMapType(newMapType)) {
 			// Update dependent panels
 			MapMetaData metaType = mapLayerPanel.getMapType();
-			// Gets a new GlobeMap if it's a different metaType
-//			globeNav.setMapType(metaType);
-
+			
 			if (metaType.isColourful()) {
 				// turn off day night layer
 				setMapLayer(false, DAYLIGHT_LAYER);
@@ -1014,7 +967,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				}
 			}
 
-			// TODO: how to avoid overlapping labels ?
+			// FUTURE: how to avoid overlapping labels ?
 			
 			// Change mouse cursor if hovering over a landmark on the map
 			Iterator<Landmark> j = landmarks.iterator();
@@ -1045,10 +998,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			mapLayerPanel.update(pulse);
 		}
 	}
-
-//	public GlobeDisplay getGlobeDisplay() {
-//		return globeNav;
-//	}
 	 	
 	/** 
 	 * Gets the map panel class.
@@ -1087,16 +1036,35 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public void destroy() {
 		if (mapLayerPanel != null)
 			mapLayerPanel.destroy();
-//		if (globeNav != null)
-//			globeNav.destroy();
 
 		latCB = null;
 		lonCB = null;
 		mapLayerPanel = null;
-//		globeNav = null;
-
 		latCBDir = null;
 		lonCBDir = null;
+		
+		settlementComboBox = null;
+		mineralsButton = null;
+		
+		r0 = null;	
+		r1 = null;
+		settlementPane = null;
+		goPane = null;
+		
+		bottomPane = null;
+		heightLabel = null;
+		coordLabel = null;
+		phiLabel = null;
+		thetaLabel = null;
+
+		mapLayers  = null;
+		landmarks = null;
+		mapLayerPanel = null;
+		mineralLayer = null;
+	
+		unitManager = null;
+		umListener = null;
+		selectedSettlement = null;
 		
 		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
@@ -1107,40 +1075,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	        JRadioButton button = (JRadioButton) event.getSource();
 
 	        if (button == r0) {
-//				logger.config("r0 selected");
-	        	// Enable Go button
-//				goThere.setEnabled(true);
-//				goThere.setVisible(true);
-
-				
+			
 				// Enable all lat lon controls
 				latCB.setEnabled(true);
 				latCBDir.setEnabled(true);
 				lonCB.setEnabled(true);
 				lonCBDir.setEnabled(true);
-				// Disable settlement combobox
-//				settlementComboBox.setEnabled(false);
-//				settlementComboBox.setVisible(false);
-				
+			
 				bottomPane.remove(settlementPane);
 				bottomPane.add(goPane);
 				repaint();
-
 				
 	        } else if (button == r1) {
-//	        	logger.config("r1 selected");
-	        	// Enable settlement combobox
-//	        	settlementComboBox.setEnabled(true);
-//	        	settlementComboBox.setVisible(true);
-	        	// Disable Go button
-//	        	goThere.setEnabled(false);
-//	        	goThere.setVisible(false);
 				// Disable all lat lon controls
 				latCB.setEnabled(false);
 				latCBDir.setEnabled(false);
 				lonCB.setEnabled(false);
 				lonCBDir.setEnabled(false);
-				
 				
 				bottomPane.remove(goPane);
 				bottomPane.add(settlementPane);
