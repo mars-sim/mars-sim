@@ -29,14 +29,14 @@ import java.io.IOException;
 	 */
 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
 	 
-	/**
-	 * Gets the RGB map color at a given location.
-	 * 
-	 * @param phi the phi location.
-	 * @param theta the theta location.
-	 * @return the RGB map color.
-	 */
-	public Color getRGBColor(double phi, double theta);
+//	/**
+//	 * Gets the RGB map color at a given location.
+//	 * 
+//	 * @param phi the phi location.
+//	 * @param theta the theta location.
+//	 * @return the RGB map color.
+//	 */
+//	public Color getRGBColor(double phi, double theta);
 
 	/**
 	 * Gets the scale of the Mars surface map.

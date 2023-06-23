@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2023-06-19
+ * @date 2023-06-22
  * @author Scott Davis
  */
  package org.mars_sim.mapdata;
@@ -13,24 +13,25 @@ import static org.mars_sim.mapdata.OpenCL.getLocalSize;
 import static org.mars_sim.mapdata.OpenCL.getProgram;
 import static org.mars_sim.mapdata.OpenCL.getQueue;
 
-import com.jogamp.opencl.CLBuffer;
-import com.jogamp.opencl.CLKernel;
-import com.jogamp.opencl.CLProgram;
-import java.awt.Color;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
 import org.mars_sim.msp.common.FileLocator;
+
+import com.jogamp.opencl.CLBuffer;
+import com.jogamp.opencl.CLKernel;
+import com.jogamp.opencl.CLProgram;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -58,7 +59,14 @@ import org.mars_sim.msp.common.FileLocator;
 	private int pixelHeight;
 	// height pixels divided by pi (equals to pixelHeight / Math.PI)
 	private double rho;
-
+	
+	private double centerPhiCache;
+	
+	private double centerThetaCache;
+	
+    /** A list of locations, each having phi and theta. */
+	private static List<Point2D> locations = new ArrayList<>();
+	
 	// Name of the map
 	private MapMetaData meta;
 	
@@ -68,6 +76,8 @@ import org.mars_sim.msp.common.FileLocator;
 	
 	private CLKernel kernel;
  	
+	private transient Image mapImage = null;
+	
  	/**
  	 * Constructor.
  	 * 
@@ -86,7 +96,7 @@ import org.mars_sim.msp.common.FileLocator;
 		MAX_RHO = RHO_DEFAULT * 4;
 		MIN_RHO = RHO_DEFAULT / 6;
 		
-		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + "x" + pixelHeight + ".");
+		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
 		
 		setKernel();
  	}
@@ -245,11 +255,21 @@ import org.mars_sim.msp.common.FileLocator;
  	@Override
  	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale) {
 
+ 		if (mapImage != null 
+ 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && scale == rho)) {
+ 			return mapImage;
+ 		}
+ 		
+		// Set the new phi		
+ 		centerPhiCache = centerPhi;
+		// Set the new theta 		
+ 		centerThetaCache = centerTheta;
 		// Set the new map scale
 		setMapScale(scale);
  		
  		// Create a new buffered image to draw the map on.
- 		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, BufferedImage.TYPE_4BYTE_ABGR);
+ 		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, 
+ 				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);
 
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
@@ -258,7 +278,9 @@ import org.mars_sim.msp.common.FileLocator;
 		 if (invalid) {
 			 logger.log(Level.SEVERE, "centerPhi and/or centerTheta is invalid.");
 		 }
-
+	 
+		 // Clear all the saved point2d locations
+		 locations.clear();
 		 
 		 if(HARDWARE_ACCELERATION || program == null || kernel == null) {
 			 try {
@@ -275,6 +297,8 @@ import org.mars_sim.msp.common.FileLocator;
  		// Create new map image.
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 
+ 		mapImage = result;
+ 		
  		return result;
  	}
 
@@ -299,8 +323,12 @@ import org.mars_sim.msp.common.FileLocator;
 
 				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getScale());
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
+
+				 locations.add(loc);
 			 }
 		 }
+		 
+		 logger.info("locations: " + locations.size());
 	 }
 
 	 /**
@@ -397,10 +425,10 @@ import org.mars_sim.msp.common.FileLocator;
 		 return new Point2D.Double(phiNew, thetaNew);
 	 }
 
- 	@Override
- 	public Color getRGBColor(double phi, double theta) {
- 		return new Color(getRGBColorInt(phi, theta));
- 	}
+// 	@Override
+// 	public Color getRGBColor(double phi, double theta) {
+// 		return new Color(getRGBColorInt(phi, theta));
+// 	}
 
  	/**
  	 * Gets the RGB map color as an integer at a given location.
@@ -441,31 +469,16 @@ import org.mars_sim.msp.common.FileLocator;
  	}
 
  	
- 	
- 	/**
- 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
- 	 * and y display coordinates for spherical location.
- 	 *
- 	 * @param newPhi   the new phi coordinate
- 	 * @param newTheta the new theta coordinate
- 	 * @return pixel offset value for map
- 	 */
- 	private Point findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, int lowEdge) {
-
- 		final double temp_col = newTheta + ((Math.PI / -2D) - oldTheta);
- 		final double temp_buff_x = getScale() * Math.sin(newPhi);
- 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + (pixelHeight/2)) - lowEdge;
- 		int buff_y = ((int) Math.round(((temp_buff_x * (0D - Math.cos(oldPhi))) * Math.sin(temp_col))
- 				+ (getScale() * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) + (pixelHeight/2)) - lowEdge;
- 		return new Point(buff_x, buff_y);
- 	}
- 	
  	public BufferedImage getCylindricalMapImage() {
  		return cylindricalMapImage;
  	}
  	
  	public int[][] getPixels() {
  		return pixels;
+ 	}
+ 	
+ 	public static List<Point2D> getLocations() {
+ 		return locations;
  	}
  	
 	/**

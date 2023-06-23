@@ -449,15 +449,37 @@ public final class Coordinates implements Serializable {
 		double sinPhi = Math.sin(this.phi);
 		double cosPhi = Math.cos(this.phi);
 
-		double tempCol = newTheta + (-PI_HALF - theta);
-		double tempBuffX = rho * Math.sin(newPhi);
-		int buffX = ((int) Math.round(tempBuffX * Math.cos(tempCol)) + halfMap) - lowEdge;
-		int buffY = ((int) Math
-				.round(((tempBuffX * (0D - cosPhi)) * Math.sin(tempCol)) + (rho * Math.cos(newPhi) * (0D - sinPhi)))
+		double col = newTheta + (-PI_HALF - theta);
+		double x = rho * Math.sin(newPhi);
+		
+		int buffX = ((int) Math.round(x * Math.cos(col)) + halfMap) - lowEdge;
+		int buffY = ((int) Math.round(((x * (0D - cosPhi)) * Math.sin(col)) 
+				+ (rho * Math.cos(newPhi) * (0D - sinPhi)))
 				+ halfMap) - lowEdge;
 		return new IntPoint(buffX, buffY);
 	}
 
+ 	/**
+ 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
+ 	 * and y display coordinates for spherical location.
+ 	 *
+ 	 * @param newPhi   the new phi coordinate
+ 	 * @param newTheta the new theta coordinate
+ 	 * @return pixel offset value for map
+ 	 */
+ 	private IntPoint findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, int lowEdge, double rho, int halfMap) {
+
+ 		final double col = newTheta + (PI_HALF - oldTheta);
+ 		final double x = rho * Math.sin(newPhi);
+ 		
+ 		int buff_x = ((int) Math.round(x * Math.cos(col)) + halfMap) - lowEdge;
+ 		int buff_y = ((int) Math.round(((x * (0D - Math.cos(oldPhi))) * Math.sin(col))
+ 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) 
+ 				+ halfMap) - lowEdge;
+ 		
+ 		return new IntPoint(buff_x, buff_y);
+ 	}
+ 	
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates.
 	 *

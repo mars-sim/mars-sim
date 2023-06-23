@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -430,30 +431,45 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	        	if (mapError) {
 	            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
 	                // Display previous map image
-	                if (mapImage != null) g2d.drawImage(mapImage, 0, 0, this);
+//	                if (mapImage != null) g2d.drawImage(mapImage, 0, 0, this);
 	
 	                // Draw error message
 	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
 	                drawCenteredMessage(mapErrorMessage, g);
 	            }
 	        	else {
+
+//	        		g2d.setBackground(Color.WHITE);
+	        		// Clear the background with white
+	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+
+	        		g2d.setComposite(AlphaComposite.SrcOver); 
+
 	        		// Paint black background
-	                g.setColor(Color.black);
-	                
-	                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+	        		g2d.setPaint(Color.BLACK); 
+	        		
+	        		g2d.setColor(Color.BLACK);
+//	                
+	        		g2d.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+//	
+	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, null);
 	
-	                g.drawImage(starfield, 0, 0, Color.black, null);
-	                
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
 	                		mapImage = marsMap.getMapImage();
-	                		g.drawImage(mapImage, 0, 0, this);
+	                		if (mapImage != null)
+	                			g2d.drawImage(mapImage, 0, 0, null);
 	//                		logger.log(Level.INFO, "g.drawImage");
+
 	                	}
+	                	else
+	                		return;
 	
 	                	// Display map layers.
 	                	Iterator<MapLayer> i = mapLayers.iterator();
 	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
+
+                		g2d.dispose();
 	                }
 	        	}
 	        }
@@ -506,13 +522,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
     public void setMapScale(double value) {
     	marsMap.setMapScale(value);
-//    	navwin.getGlobeDisplay().setMapScale(value);
     }
-    
-//    public void drawMarsMap(double value) {
-//		marsMap.drawMap(centerCoords, value);
-//		logger.log(Level.INFO, "drawMarsMap()");
-//    }
+
 
     /**
      * Gets the scale of the Mars surface map.

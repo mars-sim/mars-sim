@@ -121,7 +121,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	public static final int MAP_BOX_WIDTH = 450;
+	public static final int MAP_BOX_WIDTH = 600;
 
 	private static final int HEIGHT_STATUS_BAR = 16;
 
@@ -156,6 +156,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private JButton goThere;
 	
+	private JPanel settlementPane;
+	
+	private JPanel goPane;
+	
+	private JPanel bottomPane;
+	
 	/** The info label on the status bar. */
 	private JLabel heightLabel;
 	private JLabel coordLabel;
@@ -169,7 +175,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapLayerPanel;
 	/** Globe navigation. */
-	private GlobeDisplay globeNav;
+//	private GlobeDisplay globeNav;
 
 	private MineralMapLayer mineralLayer;
 	
@@ -202,7 +208,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel mapPane = new JPanel(new GridLayout(1, 2));
+		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
 		wholePane.add(mapPane, BorderLayout.CENTER);
 	
 		// Build the Map panel first as the globe is a slave
@@ -233,32 +239,33 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		detailPane.add(mapLayerPanel);
 		
 		// Prepare globe display
-		globeNav = new GlobeDisplay(this);
-		globeNav.setMapType(mapLayerPanel.getMapType());
+//		globeNav = new GlobeDisplay(this);
+//		globeNav.setMapType(mapLayerPanel.getMapType());
+//		
+//		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+//		globePane.setOpaque(true);
+//		globePane.add(globeNav);
+//		globePane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
+//		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
+//
+//		mapPane.add(globePane);
 		
-		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setOpaque(true);
-		globePane.add(globeNav);
-		globePane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
-		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
-
-		mapPane.add(globePane);
 		mapPane.add(detailPane);
 		
 		///////////////////////////////
 		
 		JPanel wholeBottomPane = new JPanel(new BorderLayout(0, 0));
-		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
-		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
-		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH * 2, 70));
+		wholeBottomPane.setPreferredSize(new Dimension(MAP_BOX_WIDTH, 80));
+		wholeBottomPane.setMinimumSize(new Dimension(MAP_BOX_WIDTH, 80));
+		wholeBottomPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, 80));
 		wholePane.add(wholeBottomPane, BorderLayout.SOUTH);
 		
 		JPanel coordControlPane = new JPanel(new BorderLayout());
 		wholeBottomPane.add(coordControlPane, BorderLayout.CENTER);
 		
-		JPanel coord2LayersPane = new JPanel(new BorderLayout(5, 5));
-		coordControlPane.add(coord2LayersPane, BorderLayout.CENTER);
+		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
+		coordControlPane.add(centerPane, BorderLayout.CENTER);
 		
 		JPanel westPane = new JPanel(new BorderLayout());
 		coordControlPane.add(westPane, BorderLayout.WEST);
@@ -290,16 +297,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		////////////////////////////////////////////
 			
-		JPanel twoLevelPane = new JPanel(new GridLayout(2, 1));
-		coord2LayersPane.add(twoLevelPane, BorderLayout.CENTER);
+		JPanel twoLevelPane = new JPanel(new BorderLayout(0, 0));//GridLayout(2, 1));
+		centerPane.add(twoLevelPane, BorderLayout.CENTER);
 		
 		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topPane.setAlignmentY(BOTTOM_ALIGNMENT);
-		twoLevelPane.add(topPane);
+		twoLevelPane.add(topPane, BorderLayout.NORTH);
 
-		JPanel bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topPane.setAlignmentY(CENTER_ALIGNMENT);
-		twoLevelPane.add(bottomPane);
+		bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomPane.setAlignmentY(TOP_ALIGNMENT);
+		twoLevelPane.add(bottomPane, BorderLayout.CENTER);
         
 		// Prepare location entry submit button
 		goThere = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
@@ -307,29 +314,32 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		goThere.setActionCommand(GO_THERE_ACTION);
 		goThere.addActionListener(this);
 
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buttonPane.setPreferredSize(new Dimension(120, 30));
-		buttonPane.setMinimumSize(new Dimension(120, 30));
-		buttonPane.setMaximumSize(new Dimension(120, 30));
-		buttonPane.add(goThere);
+		goPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		goPane.setPreferredSize(new Dimension(120, 30));
+//		goPane.setMinimumSize(new Dimension(120, 30));
+//		goPane.setMaximumSize(new Dimension(120, 30));
+		goPane.add(goThere);
 		
-		bottomPane.add(buttonPane);
+		bottomPane.add(goPane);
 		
 		////////////////////////////////////////////
 		
 		// Create the settlement combo box
         buildSettlementNameComboBox(setupSettlements());
         
-        JPanel settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        settlementPane.setPreferredSize(new Dimension(120, 30));
-        settlementPane.setMinimumSize(new Dimension(120, 30));
-        settlementPane.setMaximumSize(new Dimension(120, 30));
+        settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//        settlementPane.setPreferredSize(new Dimension(120, 30));
+//        settlementPane.setMinimumSize(new Dimension(120, 30));
+//        settlementPane.setMaximumSize(new Dimension(120, 30));
+        
+        JLabel label = new JLabel("Select a settlement: ");
+        settlementPane.add(label);
         settlementPane.add(settlementComboBox);
 		
-        bottomPane.add(settlementPane);
+//        bottomPane.add(settlementPane);
         
-        settlementComboBox.setEnabled(false);
-		settlementComboBox.setVisible(false);
+//        settlementComboBox.setEnabled(false);
+//		settlementComboBox.setVisible(false);
 		
 		////////////////////////////////////////////
 		
@@ -641,7 +651,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		updateCoordsBox(newCoords);
 
 		mapLayerPanel.showMap(newCoords);
-		globeNav.showGlobe(newCoords);
+//		globeNav.showGlobe(newCoords);
 	}
 	
 	/**
@@ -652,7 +662,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public void updateMaps(Coordinates newCoords) {
 		
 		mapLayerPanel.showMap(newCoords);
-		globeNav.showGlobe(newCoords);
+//		globeNav.showGlobe(newCoords);
 	}
 	
 	/** ActionListener method overridden */
@@ -719,7 +729,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * 
 	 * @param selected
 	 */
-	public void selectMineralLayer(boolean selected) {
+	private void selectMineralLayer(boolean selected) {
 		mineralsButton.setEnabled(selected);
 		if (selected) {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
@@ -754,7 +764,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			// Update dependent panels
 			MapMetaData metaType = mapLayerPanel.getMapType();
 			// Gets a new GlobeMap if it's a different metaType
-			globeNav.setMapType(metaType);
+//			globeNav.setMapType(metaType);
 
 			if (metaType.isColourful()) {
 				// turn off day night layer
@@ -1036,9 +1046,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
-	public GlobeDisplay getGlobeDisplay() {
-		return globeNav;
-	}
+//	public GlobeDisplay getGlobeDisplay() {
+//		return globeNav;
+//	}
 	 	
 	/** 
 	 * Gets the map panel class.
@@ -1053,7 +1063,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Type of Map
 		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapType().getId());
-		Coordinates center = globeNav.getCoordinates();
+		Coordinates center = mapLayerPanel.getCenterLocation();
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
 		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());
 
@@ -1077,13 +1087,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public void destroy() {
 		if (mapLayerPanel != null)
 			mapLayerPanel.destroy();
-		if (globeNav != null)
-			globeNav.destroy();
+//		if (globeNav != null)
+//			globeNav.destroy();
 
 		latCB = null;
 		lonCB = null;
 		mapLayerPanel = null;
-		globeNav = null;
+//		globeNav = null;
 
 		latCBDir = null;
 		lonCBDir = null;
@@ -1099,30 +1109,42 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	        if (button == r0) {
 //				logger.config("r0 selected");
 	        	// Enable Go button
-				goThere.setEnabled(true);
-				goThere.setVisible(true);
+//				goThere.setEnabled(true);
+//				goThere.setVisible(true);
+
+				
 				// Enable all lat lon controls
 				latCB.setEnabled(true);
 				latCBDir.setEnabled(true);
 				lonCB.setEnabled(true);
 				lonCBDir.setEnabled(true);
 				// Disable settlement combobox
-				settlementComboBox.setEnabled(false);
-				settlementComboBox.setVisible(false);
+//				settlementComboBox.setEnabled(false);
+//				settlementComboBox.setVisible(false);
+				
+				bottomPane.remove(settlementPane);
+				bottomPane.add(goPane);
+				repaint();
+
 				
 	        } else if (button == r1) {
 //	        	logger.config("r1 selected");
 	        	// Enable settlement combobox
-	        	settlementComboBox.setEnabled(true);
-	        	settlementComboBox.setVisible(true);
+//	        	settlementComboBox.setEnabled(true);
+//	        	settlementComboBox.setVisible(true);
 	        	// Disable Go button
-	        	goThere.setEnabled(false);
-	        	goThere.setVisible(false);
+//	        	goThere.setEnabled(false);
+//	        	goThere.setVisible(false);
 				// Disable all lat lon controls
 				latCB.setEnabled(false);
 				latCBDir.setEnabled(false);
 				lonCB.setEnabled(false);
 				lonCBDir.setEnabled(false);
+				
+				
+				bottomPane.remove(goPane);
+				bottomPane.add(settlementPane);
+				repaint();
 	        }
 	    }
 	}
