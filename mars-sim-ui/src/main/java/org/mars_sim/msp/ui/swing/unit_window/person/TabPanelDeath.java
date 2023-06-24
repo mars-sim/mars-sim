@@ -99,7 +99,7 @@ implements ActionListener {
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         timeTF = new JTextField();
-        timeTF.setText(death.getTimeOfDeath());
+        timeTF.setText(death.getTimeOfDeath().getTruncatedDateTimeStamp());
         timeTF.setEditable(false);
         timeTF.setColumns(20);
         wrapper2.add(timeTF);//, BorderLayout.CENTER);
