@@ -48,6 +48,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -165,6 +167,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
+	private static MasterClock clock;
 
 	/**
 	 * Constructor.
@@ -293,6 +296,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return missionName;
 	}
 
+	/**
+	 * Get the current martian time.
+	 * @return
+	 */
+	protected MarsTime getMarsTime() {
+		return clock.getMarsTime();
+	}
+	
 	/**
 	 * Adds a member.
 	 * 
@@ -1228,7 +1239,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
-		plan = new MissionPlanning(this, marsClock.getMissionSol());
+		plan = new MissionPlanning(this, getMarsTime().getMissionSol());
 	}
 	/**
 	 * Returns the mission plan.
@@ -1364,6 +1375,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 		surfaceFeatures = sf;
 		missionManager = m;
 		personConfig = pc;
+
+		clock = si.getMasterClock();
 
 		MissionLog.initialise(c);
 		MissionUtil.initializeInstances(u, m);

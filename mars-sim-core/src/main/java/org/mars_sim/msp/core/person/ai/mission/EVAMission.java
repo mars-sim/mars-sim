@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 abstract class EVAMission extends RoverMission {
@@ -100,18 +101,18 @@ abstract class EVAMission extends RoverMission {
 		}
 		else {
 			// Decide what to do
-			MarsClock sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
+			MarsTime sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAIT_SUBLIGHT)) {
+					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
 				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
+				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTruncatedDateTimeStamp());
 				addMissionLog(NOT_ENOUGH_SUNLIGHT);
 				startTravellingPhase();
 			}
 			else {
 				// Wait for sunrise
-				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTrucatedDateTimeStamp());
-				setPhase(WAIT_SUNLIGHT, sunrise.getTrucatedDateTimeStamp());
+				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
 			}
 		}
 		return result;

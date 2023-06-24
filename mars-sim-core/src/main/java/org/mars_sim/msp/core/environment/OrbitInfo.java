@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -170,26 +171,20 @@ public class OrbitInfo implements Serializable, Temporal {
 	private Coordinates sunDirection;
 
 	// static instances
-	private MarsClock marsClock;
-	
-	private SimulationConfig simulationConfig;
+	private MasterClock clock;
+	private LocalDateTime earthTime;
 
 	/** Constructs an {@link OrbitInfo} object */
-	public OrbitInfo(MarsClock clock) {
+	public OrbitInfo(MasterClock clock, SimulationConfig simulationConfig) {
 		// Set orbit coordinates to start of orbit.
 	
 		orbitTime = 0D;
 		theta = 0D;
-		marsClock = clock;
+		this.clock = clock;
 
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
-		
-		if (simulationConfig == null) {
-			simulationConfig = SimulationConfig.instance();
-		}
-		
-		LocalDateTime earthTime = simulationConfig.getEarthStartDate();
+		earthTime = simulationConfig.getEarthStartDate();
 		sunAreoLongitude = getLs(earthTime) % 360;
 		
 		logger.config("Areocentric Longitude: " + Math.round(sunAreoLongitude * 1_000.0)/1_000.0 + " deg");
@@ -339,18 +334,8 @@ public class OrbitInfo implements Serializable, Temporal {
 			theta -= TWO_PIs;
 
 		// Determine new radius
-//		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
-		
-//		logger.config("1. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
-		
-		if (simulationConfig == null) {
-			simulationConfig = SimulationConfig.instance();
-		}
-		
-		instantaneousSunMarsDistance = getHeliocentricDistance(simulationConfig.getEarthStartDate());
-		
-//		logger.config("2. instantaneousSunMarsDistance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
-		
+		instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
+				
 		// Recompute the areocentric longitude of Mars
 		sunAreoLongitude = computeSunLongitude(pulse.getMasterClock().getEarthTime());
 
@@ -493,7 +478,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
-		double solarTime = marsClock.getMillisol();
+		double solarTime = clock.getMarsTime().getMillisol();
 		// compute latitude in radians rather than in degree
 		double lat = location.getPhi2LatRadian();
 

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -99,13 +100,11 @@ public class Weather implements Serializable, Temporal {
 	
 	private Map<Coordinates, SunData> sunDataMap;
 	
-	private static Simulation sim;
-	private static OrbitInfo orbitInfo;
-	private static MarsClock marsClock;
-	private static SurfaceFeatures surfaceFeatures;
-	private static TerrainElevation terrainElevation;
+	private OrbitInfo orbitInfo;
+	private MasterClock clock;
+	private SurfaceFeatures surfaceFeatures;
 
-	public Weather() {
+	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
 		sunDataMap = new HashMap<>();
 		
@@ -116,6 +115,13 @@ public class Weather implements Serializable, Temporal {
 		airPressureCacheMap = new HashMap<>();
 		windSpeedCacheMap = new HashMap<>();
 		windDirCacheMap = new HashMap<>();
+
+		this.orbitInfo = orbitInfo;
+		this.clock = clock;
+	}
+
+	void setSurfaceFeatures(SurfaceFeatures sf) {
+		surfaceFeatures = sf;
 	}
 
 	/**
@@ -172,14 +178,7 @@ public class Weather implements Serializable, Temporal {
 		// of the storm's arrival they  had increased to 17 m/s (61 km/h), 
 		// with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
-
-		if (surfaceFeatures == null) 
-			surfaceFeatures = sim.getSurfaceFeatures();
-			
-		double optical = 1;
-		
-		if (surfaceFeatures != null) 
-			optical = surfaceFeatures.getOpticalDepth(location);
+		double optical = surfaceFeatures.getOpticalDepth(location);
 		
 		if (windSpeedCacheMap.containsKey(location)) {
 			// Load the previous wind speed
@@ -229,17 +228,14 @@ public class Weather implements Serializable, Temporal {
 			
 			else { // not a new sol, no need to check for dust storm
 				
-				int msol = sim.getMasterClock().getMarsClock().getMillisolInt();
+				int msol = clock.getMarsTime().getMillisolInt();
 				
 				// the value of optical depth doesn't need to be refreshed too often
 				if (msol % WINDSPEED_REFRESH == 0) {
 					
 					double rand = RandomUtil.getRandomDouble(-0.02, 0.02);
-	
-					if (terrainElevation == null) 
-						terrainElevation = sim.getSurfaceFeatures().getTerrainElevation();
 					
-					double[] terrain = terrainElevation.getTerrainProfile(location);
+					double[] terrain = surfaceFeatures.getTerrainElevation().getTerrainProfile(location);
 					
 					double boundary = Math.round(AVERAGE_WINDSPEED * optical 
 									* Math.log(1.1 + Math.abs((1 + terrain[0]) * (5 - terrain[1])))* 1000.0)/1000.0;
@@ -379,7 +375,7 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap = new HashMap<>();
 		}
 
-		if (marsClock.getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
+		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
 			double newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
 			return newP;
@@ -443,7 +439,7 @@ public class Weather implements Serializable, Temporal {
 
 		double t = 0;
 		
-		if (marsClock.getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
+		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
 			t = newT;
@@ -497,7 +493,7 @@ public class Weather implements Serializable, Temporal {
 
 		double t = 0;
 
-		if (sim.getSurfaceFeatures().inDarkPolarRegion(location)) {
+		if (surfaceFeatures.inDarkPolarRegion(location)) {
 
 			// vs. just in inPolarRegion()
 			// see http://www.alpo-astronomy.org/jbeish/Observing_Mars_3.html
@@ -515,7 +511,7 @@ public class Weather implements Serializable, Temporal {
 
 		}
 
-		else if (sim.getSurfaceFeatures().inPolarRegion(location)) {
+		else if (surfaceFeatures.inPolarRegion(location)) {
 
 			// Based on Surface brightness temperatures at 32 µm retrieved from the MCS data
 			// for
@@ -559,7 +555,7 @@ public class Weather implements Serializable, Temporal {
 //	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 //	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			
-			double lightFactor = sim.getSurfaceFeatures().getSunlightRatio(location) * LIGHT_EFFECT;
+			double lightFactor = surfaceFeatures.getSunlightRatio(location) * LIGHT_EFFECT;
 
 			// Equation below is modeled after Viking's data.
 			double equatorialTemperature = 27.5D * lightFactor - 58.5D;
@@ -593,7 +589,7 @@ public class Weather implements Serializable, Temporal {
 
 			// (4). Seasonal variation
 			double latAdjustment = TEMPERATURE_DELTA_PER_DEG_LAT * latDegree; // an educated guess
-			int solElapsed = marsClock.getMissionSol();
+			int solElapsed = clock.getMarsTime().getMissionSol();
 			double seasonalDt = latAdjustment * Math.sin(2 * Math.PI / 1000D * (solElapsed - 142));
 
 			// (5). Add windspeed
@@ -710,8 +706,8 @@ public class Weather implements Serializable, Temporal {
 					getAirPressure(location),
 					getAirDensity(location), 
 					getWindSpeed(location), 
-					sim.getSurfaceFeatures().getSolarIrradiance(location),
-					sim.getSurfaceFeatures().getOpticalDepth(location));
+					surfaceFeatures.getSolarIrradiance(location),
+					surfaceFeatures.getOpticalDepth(location));
 			
 			dailyRecordMap.addDataPoint(dailyWeather);
 			
@@ -729,7 +725,7 @@ public class Weather implements Serializable, Temporal {
 		isNewSol = pulse.isNewSol();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-		int msol = marsClock.getMillisolInt();
+		int msol = pulse.getMarsTime().getMillisolInt();
 		int remainder = msol % MSOL_PER_SAMPLE;
 		if (isNewSol || remainder == 0) {		
 			// Add a data point
@@ -912,7 +908,8 @@ public class Weather implements Serializable, Temporal {
 	 * @param L_s_int
 	 */
 	private void createDustDevils(double probability, double ls) {
-		List<Settlement> settlements = new ArrayList<>(sim.getUnitManager().getSettlements());
+		// TODO this needs fixing
+		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
 		for (Settlement s : settlements) {
 			
 			if (s.getDustStorm() == null) {
@@ -971,30 +968,6 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim.
-	 * 
-	 * @param sim
-	 * @param clock
-	 * @param orbitInfo
-	 */
-	public static void initializeInstances(Simulation s, MarsClock c, OrbitInfo oi) {
-		sim = s; 
-		marsClock = c;
-		orbitInfo = oi;
-	}
-	
-//	/**
-//	 * Reinitializes instances after deserialization.
-//	 * 
-//	 * @param in
-//	 * @throws IOException
-//	 * @throws ClassNotFoundException
-//	 */
-//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		in.defaultReadObject();
-//	}
-	
-	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
@@ -1026,8 +999,6 @@ public class Weather implements Serializable, Temporal {
 
 		sunDataMap.clear();
 		sunDataMap = null;
-		sim = null;
 		orbitInfo = null;
-		marsClock = null;				
 	}
 }

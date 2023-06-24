@@ -24,7 +24,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -72,10 +73,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static final double HALF_PI = Math.PI / 2;
 
 	private static final double THREE_HALF_PI = 1.5 * Math.PI;
-	
-//	private static final double SQUARED_SEMI_MAJOR_AXIS = OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
-	
-//	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * SQUARED_SEMI_MAJOR_AXIS;
 
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
@@ -90,45 +87,28 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/** The most recent value of solar irradiance by Coordinate. */
 	private transient Map<Coordinates, Double> currentIrradiance = new HashMap<>();
 
-	private static MarsClock currentTime;
-	private static Simulation sim;
-
+	private MasterClock clock;
+	private Weather weather;
+	private OrbitInfo orbitInfo;
+	
 	private static TerrainElevation terrainElevation;
-	private static Weather weather;
-	private static OrbitInfo orbitInfo;
 
 	/**
 	 * Constructor.
 	 *
 	 * @throws Exception when error in creating surface features.
 	 */
-	public SurfaceFeatures() {
-		// Initialize instances.
-		sim = Simulation.instance();
+	public SurfaceFeatures(MasterClock mc, OrbitInfo oi, Weather w) {
+		clock = mc;
+		orbitInfo = oi;
+		weather = w;
+		w.setSurfaceFeatures(this);
 		
 		terrainElevation = new TerrainElevation();
 		
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new ArrayList<>(); 
 		areothermalMap = new AreothermalMap();
-		
-	}
-
-	/**
-	 * Initializes transient data in the simulation.
-	 *
-	 * @param landmarkConfig
-	 * @param mc
-	 * @param oi
-	 * @param w
-	 */
-	public static void initializeInstances(Simulation s, MarsClock mc, OrbitInfo oi, Weather w) {
-		sim = s;
-		orbitInfo = oi;
-		weather = w;
-		currentTime = mc;
-		
-		terrainElevation = new TerrainElevation();
 	}
 
 	/**
@@ -137,6 +117,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return terrain elevation
 	 */
 	public TerrainElevation getTerrainElevation() {
+		if (terrainElevation == null) {
+				terrainElevation = new TerrainElevation();
+		}
 		return terrainElevation;
 	}
 
@@ -640,7 +623,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return
 	 */
-	public MarsClock getSunRise(Coordinates location) {
+	public MarsTime getSunRise(Coordinates location) {
 		Coordinates sunDirection = orbitInfo.getSunDirection();
 
 		// Sun Theta decreases over time so the Sun theta will be greater
@@ -657,9 +640,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Get the time as a ratio of the global times msols per day
 		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);
 
-		MarsClock sunRise = new MarsClock(currentTime);
-		sunRise.addTime(timeToSunRise);
-		return sunRise;
+		return clock.getMarsTime().addTime(timeToSunRise);
 	}
 
 	/**
@@ -696,7 +677,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			int estimationImprovement, Settlement settlement) {
-		int initialPercent = 100;
 		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
@@ -776,8 +756,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		if (pulse.isNewMSol()) {
-			
-			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			// TODO Resolve this; put Simualtino in ClockPulse
+			Collection<Settlement> col = Simulation.instance().getUnitManager().getSettlements();
 			Set<Coordinates> sSet = new HashSet<>();
 			for (Settlement s: col) {
 				sSet.add(s.getCoordinates());

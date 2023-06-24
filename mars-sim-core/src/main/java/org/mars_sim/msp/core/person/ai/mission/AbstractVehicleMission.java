@@ -634,7 +634,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
 			
-			int msol = marsClock.getMillisolInt();
+			int msol = getMarsTime().getMillisolInt();
 			if (msolCache != msol) {
 				msolCache = msol;
 				// Update the distances only once per msol
@@ -1075,7 +1075,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return true if enough resources.
 	 */
 	protected final boolean hasEnoughResourcesForRemainingMission() {
-		int currentMSols = marsClock.getMillisolInt();
+		int currentMSols = getMarsTime().getMillisolInt();
 		if ((currentMSols - lastResourceCheck ) > RESOURCE_CHECK_DURATION) {
 			lastResourceCheck = currentMSols;
 			int missingResourceId = hasEnoughResources(getResourcesNeededForRemainingMission(false));

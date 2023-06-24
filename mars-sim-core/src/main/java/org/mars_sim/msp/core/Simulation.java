@@ -298,20 +298,17 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void runSocietySim() {
-		Simulation sim = instance();
 		
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
-		MarsClock marsClock = masterClock.getMarsClock();
 		
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		Weather.initializeInstances(sim, marsClock, orbitInfo);
+		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
 	}
 		
 	/**
@@ -321,7 +318,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		ResourceUtil.getInstance().initializeInstances();
 		
-		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
 		
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
@@ -336,14 +332,12 @@ public class Simulation implements ClockListener, Serializable {
 		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		Weather.initializeInstances(sim, marsClock, orbitInfo);
+		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
@@ -430,16 +424,13 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = new MalfunctionFactory();
 
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		
-		Weather.initializeInstances(this, marsClock, orbitInfo);
-		
+		weather = new Weather(masterClock, orbitInfo);
+
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
-		
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
+
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		missionManager.initializeInstances(simulationConfig);
@@ -582,9 +573,6 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
-		
-		// Gets the MasterClock instance
-//		MasterClock masterClock = masterClock;
 
 		// Gets the MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -594,12 +582,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
-		// Re-initialize weather
-		Weather.initializeInstances(this, marsClock, orbitInfo);
-		
-		// Re-initialize surfacefeatures
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
 		// Reload mission configs
 		missionManager.initializeInstances(simulationConfig);

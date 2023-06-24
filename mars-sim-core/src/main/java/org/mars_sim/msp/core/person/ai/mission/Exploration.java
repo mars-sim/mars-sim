@@ -109,7 +109,7 @@ public class Exploration extends EVAMission
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 
-			int sol = marsClock.getMissionSol();
+			int sol = getMarsTime().getMissionSol();
 			numSites = 2 + (int)(1.0 * sol / 20);
 			
 			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(),
@@ -325,7 +325,7 @@ public class Exploration extends EVAMission
 	private List<Coordinates> determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
 		// Calculate the confidence score for determining the distance
 		// The longer it stays on Mars, the higher the confidence
-		int confidence = 2 * (1 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol()));
+		int confidence = 2 * (1 + (int)RandomUtil.getRandomDouble(getMarsTime().getMissionSol()));
 
 		List<Coordinates> unorderedSites = new ArrayList<>();
 
