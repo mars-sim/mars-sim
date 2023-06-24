@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
@@ -44,6 +45,8 @@ public abstract class Function implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Function.class.getName());
 
+	protected static final int BASE_MAINT_TIME = 5;
+	
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
 	protected static final int GREY_WATER_ID = ResourceUtil. greyWaterID;
@@ -112,7 +115,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return maintenance work time (millisols). Default zero
 	 */
 	public double getMaintenanceTime() {
-		return 0;
+		return BASE_MAINT_TIME;
 	}
 
 	/**
@@ -120,14 +123,14 @@ public abstract class Function implements Serializable, Temporal {
 	 *
 	 * @return array of scope strings.
 	 */
-	public String[] getMalfunctionScopeStrings() {
-		String[] result = { type.getName() };
-		return result;
+	public Set<String> getMalfunctionScopeStrings() {
+		return Set.of(type.getName());
 	}
 
 	/**
 	 * Is this time pulse valid for the Unit.Has it been already applied?
-	 * The logic on this method can be commented out later on
+	 * The logic on this method can be commented out later on.
+	 * 
 	 * @param pulse Pulse to apply
 	 * @return Valid to accept
 	 */

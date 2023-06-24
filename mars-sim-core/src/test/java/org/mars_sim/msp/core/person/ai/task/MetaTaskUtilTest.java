@@ -93,7 +93,7 @@ extends AbstractMarsSimUnitTest {
 
 	private Malfunction createMalfunction(Building b, Person p, MalfunctionRepairWork work) {
 		MalfunctionManager mm = b.getMalfunctionManager(); 
-		mm.getMaintenanceParts();
+//		mm.getMaintenanceParts();
 		for(MalfunctionMeta mMeta : simConfig.getMalfunctionConfiguration().getMalfunctionList()) {
 			EffortSpec w = mMeta.getRepairEffort().get(work);
 			if ((w != null) && (w.getWorkTime() > 0D)) {
@@ -106,7 +106,7 @@ extends AbstractMarsSimUnitTest {
 
 	public void testMaintainBuilding() throws Exception {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-		garage.getMalfunctionManager().getMaintenanceParts();
+//		garage.getMalfunctionManager().getMaintenanceParts();
 
 		MaintainBuilding evaLoad = new MaintainBuilding(person, garage);
 		assertMetaTask(evaLoad, "Maintaining Building");
@@ -114,7 +114,7 @@ extends AbstractMarsSimUnitTest {
 
 	public void testMaintainEVABuilding() throws Exception {
 		Building garage = buildBuilding(settlement.getBuildingManager(), POS, 0D, 1);
-		garage.getMalfunctionManager().getMaintenanceParts();
+//		garage.getMalfunctionManager().getMaintenanceParts();
 
 		MaintainBuildingEVA evaLoad = new MaintainBuildingEVA(person, garage);
 		assertMetaTask(evaLoad, "Maintaining Building");

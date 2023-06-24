@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -281,17 +283,20 @@ public class ThermalGeneration extends Function {
 		return heating;
 	}
 
+	/**
+	 * Gets a set of malfunction scopes.
+	 */
 	@Override
-	public String[] getMalfunctionScopeStrings() {
-		String[] result = new String[heatSources.size() + 1];
-		// TODO take care to properly internationalize malfunction scope "strings"
-		result[0] = getFunctionType().getName();
-
+	public Set<String> getMalfunctionScopeStrings() {
+		Set<String> set = new HashSet<>();
+		String n = getFunctionType().getName();
+		set.add(n);
+		
 		for (int x = 0; x < heatSources.size(); x++) {
-			result[x + 1] = heatSources.get(x).getType().toString();
+			set.add(heatSources.get(x).getType().getName());
 		}
 
-		return result;
+		return set;
 	}
 
 	/**

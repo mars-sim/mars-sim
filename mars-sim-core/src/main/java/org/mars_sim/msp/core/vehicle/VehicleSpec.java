@@ -39,6 +39,9 @@ public class VehicleSpec implements Serializable {
 	
 	public static final String DASHES = " -----------------------------------------------------------------------";
 
+	/** The wear lifetime value is 1 orbit. */
+	private static final double WEAR_LIFETIME = 668_000;
+	
 	// As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. 
 	// Energy Density is 8.9 kWh/L or 44-46 MJ/kg
 	
@@ -955,7 +958,16 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/**
-	 * Get the wear modifier for this vehicle spec
+	 * Gets the wear lifetime [in millisols].
+	 * 
+	 * @return
+	 */
+	public double getWearLifetime() {
+		return WEAR_LIFETIME *  getWearModifier();
+	}
+	 
+	/**
+	 * Gets the wear modifier for this vehicle spec.
 	 */
     public double getWearModifier() {
 	

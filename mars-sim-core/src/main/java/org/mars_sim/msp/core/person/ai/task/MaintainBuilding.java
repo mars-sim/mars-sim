@@ -85,10 +85,15 @@ public class MaintainBuilding extends Task  {
 		this.entity = building;
 
 		MalfunctionManager manager = building.getMalfunctionManager();
-		if (!manager.hasMaintenanceParts(worker.getSettlement())) {		
-			clearTask("No parts");
-			return;
-		}
+		
+		// Note 2: if parts don't exist, it simply means that one can still do the 
+		// inspection portion of the maintenance with no need of replacing any parts
+		
+//		if (!manager.hasMaintenancePartsInStorage(worker.getSettlement())) {		
+//			clearTask("No parts");
+//			return;
+//		}
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		if (effectiveTime < 10D) {
 			clearTask("Maintenance already done");

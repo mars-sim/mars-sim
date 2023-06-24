@@ -69,6 +69,9 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 	        }
         }
 
+        if (ScienceType.getJobScience(job) == null)
+        	return 0;
+        
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
@@ -110,7 +113,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 					result += 5D;
 				}
 
-				// Check the favourited research of the Reporting Authority
+				// Check the favourite research of the Reporting Authority
 				ScienceType science = ScienceType.getJobScience(job);
 				result *= settlement.getPreferenceModifier(
 								new PreferenceKey(PreferenceKey.Type.SCIENCE, science.name()));

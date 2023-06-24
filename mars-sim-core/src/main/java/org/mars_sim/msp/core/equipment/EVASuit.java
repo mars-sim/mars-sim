@@ -100,10 +100,10 @@ public class EVASuit extends Equipment
 	private static final double NORMAL_AIR_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
-	/** The wear lifetime value of 334 Sols (1/2 orbit). */
-	private static final double WEAR_LIFETIME = 334_000;
+	/** The wear lifetime value is 1 orbit. */
+	private static final double WEAR_LIFETIME = 668_000;
 	/** The maintenance time of 20 millisols. */
-	private static final double MAINTENANCE_TIME = 20D;
+	private static final double MAINTENANCE_TIME = 50D;
 	/** The ratio of CO2 expelled to O2 breathed in. */
 	private static double GAS_RATIO;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */

@@ -59,7 +59,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The reference small amount of resource. */
 	public static final double SMALL_AMOUNT = 0.1;
 	/** The amount of work time to perform maintenance (millisols) */
-	public static final double MAINTENANCE_WORK_TIME = 100D;
+	public static final double MAINTENANCE_WORK_TIME = 125D;
 
 	// Note: 34 kPa (5 psi) is chosen for the composition of oxygen inside a settlement at 58.8%.
 	/** Rate of change of temperature in degree celsius. */

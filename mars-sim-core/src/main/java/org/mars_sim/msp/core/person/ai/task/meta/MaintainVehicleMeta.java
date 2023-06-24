@@ -39,7 +39,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		private boolean eva;
 
         public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Maintain " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
+            super(owner, "Maintain " + (eva ? "via EVA " : "") + " " + target.getName(), score);
             this.target = target;
 			this.eva = eva;
         }
@@ -73,7 +73,8 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	}
 
 	/**
-     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * 
 	 * @param t Task being scored
 	 * @parma p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
@@ -87,7 +88,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			if (p.isInSettlement()) {
 				factor = getPersonModifier(p);
 				if (mtj.eva) {
-					// EVA factor is the radition and the EVA modifiers applied extra
+					// EVA factor is the radiation and the EVA modifiers applied extra
 					factor *= getRadiationModifier(p.getSettlement());
 					factor *= getEVAModifier(p);
 				}
@@ -98,6 +99,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
+     * 
 	 * @param t Task being scored
 	 * @parma r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
@@ -112,7 +114,8 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	}
 
 	/**
-	 * Get a collection of Tasks for any Vehicle maintenance that is required.
+	 * Gets a collection of Tasks for any Vehicle maintenance that is required.
+	 * 
 	 * @param settlement Settlement to scan for vehicles
 	 */
 	@Override
@@ -133,7 +136,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		return tasks;
 	}
 	
-		/**
+	/**
 	 * Gets all ground vehicles requiring maintenance. Candidate list be filtered
 	 * for just outside Vehicles.
 	 * 
@@ -150,7 +153,8 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	}
 
 	/**
-	 * Count the number of available garages spaces in a Settlement.
+	 * Counts the number of available garages spaces in a Settlement.
+	 * 
 	 * @param settlement Location to check.
 	 */
 	public static int getGarageSpaces(Settlement settlement) {

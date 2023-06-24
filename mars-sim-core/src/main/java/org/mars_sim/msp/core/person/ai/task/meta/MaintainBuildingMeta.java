@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -27,11 +28,16 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for maintaining buildings.
  */
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
+	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
+	
 	/**
      * Represents a Job needed for internal maintenance on a Building
      */
@@ -151,7 +157,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	public static double scoreMaintenance(Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean hasNoMalfunction = !manager.hasMalfunction();
-		boolean hasParts = manager.hasMaintenanceParts(entity.getAssociatedSettlement());
+		boolean hasPartsInStore = manager.hasMaintenancePartsInStorage(entity.getAssociatedSettlement());
 
 		double score = 0D;
 		double condition = manager.getAdjustedCondition();
@@ -160,11 +166,23 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		
 		// Note: look for entities that are NOT malfunction since
 		// malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
-		if (hasNoMalfunction && hasParts && (effectiveTime >= (minMaintenance * 0.9D))) {
+		
+		// About a quarter of time into the next inspection/maintenance that will be due,
+		// One can begin to do a little bit of inspection whenever possible
+		if ((hasNoMalfunction && effectiveTime >= minMaintenance * 0.25 * RandomUtil.getRandomDouble(0.8, 1.2))
+			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
+			// the standard inspection/maintenance due
+			|| hasPartsInStore) {
 			// Score is based on condition plus %age overdue
-			score = (100 - condition) + ((effectiveTime - minMaintenance)*100D/minMaintenance);
+			score = (100 - condition) + (effectiveTime - minMaintenance) * 100D / minMaintenance;
+			if (hasPartsInStore) {
+				// If needed parts are available, double up the speed of the maintenance
+				score = score * 2;
+			}
 		}
 
+//		logger.info(entity, 10_000L, "score: " + score + "  effectiveTime: " 
+//				+ effectiveTime + "  minMaintenance: " + minMaintenance);
 		return score;
 	}
 }

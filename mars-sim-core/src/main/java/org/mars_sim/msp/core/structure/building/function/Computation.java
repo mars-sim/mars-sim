@@ -102,11 +102,6 @@ public class Computation extends Function {
 		return powerSupply * existingPowerValue;
 	}
 
-	@Override
-	public String[] getMalfunctionScopeStrings() {
-		return new String[] {"Computation"};
-	}
-
 	/**
 	 * Gets the computing units [in CU].
 	 * 

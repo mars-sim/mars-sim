@@ -244,7 +244,7 @@ public abstract class Vehicle extends Unit
 		// Set the initial coordinates to be that of the settlement
 		setCoordinates(settlement.getCoordinates());
 		
-		baseWearLifetime = 668_000 * spec.getWearModifier(); // 668 Sols (1 orbit)
+		baseWearLifetime = spec.getWearLifetime();
 
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);

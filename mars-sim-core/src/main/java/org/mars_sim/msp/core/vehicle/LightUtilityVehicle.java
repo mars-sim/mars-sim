@@ -32,7 +32,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	public static final String NAME = VehicleType.LUV.getName();
 
 	/** The amount of work time to perform maintenance (millisols). */
-	public static final double MAINTENANCE_WORK_TIME = 100D;
+	public static final double MAINTENANCE_WORK_TIME = 75D;
 	
 	// Data members.
 	/** The LightUtilityVehicle's capacity for crewmembers. */

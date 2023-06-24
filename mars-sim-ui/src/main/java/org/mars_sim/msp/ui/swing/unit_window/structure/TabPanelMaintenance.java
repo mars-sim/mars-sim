@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Unit;
@@ -39,6 +41,12 @@ public class TabPanelMaintenance extends TabPanel {
 
 	private BuildingMaintModel tableModel;
 	
+	protected String[] columnToolTips = {
+		    "The Building name", 
+		    "The Building Wear and Tear Condition",
+		    "The # of Sols since last Inspection",
+		    "The Percentage of Completion of Current Inspection"};
+		
 	/**
 	 * Constructor.
 	 * 
@@ -60,7 +68,21 @@ public class TabPanelMaintenance extends TabPanel {
 		content.add(maintPane, BorderLayout.CENTER);
 
 		// Create the parts table
-		JTable table = new JTable(tableModel);
+		JTable table = new JTable(tableModel) {
+		    //Implement table header tool tips.
+		    protected JTableHeader createDefaultTableHeader() {
+		        return new JTableHeader(columnModel) {
+		            public String getToolTipText(MouseEvent e) {
+		                java.awt.Point p = e.getPoint();
+		                int index = columnModel.getColumnIndexAtX(p.x);
+		                int realIndex = 
+		                        columnModel.getColumn(index).getModelIndex();
+		                return columnToolTips[realIndex];
+		            }
+		        };
+		    }
+		};
+		
 		table.setRowSelectionAllowed(true);
 		table.addMouseListener(new UnitTableLauncher(getDesktop()));
 		table.setAutoCreateRowSorter(true);
@@ -126,9 +148,9 @@ public class TabPanelMaintenance extends TabPanel {
 				case 1:
 					return "Condition";
 				case 2:
-					return "Sols Last Maint.";
+					return "Last Inspected.";
 				case 3:
-					return "Completed";
+					return "% Done";
 				default:
 					return "";
 			}

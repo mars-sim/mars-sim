@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -42,6 +44,12 @@ public class MaintenanceTabPanel extends TabPanel {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
 
+	protected String[] columnToolTips = {
+		    "The Part name", 
+		    "The System Function",
+		    "The # of Parts",
+		    "The Probability that Triggers Maintenance"};
+	
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
 	
@@ -125,7 +133,20 @@ public class MaintenanceTabPanel extends TabPanel {
 		addBorder(partsPane, Msg.getString("MaintenanceTabPanel.tableBorder"));
 
 		// Create the parts table
-		JTable table = new JTable(tableModel);
+		JTable table = new JTable(tableModel){
+		    //Implement table header tool tips.
+		    protected JTableHeader createDefaultTableHeader() {
+		        return new JTableHeader(columnModel) {
+		            public String getToolTipText(MouseEvent e) {
+		                java.awt.Point p = e.getPoint();
+		                int index = columnModel.getColumnIndexAtX(p.x);
+		                int realIndex = 
+		                        columnModel.getColumn(index).getModelIndex();
+		                return columnToolTips[realIndex];
+		            }
+		        };
+		    }
+		};
 		table.setRowSelectionAllowed(true);
 		partsPane.setViewportView(table);
 
@@ -157,7 +178,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		// Update last completed label.
 		StringBuilder text = new StringBuilder();
 		text.append(StyleManager.DECIMAL_SOLS.format(manager.getTimeSinceLastMaintenance()/1000D));
-		text.append(" (Per Cycle: ");
+		text.append(" (Per Period: ");
 		text.append(StyleManager.DECIMAL_SOLS.format(manager.getMaintenancePeriod()/1000D));
 		text.append(")");
 

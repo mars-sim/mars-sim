@@ -839,19 +839,23 @@ public class EmergencySupply extends RoverMission {
 				}
 			}
 
-			// Determine parts needed to see if they are available from resource storage.
-			// Save them if they are not available for repairs.
-			Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+			boolean arePartsNeeded = entity.getMalfunctionManager().areMaintenancePartsNeeded();
 			
-			for (Entry<Integer, Integer> entry: maintParts.entrySet()) {
-				Integer part = entry.getKey();
-				int number = entry.getValue();
-	
-				if (!settlement.getItemResourceIDs().contains(part)) {
-					if (result.containsKey(part)) {
-						number += result.get(part).intValue();
+			if (arePartsNeeded) {
+				// Determine parts needed to see if they are available from resource storage.
+				// Save them if they are not available for repairs.
+				Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+				
+				for (Entry<Integer, Integer> entry: maintParts.entrySet()) {
+					Integer part = entry.getKey();
+					int number = entry.getValue();
+		
+					if (!settlement.getItemResourceIDs().contains(part)) {
+						if (result.containsKey(part)) {
+							number += result.get(part).intValue();
+						}
+						result.put(part, number);
 					}
-					result.put(part, number);
 				}
 			}
 		}

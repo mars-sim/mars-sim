@@ -296,7 +296,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		
 		// Add each function to the malfunction scope.
 		for (Function sfunction : functions) {
-			String[] scopes = sfunction.getMalfunctionScopeStrings();
+			Set<String> scopes = sfunction.getMalfunctionScopeStrings();
 			for (String scope : scopes) {
 				malfunctionManager.addScopeString(scope);
 			}

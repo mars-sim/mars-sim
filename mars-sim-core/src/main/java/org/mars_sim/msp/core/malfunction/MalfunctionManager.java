@@ -127,10 +127,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	private double effTimeSinceLastMaint;
 	/** The required work time for maintenance on entity. */
-	private double maintenanceWorkTime;
+	private double maintWorkTime;
 	/** The completed. */
 	private double maintenanceTimeCompleted;
-	/** The periodic maintenance window */
+	/** The periodic time window between each inspection/maintenance.  */
 	private double maintPeriod;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCond;
@@ -175,10 +175,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param entity              the malfunctionable entity.
 	 * @param wearLifeTime        the expected life time (millisols) of active use
 	 *                            before the entity is worn out.
-	 * @param maintenanceWorkTime the amount of work time (millisols) required for
+	 * @param maintWorkTime the amount of work time (millisols) required for
 	 *                            maintenance.
+	 * Note: for buildigns, see maintenance-time in buildings.xml                           
 	 */
-	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, double maintenanceWorkTime) {
+	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, double maintWorkTime) {
 
 		// Initialize data members
 		this.entity = entity;
@@ -186,21 +187,33 @@ public class MalfunctionManager implements Serializable, Temporal {
 		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<>();
 		
-		this.maintenanceWorkTime = maintenanceWorkTime;
+		this.maintWorkTime = maintWorkTime;
 		this.baseWearLifeTime = wearLifeTime;
 
-		// Assume the maintenance period is 1% of the component lifetime
-		this.maintPeriod = wearLifeTime * 0.01D;
-
-		// Assume that a random value since the last maintenance but biased
-		// towards below the maintenance period
-		double preUseTime = RandomUtil.getRandomDouble(maintPeriod * 1.1);
-		currentWearLifeTime = wearLifeTime - preUseTime;
-		cumulativeTime = preUseTime;
-		effTimeSinceLastMaint = preUseTime;
-		timeSinceLastMaintenance = preUseTime;
+		// Assume the maintenance period [in millisols] is the recommended period of time between the last and the next inspection/maintenance 
+		this.maintPeriod = wearLifeTime * 0.03;
+		
+		// deploymentime accounts for the pre-use time spent during the base deployment phase prior to the start of the sim
+		// FUTURE: vary this time according to deployment scenario.
+		// Usually power building gets deployed first.
+		// Next is in-situ resource building such as ERV 
+		int deploymentTime = 0;
+		if (UnitType.EVA_SUIT != entity.getUnitType()
+			|| UnitType.VEHICLE != entity.getUnitType()) {
+			deploymentTime = (int) Math.round(maintPeriod/20 + RandomUtil.getRandomDouble(maintPeriod/40));
+		}
+		
+		currentWearLifeTime = wearLifeTime - deploymentTime;
+		cumulativeTime = deploymentTime;
+		effTimeSinceLastMaint = deploymentTime;
+		timeSinceLastMaintenance = deploymentTime;
 		
 		currentWearCond = currentWearLifeTime/baseWearLifeTime * 100D;
+//		logger.info(entity, 10_000L, "wearLifeTime: " + wearLifeTime 
+//				+ "  maintPeriod: " + maintPeriod
+//				+ "  maintWorkTime: " + maintWorkTime
+//				+ "  preUseTime: " + deploymentTime
+//				);
 	}
 
 	/**
@@ -529,6 +542,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Updates params
 		cumulativeTime += time;
 		effTimeSinceLastMaint += time;
+		timeSinceLastMaintenance += time;
 		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
 		if (currentWearCond < 0D)
 			currentWearCond = 0D;
@@ -615,6 +629,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the malfunction probability per orbit.
+	 * Note: Assumes checking this probability once per millisol. 
+	 * Each sol has 1000 millisols and each orbit has 668.6 sols.
 	 * 
 	 * @return
 	 */
@@ -623,7 +639,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets the maintenance probability per orbit.
+	 * Gets the maintenance probability per orbit. 
+	 * Note: Assumes checking this probability once per millisol. 
+	 * Each sol has 1000 millisols and each orbit has 668.6 sols.
 	 * 
 	 * @return
 	 */
@@ -859,7 +877,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return time (in millisols)
 	 */
 	public double getMaintenanceWorkTime() {
-		return maintenanceWorkTime;
+		return maintWorkTime;
 	}
 
 	/**
@@ -878,20 +896,25 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public void addMaintenanceWorkTime(double time) {
 		maintenanceTimeCompleted += time;
-		if (maintenanceTimeCompleted >= maintenanceWorkTime) {
-			// Reset the following params
+		// Check if work if done
+		if (maintenanceTimeCompleted >= maintWorkTime) {
+			// Reset the maint time to zero
 			maintenanceTimeCompleted = 0D;
+			// Reset time last inspection to zero
 			timeSinceLastMaintenance = 0D;
+			// Reset eff time since last inspection to zero
 			effTimeSinceLastMaint = 0D;
 			// Increment num of maintenance 
 			numberMaintenances++;
 			// Improve the currentWearlifetime
+			// Note: Use a person's skill to gauge the quality of maintenance
 			currentWearLifeTime += time * RandomUtil.getRandomDouble(LOW_QUALITY_INSPECTION, HIGH_QUALITY_INSPECTION);
-			double improvement = RandomUtil.getRandomDouble(.95, 1);
+			// Add uncertainty to the wear lifetime
+			double uncertainty = RandomUtil.getRandomDouble(.95, 1);
 			// Set a upper limit for currentWearLifeTime
 			// Note: it would deteriorate over time and won't get back to baseWearLifeTime but it can improve somewhat
-			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * improvement)
-				currentWearLifeTime = baseWearLifeTime - cumulativeTime * improvement;
+			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * uncertainty)
+				currentWearLifeTime = baseWearLifeTime - cumulativeTime * uncertainty;
 		}
 	}
 
@@ -985,14 +1008,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Looks at the parts needed for maintenance on this entity.
+	 * Note: if parts don't exist, it simply means that one can still do the 
+	 * inspection portion of the maintenance with no need of replacing any parts
 	 *
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts() {
-//		return entity.getAssociatedSettlement().getBuildingManager().getMaintenanceParts(entity);
 		return partsNeededForMaintenance;
 	}
 
+	/**
+	 * Checks if any parts are needed for maintenance on this entity.
+	 *
+	 * @return
+	 */
+	public boolean areMaintenancePartsNeeded() {
+		if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty())
+			return false;
+		return true;
+	}
+	
 	/**
 	 * Retrieves the parts needed for maintenance on this entity.
 	 * Note: it doesn't automatically clear out partsNeededForMaintenance
@@ -1013,15 +1048,22 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Call to check if any maintenance parts have been posted and also see if 
 	 * they are available in a particular resource storage. 
-	 * Note: only at least one part is required to trigger some level of maintenance. 
+	 * Note 1: only at least one part is required to trigger some level of maintenance. 
+	 * Note 2: if parts don't exist, it simply means that one can still do the 
+	 * inspection portion of the maintenance with no need of replacing any parts
 	 * 
 	 * @param partStore Store to provide parts
 	 */
-	public boolean hasMaintenanceParts(EquipmentOwner partStore) {
+	public boolean hasMaintenancePartsInStorage(EquipmentOwner partStore) {
 		Map<Integer, Integer> parts = getMaintenanceParts();
 		
-		// Call building manager to check if the maintenance parts have been submitted	
-		if (parts == null || parts.isEmpty())
+		// Need to FIRST CHECK if any parts are due for maintenance in order to use this
+		// method the right way. 
+		
+		// One should have checked that parts have been posted.
+		boolean posted = areMaintenancePartsNeeded();
+		
+		if (!posted)
 			return false;
 		
 		for (Entry<Integer, Integer> entry: parts.entrySet()) {
