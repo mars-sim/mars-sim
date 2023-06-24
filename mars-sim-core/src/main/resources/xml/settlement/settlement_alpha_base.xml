@@ -390,8 +390,8 @@
 
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4320" />
-	<resource type="water" amount="21600" />
-	<resource type="oxygen" amount="8640" />
+	<resource type="water" amount="7200" />
+	<resource type="oxygen" amount="5760" />
 
     <part-package name="package 4" number="1" />
     
