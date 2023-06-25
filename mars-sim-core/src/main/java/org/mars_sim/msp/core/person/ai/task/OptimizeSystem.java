@@ -57,7 +57,7 @@ public class OptimizeSystem extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = Administration.getAvailableOffice(person);
+			Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
 			if (officeBuilding != null) {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);

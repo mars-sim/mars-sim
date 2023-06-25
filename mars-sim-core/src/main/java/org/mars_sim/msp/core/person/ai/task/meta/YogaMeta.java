@@ -9,12 +9,12 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * Meta task for the Yoga task.
@@ -79,7 +79,7 @@ public class YogaMeta extends FactoryMetaTask {
             	return 0;
             
             // Get an available gym.
-            Building building = Workout.getAvailableGym(person);
+            Building building =  BuildingManager.getAvailableGymBuilding(person);
             result *= getBuildingModifier(building, person);
         }
         

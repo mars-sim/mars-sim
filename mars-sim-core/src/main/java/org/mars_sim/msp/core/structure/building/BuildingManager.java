@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -2207,6 +2208,36 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets an available building with the workout function.
+	 *
+	 * @param person the person looking for the recreational facility.
+	 * @return an available space or null if none found.
+	 */
+	public static Building getAvailableGymBuilding(Person person) {
+		Building result = null;
+
+		// If person is in a settlement, try to find a building with an office.
+		if (person.isInSettlement()) {
+
+			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EXERCISE)
+							.stream()
+							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+									&& !b.getMalfunctionManager().hasMalfunction())
+							.collect(Collectors.toSet());
+			
+			bldgs = getNonMalfunctioningBuildings(bldgs);
+			bldgs = getLeastCrowdedBuildings(bldgs);
+
+			if (bldgs.size() > 0) {
+				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
+				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
+			}
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Gets an available building with the recreational function.
 	 *
 	 * @param person the person looking for the recreational facility.
@@ -2218,7 +2249,12 @@ public class BuildingManager implements Serializable {
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
 
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RECREATION);
+			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RECREATION)
+							.stream()
+							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+									&& !b.getMalfunctionManager().hasMalfunction())
+							.collect(Collectors.toSet());
+			
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
@@ -2243,7 +2279,12 @@ public class BuildingManager implements Serializable {
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
 
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COMMUNICATION);
+			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COMMUNICATION)
+					.stream()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+			
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
@@ -2256,6 +2297,42 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
+	public static Building getAvailableKitchen(Unit unit, FunctionType functionType) {
+		Building result = null;
+
+		if (unit.isInSettlement()) {
+			BuildingManager manager = unit.getSettlement().getBuildingManager();
+			Set<Building> kitchenBuildings = manager.getBuildingSet(functionType)
+					.stream()
+					.filter(b -> b.getZone() == unit.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+			
+			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
+			kitchenBuildings = PrepareDessert.getKitchensNeedingCooks(kitchenBuildings);
+			
+			if (UnitType.PERSON == unit.getUnitType()) {
+				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
+
+				if (kitchenBuildings.size() > 0) {
+					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)unit, kitchenBuildings);
+					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
+				}
+			} 
+			
+			else {
+				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+					kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
+	
+				if (kitchenBuildings.size() > 0) {
+					result = RandomUtil.getARandSet(kitchenBuildings);
+				}
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets an available building with the admin function.
 	 *
@@ -2268,7 +2345,12 @@ public class BuildingManager implements Serializable {
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
 
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.ADMINISTRATION);
+			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.ADMINISTRATION)
+					.stream()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+			
 			bldgs = getNonMalfunctioningBuildings(bldgs);
 			bldgs = getLeastCrowdedBuildings(bldgs);
 

@@ -471,7 +471,7 @@ public class EquipmentInventory
 				// Check it matches the resource spec
 				int containerResource = c.getResource();
 				if (resource == -1 || containerResource == resource || containerResource == -1) {
-					if (e.getLastOwnerID() == personId) {
+					if (e.getRegisteredOwnerID() == personId) {
 						return c;
 					}
 				}

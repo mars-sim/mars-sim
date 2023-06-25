@@ -653,7 +653,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 				double fullness = suit.getFullness();
-				boolean lastOwner = p.equals(suit.getLastOwner());
+				boolean lastOwner = p.equals(suit.getRegisteredOwner());
 
 				if (!malfunction && (fullness >= EVA_LOWEST_FILL)) {
 					if (lastOwner) {

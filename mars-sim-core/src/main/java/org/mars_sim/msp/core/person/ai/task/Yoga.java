@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -56,7 +57,7 @@ public class Yoga extends Task {
 		
 		else if (person.isInSettlement()) {
 			// If person is in a settlement, try to find a gym.
-			Building gymBuilding = Workout.getAvailableGym(person);
+			Building gymBuilding = BuildingManager.getAvailableGymBuilding(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
 				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, FunctionType.EXERCISE, false);

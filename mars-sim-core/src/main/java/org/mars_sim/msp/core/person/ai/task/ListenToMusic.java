@@ -76,7 +76,7 @@ extends Task {
 				    walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				} else {
                 	// if rec building is not available, go to a gym
-                	Building gym = Workout.getAvailableGym(person);
+                	Building gym = BuildingManager.getAvailableGymBuilding(person);
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                } else {

@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The CookMeal class is a task for cooking meals in a building with the Cooking
@@ -93,7 +92,7 @@ public class CookMeal extends Task {
 		setDescription(Msg.getString("Task.description.cookMeal.detail", getTypeOfMeal())); // $NON-NLS-1$
 
 		// Get an available kitchen.
-		kitchenBuilding = getAvailableKitchen(person);
+		kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.COOKING);
 
 		if (kitchenBuilding != null) {
 			kitchen = kitchenBuilding.getCooking();
@@ -128,7 +127,7 @@ public class CookMeal extends Task {
 		setDescription(Msg.getString("Task.description.cookMeal.detail", getTypeOfMeal())); // $NON-NLS-1$
 
 		// Get available kitchen if any.
-		kitchenBuilding = getAvailableKitchen(robot);
+		kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.COOKING);
 
 		if (kitchenBuilding != null) {
 			kitchen = kitchenBuilding.getCooking();
@@ -384,53 +383,6 @@ public class CookMeal extends Task {
 		if ((modifiedTime >= MIDNIGHT_SNACK_START)
 				&& (modifiedTime <= (MIDNIGHT_SNACK_START + MEALTIME_DURATION))) {
 			result = "Midnight";
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an available kitchen building at the person's settlement.
-	 * 
-	 * @param person the person to check for.
-	 * @return kitchen building or null if none available.
-	 */
-	public static Building getAvailableKitchen(Person person) {
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.COOKING);
-			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(getKitchensNeedingCooks(kitchenBuildings));
-
-			if (kitchenBuildings.size() > 0) {
-				result = RandomUtil.getWeightedRandomObject(BuildingManager.getBestRelationshipBuildings(person,
-						kitchenBuildings));
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets available kitchen building.
-	 * 
-	 * @param robot
-	 * @return
-	 */
-	public static Building getAvailableKitchen(Robot robot) {
-		Building result = null;
-
-		if (robot.isInSettlement()) {
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.COOKING);
-			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(getKitchensNeedingCooks(kitchenBuildings));
-
-			if (kitchenBuildings.size() > 0) {
-				return RandomUtil.getARandSet(kitchenBuildings);
-			}
 		}
 
 		return result;

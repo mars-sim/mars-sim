@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 
 /**
@@ -73,7 +74,7 @@ public class WriteReportMeta extends FactoryMetaTask {
 	            if (result <= 0) result = 0;
 	            
 	            // Get an available office space.
-	            Building building = Administration.getAvailableOffice(person);
+	            Building building = BuildingManager.getAvailableAdminBuilding(person);
 
 	            // Note: if an office space is not available such as in a vehicle, one can still write reports!
 	            result *= getBuildingModifier(building, person);

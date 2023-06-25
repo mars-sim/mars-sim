@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -77,7 +74,7 @@ public class PlayHoloGame extends Task {
 			
 			if (rand == 0) {
 				// if rec building is not available, go to a gym
-				Building gym = Workout.getAvailableGym(person);
+				Building gym = BuildingManager.getAvailableGymBuilding(person);
 				if (gym != null) {
 					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 					walkSite = true;
@@ -85,7 +82,7 @@ public class PlayHoloGame extends Task {
 			}
 			
 			else if (rand == 1 || rand == 2) {
-				Building rec = getAvailableRecreationBuilding(person);
+				Building rec = BuildingManager.getAvailableRecBuilding(person);
 				if (rec != null) {
 					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					walkSite = true;
@@ -262,30 +259,4 @@ public class PlayHoloGame extends Task {
 		return remainingTime;
 	}
 
-	/**
-	 * Gets an available recreation building that the person can use. Returns null
-	 * if no recreation building is currently available.
-	 * 
-	 * @param person the person
-	 * @return available recreation building
-	 */
-	public static Building getAvailableRecreationBuilding(Person person) {
-
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Set<Building> recreationBuildings = manager.getBuildingSet(FunctionType.RECREATION);
-			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
-			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
-
-			if (recreationBuildings.size() > 0) {
-				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						recreationBuildings);
-				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
-			}
-		}
-
-		return result;
-	}
 }

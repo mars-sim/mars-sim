@@ -99,7 +99,7 @@ public class InventoryUtil {
 
 					if (!malfunction) {
 						if (hasEnoughResources) {
-							if (p != null && suit.getLastOwner() == p) {
+							if (p != null && suit.getRegisteredOwner() == p) {
 								// Prefers to pick the same suit that a person has been tagged in the past
 								return suit;
 							}

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
@@ -25,6 +26,8 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -55,6 +58,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do
@@ -1510,6 +1514,75 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		
 		return false;
+	}
+	
+	
+	/**
+	 * Take off EVA suit, puts on the garment and get back the thermal bottle.
+	 * 
+	 * @param person
+	 * @param entity
+	 */
+	protected void checkIn(Person person, Object entity) {
+		EquipmentOwner housing = null;
+
+		boolean inS = person.isInSettlement();
+		
+		if (inS)
+			housing = ((Building)entity).getSettlement();
+		else
+			housing = (Vehicle)entity;
+		
+		// Transfer the EVA suit from person to the new destination
+		if (person.getSuit().transfer((Unit)housing)) {
+			// Doff this suit. Deregister the suit from the person
+			person.registerSuit(null);
+		}
+		
+		// Remove pressure suit and put on garment
+		if (inS) {
+			if (person.unwearPressureSuit(housing)) {
+				person.wearGarment(housing);
+			}
+		}
+		// Note: vehicle may or may not have garment available
+		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+			person.wearGarment(housing);
+		}
+
+		// Assign thermal bottle
+		person.assignThermalBottle();
+	}
+	
+	/**
+	 * Puts off the garment and the thermal bottle.
+	 * 
+	 * @param person
+	 * @param entity
+	 */
+	private void putOff(Person person, Entity entity) {
+		EquipmentOwner housing = null;
+
+		boolean inS = person.isInSettlement();
+		
+		if (inS)
+			housing = ((Building)entity).getSettlement();
+		else
+			housing = (Vehicle)entity;
+		
+		// Remove pressure suit and put on garment
+		if (inS) {
+			if (person.unwearPressureSuit(housing)) {
+				person.wearGarment(housing);
+			}
+		}
+		// Note: vehicle may or may not have garment available
+		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+			person.wearGarment(housing);
+		}
+
+		// Assign thermal bottle
+		person.assignThermalBottle();
 	}
 	
 	/**

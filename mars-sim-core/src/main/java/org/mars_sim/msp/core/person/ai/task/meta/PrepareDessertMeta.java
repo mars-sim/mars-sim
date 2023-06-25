@@ -19,6 +19,8 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
@@ -69,7 +71,7 @@ public class PrepareDessertMeta extends FactoryMetaTask {
             	return 0;
             
             // See if there is an available kitchen.
-            Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
+            Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.PREPARING_DESSERT);
 
             if (kitchenBuilding != null) {
 
@@ -111,7 +113,7 @@ public class PrepareDessertMeta extends FactoryMetaTask {
 
        if (CookMeal.isMealTime(robot, PrepareDessert.PREP_TIME)) { 
            // See if there is an available kitchen.
-           Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
+           Building kitchenBuilding =  BuildingManager.getAvailableKitchen(robot, FunctionType.PREPARING_DESSERT);
 
            if (kitchenBuilding != null) {
 

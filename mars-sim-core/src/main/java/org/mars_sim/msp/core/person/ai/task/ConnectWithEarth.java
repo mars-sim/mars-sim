@@ -67,44 +67,49 @@ public class ConnectWithEarth extends Task {
 			// set the boolean to true so that it won't be done again today
 //			person.getPreference().setTaskDue(this, true);
 			
-			// If person is in a settlement, try to find an comm facility.
+			// Find a comm facility.
 			Building bldg = BuildingManager.getAvailableCommBuilding(person);
 			if (bldg != null) {
 				// Walk to the facility.
 				walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
+				
+				proceed = true;
 			} 
 			
-			else {
+			if (!proceed) {
 				// Find an admin facility.
 				bldg = BuildingManager.getAvailableAdminBuilding(person);
 				if (bldg != null) {
 					// Walk to the facility.
 					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.ADMINISTRATION, false);
-				} 
-				
-				else {
-					// Go back to his quarters
-					Building quarters = person.getQuarters();
-					if (quarters != null) {
-						walkToBed(quarters, person, true);
-					}
-				}
+					
+					proceed = true;
+				} 		
 			}
 			
-			proceed = true;
-			
-		} 
+			if (!proceed) {
+				// Go back to his quarters
+				Building quarters = person.getQuarters();
+				if (quarters != null) {
+					walkToBed(quarters, person, true);
+					
+					proceed = true;
+				}
+			}
+		}
 		
 		else if (person.isInVehicle()) {
 			if (person.getVehicle() instanceof Rover) {
+				
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 
-				// set the boolean to true so that it won't be done again today
-//				person.getPreference().setTaskDue(this, true);
+				proceed = true;
 			}
-			
-			proceed = true;
-		} 
+		}
+		
+		// Note: this task can be done in principle anywhere using tablets and handheld device
+		// but preferably it will look for a suitable location first
+		proceed = true;
 
 		if (proceed) {
 			connection = person.getPreference().getRandomConnection();

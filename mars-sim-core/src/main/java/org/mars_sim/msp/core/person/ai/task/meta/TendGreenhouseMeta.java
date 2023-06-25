@@ -109,7 +109,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
     }
 
     /**
-     * Scan the settlement Farms for any that need tending. CReate one task per applicable Farming function.
+     * Scans the settlement Farms for any that need tending. CReate one task per applicable Farming function.
+     * 
      * @param settlement Source to scan
      * @return List of applicable tasks
      */

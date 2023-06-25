@@ -7,12 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -23,7 +21,6 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The PrepareDessert class is a task for making dessert
@@ -34,7 +31,7 @@ public class PrepareDessert extends Task {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(PrepareDessert.class.getName());
+//	Can add back private static SimLogger logger = SimLogger.getLogger(PrepareDessert.class.getName())
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.prepareDessert"); //$NON-NLS-1$
@@ -63,7 +60,7 @@ public class PrepareDessert extends Task {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
 
 		// Get an available dessert preparing kitchen.
-		Building kitchenBuilding = getAvailableKitchen(person);
+		Building kitchenBuilding = BuildingManager.getAvailableKitchen(person, FunctionType.PREPARING_DESSERT);
 		if (kitchenBuilding != null) {
 			initDessert(kitchenBuilding);
 		}
@@ -84,7 +81,7 @@ public class PrepareDessert extends Task {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
 
 		// Get available kitchen if any.
-		Building kitchenBuilding = getAvailableKitchen(robot);
+		Building kitchenBuilding = BuildingManager.getAvailableKitchen(robot, FunctionType.PREPARING_DESSERT);
 
 		if (kitchenBuilding != null) {
 			initDessert(kitchenBuilding);
@@ -198,60 +195,13 @@ public class PrepareDessert extends Task {
 	}
 
 	/**
-	 * Gets an available kitchen building at the person's settlement.
-	 * 
-	 * @param person the person to check for.
-	 * @return kitchen building or null if none available.
-	 */
-	public static Building getAvailableKitchen(Person person) {
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.PREPARING_DESSERT);
-			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings);
-
-			if (kitchenBuildings.size() > 0) {
-
-				Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						kitchenBuildings);
-
-				result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
-			}
-		}
-
-		return result;
-	}
-
-	public static Building getAvailableKitchen(Robot robot) {
-		Building result = null;
-
-		if (robot.isInSettlement()) {
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			Set<Building> kitchenBuildings = manager.getBuildingSet(FunctionType.PREPARING_DESSERT);
-			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
-			kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
-				kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
-
-			if (kitchenBuildings.size() > 0) {
-				result = RandomUtil.getARandSet(kitchenBuildings);
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Gets a list of kitchen buildings that have room for more cooks.
 	 * 
 	 * @param kitchenBuildings list of kitchen buildings
 	 * @return list of kitchen buildings
 	 * @throws BuildingException if error
 	 */
-	private static Set<Building> getKitchensNeedingCooks(Set<Building> kitchenBuildings) {
+	public static Set<Building> getKitchensNeedingCooks(Set<Building> kitchenBuildings) {
 		Set<Building> result = new UnitSet<>();
 
 		if (kitchenBuildings != null) {

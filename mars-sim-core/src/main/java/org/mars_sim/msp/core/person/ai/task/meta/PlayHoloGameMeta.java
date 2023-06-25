@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -93,7 +94,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
             	
             	try {
                     	
-	            	Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
+	            	Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
 	           		
 	            	if (recBuilding != null) {
                         result *= getBuildingModifier(recBuilding, person);

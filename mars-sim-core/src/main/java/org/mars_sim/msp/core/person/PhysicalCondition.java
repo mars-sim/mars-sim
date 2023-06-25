@@ -2029,9 +2029,17 @@ public class PhysicalCondition implements Serializable {
         return remainingPrebreathingTime <= 0;
     }
 
+	public boolean isAtLeast3QuartersDonePrebreathing() {
+        return remainingPrebreathingTime <= .25 * STANDARD_PREBREATHING_TIME;
+	}
+	
 	public boolean isAtLeastHalfDonePrebreathing() {
         return remainingPrebreathingTime <= .5 * STANDARD_PREBREATHING_TIME;
     }
+	
+	public boolean isAtLeastAQuarterDonePrebreathing() {
+        return remainingPrebreathingTime <= .75 * STANDARD_PREBREATHING_TIME;
+	}
 	
 	public void resetRemainingPrebreathingTime() {
 		remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);

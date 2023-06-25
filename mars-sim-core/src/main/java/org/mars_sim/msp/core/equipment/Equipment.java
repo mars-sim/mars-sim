@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Equipment.java
- * @date 2023-05-09
+ * @date 2023-06-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
- * equipment, such as a EVA suit or a medpack.
+ * equipment, such as a container, an EVA suit or a medpack.
  */
 public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
@@ -48,8 +48,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** Unique identifier for the settlement that owns this equipment. */
 	private int associatedSettlementID;
-	/** The identifier for the last owner of this equipment. */
-	private int lastOwner;
+	/** The identifier for the registered owner of this equipment. */
+	private int registeredOwner;
 
 	/** The equipment type enum. */
 	private final EquipmentType equipmentType;
@@ -57,7 +57,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private SalvageInfo salvageInfo;
 
 	/**
-	 * Constructs an Equipment object
+	 * Constructs an Equipment object.
 	 *
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
@@ -68,7 +68,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Constructs an Equipment object
+	 * Constructs an Equipment object.
 	 *
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
@@ -82,7 +82,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		isSalvaged = false;
 		salvageInfo = null;
 
-		lastOwner = -1;
+		registeredOwner = -1;
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
@@ -114,7 +114,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Stores the resource
+	 * Stores the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -125,7 +125,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// should it be tagged for only regolith and NOT for another resource ?
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -134,7 +134,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public abstract double retrieveAmountResource(int resource, double quantity);
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -142,7 +142,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public abstract double getAmountResourceCapacity(int resource);
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -165,8 +165,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = new ArrayList<>();
 
-		if (lastOwner != -1) {
-			people.add(unitManager.getPersonByID(lastOwner));
+		if (registeredOwner != -1) {
+			people.add(unitManager.getPersonByID(registeredOwner));
 		}
 
 		// Check all people.
@@ -203,7 +203,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Indicate the start of a salvage process on the item.
+	 * Indicates the start of a salvage process on the item.
 	 *
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
@@ -223,7 +223,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Get vehicle the equipment is in, null if not in vehicle
+	 * Gets vehicle the equipment is in, null if not in vehicle.
 	 *
 	 * @return {@link Vehicle} the equipment's vehicle
 	 */
@@ -239,7 +239,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Is the equipment's outside of a settlement but within its vicinity
+	 * Is the equipment's outside of a settlement but within its vicinity ?
 	 *
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
@@ -248,32 +248,37 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
     }
 
 	/**
-	 * Sets the last owner of this equipment
+	 * Sets the last owner of this equipment.
 	 *
 	 * @param person
 	 */
 	public void setLastOwner(Person person) {
 		if (person != null) {
-			 if (person.getIdentifier() != lastOwner)
-				 lastOwner = person.getIdentifier();
+			 if (person.getIdentifier() != registeredOwner)
+				 registeredOwner = person.getIdentifier();
 		}
 		else
-			lastOwner = Unit.UNKNOWN_UNIT_ID;
+			registeredOwner = Unit.UNKNOWN_UNIT_ID;
 	}
 
 	/**
-	 * Gets the last owner of this equipment
+	 * Gets the registered owner of this equipment.
 	 *
 	 * @return
 	 */
-	public Person getLastOwner() {
-		if (lastOwner != -1)
-			return unitManager.getPersonByID(lastOwner);
+	public Person getRegisteredOwner() {
+		if (registeredOwner != -1)
+			return unitManager.getPersonByID(registeredOwner);
 		return null;
 	}
 
-	public int getLastOwnerID() {
-		return lastOwner;
+	/**
+	 * Gets the registered owner's id.
+	 * 
+	 * @return
+	 */
+	public int getRegisteredOwnerID() {
+		return registeredOwner;
 	}
 
 	public EquipmentType getEquipmentType() {

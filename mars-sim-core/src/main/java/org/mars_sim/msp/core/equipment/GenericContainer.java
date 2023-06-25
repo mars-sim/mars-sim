@@ -301,7 +301,7 @@ class GenericContainer extends Equipment implements Container {
 	 */
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
-			return (getLastOwnerID() == -1);
+			return (getRegisteredOwnerID() == -1);
 		}
 
 		return resourceHeld == -1;

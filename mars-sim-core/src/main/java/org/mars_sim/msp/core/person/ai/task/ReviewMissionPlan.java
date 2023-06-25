@@ -82,7 +82,7 @@ public class ReviewMissionPlan extends Task {
 			mp.setActiveReviewer(person);
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = Administration.getAvailableOffice(person);
+			Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
 
 			// Note: office building is optional
 			if (officeBuilding != null) {

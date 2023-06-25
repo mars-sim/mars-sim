@@ -7,18 +7,13 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * An administration building function. The building facilitates report writing
@@ -88,34 +83,6 @@ public class Administration extends Function {
 		return demand / (supply + 1D);
 	}
 
-	/**
-	 * Gets an available building with the administration function.
-	 * 
-	 * @param person the person looking for the office.
-	 * @return an available office space or null if none found.
-	 */
-	public static Building getAvailableOffice(Person person) {
-		Building result = null;
-		
-		// If person is in a settlement, try to find a building with )an office.
-		if (person.isInSettlement()) {
-			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			Set<Building> offices = buildingManager.getBuildingSet(FunctionType.ADMINISTRATION);
-			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
-			
-			Set<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
-
-			if (!comfortOffices.isEmpty()) {				
-				offices = comfortOffices;			
-			}
-			
-			// skip filtering the crowded offices
-			Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
-			result = RandomUtil.getWeightedRandomObject(selectedOffices);
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the number of people this administration facility can support.

@@ -456,7 +456,7 @@ public class EVASuit extends Equipment
 	 * @return owner
 	 */
 	public Person getOwner() {
-		return getLastOwner();
+		return getRegisteredOwner();
 	}
 
 	/**
@@ -638,7 +638,7 @@ public class EVASuit extends Equipment
 	 */
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
-			return (getLastOwnerID() == -1);
+			return (getRegisteredOwnerID() == -1);
 		}
 
 		return microInventory.isEmpty();

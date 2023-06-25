@@ -470,7 +470,7 @@ public class InventoryTabPanel extends TabPanel {
 					case 0: return e.getName();
 					case 1: return e.getMass();
 					case 2: {
-						Person owner = e.getLastOwner();
+						Person owner = e.getRegisteredOwner();
 						return (owner != null ? owner.getName() : null);
 					}
 					case 3: return getContent(e);

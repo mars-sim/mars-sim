@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2023-05-09
+ * @date 2023-06-25
  * @author Scott Davis
  */
 
@@ -2247,21 +2247,67 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public void assignThermalBottle() {
 
 		if (!hasThermalBottle() && isInside()) {
-
+			Equipment aBottle = null;
 			Iterator<Equipment> i = ((EquipmentOwner)getContainerUnit()).getEquipmentSet().iterator();
 			while (i.hasNext()){
 				Equipment e = i.next();
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
+					Person owner = e.getRegisteredOwner();
+					if (owner != null && owner.equals(this)) {
+						// Remove it from the container unit
+						i.remove();
+						// Add to this person's inventory
+						addEquipment(e);
+						// Register the person as the owner of this bottle
+						e.setLastOwner(this);
+						
+						return;
+					}
+					
+					// Save this bottle first
+					if (aBottle == null)
+						aBottle = e;
+				}
+			}
+			
+			// After done with iterating over all the bottle,
+			// if it still can't find a bottle that was last assigned to this person
+			// get the first saved one 
+			if (aBottle != null) {
+				// Remove it from the container unit
+				i.remove();
+				// Add to this person's inventory
+				addEquipment(aBottle);
+				// Register the person as the owner of this bottle
+				aBottle.setLastOwner(this);
+			}
+		}
+	}
+	
+	/**
+	 * Drops off the thermal bottle such as when going out for an EVA.
+	 */
+	public void dropOffThermalBottle() {
+
+		if (hasThermalBottle() && isInside()) {
+
+			Iterator<Equipment> i = getEquipmentSet().iterator();
+			while (i.hasNext()){
+				Equipment e = i.next();
+				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					i.remove();
-					// Add to this person's inventory
-					addEquipment(e);
-					// Register the person as the owner of this bottle
+					// Transfer to this person's container unit 
+					((EquipmentOwner)getContainerUnit()).addEquipment(e);
+					// Register the person as the owner of this bottle if not done
 					e.setLastOwner(this);
+					
 					break;
 				}
 			}
 		}
 	}
+	
+	
 	
 	/**
 	 * Puts on a garment.

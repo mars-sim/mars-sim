@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -54,7 +51,7 @@ public class Workout extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find a gym.
-			Building gymBuilding = getAvailableGym(person);
+			Building gymBuilding = BuildingManager.getAvailableGymBuilding(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
 				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, FunctionType.EXERCISE, true);
@@ -116,34 +113,5 @@ public class Workout extends Task {
 		if (gym != null && gym.getNumExercisers() > 0) {
 			gym.removeExerciser();
 		}
-	}
-
-	/**
-	 * Gets an available building with the exercise function.
-	 *
-	 * @param person the person looking for the gym.
-	 * @return an available exercise building or null if none found.
-	 */
-	public static Building getAvailableGym(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with a gym.
-		if (person.isInSettlement()) {
-			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			Set<Building> gyms = buildingManager.getBuildingSet(FunctionType.EXERCISE);
-			gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
-
-			if (RandomUtil.getRandomInt(1) == 0)
-				// Note: in small settlement, even if A doesn't like B, A will still have
-				// to put up with B to be in the same gym from time to time.
-				gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
-
-			if (gyms.size() > 0) {
-				Map<Building, Double> gymProbs = BuildingManager.getBestRelationshipBuildings(person, gyms);
-				result = RandomUtil.getWeightedRandomObject(gymProbs);
-			}
-		}
-
-		return result;
 	}
 }

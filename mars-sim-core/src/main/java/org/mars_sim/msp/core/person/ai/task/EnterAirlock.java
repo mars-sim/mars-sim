@@ -732,31 +732,19 @@ public class EnterAirlock extends Task {
 				housing = ((Building)airlock.getEntity()).getSettlement();
 			else
 				housing = (Vehicle)airlock.getEntity();
-			// 2. Doff this suit
-			// 2a. Records the person as the owner (if it hasn't been done)
-			suit.setLastOwner(person);
-			// 2b. Doff this suit. Deregister the suit from the person
-			person.registerSuit(null);
-			// Print log
-			logger.log((Unit)housing, person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
-			// 2c. Transfer the EVA suit from person to the new destination
-			suit.transfer((Unit)housing);
-			// 2d. Remove pressure suit and put on garment
-			if (inSettlement) {
-				if (person.unwearPressureSuit(housing)) {
-					person.wearGarment(housing);
-				}
-			}
-			// Note: vehicle may or may not have garment available
-			else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
+		
 			
-			// 2e. Unload any waste
+			// 1. Doff off the suit, take back the garment and thermal bottle
+			checkIn(person, airlock.getEntity());
+			
+			// 2. Records the person as the owner (if it hasn't been done)
+			suit.setLastOwner(person);
+			
+			// 3. Unload any waste
 			suit.unloadWaste(housing);
 			
-			// 2f. Assign thermal bottle
-			person.assignThermalBottle();
+			// 4. Print log
+			logger.log((Unit)housing, person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
 			
 			// Add experience
 			addExperience(time);
@@ -772,7 +760,6 @@ public class EnterAirlock extends Task {
 		
 		return 0;
 	}
-
 
 	/**
 	 * Performs cleaning up of EVA suit and oneself.
