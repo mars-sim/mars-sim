@@ -173,10 +173,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="carbon dioxide" value="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="100.0" />
+			<capacity resource="water" value="120.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="20.0" />
+			<capacity resource="food" value="60.0" />
 
 			<!-- Default: varies according to the type of vehicle -->
 			<!--<capacity resource="dessert" value="120.0" />-->
@@ -251,14 +251,14 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2000.0">
-			<capacity resource="methanol" value="40.0" />
-			<capacity resource="oxygen" value="80.0" />
+			<capacity resource="methanol" value="50.0" />
+			<capacity resource="oxygen" value="100.0" />
 			
 			<capacity resource="nitrogen" value="2.0" />
 			<capacity resource="carbon dioxide" value="2.0" />
 			
 			<capacity resource="water" value="200.0" />
-			<capacity resource="food" value="40.0" />
+			<capacity resource="food" value="100.0" />
 			
 			<capacity resource="rock samples" value="400.0" />
 			<capacity resource="ice" value="400.0" />

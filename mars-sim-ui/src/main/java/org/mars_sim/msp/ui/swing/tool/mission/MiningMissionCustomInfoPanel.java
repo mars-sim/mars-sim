@@ -175,7 +175,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Data members.
 		protected Map<String, Double> estimatedConcentrationMap;
-		protected Map<String, Double> actualConcentrationMap;
+		protected Map<String, Integer> actualConcentrationMap;
 
 		/**
 		 * Constructor
@@ -265,7 +265,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (mission.getMiningSite() != null) {
 				estimatedConcentrationMap = mission.getMiningSite().getEstimatedMineralConcentrations();
 				actualConcentrationMap = surfaceFeatures.getMineralMap()
-						.getAllMineralConcentrations(mission.getMiningSite().getLocation());
+						.getAllMineralConcentrations(mission.getMiningSite().getLocation(), 0);
 			} else {
 				estimatedConcentrationMap.clear();
 				actualConcentrationMap.clear();

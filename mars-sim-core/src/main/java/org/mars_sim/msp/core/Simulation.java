@@ -945,7 +945,7 @@ public class Simulation implements ClockListener, Serializable {
 				break;
 			
 			case AUTOSAVE:
-				int missionSol = masterClock.getMarsClock().getMissionSol();
+				int missionSol = masterClock.getMarsTime().getMissionSol();
 				String saveTime = new SystemDateTime().getDateTimeStr();
 				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + BUILD
 						+ SAVE_FILE_EXTENSION;

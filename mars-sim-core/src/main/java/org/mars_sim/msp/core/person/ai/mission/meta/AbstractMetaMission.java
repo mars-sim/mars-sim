@@ -11,14 +11,22 @@ import java.util.Set;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Default implementation of the MetaMission interface. Provides 
  * default implementations.
  */
 public class AbstractMetaMission implements MetaMission {
+	private static MasterClock masterClock;
+	private static MissionManager missionMgr;
+
 	private String name;
 	private MissionType type;
 	private Set<JobType> preferredLeaderJob = null;
@@ -90,4 +98,43 @@ public class AbstractMetaMission implements MetaMission {
 	protected Set<JobType> getPreferredLeaderJob() {
 		return preferredLeaderJob;
 	}
+
+	/**
+	 * Get the current time on Mars
+	 * @return
+	 */
+	protected MarsTime getMarsTime() {
+		return masterClock.getMarsTime();
+	}
+
+	/**
+	 * Get the score modifier for a Settlement based on it's population for this type of mission
+	 * @param target The settlemetn to check
+	 * @param capacity The number of person needed for capacity calcs
+	 */
+	protected double getSettlementPopModifier(Settlement target, int capacity) {
+		int numEmbarking = MissionUtil.numEmbarkingMissions(target);
+	    int numThisMission = missionMgr.numParticularMissions(type, target);
+		int pop = target.getNumCitizens();
+				
+		// Check for # of embarking missions.
+	    if (Math.max(1, pop / capacity) < numEmbarking) {
+	    	return 0;
+	    }
+
+		// 
+	    if (numThisMission > Math.max(1, pop / capacity)) {
+	    	return 0;
+	    }
+		
+	    int f1 = numEmbarking + 1;
+	    int f2 = numThisMission + 1;
+		
+	    return (double)Math.max(1, pop / capacity) / f1 / f2;
+	}
+	
+    public static void initializeInstances(MasterClock mc, MissionManager m) {
+		masterClock = mc;
+		missionMgr = m;
+    }
 }

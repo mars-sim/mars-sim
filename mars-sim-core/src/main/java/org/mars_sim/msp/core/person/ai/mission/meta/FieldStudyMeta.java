@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.FieldStudyMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -61,17 +60,8 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-
 				missionProbability = 1D;
 				
-				int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(mType, settlement);
-				
-		   		// Check for # of embarking missions.
-	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
-	    			return 0;
-	    		}
-
 	            try {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
@@ -102,10 +92,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	                return 0;
 	            }
 
-				int f1 = numEmbarked + 1;
-				int f2 = numThisMission + 1;
-
-				missionProbability *= 4.0 * settlement.getNumCitizens() / f1 / f2;
+				missionProbability *= getSettlementPopModifier(settlement, 4);
 
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

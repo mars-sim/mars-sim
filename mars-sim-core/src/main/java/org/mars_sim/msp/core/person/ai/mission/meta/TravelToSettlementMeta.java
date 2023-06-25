@@ -12,7 +12,6 @@ import java.util.Map;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -40,7 +39,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public double getProbability(Person person) {
 
-    	if (marsClock.getMissionSol() < EARLIEST_SOL_TRAVEL) {
+    	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
     		return 0;
     	}
     	
@@ -105,23 +104,8 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         // Determine mission probability.
         missionProbability = TravelToSettlement.BASE_MISSION_WEIGHT
                 + (topSettlementDesirability / 100D);
-
-		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-		int numThisMission = missionManager.numParticularMissions(MissionType.TRAVEL_TO_SETTLEMENT, settlement);
-
-   		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
-			return 0;
-		}			
-		
-		else if (numThisMission > 1)
-			return 0;	
-		
-
-		int f1 = 2*numEmbarked + 1;
-		int f2 = 2*numThisMission + 1;
-		
-		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+        
+        missionProbability *= getSettlementPopModifier(settlement, 8);
 		
         // Crowding modifier.
         int crowding = settlement.getIndoorPeopleCount()

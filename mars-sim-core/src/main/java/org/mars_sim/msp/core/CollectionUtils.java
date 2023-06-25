@@ -170,14 +170,14 @@ public class CollectionUtils {
 	 * @param c the coordinates of interest
 	 * @return
 	 */
-	public static String getNearbyObjectName(Coordinates c) {
-		if (isSettlement(c)) {
+	public static String getNearbyVehicleName(Coordinates c) {
+//		if (isSettlement(c)) {
 			Vehicle vehicle = CollectionUtils.findVehicle(c);
 			if (vehicle != null) {
 				return vehicle.getName();
 			}
-		}
-		return "Outside";
+//		}
+		return "No Vehicle";
 	}
 	
 	public static <T extends Unit> Collection<T> sortByName(

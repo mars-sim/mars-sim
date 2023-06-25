@@ -49,7 +49,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
         double missionProbability = 0D;
          
         // No construction until after the x sols of the simulation.
-        if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL) {
+        if (getMarsTime().getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL) {
         	return 0;
         }
         

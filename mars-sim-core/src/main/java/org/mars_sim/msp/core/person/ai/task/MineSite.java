@@ -209,8 +209,8 @@ public class MineSite extends EVAOperation {
 	 */
 	private void excavateMinerals(double time) {
 
-		Map<String, Double> minerals = surfaceFeatures.getMineralMap()
-				.getAllMineralConcentrations(site);
+		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
+				.getAllMineralConcentrations(site, 0);
 		Iterator<String> i = minerals.keySet().iterator();
 		while (i.hasNext()) {
 			String mineralName = i.next();
@@ -221,6 +221,9 @@ public class MineSite extends EVAOperation {
 				amountExcavated = HAND_EXCAVATION_RATE * time;
 			}
 			double mineralConcentration = minerals.get(mineralName);
+			
+			logger.info(person, 20_000L, "conc: " + mineralConcentration);
+			
 			amountExcavated *= mineralConcentration / 100D;
 			amountExcavated *= getEffectiveSkillLevel();
 

@@ -249,6 +249,7 @@ import com.jogamp.opencl.CLProgram;
  	 * @param centerTheta Center theta value on the image
 	 * @param mapBoxWidth The Width of the requested image
 	 * @param mapBoxHeight The Height of the requested image
+	 * @param scale The map scale
  	 */
  	@Override
  	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale) {

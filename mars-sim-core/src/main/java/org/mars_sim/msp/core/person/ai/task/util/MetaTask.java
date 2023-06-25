@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -56,6 +57,7 @@ public abstract class MetaTask {
 	
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
+	protected static MissionManager missionManager;
 	
 	private boolean effortDriven = true;
 	private String name;
@@ -342,5 +344,6 @@ public abstract class MetaTask {
 	static void initialiseInstances(Simulation sim) {
 		masterClock = sim.getMasterClock();
 		surfaceFeatures = sim.getSurfaceFeatures();
+		missionManager = sim.getMissionManager();
 	}
 }

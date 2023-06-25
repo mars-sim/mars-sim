@@ -33,7 +33,13 @@ public final class Coordinates implements Serializable {
 
 	/** Mars average radius in km. */
 	public static final double MARS_RADIUS_KM = 3393D;
+	
 	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2 * Math.PI;
+	
+	public static final double KM_PER_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360;
+	
+	// Approximately 5.9219 m resolution
+	public static final double KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360 / 10_000;
 	
 	private static final double DEG_TO_RADIAN  = Math.PI / 180;
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
@@ -63,6 +69,7 @@ public final class Coordinates implements Serializable {
 	/** Formatted string of both latitude and longitude. */
 	private String formattedString;
 	
+	/** Currently, lat and lon are up to 4 decimal places. Thus the decimal format '0.0000' is used. */
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 
 	/**
@@ -76,9 +83,8 @@ public final class Coordinates implements Serializable {
 		double p = phi;
 		double t = theta;
 		
-		// Set Coordinates
-		// Make sure phi is between 0 and PI.
-		// Not between -90 (-pi/2 radians) and 90 degrees (pi/2 radians).
+		// Make sure phi is between 0 and PI in radians
+		// Not between -PI/2 and PI/2 in radians
 
 		while (p > Math.PI)
 			p -= Math.PI;
@@ -87,8 +93,8 @@ public final class Coordinates implements Serializable {
 
 		this.phi = p;
 		
-		// Make sure theta is between 0 and 2 PI.
-		// Not between 0 (-pi radians) and 90 degrees (pi radians).
+		// Make sure theta is between 0 and 2PI in radians
+		// Not between -PI and PI in radians
 
 		while (t < 0D)
 			t += TWO_PI;
@@ -100,8 +106,12 @@ public final class Coordinates implements Serializable {
 
 	/**
 	 * Constructor with a latitude and longitude string. Expects direction
-	 * abbreviations according to current locale, so for english NESW, for german
-	 * NOSW, french NESO, etc.
+	 * abbreviations according to current locale, so for English NESW, for German
+	 * NOSW, French NESO, etc.
+	 *
+	 * Note: Currently, lat and lon are up to 4 decimal places.
+	 * - 1 degree at equator is 5.9167 km
+	 * - 0.0001 degree at equator is 5.92 m 
 	 *
 	 * @param latitude  String representing latitude value. ex. "25.3443 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
@@ -118,7 +128,7 @@ public final class Coordinates implements Serializable {
 	 * @see #getFormattedString()
 	 */
 	public String toString() {
-		return formattedString;
+		return getFormattedString();
 	}
 
 	/**
