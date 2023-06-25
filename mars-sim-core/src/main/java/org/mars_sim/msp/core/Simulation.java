@@ -583,8 +583,6 @@ public class Simulation implements ClockListener, Serializable {
 		CropConfig cc = simulationConfig.getCropConfiguration();
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
-		// Gets the MasterClock instance
-//		MasterClock masterClock = masterClock;
 
 		// Gets the MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -963,7 +961,7 @@ public class Simulation implements ClockListener, Serializable {
 				break;
 			
 			case AUTOSAVE:
-				int missionSol = masterClock.getMarsClock().getMissionSol();
+				int missionSol = masterClock.getMarsTime().getMissionSol();
 				String saveTime = new SystemDateTime().getDateTimeStr();
 				String autosaveFilename = saveTime + "_sol" + missionSol + "_r" + BUILD
 						+ SAVE_FILE_EXTENSION;

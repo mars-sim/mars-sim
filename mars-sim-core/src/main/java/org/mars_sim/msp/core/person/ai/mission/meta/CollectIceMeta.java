@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -59,26 +58,11 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				missionProbability = 1D;
-	    		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
-				int pop = settlement.getNumCitizens();
-				
-		   		// Check for # of embarking missions.
-	    		if (Math.max(1, pop / 8.0) < numEmbarked + numThisMission) {
-	    			return 0;
-	    		}
-
-	    		if (numThisMission > Math.max(1, pop / 8.0)) {
-	    			return 0;
-	    		}
-
-	    		missionProbability = settlement.getIceProbabilityValue() / VALUE;
-
-	    		int f1 = numEmbarked + 1;
-	    		int f2 = numThisMission + 1;
-
-	    		missionProbability *= (double)Math.max(1, pop / 8.0) / f1 / f2;
+				missionProbability = getSettlementPopModifier(settlement, 8);
+				if (missionProbability == 0) {
+					return 0;
+				}
+	    		missionProbability *= settlement.getIceProbabilityValue() / VALUE;
 
 				// Job modifier.
 	    		missionProbability *= getLeaderSuitability(person);

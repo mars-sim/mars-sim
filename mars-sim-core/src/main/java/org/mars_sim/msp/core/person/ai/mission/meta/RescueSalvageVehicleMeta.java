@@ -82,18 +82,10 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             else if (all > 3)	
             	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
     	    
-            // FIXME : need to know how many extra EVA suits needed in the broken vehicle
-			int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-
             // Check if min number of EVA suits at settlement.
             if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;
     	    }
-
-            // Check for embarking missions.
-            else if (numEmbarked == 0) {
-                return missionProbability * 2;
-            }
    
             // Check if minimum number of people are available at the settlement.
             if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, min_num)) {
@@ -105,24 +97,11 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                 return 0;
             }
             
+			missionProbability *= getSettlementPopModifier(settlement, 4);
     		if (missionProbability <= 0)
     			return 0;
-    		
-			int numThisMission = missionManager.numParticularMissions(MissionType.RESCUE_SALVAGE_VEHICLE, settlement);
-            
-	   		// Check for # of embarking missions.
-    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numThisMission + numEmbarked) {
-    			return 0;
-    		}	
-    		
-    		if (numThisMission > 0)
-    			return 0;	
+    	
 
-			int f1 = 2 * numEmbarked + 1;
-			int f2 = numThisMission + 1;
-			
-			missionProbability = (1 + missionProbability) * settlement.getNumCitizens() / f2 / f1;
-			
            	RoleType roleType = person.getRole().getType();
         	
         	if (RoleType.MISSION_SPECIALIST == roleType)

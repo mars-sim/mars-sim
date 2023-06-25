@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -74,16 +73,10 @@ public class MiningMeta extends AbstractMetaMission {
 	            if (!Mining.areAvailableAttachmentParts(settlement))
 	            	return 0;
 
-				int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
-				int numThisMission = missionManager.numParticularMissions(MissionType.MINING, settlement);
-
-		   		// Check for # of embarking missions.
-	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
+				missionProbability = getSettlementPopModifier(settlement, 8);
+				if (missionProbability == 0) {
 	    			return 0;
 	    		}
-
-	    		if (numThisMission > 1)
-	    			return 0;
 
 	            try {
 	                // Get available rover.
@@ -91,7 +84,7 @@ public class MiningMeta extends AbstractMetaMission {
 
 	                if (rover != null) {
 	                    // Find best mining site.
-	                	missionProbability = Mining.getMatureMiningSitesTotalScore(rover, settlement);
+	                	missionProbability *= Mining.getMatureMiningSitesTotalScore(rover, settlement);
 	                }
 	            } catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error getting mining site.", e);
@@ -104,11 +97,6 @@ public class MiningMeta extends AbstractMetaMission {
 	            if (crowding > 0) {
 	                missionProbability *= (crowding + 1);
 	            }
-
-				int f1 = numEmbarked + 1;
-				int f2 = 2 * numThisMission + 1;
-
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2;
 
 	            // Job modifier.
 				missionProbability *= getLeaderSuitability(person)

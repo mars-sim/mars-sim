@@ -77,25 +77,9 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	    	    }
 	
 	            missionProbability = EmergencySupply.BASE_STARTING_PROBABILITY;
-	
-	    		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);	
-	    		int numThisMission = missionManager.numParticularMissions(MissionType.EMERGENCY_SUPPLY, settlement);
-	    		
-		   		// Check for # of embarking missions.
-	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
-	    			return 0;
-	    		}	
-	    		
-	    		if (numThisMission > 1)
-	    			return 0;	
-
+	        	missionProbability *= getSettlementPopModifier(settlement, 8);
 	    		if (missionProbability <= 0)
 	    			return 0;
-	    		
-	    		int f1 = 2 * numEmbarked + 1;
-	    		int f2 = 2 * numThisMission + 1;
-	    		
-	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 	    		
 	           	RoleType roleType = person.getRole().getType();
             	
