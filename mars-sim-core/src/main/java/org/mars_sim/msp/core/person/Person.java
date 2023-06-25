@@ -2244,26 +2244,23 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Assigns a thermal bottle as a standard living necessity.
 	 */
-	public Container assignThermalBottle() {
-		Equipment bottle = null;
-		
+	public void assignThermalBottle() {
+
 		if (!hasThermalBottle() && isInside()) {
 
 			Iterator<Equipment> i = ((EquipmentOwner)getContainerUnit()).getEquipmentSet().iterator();
 			while (i.hasNext()){
-				bottle = i.next();
-				if (bottle.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
+				Equipment e = i.next();
+				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					i.remove();
-
-					addEquipment(bottle);
+					// Add to this person's inventory
+					addEquipment(e);
 					// Register the person as the owner of this bottle
-					bottle.setLastOwner(this);
+					e.setLastOwner(this);
 					break;
 				}
 			}
 		}
-		
-		return (Container)bottle;
 	}
 	
 	/**
