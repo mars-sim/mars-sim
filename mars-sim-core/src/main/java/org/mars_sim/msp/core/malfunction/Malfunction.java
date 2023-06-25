@@ -416,7 +416,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Returns the probability of failure of the malfunction
+	 * Returns the probability of failure of the malfunction.
 	 *
 	 * @return probability in %
 	 */
@@ -425,7 +425,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Returns the MalfunctionMeta definition of the malfunction
+	 * Returns the MalfunctionMeta definition of the malfunction.
 	 *
 	 * @return MalfunctionMeta
 	 */
@@ -434,7 +434,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Sets the probability of failure
+	 * Sets the probability of failure.
 	 *
 	 * @param p
 	 */
@@ -596,7 +596,7 @@ public class Malfunction implements Serializable {
 	 */
 	private void determineRepairParts() {
 		for (RepairPart part : definition.getParts()) {
-			if (RandomUtil.lessThanRandPercent(part.getProbability())) {
+			if (RandomUtil.lessThanRandPercent(part.getRepairProbability())) {
 				int id = part.getPartID();
 				repairParts.put(id, part.getNumber());
 

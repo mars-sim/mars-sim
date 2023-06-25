@@ -52,9 +52,29 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The MalfunctionManager class manages malfunctions and part maintenance needs for units such as 
- * Building, BuildingKit, EVASuit, Robot, MockBuilding, or Vehicle. 
- * Note: each unit has its own MalfunctionManager.
+ * The MalfunctionManager class manages malfunctions and part maintenance needs for 
+ * units such as Building, EVASuit, Robot, or Vehicle. 
+ * 
+ * Maintenance is different from malfunction.
+ * 
+ * When something breaks, it is a malfunction and repair must be done ASAP. 
+ * 
+ * On the other hand, maintenance are generally predictive in nature. 
+ * 
+ * The inspection-portion of a maintenance event by definition does not generate 
+ * any needed parts. 
+ * 
+ * If a maintenance does generate needed parts, it should be taken as a 
+ * preventive measure to swap out possibly worn parts in order to prevent a 
+ * malfunction from happening. 
+ * 
+ * In future, we may identify and allow some of needed parts being taken offline 
+ * to be retrofit, especially those those costly, limited quantity parts.
+ * 
+ * Both maintenance and malfunction are reliability-centered, meaning these two
+ * disciplines are closely related with the concept of part and system reliability.
+ *  
+ * Note: almost all units (except Container) have their own MalfunctionManager.
  */
 public class MalfunctionManager implements Serializable, Temporal {
 
@@ -413,31 +433,46 @@ public class MalfunctionManager implements Serializable, Temporal {
 			String partName = part.getName();
 
 			double oldRel = part.getReliability();
-			double oldProb = getRepairPartProbability(malfunction, partName);
-			double oldFailure = (100 - oldRel) * oldProb / 100D;
-			double oldMalProbFailure = malfunction.getProbability();
+			double oldRepairProb = getRepairPartProbability(malfunction, partName);
+			double oldFailure = part.getFailureRate();
+			double oldMalProb = malfunction.getProbability();
+			
 			double oldMTBF = part.getMTBF();
 
 			// Record the number of failure
-			// and recompute the new reliability
-			part.setFailure(num, currentTime.getMissionSol());
-
-			// Need to calculate the new probability for the whole MalfunctionMeta object
-			double newRel = part.getReliability();
-			double newProb = getRepairPartProbability(malfunction, partName);
-			double newFailure = (100 - newRel) * newProb / 100D;
-			double newMalProbFailure = (oldMalProbFailure + newFailure) / 2.0;
-			double newMTBF = part.getMTBF();
-
+			part.recordCumFailure(num);	
+			
+			// Record the number of failure
+			int numFailure = part.getCumFailure();	
+			
+			// Gets the mission sol
+			int missionSol = currentTime.getMissionSol();
+			// Gets the @ of sols in use 
+			int solsInUse = missionSol - part.getStartSol();
+			
+			// Recompute the MTBF for this part
+			double newMTBF = part.computeMTBF(missionSol);
+			// Recompute the reliability for this part
+			double newRel = part.computeReliability(missionSol);
+			// Recompute the failure rate
+			double newFailure = part.computeFailureRate();
+			// Update all part's repair probability
+			double newRepairProb = computeRepairPartProbability(malfunction, partName, newRel);
+			// Recompute the malfunction failure 
+			double newMalProb = 0.1 * oldMalProb * + 0.9 * newFailure;
+			// Update the probability of failure for this particular malfunction
+			malfunction.setProbability(newMalProb);
+			
 			logger.warning("           *** Part : " + partName + " ***");
-			logger.warning(" (1).   Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
-			logger.warning(" (2).  Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));
-			logger.warning(" (3).          MTBF : " + String.format("%.1f hr --> %.1f hr", oldMTBF, newMTBF));
-			logger.warning(" (4).   Probability : " + String.format(PERC_CHANGE, oldMalProbFailure, 
-												newMalProbFailure));
+			logger.warning(" (1).         Num of Failures : " + numFailure);	
+			logger.warning(" (2).             Sols in Use : " + solsInUse);
+			logger.warning(" (3).                    MTBF : " + String.format("%.1f millisols --> %.1f millisols", oldMTBF, newMTBF));	
+			logger.warning(" (4).            Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));			
+			logger.warning(" (5).     Percent Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
+			logger.warning(" (6).      Repair Probability : " + String.format(PERC_CHANGE, oldRepairProb, newRepairProb));			
+			logger.warning(" (7). Malfunction Probability : " + String.format(PERC_CHANGE, oldMalProb, newMalProb));
 
-			// Modify the probability of failure for this particular malfunction
-			malfunction.setProbability(newMalProbFailure);
+
 		}
 	}
 	
@@ -456,13 +491,87 @@ public class MalfunctionManager implements Serializable, Temporal {
 			while (i.hasNext()) {
 				RepairPart part = i.next();
 				if (part.getName().equalsIgnoreCase(partName)) {
-					return part.getProbability();
+					return part.getRepairProbability();
 				}
 			}
 		}
 		return result;
 	}
 
+
+	/**
+	 * Sets the probability of a repair part for a malfunction.
+	 *
+	 * @param malfunctionName the name of the malfunction.
+	 * @param partName        the name of the part.
+	 * @param failureRate     the failure rate of the part.
+	 * @return reliability the percent reliability of the repair part.
+	 */
+	public double computeRepairPartProbability(Malfunction malfunction, String partName, double reliability) {
+		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
+		if (partList != null) {
+			Iterator<RepairPart> i = partList.iterator();
+			double totalProb = 0;
+			double oldRepairProb = 0;
+			int num = 0;
+			while (i.hasNext()) {
+				RepairPart part = i.next();
+				double prob = part.getRepairProbability();
+				totalProb += prob;	
+				if (part.getName().equalsIgnoreCase(partName)) {
+					oldRepairProb = prob;
+				}
+			}
+			
+			double newRepairProb = oldRepairProb * (1 + (100 - reliability)/100) * totalProb / 100;
+			double diff = (newRepairProb - oldRepairProb);
+			
+			// Adjust other parts' repair probability
+			double spreadRepairProb = diff / num;
+			
+			Iterator<RepairPart> j = partList.iterator();
+			while (j.hasNext()) {
+				RepairPart part = j.next();
+				double prob = part.getRepairProbability();
+				totalProb += prob;	
+				if (part.getName().equalsIgnoreCase(partName)) {
+					part.setRepairProbability(newRepairProb);
+				}
+				else {
+					double oldProb = part.getRepairProbability();
+					double newProb = (oldProb + spreadRepairProb )* totalProb / 100;			
+					part.setRepairProbability(newProb);
+				}
+			}
+			
+			return newRepairProb;
+		}
+		
+		return -1;
+	}
+	
+	
+	/**
+	 * Sets the probability of a repair part for a malfunction.
+	 *
+	 * @param malfunctionName the name of the malfunction.
+	 * @param partName        the name of the part.
+	 * @return the probability of the repair part.
+	 */
+	public void setRepairPartProbability(Malfunction malfunction, String partName, double repairProbability) {
+		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
+		if (partList != null) {
+			Iterator<RepairPart> i = partList.iterator();
+			while (i.hasNext()) {
+				RepairPart part = i.next();
+				if (part.getName().equalsIgnoreCase(partName)) {
+					part.setRepairProbability(repairProbability);
+					break;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Sets up a malfunction event.
 	 *

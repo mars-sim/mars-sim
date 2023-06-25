@@ -252,7 +252,7 @@ public final class MalfunctionFactory implements Serializable {
 				double malfunctionProbability = m.getProbability() / 100D;
 
 				for (RepairPart p : m.getParts()) {
-					double partProbability = p.getProbability() / 100D;
+					double partProbability = p.getRepairProbability() / 100D;
 					double averageNumber = RandomUtil.getIntegerAverageValue(p.getNumber());
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 
@@ -293,7 +293,7 @@ public final class MalfunctionFactory implements Serializable {
 	}
 
 	/**
-	 * Obtains the malfunction representing the specified name
+	 * Obtains the malfunction representing the specified name.
 	 *
 	 * @param malfunctionName
 	 * @return {@link Malfunction}
@@ -310,7 +310,7 @@ public final class MalfunctionFactory implements Serializable {
 	}
 
 	/**
-	 * Gets the next incident number for the simulation
+	 * Gets the next incident number for the simulation.
 	 *
 	 * @return
 	 */
@@ -319,7 +319,9 @@ public final class MalfunctionFactory implements Serializable {
 	}
 
 	/**
-	 * Computes the reliability of each part
+	 * Computes the reliability of each part.
+	 * 
+	 * @param missionSol
 	 */
 	public void computePartReliability(int missionSol) {
 		for (Part p : Part.getParts()) {

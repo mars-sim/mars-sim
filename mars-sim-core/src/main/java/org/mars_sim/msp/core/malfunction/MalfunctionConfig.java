@@ -47,7 +47,9 @@ public class MalfunctionConfig {
 	private static final String MALFUNCTION_EL = "malfunction";
 	private static final String NAME_ATTR = "name";
 	private static final String SEVERITY_EL = "severity";
-	private static final String PROBABILITY_EL = "probability";
+	private static final String MEDICAL_PROBABILITY = "medical-probability";
+	private static final String MALFUNCTION_PROBABILITY = "malfunction-probability";
+	private static final String REPAIR_PROBABILITY = "repair-probability";
 	private static final String SYSTEM_LIST_EL = "system-list";
 	private static final String SYSTEM_EL = "system";
 	private static final String EFFECT_LIST = "effect-list";
@@ -130,9 +132,9 @@ public class MalfunctionConfig {
 			Element severityElement = malfunctionElement.getChild(SEVERITY_EL);
 			int severity = Integer.parseInt(severityElement.getAttributeValue(VALUE_ATTR));
 
-			// Get probability.
-			Element probabilityElement = malfunctionElement.getChild(PROBABILITY_EL);
-			double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE_ATTR));
+			// Get malfunction probability.
+			Element probabilityElement = malfunctionElement.getChild(MALFUNCTION_PROBABILITY);
+			double malfunctionProbability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE_ATTR));
 
 			// Get the various work efforts
 			EnumMap<MalfunctionRepairWork, EffortSpec> workEffort = new EnumMap<>(MalfunctionRepairWork.class);
@@ -206,7 +208,7 @@ public class MalfunctionConfig {
 				for (Element medicalComplaintElement : medicalComplaintNodes) {
 					String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR);
 					double complaintProbability = Double.parseDouble(
-							medicalComplaintElement.getAttributeValue(PROBABILITY_EL));
+							medicalComplaintElement.getAttributeValue(MEDICAL_PROBABILITY));
 					medicalComplaints.put(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
 											complaintProbability);
 				}
@@ -233,15 +235,15 @@ public class MalfunctionConfig {
 								partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
 					else {
 						int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER_ATTR));
-						int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY_EL));
+						int repairProbability = Integer.parseInt(partElement.getAttributeValue(REPAIR_PROBABILITY));
 						int partID = ItemResourceUtil.findIDbyItemResourceName(partName);
-						parts.add(new RepairPart(partName, partID, partNumber, partProbability));
+						parts.add(new RepairPart(partName, partID, partNumber, repairProbability));
 					}
 				}
 			}
 
 			// Create malfunction.
-			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort, systems,
+			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, malfunctionProbability, workEffort, systems,
 															  resourceEffectIDs, lifeSupportEffects,
 															  medicalComplaints, parts);
 			// Add malfunction meta to newList.

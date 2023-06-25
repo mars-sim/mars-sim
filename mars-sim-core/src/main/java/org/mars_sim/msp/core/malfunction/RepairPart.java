@@ -20,21 +20,21 @@ class RepairPart implements Serializable {
 	private String name;
 	private int partID;
 	private int number;
-	private double probability;
+	private double repairProbability;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param name        the name of the part.
 	 * @param partID      the ID of the part.
 	 * @param number      the maximum number of parts.
-	 * @param probability the probability of the part being needed.
+	 * @param repairProbability the probability of the part being needed.
 	 */
-	RepairPart(String name, int partID, int number, double probability) {
+	RepairPart(String name, int partID, int number, double repairProbability) {
 		this.partID = partID;
 		this.name = name;
 		this.number = number;
-		this.probability = probability;
+		this.repairProbability = repairProbability;
 	}
 
 	protected String getName() {
@@ -49,7 +49,11 @@ class RepairPart implements Serializable {
 		return number;
 	}
 
-	protected double getProbability() {
-		return probability;
+	protected double getRepairProbability() {
+		return repairProbability;
+	}
+	
+	protected void setRepairProbability(double value) {
+		repairProbability = value;
 	}
 }
