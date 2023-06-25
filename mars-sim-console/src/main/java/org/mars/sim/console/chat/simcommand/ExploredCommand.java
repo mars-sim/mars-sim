@@ -54,7 +54,7 @@ public class ExploredCommand extends ChatCommand {
 
 				// Check the locaiton has minerals
 				boolean hasMinerals = false;
-				Map<String, Integer> minerals = surface.getMineralMap().getAllMineralConcentrations(siteLocation);
+				Map<String, Integer> minerals = surface.getMineralMap().getAllMineralConcentrations(siteLocation, 0);
 				for(int conc : minerals.values()) {
 					hasMinerals = conc > 0D;
 					if (hasMinerals) {

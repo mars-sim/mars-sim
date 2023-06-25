@@ -210,7 +210,7 @@ public class MineSite extends EVAOperation {
 	private void excavateMinerals(double time) {
 
 		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
-				.getAllMineralConcentrations(site);
+				.getAllMineralConcentrations(site, 0);
 		Iterator<String> i = minerals.keySet().iterator();
 		while (i.hasNext()) {
 			String mineralName = i.next();

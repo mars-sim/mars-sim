@@ -95,16 +95,16 @@ public class MineralMapLayer implements MapLayer {
 
 			double rho = baseMap.getScale();
 				
-			for (int x = 0; x < Map.MAP_VIS_WIDTH; x++) {
+			for (int x = 0; x < Map.MAP_VIS_WIDTH; x = x + 2) {
 				
-				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y++) {
+				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y = y + 2) {
 					 
 					if (mineralsDisplaySet.isEmpty()) {
 						continue;
 					}
 						
 					java.util.Map<String, Integer> mineralConcentrations = mineralMap
-									.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho));
+									.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), rho);
 								
 					if (mineralConcentrations.isEmpty()) {
 						continue;

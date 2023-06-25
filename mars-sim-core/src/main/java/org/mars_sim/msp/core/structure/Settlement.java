@@ -3013,7 +3013,7 @@ public class Settlement extends Structure implements Temporal,
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
 
 		if (mineralLocation != null)
-			minerals = map.getAllMineralConcentrations(mineralLocation);
+			minerals = map.getAllMineralConcentrations(mineralLocation, range / 2D);
 
 		return minerals;
 	}

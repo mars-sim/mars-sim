@@ -364,9 +364,10 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Gets all of the mineral concentrations at a given location.
 	 * 
 	 * @param location the coordinate location.
+	 * @param baseMap
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Integer> getAllMineralConcentrations(Coordinates location) {
+	public Map<String, Integer> getAllMineralConcentrations(Coordinates location, double rho) {
 
 //		if (allMineralsByLocation.isEmpty()
 //				|| !allMineralsByLocation.containsKey(location)) {
@@ -376,6 +377,18 @@ public class RandomMineralMap implements Serializable, MineralMap {
 //		else {
 //			return allMineralsByLocation.get(location);
 //		}
+		
+		double pixelHeight = rho * Math.PI;
+		
+		double pixelWidth = 2 * pixelHeight;
+		
+		double ratio = Coordinates.MARS_CIRCUMFERENCE /  pixelWidth;
+
+		double H = pixelWidth / ratio; 
+		
+		double sinAngle = H / Coordinates.MARS_RADIUS_KM;
+		
+		double angle = Math.asin(sinAngle);
 		
 		Map<String, Integer> result = new HashMap<>();
 		
@@ -391,13 +404,15 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			double concentrationTheta = c.getTheta();
 			double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
 			double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-			double diffLimit = .04D;
+//			double diffLimit = .04D;
+//			
+//			if (concentrationPhi < LIMIT || concentrationPhi > Math.PI - halfHeight)
+//				diffLimit += Math.abs(Math.cos(concentrationPhi));
+//			
+//			if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
 			
-			if (concentrationPhi < LIMIT || concentrationPhi > Math.PI - LIMIT)
-				diffLimit += Math.abs(Math.cos(concentrationPhi));
-			
-			if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
 				// only take in what's within the limit
+			if (phiDiff < angle && thetaDiff < angle)	{
 				
 				Iterator<String> j = allMineralsByLocation.get(c).keySet().iterator();
 				while (j.hasNext()) {
