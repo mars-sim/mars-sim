@@ -175,7 +175,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Data members.
 		protected Map<String, Double> estimatedConcentrationMap;
-		protected Map<String, Double> actualConcentrationMap;
+		protected Map<String, Integer> actualConcentrationMap;
 
 		/**
 		 * Constructor

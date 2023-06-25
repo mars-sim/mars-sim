@@ -16,7 +16,9 @@ import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,10 +44,15 @@ public class MineralMapLayer implements MapLayer {
 	private Image mineralConcentrationMap;
 
 	private Coordinates mapCenterCache;
+	
 	private MineralMap mineralMap;
 	
 	private java.util.Map<String, Color> mineralColorMap;
-	private java.util.Map<String, Boolean> mineralsDisplayedMap;
+
+	private java.util.Set<String> mineralsDisplaySet = new HashSet<>();
+	
+	private java.util.Map<String, Color> mineralColors;
+	
 
 	/**
 	 * Constructor
@@ -56,8 +63,8 @@ public class MineralMapLayer implements MapLayer {
 		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
 		mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
-		 
-		updateMineralsDisplayed();
+		
+		mineralColors = getMineralColors();
 	}
 	
 	/**
@@ -77,6 +84,9 @@ public class MineralMapLayer implements MapLayer {
 			mapTypeCache = mapType;
 			updateLayer = false;
 
+			if (mineralColors == null)
+				mineralColors = getMineralColors();
+			
 			// Clear map concentration array.
 			Arrays.fill(mineralConcentrationArray, 0);
 
@@ -84,25 +94,32 @@ public class MineralMapLayer implements MapLayer {
 			double centerY = Map.HALF_MAP_BOX;
 
 			double rho = baseMap.getScale();
-
-			java.util.Map<String, Color> mineralColors = getMineralColors();
-	
-			for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
 				
-				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
+			for (int x = 0; x < Map.MAP_VIS_WIDTH; x++) {
+				
+				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y++) {
 					 
-					java.util.Map<String, Double> mineralConcentrations = mineralMap
+					if (mineralsDisplaySet.isEmpty()) {
+						continue;
+					}
+						
+					java.util.Map<String, Integer> mineralConcentrations = mineralMap
 									.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho));
-											
+								
 					if (mineralConcentrations.isEmpty()) {
 						continue;
 					}
 					
-					Iterator<String> i = mineralConcentrations.keySet().iterator();
+					Set<String> mineralNames = updateMineralDisplay(mineralConcentrations.keySet());
+					if (mineralNames.isEmpty()) {
+						continue;
+					}
+					
+					Iterator<String> i = mineralNames.iterator();
 					while (i.hasNext()) {
 						String mineralType = i.next();
 						if (isMineralDisplayed(mineralType)) {
-//							logger.info(mineralType + " is Displayed.");
+//							logger.info(mineralType + " is being drawn.");
 							double concentration = mineralConcentrations.get(mineralType);
 							if (concentration <= 0) {
 								continue;
@@ -141,57 +158,6 @@ public class MineralMapLayer implements MapLayer {
 		g2d.drawImage(mineralConcentrationMap, 0, 0, displayComponent);
 	}
 
-//	 /**
-//	  * Constructs a map array for display with GPU via JOCL.
-//	  * 
-//	  * @param centerPhi
-//	  * @param centerTheta
-//	  * @param mapBoxWidth
-//	  * @param mapBoxHeight
-//	  * @param mapArray
-//	  * @param scale
-//	  */
-//	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
-//		 
-//		 // Set the new scale arg again
-//		 kernel.setArg(12, (float) getScale());
-//		 
-//		 int size = mapArray.length;
-//		 int globalSize = getGlobalSize(size);
-//
-//		 CLBuffer<IntBuffer> rowBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
-//		 CLBuffer<IntBuffer> colBuffer = OpenCL.getContext().createIntBuffer(size, WRITE_ONLY);
-//
-//		 kernel.rewind();
-//		 kernel.putArg((float)centerPhi)
-//				 .putArg((float)centerTheta)
-//				 .putArg(mapBoxWidth)
-//				 .putArg(mapBoxHeight)
-//				 .putArg(pixelWidth)
-//				 .putArg(pixelHeight)
-//				 .putArg(mapBoxWidth/2)
-//				 .putArg(mapBoxHeight/2)
-//				 .putArg(size)
-//				 .putArgs(colBuffer, rowBuffer);
-//
-//		 getQueue().put1DRangeKernel(kernel, 0, globalSize, getLocalSize())
-//				 .putReadBuffer(rowBuffer, false)
-//				 .putReadBuffer(colBuffer, true);
-//
-//		 int[] rows = new int[size];
-//		 rowBuffer.getBuffer().get(rows);
-//		 int[] cols = new int[size];
-//		 colBuffer.getBuffer().get(cols);
-//
-//		 for(int i = 0; i < size; i++) {
-//			 mapArray[i] = pixels[rows[i]][cols[i]];
-//		 }
-//
-//		 rowBuffer.release();
-//		 colBuffer.release();
-//	 }
-
-	 
 	/**
 	 * Adds a color to the mineral concentration array.
 	 * 
@@ -229,27 +195,24 @@ public class MineralMapLayer implements MapLayer {
 		return mineralColorMap;
 	}
 
+	
 	/**
-	 * Updates which minerals to display on the map if they've changed.
+	 * Updates the set of minerals to be display.
+	 * 
+	 * @param availableMinerals
+	 * @return
 	 */
-	private void updateMineralsDisplayed() {
-		// Q: Why would the names in mineralsDisplayedMap be changed in the first place ?
-		// A: Players may turn on and off any mineral names in the Map Option menu
+	private Set<String> updateMineralDisplay(Set<String> availableMinerals) {
+
+		Set<String> intersection = new HashSet<>();
+		availableMinerals.forEach((i) -> {
+			if (mineralsDisplaySet.contains(i))
+				intersection.add(i);
+		});
 		
-		// Each time it was changed, call this method once to update the content
-		// No need to keep calling this method
-		String[] mineralNames = mineralMap.getMineralTypeNames();
-		Arrays.sort(mineralNames);
-		if (mineralsDisplayedMap == null)
-			mineralsDisplayedMap = new HashMap<>(mineralNames.length);
-		String[] currentMineralNames = mineralsDisplayedMap.keySet().toArray(new String[mineralsDisplayedMap.size()]);
-		Arrays.sort(currentMineralNames);
-		if (!Arrays.equals(mineralNames, currentMineralNames)) {
-			mineralsDisplayedMap.clear();
-			for (String mineralName : mineralNames)
-				mineralsDisplayedMap.put(mineralName, true);
-		}
+		return intersection;
 	}
+
 
 	/**
 	 * Checks if a mineral type is displayed on the map.
@@ -258,8 +221,8 @@ public class MineralMapLayer implements MapLayer {
 	 * @return true if displayed.
 	 */
 	public boolean isMineralDisplayed(String mineralType) {
-		if ((mineralsDisplayedMap != null) && mineralsDisplayedMap.containsKey(mineralType))
-			return mineralsDisplayedMap.get(mineralType);
+		if (mineralsDisplaySet.contains(mineralType))
+			return true;
 		else
 			return false;
 	}
@@ -271,9 +234,23 @@ public class MineralMapLayer implements MapLayer {
 	 * @param displayed   true if displayed, false if not.
 	 */
 	public void setMineralDisplayed(String mineralType, boolean displayed) {
-		if ((mineralsDisplayedMap != null) && (isMineralDisplayed(mineralType) != displayed)) {
-			mineralsDisplayedMap.put(mineralType, displayed);
-			updateLayer = true;
+		if (mineralsDisplaySet.isEmpty()) {
+			if (displayed) {
+				mineralsDisplaySet.add(mineralType);	
+				updateLayer = true;
+			}
+		}
+		else {
+			if (displayed) {
+				mineralsDisplaySet.add(mineralType);	
+				updateLayer = true;
+			}
+			else {
+				if (mineralsDisplaySet.contains(mineralType)) {
+					mineralsDisplaySet.remove(mineralType);
+					updateLayer = true;
+				}
+			}
 		}
 	}
 	
@@ -286,7 +263,7 @@ public class MineralMapLayer implements MapLayer {
 		mineralConcentrationMap = null;
 		mapCenterCache = null;
 		mineralMap = null;
-		mineralsDisplayedMap.clear();
-		mineralsDisplayedMap = null;
+		mineralsDisplaySet.clear();
+		mineralsDisplaySet = null;
 	}
 }

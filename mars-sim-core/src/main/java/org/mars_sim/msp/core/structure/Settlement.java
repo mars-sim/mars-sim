@@ -225,7 +225,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The average ice collection rate of the water ice nearby. */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The composite value of the minerals nearby. */
-	public double mineralValue = -1;
+	public int mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
@@ -463,14 +463,12 @@ public class Settlement extends Structure implements Temporal,
 		logger.config(this, " iceCollectionRate: " + Math.round(iceCollectionRate * 100.0)/100.0);
 		logger.config(this, " regolithCollectionRate: " + Math.round(regolithCollectionRate * 100.0)/100.0);
 		
-		Map<String, Double> mineralConcentrations = surfaceFeatures.getMineralMap().createConcentration(location);
-		logger.config(this, "Mineral profile: " + mineralConcentrations);
+		// Create local mineral locations
+		surfaceFeatures.getMineralMap().createLocalConcentration(location);
 		
 		double areoThermalPot = surfaceFeatures.getAreothermalPotential(location);
 		
 		logger.config(this, " Areothermal Potential: " + Math.round(areoThermalPot * 1000.0)/1000.0);
-		
-		
 		
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
@@ -2982,11 +2980,11 @@ public class Settlement extends Structure implements Temporal,
 		return (getPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name())) > 0D);
 	}
 
-	public double getTotalMineralValue(Rover rover) {
+	public int getTotalMineralValue(Rover rover) {
 		if (mineralValue == -1) {
 			// Check if any mineral locations within rover range and obtain their
 			// concentration
-			Map<String, Double> minerals = getNearbyMineral(rover, this);
+			Map<String, Integer> minerals = getNearbyMineral(rover, this);
 			if (!minerals.isEmpty()) {
 				mineralValue = Exploration.getTotalMineralValue(this, minerals);
 			}
@@ -3001,8 +2999,8 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if mineral locations.
 	 * @throws Exception if error determining mineral locations.
 	 */
-	public Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
-		Map<String, Double> minerals = new HashMap<>();
+	public Map<String, Integer> getNearbyMineral(Rover rover, Settlement homeSettlement) {
+		Map<String, Integer> minerals = new HashMap<>();
 
 		double roverRange = rover.getRange();
 		double tripTimeLimit = rover.getTotalTripTimeLimit(true);

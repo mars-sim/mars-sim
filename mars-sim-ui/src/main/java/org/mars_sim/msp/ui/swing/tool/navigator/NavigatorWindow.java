@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -40,6 +41,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -101,13 +103,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 	
-	// Can add back private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName())
+	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
 	private static final String MINERAL_ACTION = "mineralLayer";
+	private static final String MINERAL = "mineral";
 
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
@@ -650,9 +653,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						settlementComboBox.setSelectedIndex(-1);
 					}
 				} catch (NumberFormatException e) {
-			}
-		} break;
+				}
+			} break;
 
+			case MINERAL: {
+				JCheckBoxMenuItem mineralItem = (JCheckBoxMenuItem) source;
+				boolean previous = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
+				boolean now = !previous;
+//				logger.info("Triggering " + mineralItem.getText() + " previous state: " + previous);
+				mineralItem.setSelected(now);
+				((MineralMapLayer) mineralLayer).setMineralDisplayed(mineralItem.getText(), now);
+//				now = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
+				logger.config("Just set the state of " + mineralItem.getText() + " to " + now + " in mineral layer.");
+//				if (now) {
+//					logger.info("Just turned off " + mineralItem.getText() + " in mineral layer.");
+//				} else {
+//					logger.info("Just turned on " + mineralItem.getText() + "in mineral layer.");
+//				}
+			}
+			
+			break;
+		
 		default: // Grouped command
 			if (command.startsWith(MAPTYPE_ACTION)) {
 				String newMapType = command.substring(MAPTYPE_ACTION.length());
@@ -679,21 +700,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 	}
 
-	/**
-	 * Selects the mineral button state and text.
-	 * 
-	 * @param selected
-	 */
-	private void selectMineralLayer(boolean selected) {
-		mineralsButton.setEnabled(selected);
-		if (selected) {
-			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
-		}
-		else {
-			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " off ");
-		}
-	}
-	
 	/**
 	 * Selects an unloaded map as the new choice but prompt user first.
 	 * 
@@ -736,15 +742,31 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 		
 		boolean selected = mineralsButton.isEnabled();
+		
+		printMineralText(selected);
+	}
+
+	/**
+	 * Selects the mineral button state and text.
+	 * 
+	 * @param selected
+	 */
+	private void selectMineralLayer(boolean selected) {
+		mineralsButton.setEnabled(selected);
+		
+		printMineralText(selected);
+	}
+	
+	private void printMineralText(boolean selected) {
+		mineralsButton.setEnabled(selected);
 		if (selected) {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " on ");
 		}
 		else {
 			mineralsButton.setText(Msg.getString("NavigatorWindow.button.mineralOptions") + " off ");
 		}
-		
 	}
-
+	
 	/**
 	 * Sets a map layer on or off.
 	 * 
@@ -825,21 +847,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
+//			logger.config(mineralName + " in check menu's start state: " + isMineralDisplayed);
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
 			Icon icon = createColorLegendIcon(mineralColor, mineralItem);
 			mineralItem.setIcon(icon);
-
-//			Re-use existing Action listener with a prefix pattern
-			mineralItem.addActionListener(e ->  {
-						((MineralMapLayer) mineralLayer).setMineralDisplayed(mineralItem.getText(), mineralItem.getState());	
-			});
+			mineralItem.addActionListener(this);
+			mineralItem.setActionCommand(MINERAL);
 			minMenu.add(mineralItem);
 		}
 
 		minMenu.pack();
 		return minMenu;
 	}
-
+	
 	/**
 	 * Creates an icon representing a color.
 	 * 

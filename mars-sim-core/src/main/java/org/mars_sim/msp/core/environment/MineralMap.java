@@ -31,15 +31,14 @@ public interface MineralMap {
 	 * @param location the coordinate location.
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> getAllMineralConcentrations(Coordinates location);
+	public Map<String, Integer> getAllMineralConcentrations(Coordinates location);
 
 	/**
 	 * Creates mineral concentrations at a given location.
 	 * 
 	 * @param location the coordinate location.
-	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> createConcentration(Coordinates location);
+	public void createLocalConcentration(Coordinates location);
 	
 	/**
 	 * Gets an array of all mineral type names.
@@ -49,7 +48,7 @@ public interface MineralMap {
 	public String[] getMineralTypeNames();
 
 	/**
-	 * Finds a random location with mineral concentrations from a starting location
+	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.
 	 * 
 	 * @param startingLocation the starting location.

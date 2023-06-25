@@ -700,6 +700,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
+		
 		for (String mineralType : mineralTypes) {
 			double actual = mineralMap.getMineralConcentration(mineralType, location);
 

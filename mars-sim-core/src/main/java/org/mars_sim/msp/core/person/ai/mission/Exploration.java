@@ -526,11 +526,11 @@ public class Exploration extends EVAMission
 	 * @return estimated value of the minerals at the site (VP).
 	 * @throws MissionException if error determining the value.
 	 */
-	public static double getTotalMineralValue(Settlement settlement, Map<String, Double> minerals) {
+	public static int getTotalMineralValue(Settlement settlement, Map<String, Integer> minerals) {
 
 		double result = 0D;
 
-		for (Map.Entry<String, Double> entry : minerals.entrySet()) {
+		for (Map.Entry<String, Integer> entry : minerals.entrySet()) {
 		    String mineralType = entry.getKey();
 		    double concentration = entry.getValue();
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
@@ -539,7 +539,7 @@ public class Exploration extends EVAMission
 			result += mineralValue * mineralAmount;
 		}
 
-		return result;
+		return (int)(Math.round(result));
 	}
 
 	/**
