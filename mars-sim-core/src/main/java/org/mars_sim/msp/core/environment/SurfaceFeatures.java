@@ -42,7 +42,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public static final int OPTICAL_DEPTH_REFRESH = 3;
 
 	/** Maximum mineral concentration estimation diff from actual. */
-	private static final int MINERAL_ESTIMATION_VARIANCE = 2;
+	private static final int MINERAL_ESTIMATION_VARIANCE = 10;
 
 	/** Maximum mineral estimation */
 	private static final double MINERAL_ESTIMATION_MAX = 100D;
@@ -696,21 +696,22 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			int estimationImprovement, Settlement settlement) {
-		int initialPercent = 100;
+//		int initialPercent = 100;
 		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
 			double actual = mineralMap.getMineralConcentration(mineralType, location);
+
 			double estimated = 0;
 			double varianceMax = 0;
 			
 			// via the use of ExploredCommand			
 			if (estimationImprovement == Mining.MATURE_ESTIMATE_NUM) {
-				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE / 2;
+				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE / 1.5;
 			}
 			else {
-				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE * 2;
+				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE * 1.5;
 			}
 
 			estimated = actual + RandomUtil.getRandomDouble(-varianceMax, varianceMax);
@@ -721,6 +722,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			else if (estimated > MINERAL_ESTIMATION_MAX) {
 				estimated = MINERAL_ESTIMATION_MAX;
 			}
+			
+			logger.info(settlement, 10_000L, mineralType + "'s estimated mineral content: " + estimated);
 			
 			initialMineralEstimations.put(mineralType, estimated);
 		}

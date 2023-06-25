@@ -29,6 +29,7 @@ public class ExploredLocation implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ExploredLocation.class.getName());
 	
+	private static final int ESTIMATED_MASS = 30_000;
 	
 	// Private members.
 	private boolean mined;
@@ -62,13 +63,19 @@ public class ExploredLocation implements Serializable {
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
 		
-		double reserve = RandomUtil.getRandomDouble(5_000, 300_000);
+		// Future: Need to find better algorithm to estimate the reserve amount of each mineral 
+		double reserve = 0;
+		for (String s: estimatedMineralConcentrations.keySet()) {
+			double concentration = estimatedMineralConcentrations.get(s);
+			reserve += ESTIMATED_MASS * concentration * RandomUtil.getRandomDouble(.1, 10);
+		}
+
 		totalMass = RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
 		remainingMass = totalMass;
 		
 		logger.info(settlement + " - " + location.getFormattedString() 
-			+ "   Estimated reserve: " + (int)totalMass + " kg.  Concentration: "
-			+ estimatedMineralConcentrations);
+			+ "  Estimated reserve: " + (int)totalMass + " kg.  Concentration: "
+			+  estimatedMineralConcentrations);
 	}
 
 	public boolean isEmpty() {
