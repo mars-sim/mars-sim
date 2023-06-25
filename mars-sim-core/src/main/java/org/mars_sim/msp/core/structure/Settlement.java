@@ -239,9 +239,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's current dessert replenishment rate. */
 	public double dessertsReplenishmentRate = 0.4;
 	/** The settlement's current probability value for ice. */
-	private double iceProbabilityValue = 0;
+	private double iceProbabilityValue = 400D;
 	/** The settlement's current probability value for regolith. */
-	private double regolithProbabilityValue = 0;
+	private double regolithProbabilityValue = 400D;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** Total Crop area */
