@@ -388,9 +388,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		eventManager = new HistoricalEventManager(masterClock);
 
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
-		MissionStep.initializeInstances(marsClock, unitManager);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		doneInitializing = true;
 	}
@@ -527,9 +527,9 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 
 		// Set instances for classes that extend Unit and Task and Mission
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);	
-		MissionStep.initializeInstances(marsClock, unitManager);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
@@ -662,7 +662,7 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 		
 		// Re-initialize Mission related class
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);

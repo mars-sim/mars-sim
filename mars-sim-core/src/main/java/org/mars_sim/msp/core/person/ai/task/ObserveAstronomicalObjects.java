@@ -277,7 +277,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
-        int msol = marsClock.getMillisolInt();
+        int msol = getMarsTime().getMillisolInt();
         
         boolean successful = false; 
         

@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.function.Computation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Flyer;
 
@@ -64,7 +64,7 @@ public class PilotDrone extends OperateVehicle {
 	 * @param startTripTime     the starting time of the trip
 	 * @param startTripDistance the starting distance to destination for the trip
 	 */
-	public PilotDrone(Person person, Flyer flyer, Coordinates destination, MarsClock startTripTime,
+	public PilotDrone(Person person, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
@@ -78,7 +78,7 @@ public class PilotDrone extends OperateVehicle {
 		logger.log(flyer, person, Level.INFO, 20_000, "Took control of the drone.");
 	}
 
-	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsClock startTripTime,
+	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
@@ -101,7 +101,7 @@ public class PilotDrone extends OperateVehicle {
 	 * @param startTripDistance the starting distance to destination for the trip
 	 * @param startingPhase     the starting phase for the task
 	 */
-	public PilotDrone(Person person, Flyer flyer, Coordinates destination, MarsClock startTripTime,
+	public PilotDrone(Person person, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
@@ -119,7 +119,7 @@ public class PilotDrone extends OperateVehicle {
 
 	}
 
-	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsClock startTripTime,
+	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
@@ -221,7 +221,7 @@ public class PilotDrone extends OperateVehicle {
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
 		
-		int msol = marsClock.getMillisolInt();       
+		int msol = getMarsTime().getMillisolInt();       
         boolean successful = false; 
         
         double lastDistance = flyer.getLastDistanceTravelled();
@@ -324,14 +324,14 @@ public class PilotDrone extends OperateVehicle {
 		
 		if (ascentE > 0) {
 			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsClock.SECONDS_PER_MILLISOL;
+			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
 			double speed = .0025 * mod;
 			climbE = speed * tSec;
 			
 		}
 		else if (ascentE < 0) {
 			// Future: Use Newton's law to determine the amount of height the flyer can climb 
-			double tSec = time * MarsClock.SECONDS_PER_MILLISOL;
+			double tSec = time * MarsTime.SECONDS_PER_MILLISOL;
 			double speed = -.02 * mod;
 			climbE = speed * tSec;
 		}

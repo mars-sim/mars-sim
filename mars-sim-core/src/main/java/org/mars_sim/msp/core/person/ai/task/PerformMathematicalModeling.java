@@ -403,7 +403,7 @@ implements ResearchScientificStudy {
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
-        int msol = marsClock.getMillisolInt();
+        int msol = getMarsTime().getMillisolInt();
         boolean successful = false; 
         
         if (computingNeeded > 0) {

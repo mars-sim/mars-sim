@@ -55,7 +55,6 @@ extends Task {
 		super(NAME, person, false, false, STRESS_MODIFIER, 10D);
 		
 		// If during person's work shift, only relax for short period.
-		int msols = marsClock.getMillisolInt();
         boolean isShiftHour = person.isOnDuty();
 		if (isShiftHour) {
 		    setDuration(10D);

@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Represents the behave that a Mission exhibits.
@@ -124,7 +124,7 @@ public interface Mission extends Entity, Serializable {
 	/**
 	 * Time that the current phases started
 	 */
-	MarsClock getPhaseStartTime();
+	MarsTime getPhaseStartTime();
 
     /**
 	 * Returns the mission plan.

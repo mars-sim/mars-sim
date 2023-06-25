@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Holds all log details about a Missiion
@@ -26,16 +27,16 @@ public class MissionLog implements Serializable  {
     	
         private static final long serialVersionUID = 1L;
         
-        private MarsClock time;
+        private MarsTime time;
         private String entry;
         
-        private MissionLogEntry(MarsClock time, String entry) {
+        private MissionLogEntry(MarsTime time, String entry) {
             super();
             this.time = time;
             this.entry = entry;
         }
     
-        public MarsClock getTime() {
+        public MarsTime getTime() {
             return time;
         }
     
@@ -50,12 +51,12 @@ public class MissionLog implements Serializable  {
     }
 
     private List<MissionLogEntry> log = new ArrayList<>();
-    private MarsClock startDate;
+    private MarsTime startDate;
     private boolean done = false;
-    protected static MarsClock marsClock;
+    protected static MasterClock clock;
 
     public void addEntry(String entry) {
-		log.add(new MissionLogEntry(new MarsClock(marsClock), entry));
+		log.add(new MissionLogEntry(clock.getMarsTime(), entry));
     }
 
     /**
@@ -63,7 +64,7 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public MarsClock getDateCreated() {
+	public MarsTime getDateCreated() {
 		if (!log.isEmpty()) {
 			return log.get(0).getTime();
 		}
@@ -76,7 +77,7 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public MarsClock getDateStarted() {
+	public MarsTime getDateStarted() {
 		return startDate;
 	}
 
@@ -85,7 +86,7 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public MarsClock getDateFinished() {
+	public MarsTime getDateFinished() {
 		if (done && !log.isEmpty()) {
             // TODO SHould this be when teh mission returned to the Settlement? 
 			return log.get(log.size()-1).getTime();
@@ -100,7 +101,7 @@ public class MissionLog implements Serializable  {
 
     public void setStarted() {
         if (startDate == null) {
-            startDate = new MarsClock(marsClock);
+            startDate = clock.getMarsTime();
         }
     }
 
@@ -108,8 +109,8 @@ public class MissionLog implements Serializable  {
         return log;
     }
 
-    public static void initialise(MarsClock mc) {
-        marsClock = mc;
+    public static void initialise(MasterClock mc) {
+        clock = mc;
     }
 
     public MissionLogEntry getLastEntry() {

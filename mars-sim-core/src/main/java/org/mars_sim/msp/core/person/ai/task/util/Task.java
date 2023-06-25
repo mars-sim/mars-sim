@@ -51,7 +51,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -144,8 +144,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
-	/** The static instance of the mars clock */
-	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
 	protected static HistoricalEventManager eventManager;
 	/** The static instance of the UnitManager */
@@ -166,6 +164,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 	/** The static instance of the constructionConfig */
 	protected static ConstructionConfig constructionConfig = simulationConfig.getConstructionConfiguration();
+
+	private static Simulation sim;
 	
 	/**
 	 * Constructs a Task object that has a fixed duration.
@@ -1549,30 +1549,35 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.reinit();
 	}
 
+	/**
+	 * Get the simualtion underpinning run
+	 */
+	protected Simulation getSimulation() {
+		return sim;
+	}
 
+	/**
+	 * Get teh current Martian time
+	 */
+	protected static MarsTime getMarsTime() {
+		return masterClock.getMarsTime();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param c  {@link MarsClock}
-	 * @param e  {@link HistoricalEventManager}
-	 * @param r  {@link RelationshipUtil}
-	 * @param u  {@link UnitManager}
-	 * @param s  {@link ScientificStudyManager}
-	 * @param sf {@link SurfaceFeatures}
-	 * @param oi {@link OrbitInfo}
-	 * @param m  {@link MissionManager}
+	 * @param s
 	 * @param pc  {@link PersonConfig}
 	 */
-	static void initializeInstances(MasterClock ms, MarsClock c, HistoricalEventManager e, UnitManager u,
-			ScientificStudyManager s, SurfaceFeatures sf, OrbitInfo oi, MissionManager m, PersonConfig pc) {
-		masterClock = ms;
-		marsClock = c;
-		eventManager = e;
-		unitManager = u;
-		scientificStudyManager = s;
-		surfaceFeatures = sf;
-		orbitInfo = oi;
-		missionManager = m;
+	static void initializeInstances(Simulation s, PersonConfig pc) {
+		sim = s;
+		masterClock = s.getMasterClock();
+		eventManager = s.getEventManager();
+		unitManager = s.getUnitManager();
+		scientificStudyManager = s.getScientificStudyManager();
+		surfaceFeatures = s.getSurfaceFeatures();
+		orbitInfo = s.getOrbitInfo();
+		missionManager = s.getMissionManager();
 		personConfig = pc;
 	}
 	

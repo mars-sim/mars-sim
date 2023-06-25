@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
-import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -63,8 +61,6 @@ public class ExamineBody extends Task {
 	private Person patient;
 
 	private Malfunctionable malfunctionable;
-
-	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
 	
 	/**
 	 * Constructor.
@@ -311,7 +307,7 @@ public class ExamineBody extends Task {
 		// Bury the body
 		patient.buryBody();
 		
-		medicalManager.addDeathRegistry(person.getSettlement(), deathInfo);
+		getSimulation().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
 				
 		// Check for accident in medical aid.
 		checkForAccident(malfunctionable, 0.005D, time);

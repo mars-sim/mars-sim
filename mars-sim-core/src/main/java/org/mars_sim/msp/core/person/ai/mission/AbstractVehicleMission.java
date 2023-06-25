@@ -50,7 +50,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -111,7 +111,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 															new String[] {
 																	ItemResourceUtil.FIBERGLASS});
 																	
-	
+
 	
 	// Data members
 	/** The msol cache. */
@@ -862,10 +862,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.
 	 *
-	 * @return time (MarsClock) or null if not applicable.
+	 * @return time (MarsTime) or null if not applicable.
 	 */
 	@Override
-	public MarsClock getLegETA() {
+	public MarsTime getLegETA() {
 		if (TRAVELLING.equals(getPhase())
 				&& operateVehicleTask != null
 				&& vehicle.getOperator() != null) {
@@ -889,7 +889,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			double time = getEstimatedTripTime(useMargin, distance);
 			logger.log(vehicle, Level.FINE, 20_000L, this 
 					+ " - Projected remaining waypoint time: " 
-					+  Math.round(time * MarsClock.HOURS_PER_MILLISOL * 10.0)/10.0 + " hrs ("
+					+  Math.round(time * MarsTime.HOURS_PER_MILLISOL * 10.0)/10.0 + " hrs ("
 					+  Math.round(time * 10.0)/10.0 + " millisols)");
 			return time;
 		}
@@ -911,7 +911,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		double averageSpeed = getAverageVehicleSpeedForOperators() * ((1 + NIGHT_TIME_SPEED_MOD) / 2);
 		logger.log(vehicle, Level.FINE, 10_000, "Estimated average speed: " + Math.round(averageSpeed * 100.0)/100.0 + " kph.");
 		if (averageSpeed > 0) {
-			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
+			result = distance / averageSpeed * MarsTime.MILLISOLS_PER_HOUR;
 		}
 
 		// If buffer, multiply by the the life support margin
@@ -1776,7 +1776,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return starting time
 	 */
-	protected final MarsClock getCurrentLegStartingTime() {
+	protected final MarsTime getCurrentLegStartingTime() {
 		return getPhaseStartTime();
 	}
 

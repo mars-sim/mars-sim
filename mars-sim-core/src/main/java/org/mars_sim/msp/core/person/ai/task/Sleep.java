@@ -89,7 +89,7 @@ public class Sleep extends Task {
 
 			// Adjust the duration so the person does not oversleep
 			double alarmTime = getAlarmTime();
-			double maxSleep = alarmTime - marsClock.getMillisol();
+			double maxSleep = alarmTime - getMarsTime().getMillisol();
 			if (maxSleep < 0D) {
 				// Roll over midnight
 				maxSleep += 1000D;
@@ -418,7 +418,7 @@ public class Sleep extends Task {
 	    	// Update sleep times once ending
 	    	CircadianClock circadian = person.getCircadianClock();
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
-			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
+			circadian.updateSleepCycle((int) getMarsTime().getMillisol(), true);
 			circadian.setAwake(true);
 
 		} 
@@ -524,7 +524,7 @@ public class Sleep extends Task {
      * @param person
      */
     public void refreshSleepHabit(Person person, CircadianClock circadian) {
-    	int now = marsClock.getMillisolInt();
+    	int now = getMarsTime().getMillisolInt();
 
 		// if a person is on shift right now
 		if (person.isOnDuty()) {
