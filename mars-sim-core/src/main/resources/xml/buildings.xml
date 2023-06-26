@@ -880,11 +880,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="carbon dioxide" amount="1000.0" />
 
 				<!-- Produced on Mars -->
-				<resource-initial resource="oxygen" amount="16080.0" />
-				<resource-initial resource="methane" amount="8400.0" />
-				<resource-initial resource="methanol" amount="8400.0" />
-				<resource-initial resource="hydrogen" amount="6300.0" />
-				<resource-initial resource="water" amount="18900.0" />
+				<resource-initial resource="oxygen" amount="8040.0" />
+				<resource-initial resource="methane" amount="4200.0" />
+				<resource-initial resource="methanol" amount="4200.0" />
+				<resource-initial resource="hydrogen" amount="3150.0" />
+				<resource-initial resource="water" amount="9450.0" />
 
 
 			</storage>

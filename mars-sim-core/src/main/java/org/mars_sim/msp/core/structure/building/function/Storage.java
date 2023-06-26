@@ -76,10 +76,9 @@ public class Storage extends Function {
 			if (excess > 0D) {
 				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
 				logger.warning(building, 
-						"Lacking " + excess + " kg "
+						"Still lacking " + excess + " kg "
 						+ resourceName
-						+ " storage space. Only " + (initialAmount - excess) + " kg " 
-						+ " stored. "
+						+ " storage space. " + (initialAmount - excess) + " kg stored. "
 						);
 			}
 		}
