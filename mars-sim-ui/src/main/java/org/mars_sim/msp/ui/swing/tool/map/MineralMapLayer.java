@@ -25,11 +25,12 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.MineralMap;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**
  * A map layer showing mineral concentrations.
  */
-public class MineralMapLayer implements MapLayer {
+public class MineralMapLayer implements MapLayer, SimulationConstants {
 
  	private static final Logger logger = Logger.getLogger(MineralMapLayer.class.getName());
 

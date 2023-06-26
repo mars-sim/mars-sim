@@ -14,9 +14,10 @@ import javax.swing.Icon;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.environment.ExploredLocation;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
-public class ExploredSiteMapLayer implements MapLayer {
+public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 
 	// Static members
 	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 

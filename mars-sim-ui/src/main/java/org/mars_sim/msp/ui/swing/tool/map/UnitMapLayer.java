@@ -14,6 +14,7 @@ import java.util.Collection;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 /**
  * The UnitMapLayer is an abstract graphics layer to display units.
  */
-abstract class UnitMapLayer implements MapLayer {
+abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 
 	// Domain data
 	private static boolean blinkFlag;

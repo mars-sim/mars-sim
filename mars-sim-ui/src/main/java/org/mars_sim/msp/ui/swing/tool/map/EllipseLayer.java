@@ -14,11 +14,12 @@ import java.awt.geom.Ellipse2D;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**
  * A map layer for displaying ellipses.
  */
-public class EllipseLayer implements MapLayer {
+public class EllipseLayer implements MapLayer, SimulationConstants {
 
 	// Data members.
 	private Color drawColor;

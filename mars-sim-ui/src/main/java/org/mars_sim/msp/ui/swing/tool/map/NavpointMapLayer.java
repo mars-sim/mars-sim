@@ -17,12 +17,13 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
  * The NavpointMapLayer is a graphics layer to display mission navpoints.
  */
-public class NavpointMapLayer implements MapLayer {
+public class NavpointMapLayer implements MapLayer, SimulationConstants {
 
 	// Static members
 	private static final String BLUE_ICON_NAME = "map/flag_blue";

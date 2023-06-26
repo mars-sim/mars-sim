@@ -17,11 +17,12 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.Landmark;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.
  */
-public class LandmarkMapLayer implements MapLayer {
+public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 
 	/** Diameter of marking circle. */
 	private int CIRCLE_DIAMETER = 2; // FIXME: make proportional to actual loaded diameter.
