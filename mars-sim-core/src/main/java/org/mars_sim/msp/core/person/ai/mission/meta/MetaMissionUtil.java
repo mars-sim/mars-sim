@@ -13,12 +13,9 @@ import java.util.List;
  * A utility mission for getting the list of meta missions.
  */
 public class MetaMissionUtil {
-
-	private static int numMetaMissions;
 	
 	// Static values.
 	private static List<MetaMission> metaMissions = null;
-	private static List<MetaMission> robotMetaMissions = null;
 
 	/**
 	 * Private constructor for utility class.
@@ -29,39 +26,33 @@ public class MetaMissionUtil {
 	/**
 	 * Lazy initialization of metaMissions list.
 	 */
-	private static void initializeMetaMissions() {
+	private synchronized static void initializeMetaMissions() {
 
-		metaMissions = new ArrayList<>();
+		// Check for concurrrent creation
+		if (metaMissions != null) {
+			// Already created during the lock wait of this Thread
+			return;
+		}
+
+		List<MetaMission> newMissions = new ArrayList<>();
 
 		// Populate metaMissions list with all meta missions.
-		metaMissions.add(new AreologyFieldStudyMeta());
-		metaMissions.add(new BiologyFieldStudyMeta());
-		metaMissions.add(new BuildingConstructionMissionMeta());
-		metaMissions.add(new BuildingSalvageMissionMeta());
-		metaMissions.add(new CollectIceMeta());
-		metaMissions.add(new CollectRegolithMeta());
-		metaMissions.add(new DeliveryMeta());
-		metaMissions.add(new EmergencySupplyMeta());
-		metaMissions.add(new ExplorationMeta());
-		metaMissions.add(new MeteorologyFieldStudyMeta());
-		metaMissions.add(new MiningMeta());
-		metaMissions.add(new RescueSalvageVehicleMeta());
-		metaMissions.add(new TradeMeta());
-		metaMissions.add(new TravelToSettlementMeta());
-		
-		computeNumMetaMissions();
-	}
+		newMissions.add(new AreologyFieldStudyMeta());
+		newMissions.add(new BiologyFieldStudyMeta());
+		newMissions.add(new BuildingConstructionMissionMeta());
+		newMissions.add(new BuildingSalvageMissionMeta());
+		newMissions.add(new CollectIceMeta());
+		newMissions.add(new CollectRegolithMeta());
+		newMissions.add(new DeliveryMeta());
+		newMissions.add(new EmergencySupplyMeta());
+		newMissions.add(new ExplorationMeta());
+		newMissions.add(new MeteorologyFieldStudyMeta());
+		newMissions.add(new MiningMeta());
+		newMissions.add(new RescueSalvageVehicleMeta());
+		newMissions.add(new TradeMeta());
+		newMissions.add(new TravelToSettlementMeta());		
 
-	private static void initializeRobotMetaMissions() {
-		robotMetaMissions = new ArrayList<>();
-	}
-
-	public static int getNumMetaMissions() {
-		return numMetaMissions;
-	}
-
-	public static void computeNumMetaMissions() {
-		numMetaMissions = getMetaMissions().size();
+		metaMissions = newMissions;
 	}
 
 	/**
@@ -78,16 +69,5 @@ public class MetaMissionUtil {
 
 		// Return copy of meta mission list.
 		return metaMissions;
-	}
-
-	public static List<MetaMission> getRobotMetaMissions() {
-
-		// Lazy initialize meta missions list if necessary.
-		if (robotMetaMissions == null) {
-			initializeRobotMetaMissions();
-		}
-
-		// Return copy of meta mission list.
-		return robotMetaMissions;
 	}
 }
