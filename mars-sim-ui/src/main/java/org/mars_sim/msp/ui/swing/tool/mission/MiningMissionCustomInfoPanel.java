@@ -245,10 +245,10 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 				if (column == 0) {
 					result = Conversion.capitalize(minerals[row]);
 				} else if (column == 1) {
-					result = Math.round(estimatedConcentrationMap.get(minerals[row]) * 100.0)/100.0;
+					result = Math.round(estimatedConcentrationMap.get(minerals[row]) * 1000.0)/1000.0;
 				} else if (column == 2) {
 					if (actualConcentrationMap.containsKey(minerals[row])) {
-						result = Math.round(actualConcentrationMap.get(minerals[row]) * 100.0)/100.0;
+						result = Math.round(actualConcentrationMap.get(minerals[row]) * 1000.0)/1000.0;
 					} else {
 						result = Double.valueOf(0D);
 					}

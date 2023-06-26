@@ -704,7 +704,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				estimated = MINERAL_ESTIMATION_MAX;
 			}
 			
-			logger.info(settlement, 10_000L, mineralType + "'s estimated mineral content: " + estimated);
+			logger.info(settlement, 10_000L, mineralType 
+					+ " - initial %: " + Math.round(actual * 100.0)/100.0 
+					+ "  projected %: " + Math.round(estimated* 100.0)/100.0);
 			
 			initialMineralEstimations.put(mineralType, estimated);
 		}

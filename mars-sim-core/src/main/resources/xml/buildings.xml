@@ -886,7 +886,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="hydrogen" amount="3150.0" />
 				<resource-initial resource="water" amount="9450.0" />
 
-
 			</storage>
 		</functions>
 	</building>

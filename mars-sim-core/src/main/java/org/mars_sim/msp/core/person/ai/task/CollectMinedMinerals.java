@@ -47,7 +47,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
 
 	/** Rate of mineral collection (kg/millisol). */
-	private static final double FULL_COLLECTION_RATE = 40D;
+	private static final double MINERAL_SELECTION_RATE = .07;
 
 	/** The average labor time it takes to find the mineral */
 	public static final double LABOR_TIME = 40D;
@@ -188,8 +188,9 @@ public class CollectMinedMinerals extends EVAOperation {
 			
 		remainingPersonCapacity = worker.getRemainingCargoCapacity();
 
-		double concentration = mission.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());		
-		double mineralsCollected = time * FULL_COLLECTION_RATE * concentration;
+		double concentration = mission.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());	
+		double reserve = mission.getMiningSite().getRemainingMass();
+		double mineralsCollected = time * reserve * MINERAL_SELECTION_RATE * concentration;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -209,6 +210,9 @@ public class CollectMinedMinerals extends EVAOperation {
 		// Collect minerals.
 		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
 
+		logger.info(worker, "Collected " + Math.round(mineralsCollected * 1000.0)/1000.0 
+				+ " kg " + mineralType.getName() + ".");
+		
 		mission.collectMineral(mineralType, mineralsCollected);
 		
 		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {

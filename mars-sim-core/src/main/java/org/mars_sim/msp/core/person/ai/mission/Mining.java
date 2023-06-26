@@ -46,7 +46,7 @@ public class Mining extends EVAMission
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Mining.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
@@ -60,13 +60,13 @@ public class Mining extends EVAMission
 	public static final int NUMBER_OF_LARGE_BAGS = 20;
 
 	/** Base amount (kg) of a type of mineral at a site. */
-	static final double MINERAL_BASE_AMOUNT = .001;
+	static final double MINERAL_BASE_AMOUNT = 0.1;
 
 	/** Amount of time(millisols) to spend at the mining site. */
 	private static final double MINING_SITE_TIME = 4000D;
 
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
-	private static final double MINIMUM_COLLECT_AMOUNT = 1;
+	private static final double MINIMUM_COLLECT_AMOUNT = .01;
 
 
 	/**
@@ -373,6 +373,8 @@ public class Mining extends EVAMission
 			AmountResource resource = ResourceUtil.findAmountResource(name);
 			double percent = concs.get(name);
 			detectedMinerals.put(resource, remainingMass * percent / 100);
+			
+			logger.info(getName() + " detected " + Math.round(remainingMass * 100.0)/100.0 + " kg " + resource.getName());
 		}
 	}
 	
@@ -521,9 +523,11 @@ public class Mining extends EVAMission
 			double mineralAmount = (conc.getValue() / 100) * reserve * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
-			
-//		logger.info(site.getLocation().getCoordinateString() + " site value: " + result);
+
 		result = Math.min(MAX, result);
+		
+		logger.info(settlement, "Estimating a mining site at " + site.getLocation() + " has a value of " + Math.round(result * 1000.0)/1000.0);
+		
 		return result;
 	}
 
