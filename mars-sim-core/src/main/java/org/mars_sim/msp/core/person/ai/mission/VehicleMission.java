@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface VehicleMission extends Mission {
@@ -58,7 +58,7 @@ public interface VehicleMission extends Mission {
 	 *
 	 * @return time (MarsClock) or null if not applicable.
 	 */
-	MarsClock getLegETA();
+	MarsTime getLegETA();
 
     /**
      * Is the Mission traveling to the current destination.

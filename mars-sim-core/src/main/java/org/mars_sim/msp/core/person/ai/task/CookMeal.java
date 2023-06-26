@@ -332,7 +332,7 @@ public class CookMeal extends Task {
 	public static boolean isMealTime(int timeDiff, int prepTime) {
 
 		boolean result = false;
-		double timeOfDay = marsClock.getMillisol();
+		double timeOfDay = getMarsTime().getMillisol();
 		
 		double modifiedTime = timeOfDay + timeDiff + prepTime;
 		if (modifiedTime >= 1000D) {
@@ -364,7 +364,7 @@ public class CookMeal extends Task {
 	private String getTypeOfMeal() {
 		String result = "";
 
-		double timeOfDay = marsClock.getMillisol();
+		double timeOfDay = getMarsTime().getMillisol();
 		int timeDiff = getTimeDifference(worker.getCoordinates());
 		double modifiedTime = timeOfDay + timeDiff;
 		if (modifiedTime >= 1000D) {

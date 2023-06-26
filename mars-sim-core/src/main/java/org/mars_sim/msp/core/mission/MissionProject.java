@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Is a Mission astraction that allows a Mission tobe defiend in terms of a number of MissionSteps.
@@ -88,7 +88,7 @@ public abstract class MissionProject implements Mission {
 
 	/** Mission listeners. */
 	private transient Set<MissionListener> listeners = null;
-    private MarsClock stepStarted;
+    private MarsTime stepStarted;
 
     private Set<Worker> members = new HashSet<>();
     private Set<Worker> signedUp = new HashSet<>();
@@ -307,7 +307,7 @@ public abstract class MissionProject implements Mission {
     }
 
     @Override
-    public MarsClock getPhaseStartTime() {
+    public MarsTime getPhaseStartTime() {
         return stepStarted;
     }
 

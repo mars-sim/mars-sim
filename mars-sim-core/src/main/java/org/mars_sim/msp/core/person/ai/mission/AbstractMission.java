@@ -48,7 +48,8 @@ import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -133,7 +134,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
 	/** Time the phase started */
-	private MarsClock phaseStartTime;
+	private MarsTime phaseStartTime;
 	/** Log of mission activity	 */
 	private MissionLog log = new MissionLog();
 
@@ -165,7 +166,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
-	protected static MarsClock marsClock;
+	private static MasterClock clock;
 
 	/**
 	 * Constructor.
@@ -294,6 +295,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return missionName;
 	}
 
+	/**
+	 * Get the current martian time.
+	 * @return
+	 */
+	protected MarsTime getMarsTime() {
+		return clock.getMarsTime();
+	}
+	
 	/**
 	 * Adds a member.
 	 * 
@@ -500,7 +509,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Move phase on
  		phase = newPhase;
 		setPhaseEnded(false);
-		phaseStartTime = new MarsClock(marsClock);
+		phaseStartTime = clock.getMarsTime();
 
 		String template = newPhase.getDescriptionTemplate();
 		if (template != null) {
@@ -532,7 +541,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Time that the current phases started
 	 */
 	@Override
-	public MarsClock getPhaseStartTime() {
+	public MarsTime getPhaseStartTime() {
 		return phaseStartTime;
 	}
 
@@ -540,7 +549,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Gets duration of current Phase.
 	 */
 	protected double getPhaseDuration() {
-		return MarsClock.getTimeDiff(marsClock, phaseStartTime);
+		return clock.getMarsTime().getTimeDiff(phaseStartTime);
 	}
 
 	/**
@@ -1228,7 +1237,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
-		plan = new MissionPlanning(this, marsClock.getMissionSol());
+		plan = new MissionPlanning(this, getMarsTime().getMissionSol());
 	}
 	/**
 	 * Returns the mission plan.
@@ -1355,18 +1364,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param sf {@link SurfaceFeatures}
 	 * @param m {@link MissionManager}
 	 */
-	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
+	public static void initializeInstances(Simulation si, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
 			MissionManager m, PersonConfig pc) {
-		marsClock = c;
 		eventManager = e;
 		unitManager = u;
 		surfaceFeatures = sf;
 		missionManager = m;
 		personConfig = pc;
 
-		MissionLog.initialise(c);
+		clock = si.getMasterClock();
+
+		MissionLog.initialise(clock);
 		MissionUtil.initializeInstances(u, m);
-		AbstractMetaMission.initializeInstances(si.getMasterClock(), m);
+		AbstractMetaMission.initializeInstances(clock, m);
 	}
 }

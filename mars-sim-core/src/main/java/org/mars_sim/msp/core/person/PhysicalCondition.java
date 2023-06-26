@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.person.health.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -80,12 +79,6 @@ public class PhysicalCondition implements Serializable {
 
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 
-//	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
-//	private static final double MENTAL_BREAKDOWN = 100D;
-//	/** Stress jump resulting from being in an accident. */
-//	private static final double ACCIDENT_STRESS = 10D;
-//	/** The food reserve factor. */
-//	private static final double FOOD_RESERVE_FACTOR = 1.5D;
 	/** Performance modifier for thirst. */
 	private static final double THIRST_PERFORMANCE_MODIFIER = .00015D;
 	/** Performance modifier for hunger. */
@@ -128,8 +121,6 @@ public class PhysicalCondition implements Serializable {
 	private boolean isStarving;
 	/** True if person is stressed out. */
 	private boolean isStressedOut;
-//	/** True if person is collapsed under fatigue. */
-//	private boolean isCollapsed;
 	/** True if person is dehydrated. */
 	private boolean isDehydrated;
 	/** True if person is alive. */
@@ -158,8 +149,6 @@ public class PhysicalCondition implements Serializable {
 	private double stress;
 	/** Performance factor 0.0 to 1.0. */
 	private double performance;
-	/** Person's hygiene factor (0.0 - 100.0) */
-	// private double hygiene;
 	/** Person's energy level [in kJ] */
 	private double kJoules;
 	/** Person's food appetite (0.0 to 1.0) */
@@ -192,8 +181,8 @@ public class PhysicalCondition implements Serializable {
 	private List<HealthProblem> problems;
 	/** Record of Illness frequency. */
 	private Map<ComplaintType, Integer> healthLog;
-	/** Record of illness start time. */
-	private Map<ComplaintType, List<String>> healthHistory;
+	// /** Record of illness start time. */
+	// private Map<ComplaintType, List<String>> healthHistory;
 
 	/** 
 	 * The amount a person consumes on each sol.
@@ -215,7 +204,7 @@ public class PhysicalCondition implements Serializable {
 	/** Most serious problem. */
 	private HealthProblem serious;
 
-	private static MarsClock marsClock;
+	private static MasterClock master;
 
 	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
@@ -241,7 +230,7 @@ public class PhysicalCondition implements Serializable {
 
 		problems = new CopyOnWriteArrayList<>();
 		healthLog = new ConcurrentHashMap<>();
-		healthHistory = new ConcurrentHashMap<>();
+		//healthHistory = new ConcurrentHashMap<>();
 		medicationList = new CopyOnWriteArrayList<>();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
@@ -280,16 +269,10 @@ public class PhysicalCondition implements Serializable {
 
 		isStarving = false;
 		isStressedOut = false;
-//		isCollapsed = false;
 		isDehydrated = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
 
-		// initialize it to save 7 sols
-//		for (int i=0; i<4; i++) {
-//			foodConsumption[i] = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
-//		}
-		
 		// Initialize the food consumption logger
 		consumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		consumption.increaseDataPoint(0, 0.0);
@@ -331,8 +314,6 @@ public class PhysicalCondition implements Serializable {
 		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + 50 * (d1 + d2 + preference);
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-//		System.out.println(person + "  d1: " + d1 + "  d2: " + d2 + "  pref: " + preference
-//				+ "  personalMaxEnergy: " + personalMaxEnergy + "  appetite: " + appetite);
 	}
 
 	/**
@@ -1253,15 +1234,15 @@ public class PhysicalCondition implements Serializable {
 			healthLog.put(type, freq + 1);
 
 			// Register this complaint type with a time-stamp
-			List<String> clocks = null;
-			if (healthHistory.get(type) != null) {
-				clocks = healthHistory.get(type);
-			} else {
-				clocks = new CopyOnWriteArrayList<>();
-			}
+			// List<String> clocks = null;
+			// if (healthHistory.get(type) != null) {
+			// 	clocks = healthHistory.get(type);
+			// } else {
+			// 	clocks = new CopyOnWriteArrayList<>();
+			// }
 
-			clocks.add(marsClock.getDateTimeStamp());
-			healthHistory.put(type, clocks);
+			// clocks.add(marsClock.getDateTimeStamp());
+			// healthHistory.put(type, clocks);
 			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
 			recalculatePerformance();
 		}
@@ -1417,7 +1398,7 @@ public class PhysicalCondition implements Serializable {
 			this.serious = problem;
 		}
 
-		deathDetails = new DeathInfo(person, problem, reason, lastWord);
+		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
 		// Declare the person dead
 		person.setDeclaredDead();
 
@@ -2157,11 +2138,11 @@ public class PhysicalCondition implements Serializable {
 	 * @param c1
 	 * @param m
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MedicalManager m,
+	public static void initializeInstances(MasterClock c0, MedicalManager m,
 											PersonConfig pc) {
-		marsClock = c1;
 		medicalManager = m;
 		personConfig = pc;
+		master = c0;
 
 		H2O_CONSUMPTION = personConfig.getWaterConsumptionRate(); // 3 kg per sol
 		O2_CONSUMPTION = personConfig.getNominalO2ConsumptionRate();
@@ -2190,8 +2171,6 @@ public class PhysicalCondition implements Serializable {
 		circadian = null;
 		starved = null;
 		dehydrated = null;
-		medicalManager = null;
-		marsClock = null;
 		medicationList = null;
 	}
 }

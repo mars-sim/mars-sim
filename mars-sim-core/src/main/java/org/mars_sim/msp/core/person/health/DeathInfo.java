@@ -8,13 +8,10 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -26,7 +23,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -43,13 +40,22 @@ public class DeathInfo implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(DeathInfo.class.getName());
 
+	// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+	// https://www.goodreads.com/quotes/tag/suicide-note
+	private static final String[] LAST_WORDS = {"Take care of my family.",
+						"One day, send my ashes back to Earth and give it to my family.",
+						"Send my ashes to orbit around Mars one day.",
+						"I have to move on. Farewell.",
+						"I want to be buried outside the settlement.",
+						"Take care my friend.",
+						"I will be the patron saint for the future Mars generations.",
+						"I'm leaving this world. No more sorrow to bear. See ya."};
+
 	// Data members
 	/** Has the body been retrieved for exam */	
 	private boolean bodyRetrieved = false;	
 	/** Is the postmortem exam done ? */	
 	private boolean examDone = false;	
-	/** Mission sol */	
-	private int missionSol;
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
 	private double timeSpentExam;
 	/** Estimated time the postmortem exam should take [in Millisols]. */	
@@ -59,9 +65,7 @@ public class DeathInfo implements Serializable {
 	/** Cause of death. */	
 	private String causeOfDeath;
 	/** Time of death. */
-	private String timeOfDeath;
-	/** Time of death. */
-	private String earthTimeOfDeath;
+	private MarsTime timeOfDeath;
 	/** Place of death. */
 	private String placeOfDeath = "";
 	/** Name of the doctor who did the postmortem. */	
@@ -110,39 +114,23 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @param person the dead person
 	 */
-	public DeathInfo(Person person, HealthProblem problem, String cause, String lastWord) {
+	public DeathInfo(Person person, HealthProblem problem, String cause, String lastWord,
+							MarsTime martianTime) {
 		this.person = person;
 		this.problem = problem;
 		this.causeOfDeath = cause;
 
 		// Initialize data members
-		if (lastWord.equals("")) {
-			int rand = RandomUtil.getRandomInt(7);
-			// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
-			// https://www.goodreads.com/quotes/tag/suicide-note
-			if (rand == 0)
-				this.lastWord = "Take care of my family.";
-			else if (rand == 1)
-				this.lastWord = "One day, send my ashes back to Earth and give it to my family.";
-			else if (rand == 2)
-				this.lastWord = "Send my ashes to orbit around Mars one day.";
-			else if (rand == 3)
-				this.lastWord = "I have to move on. Farewell.";
-			else if (rand == 4)
-				this.lastWord = "I want to be buried outside the settlement.";
-			else if (rand == 5)
-				this.lastWord = "Take care my friend.";
-			else if (rand == 6)
-				this.lastWord = "I will be the patron saint for the future Mars generations.";
-			else 
-				this.lastWord = "I'm leaving this world. No more sorrow to bear. See ya.";
+		if (lastWord == null) {
+			int rand = RandomUtil.getRandomInt(LAST_WORDS.length);
+			this.lastWord = LAST_WORDS[rand];
+		}
+		else {
+			this.lastWord = lastWord;
 		}
 		
-		MasterClock masterClock = Simulation.instance().getMasterClock();
-		timeOfDeath = masterClock.getMarsClock().getDateTimeStamp();	
-		missionSol = masterClock.getMarsClock().getMissionSol();
-		earthTimeOfDeath = masterClock.getEarthTime().format(
-								DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
+		timeOfDeath = martianTime;	
+
 		if (problem == null) {
 			Complaint serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
@@ -213,11 +201,11 @@ public class DeathInfo implements Serializable {
 		}
 	}
 
-	public DeathInfo(Robot robot) {
+	public DeathInfo(Robot robot, MarsTime martianTime) {
 		// Initialize data members
 		this.robot = robot;
 		
-		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+		timeOfDeath = martianTime;
 
 		TaskManager taskMgr = robot.getBotMind().getBotTaskManager();
 		if (taskMgr.hasTask()) {
@@ -245,34 +233,10 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @return formatted time.
 	 */
-	public String getTimeOfDeath() {
-		if (timeOfDeath != null)
-			return timeOfDeath;
-		else
-			return "";
+	public MarsTime getTimeOfDeath() {
+		return timeOfDeath;
 	}
 
-	/**
-	 * Get the earth time of death.
-	 * 
-	 * @return formatted time.
-	 */
-	public String getEarthTimeOfDeath() {
-		if (earthTimeOfDeath != null)
-			return earthTimeOfDeath;
-		else
-			return "";
-	}
-	
-	/**
-	 * Gets the mission sol on the day of passing
-	 * 
-	 * @return
-	 */
-	public int getMissionSol() {
-		return missionSol;
-	}
-	
 	/**
 	 * Gets the place the death happened. Either the name of the unit the person was
 	 * in, or 'outside' if the person died on an EVA.

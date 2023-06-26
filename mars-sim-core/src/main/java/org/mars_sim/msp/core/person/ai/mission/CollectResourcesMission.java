@@ -368,7 +368,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	private List<Coordinates> determineCollectionSites(Coordinates startingLocation,
 		double range, int numSites) {
 
-		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
+		int confidence = 3 + (int)RandomUtil.getRandomDouble(getMarsTime().getMissionSol());
 
 		List<Coordinates> unorderedSites = new ArrayList<>();
 

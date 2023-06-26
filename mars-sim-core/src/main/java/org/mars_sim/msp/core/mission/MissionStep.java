@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -28,9 +28,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public abstract class MissionStep extends ProjectStep {
 	private static final SimLogger logger = SimLogger.getLogger(MissionStep.class.getName());
 
-    private static MarsClock marsClock;
-
     private static UnitManager unitManager;
+
+    private static MasterClock clock;
 
     private MissionProject mission;
 
@@ -48,7 +48,7 @@ public abstract class MissionStep extends ProjectStep {
      * @return mSol
      */
     protected int getStepDuration() {
-        return (int) MarsClock.getTimeDiff(marsClock, mission.getPhaseStartTime());
+        return (int) clock.getMarsTime().getTimeDiff(mission.getPhaseStartTime());
     }
 
     /**
@@ -120,8 +120,8 @@ public abstract class MissionStep extends ProjectStep {
         return unitManager;
     }
 
-    public static void initializeInstances(MarsClock mc, UnitManager um) {
-        marsClock = mc;
+    public static void initializeInstances(MasterClock mc, UnitManager um) {
+        clock = mc;
         unitManager = um;
     }
 }

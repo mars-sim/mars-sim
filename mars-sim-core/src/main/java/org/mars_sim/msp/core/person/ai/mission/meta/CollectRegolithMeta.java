@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
 
-	private static final double VALUE = 4000D;
+	private static final double VALUE = 200D;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 2;
@@ -61,7 +61,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 				if (missionProbability == 0) {
 	    			return 0;
 	    		}
-	    		missionProbability = settlement.getRegolithProbabilityValue() / VALUE;
+	    		missionProbability *= (settlement.getRegolithProbabilityValue() / VALUE);
 
 				// Job modifier.
 	    		missionProbability *= getLeaderSuitability(person);

@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -33,7 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -98,7 +97,7 @@ public abstract class OperateVehicle extends Task {
 	/** The location of the destination of the trip. */
 	private Coordinates destination;
 	/** The timestamp the trip is starting. */
-	private MarsClock startTripTime;
+	private MarsTime startTripTime;
 	/** The malfunctionManager of this vehicle. */
 	private MalfunctionManager malfunctionManager;
 	
@@ -114,7 +113,7 @@ public abstract class OperateVehicle extends Task {
 	 * @param duration the time duration (millisols) of the task (or 0 if none).
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double duration) {
+			MarsTime startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
 		super(name, person, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
@@ -178,7 +177,7 @@ public abstract class OperateVehicle extends Task {
 	 * @param duration
 	 */
 	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
-			MarsClock startTripTime, double startTripDistance, double duration) {
+			MarsTime startTripTime, double startTripDistance, double duration) {
 		
 		// Use Task constructor
 		super(name, robot, false, false, STRESS_MODIFIER, SkillType.PILOTING, EXP, duration);
@@ -284,7 +283,7 @@ public abstract class OperateVehicle extends Task {
 	 * 
 	 * @return start time
 	 */
-	protected MarsClock getStartTripTime() {
+	protected MarsTime getStartTripTime() {
 		return startTripTime;
 	}
 	
@@ -431,7 +430,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         // Convert time from millisols to hours
-        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+        double hrsTime = MarsTime.HOURS_PER_MILLISOL * time;
               
         // Case 2: Already arrived
         if (dist2Dest <= DESTINATION_BUFFER) {
@@ -458,7 +457,7 @@ public abstract class OperateVehicle extends Task {
         
         else {
         	// Vehicle is moving
-        	return moveVehicle(hrsTime, dist2Dest, remainingFuel, remainingOxidizer) / MarsClock.HOURS_PER_MILLISOL;
+        	return moveVehicle(hrsTime, dist2Dest, remainingFuel, remainingOxidizer) / MarsTime.HOURS_PER_MILLISOL;
         }
 	} 
 	
@@ -616,14 +615,11 @@ public abstract class OperateVehicle extends Task {
      * 
      * @return MarsClock instance of date/time for ETA
      */
-    public MarsClock getETA() {
+    public MarsTime getETA() {
     	
-    	if (marsClock == null)
-    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
         // Determine time difference between now and from start of trip in millisols.
-        double millisolsDiff = MarsClock.getTimeDiff(marsClock, startTripTime);
-        double hoursDiff = MarsClock.HOURS_PER_MILLISOL * millisolsDiff;
+        double millisolsDiff = getMarsTime().getTimeDiff(startTripTime);
+        double hoursDiff = MarsTime.HOURS_PER_MILLISOL * millisolsDiff;
 
         // Determine average speed so far in km/hr.
         double avgSpeed = (startTripDistance - getDistanceToDestination()) / hoursDiff;
@@ -640,13 +636,10 @@ public abstract class OperateVehicle extends Task {
 
         // Determine time to destination in millisols.
         double hoursToDestination = getDistanceToDestination() / finalEstimatedSpeed;
-        double millisolsToDestination = hoursToDestination / MarsClock.HOURS_PER_MILLISOL;// MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
+        double millisolsToDestination = hoursToDestination / MarsTime.HOURS_PER_MILLISOL;
 
         // Determine ETA
-        MarsClock eta = new MarsClock(marsClock);
-        eta.addTime(millisolsToDestination);
-
-        return eta;
+        return getMarsTime().addTime(millisolsToDestination);
     }
     
     /**

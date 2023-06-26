@@ -154,7 +154,7 @@ public class PlayHoloGame extends Task {
 			endTask();
 		}
 		
-		int msol = marsClock.getMillisolInt();       
+		int msol = getMarsTime().getMillisolInt();       
         boolean successful = false; 
         
         if (computingNeeded > 0) {
@@ -226,7 +226,7 @@ public class PlayHoloGame extends Task {
 		double remainingTime = 0;
 		
 		boolean successful = false; 
-		int msol = marsClock.getMillisolInt();
+		int msol = getMarsTime().getMillisolInt();
 		
 		if (computingNeeded > 0) {
 	      	double workPerMillisol = time * seed;

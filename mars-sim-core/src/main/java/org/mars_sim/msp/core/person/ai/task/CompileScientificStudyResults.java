@@ -229,7 +229,7 @@ extends Task {
             return time;
         }
 
-        int msol = marsClock.getMillisolInt();
+        int msol = getMarsTime().getMillisolInt();
         
         boolean successful = false; 
         

@@ -153,7 +153,7 @@ public class ReviewMissionPlan extends Task {
 			}
 			
 			else if (mp.getPercentComplete() >= 60) {
-				int sol = marsClock.getMissionSol();
+				int sol = getMarsTime().getMissionSol();
 				int solRequest = mp.getMissionSol();
 				if (sol - solRequest > 7) {
 					// If no one else is able to offer the review after x days, 

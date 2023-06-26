@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class ExplorationMeta extends AbstractMetaMission {
 
 	/** Mission name */
-	private static final double VALUE = 2D;
+	private static final double VALUE = 20D;
 
 	private static final int MAX = 200;
 
@@ -81,7 +81,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 					Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 					if (rover != null) {
 						// Check if any mineral locations within rover range and obtain their concentration
-						missionProbability = Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;
+						missionProbability *= Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;
 						if (missionProbability < 0) {
 							missionProbability = 0;
 						}
@@ -95,10 +95,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)
 						* (settlement.getGoodsManager().getTourismFactor()
-	               		 + settlement.getGoodsManager().getResearchFactor())/1.5;
+	               		 + settlement.getGoodsManager().getResearchFactor())/2;
 
-				if (missionProbability > LIMIT)
-					missionProbability = LIMIT;
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
@@ -108,6 +106,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 				if (missionProbability < 0)
 					missionProbability = 0;
+				else if (missionProbability > LIMIT)
+					missionProbability = LIMIT;
  			}
 		}
 

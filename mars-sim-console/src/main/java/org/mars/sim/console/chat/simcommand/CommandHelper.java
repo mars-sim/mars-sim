@@ -319,7 +319,7 @@ public class CommandHelper {
 		
 		if (!mission.isDone()) {
 			response.appendLabeledString("Phase", mission.getPhaseDescription());
-			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTrucatedDateTimeStamp());
+			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTruncatedDateTimeStamp());
 		
 			List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
 			response.appendNumberedList("Members", names);
@@ -362,7 +362,7 @@ public class CommandHelper {
 		response.appendText("Log:");
 		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
 		for (MissionLog.MissionLogEntry entry : mission.getLog().getEntries()) {
-			response.appendTableRow(MarsClockFormat.getTruncatedDateTimeStamp(entry.getTime()), entry.getEntry());
+			response.appendTableRow(entry.getTime().getTruncatedDateTimeStamp(), entry.getEntry());
 		}
 	}
 

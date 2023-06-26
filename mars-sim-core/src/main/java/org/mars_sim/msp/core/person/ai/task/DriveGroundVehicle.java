@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.function.Computation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
@@ -65,7 +65,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 * @param startTripTime     the starting time of the trip
 	 * @param startTripDistance the starting distance to destination for the trip
 	 */
-	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
+	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
@@ -88,7 +88,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 * @param startTripTime
 	 * @param startTripDistance
 	 */
-	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
+	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
@@ -112,7 +112,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 * @param startTripDistance the starting distance to destination for the trip
 	 * @param startingPhase     the starting phase for the task
 	 */
-	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
+	public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
@@ -140,7 +140,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 * @param startTripDistance
 	 * @param startingPhase
 	 */
-	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
+	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsTime startTripTime,
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
@@ -256,7 +256,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
 
-		int msol = marsClock.getMillisolInt();       
+		int msol = getMarsTime().getMillisolInt();       
         boolean successful = false; 
         
         double lastDistance = vehicle.getLastDistanceTravelled();

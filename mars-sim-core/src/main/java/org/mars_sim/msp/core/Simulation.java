@@ -298,20 +298,17 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void runSocietySim() {
-		Simulation sim = instance();
 		
 		// Create marsClock instance
 		masterClock = new MasterClock(256);
-		MarsClock marsClock = masterClock.getMarsClock();
 		
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		Weather.initializeInstances(sim, marsClock, orbitInfo);
+		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
 	}
 		
 	/**
@@ -321,7 +318,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		ResourceUtil.getInstance().initializeInstances();
 		
-		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();
 		
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
@@ -336,14 +332,12 @@ public class Simulation implements ClockListener, Serializable {
 		SimuLoggingFormatter.initializeInstances(masterClock);
 		
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		Weather.initializeInstances(sim, marsClock, orbitInfo);
+		weather = new Weather(masterClock, orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
@@ -371,7 +365,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		medicalManager = new MedicalManager();
 		medicalManager.initializeInstances(mc);
-		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig());
 
 		malfunctionFactory = new MalfunctionFactory();
@@ -394,9 +388,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		eventManager = new HistoricalEventManager(masterClock);
 
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
-		MissionStep.initializeInstances(marsClock, unitManager);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		doneInitializing = true;
 	}
@@ -430,16 +424,13 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = new MalfunctionFactory();
 
 		// Create orbit info
-		orbitInfo = new OrbitInfo(marsClock);
+		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
-		weather = new Weather();
-		
-		Weather.initializeInstances(this, marsClock, orbitInfo);
-		
+		weather = new Weather(masterClock, orbitInfo);
+
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
-		
+		surfaceFeatures = new SurfaceFeatures(masterClock, orbitInfo, weather);
+
 		// Initialize MissionManager instance
 		missionManager = new MissionManager();
 		missionManager.initializeInstances(simulationConfig);
@@ -474,7 +465,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 	
-		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 										simulationConfig.getPersonConfig());
 
 		scientificStudyManager = new ScientificStudyManager();
@@ -536,9 +527,9 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 
 		// Set instances for classes that extend Unit and Task and Mission
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);	
-		MissionStep.initializeInstances(marsClock, unitManager);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
@@ -582,7 +573,6 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
-		
 
 		// Gets the MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -592,12 +582,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
-		// Re-initialize weather
-		Weather.initializeInstances(this, marsClock, orbitInfo);
-		
-		// Re-initialize surfacefeatures
-		SurfaceFeatures.initializeInstances(this, marsClock, orbitInfo, weather);
 		
 		// Reload mission configs
 		missionManager.initializeInstances(simulationConfig);
@@ -619,7 +603,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 
-		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager,
+		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig());
 
 		
@@ -678,7 +662,7 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 		
 		// Re-initialize Mission related class
-		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
 
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);

@@ -964,7 +964,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			List<MissionLog.MissionLogEntry> entries = mission.getLog().getEntries();
 			if (row < entries.size()) {
 				if (column == 0)
-					return entries.get(row).getTime().getDisplayTruncatedTimeStamp();
+					return entries.get(row).getTime().getTruncatedDateTimeStamp();
 				else
 					return entries.get(row).getEntry();
 			} else

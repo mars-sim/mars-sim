@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta extends AbstractMetaMission {
 
-	private static final double VALUE = 3500D;
+	private static final double VALUE = 200D;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 3;

@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -242,7 +242,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare ETA label.
         etaCache = "";
         if (mission instanceof VehicleMission vm) {
-            MarsClock due = vm.getLegETA();
+            MarsTime due = vm.getLegETA();
             if (due != null) {
                 etaCache = due.toString();
             }
@@ -382,7 +382,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 remainingDistanceLabel.setText(StyleManager.DECIMAL_KM.format(remainingDistanceCache));
             }
 
-            MarsClock newETA = vehicleMission.getLegETA();
+            MarsTime newETA = vehicleMission.getLegETA();
             if (newETA != null) {
                 String newText = newETA.toString();
                 if (!etaCache.equals(newText)) {

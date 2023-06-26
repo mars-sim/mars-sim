@@ -816,11 +816,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param sim
 	 */
 	public static void initializeInstances(Simulation sim, SimulationConfig conf) {
-		marsClock = sim.getMasterClock().getMarsClock();
 
 		MetaTaskUtil.initialiseInstances(sim);
-		Task.initializeInstances(sim.getMasterClock(), marsClock, sim.getEventManager(), sim.getUnitManager(),
-									sim.getScientificStudyManager(), sim.getSurfaceFeatures(), sim.getOrbitInfo(),
-						sim.getMissionManager(), conf.getPersonConfig());
+		Task.initializeInstances(sim, conf.getPersonConfig());
 	}
 }

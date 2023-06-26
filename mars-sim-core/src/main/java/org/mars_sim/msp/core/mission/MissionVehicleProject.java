@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -176,7 +177,7 @@ public class MissionVehicleProject extends MissionProject
     }
 
     @Override
-    public MarsClock getLegETA() {
+    public MarsTime getLegETA() {
         return null;
     }
 
