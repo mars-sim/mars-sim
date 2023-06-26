@@ -44,8 +44,12 @@ public final class LocationFormat {
 				outputCoordinates(entity, buffer);
 			}
 			else {
-				locationDescription(context,  buffer);
+				locationDescription(context, buffer);
 			}
+		}
+		else if (entity instanceof Building) {
+			String n = ((Building)entity).getSettlement().getName();
+			buffer.append(n);
 		}
 		else {
 			buffer.append("Unknown");
@@ -63,7 +67,7 @@ public final class LocationFormat {
 	private static void locationDescription(Unit location, StringBuilder outputMessage) {
 		Unit next = null;
 		if (location instanceof Building) {
-			next = location.getAssociatedSettlement();
+			next = location.getSettlement();
 		}
 		else {
 			next = location.getContainerUnit();

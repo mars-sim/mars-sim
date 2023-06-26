@@ -487,6 +487,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		} else if (getUnitType() == UnitType.CONSTRUCTION) {
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+		} else if (getUnitType() == UnitType.BUILDING) {
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		} else {
 			currentStateType = LocationStateType.UNKNOWN;
 			containerID = (Integer) UNKNOWN_UNIT_ID;

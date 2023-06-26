@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 
 /**
@@ -209,14 +210,12 @@ public class SimLogger {
 			// Actor unknown
 			outputMessage.append("System").append(CLOSED_BRACKET_SPACE);
 		}
-		else if (actor instanceof Settlement) {
+		else if (actor instanceof Settlement
+				|| actor instanceof ConstructionSite) {
 			// Actor in bracket; it's top level
 			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
 		}
-		else if (actor instanceof ConstructionSite) {
-			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
-		}
-		else { // In case of a person or robot or building
+		else { // In case of a person, robot, building, vehicle
 			// Need container hierarchy in brackets
 			if (location == null) {
 				outputMessage.append(LocationFormat.getLocationDescription(actor));
