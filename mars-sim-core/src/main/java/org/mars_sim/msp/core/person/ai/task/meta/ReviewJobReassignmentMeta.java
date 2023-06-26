@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.Assignment;
 import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
@@ -64,8 +65,8 @@ public class ReviewJobReassignmentMeta extends FactoryMetaTask {
 	                while (i.hasNext()) {
 	                	// Get the job history of the candidate not the caller
 	                    Person p = i.next();
-	                    List<Assignment> list = p.getJobHistory().getJobAssignmentList();
-	                    Assignment ja = list.get(list.size()-1);
+	                    List<HistoryItem<Assignment>> list = p.getJobHistory().getJobAssignmentList();
+	                    Assignment ja = list.get(list.size()-1).getWhat();
 	                    
 	                    AssignmentType status = ja.getStatus();
 
@@ -108,7 +109,7 @@ public class ReviewJobReassignmentMeta extends FactoryMetaTask {
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             // if the job assignment submitted date is > 1 sol
                             int sol = getMarsTime().getMissionSol();
-                            int solRequest = ja.getSolSubmitted();
+                            int solRequest = list.get(list.size()-1).getWhen().getMissionSol();
                             if (sol - solRequest == 1)
                                 result += 50D;
                             else if (sol - solRequest == 2)

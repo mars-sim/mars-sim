@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -134,25 +135,25 @@ public class ReviewJobReassignment extends Task {
 		Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person tempPerson = i.next();
-			List<Assignment> list = tempPerson.getJobHistory().getJobAssignmentList();
+			List<HistoryItem<Assignment>> list = tempPerson.getJobHistory().getJobAssignmentList();
 			int last = list.size() - 1;
-			AssignmentType status = list.get(last).getStatus();
+			AssignmentType status = list.get(last).getWhat().getStatus();
 
 			if (status != null && status == AssignmentType.PENDING) {
-				JobType pendingJob = JobType.getJobTypeByName(list.get(last).getType());
+				JobType pendingJob = list.get(last).getWhat().getType();
 				JobType lastJob = null;
 				if (last == 0)
 					lastJob = pendingJob;
 				else
-					lastJob = JobType.getJobTypeByName(list.get(last - 1).getType());
+					lastJob = list.get(last - 1).getWhat().getType();
 				String approvedBy = person.getRole().getType() + " " + person.getName();
 
 				// 1. Reviews requester's cumulative job rating
-				double rating = list.get(last).getJobRating();
+				double rating = list.get(last).getWhat().getJobRating();
 				double cumulative_rating = 0;
 				int size = list.size();
 				for (int j = 0; j < size; j++) {
-					cumulative_rating += list.get(j).getJobRating();
+					cumulative_rating += list.get(j).getWhat().getJobRating();
 				}
 				cumulative_rating = cumulative_rating / size;
 

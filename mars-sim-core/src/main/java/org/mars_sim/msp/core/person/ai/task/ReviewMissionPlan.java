@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -17,7 +16,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.util.Assignment;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -217,20 +215,9 @@ public class ReviewMissionPlan extends Task {
 	    
 		Person leader = m.getStartingPerson();
     	
-		List<Assignment> list = leader.getJobHistory().getJobAssignmentList();
-		int last = list.size() - 1;
-		
 		// 1. Reviews requester's cumulative job rating
-		double rating = list.get(last).getJobRating();
-		double cumulative_rating = 0;
-		int size = list.size();
-		for (int j = 0; j < size; j++) {
-			cumulative_rating += list.get(j).getJobRating();
-		}
-		cumulative_rating = cumulative_rating / size;
-
-		rating = (rating + cumulative_rating);
-				
+		double rating = leader.getJobHistory().getCummulativeJobRating();
+			
 		// 2. Relationship Score 
 		int relation = assessLeader(leader, reviewerSettlement);
 

@@ -174,8 +174,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		attrPanel.addLabelledItem(Msg.getString("TabPanelCareer.roleType"), roleComboBox);
 
 		// Create ratings
-		List<Assignment> list = person.getJobHistory().getJobAssignmentList();
-		aveRater = new StarRater(5, calculateAveRating(list));
+		AssignmentHistory jobHistory = person.getJobHistory();
+		aveRater = new StarRater(5, calculateAveRating(jobHistory));
 		aveRater.setEnabled(false);
 		aveRater.setToolTipText(Msg.getString("TabPanelCareer.aveRater.tooltip"));
 		attrPanel.addLabelledItem("Overall Performance", aveRater);
@@ -194,20 +194,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					displayNotice("Job Rating submitted on " + dateTimeRatingSubmitted, false);
 					starRater.setRating(selection);
 
-					int size = list.size();
-					// check if a new job reassignment has just been submitted
-					if (list.get(size - 1).getStatus() == AssignmentType.PENDING) {
-						list.get(size - 2).setJobRating(selection);
-						list.get(size - 2).setSolRatingSubmitted(sol);
-					} else {
-						list.get(size - 1).setJobRating(selection);
-						list.get(size - 1).setSolRatingSubmitted(sol);
-					}
+					Assignment approved = person.getJobHistory().getLastApproved();
+					approved.setJobRating(selection, sol);
+				
 					solRatingSubmitted = sol;
 					// starRater.setSelection(0);
 					starRater.setEnabled(false);// disable();
 
-					aveRater.setRating(calculateAveRating(list));
+					aveRater.setRating(calculateAveRating(person.getJobHistory()));
 				}
 			}
 		});
@@ -218,7 +212,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		northPanel.add(changeNotice, BorderLayout.SOUTH);
 
 		// Check if user submitted a job rating
-		checkingJobRating(list);
+		checkingJobRating(jobHistory);
 
 		dead = person.getPhysicalCondition().isDead();
 		deathInfo = person.getPhysicalCondition().getDeathDetails();
@@ -233,7 +227,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		} else
 			// Add checking for the status of Job Reassignment
-			checkJobReassignment(person, list);
+			checkJobReassignment(jobHistory);
 
 		// Prepare job title panel
 		JPanel historyPanel = new JPanel(new BorderLayout(0, 0));
@@ -245,7 +239,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(historyLabel);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
-		jobHistoryTableModel = new JobHistoryTableModel(person);
+		jobHistoryTableModel = new JobHistoryTableModel(jobHistory);
 		JScrollPane scrollPanel = new JScrollPane();
 		jobHistoryPanel.add(scrollPanel, BorderLayout.CENTER);
 		JTable table = new JTable(jobHistoryTableModel);
@@ -282,16 +276,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 *
 	 * @param list
 	 */
-	public void checkingJobRating(List<Assignment> list) {
-		int size = list.size();
+	private void checkingJobRating(AssignmentHistory jobHistory) {
+		Assignment lastApproved = jobHistory.getLastApproved();
 		if (solRatingSubmitted == -1) {
-			// the TabPanelCareer was closed and retrieve the saved value of
-			// solRatingSubmitted from JobAssignment
-			if (list.get(size - 1).getStatus() == AssignmentType.PENDING) {
-				solRatingSubmitted = list.get(size - 2).getSolRatingSubmitted();
-			} else {
-				solRatingSubmitted = list.get(size - 1).getSolRatingSubmitted();
-			}
+			solRatingSubmitted = lastApproved.getSolRatingSubmitted();
 		}
 
 		if (solRatingSubmitted == -1) {
@@ -345,13 +333,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Calculates the cumulative career performance score of a person.
 	 */
-	public int calculateAveRating(List<Assignment> list) {
-		double score = 0;
-		int size = list.size();
-		for (int i = 0; i < size; i++) {
-			score += list.get(i).getJobRating();
-		}
-		score = score / size; // divided by 2 because job rating in JobAssignment is from 0 to 10
+	private int calculateAveRating(AssignmentHistory assignmentHistory) {
+		double score = assignmentHistory.getCummulativeJobRating();
 		if (score > 5)
 			score = 5;
 		return (int) score;
@@ -390,12 +373,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Checks for the status of job reassignment.
 	 */
-	public void checkJobReassignment(Person person, List<Assignment> list) {
+	private void checkJobReassignment(AssignmentHistory assignments) {
 		int pop = settlement.getNumCitizens();
 
-		int last = list.size() - 1;
+		List<HistoryItem<Assignment>> jobHistory = assignments.getJobAssignmentList();
+		int last = jobHistory.size() - 1;
 
-		AssignmentType status = list.get(last).getStatus();
+		AssignmentType status = jobHistory.get(last).getWhat().getStatus();
 
 		if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 
@@ -403,7 +387,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				statusCache = AssignmentType.PENDING;
 				jobComboBox.setEnabled(false);
 				
-				String s = "Job Reassignment submitted on " + list.get(last).getTimeSubmitted();
+				String s = "Job Reassignment submitted on " + jobHistory.get(last).getWhen().getTruncatedDateTimeStamp();
 				changeNotice.setText(s);
 				
 				if (firstNotification) 
@@ -418,7 +402,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					statusCache = AssignmentType.APPROVED;
 					logger.info(person, "Job reassignment reviewed and approved.");
 					
-					JobType selectedJob = JobType.getJobTypeByName(list.get(last).getType());
+					JobType selectedJob = jobHistory.get(last).getWhat().getType();
 
 					if (jobCache != selectedJob) {
 						jobCache = selectedJob;
@@ -434,7 +418,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					statusCache = AssignmentType.NOT_APPROVED;
 					logger.info(person, "Job reassignment reviewed and NOT approved.");
 
-					JobType selectedJob = JobType.getJobTypeByName(list.get(last - 1).getType());
+					JobType selectedJob = jobHistory.get(last - 1).getWhat().getType();
 	
 					if (jobCache != selectedJob) {
 						jobCache = selectedJob;
@@ -472,7 +456,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else {
 			// Update the jobComboBox if pop is less than
 			// POPULATION_WITH_COMMANDER
-			JobType selectedJob = JobType.getJobTypeByName(list.get(last).getType());
+			JobType selectedJob = jobHistory.get(last).getWhat().getType();
 			
 			if (jobCache != selectedJob) {
 				jobCache = selectedJob;
@@ -508,13 +492,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Check for the role change
 			checkRoleChange();
 
-			List<Assignment> list = person.getJobHistory().getJobAssignmentList();
+			AssignmentHistory list = person.getJobHistory();
 
 			// Added checking if user submitted a job rating
 			checkingJobRating(list);
 
 			// Check for the status of Job Reassignment
-			checkJobReassignment(person, list);
+			checkJobReassignment(list);
 
 			// check for the passing of each day
 			int solElapsed = masterClock.getMarsTime().getMissionSol();
@@ -636,7 +620,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				statusCache = AssignmentType.PENDING;
 
-				jh.savePendingJob(selectedJob.getName(), JobUtil.USER, statusCache, null, true);
+				jh.saveJob(selectedJob, JobUtil.USER, statusCache, null, true);
 				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
 				jobComboBox.setSelectedItem(jobCache.getName());
@@ -749,8 +733,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		private static final long serialVersionUID = 1L;
 
-		private AssignmentHistory jobHistory;
-		private List<Assignment> jobAssignmentList;
+		private List<HistoryItem<Assignment>> jobAssignmentList;
 		private int origSize;
 
 		/**
@@ -758,8 +741,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		 *
 		 * @param unit {@link Unit}
 		 */
-		JobHistoryTableModel(Person p) {
-			jobHistory = p.getJobHistory();
+		JobHistoryTableModel(AssignmentHistory jobHistory) {
 			jobAssignmentList = jobHistory.getJobAssignmentList();
 			origSize = jobAssignmentList.size();
 		}
@@ -796,9 +778,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		public Object getValueAt(int row, int column) {
 			int r = jobAssignmentList.size() - row - 1;
-			Assignment ja = jobAssignmentList.get(r);
+			HistoryItem<Assignment> item = jobAssignmentList.get(r);
+			Assignment ja = item.getWhat();
 			return switch(column) {
-				case 0 -> ja.getTimeSubmitted(); // MarsClock.getDateTimeStamp(ja.getTimeSubmitted());
+				case 0 -> item.getWhen().getTruncatedDateTimeStamp();
 				case 1 -> ja.getType();
 				case 2 -> ja.getInitiator();
 				case 3 -> ja.getStatus();
