@@ -76,7 +76,7 @@ public interface Crewable {
 	public boolean isRobotCrewmember(Robot robot);
 	
 	/**
-	 * Removes a person as crewmember
+	 * Removes a person as crewmember.
 	 * 
 	 * @param person
 	 * @param true if the person can be removed
@@ -84,7 +84,7 @@ public interface Crewable {
 	public boolean removePerson(Person person);
 	
 	/**
-	 * Adds a person as crewmember
+	 * Adds a person as crewmember.
 	 * 
 	 * @param person
 	 * @param true if the person can be added
@@ -92,7 +92,7 @@ public interface Crewable {
 	public boolean addPerson(Person person);
 	
 	/**
-	 * Removes a robot as crewmember
+	 * Removes a robot as crewmember.
 	 * 
 	 * @param robot
 	 * @param true if the robot can be removed
@@ -100,7 +100,7 @@ public interface Crewable {
 	public boolean removeRobot(Robot robot);
 	
 	/**
-	 * Adds a robot as crewmember
+	 * Adds a robot as crewmember.
 	 * 
 	 * @param robot
 	 * @param true if the robot can be added

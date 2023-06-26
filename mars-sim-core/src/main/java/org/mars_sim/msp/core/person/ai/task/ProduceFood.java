@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.data.UnitSet;
@@ -220,8 +221,12 @@ public class ProduceFood extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
-			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
+			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION)
+					.stream()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);
@@ -244,8 +249,12 @@ public class ProduceFood extends Task {
 
 		if (robot.isInSettlement()) {
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION);
-			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
+			Set<Building> foodProductionBuildings = buildingManager.getBuildingSet(FunctionType.FOOD_PRODUCTION)
+					.stream()
+					.filter(b -> b.getZone() == robot.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);

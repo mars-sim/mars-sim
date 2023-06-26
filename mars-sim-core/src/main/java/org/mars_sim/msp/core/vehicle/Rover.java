@@ -151,7 +151,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 	
 	/**
-	 * Constructs a Rover object at a given settlement
+	 * Constructs a Rover object at a given settlement.
 	 *
 	 * @param name        the name of the rover
 	 * @param spec the configuration type of the vehicle.
@@ -242,7 +242,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Is this rover towing another vehicle.
+	 * Is this rover towing another vehicle ?
 	 *
 	 * @return true or false
 	 */
@@ -319,7 +319,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return true if person is a crewmember
 	 */
 	public boolean isCrewmember(Person person) {
-		return occupants.contains(person);
+		return getCrew().contains(person);
 	}
 
 	/**
@@ -329,17 +329,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return true if robot is a crewmember
 	 */
 	public boolean isRobotCrewmember(Robot robot) {
-		return robotOccupants.contains(robot);
+		return getRobotCrew().contains(robot);
 	}
 
 	/**
-	 * Adds a person as crewmember
+	 * Adds a person as crewmember.
 	 *
 	 * @param person
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
+		if (!isCrewmember(person) && getCrew().add(person)) {
 			person.setContainerUnit(this);
 			return true;
 		}
@@ -347,7 +347,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Removes a person as crewmember
+	 * Removes a person as crewmember.
 	 *
 	 * @param person
 	 * @param true if the person can be removed
@@ -359,13 +359,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Adds a robot as crewmember
+	 * Adds a robot as crewmember.
 	 *
 	 * @param robot
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
+		if (!isRobotCrewmember(robot) && getRobotCrew().add(robot)) {
 			robot.setContainerUnit(this);
 			return true;
 		}
@@ -373,7 +373,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Removes a robot as crewmember
+	 * Removes a robot as crewmember.
 	 *
 	 * @param robot
 	 * @param true if the robot can be removed
@@ -499,7 +499,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	}
 
 	/**
-	 * Is the rover connected to the settlement through hoses
+	 * Is the rover connected to the settlement through hoses ?
 	 *
 	 * @return true if yes
 	 */

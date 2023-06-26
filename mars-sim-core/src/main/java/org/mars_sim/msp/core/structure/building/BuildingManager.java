@@ -834,6 +834,18 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets the buildings in a settlement have function f1 and have no f2.
+	 *
+	 * @param functions the array of required functions {@link BuildingFunctions}.
+	 * @return list of buildings.
+	 */
+	public Set<Building> getBuildingsF1NoF2(FunctionType f1, FunctionType f2) {
+		return buildings.stream()
+				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2))
+				.collect(Collectors.toSet());
+	}
+	
+	/**
 	 * Gets the buildings in a settlement have both function f1 and f2.
 	 *
 	 * @param functions the array of required functions {@link BuildingFunctions}.
@@ -1044,27 +1056,25 @@ public class BuildingManager implements Serializable {
 	
 	/**
 	 * Adds a person to a random inhabitable building within a settlement.
+	 * Note: excluding the astronomical observation building
 	 *
 	 * @param unit       the person to add.
 	 * @param s the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
 	public static void addPersonToRandomBuilding(Person person, Settlement s) {
-		BuildingManager manager = s.getBuildingManager();
 
-		List<Building> list = manager.getBuildingsWithLifeSupport();
-		
-		list = list.stream().filter(b -> !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
-				.collect(Collectors.toList());
+		Set<Building> set = s.getBuildingManager()
+				.getBuildingsF1NoF2(FunctionType.LIFE_SUPPORT, FunctionType.ASTRONOMICAL_OBSERVATION);
 
-		if (list.isEmpty()) {
+		if (set.isEmpty()) {
 			logger.warning(person, "No inhabitable buildings available (except the astronomy observatory if available.");
 			return;
 		}
 		
 		boolean found = false;
 		
-		for (Building building: list) {
+		for (Building building: set) {
 			if (!found && building != null) {
 				// Add the person to a building loc
 				found = addPersonToActivitySpot(person, building);
@@ -2224,8 +2234,7 @@ public class BuildingManager implements Serializable {
 							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 									&& !b.getMalfunctionManager().hasMalfunction())
 							.collect(Collectors.toSet());
-			
-			bldgs = getNonMalfunctioningBuildings(bldgs);
+
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
 			if (bldgs.size() > 0) {
@@ -2254,8 +2263,7 @@ public class BuildingManager implements Serializable {
 							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 									&& !b.getMalfunctionManager().hasMalfunction())
 							.collect(Collectors.toSet());
-			
-			bldgs = getNonMalfunctioningBuildings(bldgs);
+
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
 			if (bldgs.size() > 0) {
@@ -2284,8 +2292,7 @@ public class BuildingManager implements Serializable {
 					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
-			
-			bldgs = getNonMalfunctioningBuildings(bldgs);
+
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
 			if (bldgs.size() > 0) {
@@ -2308,7 +2315,6 @@ public class BuildingManager implements Serializable {
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 			
-			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
 			kitchenBuildings = PrepareDessert.getKitchensNeedingCooks(kitchenBuildings);
 			
 			if (UnitType.PERSON == unit.getUnitType()) {
@@ -2350,8 +2356,7 @@ public class BuildingManager implements Serializable {
 					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
-			
-			bldgs = getNonMalfunctioningBuildings(bldgs);
+
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
 			if (bldgs.size() > 0) {
