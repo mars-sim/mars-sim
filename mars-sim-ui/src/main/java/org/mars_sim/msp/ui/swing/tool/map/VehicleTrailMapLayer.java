@@ -14,12 +14,13 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.
  */
-public class VehicleTrailMapLayer implements MapLayer {
+public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 
 	// Data members
 	private Vehicle singleVehicle;

@@ -20,6 +20,11 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
+			<artifactId>mars-sim-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-console</artifactId>
 			<version>${project.version}</version>
 		</dependency>

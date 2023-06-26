@@ -1080,12 +1080,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		landmarks = null;
 		mapLayerPanel = null;
 		mineralLayer = null;
-	
+
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
+
 		unitManager = null;
 		umListener = null;
 		selectedSettlement = null;
 		
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 	
 	class PolicyRadioActionListener implements ActionListener {

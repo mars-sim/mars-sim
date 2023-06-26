@@ -20,12 +20,13 @@ import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
  * A map layer to allow the editing of navpoints.
  */
-public class NavpointEditLayer implements MapLayer {
+public class NavpointEditLayer implements MapLayer, SimulationConstants {
 
 	// Static members
 	private static final String BLUE_ICON_NAME = "map/flag_blue";

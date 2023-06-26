@@ -13,12 +13,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time
  * shading.
  */
-public class ShadingMapLayer implements MapLayer {
+public class ShadingMapLayer implements MapLayer, SimulationConstants {
 	
     private static final int LIGHT_THRESHOLD = 196;
  
