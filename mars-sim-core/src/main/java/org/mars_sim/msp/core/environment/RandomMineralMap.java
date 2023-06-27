@@ -79,7 +79,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 	private String[] mineralTypeNames;
 	
-	private Set<Coordinates> allLocations;
+	private static Set<Coordinates> allLocations;
 	
 	private static MineralMapConfig mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 	
@@ -452,79 +452,15 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * @param rho		the map scale
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Integer> getAllMineralConcentrations(Coordinates location, double rho) {
-
-//		if (allMineralsByLocation.isEmpty()
-//				|| !allMineralsByLocation.containsKey(location)) {
-//				
-//			return new HashMap<>();
-//		}
-//		else {
-//			return allMineralsByLocation.get(location);
-//		}
-		
-		double pixelHeight = rho * Math.PI;
-		
-		double pixelWidth = 2 * pixelHeight;
-		
-		double ratio = Coordinates.MARS_CIRCUMFERENCE /  pixelWidth;
-
-		double H = pixelWidth / ratio; 
-		
-		double sinAngle = H / Coordinates.MARS_RADIUS_KM;
-		
-		double angle = Math.asin(sinAngle);
-		
-		Map<String, Integer> result = new HashMap<>();
-		
-		boolean emptyMap = true;
-		
-		if (allLocations == null) {
-			allLocations = allMineralsByLocation.keySet();
+	public Map<String, Integer> getAllMineralConcentrations(Coordinates location) {
+		if (allMineralsByLocation.isEmpty()
+			|| !allMineralsByLocation.containsKey(location)) {
+			
+			return new HashMap<>();
 		}
-		
-		Iterator<Coordinates> i = allMineralsByLocation.keySet().iterator();
-		while (i.hasNext()) {
-			Coordinates c = i.next();
-	
-			double concentrationPhi = c.getPhi();
-			double concentrationTheta = c.getTheta();
-			double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
-			double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-		
-				// only take in what's within the limit
-			if (phiDiff < angle && thetaDiff < angle)	{
-				
-				Iterator<String> j = allMineralsByLocation.get(c).keySet().iterator();
-				while (j.hasNext()) {
-					String mineralName = j.next();	
-					double effect = 0;
-					double conc = allMineralsByLocation.get(c).get(mineralName);
-
-					double distance = location.getDistance(c);
-					double concentrationRange = conc;
-					if (distance < concentrationRange)
-						effect = (1D - (distance / concentrationRange)) * conc;
-					
-					if (effect > 0D) {
-						if (emptyMap) {
-							result = new HashMap<>();
-							emptyMap = false;
-						}
-						double totalConcentration = 0D;
-						if (result.containsKey(mineralName))
-							totalConcentration = result.get(mineralName);
-						totalConcentration += effect;
-						if (totalConcentration > 100D)
-							totalConcentration = 100D;
-						
-						result.put(mineralName, (int)Math.round(totalConcentration));
-					}
-				}
-			}	
+		else {
+			return allMineralsByLocation.get(location);
 		}
-		
-		return result;
 	}
 
 	/**

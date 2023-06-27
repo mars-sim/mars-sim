@@ -265,7 +265,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (mission.getMiningSite() != null) {
 				estimatedConcentrationMap = mission.getMiningSite().getEstimatedMineralConcentrations();
 				actualConcentrationMap = surfaceFeatures.getMineralMap()
-						.getAllMineralConcentrations(mission.getMiningSite().getLocation(), 0);
+						.getAllMineralConcentrations(mission.getMiningSite().getLocation());
 			} else {
 				estimatedConcentrationMap.clear();
 				actualConcentrationMap.clear();

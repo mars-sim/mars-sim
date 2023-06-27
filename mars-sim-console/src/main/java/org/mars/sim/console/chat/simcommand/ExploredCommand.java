@@ -52,9 +52,9 @@ public class ExploredCommand extends ChatCommand {
 				// Get location and check concentration
 				Coordinates siteLocation = CommandHelper.getCoordinates("Site Location", context);
 
-				// Check the locaiton has minerals
+				// Check the location has minerals
 				boolean hasMinerals = false;
-				Map<String, Integer> minerals = surface.getMineralMap().getAllMineralConcentrations(siteLocation, 0);
+				Map<String, Integer> minerals = surface.getMineralMap().getAllMineralConcentrations(siteLocation);
 				for(int conc : minerals.values()) {
 					hasMinerals = conc > 0D;
 					if (hasMinerals) {
