@@ -620,7 +620,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				statusCache = AssignmentType.PENDING;
 
-				jh.saveJob(selectedJob, JobUtil.USER, statusCache, null, true);
+				jh.saveJob(selectedJob, JobUtil.USER, statusCache, null);
 				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
 				jobComboBox.setSelectedItem(jobCache.getName());

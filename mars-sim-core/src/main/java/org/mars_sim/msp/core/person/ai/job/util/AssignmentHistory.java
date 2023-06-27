@@ -34,9 +34,8 @@ public class AssignmentHistory implements Serializable  {
 	 * @param initiator
 	 * @param status
 	 * @param approvedBy
-	 * @param addNewJobAssignment
 	 */
-    public void saveJob(JobType newJob, String initiator, AssignmentType status, String approvedBy, boolean addNewJobAssignment) {
+    public void saveJob(JobType newJob, String initiator, AssignmentType status, String approvedBy) {
      	assignmentList.add(new Assignment(newJob, initiator, status, approvedBy));
     }
 
@@ -54,6 +53,10 @@ public class AssignmentHistory implements Serializable  {
 		return history.get(idx).getWhat();
 	}
 
+	/**
+	 * Get the average cummlative job rating
+	 * @return
+	 */
     public double getCummulativeJobRating() {
 		double score = 0;
 		int valid = 0;

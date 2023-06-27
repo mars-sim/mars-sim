@@ -13,11 +13,15 @@ import java.io.Serializable;
  */
 public class Assignment implements Serializable {
 
+	public static final int INITIAL_RATING = 5;
+	public static final double NEW_RATING_WEIGHT = 0.3D;
+	public static final double OLD_RATING_WEIGHT = 1D - NEW_RATING_WEIGHT;
+
     private static final long serialVersionUID = 1L;
 
 	private int solRatingSubmitted = -1; //no rating has ever been submitted
 
-    private double jobRating = 5; // has a score of 5 if unrated 
+    private int jobRating = INITIAL_RATING; // has a score of 5 if unrated 
     	
     private String initiator;
     private JobType type;
@@ -54,7 +58,7 @@ public class Assignment implements Serializable {
 	}
 
 	public void setJobRating(int value, int sol) {
-		jobRating = (int) (0.7 * jobRating + 0.3 * value);	
+		jobRating = (int) ((OLD_RATING_WEIGHT * jobRating) + (NEW_RATING_WEIGHT * value));	
 		solRatingSubmitted = sol;
 	}
 
@@ -63,6 +67,6 @@ public class Assignment implements Serializable {
 	}
 	
 	public int getJobRating() {	
-		return (int)jobRating;
+		return jobRating;
 	}
 }
