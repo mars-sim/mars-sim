@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * 
  * @author mkhelios
  */
-public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
+public class MeteoriteImpactImpl implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

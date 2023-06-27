@@ -97,6 +97,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// Use RoverMission constructor
 		super(missionType, startingPerson, null, COLLECT_RESOURCES);
+		setIgnoreSunlight(true);
 
 		// Problem starting mission
 		if (isDone()) {
@@ -204,6 +205,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// Use RoverMission constructor
 		super(missionType, (Worker) members.toArray()[0], rover, COLLECT_RESOURCES);
+		setIgnoreSunlight(true);
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);

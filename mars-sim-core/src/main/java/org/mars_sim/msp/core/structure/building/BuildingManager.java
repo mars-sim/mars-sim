@@ -29,8 +29,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.environment.Meteorite;
-import org.mars_sim.msp.core.environment.MeteoriteModule;
+import org.mars_sim.msp.core.environment.MeteoriteImpactImpl;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
@@ -102,8 +101,6 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
-import com.google.inject.Guice;
-
 /**
  * The BuildingManager manages the settlement's buildings.
  */
@@ -130,7 +127,7 @@ public class BuildingManager implements Serializable {
 	private Map<Malfunctionable, Map<Integer, Integer>> partsMaint = new HashMap<>();
 	
 	private transient Settlement settlement;
-	private transient Meteorite meteorite;
+	private MeteoriteImpactImpl meteorite;
 	
 	// Data members
 	/** The population capacity (determined by the # of beds) of the settlement. */
@@ -191,8 +188,7 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap == null)
 			setupBuildingFunctionsMap();
 		
-		// Make use of Guice for Meteorite
-		meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
+		meteorite = new MeteoriteImpactImpl();
 	}
 
 	/**
@@ -978,14 +974,9 @@ public class BuildingManager implements Serializable {
 		}
 		
 		if (pulse.isNewSol()) {		
-			
-			if (meteorite == null) {
-				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
-			}
-
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
-			meteorite.startMeteoriteImpact(this);
+			meteorite.calculateMeteoriteProbability(this);
 		}
 
 		if (pulse.isNewMSol()) {
@@ -2726,10 +2717,6 @@ public class BuildingManager implements Serializable {
 
 	public double getWallPenetration() {
 		return wallPenetrationThicknessAL;
-	}
-
-	public Meteorite getMeteorite() {
-		return meteorite;
 	}
 
 	/**
