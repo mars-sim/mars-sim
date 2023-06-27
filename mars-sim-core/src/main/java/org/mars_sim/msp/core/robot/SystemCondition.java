@@ -63,7 +63,7 @@ public class SystemCondition implements Serializable {
         lowPowerPercent = spec.getLowPowerModePercent();
         standbyPower = spec.getStandbyPowerConsumption();
         maxCapacity = spec.getMaxCapacity();
-        currentEnergy = RandomUtil.getRandomDouble(1, maxCapacity);
+        currentEnergy = RandomUtil.getRandomDouble(maxCapacity * (lowPowerPercent/100 * 2), maxCapacity);
         updateLowPowerMode();
     }
 
