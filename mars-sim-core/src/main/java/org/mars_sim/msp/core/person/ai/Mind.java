@@ -358,22 +358,7 @@ public class Mind implements Serializable, Temporal {
 			if (bypassingJobLock || !jobLock) {
 				// Set to the new job
 				job = newJob;
-				// Set up 4 approvedBy conditions
-				if (approvedBy.equals(JobUtil.SETTLEMENT)) { 
-					// Automatically approved if pop <= 4
-					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-				} else if (approvedBy.equals(JobUtil.USER)) {
-					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-				} else if (approvedBy.equals(JobUtil.MISSION_CONTROL)) { 
-					// At the start of sim
-					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-				} else { 
-					// Approved by a senior official, etc.
-					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-				}
-
-//				logger.log(person, Level.CONFIG, 0, "Assigned as " + newJob.getName()
-//								+ " by " + approvedBy + ".");
+				jh.saveJob(newJob, assignedBy, status, approvedBy);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 

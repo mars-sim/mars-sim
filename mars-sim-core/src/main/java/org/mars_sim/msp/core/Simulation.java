@@ -330,6 +330,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
+		History.initializeInstances(masterClock);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);

@@ -8,8 +8,10 @@
 package org.mars_sim.msp.core.person.ai.job.util;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.mars_sim.msp.core.data.History;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 
 /**
  * This records a person's a list of job or role assignment over time
@@ -19,26 +21,12 @@ public class AssignmentHistory implements Serializable  {
     private static final long serialVersionUID = 1L;
 	
     /** The person's assignment history. */
-    private List<Assignment> assignmentList = new ArrayList<>();
+    private History<Assignment> assignmentList = new History<>();
 
-	public List<Assignment> getJobAssignmentList() {
-		return assignmentList;
+	public List<HistoryItem<Assignment>> getJobAssignmentList() {
+		return assignmentList.getChanges();
 	}
     
-    /**
-     * Saves a pending assignment for a person.
-     * 
-     * @param newJobStr
-     * @param initiator
-     * @param status
-     * @param approvedBy
-     * @param addAssignment
-     */
-    public void savePendingJob(String newJob, String initiator, AssignmentType status, String approvedBy, boolean addAssignment) {
-    	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
-        assignmentList.add(new Assignment(newJob.toString(), initiator, status, approvedBy));
-    }
-
 	/**
 	 * Saves the new assignment for a person.
 	 * 
@@ -46,37 +34,41 @@ public class AssignmentHistory implements Serializable  {
 	 * @param initiator
 	 * @param status
 	 * @param approvedBy
-	 * @param addNewJobAssignment
 	 */
-    public void saveJob(JobType newJob, String initiator, AssignmentType status, String approvedBy, boolean addNewJobAssignment) {
-    	// at the start of sim OR for a pop less than equal 4 settlement in which approvedBy "User"
-    	if (assignmentList.isEmpty()) {
-     		assignmentList.add(new Assignment(newJob.toString(), initiator, status, approvedBy));
-    	}
-
-    	else if (approvedBy.equals(JobUtil.USER)) {
-    	   	// user approves the flexible job reassignment (for pop less than 4 only)");
-			// Obtain last entry's lastJobStr
-     		assignmentList.add(new Assignment(newJob.toString(), initiator, status, approvedBy));
-     	}
-    	
-    	else {
-      		int last = assignmentList.size() - 1;
-			// Obtain last entry's lastJobStr
-    		if (approvedBy.equals(JobUtil.SETTLEMENT)){ // based on the emergent need of the settlement
-         	   	assignmentList.add(new Assignment(newJob.toString(), initiator, status, approvedBy));
-    		}
-
-    		else { 
-        		//if status used to be Pending
-    			assignmentList.get(last).setAuthorizedBy(approvedBy); 
-          		assignmentList.get(last).setStatus(AssignmentType.APPROVED);
-     		}
-    	}
+    public void saveJob(JobType newJob, String initiator, AssignmentType status, String approvedBy) {
+     	assignmentList.add(new Assignment(newJob, initiator, status, approvedBy));
     }
-    
-    public void destroy() {
-        if (assignmentList != null) 
-        	assignmentList.clear();
+
+	/**
+	 * Get the last approved job assignment. 
+	 * @return
+	 */
+	public Assignment getLastApproved() {
+		List<HistoryItem<Assignment>> history = assignmentList.getChanges();
+		int idx = history.size() - 1;
+		if (history.get(idx).getWhat().getStatus() == AssignmentType.PENDING) {
+			idx--;
+		}
+
+		return history.get(idx).getWhat();
+	}
+
+	/**
+	 * Get the average cummlative job rating
+	 * @return
+	 */
+    public double getCummulativeJobRating() {
+		double score = 0;
+		int valid = 0;
+
+		// Count scores ignoring Pending
+		for(HistoryItem<Assignment> item : assignmentList.getChanges()) {
+			Assignment a = item.getWhat();
+			if (a.getStatus() != AssignmentType.PENDING) {
+				score += a.getJobRating();
+				valid++;
+			}
+		}
+		return score / valid; 
     }
 }
