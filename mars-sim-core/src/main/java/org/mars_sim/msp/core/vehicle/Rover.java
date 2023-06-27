@@ -339,7 +339,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && getCrew().add(person)) {
+		if (!isCrewmember(person) && occupants.add(person)) {
 			person.setContainerUnit(this);
 			return true;
 		}
@@ -365,7 +365,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot) && getRobotCrew().add(robot)) {
+		if (!isRobotCrewmember(robot) && robotOccupants.add(robot)) {
 			robot.setContainerUnit(this);
 			return true;
 		}

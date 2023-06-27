@@ -259,7 +259,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
-	
+
 		assertTrue("Person in crew", vehicle.getCrew().contains(person));
 		assertFalse("Person in a vehicle. Person is not considered to be in a settlement", person.isInSettlement());
 		assertTrue("Vehicle still in a settlement", vehicle.isInSettlement());
