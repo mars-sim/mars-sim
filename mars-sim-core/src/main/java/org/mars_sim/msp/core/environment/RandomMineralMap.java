@@ -48,8 +48,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	
 	private static final int NUM_REGIONS = 50;
 
-	private static final int REGION_FACTOR = 1000;
-	private static final int NON_REGION_FACTOR = 20;
+	private static final int REGION_FACTOR = 1500;
+	private static final int NON_REGION_FACTOR = 50;
 	
 	private static final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 	
@@ -72,10 +72,14 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 	private static final double LIMIT = Math.PI / 7;
 	
+//	private double angleCache;
+	
 	// A map of all mineral concentrations
 	private Map<Coordinates, Map<String, Integer>> allMineralsByLocation;
 
 	private String[] mineralTypeNames;
+	
+	private Set<Coordinates> allLocations;
 	
 	private static MineralMapConfig mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 	
@@ -87,6 +91,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		allMineralsByLocation = new HashMap<>();
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
+		
+		allLocations = allMineralsByLocation.keySet();
 	}
 
 	/**
@@ -131,7 +137,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 //				regionArray is between 850 and 3420 for each mineral
 			
 			// For now start with a random concentration between 0 to 100
-			int conc = RandomUtil.getRandomInt(80);
+			int conc = RandomUtil.getRandomInt(100);
 			
 			// Determine individual mineral concentrations.
 			int concentrationNumber = calculateIteration(mineralType, true, length);
@@ -148,9 +154,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				remainingConc = createMinerals(remainingConc, 
 						regionArray[RandomUtil.getRandomInt(length - 1)], x, concentrationNumber, conc, mineralType.name);
 				
-//				logger.info(
-//						"  x: " + x
-//						+ "  remainingConc: " + remainingConc);
+//				logger.info("  x: " + x + "  remainingConc: " + remainingConc);
 				
 				if (remainingConc <= 0.0) 
 					break;
@@ -209,33 +213,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		}
 		
 		allMineralsByLocation.put(newLocation, map);
-
-//		logger.info(
-//				"  oldLocation: " + oldLocation
-//				+ "  mineralName: " + mineralName
-//				+ "  concentration: " + (int)concentration
-//				+ "  distance: " + (int)distance
-//				);
-		
-//		map.clear();
-//		
-//		double effect = getMineralConcentrationEffect(oldLocation, newLocation, (int)Math.round(concentration));
-//		if (effect > 0D) {
-//			concentration += effect;
-//			if (concentration > 100D)
-//				concentration = 100D;
-//
-//			map.put(mineralName, (int)Math.round(concentration));
-//			
-////			logger.info(
-////					"  newLocation: " + newLocation
-////					+ "  mineralName: " + mineralName
-////					+ "  concentration: " + (int)Math.round(concentration)
-////					);
-//			
-//			
-//			allMineralsByLocation.put(newLocation, map);
-//		}
 
 		return remainingConc;
 	}
@@ -361,10 +338,118 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	}
 
 	/**
+	 * Updates the set of minerals to be displayed.
+	 * 
+	 * @param availableMinerals
+	 * @return
+	 */
+	private Set<String> updateMineralDisplay(Set<String> displayMinerals, Set<String> availableMinerals) {
+
+		Set<String> intersection = new HashSet<>();
+		availableMinerals.forEach((i) -> {
+			if (displayMinerals.contains(i))
+				intersection.add(i);
+		});
+		
+		return intersection;
+	}
+	
+	/**
 	 * Gets all of the mineral concentrations at a given location.
 	 * 
-	 * @param location the coordinate location.
-	 * @param baseMap
+	 * @param mineralsDisplaySet 	a set of mineral strings.
+	 * @param aLocation  a coordinate
+	 * @param mag		 the map magnification factor
+	 * @return map of mineral types and percentage concentration (0 to 100.0)
+	 */
+	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates aLocation,
+			double mag) {
+		
+		double angle = .025 / mag;
+	
+		Map<String, Double> newMap = new HashMap<>();
+		
+		boolean emptyMap = true;
+		
+		if (allLocations == null) {
+			allLocations = allMineralsByLocation.keySet();
+		}
+		
+		Iterator<Coordinates> i = allLocations.iterator();
+		while (i.hasNext()) {
+			Coordinates c = i.next();
+	
+			double concentrationPhi = c.getPhi();
+			double concentrationTheta = c.getTheta();
+			double phiDiff = Math.abs(aLocation.getPhi() - concentrationPhi);
+			double thetaDiff = Math.abs(aLocation.getTheta() - concentrationTheta);
+
+			// Only take in what's within a certain boundary
+			if (concentrationPhi > LIMIT && concentrationPhi < Math.PI - LIMIT
+				&& phiDiff < angle && thetaDiff < angle) {
+				
+				Map<String, Integer> map = allMineralsByLocation.get(c);
+				
+				Set<String> mineralNames = updateMineralDisplay(mineralsDisplaySet, map.keySet());
+				if (mineralNames.isEmpty()) {
+					continue;
+				}
+				
+				double distance = aLocation.getDistance(c);
+			
+				Iterator<String> j = mineralNames.iterator();
+				while (j.hasNext()) {
+					String mineralName = j.next();	
+					
+					double effect = 0;
+					double conc = map.get(mineralName);	
+					// Tune the fuzzyRange to respond to the map magnification and mineral concentration
+					double fuzzyRange = conc;
+									
+					if (distance < fuzzyRange)
+						effect = (1D - (distance / fuzzyRange)) * conc;				
+					
+					if (effect > 0D) {
+						
+//						if (angleCache != angle) {
+//							angleCache = angle;
+//							logger.info("mag: " + Math.round(mag* 1000.0)/1000.0 
+//									+ "  angle: "+ Math.round(angle * 1000.0)/1000.0
+//									+ "  distance: " + Math.round(distance * 1000.0)/1000.0
+//									+ "  conc: " + Math.round(conc * 1000.0)/1000.0
+//									+ "  ratio: " + Math.round(distance / fuzzyRange * 1000.0)/1000.0
+//									+ "  fuzzyRange: " + Math.round(fuzzyRange * 1000.0)/1000.0
+//									+ "  effect: " + Math.round(effect * 1000.0)/1000.0) ;
+//						}
+						
+						if (emptyMap) {
+							newMap = new HashMap<>();
+							emptyMap = false;
+						}
+						double totalConcentration = 0D;
+						if (newMap.containsKey(mineralName)) {
+							// Load the total concentration
+							totalConcentration = newMap.get(mineralName);
+						}
+						
+						totalConcentration += effect;
+						if (totalConcentration > 100D)
+							totalConcentration = 100D;
+						
+						newMap.put(mineralName, totalConcentration);
+					}
+				}
+			}	
+		}
+		
+		return newMap;
+	}
+	
+	/**
+	 * Gets all of the mineral concentrations at a given location.
+	 * 
+	 * @param location  the coordinate
+	 * @param rho		the map scale
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
 	public Map<String, Integer> getAllMineralConcentrations(Coordinates location, double rho) {
@@ -394,23 +479,19 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		
 		boolean emptyMap = true;
 		
+		if (allLocations == null) {
+			allLocations = allMineralsByLocation.keySet();
+		}
+		
 		Iterator<Coordinates> i = allMineralsByLocation.keySet().iterator();
 		while (i.hasNext()) {
 			Coordinates c = i.next();
-			
-			// Note : it merges with the code from getMineralConcentrationEffect() below
-			
+	
 			double concentrationPhi = c.getPhi();
 			double concentrationTheta = c.getTheta();
 			double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
 			double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-//			double diffLimit = .04D;
-//			
-//			if (concentrationPhi < LIMIT || concentrationPhi > Math.PI - halfHeight)
-//				diffLimit += Math.abs(Math.cos(concentrationPhi));
-//			
-//			if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
-			
+		
 				// only take in what's within the limit
 			if (phiDiff < angle && thetaDiff < angle)	{
 				
@@ -444,7 +525,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		}
 		
 		return result;
-		
 	}
 
 	/**
@@ -469,83 +549,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			return 0;
 		}
 	}
-	
-//	/**
-//	 * Gets the mineral concentration at a given location.
-//	 * 
-//	 * @param mineralType the mineral type (see MineralMap.java)
-//	 * @param location    the coordinate location.
-//	 * @return percentage concentration (0 to 100.0)
-//	 */
-//	public double getMineralConcentration(String mineralType, Coordinates location) {
-//		double result = 0D;
-//		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
-//		while (i.hasNext()) {
-//			MineralConcentration mineralConcentration = i.next();
-//			if (mineralConcentration.getMineralType().equalsIgnoreCase(mineralType)) {
-//				result += getMineralConcentrationEffect(mineralConcentration, location);
-//				if (result > 100D)
-//					result = 100D;
-//			}
-//		}
-//
-//		return result;
-//	}
 
-//	/**
-//	 * Gets the effect of a given mineral concentration on a location.
-//	 * 
-//	 * @param concentration the mineral concentration.
-//	 * @param location      the location to affect.
-//	 * @return concentration effect (0% - 100%).
-//	 */
-//	private double getMineralConcentrationEffect(MineralConcentration concentration, Coordinates location) {
-//		double result = 0D;
-//
-//		double concentrationPhi = concentration.getLocation().getPhi();
-//		double concentrationTheta = concentration.getLocation().getTheta();
-//		double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
-//		double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-//		double diffLimit = .04D;
-//		if ((concentrationPhi < Math.PI / 7D) || concentrationPhi > Math.PI - (Math.PI / 7D))
-//			diffLimit += Math.abs(Math.cos(concentrationPhi));
-//		if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
-//			double distance = location.getDistance(concentration.getLocation());
-//			double concentrationRange = concentration.getConcentration();
-//			if (distance < concentrationRange)
-//				result = (1D - (distance / concentrationRange)) * concentration.getConcentration();
-//		}
-//
-//		return result;
-//	}
-
-//	/**
-//	 * Adds the effect of a given mineral concentration on a location.
-//	 * 
-//	 * @param location the location.
-//	 * @param concLocation  the mineral concentration location
-//	 * @return concentration effect (0% - 100%).
-//	 */
-//	private double getMineralConcentrationEffect(Coordinates location, Coordinates concLocation, int conc) {
-//		double result = 0D;
-//
-//		double concentrationPhi = concLocation.getPhi();
-//		double concentrationTheta = concLocation.getTheta();
-//		double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
-//		double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-//		double diffLimit = .04D;
-//		if ((concentrationPhi < Math.PI / 7D) || concentrationPhi > Math.PI - (Math.PI / 7D))
-//			diffLimit += Math.abs(Math.cos(concentrationPhi));
-//		if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
-//			double distance = location.getDistance(concLocation);
-//			double concentrationRange = conc;
-//			if (distance < concentrationRange)
-//				result = (1D - (distance / concentrationRange)) * conc;
-//		}
-//
-//		return result;
-//	}
-	
 	/**
 	 * Gets an array of all mineral type names.
 	 * 
@@ -590,7 +594,11 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 		List<Coordinates> locales = new ArrayList<>();
 		
-		Iterator<Coordinates> i = allMineralsByLocation.keySet().iterator();
+		if (allLocations == null) {
+			allLocations = allMineralsByLocation.keySet();
+		}
+		
+		Iterator<Coordinates> i = allLocations.iterator();
 		while (i.hasNext()) {
 			Coordinates c = i.next();
 			double distance = Coordinates.computeDistance(startingLocation, c);

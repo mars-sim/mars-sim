@@ -65,6 +65,13 @@ public interface Map {
 	public double getScale();
 
 	/**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification();
+    
+	/**
 	 * Gets the name type of this map.
 	 * 
 	 * @return

@@ -36,6 +36,13 @@ import java.io.IOException;
     public double getScale();
 
     /**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification();
+    
+    /**
      * Gets the number of pixels height.
      * 
      * @return

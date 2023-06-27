@@ -63,9 +63,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //	private boolean update;
 	private boolean recreateMap = false;
 	
-	private double RHO_DEFAULT;
+	public double RHO_DEFAULT;
+	
 	private final double ZOOM_STEP = 16;
 	private double multiplier;
+	private double magnification;
 	
 	private String mapErrorMessage;
 	private String mapStringType;
@@ -156,6 +158,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		RHO_DEFAULT = getScale();
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
+		
+		magnification = RHO_DEFAULT/RHO_DEFAULT;
+		
 		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
@@ -184,15 +189,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
  
 		if (newRho != oldRho) {
 			
+			magnification = newRho/RHO_DEFAULT;
+			
 	    	// Update the map scale
 //	    	setMapScale(newRho);
 
 			// Call showMap
+//			showMap(centerCoords, newRho);
 	    	// which in turns calls updateDisplay()
 	    	// which in turns calls MapTask thread
 	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
 
-			showMap(centerCoords, newRho);
+			marsMap.drawMap(centerCoords, newRho);
+			repaint();
 		}
     }
 	
@@ -425,9 +434,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			
 	        if (wait) {
-	        	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+	        	if (mapImage != null) 
+	        		g2d.drawImage(mapImage, 0, 0, this);
 	        	String message = "Generating Map";
-	        	drawCenteredMessage(message, g);
+	        	drawCenteredMessage(message, g2d);
 	        }
 	        else {
 	        	if (mapError) {
@@ -437,41 +447,45 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	                // Draw error message
 	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
-	                drawCenteredMessage(mapErrorMessage, g);
+	                drawCenteredMessage(mapErrorMessage, g2d);
 	            }
 	        	else {
 
-	        		g2d.setBackground(Color.BLACK);
+	        		g2d.setComposite(AlphaComposite.SrcOver); 
+	        		
+//	        		g2d.setBackground(Color.BLACK);
 	        		
 	        		// Clear the background with white
-	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-
-	        		g2d.setComposite(AlphaComposite.SrcOver); 
+//	        		g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
 	        		// Paint black background
-	        		g2d.setPaint(Color.BLACK); 
+//	        		g2d.setPaint(Color.BLACK); 
 	        		
-	        		g2d.setColor(Color.BLACK);
+//	        		g2d.setColor(Color.BLACK);
 //	                
-	        		g2d.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+//	        		g2d.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 //	
-	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, null);
+	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
 	
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
 	                		mapImage = marsMap.getMapImage();
-	                		if (mapImage != null)
-	                			g2d.drawImage(mapImage, 0, 0, null);
-	//                		logger.log(Level.INFO, "g.drawImage");
-
+	                		if (mapImage != null) {
+	                			g2d.drawImage(mapImage, 0, 0, this);
+	                		}
 	                	}
 	                	else
 	                		return;
 	
 	                	// Display map layers.
+	                	
+	                	// Put the map layers here.
+	                	// Say if the location of a vehicle is updated
+	                	// it doesn't have to redraw the marsMap.
+	                	// It only have to redraw its map layer below
 	                	Iterator<MapLayer> i = mapLayers.iterator();
 	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
-
+	                	
                 		g2d.dispose();
 	                }
 	        	}
@@ -525,6 +539,15 @@ public class MapPanel extends JPanel implements MouseWheelListener {
      */
     public double getScale() {
     	return marsMap.getScale();
+    }
+    
+    /**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification() {
+    	return magnification;
     }
     
 	/**

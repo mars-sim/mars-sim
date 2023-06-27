@@ -89,6 +89,15 @@ public class CannedMarsMap extends JComponent implements Map {
 	}
 
 	/**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification() {
+		return mapData.getMagnification();
+	}
+	   
+	/**
 	 * Gets the scale of the Mars surface map.
 	 * 
 	 * @return
@@ -97,7 +106,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	public double getScale() {
 		return mapData.getScale();
 	}
-	   
+	
 	/**
 	 * Gets the height of this map in pixels.
 	 * 

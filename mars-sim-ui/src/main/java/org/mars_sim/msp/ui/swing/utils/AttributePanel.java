@@ -34,33 +34,33 @@ public class AttributePanel extends JPanel {
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
 	 * 
-	 * @param label The fixed label
+	 * @param titleLabel The fixed label
 	 * @param content Initial content of the text field
 	 * @param tooltip Optional tooltip
 	 * @return The JLabel that can be updated.
 	 */
-	public JLabel addTextField(String label, String content, String tooltip) {
-		JPanel wrapper3 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
-		JLabel typeTF = new JLabel(content);
+	public JLabel addTextField(String titleLabel, String content, String tooltip) {
+		JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+		JLabel contentLabel = new JLabel(content);
 		if (tooltip != null) {
-			typeTF.setToolTipText(tooltip);
+			contentLabel.setToolTipText(tooltip);
 		}
-		wrapper3.add(typeTF);
-		addLabelledItem(label, typeTF);
-		return typeTF;
+		wrapper.add(contentLabel);
+		addLabelledItem(titleLabel, contentLabel);
+		return contentLabel;
 	}
 	
 	/**
 	 * Adds a labelled content to the TabPanel. This ensures the styling is common.
 	 * 
-	 * @param label Label to add
+	 * @param titleLabel Label to add
 	 * @param content Content showing the value
 	 */
-	public void addLabelledItem(String label, JComponent content) {
-        if ((label != null) && !label.endsWith(":")) {
-            label = label + " :";
+	public void addLabelledItem(String titleLabel, JComponent content) {
+        if ((titleLabel != null) && !titleLabel.endsWith(":")) {
+            titleLabel = titleLabel + " :";
         }
-        JLabel title = new JLabel(label, SwingConstants.RIGHT);
+        JLabel title = new JLabel(titleLabel, SwingConstants.RIGHT);
         title.setFont(StyleManager.getLabelFont());
 		add(title);
 		add(content);

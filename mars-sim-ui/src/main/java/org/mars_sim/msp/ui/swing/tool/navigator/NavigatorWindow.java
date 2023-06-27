@@ -127,6 +127,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final int HEIGHT_STATUS_BAR = 16;
 
 	private static final String WHITESPACE = " ";
+	private static final String MAG = "mag: ";
 	private static final String THETA = "\u03B8: "; //"Theta: ";
 	private static final String PHI = "\u03C6: "; //"Phi: ";
 
@@ -160,6 +161,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JPanel bottomPane;
 	
 	/** The info label on the status bar. */
+	private JLabel magLabel;
 	private JLabel heightLabel;
 	private JLabel coordLabel;
 	private JLabel phiLabel;
@@ -420,9 +422,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		thetaLabel.setFont(font);
 		thetaLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
 
+		magLabel = new JLabel();
+		magLabel.setFont(font);
+		magLabel.setPreferredSize(new Dimension(60, HEIGHT_STATUS_BAR));
+		
 		heightLabel = new JLabel();
 		heightLabel.setFont(font);
-		heightLabel.setPreferredSize(new Dimension(80, HEIGHT_STATUS_BAR));
+		heightLabel.setPreferredSize(new Dimension(90, HEIGHT_STATUS_BAR));
 	    
 		coordLabel = new JLabel();
 		coordLabel.setFont(font);
@@ -430,6 +436,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		statusBar.addLeftComponent(phiLabel, false);
 		statusBar.addLeftComponent(thetaLabel, false);
+		statusBar.addCenterComponent(magLabel, false);
 		statusBar.addCenterComponent(heightLabel, false);
 		statusBar.addRightComponent(coordLabel, false);
 		
@@ -520,7 +527,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param phi
 	 * @param theta
 	 */
-	private void updateStatusBarLabels(String height, String coord, double phi, double theta) {
+	private void updateStatusBar(double mag, String height, String coord, double phi, double theta) {
+		magLabel.setText(MAG + mag);
 		heightLabel.setText(height);
 		coordLabel.setText(WHITESPACE + coord);
 		phiLabel.setText(PHI + phi);
@@ -942,21 +950,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 			StringBuilder coordSB = new StringBuilder();			
 			StringBuilder elevSB = new StringBuilder();
-			
+
 			double phi = pos.getPhi();
 			double theta = pos.getTheta();			
 			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
 			
+			double mag = mapLayerPanel.getMagnification();
+			
 			phi = Math.round(phi*1000.0)/1000.0;
 			theta = Math.round(theta*1000.0)/1000.0;
-
+			mag = Math.round(mag*10.0)/10.0;
+				
 			elevSB.append(ELEVATION)
 				.append(Math.round(h0*1000.0)/1000.0)
 				.append(KM);
 			
 			coordSB.append(pos.getFormattedString());
 			
-			updateStatusBarLabels(elevSB.toString(), coordSB.toString(), phi, theta);
+			updateStatusBar(mag, elevSB.toString(), 
+					coordSB.toString(), phi, theta);
 
 			boolean onTarget = false;
 

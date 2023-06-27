@@ -179,7 +179,17 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		topBox.add(initMissionPane(), BorderLayout.CENTER);
 		topBox.add(initLogPane(), BorderLayout.SOUTH);
 
-		centerBox.add(initVehiclePane(), BorderLayout.NORTH);
+		// Create the member panel.
+		JPanel leftRightBox = new JPanel(new GridLayout(1, 2));
+		leftRightBox.add(initVehiclePane());
+		leftRightBox.add(initLocationPane());
+		centerBox.add(leftRightBox, BorderLayout.NORTH);
+
+//		JPanel innerBox = new JPanel(new BorderLayout(1, 1));
+//		innerBox.add(initVehiclePane(), BorderLayout.CENTER);
+//		innerBox.add(initLocationPane(), BorderLayout.SOUTH);
+//		centerBox.add(innerBox, BorderLayout.WEST);
+		
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new JPanel(new BorderLayout(1, 1));
@@ -216,34 +226,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	}
 	
 	private JPanel initVehiclePane() {
-
-		// Create the vehicle grid panel.
-		JPanel vehicleLayout = new JPanel(new GridLayout(1, 2));
 		
-		// Create the vehicle pane.
-		JPanel vehiclePane = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		vehiclePane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
-		vehicleLayout.add(vehiclePane);
-
-		// Create center map button
-		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
-		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
-		centerMapButton.addActionListener(e -> {
-			if (missionCache != null)
-				getDesktop().centerMapGlobe(missionCache.getCurrentMissionLocation());
-		});
-		centerMapButton.setToolTipText(Msg.getString("MainDetailPanel.gotoMarsMap")); //$NON-NLS-1$
-		centerMapButton.setEnabled(false);
-		vehiclePane.add(centerMapButton);
-
-		// Create the vehicle label.
-		JLabel vehicleLabel = new JLabel(" " + Msg.getString("MainDetailPanel.vehicle"), SwingConstants.LEFT); //$NON-NLS-1$
-		vehiclePane.add(vehicleLabel);
+		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
+		Border blackline = StyleManager.createLabelBorder(Msg.getString("MainDetailPanel.vehicle")); //$NON-NLS-1$
+		mainLayout.setBorder(blackline);
 
 		// Create the vehicle panel.
-		vehicleButton = new JButton("");
-		vehicleButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		vehicleButton.setVisible(false);
+		vehicleButton = new JButton(" ");
 		vehicleButton.addActionListener(e -> {
 			if (missionCache instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
@@ -257,23 +246,50 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 			}
 		});
+		vehicleButton.setVisible(false);
+		vehicleButton.setToolTipText(Msg.getString("MainDetailPanel.vehicleToolTip")); //$NON-NLS-1$
 
-		JPanel wrapper00 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper00.add(vehicleButton);
-		vehicleLayout.add(wrapper00);
+		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));//BorderLayout(5, 5));
+		buttonWrapper.add(vehicleButton);
+		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
+		
+		return mainLayout;
+	}
+	
+	private JPanel initLocationPane() {
 
-		return vehicleLayout;
+		JPanel mainLayout = new JPanel(new BorderLayout(5, 5));
+		Border blackline = StyleManager.createLabelBorder(Msg.getString("MainDetailPanel.location")); //$NON-NLS-1$
+		mainLayout.setBorder(blackline);
+		
+		// Create center map button
+		centerMapButton = new JButton(ImageLoader.getIconByName("mars")); //$NON-NLS-1$
+//		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
+		centerMapButton.addActionListener(e -> {
+			if (missionCache != null)
+				getDesktop().centerMapGlobe(missionCache.getCurrentMissionLocation());
+		});
+		centerMapButton.setEnabled(false);
+		centerMapButton.setToolTipText(Msg.getString("MainDetailPanel.gotoMarsMap")); //$NON-NLS-1$
+		
+		JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));//BorderLayout(5, 5));
+		buttonWrapper.add(centerMapButton);
+		mainLayout.add(buttonWrapper, BorderLayout.CENTER);
+		
+		return mainLayout;
 	}
 
 	private JPanel initTravelPane() {
 		
 		JPanel mainLayout = new JPanel(new BorderLayout());
+		mainLayout.setAlignmentX(CENTER_ALIGNMENT);
+		mainLayout.setAlignmentY(CENTER_ALIGNMENT);
 		Border blackline = StyleManager.createLabelBorder("Travel");
 		mainLayout.setBorder(blackline);
-	
+		
 		// Prepare travel grid layout.
 		AttributePanel travelGridPane = new AttributePanel(4);
-		mainLayout.add(travelGridPane, BorderLayout.NORTH);
+		mainLayout.add(travelGridPane, BorderLayout.CENTER);
 
 		vehicleStatusLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
 		speedLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
@@ -285,10 +301,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 	private JPanel initLogPane() {
 
-		Border blackline = StyleManager.createLabelBorder("Phase Log");
-		
 		// Create the member panel.
 		JPanel logPane = new JPanel(new BorderLayout());
+		Border blackline = StyleManager.createLabelBorder("Phase Log");
 		logPane.setBorder(blackline);
 		logPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		logPane.setPreferredSize(new Dimension(100, HEIGHT_1));
@@ -468,7 +483,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 *
 	 * @param text any text component, such as a {@link JTextField}
 	 *        or {@link JTextArea}
-	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 * @param changeListener a listener to receive {@link ChangeEvent}
 	 *        when the text is changed; the source object for the events
 	 *        will be the text component
 	 * @throws NullPointerException if either parameter is null
@@ -1057,7 +1072,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		/**
-		 * Has this member boarded the vehicle ?
+		 * Is this member currently onboard a rover ?
 		 *
 		 * @param member
 		 * @return

@@ -37,8 +37,12 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	// Domain members
 	private boolean updateLayer;
 
-	private String mapTypeCache;
+	private int numMineralsCache;
 
+	private double rhoCache;
+
+	private String mapTypeCache;
+	
 	private int[] mineralConcentrationArray;
 
 	private Component displayComponent;
@@ -54,7 +58,6 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	
 	private java.util.Map<String, Color> mineralColors;
 	
-
 	/**
 	 * Constructor
 	 * 
@@ -76,12 +79,26 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	 * @param g         graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
+		
+		if (mineralsDisplaySet.isEmpty()) {
+			return;
+		}
+		
 		Graphics2D g2d = (Graphics2D) g;
 		
 		String mapType = baseMap.getType().getId();
+
+		double rho = baseMap.getScale();
 		
-		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) || updateLayer) {
+		int numMinerals = mineralsDisplaySet.size();
+		
+		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) 
+				|| updateLayer || rho != rhoCache || numMineralsCache != numMinerals) {
+			
 			mapCenterCache = mapCenter;
+			rhoCache = rho;
+			numMineralsCache = numMinerals;
+
 			mapTypeCache = mapType;
 			updateLayer = false;
 
@@ -93,30 +110,24 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 
 			double centerX = Map.HALF_MAP_BOX;
 			double centerY = Map.HALF_MAP_BOX;
-
-			double rho = baseMap.getScale();
+	
+			double mag = baseMap.getMagnification();
 				
 			for (int x = 0; x < Map.MAP_VIS_WIDTH; x = x + 2) {
 				
 				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y = y + 2) {
-					 
-					if (mineralsDisplaySet.isEmpty()) {
-						continue;
-					}
-						
-					java.util.Map<String, Integer> mineralConcentrations = mineralMap
-									.getAllMineralConcentrations(mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), rho);
+
+					// param (x - centerX) varies as x goes from 0 to MAP_VIS_WIDTH
+					// param (y - centerY) varies as y goes from 0 to MAP_VIS_HEIGHT
+					
+					java.util.Map<String, Double> mineralConcentrations = mineralMap
+									.getSomeMineralConcentrations(mineralsDisplaySet, mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
 								
 					if (mineralConcentrations.isEmpty()) {
 						continue;
 					}
 					
-					Set<String> mineralNames = updateMineralDisplay(mineralConcentrations.keySet());
-					if (mineralNames.isEmpty()) {
-						continue;
-					}
-					
-					Iterator<String> i = mineralNames.iterator();
+					Iterator<String> i = mineralConcentrations.keySet().iterator();
 					while (i.hasNext()) {
 						String mineralType = i.next();
 						if (isMineralDisplayed(mineralType)) {

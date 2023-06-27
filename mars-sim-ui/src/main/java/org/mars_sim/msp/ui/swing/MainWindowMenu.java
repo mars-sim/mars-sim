@@ -177,6 +177,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create Background Music Volume slider menu item
 		soundPlayer = desktop.getSoundPlayer();
+		
+		// Note: if "-nosound" argument is given when starting mars-sim
+		// then the following sound control won't be shown under settings
 		if (soundPlayer != null) {
 			double volume = soundPlayer.getMusicVolume();
 			int intVolume = (int) Math.round(volume * 10.0);

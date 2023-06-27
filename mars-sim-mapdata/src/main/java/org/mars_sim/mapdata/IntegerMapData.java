@@ -135,6 +135,15 @@ import com.jogamp.opencl.CLProgram;
 		return rho;
 	}
 	
+    /**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification() {
+    	return rho / RHO_DEFAULT;
+    }
+    
 	/**
 	 * Sets the scale of the Mars surface map.
 	 * 

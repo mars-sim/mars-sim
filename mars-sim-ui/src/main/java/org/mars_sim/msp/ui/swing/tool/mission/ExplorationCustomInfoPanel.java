@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationCustomInfoPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.tool.Conversion;
-
 
 
 /**
@@ -58,7 +57,7 @@ extends MissionCustomInfoPanel {
 		mainPane = Box.createVerticalBox();
 		mainScrollPane.setViewportView(mainPane);
 
-		sitePanes = new HashMap<String, ExplorationSitePanel>(5);
+		sitePanes = new HashMap<>(5);
 	}
 
 	@Override
@@ -73,7 +72,7 @@ extends MissionCustomInfoPanel {
 
 				// Create new site panels.
 				Map<String, Double> explorationSites = this.mission.getExplorationSiteCompletion();
-				TreeSet<String> treeSet = new TreeSet<String>(explorationSites.keySet());
+				TreeSet<String> treeSet = new TreeSet<>(explorationSites.keySet());
 				Iterator<String> i = treeSet.iterator();
 				while (i.hasNext()) {
 					String siteName = i.next();
@@ -89,7 +88,7 @@ extends MissionCustomInfoPanel {
 			else {
 				// Update existing site completion levels.
 				Map<String, Double> explorationSites = this.mission.getExplorationSiteCompletion();
-				TreeSet<String> treeSet = new TreeSet<String>(explorationSites.keySet());
+				TreeSet<String> treeSet = new TreeSet<>(explorationSites.keySet());
 				Iterator<String> i = treeSet.iterator();
 				while (i.hasNext()) {
 					String siteName = i.next();
@@ -120,15 +119,13 @@ extends MissionCustomInfoPanel {
 	private class ExplorationSitePanel
 	extends JPanel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		// Data members
 		private double completion;
 		private JProgressBar completionBar;
 
 		/**
-		 * Constructor
+		 * Constructor.
+		 * 
 		 * @param siteName the site name.
 		 * @param completion the completion level.
 		 */
@@ -142,18 +139,22 @@ extends MissionCustomInfoPanel {
 
 			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 3, 3));
 			namePanel.setAlignmentX(CENTER_ALIGNMENT);
+			namePanel.setAlignmentY(CENTER_ALIGNMENT);
 			add(namePanel);
 
 			JLabel nameLabel = new JLabel("  " + Conversion.capitalize(siteName), SwingConstants.RIGHT);
 			nameLabel.setAlignmentX(CENTER_ALIGNMENT);
+			nameLabel.setAlignmentY(CENTER_ALIGNMENT);
 			namePanel.add(nameLabel);
 
 			JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
 			barPanel.setAlignmentX(CENTER_ALIGNMENT);
+			barPanel.setAlignmentY(CENTER_ALIGNMENT);
 			add(barPanel);
 
 			completionBar = new JProgressBar(0, 100);
 			completionBar.setAlignmentX(CENTER_ALIGNMENT);
+			completionBar.setAlignmentY(CENTER_ALIGNMENT);
 			completionBar.setStringPainted(true);
 			completionBar.setValue((int) (completion * 100D));
 			barPanel.add(completionBar);
@@ -161,6 +162,7 @@ extends MissionCustomInfoPanel {
 
 		/**
 		 * Updates the completion.
+		 * 
 		 * @param completion the site completion level.
 		 */
 		void updateCompletion(double completion) {

@@ -8,6 +8,9 @@
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -29,7 +32,7 @@ public class ExploredLocation implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ExploredLocation.class.getName());
 	
-	private static final int ESTIMATED_MASS = 30_000;
+	private static final int AVERAGE_RESERVE_MASS = 10_000;
 	
 	// Private members.
 	private boolean mined;
@@ -43,6 +46,10 @@ public class ExploredLocation implements Serializable {
 	private Coordinates location;
 
 	private Map<String, Double> estimatedMineralConcentrations;
+	/**
+	 * A map for the degree of certainty in estimating mineral concentration
+	 */
+	private Map<String, Double> degreeCertainty = new HashMap<>();
 
 	/**
 	 * Constructor.
@@ -67,14 +74,14 @@ public class ExploredLocation implements Serializable {
 		double reserve = 0;
 		for (String s: estimatedMineralConcentrations.keySet()) {
 			double concentration = estimatedMineralConcentrations.get(s);
-			reserve += ESTIMATED_MASS * concentration * RandomUtil.getRandomDouble(.1, 10);
+			reserve += AVERAGE_RESERVE_MASS * concentration * RandomUtil.getRandomDouble(.5, 5);
 		}
 
-		totalMass = RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
+		totalMass = reserve; //RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
 		remainingMass = totalMass;
 		
 		logger.info(settlement + " - " + location.getFormattedString() 
-			+ "  Estimated reserve: " + (int)totalMass + " kg.  Concentration: "
+			+ "  Estimated reserve: " + (int)totalMass + " kg. % Concentration: "
 			+  estimatedMineralConcentrations);
 	}
 
@@ -128,10 +135,26 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
+	 * Improves the certainty of mineral concentration estimation.
+	 */
+	public void improveCertainty() {
+		
+		List<String> minerals = new ArrayList<>(degreeCertainty.keySet());
+		
+		int rand = RandomUtil.getRandomInt(minerals.size() - 1);
+		
+		String aMineral = minerals.get(rand);
+		
+		
+		
+	}
+	
+	/**
 	 * Adds an mineral concentration estimation improvement.
 	 */
 	public void addEstimationImprovement() {
 		numEstimationImprovement++;
+		improveCertainty();
 	}
 
 	/**
