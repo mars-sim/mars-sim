@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -1510,8 +1511,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				logger.log(worker, Level.INFO, 4_000, "Unable to walk to " + interiorObject + ".");
 			}
 		}
-		
-		
+
 		return false;
 	}
 	
@@ -1532,8 +1532,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		else
 			housing = (Vehicle)entity;
 		
+		EVASuit suit = person.getSuit();
+		
 		// Transfer the EVA suit from person to the new destination
-		if (person.getSuit().transfer((Unit)housing)) {
+		if (suit != null && suit.transfer((Unit)housing)) {
 			// Doff this suit. Deregister the suit from the person
 			person.registerSuit(null);
 		}

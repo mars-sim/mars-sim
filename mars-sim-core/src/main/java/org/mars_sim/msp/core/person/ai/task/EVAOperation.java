@@ -221,7 +221,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (!person.isSuperUnFit()) {
+			if (person.isSuperUnFit()) {
 				setPhase(WALK_BACK_INSIDE);
 			}
 			else

@@ -767,8 +767,8 @@ public class BuildingManager implements Serializable {
 		// If this person is located in the settlement
 		Settlement settlement = person.getSettlement();	
 		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
-			Set<Building> list0 = manager.getDiningBuildings(person);
+			
+			Set<Building> list0 = settlement.getBuildingManager().getDiningBuildings(person);
 			Set<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall

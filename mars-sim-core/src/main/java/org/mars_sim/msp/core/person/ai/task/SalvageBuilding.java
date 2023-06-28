@@ -74,10 +74,7 @@ public class SalvageBuilding extends EVAOperation {
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
 		if (person.isSuperUnFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return;
 		}
 

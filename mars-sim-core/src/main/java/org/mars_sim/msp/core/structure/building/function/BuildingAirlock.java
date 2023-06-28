@@ -75,7 +75,8 @@ public class BuildingAirlock extends Airlock {
     private Map<LocalPosition, Integer> activitySpotMap;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param building the building this airlock of for.
      * @param capacity number of people airlock can hold.
      */
@@ -139,7 +140,7 @@ public class BuildingAirlock extends Airlock {
     }
 
     /**
-     * Steps inside of a settlement
+     * Steps inside of a settlement.
      *
      * @param person
      */
@@ -184,7 +185,7 @@ public class BuildingAirlock extends Airlock {
     }
 
     /**
-     * Gets outside of the airlock and step into the surface of Mars
+     * Gets outside of the airlock and step into the surface of Mars.
      *
      * @param person
      */
@@ -452,7 +453,7 @@ public class BuildingAirlock extends Airlock {
     }
 
     /**
-     * Check if the person is in a particular zone
+     * Checks if the person is in a particular zone.
      *
      * @param p the person
      * @param zone the zone of interest
@@ -520,7 +521,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the chamber in zone 2
+	 * Gets the total number of people occupying the chamber in zone 2.
 	 *
 	 * @return a list of occupants inside zone 2
 	 */
@@ -559,7 +560,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets a set of ids of the occupants inside zone 1, 2, 3
+	 * Gets a set of ids of the occupants inside zone 1, 2, 3.
 	 *
 	 * @return a set of ids
 	 */
@@ -583,7 +584,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-     * Gets a set of occupants from a particular zone
+     * Gets a set of occupants from a particular zone.
      *
      * @param zone the zone of interest
 	 * @return a set of occupants in the zone of the interest
@@ -634,7 +635,7 @@ public class BuildingAirlock extends Airlock {
     }
 
 	/**
-	 * Gets the number of people occupying a zone
+	 * Gets the number of people occupying a zone.
 	 *
 	 * @param zone
 	 * @return
@@ -676,7 +677,7 @@ public class BuildingAirlock extends Airlock {
 
 
 	/**
-	 * Loads up and converts the native EVA activity spots into the settlement coordinates
+	 * Loads up and converts the native EVA activity spots into the settlement coordinates.
 	 */
 	@Override
 	public void loadEVAActivitySpots() {
@@ -693,7 +694,7 @@ public class BuildingAirlock extends Airlock {
 
 
     /**
-     * Gets the exact number of occupants who are within the chamber
+     * Gets the exact number of occupants who are within the chamber.
      * 
      * @return
      */
@@ -753,7 +754,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the type of airlock
+	 * Gets the type of airlock.
 	 *
 	 * @return AirlockType
 	 */
@@ -777,7 +778,7 @@ public class BuildingAirlock extends Airlock {
 	}
 	
 	/**
-	 * Cycles the air and consumes the time
+	 * Cycles the air and consumes the time.
 	 * 
 	 * @param time
 	 */

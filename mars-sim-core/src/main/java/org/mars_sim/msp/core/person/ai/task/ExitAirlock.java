@@ -56,8 +56,8 @@ public class ExitAirlock extends Task {
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door."; 
 	private static final String PREBREATH_HALF_DONE = "Other occupant(s) already pre-breathed half-way thru.";
-	private static final String PREBREATH_QUARTER_DONE = "Other occupant(s) already pre-breathed a quarter of time.";
-	private static final String PREBREATH_3QUARTERS_DONE = "Other occupant(s) already pre-breathed 3/4 quarters of time.";
+	private static final String PREBREATH_ONE_QUARTER_DONE = "Other occupant(s) already pre-breathed a quarter of time.";
+	private static final String PREBREATH_THREE_QUARTERS_DONE = "Other occupant(s) already pre-breathed 3/4 quarters of time.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
@@ -331,11 +331,11 @@ public class ExitAirlock extends Task {
 	}
 
 	/**
-	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep.
+	 * Checks if a person is super unfit.
 	 *
-	 * @return true if a person is fit
+	 * @return true if a person is super unfit
 	 */
-	private boolean isUnFit() {
+	private boolean isSuperUnFit() {
 		
 		if (inSettlement) {
 			if (isObservatoryAttached) {
@@ -355,7 +355,7 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 
-		return person.isUnFit();
+		return person.isSuperUnFit();
 	}
 	
 	/**
@@ -394,7 +394,12 @@ public class ExitAirlock extends Task {
 		List<Integer> list = new ArrayList<>(airlock.getOccupants());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
-			if (p != person && p.getSuit() != null
+			// Filter checking on this person doing the ExitAirlock
+			// Check on others only
+			if (p != person 
+				// Is that person wearing a suit	
+				&& p.getSuit() != null
+				// Is that person already prebreating half way through
 				&& p.getPhysicalCondition().isAtLeastHalfDonePrebreathing()) {
 				return true;
 			}
@@ -411,11 +416,16 @@ public class ExitAirlock extends Task {
 	public boolean isOccupantAQuarterPrebreathed() {
 		// Verify occupant's whereabout first
 		airlock.checkOccupantIDs();
-		
+
 		List<Integer> list = new ArrayList<>(airlock.getOccupants());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
-			if (p != person && p.getSuit() != null
+			// Filter checking on this person doing the ExitAirlock
+			// Check on others only
+			if (p != person 
+				// Is that person wearing a suit	
+				&& p.getSuit() != null
+				// Is that person already prebreating a quarter way through
 				&& p.getPhysicalCondition().isAtLeastAQuarterDonePrebreathing()) {
 				return true;
 			}
@@ -436,7 +446,12 @@ public class ExitAirlock extends Task {
 		List<Integer> list = new ArrayList<>(airlock.getOccupants());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
-			if (p != person && p.getSuit() != null
+			// Filter checking on this person doing the ExitAirlock
+			// Check on others only
+			if (p != person 
+				// Is that person wearing a suit	
+				&& p.getSuit() != null
+				// Is that person already prebreating 3/4 way through
 				&& p.getPhysicalCondition().isAtLeast3QuartersDonePrebreathing()) {
 				return true;
 			}
@@ -489,7 +504,7 @@ public class ExitAirlock extends Task {
 		}
 
 		if (isOccupantAQuarterPrebreathed()) {
-			walkAway(person, "Can't egress. " + PREBREATH_QUARTER_DONE + 
+			walkAway(person, "Can't egress. " + PREBREATH_ONE_QUARTER_DONE + 
 					" Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
@@ -615,7 +630,7 @@ public class ExitAirlock extends Task {
 		}
 		
 		if (isOccupantAQuarterPrebreathed()) {
-			walkAway(person, "Can't egress. " + PREBREATH_QUARTER_DONE);
+			walkAway(person, "Can't egress. " + PREBREATH_ONE_QUARTER_DONE);
 			return time;
 		}
 		
@@ -778,8 +793,8 @@ public class ExitAirlock extends Task {
 			return time;
 		}
 
-		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't walk to chamber - " + PREBREATH_HALF_DONE);
+		if (isOccupant3QuartersPrebreathed()) {
+			walkAway(person, "Can't walk to chamber. " + PREBREATH_THREE_QUARTERS_DONE);
 			return time;
 		}
 		
@@ -853,13 +868,13 @@ public class ExitAirlock extends Task {
 	 */
 	private double donEVASuit(double time) {
 
-		if (isUnFit()) {
+		if (isSuperUnFit()) {
 			walkAway(person, NOT_FIT + " to don an EVA suit.");
 			return time;
 		}
 
 		if (isOccupant3QuartersPrebreathed()) {
-			walkAway(person, CANT_DON_SUIT + PREBREATH_3QUARTERS_DONE);
+			walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
 			return time;
 		}
 		
@@ -876,7 +891,6 @@ public class ExitAirlock extends Task {
 				setPhase(PRESSURIZE_CHAMBER);
 				return time;
 			}
-
 
 			EquipmentOwner housing = null;
 			
@@ -960,7 +974,7 @@ public class ExitAirlock extends Task {
 	 */
 	private double prebreathe(double time) {
 
-		if (isUnFit()) {
+		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
 			checkIn(person, airlock.getEntity());
 			
@@ -968,13 +982,13 @@ public class ExitAirlock extends Task {
 			return time;
 		}
 		
-		if (isOccupant3QuartersPrebreathed()) {
-			// Get back the garment and thermal bottle
-			checkIn(person, airlock.getEntity());
-			
-			walkAway(person, CANT_DON_SUIT + PREBREATH_3QUARTERS_DONE);
-			return time;
-		}
+//		if (isOccupant3QuartersPrebreathed()) {
+//			// Get back the garment and thermal bottle
+//			checkIn(person, airlock.getEntity());
+//			
+//			walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
+//			return time;
+//		}
 		
 		boolean canProceed = false;
 		
@@ -1036,7 +1050,7 @@ public class ExitAirlock extends Task {
 
 		boolean canProceed = false;
 	
-		if (isUnFit()) {
+		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
 			checkIn(person, airlock.getEntity());
 			
@@ -1044,9 +1058,9 @@ public class ExitAirlock extends Task {
 			return time;
 		}
 		
-		if (isOccupantHalfPrebreathed()) {
-			// just wait for others to finish prebreathing
-		}		
+//		if (isOccupantHalfPrebreathed()) {
+//			// just wait for others to finish prebreathing
+//		}		
 		
 		else if (airlock.isDepressurizing()) {
 			// just wait for depressurization to finish
@@ -1068,20 +1082,26 @@ public class ExitAirlock extends Task {
 				airlock.setTransitioning(true);
 			}
 			
-			Set<Person> list = airlock.noEVASuit();
-			
-			if (!list.isEmpty()) {
-				// Everyone has an EVA suit
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"Could not depressurize " + airlock.getEntity().toString()
-						+ ". " + list + " inside not wearing EVA suit.");
+			// Gets a set of settlers without wearing EVA suits
+			Set<Person> noEVASuit = airlock.noEVASuit();
 
-				for (Person p: list) {
+			if (noEVASuit.isEmpty()) {
+				// Great that everyone has an EVA suit on
+				
+				// Now just wait for the depressurization to complete
+			}
+			else {
+				for (Person p: noEVASuit) {
+					
+					// Get back the garment and thermal bottle
+					checkIn(p, airlock.getEntity());
+					
 					// Without an EVA suit, one needs to leave the airlock 
 					// while the airlock is still being pressurized 
-					walkAway(p, "Without EVA Suit.");
-					logger.log(p, Level.WARNING, 4_000,
-							"Ran out of time to don EVA suit. Cancelling EVA egress.");
+					walkAway(p, "Haven't donned EVA Suit.");
+					
+					logger.log((Unit)airlock.getEntity(), p, Level.WARNING, 4_000,
+							"Can't egree. Airlock about to be depressurized. Not enough time to don EVA suit.");
 				}
 			}
 		}

@@ -1064,7 +1064,7 @@ public abstract class Airlock implements Serializable {
 		return getAllInsideOccupants()
 				.stream()
 				.map(i -> getPersonByID(i))
-				.filter(p -> (p == null))
+				.filter(p -> (p.getSuit() == null))
 				.collect(Collectors.toSet());
 	}
 
