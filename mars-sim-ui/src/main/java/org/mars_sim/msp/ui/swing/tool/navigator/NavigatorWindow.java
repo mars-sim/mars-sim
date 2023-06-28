@@ -504,10 +504,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param isAdding
 	 */
 	public void createSettlementPane(boolean isAdding) {   
+	    settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    JLabel label = new JLabel("Select a settlement: ");
 	    settlementPane.add(label);
 	    
-	    settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
     	settlementPane.add(settlementComboBox);
     	
 	    if (isAdding)
