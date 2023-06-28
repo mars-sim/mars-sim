@@ -111,74 +111,78 @@ public abstract class CollectResourcesMission extends EVAMission
 		
 		Settlement s = startingPerson.getSettlement();
 
-		if (s != null && !isDone()) {
-			setResourceID(resourceID);
-			this.collected = new HashMap<>();
-			this.containerID = containerID;
-			setEVAEquipment(containerID, containerNum);
+		if (s == null && isDone()) {
+			return;
+		}
+		
+		setResourceID(resourceID);
+		this.collected = new HashMap<>();
+		this.containerID = containerID;
+		setEVAEquipment(containerID, containerNum);
 
-			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
-				logger.warning(getVehicle(), "Not enough members recruited for mission " 
-						+ getName() + ".");
-				endMission(NOT_ENOUGH_MEMBERS);
+		// Recruit additional members to mission.
+		if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
+			logger.warning(getVehicle(), "Not enough members recruited for mission " 
+					+ getName() + ".");
+			endMission(NOT_ENOUGH_MEMBERS);
+			return;
+		}
+
+		// Check vehicle
+		if (!hasVehicle()) {
+			return;
+		}
+			
+		// Get the current location.
+		Coordinates startingLocation = s.getCoordinates();
+		double range = getVehicle().getRange();
+		double timeLimit = getRover().getTotalTripTimeLimit(true);
+
+		// Determining the actual traveling range.
+		double timeRange = getTripTimeRange(timeLimit, numSites, true);
+		if (timeRange < range)
+			range = timeRange;
+		if (range <= 0D) {
+			logger.warning(getVehicle(), "Zero range for mission " 
+					+ getName() + ".");
+			endMission(NO_AVAILABLE_VEHICLES);
+			return;
+		}
+
+		// Find some sites
+		List<Coordinates> unorderedSites = null;
+		while (unorderedSites == null) {
+			unorderedSites = determineCollectionSites(startingLocation, range, numSites);
+
+			if (!isValidScore(totalSiteScore)) {
+				totalSiteScore = 0;
+				unorderedSites = null;
+				logger.warning(startingPerson, getName() + " attempt another collection site find");
+			}
+
+			// Mission might be aborted at determine site step
+			if (isDone()) {
+				logger.warning(startingPerson, getName() + " site searched & mission aborted");
 				return;
 			}
+		}
 
-			// Determine collection sites
-			if (hasVehicle()) {
-				// Get the current location.
-				Coordinates startingLocation = s.getCoordinates();
-				double range = getVehicle().getRange();
-				double timeLimit = getRover().getTotalTripTimeLimit(true);
+		// Reorder sites for shortest distance and load
+		List<Coordinates> orderSites = getMinimalPath(startingLocation, unorderedSites);
+		addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
-				// Determining the actual traveling range.
-				double timeRange = getTripTimeRange(timeLimit, numSites, true);
-				if (timeRange < range)
-					range = timeRange;
-				if (range <= 0D) {
-					logger.warning(getVehicle(), "Zero range for mission " 
-							+ getName() + ".");
-					endMission(NO_AVAILABLE_VEHICLES);
-					return;
-				}
+		double containerCap = ContainerUtil.getContainerCapacity(containerID);
+		this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
+		logger.info(getVehicle(), "Target amount of resource per site: "
+				+ (int)siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
+				+ ".");
 
-				// Find some sites
-				List<Coordinates> unorderedSites = null;
-				while (unorderedSites == null) {
-					unorderedSites = determineCollectionSites(startingLocation, range, numSites);
+		// Add home settlement for return
+		addNavpoint(s);
 
-					if (!isValidScore(totalSiteScore)) {
-						totalSiteScore = 0;
-						unorderedSites = null;
-						logger.warning(startingPerson, getName() + " attempt another collection site find");
-					}
-
-					// Mission might be aborted at determine site step
-					if (isDone()) {
-						logger.warning(startingPerson, getName() + " site searched & mission aborted");
-						return;
-					}
-				}
-
-				// Reorder sites for shortest distance and load
-				List<Coordinates> orderSites = getMinimalPath(startingLocation, unorderedSites);
-				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
-
-				double containerCap = ContainerUtil.getContainerCapacity(containerID);
-				this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
-				logger.info(getVehicle(), "Target amount of resource per site: "
-						+ (int)siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
-						+ ".");
-			}
-
-			// Add home settlement for return
-			addNavpoint(s);
-
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(CANNOT_LOAD_RESOURCES);
-			}
+		// Check if vehicle can carry enough supplies for the mission.
+		if (hasVehicle() && !isVehicleLoadable()) {
+			endMission(CANNOT_LOAD_RESOURCES);
 		}
 
 		if (!isDone()) {
@@ -213,14 +217,13 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.collected = new HashMap<>();
 		this.containerID = containerID;
 		setEVAEquipment(containerID, containerNum);
-
+		
 		// Set collection navpoints.
 		addNavpoints(collectionSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 		// Add home navpoint.
-		Settlement s = getStartingSettlement();
-		addNavpoint(s);
-
+		addNavpoint(getStartingSettlement());
+		
 		// Add mission members.
 		addMembers(members, false);
 

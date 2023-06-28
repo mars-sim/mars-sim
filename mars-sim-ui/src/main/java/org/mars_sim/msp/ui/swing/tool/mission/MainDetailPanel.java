@@ -881,17 +881,22 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 			} else if (type == MissionEventType.DISTANCE_EVENT) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
-				try {
-					int distanceNextNav = (int) vehicleMission.getDistanceCurrentLegRemaining();
-					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(distanceNextNav)); //$NON-NLS-1$
-				} catch (Exception e2) {
-				}
+
+				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
 						estTotalDistance
 						));
+				
+				try {
+					// Make sure to call getTotalDistanceTravelled first. 
+					// It should be by default already been called in performPhase's TRAVELLING
+					int distanceNextNav = (int) vehicleMission.getDistanceCurrentLegRemaining();
+					distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(distanceNextNav)); //$NON-NLS-1$
+				} catch (Exception e2) {
+				}
 			}
 
 			// Update custom mission panel.

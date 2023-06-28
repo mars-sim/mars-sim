@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.environment.ExploredLocation;
@@ -75,8 +77,8 @@ public class Exploration extends EVAMission
 	private Map<String, Double> explorationSiteCompletion;
 	/** The current exploration site. */
 	private ExploredLocation currentSite;
-	/** List of sites explored by this mission. */
-	private List<ExploredLocation> exploredSites;
+	/** The set of sites to be explored by this mission. */
+	private Set<ExploredLocation> exploredSites;
 
 	/**
 	 * Constructor.
@@ -166,12 +168,15 @@ public class Exploration extends EVAMission
 		numSites = explorationSites.size();
 		
 		// Initialize explored sites.
-		exploredSites = new ArrayList<>(numSites);
+		if (exploredSites == null || exploredSites.isEmpty())
+			exploredSites = new HashSet<>(numSites);
+		
 		explorationSiteCompletion = new HashMap<>(numSites);
+		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX, REQUIRED_SPECIMEN_CONTAINERS);
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
-		for(Coordinates c : explorationSites) {
+		for (Coordinates c : explorationSites) {
 			createAExploredSite(c);
 		}
 
@@ -210,14 +215,18 @@ public class Exploration extends EVAMission
 	 * @return
 	 */
 	private ExploredLocation retrieveCurrentSite() {
-		Coordinates current = getCurrentMissionLocation();
-		for (ExploredLocation e: exploredSites) {
-			if (e.getLocation().equals(current))
-				return e;
+		
+		if (exploredSites != null && !exploredSites.isEmpty()) {
+			Coordinates current = getCurrentMissionLocation();
+			for (ExploredLocation e: exploredSites) {
+				if (e.getLocation().equals(current))
+					return e;
+			}
+			// Should never get here
+			return createAExploredSite(current);
 		}
-
-		// Should never get here
-		return createAExploredSite(current);
+		
+		return null;
 	}
 
 	/**
@@ -243,6 +252,7 @@ public class Exploration extends EVAMission
 			currentSite = retrieveCurrentSite();
 			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
+		
 		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
 
 		// If person can explore the site, start that task.
@@ -276,14 +286,21 @@ public class Exploration extends EVAMission
 	 */
 	private ExploredLocation createAExploredSite(Coordinates siteLocation) {
 
-		// Make sure site is not known already
+		int rand = RandomUtil.getRandomInt(1, 5);
+		
+		// Check if this siteLocation has already been added or not to SurfaceFeatures
 		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation);
 		if (el == null) {
+			// Proceed if it hasn't
 			el = surfaceFeatures.addExploredLocation(siteLocation,
-					0, getStartingSettlement());
+					rand, getStartingSettlement());
+
+			if (exploredSites == null || exploredSites.isEmpty())
+				exploredSites = new HashSet<>();
+			if (el != null)
+				exploredSites.add(el);
 		}
 
-		exploredSites.add(el);
 		return el;
 	}
 
@@ -340,22 +357,31 @@ public class Exploration extends EVAMission
 		// Determine the first exploration site.
 		Coordinates startingLocation = getCurrentMissionLocation();
 		Coordinates currentLocation = null;
+		ExploredLocation el = null;
 		
+		// Find mature sites to explore
 		List<Coordinates> outstandingSites = findCandidateSites(startingLocation);
 		if (!outstandingSites.isEmpty()) {
 			currentLocation = outstandingSites.remove(0);
 		}
+		
 		else {
 			limit = range / 2D;
-	
+
 			// Use the confidence score to limit the range
 			double distance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			
 			currentLocation = determineFirstExplorationSite(distance, areologySkill);
+			
+			// Creates an initial explored site in SurfaceFeatures
+			el = createAExploredSite(currentLocation);
 		}
-		
+
 		if (currentLocation != null) {
 			unorderedSites.add(currentLocation);
+		}
+		else if (el == null) {
+			logger.info(CollectionUtils.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to analyze map more.");
 		}
 		else
 			throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");
@@ -431,17 +457,19 @@ public class Exploration extends EVAMission
 
 		Settlement home = getStartingSettlement();
 
-		int rand = RandomUtil.getRandomRegressionInteger(100);
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
 		List<Coordinates> candidateLocs = surfaceFeatures.getExploredLocations().stream()
-				.filter(e -> e.getNumEstimationImprovement() < rand)
+				.filter(e -> e.getNumEstimationImprovement() < 
+						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
 				.map(ExploredLocation::getLocation)
 				.collect(Collectors.toList());
+		
 		if (!candidateLocs.isEmpty()) {
 			return getMinimalPath(startingLoc, candidateLocs);
 		}
+		
 		return Collections.emptyList();
 	}
 
@@ -465,39 +493,41 @@ public class Exploration extends EVAMission
 	/**
 	 * Determine the first exploration site.
 	 *
-	 * @param range         the range (km) for site.
+	 * @param dist         the dist (km) for site.
 	 * @param areologySkill the skill level in areology of the areologist starting
 	 *                      the mission.
 	 * @return first exploration site or null if none.
 	 * @throws MissionException if error determining site.
 	 */
-	private Coordinates determineFirstExplorationSite(double range, int areologySkill) {
-		Coordinates result = null;
+	private Coordinates determineFirstExplorationSite(double dist, int areologySkill) {
+//		Coordinates result = null;
 
 		Coordinates startingLocation = getCurrentMissionLocation();
 		MineralMap map = surfaceFeatures.getMineralMap();
-		Coordinates randomLocation = map.findRandomMineralLocation(startingLocation, range);
-		if (randomLocation != null) {
-			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			if (areologySkill <= 0) {
-				areologySkill = 1;
-			}
-			double distance = RandomUtil.getRandomDouble(10, 500D / areologySkill);
-			result = randomLocation.getNewLocation(direction, distance);
-			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
-			if (distanceFromStart > range) {
-				Direction direction2 = startingLocation.getDirectionToPoint(result);
-				result = startingLocation.getNewLocation(direction2, range);
-			}
-		} else {
-			// Use random direction and distance for first location
-			// if no minerals found within range.
-			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			double distance = RandomUtil.getRandomDouble(1, range);
-			result = startingLocation.getNewLocation(direction, distance);
-		}
-
-		return result;
+		return map.findRandomMineralLocation(startingLocation, dist);
+//		if (randomLocation != null) {
+//			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+//			if (areologySkill <= 0) {
+//				areologySkill = 1;
+//			}
+//			double distance = RandomUtil.getRandomDouble(10, 500D / areologySkill);
+//			result = randomLocation.getNewLocation(direction, distance);
+//			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
+//			if (distanceFromStart > dist) {
+//				Direction direction2 = startingLocation.getDirectionToPoint(result);
+//				result = startingLocation.getNewLocation(direction2, dist);
+//			}
+//		} 
+//		
+//		else {
+//			// Use random direction and distance for first location
+//			// if no minerals found within range.
+//			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+//			double distance = RandomUtil.getRandomDouble(1, dist);
+//			result = startingLocation.getNewLocation(direction, distance);
+//		}
+//
+//		return randomLocation;
 	}
 
 	/**
@@ -505,7 +535,7 @@ public class Exploration extends EVAMission
 	 *
 	 * @return list of explored sites.
 	 */
-	public List<ExploredLocation> getExploredSites() {
+	public Set<ExploredLocation> getExploredSites() {
 		return exploredSites;
 	}
 
@@ -556,9 +586,9 @@ public class Exploration extends EVAMission
 
 		int count = 0;
 		double siteValue = 0D;
-		for (ExploredLocation e : exploredSites) {
+		for (ExploredLocation el : exploredSites) {
 			count++;
-			siteValue += Mining.getMiningSiteValue(e, reviewerSettlement);
+			siteValue += Mining.getMiningSiteValue(el, reviewerSettlement);
 		}
 
 		if (count == 0)

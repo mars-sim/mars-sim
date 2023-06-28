@@ -381,7 +381,7 @@ public class MiningSitePanel extends WizardPanel {
 			Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
-				if (!site.isReserved() && !site.isMined() && site.isExplored()) {
+				if (!site.isReserved() && site.isMinable() && site.isExplored()) {
 					double clickRange = site.getLocation().getDistance(clickedPosition);
 					if ((clickRange <= CLICK_RANGE) && (clickRange < closestRange)) {
 						closestSite = site;

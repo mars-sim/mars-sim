@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.function.Computation;
@@ -86,7 +87,7 @@ public class AnalyzeMapData extends Task {
 	
 		List<ExploredLocation> siteList0 = surfaceFeatures
     			.getExploredLocations().stream()
-    			.filter(site -> !site.isMined())
+    			.filter(site -> site.isMinable())
     			.collect(Collectors.toList());
 
 		int num = siteList0.size();
@@ -97,7 +98,8 @@ public class AnalyzeMapData extends Task {
 		}
 		else {
 			List<ExploredLocation> siteList1 = siteList0.stream()
-	    			.filter(site -> site.getNumEstimationImprovement() < 30)
+	    			.filter(site -> site.getNumEstimationImprovement() < 
+	    					RandomUtil.getRandomDouble(0, Mining.MATURE_ESTIMATE_NUM * 10))
 	    			.collect(Collectors.toList());
 			
 			num = siteList1.size();
@@ -126,7 +128,7 @@ public class AnalyzeMapData extends Task {
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		 logger.log(person, Level.FINE, 10_000, "Total computing needs: " 
+		logger.log(person, Level.INFO, 20_000, "Total computing needs: " 
 		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
 		 		+ " CUs. score: " 
 		 		+ Math.round(score * 1000.0)/1000.0 + ". rand: "
@@ -243,11 +245,11 @@ public class AnalyzeMapData extends Task {
 	 * Improves the mineral concentration estimates of an explored site.
 	 *
 	 * @param time the amount of time available (millisols).
-     * @param improvement
+     * @param effort
      */
-	private void improveMineralConcentrationEstimates(double time, double improvement) {
+	private void improveMineralConcentrationEstimates(double time, double effort) {
 
-		double probability = (time * siteTime / 1000.0) * improvement;
+		double probability = (time * siteTime / 1000.0) * effort;
 		if (probability > .9)
 			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {

@@ -27,7 +27,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconExplored;
-	private Icon navpointIconMined;
+	private Icon navpointIconMinable;
 	private Icon navpointIconSelected;
 	private boolean displayMined;
 	private boolean displayReserved;
@@ -45,7 +45,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
 		navpointIconExplored = ImageLoader.getIconByName(EXPLORED_ICON_NAME);
-		navpointIconMined = ImageLoader.getIconByName(MINED_ICON_NAME);
+		navpointIconMinable = ImageLoader.getIconByName(MINED_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIconByName(SELECTED_ICON_NAME);
 		displayMined = true;
 		displayReserved = true;
@@ -90,7 +90,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
-            if (site.isMined() && !displayMined)
+            if (!site.isMinable() && !displayMined)
 				displaySite = false;
 			if (!site.isExplored())
 				displaySite = false;
@@ -115,8 +115,8 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 			Icon navIcon = null;
 			if (site.equals(selectedSite))
 				navIcon = navpointIconSelected;
-			else if (site.isMined())
-				navIcon = navpointIconMined;
+			else if (site.isMinable())
+				navIcon = navpointIconMinable;
 			else
 				navIcon = navpointIconExplored;
 

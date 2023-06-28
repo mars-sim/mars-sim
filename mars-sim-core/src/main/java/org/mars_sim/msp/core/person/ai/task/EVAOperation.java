@@ -511,7 +511,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void abortEVA(String reason) {
 		if (reason != null) {
- 			logger.warning(worker, "EVA " + getName() + " aborted:" + reason);
+ 			logger.warning(worker, "EVA " + getName() + " aborted: " + reason);
 		}
 		
 		if (person.isOutside())

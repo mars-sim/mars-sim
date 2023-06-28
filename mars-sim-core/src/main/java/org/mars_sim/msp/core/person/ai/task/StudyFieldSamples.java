@@ -557,11 +557,11 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 		Mission mission = person.getMind().getMission();
 		if ((mission != null) && (mission instanceof Exploration)) {
 			Exploration explorationMission = (Exploration) mission;
-			List<ExploredLocation> exploredSites = explorationMission.getExploredSites();
+			List<ExploredLocation> exploredSites = new ArrayList<>(explorationMission.getExploredSites());
 			if (exploredSites.size() > 0) {
 				int siteIndex = RandomUtil.getRandomInt(exploredSites.size() - 1);
 				ExploredLocation location = exploredSites.get(siteIndex);
-				if (!location.isMined() && !location.isReserved()) {
+				if (location.isMinable() && !location.isReserved()) {
 					result = location;
 				}
 			}
@@ -586,7 +586,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 			Iterator<ExploredLocation> i = allExploredLocations.iterator();
 			while (i.hasNext()) {
 				ExploredLocation location = i.next();
-				if (settlement.equals(location.getSettlement()) && !location.isMined() && !location.isReserved()) {
+				if (settlement.equals(location.getSettlement()) && location.isMinable() && !location.isReserved()) {
 					settlementExploredLocations.add(location);
 				}
 			}

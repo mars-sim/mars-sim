@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -73,7 +74,7 @@ public class Mining extends EVAMission
 	 * The minimum number of mineral concentration estimation improvements for an
 	 * exploration site for it to be considered mature enough to mine.
 	 */
-	public static final int MATURE_ESTIMATE_NUM = 10;
+	public static final int MATURE_ESTIMATE_NUM = 50;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
 
@@ -352,8 +353,10 @@ public class Mining extends EVAMission
 	protected void endEVATasks() {
 		super.endEVATasks();
 
-		// Mark site as mined.
-		miningSite.setMined(true);
+		double remainingMass = miningSite.getRemainingMass();
+		if (remainingMass < 100)
+			// Mark site as mined.
+			miningSite.setMinable(false);
 
 		// Attach light utility vehicle for towing.
 		Rover rover = getRover();
@@ -447,9 +450,10 @@ public class Mining extends EVAMission
 			}
 
 			for(ExploredLocation site : surfaceFeatures.getExploredLocations()) {
-				boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
+				boolean isMature = (site.getNumEstimationImprovement() >= 
+						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
 
-				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature
+				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
@@ -488,8 +492,9 @@ public class Mining extends EVAMission
 			}
 
 			for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
-				boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
-				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature
+				boolean isMature = (site.getNumEstimationImprovement() >= 
+						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
+				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
@@ -520,13 +525,14 @@ public class Mining extends EVAMission
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double reserve = site.getRemainingMass();
-			double mineralAmount = (conc.getValue() / 100) * reserve * MINERAL_BASE_AMOUNT;
+			double mineralAmount = (conc.getValue() / 100) * reserve / 1_000 * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
 
 		result = Math.min(MAX, result);
 		
-		logger.info(settlement, "Estimating a mining site at " + site.getLocation() + " has a value of " + Math.round(result * 1000.0)/1000.0);
+		logger.info(settlement, 30_000L, site.getLocation() 
+			+ " has an mining value of " + Math.round(result * 100.0)/100.0 + ".");
 		
 		return result;
 	}

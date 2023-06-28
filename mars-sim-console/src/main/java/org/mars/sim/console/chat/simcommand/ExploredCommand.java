@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Command to display details of Explored Locations. The locations are filtered
@@ -63,8 +64,9 @@ public class ExploredCommand extends ChatCommand {
  				}
 
 				if (hasMinerals) {
+					int rand = RandomUtil.getRandomInt(1, 5);
 					// Add new site but at maximum estimation improvement
-					ExploredLocation newSite = surface.addExploredLocation(siteLocation, Mining.MATURE_ESTIMATE_NUM, null);
+					ExploredLocation newSite = surface.addExploredLocation(siteLocation, rand, null);
 					newSite.setExplored(true);
 				}
 				else {
@@ -125,7 +127,7 @@ public class ExploredCommand extends ChatCommand {
 				}
 			}
 			
-			String status = (s.isMined() ? "Mined" : (s.isReserved() ? "Reserved" : (s.isExplored() ? "Explored" : "")));
+			String status = (s.isMinable() ? "Minable" : (s.isReserved() ? "Reserved" : (s.isExplored() ? "Explored" : "")));
 			Settlement owner = s.getSettlement();
 			response.appendTableRow(s.getLocation().getFormattedString(),
 									(owner != null ? owner.getName() : ""),

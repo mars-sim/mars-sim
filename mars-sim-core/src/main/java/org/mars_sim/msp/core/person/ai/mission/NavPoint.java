@@ -26,6 +26,7 @@ public class NavPoint implements Serializable {
 	private Settlement settlement;
 	/** The description of the navpoint. */
 	private String description;
+	
 	private double distance;
 
 	/**

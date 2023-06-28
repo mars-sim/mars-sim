@@ -22,15 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig.MineralType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -41,7 +42,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(RandomMineralMap.class.getName());
 
 	private static final int W = 300;
 	private static final int H = 150;
@@ -264,7 +265,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		int num = 0;
 		if ((isGlobal)) {
 			num = (int)(Math.round(RandomUtil.getRandomDouble(.75, 1.25) 
-					* REGION_FACTOR / 2500 * length
+					* REGION_FACTOR / 1800 * length
 					/ getFrequencyModifier(mineralType.frequency)));
 		}
 		else {
@@ -444,7 +445,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		
 		return newMap;
 	}
-	
+
 	/**
 	 * Gets all of the mineral concentrations at a given location.
 	 * 
@@ -526,7 +527,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 *         found.
 	 */
 	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
-		Coordinates result = null;
+		Coordinates chosen = null;
 
 		List<Coordinates> locales = new ArrayList<>();
 		
@@ -538,23 +539,50 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		while (i.hasNext()) {
 			Coordinates c = i.next();
 			double distance = Coordinates.computeDistance(startingLocation, c);
-			if (range > distance) {
+			if (range >= distance) {
 				locales.add(c);
 			}
 		}
 
-		if (locales.size() > 0) {
-			int index = RandomUtil.getRandomInt(locales.size() - 1);
-			Coordinates c = locales.get(index);
-			double distance = Coordinates.computeDistance(startingLocation, c);
-			if (range < distance) {
-				Direction direction = startingLocation.getDirectionToPoint(c);
-				result = startingLocation.getNewLocation(direction, range);
-			} else
-				result = c;
+		int size = locales.size();
+		
+		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
+				"Found potentially " + size 
+				+ " mineral sites to explore within " + Math.round(range * 10.0)/10.0 + " km.");
+		
+		if (size <= 0) {
+			return null;
 		}
+		
+		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		
+		Coordinates closestC = null;
+		double shortestD = range;
+		
+		for (int j = 0; j < size; j++) {
+			Coordinates c = locales.get(j);
+			double distance = Coordinates.computeDistance(startingLocation, c);
 
-		return result;
+			// Fill up the weight map
+			weightedMap.put(c, (range - distance) / range);
+			
+//			if (distance < shortestD) {
+//				shortestD = distance;
+//				closestC = c;
+//			}
+		}
+		
+//		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
+//				"Nearest mineral site: " + closestC + " (" + Math.round(shortestD * 10.0)/10.0 + " km).");
+		
+		// Choose one with weighted randomness 
+		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+		double chosenDist = weightedMap.get(chosen);
+		
+		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
+				"Chosen to investigate mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
+
+		return chosen;
 	}
 
 	@Override

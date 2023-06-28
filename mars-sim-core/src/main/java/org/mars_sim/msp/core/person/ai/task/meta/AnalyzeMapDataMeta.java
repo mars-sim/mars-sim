@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.AnalyzeMapData;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -29,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final int VALUE = 5;
+	private static final int VALUE = 10;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -60,12 +61,12 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	return 0;
         
         if (person.isInside()) {
-        	int rand = RandomUtil.getRandomInt(0, 30);
-        	
+
         	List<ExploredLocation> siteList = surfaceFeatures
         			.getExploredLocations().stream()
-        			.filter(site -> !site.isMined()
-        					&& site.getNumEstimationImprovement() < rand)
+        			.filter(site -> site.isMinable()
+        					&& site.getNumEstimationImprovement() < 
+        						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
         			.collect(Collectors.toList());  	
         	
         	int num = siteList.size();

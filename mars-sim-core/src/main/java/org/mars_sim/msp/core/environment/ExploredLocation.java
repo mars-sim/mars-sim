@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class ExploredLocation implements Serializable {
 	private static final int AVERAGE_RESERVE_MASS = 10_000;
 	
 	// Private members.
-	private boolean mined;
+	private boolean minable;
 	private boolean explored;
 	private boolean reserved;
 	private int numEstimationImprovement;
@@ -65,7 +66,7 @@ public class ExploredLocation implements Serializable {
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
-		mined = false;
+		minable = false;
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
@@ -80,8 +81,8 @@ public class ExploredLocation implements Serializable {
 		totalMass = reserve; //RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
 		remainingMass = totalMass;
 		
-		logger.info(settlement + " - " + location.getFormattedString() 
-			+ "  Estimated reserve: " + (int)totalMass + " kg. % Concentration: "
+		logger.info(settlement, location.getFormattedString() 
+			+ " has estimated reserve of " + (int)totalMass + " kg.  % Minerals: "
 			+  estimatedMineralConcentrations);
 	}
 
@@ -137,42 +138,114 @@ public class ExploredLocation implements Serializable {
 	/**
 	 * Improves the certainty of mineral concentration estimation.
 	 */
-	public void improveCertainty() {
+	public void improveCertainty(int skill) {
+			
+		List<String> minerals = new ArrayList<>(estimatedMineralConcentrations.keySet());
 		
-		List<String> minerals = new ArrayList<>(degreeCertainty.keySet());
+		Collections.shuffle(minerals);
 		
-		int rand = RandomUtil.getRandomInt(minerals.size() - 1);
+		int size = minerals.size();
 		
-		String aMineral = minerals.get(rand);
-		
-		
-		
+		for (int i = 0; i < size; i++) {
+			// Pick this mineral
+			String aMineral = minerals.get(i);
+			
+			double conc = estimatedMineralConcentrations.get(aMineral);
+			
+			if (conc <= 0) {
+				continue;
+			}
+	
+			if (degreeCertainty != null && !degreeCertainty.isEmpty()
+					&& degreeCertainty.containsKey(aMineral)) {
+				
+				double certainty = degreeCertainty.get(aMineral);
+				
+				if (certainty >= 100) {
+					continue;
+				}
+				
+				// Improvement is skill based
+				double rand = RandomUtil.getRandomDouble(1, 5) * (1 + skill);
+				
+				double newCertainty = rand * certainty / 100;
+				
+				if (certainty > 100) {
+					certainty = 100;
+				}
+				
+				logger.info(settlement, location.getFormattedString() + " Degree of estimation certainty improved on " 
+						+ aMineral + ": " + Math.round(newCertainty * 10.0)/10.0 + " %");
+				
+				degreeCertainty.put(aMineral, newCertainty);
+						
+				break;
+			}
+			
+			else {
+				degreeCertainty = new HashMap<>();			
+
+				// Improvement is skill based
+				double newCertainty = RandomUtil.getRandomDouble(1, 5) * (1 + skill);
+				
+				logger.info(settlement, location.getFormattedString() + " Degree of estimation certainty improved on " 
+						+ aMineral + ": " + Math.round(newCertainty * 10.0)/10.0 + " %");
+				
+				degreeCertainty.put(aMineral, newCertainty);
+				
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Returns the degree of certainty map.
+	 * 
+	 * @return
+	 */
+	public Map<String, Double> getDegreeCertainty() {
+		return degreeCertainty;
+	}
+	
+	/**
+	 * Returns the degree of certainty of a mineral.
+	 * 
+	 * @param mineral
+	 * @return
+	 */
+	public double getDegreeCertainty(String mineral) {
+		if (degreeCertainty != null 
+				&& !degreeCertainty.isEmpty()
+				&& degreeCertainty.containsKey(mineral)) {
+			return degreeCertainty.get(mineral);
+		}
+		return 0;
 	}
 	
 	/**
 	 * Adds an mineral concentration estimation improvement.
 	 */
-	public void addEstimationImprovement() {
+	public void addEstimationImprovement(int skill) {
 		numEstimationImprovement++;
-		improveCertainty();
+		improveCertainty(skill);
 	}
 
 	/**
-	 * Sets if the location has been mined or not.
+	 * Sets if this site is still minable or not .
 	 *
-	 * @param mined true if mined.
+	 * @param value true if minable.
 	 */
-	public void setMined(boolean mined) {
-		this.mined = mined;
+	public void setMinable(boolean value) {
+		this.minable = value;
 	}
 
 	/**
-	 * Checks if the location has been mined or not.
+	 * Checks if this site is minable or not.
 	 *
-	 * @return true if mined.
+	 * @return true if minable.
 	 */
-	public boolean isMined() {
-		return mined;
+	public boolean isMinable() {
+		return minable;
 	}
 
 	/**

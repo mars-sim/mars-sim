@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-06-22
+ * @date 2023-06-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -149,15 +149,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JComboBoxMW<?> lonCBDir;
 	/** Minerals button. */
 	private JButton mineralsButton;
+	/** Go button. */
+	private JButton goButton;
 	
 	private JRadioButton r0;
-	
 	private JRadioButton r1;
 	
 	private JPanel settlementPane;
-	
 	private JPanel goPane;
-	
 	private JPanel bottomPane;
 	
 	/** The info label on the status bar. */
@@ -292,27 +291,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		bottomPane.setAlignmentY(TOP_ALIGNMENT);
 		twoLevelPane.add(bottomPane, BorderLayout.SOUTH);
         
-		// Prepare location entry submit button
-		JButton goButton = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-		goButton.setToolTipText("Go to the location with your specified coordinate");
-		goButton.setActionCommand(GO_THERE_ACTION);
-		goButton.addActionListener(this);
-
-		goPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		goPane.add(goButton);
-		
-		bottomPane.add(goPane);
-		
-		////////////////////////////////////////////
-		
+		// Prepare the go button and button pane
+		createGoPane(true);
+			
 		// Create the settlement combo box
         buildSettlementNameComboBox(setupSettlements());
         
-        settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-  
-        JLabel label = new JLabel("Select a settlement: ");
-        settlementPane.add(label);
-        settlementPane.add(settlementComboBox);
+        // Set up the label and the settlement pane
+        createSettlementPane(false);
+
 		
 		////////////////////////////////////////////
 			
@@ -493,6 +480,39 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		pack();
 	}
 
+	/**
+	 * Creates the go button.
+	 */
+	public void createGoPane(boolean isCreatingButton) {
+		
+		if (isCreatingButton) {
+			goButton = new JButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
+			goButton.setToolTipText("Go to the location with your specified coordinate");
+			goButton.setActionCommand(GO_THERE_ACTION);
+			goButton.addActionListener(this);
+		}
+		
+		goPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		goPane.add(goButton);
+		
+		bottomPane.add(goPane);
+	}
+	
+	/**
+	 * Creates the settlement pane.
+	 * 
+	 * @param isAdding
+	 */
+	public void createSettlementPane(boolean isAdding) {   
+	    JLabel label = new JLabel("Select a settlement: ");
+	    settlementPane.add(label);
+	    
+	    settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    	settlementPane.add(settlementComboBox);
+    	
+	    if (isAdding)
+			bottomPane.add(settlementPane);
+	}
 	
 	/**
 	 * Sets up a list of settlements.
@@ -656,7 +676,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						}
 
 						updateMaps(new Coordinates(latitude + " " + latDirStr, longitude + " " + longDirStr)); // $NON-NLS-1$
-
+						// FUTURE: May switch to having a prompt statement at the top of the combobox
 						settlementComboBox.setSelectedIndex(-1);
 					}
 				} catch (NumberFormatException e) {
@@ -667,16 +687,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				JCheckBoxMenuItem mineralItem = (JCheckBoxMenuItem) source;
 				boolean previous = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
 				boolean now = !previous;
-//				logger.info("Triggering " + mineralItem.getText() + " previous state: " + previous);
 				mineralItem.setSelected(now);
 				((MineralMapLayer) mineralLayer).setMineralDisplayed(mineralItem.getText(), now);
-//				now = ((MineralMapLayer) mineralLayer).isMineralDisplayed(mineralItem.getText());
 				logger.config("Just set the state of " + mineralItem.getText() + " to " + now + " in mineral layer.");
-//				if (now) {
-//					logger.info("Just turned off " + mineralItem.getText() + " in mineral layer.");
-//				} else {
-//					logger.info("Just turned on " + mineralItem.getText() + "in mineral layer.");
-//				}
 			}
 			
 			break;
@@ -1106,6 +1119,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	    public void actionPerformed(ActionEvent event) {
 	        JRadioButton button = (JRadioButton) event.getSource();
 
+			// Note: due to the behavior of FlatLAF
+			// If player changes to a different FlatLAF theme while the settlementPane is
+			// not visible, it won't get updated with the new theme color.
+			// Therefore, it's best rebuilding settlementPane and goPane when r0/r1 radio button is clicked
+			// in order to match the current color theme
+	        
 	        if (button == r0) {
 			
 				// Enable all lat lon controls
@@ -1115,7 +1134,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				lonCBDir.setEnabled(true);
 			
 				bottomPane.remove(settlementPane);
-				bottomPane.add(goPane);
+				
+				createGoPane(false);
+	
 				repaint();
 				
 	        } else if (button == r1) {
@@ -1126,7 +1147,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				lonCBDir.setEnabled(false);
 				
 				bottomPane.remove(goPane);
-				bottomPane.add(settlementPane);
+				
+				createSettlementPane(true);
+				
 				repaint();
 	        }
 	    }

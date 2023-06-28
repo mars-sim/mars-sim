@@ -678,43 +678,54 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public ExploredLocation addExploredLocation(Coordinates location,
 			int estimationImprovement, Settlement settlement) {
 		
+		ExploredLocation result = null;
+		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
+		
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
 		
+		double totalConc = 0;
+		
 		for (String mineralType : mineralTypes) {
-			double actual = mineralMap.getMineralConcentration(mineralType, location);
-
-			double estimated = 0;
-			double varianceMax = 0;
 			
-			// via the use of ExploredCommand			
-			if (estimationImprovement == Mining.MATURE_ESTIMATE_NUM) {
-				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE / 1.5;
-			}
-			else {
-				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE * 1.5;
-			}
+			double initialEst = mineralMap.getMineralConcentration(mineralType, location);
 
-			estimated = actual + RandomUtil.getRandomDouble(-varianceMax, varianceMax);
+			totalConc += initialEst;
+			
+			if (initialEst <= 0) {
+				continue;
+			}
+			
+			double variance = 1.0 / (1 + estimationImprovement);
+
+			double newEst = initialEst + initialEst * RandomUtil.getRandomDouble(-variance, variance);
 			
 			// With no improvements the estimates are capped
-			if (estimated < 0)
-				estimated = 0;
-			else if (estimated > MINERAL_ESTIMATION_MAX) {
-				estimated = MINERAL_ESTIMATION_MAX;
+			if (newEst < 0)
+				newEst = 0;
+			else if (newEst > MINERAL_ESTIMATION_MAX) {
+				newEst = MINERAL_ESTIMATION_MAX;
 			}
 			
-			logger.info(settlement, 10_000L, mineralType 
-					+ " - initial %: " + Math.round(actual * 100.0)/100.0 
-					+ "  projected %: " + Math.round(estimated* 100.0)/100.0);
+			logger.info(settlement, 0L, mineralType 
+					+ " - initial est %: " + Math.round(initialEst * 1000.0)/1000.0 
+					+ "   variance: " + Math.round(variance * 100.0)/100.0 
+					+ "   new est %: " + Math.round(newEst* 1000.0)/1000.0);
 			
-			initialMineralEstimations.put(mineralType, estimated);
+			initialMineralEstimations.put(mineralType, newEst);
 		}
 
-		ExploredLocation result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement);
-		synchronized (exploredLocations) {
-			exploredLocations.add(result);
+		if (totalConc> 0) {
+			result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement);
+			
+			synchronized (exploredLocations) {
+				exploredLocations.add(result);
+			}
 		}
+		else {
+			logger.info(settlement, location.getFormattedString() + " has no mineral concentrations.");
+		}
+		
 		return result;
 	}
 

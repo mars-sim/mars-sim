@@ -680,7 +680,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// This allows person to do other important things such as eating
 				&& RandomUtil.lessThanRandPercent(75)) {
 				
-				if (member instanceof Person) {
+				if (member.getUnitType() == UnitType.PERSON) {
 					Person person = (Person) member;
 
 					boolean hasAnotherMission = false;
@@ -844,7 +844,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 		// Set the members' work shift to on-call to get ready
 		for (Worker m : getMembers()) {
-			if (m instanceof Person) {
+			if (m.getUnitType() == UnitType.PERSON) {
 				Person pp = (Person) m;
 				// If first time this person has been caleld and there is a limit interrupt them
 				if (!pp.getShiftSlot().setOnCall(true) && (deadline > 0)) {
@@ -1479,11 +1479,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Add a Nav point for a Settlement
+	 * Add a Nav point for a Settlement.
+	 * 
 	 * @param s
 	 */
 	protected void addNavpoint(Settlement s) {
-
 		addNavpoint(new NavPoint(s, getLastNavpoint()));
 	}
 	
@@ -1787,7 +1787,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return distance (km)
 	 */
 	public final double getCurrentLegDistance() {
-		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus) && lastStopNavpoint != null) {
+		if (travelStatus != null 
+				&& TRAVEL_TO_NAVPOINT.equals(travelStatus) 
+				&& lastStopNavpoint != null) {
+			
 			NavPoint next = getNextNavpoint();
 			if (next != null) {
 				return lastStopNavpoint.getLocation().getDistance(next.getLocation());
@@ -1804,7 +1807,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	public final double computeDistanceCurrentLegRemaining() {
 		
-		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
+		if (travelStatus != null 
+				&& TRAVEL_TO_NAVPOINT.equals(travelStatus)
+				&& lastStopNavpoint != null) {
 
 			if (getNextNavpoint() == null) {
 				int offset = 2;
@@ -1817,8 +1822,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			Coordinates c1 = null;
 			
 			// In case of TravelToSettlement, it's an one-way trip
-			if (this instanceof TravelToSettlement) {
-				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
+			if (this instanceof TravelToSettlement travelToSettlement) {
+				c1 = travelToSettlement.getDestinationSettlement().getCoordinates();	
 			}
 			
 			NavPoint next = getNextNavpoint();
@@ -1898,7 +1903,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected final double computeTotalDistanceRemaining() {
 
-		double leg = computeDistanceCurrentLegRemaining();
+		double remainingLeg = computeDistanceCurrentLegRemaining();
 
 		int index = 0;
 		double navDist = 0;
@@ -1913,7 +1918,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				navDist += next.getDistance();
 		}
 		
-		double total = leg + navDist;
+		double total = remainingLeg + navDist;
 			
 		if (distanceTotalRemaining != total) {
 			// Record the distance
@@ -1933,9 +1938,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	@Override
 	public final double getTotalDistanceRemaining() {
-		return distanceTotalRemaining;
+		return computeTotalDistanceRemaining();
 	}
-	
+
 	/**
 	 * Gets the actual total distance travelled during the mission so far.
 	 *
@@ -1943,7 +1948,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	@Override
 	public double getTotalDistanceTravelled() {
-		return distanceTravelled;
+		return computeTotalDistanceTravelled();
 	}
 	
 	/**

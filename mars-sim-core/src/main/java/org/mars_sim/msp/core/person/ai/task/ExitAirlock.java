@@ -55,9 +55,9 @@ public class ExitAirlock extends Task {
 	private static final String CANT_DON_SUIT = "Can't don an EVA suit - ";
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door."; 
-	private static final String PREBREATH_HALF_DONE = "other occupant(s) already pre-breathed half-way thru.";
-	private static final String PREBREATH_QUARTER_DONE = "other occupant(s) already pre-breathed a quarter of time.";
-	private static final String PREBREATH_3QUARTERS_DONE = "other occupant(s) already pre-breathed 3/4 quarters of time.";
+	private static final String PREBREATH_HALF_DONE = "Other occupant(s) already pre-breathed half-way thru.";
+	private static final String PREBREATH_QUARTER_DONE = "Other occupant(s) already pre-breathed a quarter of time.";
+	private static final String PREBREATH_3QUARTERS_DONE = "Other occupant(s) already pre-breathed 3/4 quarters of time.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
@@ -491,7 +491,7 @@ public class ExitAirlock extends Task {
 
 		if (isOccupantAQuarterPrebreathed()) {
 			walkAway(person, "Can't egress. " + PREBREATH_QUARTER_DONE + 
-					". Current task: " + person.getTaskDescription() + ".");
+					" Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 
@@ -683,7 +683,7 @@ public class ExitAirlock extends Task {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + PREBREATH_HALF_DONE + ".");
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + PREBREATH_HALF_DONE);
 			return time;
 		}
 		
