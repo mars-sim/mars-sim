@@ -1,10 +1,16 @@
 package org.mars_sim.msp.core;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -38,6 +44,11 @@ public class TestSaving extends TestCase implements SimulationListener {
         Scenario bootstrap = config.getItem("Single Settlement");
         builder.createInitialSettlements(bootstrap);
         
+        // Find a person and add a medical complaint
+        Complaint complaint = sim.getMedicalManager().getComplaintByName(ComplaintType.APPENDICITIS);
+        Person p = (new ArrayList<>(sim.getUnitManager().getPeople())).get(0);
+        p.getPhysicalCondition().addMedicalComplaint(complaint);
+
         saveFile = File.createTempFile("save-test", ".sim");
         sim.requestSave(saveFile, this);
 
@@ -52,6 +63,13 @@ public class TestSaving extends TestCase implements SimulationListener {
         assertTrue("Simulation file exists", saveFile.isFile());
         assertTrue("Save file is not empty", saveFile.length() > 0);
 
+        // Reload it
+        UnitManager origMgr = sim.getUnitManager();
+        sim.loadSimulation(saveFile);
+        assertNotEquals("Changed Unit Manager", origMgr, sim.getUnitManager());
+
+        Person laterP = sim.getUnitManager().getPersonByID(p.getIdentifier());
+        assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious());
     }
 
     @Override
