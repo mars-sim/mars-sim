@@ -613,25 +613,38 @@ public class EatDrink extends Task {
 		}
 
 		Unit container = person.getContainerUnit();
-		
-		double amount = checkVehicleMission(eatingTime);
-					
+				
 		// Check directly from settlement
-		if (amount == 0.0 && person.isInSettlement()) {
+		if (person.isInSettlement()) {
 			// Take preserved food from container if it is available.
-			double shortfall = person.getSettlement().retrieveAmountResource(FOOD_ID, amount);
-			if (amount - shortfall > 0) {
-				amount -= shortfall;			
+			double shortfall = person.getSettlement().retrieveAmountResource(FOOD_ID, proportion);
+			if (proportion > shortfall) {
+				proportion -= shortfall;			
+			}
+		}
+		else {
+			// When inside a vehicle, retrieve food from a person or from vehicle
+		
+			if (person.isInVehicle()) {
+				// Person will try refraining from eating food while in a vehicle
+				proportion *= EatDrinkMeta.VEHICLE_FOOD_RATION;
+				proportion = consumeFoodProportion(proportion);
+			}
+			
+			else if (person.getMission() != null) {
+				// Person will tends to ration more food while on a mission
+				proportion *= EatDrinkMeta.MISSION_FOOD_RATION;
+				proportion = consumeFoodProportion(proportion);
 			}
 		}
 		
-		if (amount > 0) {
+		if (proportion > 0) {
 			// Record the amount consumed
-			pc.recordFoodConsumption(amount, 0);
+			pc.recordFoodConsumption(proportion, 0);
 			// Add to cumulativeProportion
-			cumulativeProportion += amount;
+			cumulativeProportion += proportion;
 			// Food amount eaten over this period of time.
-			double hungerRelieved = millisolPerKgFood * amount;
+			double hungerRelieved = millisolPerKgFood * proportion;
 			// Consume preserved food after eating
 			pc.reduceHunger(hungerRelieved);
 			
@@ -641,7 +654,7 @@ public class EatDrink extends Task {
 
 		} else {
 			// Not enough food available to eat, will end this task.
-			amount = 0;
+			proportion = 0;
 		}
 		
 		// Note: only allow this 'luxury' when a person is in a settlement  
@@ -667,41 +680,7 @@ public class EatDrink extends Task {
 			}
 		}				
 
-		return amount;
-	}
-	
-	/**
-	 * Checks the food proportion when in a vehicle or on a mission.
-	 * 
-	 * @param eatingTime
-	 * @return
-	 */
-	private double checkVehicleMission(double eatingTime) {
-		double amount = 0;
-
-		// Proportion of food being eaten over this time period.
-		double proportion = person.getEatingSpeed() * eatingTime;
-		if (cumulativeProportion + proportion > foodConsumedPerServing) {
-			proportion = foodConsumedPerServing - cumulativeProportion;
-		}
-				
-		if (proportion < MIN) {
-			return 0;		
-		}
-		
-		if (person.isInVehicle()) {
-			// Person will try refraining from eating food while in a vehicle
-			proportion *= EatDrinkMeta.VEHICLE_FOOD_RATION;
-			amount = consumeFoodProportion(proportion);
-		}
-		
-		else if (person.getMission() != null) {
-			// Person will tends to ration food while in a mission
-			proportion *= EatDrinkMeta.MISSION_FOOD_RATION;
-			amount = consumeFoodProportion(proportion);
-		}
-		
-		return amount;
+		return proportion;
 	}
 	
 	/**
