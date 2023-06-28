@@ -1,20 +1,18 @@
 /*
  * Mars Simulation Project
- * InventoryUtil.java
- * @date 2021-10-20
+ * EVASuitUtil.java
+ * @date 2023-06-27
  * @author Manny Kung
  */
-package org.mars_sim.msp.core;
+package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
-import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -22,20 +20,21 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * A utility class for finding resources in an inventory
+ * A utility class for finding an EVA suit from an inventory
  */
-public class InventoryUtil {
+public class EVASuitUtil {
 
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(InventoryUtil.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(EVASuitUtil.class.getName());
 
 	/**
-	 * Gets a good EVA suit
+	 * Finds the instance of a good EVA suit in a person's container unit. 
+	 * @Note: this method does not transfer the suit.
 	 *
-	 * @param p the person who may have an EVA Suit
-	 * @return
+	 * @param p 	the person who's looking for an EVA Suit
+	 * @return EVA suit's instance
 	 */
-	public static EVASuit getGoodEVASuit(Person p) {
+	public static EVASuit findAnyGoodEVASuit(Person p) {
 		Unit cu = p.getContainerUnit();
 		if (!(cu instanceof EquipmentOwner)) {
 			logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
@@ -73,16 +72,18 @@ public class InventoryUtil {
 	}
 
 	/**
-	 * Gets a good working EVA suit from an inventory.
+	 * Finds the instance of person's registered EVA suit with or without resources from a given inventory. 
+	 * @Note: this method does not transfer the suit.
 	 *
-	 * @param inv the inventory to check.
-	 * @param p the person to check.
-	 * @return EVA suit or null if none available.
+	 * @param owner 	the EquipmentOwner
+	 * @param p 		the person who's looking for an EVA Suit
+	 * @return EVA suit's instance
 	 */
-	public static EVASuit getGoodEVASuitNResource(EquipmentOwner owner, Person p) {
+	public static EVASuit findRegisteredEVASuit(EquipmentOwner owner, Person p) {
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
+		
 		for (Equipment e : owner.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
@@ -140,9 +141,9 @@ public class InventoryUtil {
 	/**
 	 * Checks if entity unit has enough resource supplies to fill the EVA suit.
 	 *
-	 * @param entityInv the entity unit.
-	 * @param suit      the EVA suit.
-	 * @return true if enough supplies.
+	 * @param owner 	the EquipmentOwner
+	 * @param suit      the EVA suit
+	 * @return true if enough supplies
 	 */
 	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
 		int otherPeopleNum = 0;

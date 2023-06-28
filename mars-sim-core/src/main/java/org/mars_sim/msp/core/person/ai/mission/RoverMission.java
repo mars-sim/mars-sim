@@ -16,12 +16,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -409,7 +409,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
 							&& !hasBaselineNumEVASuit(v)) {
 
-							EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+							EVASuit suit = EVASuitUtil.findRegisteredEVASuit(settlement, person);
 							if (suit != null && !suit.transfer(v)) {
 								logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
 									+ settlement + " to " + v + ".");
@@ -622,7 +622,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (availableSuitNum > 1 && !hasBaselineNumEVASuit(v)) {
 					// Deliver an EVA suit from the settlement to the rover
 					// Note: Need to generate a task for a person to hand deliver an extra suit
-					suit = InventoryUtil.getGoodEVASuitNResource(disembarkSettlement, p);
+					suit = EVASuitUtil.findRegisteredEVASuit(disembarkSettlement, p);
 					if (suit != null) {
 						boolean success = suit.transfer(v);
 						if (success)
@@ -796,7 +796,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
 			// Check for fitness
-			if (!person.isBarelyFit()) {
+			if (person.isSuperUnFit()) {
 				logger.warning(person, 10_000L, "Not fit to operate " + getRover() + ".");
 				return null;
 			}

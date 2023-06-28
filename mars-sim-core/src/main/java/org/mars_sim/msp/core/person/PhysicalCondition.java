@@ -1676,15 +1676,25 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is barely fit.
+	 * Checks if a person is super unfit.
 	 *
-	 * @return true if a person is barely fit
+	 * @return true if a person is super fit
 	 */
-	public boolean isBarelyFit() {
-        return !(fatigue > 750) && !(stress > 75) && !(hunger > 750) && !(thirst > 750) && !(kJoules < 3000)
-                && !hasSeriousMedicalProblems();
+	public boolean isSuperUnFit() {
+        return (fatigue > 1000) || (stress > 90) || (hunger > 1000) || (thirst > 1000) || (kJoules < 2000)
+                || hasSeriousMedicalProblems();
     }
-
+	
+	/**
+	 * Checks if a person is unfit.
+	 *
+	 * @return true if a person is unfit
+	 */
+	public boolean isUnFit() {
+        return (fatigue > 500) || (stress > 50) || (hunger > 500) || (thirst > 500) || (kJoules < 6000)
+                || hasSeriousMedicalProblems();
+    }
+	
 	/**
 	 * Checks if a person is nominally fit.
 	 *

@@ -290,7 +290,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
      */
     private double togglePowerSourcePhase(double time) {
   
-		if (!person.isBarelyFit()) {
+		if (person.isUnFit()) {
 			checkLocation();
 			return time;
 		}

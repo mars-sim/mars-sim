@@ -221,7 +221,7 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (!person.isBarelyFit()) {
+			if (!person.isSuperUnFit()) {
 				setPhase(WALK_BACK_INSIDE);
 			}
 			else
@@ -489,9 +489,8 @@ public abstract class EVAOperation extends Task {
 			return time;
 		}		
 		
-		
-		if (!person.isBarelyFit()) {
-			abortEVA("No fit");
+		if (person.isSuperUnFit()) {
+			abortEVA("Not fit");
 			return time;
 		}
 		return 0;
@@ -506,7 +505,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Abort an EVA, if the Person is outside get them to return otherwise end the Task.
+	 * Aborts an EVA, if the Person is outside get them to return otherwise end the Task.
+	 * 
 	 * @param reason Reason for ending.
 	 */
 	protected void abortEVA(String reason) {

@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
@@ -389,7 +389,7 @@ public class EmergencySupply extends RoverMission {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
 						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person) && person.isBarelyFit()) {
+						if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
 							assignTask(person, new UnloadVehicleEVA(person, getRover()));
 						}
 					}
@@ -457,7 +457,7 @@ public class EmergencySupply extends RoverMission {
 					
 					EVASuit suit0 = getEVASuitFromVehicle(person, v);
 					if (suit0 == null) {
-						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person);
+						EVASuit suit1 = EVASuitUtil.findRegisteredEVASuit(emergencySettlement, person);
 						if (!suit1.transfer(v)) {
 							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
 						}

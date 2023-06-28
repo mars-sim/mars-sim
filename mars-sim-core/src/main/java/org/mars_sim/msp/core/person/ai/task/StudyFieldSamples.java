@@ -411,7 +411,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 			return time;
 		}
 
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
         	endTask();
 	      	return time;
 		}

@@ -1099,14 +1099,22 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Checks if the person is barely fit. 
-	 * Used as the fitness limit for ending a heavy duty task in EVAOperation.
+	 * Checks if a person is super unfit.
 	 *
-	 * @return true if the person is barely fit.
+	 * @return true if a person is super fit
 	 */
-	public boolean isBarelyFit() {
-		return condition.isBarelyFit();
-	}
+	public boolean isSuperUnFit() {
+		return condition.isSuperUnFit();
+    }
+	
+	/**
+	 * Checks if a person is unfit.
+	 *
+	 * @return true if a person is unfit
+	 */
+	public boolean isUnFit() {
+		return condition.isUnFit();
+    }
 
 	/**
 	 * Checks if a person is nominally fit.

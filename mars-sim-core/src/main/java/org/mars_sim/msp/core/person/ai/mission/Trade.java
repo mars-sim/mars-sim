@@ -13,10 +13,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
@@ -466,7 +466,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					EVASuit suit0 = getEVASuitFromVehicle(person, v);
 					if (suit0 == null) {
 						if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-							EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
+							EVASuit suit1 = EVASuitUtil.findRegisteredEVASuit(tradingSettlement, person);
 							if (suit1 != null) {
 								boolean done = suit1.transfer(v);
 								if (!done)

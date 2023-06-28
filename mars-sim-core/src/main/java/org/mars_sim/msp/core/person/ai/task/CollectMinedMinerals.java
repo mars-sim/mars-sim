@@ -9,11 +9,11 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -279,7 +279,7 @@ public class CollectMinedMinerals extends EVAOperation {
 				carryMass += bag.getBaseMass();
 			}
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
+			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);

@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -87,7 +87,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		
 		EquipmentOwner personOwner = (EquipmentOwner)person;
 		
-		EVASuit suitPerson = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+		EVASuit suitPerson = EVASuitUtil.findRegisteredEVASuit(settlement, person);
 		
 		assertEquals("EVA suit name not matched.", suitSettlement.getName(), suitPerson.getName());
 		
@@ -124,7 +124,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		// 2b. Doff this suit. Deregister the suit from the person
 		person.registerSuit(null);
 		
-		suitSettlement = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+		suitSettlement = EVASuitUtil.findRegisteredEVASuit(settlement, person);
 		
 		if (suitSettlement == null) {	
 			String suitName = suitPerson.getName();

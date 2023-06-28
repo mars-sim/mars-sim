@@ -9,11 +9,11 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -83,7 +83,7 @@ public class CollectResources extends EVAOperation {
 
 		addAdditionSkill(SkillType.PROSPECTING);
 		
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
 	      	return;
 		}
@@ -290,7 +290,7 @@ public class CollectResources extends EVAOperation {
 				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
+			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
 			if (suit != null) {
 				// Mass include everything
 				carryMass += suit.getMass();

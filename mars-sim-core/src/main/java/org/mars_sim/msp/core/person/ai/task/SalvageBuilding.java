@@ -73,7 +73,7 @@ public class SalvageBuilding extends EVAOperation {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -143,9 +143,8 @@ public class SalvageBuilding extends EVAOperation {
 
         // Check if person can exit the settlement airlock.
         Airlock airlock = getWalkableAvailableEgressAirlock(person);
-        if (airlock != null) {
-            if(!ExitAirlock.canExitAirlock(person, airlock))
-            	return false;
+        if (airlock != null && !ExitAirlock.canExitAirlock(person, airlock)) {
+            return false;
         }
 
 		// Check if it is night time.
@@ -288,7 +287,7 @@ public class SalvageBuilding extends EVAOperation {
 			return time;
 		}
 
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
 			return time;
 		}

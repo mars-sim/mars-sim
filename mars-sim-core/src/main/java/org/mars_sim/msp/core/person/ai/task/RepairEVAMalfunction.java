@@ -123,7 +123,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
 		endTask |= (shouldEndEVAOperation(false) || addTimeOnSite(time));
-		endTask |= (person != null && !person.isBarelyFit());
+		endTask |= (person != null && person.isSuperUnFit());
 		
 		if (endTask) {
 			// Return all the time

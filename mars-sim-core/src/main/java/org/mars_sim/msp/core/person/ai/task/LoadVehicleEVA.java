@@ -65,7 +65,7 @@ public class LoadVehicleEVA extends EVAOperation {
 
 		this.vehicleMission = mission;
 		
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
         	return;
 		}
@@ -149,7 +149,7 @@ public class LoadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
-		if (!person.isBarelyFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
 			return time;
 		}

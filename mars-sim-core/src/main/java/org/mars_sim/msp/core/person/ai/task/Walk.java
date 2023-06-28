@@ -246,6 +246,7 @@ public class Walk extends Task {
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
         // Check if all airlocks can be exited.
+		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
 		canWalk = canWalk && canExitAllAirlocks(person, walkingSteps);
 
 		if (canWalk) {
@@ -346,6 +347,7 @@ public class Walk extends Task {
 		// Check if all steps can be walked.
 
         // Check if all airlocks can be exited.
+		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
 		if (!canExitAllAirlocks(person, walkingSteps)) {
 			result = false;
 		}

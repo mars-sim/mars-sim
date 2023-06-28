@@ -12,11 +12,11 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -335,7 +335,7 @@ public class ExitAirlock extends Task {
 	 *
 	 * @return true if a person is fit
 	 */
-	private boolean isBarelyFit() {
+	private boolean isUnFit() {
 		
 		if (inSettlement) {
 			if (isObservatoryAttached) {
@@ -343,7 +343,7 @@ public class ExitAirlock extends Task {
 				// sitting at an isolated and remote part of the settlement,
 				// it will not check if he's physically fit to leave that place, or else
 				// he may get stranded.
-				return true;
+				return false;
 			}
 			
 			// else need to go to the bottom to check fitness
@@ -352,11 +352,10 @@ public class ExitAirlock extends Task {
 			// if vehicle occupant is unfit and the vehicle is at settlement/vicinity,
 			// bypass checking for fitness since the person may just be too exhausted and
 			// should be allowed to return home to recuperate.
-			return true;
+			return false;
 		}
-		
-		// Checks if a person is nominally fit 
-		return person.isBarelyFit();
+
+		return person.isUnFit();
 	}
 	
 	/**
@@ -854,7 +853,7 @@ public class ExitAirlock extends Task {
 	 */
 	private double donEVASuit(double time) {
 
-		if (!isBarelyFit()) {
+		if (isUnFit()) {
 			walkAway(person, NOT_FIT + " to don an EVA suit.");
 			return time;
 		}
@@ -870,6 +869,7 @@ public class ExitAirlock extends Task {
 		EVASuit suit = person.getSuit();
 		
 		if (suit == null) {
+			// If the person hasn't donned the suit yet
 			
 			if (!airlock.isPressurized()) {
 				// Go back to the previous phase
@@ -877,8 +877,7 @@ public class ExitAirlock extends Task {
 				return time;
 			}
 
-			// Get an EVA suit from entity inventory.
-			
+
 			EquipmentOwner housing = null;
 			
 			if (inSettlement)
@@ -886,10 +885,10 @@ public class ExitAirlock extends Task {
 			else
 				housing = (Vehicle)airlock.getEntity();
 	
-			// 1. Drop off the thermal bottle 
+			// 0. Drop off the thermal bottle 
 			person.dropOffThermalBottle();
-			
-			suit = InventoryUtil.getGoodEVASuitNResource((EquipmentOwner)housing, person);
+			// 1. Get a good EVA suit's instance from entity inventory
+			suit = EVASuitUtil.findRegisteredEVASuit((EquipmentOwner)housing, person);
 	
 			if (suit == null) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
@@ -909,7 +908,7 @@ public class ExitAirlock extends Task {
 				person.wearPressureSuit(housing);
 			}
 			
-			// 2. Transfer the EVA suit from settlement/vehicle to person
+			// 2. Transfer the EVA suit from entity to person
 			suit.transfer(person);
 			// 3. Set the person as the owner
 			suit.setLastOwner(person);
@@ -961,7 +960,7 @@ public class ExitAirlock extends Task {
 	 */
 	private double prebreathe(double time) {
 
-		if (!isBarelyFit()) {
+		if (isUnFit()) {
 			// Get back the garment and thermal bottle
 			checkIn(person, airlock.getEntity());
 			
@@ -979,11 +978,11 @@ public class ExitAirlock extends Task {
 		
 		boolean canProceed = false;
 		
-		if (person.getSuit() == null) {
-			// Go back to previous task phase
-			setPhase(DON_EVA_SUIT);
-			return time;
-		}
+//		if (person.getSuit() == null) {
+//			// Go back to previous task phase
+//			setPhase(DON_EVA_SUIT);
+//			return time;
+//		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
@@ -1037,7 +1036,7 @@ public class ExitAirlock extends Task {
 
 		boolean canProceed = false;
 	
-		if (!isBarelyFit()) {
+		if (isUnFit()) {
 			// Get back the garment and thermal bottle
 			checkIn(person, airlock.getEntity());
 			
@@ -1045,11 +1044,7 @@ public class ExitAirlock extends Task {
 			return time;
 		}
 		
-//		if (isOccupantHalfPrebreathed()) {
-//			// just wait for others to finish prebreathing
-//		}		
-		
-		if (isOccupantAQuarterPrebreathed()) {
+		if (isOccupantHalfPrebreathed()) {
 			// just wait for others to finish prebreathing
 		}		
 		
@@ -1280,31 +1275,36 @@ public class ExitAirlock extends Task {
 
 		else if (person.isInSettlement()) {
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
-			// Check if EVA suit is available.
+			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
+
 			if (suit != null) {
+				// Reset counter
 				airlock.resetCheckEVASuit();
+				// EVA suit is available.
 				return true;
 			}
+			
+			// EVA suit is not available.
+			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+					"Could not find a working EVA suit and needed to wait.");
+			// Add to the counter
+			airlock.addCheckEVASuit();
+			return false;
 
-			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"Could not find a working EVA suit and needed to wait.");
-
-				airlock.addCheckEVASuit();
-				return false;
-
-			}
 		}
 
 		else if (person.isInVehicle()) {
 
-			EVASuit suit = InventoryUtil.getGoodEVASuit(person);
-			// Check if EVA suit is available.
+			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
+
 			if (suit != null) {
+				// Reset counter
 				airlock.resetCheckEVASuit();
+				// EVA suit is available.
 				return true;
 			}
+			
+			// EVA suit is not available.
 			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 					"Could not find a working EVA suit and needed to wait.");
 
@@ -1319,7 +1319,8 @@ public class ExitAirlock extends Task {
 					// Set the emergency beacon on since no EVA suit is available
 					((VehicleMission) m).getHelp(NO_EVA_SUITS);
 			}
-
+			
+			// Add to the counter
 			airlock.addCheckEVASuit();
 			return false;
 		}

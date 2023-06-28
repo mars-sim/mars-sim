@@ -66,7 +66,7 @@ public class ConstructBuilding extends EVAOperation {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
-		if (!person.isBarelyFit()) {
+		if (person.isUnFit()) {
 			checkLocation();
         	return;
 		}
@@ -111,7 +111,7 @@ public class ConstructBuilding extends EVAOperation {
 		this.site = site;
 		this.vehicles = vehicles;
 
-		if (!person.isBarelyFit()) {
+		if (person.isUnFit()) {
 			checkLocation();
         	return;
 		}
