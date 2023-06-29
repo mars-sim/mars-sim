@@ -35,6 +35,8 @@ public class ExploredLocation implements Serializable {
 	
 	private static final int AVERAGE_RESERVE_MASS = 10_000;
 	
+	public static final int IMPROVEMENT_THRESHOLD = 1000;
+	
 	// Private members.
 	private boolean minable;
 	private boolean explored;

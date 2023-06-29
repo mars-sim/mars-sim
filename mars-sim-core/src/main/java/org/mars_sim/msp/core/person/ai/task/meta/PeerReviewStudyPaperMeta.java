@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -36,6 +37,7 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC, TaskTrait.TEACHING);
 		setPreferredJob(JobType.ACADEMICS);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
 	}
 
     @Override

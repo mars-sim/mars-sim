@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -70,6 +71,8 @@ public abstract class MetaTask {
 	private Set<FavoriteType> favourites = Collections.emptySet();
 	private Set<JobType> preferredJobs = new HashSet<>();
 	private Set<RobotType> preferredRobots = new HashSet<>();
+	private Set<RoleType> preferredRoles = new HashSet<>();
+	
 	
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
@@ -125,6 +128,24 @@ public abstract class MetaTask {
         Collections.addAll(this.preferredJobs, jobs);
 	}
 	
+	/**
+	 * Sets the preferred roles for this Task. This overwrites any previous values.
+	 * 
+	 * @param jobs
+	 */
+    protected void setPreferredRole(Set<RoleType> roles) {
+    	this.preferredRoles = roles;
+	}
+
+	/**
+	 * Sets the preferred roles for this Task.
+	 * 
+	 * @param jobs
+	 */
+    protected void setPreferredRole(RoleType... roles) {
+        Collections.addAll(this.preferredRoles, roles);
+	}
+    
 	/**
 	 * Gets the associated task name.
 	 * 

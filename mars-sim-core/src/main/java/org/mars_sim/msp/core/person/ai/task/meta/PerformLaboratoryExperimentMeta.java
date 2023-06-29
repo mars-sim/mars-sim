@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -43,7 +44,8 @@ public class PerformLaboratoryExperimentMeta extends FactoryMetaTask {
 
 		setFavorite(FavoriteType.LAB_EXPERIMENTATION);
 		setTrait(TaskTrait.ACADEMIC);
-		setPreferredJob(JobType.SCIENTISTS);
+		setPreferredJob(JobType.ACADEMICS);
+		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);
 	}
 
     @Override
