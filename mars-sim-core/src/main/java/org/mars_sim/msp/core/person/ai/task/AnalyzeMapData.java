@@ -130,16 +130,15 @@ public class AnalyzeMapData extends Task {
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		logger.log(person, Level.INFO, 20_000, "Total computing needs: " 
+		logger.log(person, Level.INFO, 20_000, NAME + " requesting computing resources: " 
 		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
-		 		+ " CUs. score: " 
-		 		+ Math.round(score * 1000.0)/1000.0 + ". rand: "
-		 		+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
-		 		+ Math.round(seed * 1000.0)/1000.0 + ". "
-		 		+ num + " candidate sites identified. Final site selected: " 
-		 		+ site.getLocation().getFormattedString() + ".");
+		 		+ " CUs. score: " + Math.round(score * 1000.0)/1000.0 
+		 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
+		 		+ ". seed: " + Math.round(seed * 1000.0)/1000.0 
+		 		+ ". # Candidate sites: " + num 
+		 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
 		
-		int limit = Math.min(4, Mining.MATURE_ESTIMATE_NUM - numImprovement);
+		int limit = Math.max(4, Mining.MATURE_ESTIMATE_NUM - numImprovement);
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
 		
@@ -184,6 +183,11 @@ public class AnalyzeMapData extends Task {
      */
     private double discoveringPhase(double time) {
     	
+       	if (isDone() || getTimeLeft() <= 0 || totalWork > getDuration()) {
+        	// this task has ended
+			endTask();
+		}
+    	
     	consumeComputingResource(time);
 
     	totalWork += time * (1 + workPerMillisol);
@@ -212,11 +216,6 @@ public class AnalyzeMapData extends Task {
          	
          	endTask();
         }
-					
-    	if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
-        	// this task has ended
-			endTask();
-		}
 
         // Add experience points
         addExperience(time);

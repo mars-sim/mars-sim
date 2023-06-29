@@ -919,7 +919,10 @@ public class Settlement extends Structure implements Temporal,
 			
 			// Initialize a set of nearby mineral locations at the start of the sim only
 			Rover rover = getVehicleWithMinimalRange();
+			
+			// Creates a set of nearby mineral locations			
 			createNearbyMineralLocations(rover);
+			// Note : may call it again if a new rover is made with longer range
 			
 			// Look for the first site to be analyzed and explored
 			Coordinates firstSite = getAComfortableNearbyMineralLocation(
@@ -931,7 +934,7 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
 						+ " was the very first exploration site chosen to be analyzed and explored.");
 			
-			improveMineralMap();
+			checkMineralMapImprovement();
 		}
 		
 		int rand = RandomUtil.getRandomInt(100);
@@ -967,7 +970,7 @@ public class Settlement extends Structure implements Temporal,
 			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
 						+ " was added to be analyzed and explored.");
 			
-			improveMineralMap();
+			checkMineralMapImprovement();
 		}
 
 		// Keeps track of things based on msol
@@ -979,8 +982,10 @@ public class Settlement extends Structure implements Temporal,
 		return true;
 	}
 
-	public void improveMineralMap() {
-		////////////////////
+	/**
+	 * Checks and prints the average mineral map improvement made.
+	 */
+	public void checkMineralMapImprovement() {
 		
 		int improved = 0;
 		
@@ -3097,6 +3102,7 @@ public class Settlement extends Structure implements Temporal,
 		if (tripRange < range)
 			range = tripRange;
 
+		// This will overwrite existing nearbyMineralLocations
 		nearbyMineralLocations = surfaceFeatures.getMineralMap()
 				.generateMineralLocations(getCoordinates(), range / 2D);
 	}
@@ -3115,21 +3121,55 @@ public class Settlement extends Structure implements Temporal,
 	 * 
 	 * @param rover
 	 */
-	public Coordinates getARandomNearbyMineralLocation() {
+	public Coordinates getARandomNearbyMineralLocation(double limit) {
 		
 		double range = getVehicleWithMinimalRange().getRange();
 			
-		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		range = Math.min(range, limit);
 		
-		for (Coordinates c : nearbyMineralLocations) {
-			double distance = Coordinates.computeDistance(getCoordinates(), c);
+		Coordinates chosen = null;
+		
+		// Remove coordinates that have been explored or staked by other settlements
+		
+		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getExploredCoordinates();
+		
+		// Create a set
+		Set<Coordinates> intersection = new HashSet<>(nearbyMineralLocations);
+		
+//		logger.info("1. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
+//					+ "  intersection sets:" + intersection.size());
 
-			// Fill up the weight map
-			weightedMap.put(c, (range - distance) / range);
-		}
-
-		// Choose one with weighted randomness 
-		return RandomUtil.getWeightedRandomObject(weightedMap);
+		// Execute to create the union of the two sets
+		intersection.retainAll(surfaceFeaturesSet);
+		
+//		logger.info("2. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
+//					+ "  intersection sets:" + intersection.size());
+		
+		// Remove the union
+		nearbyMineralLocations.removeAll(intersection);
+		
+//		logger.info("3. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
+//					+ "  intersection sets:" + intersection.size());
+		
+		do {
+			Map<Coordinates, Double> weightedMap = new HashMap<>();
+			
+			for (Coordinates c : nearbyMineralLocations) {
+				double distance = Coordinates.computeDistance(getCoordinates(), c);
+	
+				// Fill up the weight map
+				weightedMap.put(c, (range - distance) / range);
+			}
+	
+			// Choose one with weighted randomness 
+			chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+		
+		} while (isAnExploredLocation(chosen));
+		
+		return chosen;
 	}
 	
 	/**
@@ -3140,28 +3180,17 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Coordinates getAComfortableNearbyMineralLocation(double limit, int skillDistance) {
 		
-		double range = getVehicleWithMinimalRange().getRange();
+		double range = Math.min(skillDistance, limit);
 
-		range = Math.min(skillDistance, Math.min(limit, range));
-			
-		Map<Coordinates, Double> weightedMap = new HashMap<>();
-		
-		for (Coordinates c : nearbyMineralLocations) {
-			double distance = Coordinates.computeDistance(getCoordinates(), c);
-
-			// Fill up the weight map
-			weightedMap.put(c, (range - distance) / range);
-		}
-
-		// Choose one with weighted randomness 
-		return RandomUtil.getWeightedRandomObject(weightedMap);
+		return getARandomNearbyMineralLocation(range);
 	}
 	
 	/**
 	 * Creates a brand new site at a given location and
 	 * estimate its mineral concentrations.
-	 *
-	 * @throws MissionException if error creating explored site.
+	 * 
+	 * @param siteLocation
+	 * @param skill
 	 * @return ExploredLocation
 	 */
 	public ExploredLocation createAExploredSite(Coordinates siteLocation, int skill) {
@@ -3174,7 +3203,25 @@ public class Settlement extends Structure implements Temporal,
 					skill, this);
 		}
 
+		if (el != null)
+			// remove this coordinate from nearbyMineralLocations
+			nearbyMineralLocations.remove(siteLocation);
+		
 		return el;
+	}
+	
+	/**
+	 * Does the site exist already in a given location in SurfaceFeatures ?
+	 *
+	 * @return ExploredLocation
+	 */
+	public boolean isAnExploredLocation(Coordinates siteLocation) {
+	
+		// Check if this siteLocation has already been added or not to SurfaceFeatures
+		if (surfaceFeatures.getExploredLocation(siteLocation, this) == null)
+			return false;
+
+		return true;
 	}
 	
 	/**

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -757,6 +758,21 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets a set of coordinates of all explored locations on Mars.
+	 *
+	 * @return
+	 */
+	public Set<Coordinates> getExploredCoordinates() {
+		Set<Coordinates> coords = new HashSet<>();
+		
+		for (ExploredLocation el: exploredLocations) {
+			Coordinates c = el.getLocation();
+			coords.add(c);
+		}
+		return coords;
+	}
+	
+	/**
 	 * Gets the areothermal heat potential for a given location.
 	 *
 	 * @param location the coordinate location.
@@ -776,7 +792,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		if (pulse.isNewMSol()) {
-			// TODO Resolve this; put Simualtino in ClockPulse
+			// TODO Resolve this; put Simulation in ClockPulse
 			Collection<Settlement> col = Simulation.instance().getUnitManager().getSettlements();
 			Set<Coordinates> sSet = new HashSet<>();
 			for (Settlement s: col) {

@@ -299,12 +299,12 @@ public class ExploreSite extends EVAOperation {
 			else
 				estimate -= rand;
 			
-			logger.info("mineralType: " + mineralType 
-					+ "   rand: " + Math.round(rand * 100.0)/100.0
-					+ "   conc: " + Math.round(conc * 100.0)/100.0
-					+ "   estimate: " + Math.round(estimate * 100.0)/100.0	
-					+ "   diff: " + Math.round(diff * 100.0)/100.0
-					);
+//			logger.info("Improving " + mineralType 
+//					+ " estimation - rand: " + Math.round(rand * 100.0)/100.0
+//					+ "   conc: " + Math.round(conc * 100.0)/100.0
+//					+ "   estimate: " + Math.round(estimate * 100.0)/100.0	
+//					+ "   diff: " + Math.round(diff * 100.0)/100.0
+//					);
 			
 			estimatedMineralConcentrations.put(mineralType, estimate);
 		}

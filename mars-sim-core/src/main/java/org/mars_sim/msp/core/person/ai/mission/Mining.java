@@ -535,7 +535,7 @@ public class Mining extends EVAMission
 		result = Math.min(MAX, result);
 		
 		logger.info(settlement, 30_000L, site.getLocation() 
-			+ " has an Mining Good Value of " + Math.round(result * 100.0)/100.0 + ".");
+			+ " has a Mining Value of " + Math.round(result * 100.0)/100.0 + ".");
 		
 		return result;
 	}
