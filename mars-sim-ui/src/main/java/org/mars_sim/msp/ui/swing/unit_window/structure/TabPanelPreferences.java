@@ -170,6 +170,9 @@ public class TabPanelPreferences extends TabPanel {
 									.map(mt -> getRendered(new PreferenceKey(Type.SCIENCE, mt.name())))
 									.toList();
 				break;
+			default:
+				newItems = null;
+				break;
 		}
 
 		if (newItems != null) {
@@ -195,6 +198,7 @@ public class TabPanelPreferences extends TabPanel {
 				case TASK -> MetaTaskUtil.getMetaTask(key.getName()).getName();
 				case SCIENCE -> ScienceType.valueOf(key.getName()).getName();
 				case MISSION -> MissionType.valueOf(key.getName()).getName();
+				default -> key.getName();
 			};
 		}
 		catch (RuntimeException e) {

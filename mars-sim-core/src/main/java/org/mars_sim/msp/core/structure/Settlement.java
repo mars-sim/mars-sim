@@ -112,6 +112,11 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
+	/**
+	 * Shared preference key for Mission limits
+	 */
+	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(Type.CONFIGURATION,
+																	"Active Missions");
 
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
@@ -125,6 +130,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 	
+    private static final int PERSON_PER_MISSION = 5;
 
 	private static final int MAX_PROB = 3000;
 	public static final int REGOLITH_MAX = 4000;
@@ -337,7 +343,6 @@ public class Settlement extends Structure implements Temporal,
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	private static SurfaceFeatures surfaceFeatures;
-	private static TerrainElevation terrainElevation;
 
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
@@ -454,8 +459,7 @@ public class Settlement extends Structure implements Temporal,
 		if (surfaceFeatures == null) 
 			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
 		
-		if (terrainElevation == null) 
-			terrainElevation = surfaceFeatures.getTerrainElevation();
+		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
 		
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
@@ -553,6 +557,7 @@ public class Settlement extends Structure implements Temporal,
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+
 	}
 
 	/**
@@ -790,6 +795,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return the amount of oxygen actually received [kg]
 	 * @throws Exception if error providing oxygen.
 	 */
+	@Override
 	public double provideOxygen(double oxygenTaken) {
 		// Note: do NOT retrieve O2 here since calculateGasExchange() in
 		// CompositionOfAir is doing it for all inhabitants once per frame.
@@ -803,6 +809,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return the amount of water actually received [kg]
 	 * @throws Exception if error providing water.
 	 */
+	@Override
 	public double provideWater(double waterTaken) {
 		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
 		return waterTaken - lacking;
@@ -864,16 +871,6 @@ public class Settlement extends Structure implements Temporal,
 	public double getTemperature() {
 		return currentTemperature;
 	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 *
-//	 * @param clock
-//	 * @param w
-//	 */
-//	public static void initializeInstances(UnitManager u) {
-//		unitManager = u;
-//	}
 
 	/**
 	 * Perform time-related processes
@@ -1474,7 +1471,7 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @return
 	 */
-	public List<Airlock> getAllAirlocks() {
+	private List<Airlock> getAllAirlocks() {
 		return buildingManager.getBuildings(FunctionType.EVA).stream()
 				.map(b -> b.getEVA().getAirlock())
 				.collect(Collectors.toList());
@@ -2012,8 +2009,14 @@ public class Settlement extends Structure implements Temporal,
 			addPeopleWithin(p);
 			p.setCoordinates(getCoordinates());
 			p.setContainerUnit(this);
+
 			// Update the numCtizens
 			numCitizens = citizens.size();
+
+			// Update active mission limit; always at least 1
+			double optimalMissions = Math.max(1D, Math.floor(numCitizens/PERSON_PER_MISSION));
+			setPreferenceModifier(MISSION_LIMIT, optimalMissions);
+
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			return true;
 		}
@@ -3721,9 +3724,6 @@ public class Settlement extends Structure implements Temporal,
 	public void reinit() {
 		if (surfaceFeatures == null) 
 			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
-		
-		if (terrainElevation == null) 
-			terrainElevation = surfaceFeatures.getTerrainElevation();
 		
 		buildingManager.reinit();
 	}

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -51,7 +52,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
     private static final int START_FACTOR = 50;
-    private static final int PERSON_PER_MISSION = 4;
+  
 
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -65,9 +66,8 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> results = new ArrayList<>();
         int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
-        int pop = settlement.getNumCitizens();
 
-        int optimalMissions = (pop/PERSON_PER_MISSION);
+        int optimalMissions = (int) settlement.getPreferenceModifier(Settlement.MISSION_LIMIT);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
             results.add(new PlanTaskJob(this, shortfall * START_FACTOR));
