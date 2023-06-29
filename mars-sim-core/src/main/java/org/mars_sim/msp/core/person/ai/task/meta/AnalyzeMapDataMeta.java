@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final int VALUE = 10;
+	private static final int VALUE = 30;
 	
     /** Task name */
     private static final String NAME = Msg.getString(

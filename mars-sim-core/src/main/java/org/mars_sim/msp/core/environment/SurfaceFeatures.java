@@ -706,16 +706,19 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				newEst = MINERAL_ESTIMATION_MAX;
 			}
 			
-			logger.info(settlement, 0L, mineralType 
-					+ " - initial est %: " + Math.round(initialEst * 1000.0)/1000.0 
-					+ "   variance: " + Math.round(variance * 100.0)/100.0 
-					+ "   new est %: " + Math.round(newEst* 1000.0)/1000.0);
+//			logger.info(settlement, 0L, mineralType 
+//					+ " - initial est %: " + Math.round(initialEst * 1000.0)/1000.0 
+//					+ "   variance: " + Math.round(variance * 100.0)/100.0 
+//					+ "   new est %: " + Math.round(newEst* 1000.0)/1000.0);
 			
 			initialMineralEstimations.put(mineralType, newEst);
 		}
 
 		if (totalConc> 0) {
-			result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement);
+			
+			double distance = Coordinates.computeDistance(location, settlement.getCoordinates());
+			
+			result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement, distance);
 			
 			synchronized (exploredLocations) {
 				exploredLocations.add(result);
@@ -734,11 +737,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param c
 	 * @return
 	 */
-	public ExploredLocation getExploredLocation(Coordinates c) {
+	public ExploredLocation getExploredLocation(Coordinates c, Settlement settlement) {
 		synchronized (exploredLocations) {
 		return exploredLocations.stream()
-				  .filter(e -> c.equals(e.getLocation()))
-				  .findAny()
+				  .filter(e -> c.equals(e.getLocation())
+						  && e.getSettlement().equals(settlement))
+				  .findFirst() //.findAny()
 				  .orElse(null);
 		}
 	}

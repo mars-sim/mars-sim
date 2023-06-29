@@ -42,9 +42,11 @@ public class ExploredLocation implements Serializable {
 	private int numEstimationImprovement;
 	private double totalMass;
 	private double remainingMass;
-
+	private double distance;
+	
 	private Settlement settlement;
 	private Coordinates location;
+	
 
 	private Map<String, Double> estimatedMineralConcentrations;
 	/**
@@ -62,7 +64,7 @@ public class ExploredLocation implements Serializable {
 	 * @param the                            settlement the exploring mission is
 	 *                                       from.
 	 */
-	ExploredLocation(Coordinates location, int estimationImprovement, Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+	ExploredLocation(Coordinates location, int estimationImprovement, Map<String, Double> estimatedMineralConcentrations, Settlement settlement, double distance) {
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
@@ -70,6 +72,7 @@ public class ExploredLocation implements Serializable {
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
+		this.distance = distance;
 		
 		// Future: Need to find better algorithm to estimate the reserve amount of each mineral 
 		double reserve = 0;

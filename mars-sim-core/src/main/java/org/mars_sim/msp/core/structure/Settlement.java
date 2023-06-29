@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalPosition;
@@ -32,7 +33,7 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
-import org.mars_sim.msp.core.environment.MineralMap;
+import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
@@ -51,6 +52,7 @@ import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
@@ -111,7 +113,6 @@ public class Settlement extends Structure implements Temporal,
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
 
-	private static final int MAX = 6000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -123,6 +124,9 @@ public class Settlement extends Structure implements Temporal,
 	public static final int NUM_CRITICAL_RESOURCES = 10;
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
+	
+
+	private static final int MAX_PROB = 5000;
 	public static final int REGOLITH_MAX = 4000;
 	public static final int MIN_REGOLITH_RESERVE = 400; // per person
 	public static final int MIN_SAND_RESERVE = 400; // per person
@@ -327,6 +331,8 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Robot> robotsWithin;
 	/** The settlement's preference modifiers map. */
 	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
+	/** A set of nearby mineral locations. */
+	private Set<Coordinates> nearbyMineralLocations;
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -895,8 +901,69 @@ public class Settlement extends Structure implements Temporal,
 		timePassing(pulse, ownedVehicles);
 		timePassing(pulse, ownedRobots);
 
+		// Run at the start of the sim once only
+		if (justLoaded) {	
+			// Reset justLoaded
+			justLoaded = false;
+
+			iceProbabilityValue = computeIceProbability();
+
+			regolithProbabilityValue = computeRegolithProbability();
+			
+			for (Person p : citizens) {
+				// Register each settler a quarter/bed
+				Building b = getBestAvailableQuarters(p, true);
+				if (b != null)
+					b.getLivingAccommodations().registerSleeper(p, false);
+			}
+
+			// Initialize the goods manager
+			goodsManager.updateGoodValues();
+			
+			// Initialize a set of nearby mineral locations at the start of the sim only
+			Rover rover = getVehicleWithMinimalRange();
+			createNearbyMineralLocations(rover);
+			
+			// Look for the first site to be analyzed and explored
+			Coordinates firstSite = getAComfortableNearbyMineralLocation(
+					rover.getRange() / 100, 10 * pulse.getMarsTime().getMissionSol());
+			
+			// Creates an initial explored site in SurfaceFeatures
+			createAExploredSite(firstSite);
+			
+			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
+						+ " was the very first exploration site chosen to be analyzed and explored.");
+		}
+		
+		// At the beginnning of a new sol
 		if (pulse.isNewSol()) {
+			
+			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());
+			
+			int sol = pulse.getMarsTime().getMissionSol();
+			
+			int range = (int) getVehicleWithMinimalRange().getRange();
+			
+			int skill = 0;
+			int num = 0;
+			for (Person p: citizens) {
+				skill += p.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+				num++;
+			}
+			
+			int skillDistance = Math.min(range, 2 * sol * skill / num);
+			
+			int limit =  Math.min(100, sol) * range / 100;
+			
+			// Add another explored site 
+			Coordinates anotherSite = getAComfortableNearbyMineralLocation(limit, skillDistance);
+			
+			// Creates an initial explored site in SurfaceFeatures
+			createAExploredSite(anotherSite);
+			
+			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
+						+ " was added to be analyzed and explored.");
 		}
 
 		// Keeps track of things based on msol
@@ -905,6 +972,8 @@ public class Settlement extends Structure implements Temporal,
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
 
+
+		
 		return true;
 	}
 
@@ -935,27 +1004,6 @@ public class Settlement extends Structure implements Temporal,
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
-
-			// Initialize tasks at the start of the sim only
-			if (justLoaded) {
-				// Reset justLoaded
-				justLoaded = false;
-
-				iceProbabilityValue = computeIceProbability();
-
-				regolithProbabilityValue = computeRegolithProbability();
-				
-				for (Person p : citizens) {
-					// Register each settler a quarter/bed
-					Building b = getBestAvailableQuarters(p, true);
-					if (b != null)
-						b.getLivingAccommodations().registerSleeper(p, false);
-				}
-
-				// Initialize the goods manager
-				goodsManager.updateGoodValues();
-		
-			}
 
 			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
@@ -2697,8 +2745,8 @@ public class Settlement extends Structure implements Temporal,
 		
 		if (result < 0)
 			result = 0;
-		if (result > MAX)
-			result = MAX;
+		if (result > MAX_PROB)
+			result = MAX_PROB;
 		
 //		logger.info(this, 30_000L, "regolithDemand: " + regolithDemand
 //						+ "   cementDemand: " + cementDemand
@@ -2769,8 +2817,8 @@ public class Settlement extends Structure implements Temporal,
 //				+ "   ice Prob value: " + result
 //				);
 		
-		if (result > MAX)
-			result = MAX;
+		if (result > MAX_PROB)
+			result = MAX_PROB;
 		
 		return result;
 	}
@@ -2980,17 +3028,125 @@ public class Settlement extends Structure implements Temporal,
 		return (getPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name())) > 0D);
 	}
 
-	public int getTotalMineralValue(Rover rover) {
-		if (mineralValue == -1) {
-			// Check if any mineral locations within rover range and obtain their
-			// concentration
-			Map<String, Integer> minerals = getNearbyMineral(rover, this);
-			if (!minerals.isEmpty()) {
-				mineralValue = Exploration.getTotalMineralValue(this, minerals);
+	/**
+	 * Gets the available vehicle at the settlement with the minimal range.
+	 *
+	 * @param settlement         the settlement to check.
+	 * @return vehicle or null if none available.
+	 */
+	public Rover getVehicleWithMinimalRange() {
+		Rover result = null;
+
+		for (Vehicle vehicle : getAllAssociatedVehicles()) {
+
+			if (vehicle instanceof Rover rover) {
+				if (result == null)
+					// Get the first vehicle
+					result = rover;
+				else if (vehicle.getRange() < result.getRange())
+					// This vehicle has a lesser range than the previously selected vehicle
+					result = rover;
 			}
 		}
-		return mineralValue;
+
+		return result;
 	}
+	
+	/**
+	 * Creates a set of nearby mineral locations.
+	 * 
+	 * @param rover
+	 */
+	public void createNearbyMineralLocations(Rover rover) {
+		double roverRange = rover.getRange();
+		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
+		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
+		double range = roverRange;
+		if (tripRange < range)
+			range = tripRange;
+
+		nearbyMineralLocations = surfaceFeatures.getMineralMap()
+				.generateMineralLocations(getCoordinates(), range / 2D);
+	}
+	
+	/**
+	 * Gets a set of nearby mineral locations.
+	 * 
+	 * @param rover
+	 */
+	public Set<Coordinates> getNearbyMineralLocations() {
+		return nearbyMineralLocations;
+	}
+	
+	/**
+	 * Gets a random nearby mineral location that can be reached by any rover.
+	 * 
+	 * @param rover
+	 */
+	public Coordinates getARandomNearbyMineralLocation() {
+		
+		double range = getVehicleWithMinimalRange().getRange();
+			
+		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		
+		for (Coordinates c : nearbyMineralLocations) {
+			double distance = Coordinates.computeDistance(getCoordinates(), c);
+
+			// Fill up the weight map
+			weightedMap.put(c, (range - distance) / range);
+		}
+
+		// Choose one with weighted randomness 
+		return RandomUtil.getWeightedRandomObject(weightedMap);
+	}
+	
+	/**
+	 * Gets a comfortable nearby mineral location, based on skills.
+	 * 
+	 * @param limit
+	 * @param skillDistance
+	 */
+	public Coordinates getAComfortableNearbyMineralLocation(double limit, int skillDistance) {
+		
+		double range = getVehicleWithMinimalRange().getRange();
+
+		range = Math.min(skillDistance, Math.min(limit, range));
+			
+		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		
+		for (Coordinates c : nearbyMineralLocations) {
+			double distance = Coordinates.computeDistance(getCoordinates(), c);
+
+			// Fill up the weight map
+			weightedMap.put(c, (range - distance) / range);
+		}
+
+		// Choose one with weighted randomness 
+		return RandomUtil.getWeightedRandomObject(weightedMap);
+	}
+	
+	/**
+	 * Creates a brand new site at a given location and
+	 * estimate its mineral concentrations.
+	 *
+	 * @throws MissionException if error creating explored site.
+	 * @return ExploredLocation
+	 */
+	private ExploredLocation createAExploredSite(Coordinates siteLocation) {
+
+		int rand = RandomUtil.getRandomInt(1, 5);
+		
+		// Check if this siteLocation has already been added or not to SurfaceFeatures
+		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation, this);
+		if (el == null) {
+			// Add it if it doesn't exist yet
+			el = surfaceFeatures.addExploredLocation(siteLocation,
+					rand, this);
+		}
+
+		return el;
+	}
+	
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.
 	 *
@@ -2999,7 +3155,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return true if mineral locations.
 	 * @throws Exception if error determining mineral locations.
 	 */
-	public Map<String, Integer> getNearbyMineral(Rover rover, Settlement homeSettlement) {
+	public Map<String, Integer> getNearbyMineral(Rover rover) {
 		Map<String, Integer> minerals = new HashMap<>();
 
 		double roverRange = rover.getRange();
@@ -3009,14 +3165,47 @@ public class Settlement extends Structure implements Temporal,
 		if (tripRange < range)
 			range = tripRange;
 
-		MineralMap map = surfaceFeatures.getMineralMap();
-		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		
+		for (Coordinates c : nearbyMineralLocations) {
+			double distance = Coordinates.computeDistance(getCoordinates(), c);
 
-		if (mineralLocation != null)
-			minerals = map.getAllMineralConcentrations(mineralLocation);
+			// Fill up the weight map
+			weightedMap.put(c, (range - distance) / range);
+		}
+
+		// Choose one with weighted randomness 
+		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+		double chosenDist = weightedMap.get(chosen);
+		
+		logger.info(CollectionUtils.findSettlement(getCoordinates()), 30_000L, 
+				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
+		
+		if (chosen != null)
+			minerals = surfaceFeatures.getMineralMap().getAllMineralConcentrations(chosen);
 
 		return minerals;
 	}
+	
+	
+	/**
+	 * Gets the total mineral value, based on the range of a given rover.
+	 * 
+	 * @param rover
+	 * @return
+	 */
+	public int getTotalMineralValue(Rover rover) {
+		if (mineralValue == -1) {
+			// Check if any mineral locations within rover range and obtain their
+			// concentration
+			Map<String, Integer> minerals = getNearbyMineral(rover);
+			if (!minerals.isEmpty()) {
+				mineralValue = Exploration.getTotalMineralValue(this, minerals);
+			}
+		}
+		return mineralValue;
+	}
+	
 	
 	/**
 	 * Gets the range of a trip based on its time limit and exploration sites.

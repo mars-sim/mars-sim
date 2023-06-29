@@ -55,13 +55,16 @@ public class Mining extends EVAMission
 	private static final MissionStatus LUV_NOT_AVAILABLE = new MissionStatus("Mission.status.noLUV");
 	private static final MissionStatus LUV_ATTACHMENT_PARTS_NOT_LOADABLE = new MissionStatus("Mission.status.noLUVAttachments");
 
-	private static final int MAX = 1000;
+	private static final int MAX = 3000;
 	
 	/** Number of large bags needed for mission. */
 	public static final int NUMBER_OF_LARGE_BAGS = 20;
 
-	/** Base amount (kg) of a type of mineral at a site. */
-	static final double MINERAL_BASE_AMOUNT = 0.1;
+	/** The good value factor of a site. */
+	static final double MINERAL_GOOD_VALUE_FACTOR = 500;
+	
+	/** The averge good value of a site. */
+	static final double AVERAGE_RESERVE_GOOD_VALUE = 50_000;
 
 	/** Amount of time(millisols) to spend at the mining site. */
 	private static final double MINING_SITE_TIME = 4000D;
@@ -525,14 +528,14 @@ public class Mining extends EVAMission
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double reserve = site.getRemainingMass();
-			double mineralAmount = (conc.getValue() / 100) * reserve / 1_000 * MINERAL_BASE_AMOUNT;
+			double mineralAmount = (conc.getValue() / 100) * reserve / AVERAGE_RESERVE_GOOD_VALUE * MINERAL_GOOD_VALUE_FACTOR;
 			result += mineralValue * mineralAmount;
 		}
 
 		result = Math.min(MAX, result);
 		
 		logger.info(settlement, 30_000L, site.getLocation() 
-			+ " has an mining value of " + Math.round(result * 100.0)/100.0 + ".");
+			+ " has an Mining Good Value of " + Math.round(result * 100.0)/100.0 + ".");
 		
 		return result;
 	}

@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -222,13 +221,23 @@ public class Exploration extends EVAMission
 				if (e.getLocation().equals(current))
 					return e;
 			}
-			// Should never get here
-			return createAExploredSite(current);
 		}
 		
-		return null;
+		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
+		
+		// Creates an random site
+		return createAExploredSite(getRandomExplorationSite());
 	}
 
+	/**
+	 * Determine the first exploration site.
+	 *
+	 * @return first exploration site or null if none.
+	 */
+	private Coordinates getRandomExplorationSite() {
+		return getStartingSettlement().getARandomNearbyMineralLocation();
+	}
+	
 	/**
 	 * Updates the explored site and start an ExploreSite Task.
 	 * 
@@ -278,7 +287,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Creates a brand new site at the current location and
+	 * Creates a brand new site at a given location and
 	 * estimate its mineral concentrations.
 	 *
 	 * @throws MissionException if error creating explored site.
@@ -289,7 +298,7 @@ public class Exploration extends EVAMission
 		int rand = RandomUtil.getRandomInt(1, 5);
 		
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation);
+		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation, getStartingSettlement());
 		if (el == null) {
 			// Proceed if it hasn't
 			el = surfaceFeatures.addExploredLocation(siteLocation,
@@ -369,9 +378,9 @@ public class Exploration extends EVAMission
 			limit = range / 2D;
 
 			// Use the confidence score to limit the range
-			double distance = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
+			double dist = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			
-			currentLocation = determineFirstExplorationSite(distance, areologySkill);
+			currentLocation = determineFirstExplorationSite(dist, areologySkill);
 			
 			// Creates an initial explored site in SurfaceFeatures
 			el = createAExploredSite(currentLocation);
@@ -490,45 +499,19 @@ public class Exploration extends EVAMission
 		return result;
 	}
 
+	
 	/**
 	 * Determine the first exploration site.
 	 *
-	 * @param dist         the dist (km) for site.
-	 * @param areologySkill the skill level in areology of the areologist starting
-	 *                      the mission.
 	 * @return first exploration site or null if none.
-	 * @throws MissionException if error determining site.
 	 */
-	private Coordinates determineFirstExplorationSite(double dist, int areologySkill) {
-//		Coordinates result = null;
-
-		Coordinates startingLocation = getCurrentMissionLocation();
-		MineralMap map = surfaceFeatures.getMineralMap();
-		return map.findRandomMineralLocation(startingLocation, dist);
-//		if (randomLocation != null) {
-//			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-//			if (areologySkill <= 0) {
-//				areologySkill = 1;
-//			}
-//			double distance = RandomUtil.getRandomDouble(10, 500D / areologySkill);
-//			result = randomLocation.getNewLocation(direction, distance);
-//			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
-//			if (distanceFromStart > dist) {
-//				Direction direction2 = startingLocation.getDirectionToPoint(result);
-//				result = startingLocation.getNewLocation(direction2, dist);
-//			}
-//		} 
-//		
-//		else {
-//			// Use random direction and distance for first location
-//			// if no minerals found within range.
-//			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-//			double distance = RandomUtil.getRandomDouble(1, dist);
-//			result = startingLocation.getNewLocation(direction, distance);
-//		}
-//
-//		return randomLocation;
+	private Coordinates determineFirstExplorationSite(double limit, int areologySkill) {
+		
+		int skillDistance = RandomUtil.getRandomRegressionInteger(10, 500 * (1 + areologySkill));
+	
+		return getStartingSettlement().getAComfortableNearbyMineralLocation(limit, skillDistance);
 	}
+	
 
 	/**
 	 * Gets a list of sites explored by the mission so far.
@@ -565,13 +548,13 @@ public class Exploration extends EVAMission
 		    double concentration = entry.getValue();
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
-			double mineralAmount = (concentration / 100) * 500 * Mining.MINERAL_BASE_AMOUNT;
+			double mineralAmount = (concentration / 100) * Mining.MINERAL_GOOD_VALUE_FACTOR;
 			result += mineralValue * mineralAmount;
 		}
 		
-		result = Math.round(result * 1000.0)/1000.0;
+		result = Math.round(result * 100.0)/100.0;
 		
-		logger.info(settlement, "An exploration site has a projected site value of " + result);
+		logger.info(settlement, "A site has an Exploration Good Value of " + result);
 		return (int)result;
 	}
 

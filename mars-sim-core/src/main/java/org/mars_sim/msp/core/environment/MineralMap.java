@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.environment;
 
-import org.mars_sim.msp.core.Coordinates;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.mars_sim.msp.core.Coordinates;
 
 /**
  * Interface for mineral maps of Mars.
@@ -58,6 +58,16 @@ public interface MineralMap {
 	 */
 	public String[] getMineralTypeNames();
 
+	
+	/**
+	 * Generates a set of Mineral locations from a starting location.
+	 * 
+	 * @param startingLocation
+	 * @param range
+	 * @return
+	 */
+	public Set<Coordinates> generateMineralLocations(Coordinates startingLocation, double range);
+	
 	/**
 	 * Finds a random location with mineral concentrations from a starting location.
 	 * and within a distance range.

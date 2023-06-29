@@ -165,7 +165,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		} // end of iterating MineralType
 
 //		logger.info("Mineral Locations: " + allMineralsByLocation);
-		logger.info("Global # of Mineral Locations: " + allMineralsByLocation.size());
+		logger.info("# of Global Mineral Locations: " + allMineralsByLocation.size());
 	}
 
 	/**
@@ -518,18 +518,15 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	}
 
 	/**
-	 * Finds a random location with mineral concentrations from a starting location
-	 * and within a distance range.
+	 * Generates a set of Mineral locations from a starting location.
 	 * 
-	 * @param startingLocation the starting location.
-	 * @param range            the distance range (km).
-	 * @return location with one or more mineral concentrations or null if none
-	 *         found.
+	 * @param startingLocation
+	 * @param range
+	 * @return
 	 */
-	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
-		Coordinates chosen = null;
+	public Set<Coordinates> generateMineralLocations(Coordinates startingLocation, double range) {
 
-		List<Coordinates> locales = new ArrayList<>();
+		Set<Coordinates> locales = new HashSet<>();
 		
 		if (allLocations == null) {
 			allLocations = allMineralsByLocation.keySet();
@@ -547,8 +544,26 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		int size = locales.size();
 		
 		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
-				"Found potentially " + size 
-				+ " mineral sites to explore within " + Math.round(range * 10.0)/10.0 + " km.");
+				"Found " + size 
+				+ " potential mineral sites to explore within " + Math.round(range * 10.0)/10.0 + " km.");
+	
+		return locales;
+	}
+	
+	/**
+	 * Finds a random location with mineral concentrations from a starting location
+	 * and within a distance range.
+	 * 
+	 * @param startingLocation the starting location.
+	 * @param range            the distance range (km).
+	 * @return location with one or more mineral concentrations or null if none
+	 *         found.
+	 */
+	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
+		Coordinates chosen = null;
+
+		Set<Coordinates> locales = generateMineralLocations(startingLocation, range);
+		int size = locales.size();
 		
 		if (size <= 0) {
 			return null;
@@ -556,11 +571,10 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
-		Coordinates closestC = null;
-		double shortestD = range;
+//		Coordinates closestC = null;
+//		double shortestD = range;
 		
-		for (int j = 0; j < size; j++) {
-			Coordinates c = locales.get(j);
+		for (Coordinates c : locales) {
 			double distance = Coordinates.computeDistance(startingLocation, c);
 
 			// Fill up the weight map
@@ -580,7 +594,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		double chosenDist = weightedMap.get(chosen);
 		
 		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
-				"Chosen to investigate mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
+				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
 
 		return chosen;
 	}
