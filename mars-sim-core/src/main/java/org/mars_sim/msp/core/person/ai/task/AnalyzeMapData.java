@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The AnalyzeMapData class is a task for analyzing and studying some map data set.
@@ -41,9 +43,9 @@ public class AnalyzeMapData extends Task {
 
 	/** Task phases. */
 	private static final TaskPhase ANALYZING = new TaskPhase(Msg.getString("Task.phase.analyzing")); //$NON-NLS-1$
-
+	private static final TaskPhase DISCOVERING = new TaskPhase(Msg.getString("Task.phase.discovering")); //$NON-NLS-1$
+	
     // Data members.
-	private double siteTime = 250;
 	/** The number of estimation improvement made for a site. */	
 	private int numImprovement;
     /** Computing Units needed per millisol. */		
@@ -137,9 +139,20 @@ public class AnalyzeMapData extends Task {
 		 		+ num + " candidate sites identified. Final site selected: " 
 		 		+ site.getLocation().getFormattedString() + ".");
 		
-       	// Add task phases
-    	addPhase(ANALYZING);
-        setPhase(ANALYZING);
+		int limit = Math.min(4, Mining.MATURE_ESTIMATE_NUM - numImprovement);
+		
+		int rand = RandomUtil.getRandomInt(0, limit);
+		
+		if (rand < 2) {
+	       	// Add task phases
+	    	addPhase(DISCOVERING);
+	        setPhase(DISCOVERING);
+		}
+        else {
+	       	// Add task phases
+	    	addPhase(ANALYZING);
+	        setPhase(ANALYZING);
+        }
     }
 	
 	
@@ -152,7 +165,9 @@ public class AnalyzeMapData extends Task {
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
 			throw new IllegalArgumentException("The analyzing task phase is null");
-		} else if (ANALYZING.equals(getPhase())) {
+    	} else if (DISCOVERING.equals(getPhase())) {
+			return discoveringPhase(time);
+    	} else if (ANALYZING.equals(getPhase())) {
 			return analyzingPhase(time);
 		} else {
 			return time;
@@ -160,6 +175,102 @@ public class AnalyzeMapData extends Task {
     }
 
 
+	/**
+     * Discovers a site.
+     *
+     * @param time time (millisol) to perform phase.
+     * @return time (millisol) remaining after performing phase.
+     * @throws Exception
+     */
+    private double discoveringPhase(double time) {
+    	
+    	consumeComputingResource(time);
+
+    	totalWork += time * (1 + workPerMillisol);
+        
+        if (totalWork > getDuration() * .95) {
+//        	logger.log(person, Level.CONFIG, 10_000, 
+//        			"effort: " + Math.round(effort * 100.0)/100.0 
+//        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
+//        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+//        			);
+   	
+        	// Get a lowest range rover
+     		Rover rover = person.getSettlement().getVehicleWithMinimalRange();
+     		
+     		double rangeLimit = rover.getRange() / 100;
+
+     		int skill = (int)Math.round(compositeSkill);
+     		
+     		// Look for the first site to be analyzed and explored
+     		Coordinates aSite = person.getSettlement().getAComfortableNearbyMineralLocation(rangeLimit, skill);
+         				
+         	// Creates an initial explored site in SurfaceFeatures
+         	person.getSettlement().createAExploredSite(aSite, skill);
+         				
+         	logger.info(person, 50_000L, "Successfully discovered a site at " +  aSite.getFormattedString() + " .");
+         	
+         	endTask();
+        }
+					
+    	if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
+        	// this task has ended
+			endTask();
+		}
+
+        // Add experience points
+        addExperience(time);
+
+        return 0;
+    }
+    
+    private void consumeComputingResource(double time) {
+    	int msol = getMarsTime().getMillisolInt();
+    	boolean successful = false; 
+          
+    	if (computingNeeded > 0) {
+   
+          	if (computingNeeded <= seed) {
+          		workPerMillisol = time * computingNeeded;
+          	}
+          	else {
+          		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+          	}
+
+          	// Submit request for computing resources
+      	Computation center = person.getAssociatedSettlement().getBuildingManager()
+      			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
+      	if (center != null) {
+      		if (computingNeeded <= seed)
+      			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
+      		else
+      			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
+      	}
+    	else
+    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
+      	
+      	if (successful) {
+      		if (computingNeeded <= seed)
+      			computingNeeded = computingNeeded - workPerMillisol;
+      		else
+      			computingNeeded = computingNeeded - workPerMillisol * getDuration();
+      		if (computingNeeded < 0) {
+      			computingNeeded = 0; 
+      		}
+        	}
+    	else {
+    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
+    	}
+      }
+      else if (computingNeeded <= 0) {
+      	// this task has ended
+  		logger.log(person, Level.FINE, 30_000L, NAME + " - " 
+  				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+  				+ " CUs Used.");
+      	endTask();
+      }
+    }
+    
 	/**
      * Analyzes the map data phase.
      *
@@ -169,70 +280,32 @@ public class AnalyzeMapData extends Task {
      */
     private double analyzingPhase(double time) {
   
-		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + ". Not feeling well.");
-			endTask();
-			return time;
-		}
+//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+//			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + ". Not feeling well.");
+//			endTask();
+//			return time;
+//		}
  
-        int msol = getMarsTime().getMillisolInt();
-        boolean successful = false; 
+    	consumeComputingResource(time);
         
-        if (computingNeeded > 0) {
- 
-        	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
-        	}
-        	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
-        	}
-
-        	// Submit request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager()
-        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	if (center != null) {
-        		if (computingNeeded <= seed)
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-        		else
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	}
-	    	else
-	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
-        	
-        	if (successful) {
-        		if (computingNeeded <= seed)
-        			computingNeeded = computingNeeded - workPerMillisol;
-        		else
-        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
-        		if (computingNeeded < 0) {
-        			computingNeeded = 0; 
-        		}
-          	}
-	    	else {
-	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
-	    	}
-        }
-        else if (computingNeeded <= 0) {
-        	// this task has ended
-    		logger.log(person, Level.FINE, 30_000L, NAME + " - " 
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-    				+ " CUs Used.");
-        	endTask();
-        }
-        
-        effort += time * workPerMillisol;
+        effort += time * (1 + workPerMillisol);
           
-        if (effort > getDuration() / 2D) {
+        if (effort > getDuration() / 3) {
+//        	logger.log(person, Level.CONFIG, 10_000, 
+//        			"effort: " + Math.round(effort * 100.0)/100.0 
+//        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
+//        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+//        			);
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
         	improveMineralConcentrationEstimates(time, effort);
+        	// Reset effort back to zero
         	effort = 0;
         }
         	
 		if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
         	// this task has ended
 			endTask();
-			return 0;
 		}
 
         // Add experience points
@@ -249,17 +322,17 @@ public class AnalyzeMapData extends Task {
      */
 	private void improveMineralConcentrationEstimates(double time, double effort) {
 
-		double probability = (time * siteTime / 1000.0) * effort;
-		if (probability > .9)
-			probability = .9;
-		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+//		double probability = (time * siteTime / 1000.0) * effort;
+//		if (probability > .9)
+//			probability = .9;
+//		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 			ExploreSite.improveSiteEstimates(site, (int)Math.round(compositeSkill));
 
-			logger.log(person, Level.FINE, 10_000,
+			logger.log(person, Level.INFO, 10_000,
 					NAME + " for " + site.getLocation().getFormattedString()
 					+ ". # of estimation done: "
 					+ site.getNumEstimationImprovement() + ".");
-		}
+//		}
 	}
 
     /**

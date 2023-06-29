@@ -126,7 +126,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 	
 
-	private static final int MAX_PROB = 5000;
+	private static final int MAX_PROB = 3000;
 	public static final int REGOLITH_MAX = 4000;
 	public static final int MIN_REGOLITH_RESERVE = 400; // per person
 	public static final int MIN_SAND_RESERVE = 400; // per person
@@ -929,14 +929,19 @@ public class Settlement extends Structure implements Temporal,
 					rover.getRange() / 100, 10 * pulse.getMarsTime().getMissionSol());
 			
 			// Creates an initial explored site in SurfaceFeatures
-			createAExploredSite(firstSite);
+			createAExploredSite(firstSite, 0);
 			
 			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
 						+ " was the very first exploration site chosen to be analyzed and explored.");
+			
+			improveMineralMap();
 		}
 		
-		// At the beginnning of a new sol
-		if (pulse.isNewSol()) {
+		int rand = RandomUtil.getRandomInt(100);
+		
+		// At the beginnning of a new sol,
+		// there's a chance a new site is automatically discovered
+		if (pulse.isNewSol() && rand < 5) {
 			
 			// Perform the end of day tasks
 			performEndOfDayTasks(pulse.getMarsTime());
@@ -960,10 +965,12 @@ public class Settlement extends Structure implements Temporal,
 			Coordinates anotherSite = getAComfortableNearbyMineralLocation(limit, skillDistance);
 			
 			// Creates an initial explored site in SurfaceFeatures
-			createAExploredSite(anotherSite);
+			createAExploredSite(anotherSite, skill);
 			
 			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
 						+ " was added to be analyzed and explored.");
+			
+			improveMineralMap();
 		}
 
 		// Keeps track of things based on msol
@@ -972,11 +979,33 @@ public class Settlement extends Structure implements Temporal,
 		// Computes the average air pressure & temperature of the life support system.
 		computeEnvironmentalAverages();
 
-
-		
 		return true;
 	}
 
+	public void improveMineralMap() {
+		////////////////////
+		
+		int improved = 0;
+		
+		List<ExploredLocation> siteList = surfaceFeatures
+    			.getExploredLocations().stream()
+    			.filter(site -> site.isMinable())
+    			.collect(Collectors.toList());  	
+    	
+    	for (ExploredLocation el: siteList) {   	
+    		 int est = el.getNumEstimationImprovement();
+    		 improved += est;
+    	}
+    	    	
+    	int size = siteList.size();
+    	
+    	if (size > 0) {
+	    	double result = 1.0 * improved / size;
+	    
+			logger.info(this, "# of mineral map improvement on ave: " + result);
+    	}
+	}
+	
 	/**
 	 * Gets the stress factor due to occupancy density
 	 *
@@ -3132,16 +3161,14 @@ public class Settlement extends Structure implements Temporal,
 	 * @throws MissionException if error creating explored site.
 	 * @return ExploredLocation
 	 */
-	private ExploredLocation createAExploredSite(Coordinates siteLocation) {
-
-		int rand = RandomUtil.getRandomInt(1, 5);
-		
+	public ExploredLocation createAExploredSite(Coordinates siteLocation, int skill) {
+	
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
 		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation, this);
 		if (el == null) {
 			// Add it if it doesn't exist yet
 			el = surfaceFeatures.addExploredLocation(siteLocation,
-					rand, this);
+					skill, this);
 		}
 
 		return el;

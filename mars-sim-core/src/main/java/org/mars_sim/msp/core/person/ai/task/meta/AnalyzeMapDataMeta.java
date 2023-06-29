@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -29,14 +28,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final double VALUE = 0.1;
+	private static final double VALUE = 0.5;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.analyzeMapData"); //$NON-NLS-1$
 
     /** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(AnalyzeMapDataMeta.class.getName());
+//	May add back private static SimLogger logger = SimLogger.getLogger(AnalyzeMapDataMeta.class.getName())
 
     public AnalyzeMapDataMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -58,12 +57,10 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
-//		logger.info(person, "Analyzed map: " + result);
-		
+	
         // Probability affected by the person's stress and fatigue.
-//        if (!person.getPhysicalCondition().isFitByLevel(750, 75, 750))
-//        	return 0;
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 80, 1000))
+        	return 0;
         
         if (person.isInside()) {
 
@@ -84,10 +81,8 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	if (num == 0)
         		return 0;
         	
-    		result += numUnimproved / num * VALUE;
-    		
-    		logger.info(person, "Analyzed map: " + result);
-    		
+    		result += VALUE * numUnimproved / num;
+	
             // Check if person is in a moving rover.
             if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
     	        // the bonus for being inside a vehicle since there's little things to do
@@ -110,7 +105,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         result *= getPersonModifier(person);
 
         if (result < 0) result = 0;
-        logger.info(person, "Analyzed map: " + result);
+
         return result;
     }
 }

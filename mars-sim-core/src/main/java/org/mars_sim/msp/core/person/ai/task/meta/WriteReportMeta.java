@@ -27,8 +27,7 @@ public class WriteReportMeta extends FactoryMetaTask {
     
     public WriteReportMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		setTrait(TaskTrait.TEACHING, TaskTrait.LEADERSHIP);
-
+		setTrait(TaskTrait.TEACHING, TaskTrait.LEADERSHIP, TaskTrait.ORGANIZATION);
 	}
 
     @Override

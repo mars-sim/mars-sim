@@ -63,9 +63,8 @@ public class ExploredCommand extends ChatCommand {
  				}
 
 				if (hasMinerals) {
-					int rand = RandomUtil.getRandomInt(1, 5);
 					// Add new site but at maximum estimation improvement
-					ExploredLocation newSite = surface.addExploredLocation(siteLocation, rand, null);
+					ExploredLocation newSite = surface.addExploredLocation(siteLocation, 1, null);
 					newSite.setExplored(true);
 				}
 				else {

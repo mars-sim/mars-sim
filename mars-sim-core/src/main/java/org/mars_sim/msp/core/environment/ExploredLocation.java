@@ -70,7 +70,7 @@ public class ExploredLocation implements Serializable {
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
-		minable = false;
+		minable = true;
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
@@ -171,16 +171,22 @@ public class ExploredLocation implements Serializable {
 				}
 				
 				// Improvement is skill based
-				double rand = RandomUtil.getRandomDouble(1, 5) * (1 + skill);
+				double rand = RandomUtil.getRandomDouble(1, 1.15) * (1 + skill);
 				
-				double newCertainty = rand * certainty / 100;
+				double newCertainty = rand * certainty;
 				
-				if (certainty > 100) {
-					certainty = 100;
+				if (newCertainty > 100) {
+					newCertainty = 100;
 				}
 				
-				logger.info(settlement, location.getFormattedString() + " Degree of estimation certainty improved on " 
-						+ aMineral + ": " + Math.round(newCertainty * 10.0)/10.0 + " %");
+				logger.info(settlement, 
+						aMineral + ": " 
+						+ location.getFormattedString()
+						+ " Degree of certainty improved: " 
+						+ Math.round(certainty * 100.0)/100.0 + " %"
+						+ " -> "
+						+ Math.round(newCertainty * 100.0)/100.0 + " %"
+						);
 				
 				degreeCertainty.put(aMineral, newCertainty);
 						
@@ -272,7 +278,7 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
-	 * Sets if the location has been reserved for mining.
+	 * Sets if the location has been staked and reserved by a Mining mission.
 	 *
 	 * @param reserved true if reserved.
 	 */
@@ -281,7 +287,7 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
-	 * Checks if the location has been reserved for mining.
+	 * Checks if the location has been staked and reserved by a Mining mission
 	 *
 	 * @return true if reserved.
 	 */

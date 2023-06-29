@@ -280,28 +280,33 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public static void improveSiteEstimates(ExploredLocation site, int skill) {
 
-		int imp = Math.max(100, site.getNumEstimationImprovement());
+		int imp = site.getNumEstimationImprovement();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
 		for (String mineralType : estimatedMineralConcentrations.keySet()) {
-			double actual = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
-			double estimated = estimatedMineralConcentrations.get(mineralType);
-			double diff = Math.abs(actual - estimated);
+			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
+			double estimate = estimatedMineralConcentrations.get(mineralType);
+			double diff = Math.abs(conc - estimate);
 			// Note that rand can 'overshoot' the target
 			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50);
 			if (rand > diff * 1.25)
 				rand = diff * 1.25;
-			if (estimated < actual)
-				estimated += rand;
+			if (estimate == conc)
+				;// do nothing;
+			else if (estimate < conc)
+				estimate += rand;
 			else
-				estimated -= rand;
+				estimate -= rand;
 			
-//			System.out.println("improveSiteEstimates  " + mineralType 
-//					+ "   estimated: " + Math.round(estimated * 100.0)/100.0
-//					+ "   actual: " + Math.round(actual * 100.0)/100.0);
+			logger.info("mineralType: " + mineralType 
+					+ "   rand: " + Math.round(rand * 100.0)/100.0
+					+ "   conc: " + Math.round(conc * 100.0)/100.0
+					+ "   estimate: " + Math.round(estimate * 100.0)/100.0	
+					+ "   diff: " + Math.round(diff * 100.0)/100.0
+					);
 			
-			estimatedMineralConcentrations.put(mineralType, estimated);
+			estimatedMineralConcentrations.put(mineralType, estimate);
 		}
 
 		// Add to site mineral concentration estimation improvement number.

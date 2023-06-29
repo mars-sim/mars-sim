@@ -666,16 +666,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/**
 	 * Adds an explored location.
 	 *
-	 * @param location                       the location coordinates.
-	 * @param estimationImprovement			 The number times the estimates have been improved
-	 * @param estimatedMineralConcentrations a map of all mineral types and their
-	 *                                       estimated concentrations (0% -100%)
-	 * @param settlement                     the settlement the exploring mission is
-	 *                                       from.
+	 * @param location		the location coordinates.
+	 * @param skill			the skill
+	 * @param settlement    the settlement staking the claim on this location
 	 * @return the explored location
 	 */
-	public ExploredLocation addExploredLocation(Coordinates location,
-			int estimationImprovement, Settlement settlement) {
+	public synchronized ExploredLocation addExploredLocation(Coordinates location,
+			int skill, Settlement settlement) {
 		
 		ExploredLocation result = null;
 		
@@ -695,11 +692,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				continue;
 			}
 			
-			double variance = 1.0 / (1 + estimationImprovement);
-
+			double variance = 5.0 / (1 + skill);
+			// With no improvements the estimates are capped
+			if (variance > 5) {
+				variance = 5;
+			}
+			
 			double newEst = initialEst + initialEst * RandomUtil.getRandomDouble(-variance, variance);
 			
-			// With no improvements the estimates are capped
 			if (newEst < 0)
 				newEst = 0;
 			else if (newEst > MINERAL_ESTIMATION_MAX) {
@@ -714,11 +714,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			initialMineralEstimations.put(mineralType, newEst);
 		}
 
-		if (totalConc> 0) {
+		if (totalConc > 0) {
 			
 			double distance = Coordinates.computeDistance(location, settlement.getCoordinates());
 			
-			result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement, distance);
+			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement, distance);
 			
 			synchronized (exploredLocations) {
 				exploredLocations.add(result);
