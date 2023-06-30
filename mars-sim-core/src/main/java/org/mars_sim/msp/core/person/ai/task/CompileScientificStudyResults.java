@@ -72,6 +72,10 @@ extends Task {
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
+		logger.log(person, Level.INFO, 10_000, "Requested computing resources: " 
+		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 + " CUs for "
+		 		+ NAME + ".");
+		 		
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
         // Determine study.

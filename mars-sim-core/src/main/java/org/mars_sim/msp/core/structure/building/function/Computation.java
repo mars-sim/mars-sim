@@ -341,6 +341,8 @@ public class Computation extends Function {
 	
 	@Override
 	public void destroy() {
+		todayDemand.clear();
+		todayDemand = null;
 		super.destroy();
 	}
 

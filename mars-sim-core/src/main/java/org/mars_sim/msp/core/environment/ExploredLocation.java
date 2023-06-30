@@ -248,11 +248,12 @@ public class ExploredLocation implements Serializable {
 		for (double percent : degreeCertainty.values()) {
 			if (percent > 0) {
 				sum += percent;
-				numMinerals ++;
+				numMinerals++;
 			}
 		}
-		
-		return sum / numMinerals;
+		if (numMinerals > 0)
+			return sum / numMinerals;
+		return 0;
 	}
 	
 	/**

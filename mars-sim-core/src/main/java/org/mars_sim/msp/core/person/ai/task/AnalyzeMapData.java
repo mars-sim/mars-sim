@@ -53,9 +53,7 @@ public class AnalyzeMapData extends Task {
 	/** The total computing resources needed for this task. */
 	private final double TOTAL_COMPUTING_NEEDED;
 	/** The composite score for a multi-disciplinary of skills. */
-	private double compositeSkill;		
-	/** The adjusted computing work per millisols. */
-	private double workPerMillisol;
+	private double compositeSkill;
 	/** The portion of effort spent. */
 	private double effort;
 	/** The total amount of work done. */
@@ -116,29 +114,33 @@ public class AnalyzeMapData extends Task {
 			}
 		}
 		
-		double certainty = site.getAverageCertainty() / 100;
+		double certainty = site.getAverageCertainty() / 100.0;
 		
 		// The higher the numImprovement, the more difficult the numerical solution, and 
 		// the more the computing resources needed to do the refinement.		
 		// The higher the composite skill, the less the computing resource.  
-		double score = (1 + certainty)/compositeSkill;
-		double rand1 = RandomUtil.getRandomDouble(score/10.0, score/5.0);
+		double score = (1 + certainty) / compositeSkill;
+		double rand1 = RandomUtil.getRandomDouble(score/60, score/30);
 		seed = Math.min(MAX_SEED, rand1);
 			
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		logger.log(person, Level.INFO, 20_000, NAME + " requested computing resources: " 
-		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
-		 		+ " CUs. score: " + Math.round(score * 1000.0)/1000.0 
-		 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
-		 		+ ". seed: " + Math.round(seed * 1000.0)/1000.0 
-		 		+ ". # Candidate sites: " + num 
-		 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
-		
 		int limit = (int)Math.round(Math.max(4, Mining.MATURE_ESTIMATE_NUM - certainty));
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
+		
+		logger.log(person, Level.INFO, 10_000, "Requested computing resources: " 
+				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 + " CUs for "
+				+ NAME);
+//				+ ". rand: " + Math.round(rand * 1000.0)/1000.0);
+// 		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
+// 		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
+// 		+ ". score: " + Math.round(score * 1000.0)/1000.0 
+// 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
+// 		+ ". seed: " + Math.round(seed * 1000.0)/1000.0 
+// 		+ ". # Candidate sites: " + num 
+// 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
 		
 		if (rand < 2) {
 	       	// Add task phases
@@ -186,7 +188,7 @@ public class AnalyzeMapData extends Task {
 			endTask();
 		}
     	
-    	consumeComputingResource(time);
+    	double workPerMillisol = consumeComputingResource(time);
 
     	totalWork += time * (1 + workPerMillisol);
         
@@ -210,7 +212,7 @@ public class AnalyzeMapData extends Task {
          	// Creates an initial explored site in SurfaceFeatures
          	person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
          				
-         	logger.info(person, 50_000L, "Successfully discovered a site at " +  aSite.getFormattedString() + " .");
+         	logger.info(person, 50_000L, "Zoned up a ROI at " +  aSite.getFormattedString() + ".");
          	
          	endTask();
         }
@@ -221,12 +223,13 @@ public class AnalyzeMapData extends Task {
         return 0;
     }
     
-    private void consumeComputingResource(double time) {
+    private double consumeComputingResource(double time) {
     	int msol = getMarsTime().getMillisolInt();
     	boolean successful = false; 
-          
+    	double workPerMillisol = 0;
+    	
     	if (computingNeeded > 0) {
-   
+    		
           	if (computingNeeded <= seed) {
           		workPerMillisol = time * computingNeeded;
           	}
@@ -235,37 +238,39 @@ public class AnalyzeMapData extends Task {
           	}
 
           	// Submit request for computing resources
-      	Computation center = person.getAssociatedSettlement().getBuildingManager()
-      			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-      	if (center != null) {
-      		if (computingNeeded <= seed)
-      			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-      		else
-      			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-      	}
-    	else
-    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
-      	
-      	if (successful) {
-      		if (computingNeeded <= seed)
-      			computingNeeded = computingNeeded - workPerMillisol;
-      		else
-      			computingNeeded = computingNeeded - workPerMillisol * getDuration();
-      		if (computingNeeded < 0) {
-      			computingNeeded = 0; 
-      		}
-        	}
-    	else {
-    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
+	      	Computation center = person.getAssociatedSettlement().getBuildingManager()
+	      			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
+	      	if (center != null) {
+	      		if (computingNeeded <= seed)
+	      			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
+	      		else
+	      			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
+	      	}
+	    	else
+	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
+	      	
+	    	if (successful) {
+	    		if (computingNeeded <= seed)
+	    			computingNeeded = computingNeeded - workPerMillisol;
+	    		else
+	    			computingNeeded = computingNeeded - workPerMillisol * getDuration();
+	    		if (computingNeeded < 0) {
+	    			computingNeeded = 0; 
+	    		}
+	      	}
+	    	else {
+	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    	}
     	}
-      }
-      else if (computingNeeded <= 0) {
-      	// this task has ended
-  		logger.log(person, Level.FINE, 30_000L, NAME + " - " 
+	    else if (computingNeeded <= 0) {
+	    	// this task has ended
+	    	logger.log(person, Level.FINE, 30_000L, NAME + " - " 
   				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
   				+ " CUs Used.");
-      	endTask();
-      }
+	    	endTask();
+	    }
+    	
+    	return workPerMillisol;
     }
     
 	/**
@@ -283,7 +288,7 @@ public class AnalyzeMapData extends Task {
 //			return time;
 //		}
  
-    	consumeComputingResource(time);
+    	double workPerMillisol = consumeComputingResource(time);
         
         effort += time * (1 + workPerMillisol);
           
@@ -333,17 +338,24 @@ public class AnalyzeMapData extends Task {
 			int newNum = site.getNumEstimationImprovement();
 			
 			logger.log(person, Level.INFO, 10_000,
-					NAME + " for " + site.getLocation().getFormattedString()
+					"Improved " + site.getLocation().getFormattedString()
 					+ ". # of estimation: " + oldNum 
 					+ " -> " + newNum + ".");
 		}
 	}
 
     /**
-     * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement.
+     * Closes out this task.
      */
     @Override
     protected void clearDown() {
 
     }
+    
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		site = null;
+	}
 }
