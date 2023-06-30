@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapDataMeta.java
- * @date 2022-10-01
+ * @date 2023-06-30
  * @author Manny Kung
  */
 
@@ -67,7 +67,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	int numUnimproved = 0;
         	
         	List<ExploredLocation> siteList = surfaceFeatures
-        			.getExploredLocations().stream()
+        			.getAllRegionOfInterestLocations().stream()
         			.filter(site -> site.isMinable())
         			.collect(Collectors.toList());  	
         	

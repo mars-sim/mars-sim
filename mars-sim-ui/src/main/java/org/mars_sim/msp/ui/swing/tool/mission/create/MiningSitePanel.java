@@ -122,7 +122,7 @@ public class MiningSitePanel extends WizardPanel {
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 3);
 		mapPane.addMapLayer(exploredSiteLayer = new ExploredSiteMapLayer(mapPane), 4);
 		
-		exploredSiteLayer.setDisplayMined(false);
+		exploredSiteLayer.setDisplayClaimed(false);
 		exploredSiteLayer.setDisplayReserved(false);
 		mapPane.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
@@ -378,10 +378,10 @@ public class MiningSitePanel extends WizardPanel {
 			ExploredLocation closestSite = null;
 			double closestRange = Double.MAX_VALUE;
 
-			Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations().iterator();
+			Iterator<ExploredLocation> i = surfaceFeatures.getAllRegionOfInterestLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
-				if (!site.isReserved() && site.isMinable() && site.isExplored()) {
+				if (!site.isReserved() && site.isMinable() && site.isClaimed() && site.isExplored()) {
 					double clickRange = site.getLocation().getDistance(clickedPosition);
 					if ((clickRange <= CLICK_RANGE) && (clickRange < closestRange)) {
 						closestSite = site;

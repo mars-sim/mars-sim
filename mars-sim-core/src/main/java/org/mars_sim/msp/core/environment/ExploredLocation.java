@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploredLocation.java
- * @date 2021-12-09
+ * @date 2023-06-30
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -20,10 +21,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * A class representing an explored location. It contains information on
- * estimated mineral concentrations and if it has been mined or not. Perhaps
- * later we can add more information related to exploration, such as evidence
- * for life.
+ * A class representing an Region of Interest for further exploration. It contains information on
+ * estimated mineral concentrations and if it's still minable or not. When reserve runs out, it's no longer minable. 
+ * 
+ * @Note Later we may further model it in looking for signature of life. 
  */
 public class ExploredLocation implements Serializable {
 
@@ -39,6 +40,7 @@ public class ExploredLocation implements Serializable {
 	
 	// Private members.
 	private boolean minable;
+	private boolean claimed;
 	private boolean explored;
 	private boolean reserved;
 	private int numEstimationImprovement;
@@ -49,8 +51,8 @@ public class ExploredLocation implements Serializable {
 	private Settlement settlement;
 	private Coordinates location;
 	
-
 	private Map<String, Double> estimatedMineralConcentrations;
+	
 	/**
 	 * A map for the degree of certainty in estimating mineral concentration
 	 */
@@ -142,8 +144,10 @@ public class ExploredLocation implements Serializable {
 
 	/**
 	 * Improves the certainty of mineral concentration estimation.
+	 * 
+	 * @param skill
 	 */
-	public void improveCertainty(int skill) {
+	public void improveCertainty(double skill) {
 			
 		List<String> minerals = new ArrayList<>(estimatedMineralConcentrations.keySet());
 		
@@ -234,11 +238,51 @@ public class ExploredLocation implements Serializable {
 	}
 	
 	/**
-	 * Adds an mineral concentration estimation improvement.
+	 * Gets the average degree of certainty of all minerals.
+	 * 
+	 * @return
 	 */
-	public void addEstimationImprovement(int skill) {
+	public double getAverageCertainty() {
+		double sum = 0;
+		int numMinerals = 0;
+		for (double percent : degreeCertainty.values()) {
+			if (percent > 0) {
+				sum += percent;
+				numMinerals ++;
+			}
+		}
+		
+		return sum / numMinerals;
+	}
+	
+	/**
+	 * Checks if the average certainty is above 50 %.
+	 * 
+	 * @return
+	 */
+	public boolean isCertaintyAverageOver50() {
+		double sum = 0;
+		double numMinerals = 0;
+		for (Entry<String, Double> i : degreeCertainty.entrySet()) {
+//			String mineral = i.getKey();
+			numMinerals ++;
+			double certainty = i.getValue();
+			sum += certainty;
+		}
+		
+		double average = sum / numMinerals;
+		if (average > 50) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Increments the estimation improvement.
+	 */
+	public void incrementNumImprovement() {
 		numEstimationImprovement++;
-		improveCertainty(skill);
 	}
 
 	/**
@@ -259,6 +303,24 @@ public class ExploredLocation implements Serializable {
 		return minable;
 	}
 
+	/**
+	 * Sets if this site is claimed or not .
+	 *
+	 * @param value true if claimed.
+	 */
+	public void setClaimed(boolean value) {
+		this.claimed = value;
+	}
+
+	/**
+	 * Checks if this site is claimed or not.
+	 *
+	 * @return true if claimed.
+	 */
+	public boolean isClaimed() {
+		return claimed;
+	}
+	
 	/**
 	 * Sets if the location has been explored or not.
 	 *

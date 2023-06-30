@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @date 2022-07-25
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -9,15 +9,12 @@ package org.mars_sim.msp.core.environment;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -43,7 +40,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public static final int OPTICAL_DEPTH_REFRESH = 3;
 
 	/** Maximum mineral concentration estimation diff from actual. */
-	private static final int MINERAL_ESTIMATION_VARIANCE = 10;
+//	private static final int MINERAL_ESTIMATION_VARIANCE = 10;
 
 	/** Maximum mineral estimation */
 	private static final double MINERAL_ESTIMATION_MAX = 100D;
@@ -80,8 +77,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 
-	/** The locations that have been explored and/or mined. */
-	private List<ExploredLocation> exploredLocations;
+	/** The set of locations that have been declared as Region of Interst (ROI). */
+	private Set<ExploredLocation> regioOfInterestLocations;
 	/** The most recent value of optical depth by Coordinate. */
 	private transient Map<Coordinates, Double> opticalDepthMap = new HashMap<>();
 	/** The most recent value of solar irradiance by Coordinate. */
@@ -107,7 +104,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		terrainElevation = new TerrainElevation();
 		
 		mineralMap = new RandomMineralMap();
-		exploredLocations = new ArrayList<>(); 
+		regioOfInterestLocations = new HashSet<>(); 
 		areothermalMap = new AreothermalMap();
 	}
 
@@ -665,14 +662,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds an explored location.
+	 * Declares a site a region of interest and generate an initial estimate of mineral contents.
 	 *
 	 * @param location		the location coordinates.
 	 * @param skill			the skill
 	 * @param settlement    the settlement staking the claim on this location
 	 * @return the explored location
 	 */
-	public synchronized ExploredLocation addExploredLocation(Coordinates location,
+	public synchronized ExploredLocation declareRegionOfInterest(Coordinates location,
 			int skill, Settlement settlement) {
 		
 		ExploredLocation result = null;
@@ -721,8 +718,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement, distance);
 			
-			synchronized (exploredLocations) {
-				exploredLocations.add(result);
+			synchronized (regioOfInterestLocations) {
+				regioOfInterestLocations.add(result);
 			}
 		}
 		else {
@@ -733,15 +730,33 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check if an explored location already exists.
-	 * 
-	 * @param c
+	 * Has this site been declared as a region of interest in SurfaceFeatures ?
+	 *
+	 * @param siteLocation
 	 * @return
 	 */
-	public ExploredLocation getExploredLocation(Coordinates c, Settlement settlement) {
-		synchronized (exploredLocations) {
-		return exploredLocations.stream()
-				  .filter(e -> c.equals(e.getLocation())
+	public boolean isDeclaredARegionOfInterest(Coordinates siteLocation, Settlement settlement, boolean isClaimed) {
+	
+		// Check if this siteLocation has already been added or not to SurfaceFeatures
+		if (getADeclaredLocation(siteLocation, settlement, isClaimed) == null)
+			return false;
+
+		return true;
+	}
+	
+	/**
+	 * Check if a location already been declared as a Region Of Interest by a party/settlement.
+	 * 
+	 * @param coord
+	 * @param settlement
+	 * @param isClaimed
+	 * @return
+	 */
+	public ExploredLocation getADeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
+		synchronized (regioOfInterestLocations) {
+		return regioOfInterestLocations.stream()
+				  .filter(e -> e.getLocation().equals(coord)
+						  && e.isClaimed() == isClaimed
 						  && e.getSettlement().equals(settlement))
 				  .findFirst() //.findAny()
 				  .orElse(null);
@@ -749,25 +764,28 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets a list of all explored locations on Mars.
+	 * Gets a set of all declared Regions of Interest (ROI).
 	 *
 	 * @return list of explored locations.
 	 */
-	public List<ExploredLocation> getExploredLocations() {
-		return exploredLocations;
+	public Set<ExploredLocation> getAllRegionOfInterestLocations() {
+		return regioOfInterestLocations;
 	}
 
 	/**
-	 * Gets a set of coordinates of all explored locations on Mars.
+	 * Gets a set of coordinates from the declared Regions of Interest (ROI).
 	 *
+	 * @param isClaimed
 	 * @return
 	 */
-	public Set<Coordinates> getExploredCoordinates() {
+	public Set<Coordinates> getDeclaredCoordinates(boolean isClaimed) {
 		Set<Coordinates> coords = new HashSet<>();
 		
-		for (ExploredLocation el: exploredLocations) {
-			Coordinates c = el.getLocation();
-			coords.add(c);
+		for (ExploredLocation el: regioOfInterestLocations) {
+			boolean claimed = el.isClaimed();
+			if (claimed == isClaimed) {
+				coords.add(el.getLocation());
+			}
 		}
 		return coords;
 	}
@@ -858,8 +876,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		currentIrradiance = null;
 		mineralMap.destroy();
 		mineralMap = null;
-		exploredLocations.clear();
-		exploredLocations = null;
+		regioOfInterestLocations.clear();
+		regioOfInterestLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
 

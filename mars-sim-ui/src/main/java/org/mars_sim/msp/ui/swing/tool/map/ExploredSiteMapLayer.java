@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploredSiteMapLayer.java
- * @date 2022-07-31
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -21,15 +21,15 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 
 	// Static members
 	private static final String EXPLORED_ICON_NAME = "map/flag_smallyellow"; 
-	private static final String MINED_ICON_NAME = "map/flag_smallgray"; 
+	private static final String CLAIMED_ICON_NAME = "map/flag_smallgray"; 
 	private static final String SELECTED_ICON_NAME ="map/flag_smallblue"; 
 
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconExplored;
-	private Icon navpointIconMinable;
+	private Icon navpointIconClaimed;
 	private Icon navpointIconSelected;
-	private boolean displayMined;
+	private boolean displayClaimed;
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 
@@ -45,20 +45,20 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
 		navpointIconExplored = ImageLoader.getIconByName(EXPLORED_ICON_NAME);
-		navpointIconMinable = ImageLoader.getIconByName(MINED_ICON_NAME);
+		navpointIconClaimed = ImageLoader.getIconByName(CLAIMED_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIconByName(SELECTED_ICON_NAME);
-		displayMined = true;
+		displayClaimed = true;
 		displayReserved = true;
 		selectedSite = null;
 	}
 
 	/**
-	 * Should mined sites be displayed?
+	 * Should claimed sites be displayed?
 	 * 
-	 * @param displayMined true if display mined sites.
+	 * @param displayClaimed true if display mined sites.
 	 */
-	public void setDisplayMined(boolean displayMined) {
-		this.displayMined = displayMined;
+	public void setDisplayClaimed(boolean displayClaimed) {
+		this.displayClaimed = displayClaimed;
 	}
 
 	/**
@@ -88,9 +88,9 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	 */
 	@Override
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
-		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
+		for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
-            if (!site.isMinable() && !displayMined)
+            if (!site.isClaimed() && !displayClaimed)
 				displaySite = false;
 			if (!site.isExplored())
 				displaySite = false;
@@ -116,7 +116,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 			if (site.equals(selectedSite))
 				navIcon = navpointIconSelected;
 			else if (site.isMinable())
-				navIcon = navpointIconMinable;
+				navIcon = navpointIconClaimed;
 			else
 				navIcon = navpointIconExplored;
 

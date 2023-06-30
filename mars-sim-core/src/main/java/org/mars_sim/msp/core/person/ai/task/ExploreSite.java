@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2022-07-18
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -59,8 +59,9 @@ public class ExploreSite extends EVAOperation {
 	// Future: should keep track of the actual total exploring site time and use it below.
 	// The longer it stays, the more samples are collected and better the mining estimation
 	private double chance = 0.5;
-	private double siteTime = 250;
 
+	private double skill;
+	
 	private ExploredLocation site;
 	private Rover rover;
 
@@ -94,11 +95,14 @@ public class ExploreSite extends EVAOperation {
 			logger.warning(person, "No more specimen box for collecting rock samples.");
 			endTask();
 		}
+		
+		skill = (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
 
 		// Add task phase
 		addPhase(EXPLORING);
 	}
-
+	
+	
 	/**
 	 * Checks if a person can explore a site.
 	 *
@@ -169,6 +173,9 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
+		// Add to the cumulative combined site time
+		((Exploration)person.getMission()).addSiteTime(time);
+		
 		if (checkReadiness(time, false) > 0)
 			return time;
 
@@ -177,15 +184,24 @@ public class ExploreSite extends EVAOperation {
 			return time;
 		}
 
-		int rand = RandomUtil.getRandomInt(1);
+		int rand = RandomUtil.getRandomInt(5);
 
 		if (rand == 0) {
 			// Improve mineral concentration estimates.
 			improveMineralConcentrationEstimates(time);
 		}
-		else {
+		else if (rand == 1){
 			// Collect rocks.
 			collectRocks(time);
+		}
+		else {
+			site.improveCertainty(skill);
+			
+			// Checks if the site has been claimed
+			if (!site.isClaimed()
+				&& site.isCertaintyAverageOver50()) {
+					site.setClaimed(true);
+			}
 		}
 		
 		// FUTURE: Add other site exploration activities later.
@@ -215,10 +231,8 @@ public class ExploreSite extends EVAOperation {
 	private void collectRocks(double time) {
 		if (hasSpecimenContainer()) {
 			
-			if (person.getMission() != null) {
-				siteTime = ((Exploration)person.getMission()).getSiteTime();
-				chance = numSamplesCollected * siteTime / 8000.0;
-			}
+			double siteTime = ((Exploration)person.getMission()).getSiteTime();
+			chance = numSamplesCollected * siteTime / 8000.0;
 			
 			double probability = (1 + site.getNumEstimationImprovement()) * chance * time 
 					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
@@ -253,16 +267,18 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
 
-		if (person.getMission() != null)
-			siteTime = ((Exploration)person.getMission()).getSiteTime();
-		
-		double probability = (time * siteTime / 1000.0) 
-				* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D
+		double siteTime = ((Exploration)person.getMission()).getSiteTime();
+			
+		double probability = (time * siteTime / 100.0) 
+				* skill
 				* ESTIMATE_IMPROVEMENT_FACTOR;
+		
 		if (probability > .9)
 			probability = .9;
+		
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
-			improveSiteEstimates(site, getEffectiveSkillLevel());
+			// Call to improve the site estimate first
+			improveSiteEstimates(site, skill);
 			
 			logger.log(person, Level.INFO, 5_000,
 					"Exploring site at " + site.getLocation().getFormattedString()				
@@ -278,7 +294,7 @@ public class ExploreSite extends EVAOperation {
 	 * @param site
 	 * @param skill
 	 */
-	public static void improveSiteEstimates(ExploredLocation site, int skill) {
+	public static void improveSiteEstimates(ExploredLocation site, double skill) {
 
 		int imp = site.getNumEstimationImprovement();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
@@ -288,8 +304,12 @@ public class ExploreSite extends EVAOperation {
 			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
 			double estimate = estimatedMineralConcentrations.get(mineralType);
 			double diff = Math.abs(conc - estimate);
+			
+			double certainty = site.getDegreeCertainty(mineralType);
+			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
+			
 			// Note that rand can 'overshoot' the target
-			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50);
+			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50 * variance);
 			if (rand > diff * 1.25)
 				rand = diff * 1.25;
 			if (estimate == conc)
@@ -308,9 +328,9 @@ public class ExploreSite extends EVAOperation {
 			
 			estimatedMineralConcentrations.put(mineralType, estimate);
 		}
-
+		
 		// Add to site mineral concentration estimation improvement number.
-		site.addEstimationImprovement(skill);
+		site.incrementNumImprovement();
 	}
 
 	/**

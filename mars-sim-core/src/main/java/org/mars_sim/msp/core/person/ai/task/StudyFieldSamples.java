@@ -581,8 +581,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 
 		Settlement settlement = person.getAssociatedSettlement();
 		if (settlement != null) {
-			List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
-			List<ExploredLocation> allExploredLocations = surfaceFeatures.getExploredLocations();
+			List<ExploredLocation> settlementExploredLocations = new ArrayList<>();
+			Set<ExploredLocation> allExploredLocations = surfaceFeatures.getAllRegionOfInterestLocations();
 			Iterator<ExploredLocation> i = allExploredLocations.iterator();
 			while (i.hasNext()) {
 				ExploredLocation location = i.next();
@@ -591,7 +591,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 				}
 			}
 
-			if (settlementExploredLocations.size() > 0) {
+			if (!settlementExploredLocations.isEmpty()) {
 				int siteIndex = RandomUtil.getRandomInt(settlementExploredLocations.size() - 1);
 				result = settlementExploredLocations.get(siteIndex);
 			}

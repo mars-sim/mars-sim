@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2023-06-09
+ * @date 2023-06-30
  * @author Manny Kung
  */
 
@@ -46,8 +46,6 @@ public class AnalyzeMapData extends Task {
 	private static final TaskPhase DISCOVERING = new TaskPhase(Msg.getString("Task.phase.discovering")); //$NON-NLS-1$
 	
     // Data members.
-	/** The number of estimation improvement made for a site. */	
-	private int numImprovement;
     /** Computing Units needed per millisol. */		
 	private double computingNeeded;
 	/** The seed value. */
@@ -88,7 +86,7 @@ public class AnalyzeMapData extends Task {
 		}
 	
 		List<ExploredLocation> siteList0 = surfaceFeatures
-    			.getExploredLocations().stream()
+    			.getAllRegionOfInterestLocations().stream()
     			.filter(site -> site.isMinable())
     			.collect(Collectors.toList());
 
@@ -118,19 +116,19 @@ public class AnalyzeMapData extends Task {
 			}
 		}
 		
-		numImprovement = site.getNumEstimationImprovement();
+		double certainty = site.getAverageCertainty() / 100;
 		
 		// The higher the numImprovement, the more difficult the numerical solution, and 
 		// the more the computing resources needed to do the refinement.		
 		// The higher the composite skill, the less the computing resource.  
-		double score = (1 + numImprovement)/compositeSkill;
-		double rand1 = RandomUtil.getRandomDouble(score/20.0, score/10.0);
+		double score = (1 + certainty)/compositeSkill;
+		double rand1 = RandomUtil.getRandomDouble(score/10.0, score/5.0);
 		seed = Math.min(MAX_SEED, rand1);
 			
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
-		logger.log(person, Level.INFO, 20_000, NAME + " requesting computing resources: " 
+		logger.log(person, Level.INFO, 20_000, NAME + " requested computing resources: " 
 		 		+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
 		 		+ " CUs. score: " + Math.round(score * 1000.0)/1000.0 
 		 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
@@ -138,7 +136,7 @@ public class AnalyzeMapData extends Task {
 		 		+ ". # Candidate sites: " + num 
 		 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
 		
-		int limit = Math.max(4, Mining.MATURE_ESTIMATE_NUM - numImprovement);
+		int limit = (int)Math.round(Math.max(4, Mining.MATURE_ESTIMATE_NUM - certainty));
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
 		
@@ -210,7 +208,7 @@ public class AnalyzeMapData extends Task {
      		Coordinates aSite = person.getSettlement().getAComfortableNearbyMineralLocation(rangeLimit, skill);
          				
          	// Creates an initial explored site in SurfaceFeatures
-         	person.getSettlement().createAExploredSite(aSite, skill);
+         	person.getSettlement().createARegionOfInterest(aSite, skill);
          				
          	logger.info(person, 50_000L, "Successfully discovered a site at " +  aSite.getFormattedString() + " .");
          	
@@ -321,17 +319,24 @@ public class AnalyzeMapData extends Task {
      */
 	private void improveMineralConcentrationEstimates(double time, double effort) {
 
-//		double probability = (time * siteTime / 1000.0) * effort;
-//		if (probability > .9)
-//			probability = .9;
-//		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
-			ExploreSite.improveSiteEstimates(site, (int)Math.round(compositeSkill));
-
+		double probability = time * effort;
+		if (probability > .75)
+			probability = .75;
+		
+		int oldNum = site.getNumEstimationImprovement();
+		
+		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
+		
+			// Improve the mineral concentration estimation
+			ExploreSite.improveSiteEstimates(site, compositeSkill);
+			
+			int newNum = site.getNumEstimationImprovement();
+			
 			logger.log(person, Level.INFO, 10_000,
 					NAME + " for " + site.getLocation().getFormattedString()
-					+ ". # of estimation done: "
-					+ site.getNumEstimationImprovement() + ".");
-//		}
+					+ ". # of estimation: " + oldNum 
+					+ " -> " + newNum + ".");
+		}
 	}
 
     /**

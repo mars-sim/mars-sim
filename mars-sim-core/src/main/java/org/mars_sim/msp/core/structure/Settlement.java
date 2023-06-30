@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2023-05-09
+ * @date 2023-06-30
  * @author Scott Davis
  */
 
@@ -929,7 +929,7 @@ public class Settlement extends Structure implements Temporal,
 					rover.getRange() / 100, 10 * pulse.getMarsTime().getMissionSol());
 			
 			// Creates an initial explored site in SurfaceFeatures
-			createAExploredSite(firstSite, 0);
+			createARegionOfInterest(firstSite, 0);
 			
 			logger.info(this, "On Sol 1, " + firstSite.getFormattedString() 
 						+ " was the very first exploration site chosen to be analyzed and explored.");
@@ -965,7 +965,7 @@ public class Settlement extends Structure implements Temporal,
 			Coordinates anotherSite = getAComfortableNearbyMineralLocation(limit, skillDistance);
 			
 			// Creates an initial explored site in SurfaceFeatures
-			createAExploredSite(anotherSite, skill);
+			createARegionOfInterest(anotherSite, skill);
 			
 			logger.info(this, "On Sol " + sol + ", " +  anotherSite.getFormattedString() 
 						+ " was added to be analyzed and explored.");
@@ -990,7 +990,7 @@ public class Settlement extends Structure implements Temporal,
 		int improved = 0;
 		
 		List<ExploredLocation> siteList = surfaceFeatures
-    			.getExploredLocations().stream()
+    			.getAllRegionOfInterestLocations().stream()
     			.filter(site -> site.isMinable())
     			.collect(Collectors.toList());  	
     	
@@ -3131,7 +3131,7 @@ public class Settlement extends Structure implements Temporal,
 		
 		// Remove coordinates that have been explored or staked by other settlements
 		
-		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getExploredCoordinates();
+		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getDeclaredCoordinates(false);
 		
 		// Create a set
 		Set<Coordinates> intersection = new HashSet<>(nearbyMineralLocations);
@@ -3167,7 +3167,7 @@ public class Settlement extends Structure implements Temporal,
 			// Choose one with weighted randomness 
 			chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 		
-		} while (isAnExploredLocation(chosen));
+		} while (surfaceFeatures.isDeclaredARegionOfInterest(chosen, this, false));
 		
 		return chosen;
 	}
@@ -3186,20 +3186,20 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	/**
-	 * Creates a brand new site at a given location and
+	 * Creates a Region of Interest (ROI) at a given location and
 	 * estimate its mineral concentrations.
 	 * 
 	 * @param siteLocation
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	public ExploredLocation createAExploredSite(Coordinates siteLocation, int skill) {
+	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
 	
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation, this);
+		ExploredLocation el = surfaceFeatures.getADeclaredLocation(siteLocation, this, false);
 		if (el == null) {
-			// Add it if it doesn't exist yet
-			el = surfaceFeatures.addExploredLocation(siteLocation,
+			// If it doesn't exist yet
+			el = surfaceFeatures.declareRegionOfInterest(siteLocation,
 					skill, this);
 		}
 
@@ -3208,20 +3208,6 @@ public class Settlement extends Structure implements Temporal,
 			nearbyMineralLocations.remove(siteLocation);
 		
 		return el;
-	}
-	
-	/**
-	 * Does the site exist already in a given location in SurfaceFeatures ?
-	 *
-	 * @return ExploredLocation
-	 */
-	public boolean isAnExploredLocation(Coordinates siteLocation) {
-	
-		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		if (surfaceFeatures.getExploredLocation(siteLocation, this) == null)
-			return false;
-
-		return true;
 	}
 	
 	/**
@@ -3302,8 +3288,6 @@ public class Settlement extends Structure implements Temporal,
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 	
-
-	
 	/**
 	 * Returns the ice collection rate in the vicinity of this settlement.
 	 * 
@@ -3337,6 +3321,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * The total amount of rock samples collected.
+	 * 
 	 * @param id resource id
 	 */
 	public double getResourceCollected(int id) {
@@ -3345,6 +3330,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Adds the amount of resource collected.
+	 * 
 	 * @param id resource id
 	 * @param value collected
 	 */

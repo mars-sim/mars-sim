@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mining.java
- * @date 2022-07-14
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -350,12 +350,12 @@ public class Mining extends EVAMission
 
 
 	/**
-	 * Close down the mining activities
+	 * Closes down the mining activities
 	 */
 	@Override
 	protected void endEVATasks() {
 		super.endEVATasks();
-
+			
 		double remainingMass = miningSite.getRemainingMass();
 		if (remainingMass < 100)
 			// Mark site as mined.
@@ -452,11 +452,11 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(ExploredLocation site : surfaceFeatures.getExploredLocations()) {
+			for(ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
 
-				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
+				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
@@ -494,10 +494,10 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
+			for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
-				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
+				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {

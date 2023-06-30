@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Exploration.java
- * @date 2022-07-14
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -69,6 +69,11 @@ public class Exploration extends EVAMission
 	/** Number of collection sites. */
 	private int numSites;
 	
+	/**
+	 * The cumulative and combined site time for all members who will explore the site
+	 */
+	private double siteTime;
+	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
 	// Data members
@@ -76,8 +81,8 @@ public class Exploration extends EVAMission
 	private Map<String, Double> explorationSiteCompletion;
 	/** The current exploration site. */
 	private ExploredLocation currentSite;
-	/** The set of sites to be explored by this mission. */
-	private Set<ExploredLocation> exploredSites;
+	/** The set of sites to be claimed by this mission. */
+	private Set<ExploredLocation> claimedSites;
 
 	/**
 	 * Constructor.
@@ -113,19 +118,19 @@ public class Exploration extends EVAMission
 			int sol = getMarsTime().getMissionSol();
 			numSites = 2 + (int)(1.0 * sol / 20);
 			
-			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(),
+			List<Coordinates> sitesToClaim = determineExplorationSites(getVehicle().getRange(),
 					getRover().getTotalTripTimeLimit(true),
 					numSites, skill);
 
-			if (explorationSites.isEmpty()) {
+			if (sitesToClaim.isEmpty()) {
 				endMission(NO_EXPLORATION_SITES);
 				return;
 			}
 
 			// Update the number of determined sites
-			numSites = explorationSites.size();
+			numSites = sitesToClaim.size();
 			
-			initSites(explorationSites, skill);
+			initSites(sitesToClaim, skill);
 
 			// Set initial mission phase.
 			setInitialPhase(needsReview);
@@ -171,8 +176,8 @@ public class Exploration extends EVAMission
 		numSites = explorationSites.size();
 		
 		// Initialize explored sites.
-		if (exploredSites == null || exploredSites.isEmpty())
-			exploredSites = new HashSet<>(numSites);
+		if (claimedSites == null || claimedSites.isEmpty())
+			claimedSites = new HashSet<>(numSites);
 		
 		explorationSiteCompletion = new HashMap<>(numSites);
 		
@@ -180,7 +185,7 @@ public class Exploration extends EVAMission
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
 		for (Coordinates c : explorationSites) {
-			createAExploredSite(c, skill);
+			declareARegionOfInterest(c, skill);
 		}
 
 		// Set exploration navpoints.
@@ -217,11 +222,11 @@ public class Exploration extends EVAMission
 	 *
 	 * @return
 	 */
-	private ExploredLocation retrieveCurrentSite() {
+	private ExploredLocation retrieveASiteToClaim() {
 		
-		if (exploredSites != null && !exploredSites.isEmpty()) {
+		if (claimedSites != null && !claimedSites.isEmpty()) {
 			Coordinates current = getCurrentMissionLocation();
-			for (ExploredLocation e: exploredSites) {
+			for (ExploredLocation e: claimedSites) {
 				if (e.getLocation().equals(current))
 					return e;
 			}
@@ -230,15 +235,15 @@ public class Exploration extends EVAMission
 		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
 		
 		// Creates an random site
-		return createAExploredSite(getRandomExplorationSite(), 0);
+		return declareARegionOfInterest(determineFirstSiteCoordinate(), 0);
 	}
 
 	/**
-	 * Determine the first exploration site.
+	 * Determine the coordinate of the first exploration site.
 	 *
-	 * @return first exploration site or null if none.
+	 * @return
 	 */
-	private Coordinates getRandomExplorationSite() {
+	private Coordinates determineFirstSiteCoordinate() {
 		double range = getVehicle().getRange();
 		return getStartingSettlement().getARandomNearbyMineralLocation(range);
 	}
@@ -263,7 +268,7 @@ public class Exploration extends EVAMission
 
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
-			currentSite = retrieveCurrentSite();
+			currentSite = retrieveASiteToClaim();
 			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
 		
@@ -283,11 +288,12 @@ public class Exploration extends EVAMission
 	@Override
 	protected void endEVATasks() {
 		super.endEVATasks();
-
+		
 		// Set the site to have been explored
 		if (currentSite != null) {
 			currentSite.setExplored(true);
 		}
+		
 		currentSite = null;
 	}
 
@@ -299,14 +305,14 @@ public class Exploration extends EVAMission
 	 * @param skill
 	 * @return ExploredLocation
 	 */
-	private ExploredLocation createAExploredSite(Coordinates siteLocation, int skill) {
+	private ExploredLocation declareARegionOfInterest(Coordinates siteLocation, int skill) {
 		
-		ExploredLocation el = getStartingSettlement().createAExploredSite(siteLocation, skill);
+		ExploredLocation el = getStartingSettlement().createARegionOfInterest(siteLocation, skill);
 		
-		if (exploredSites == null || exploredSites.isEmpty())
-			exploredSites = new HashSet<>();
+		if (claimedSites == null || claimedSites.isEmpty())
+			claimedSites = new HashSet<>();
 		if (el != null)
-			exploredSites.add(el);
+			claimedSites.add(el);
 		
 		return el;
 	}
@@ -367,7 +373,7 @@ public class Exploration extends EVAMission
 		ExploredLocation el = null;
 		
 		// Find mature sites to explore
-		List<Coordinates> outstandingSites = findCandidateSites(startingLocation);
+		List<Coordinates> outstandingSites = findCandidateSitesToClaim(startingLocation);
 		if (!outstandingSites.isEmpty()) {
 			currentLocation = outstandingSites.remove(0);
 		}
@@ -378,10 +384,10 @@ public class Exploration extends EVAMission
 			// Use the confidence score to limit the range
 			double dist = RandomUtil.getRandomRegressionInteger(confidence, (int)limit);
 			
-			currentLocation = determineFirstExplorationSite(dist, areologySkill);
+			currentLocation = determineFirstSiteCoordinate(dist, areologySkill);
 			
 			// Creates an initial explored site in SurfaceFeatures
-			el = createAExploredSite(currentLocation, areologySkill);
+			el = declareARegionOfInterest(currentLocation, areologySkill);
 		}
 
 		if (currentLocation != null) {
@@ -446,27 +452,29 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Estimate the time needed at an EVA site.
-	 * 
-	 * @param buffer Add a buffer allowance
-	 * @return Estimated time per EVA site
+	 * Determine the first exploration site.
+	 *
+	 * @return first exploration site or null if none.
 	 */
-	protected double getEstimatedTimeAtEVASite(boolean buffer) {
-		return STANDARD_TIME_PER_SITE;
+	private Coordinates determineFirstSiteCoordinate(double limit, int areologySkill) {
+		
+		int skillDistance = RandomUtil.getRandomRegressionInteger(10, 500 * (1 + areologySkill));
+	
+		return getStartingSettlement().getAComfortableNearbyMineralLocation(limit, skillDistance);
 	}
-
+	
 	/**
-	 * Gets a list of candidate explored location for this Settlement that needs estimation improvement.
+	 * Gets a list of candidate site coordinates for a settlement. Filter for those that needs estimation improvement.
 	 * 
 	 * @return
 	 */
-	private List<Coordinates> findCandidateSites(Coordinates startingLoc) {
+	private List<Coordinates> findCandidateSitesToClaim(Coordinates startingLoc) {
 
 		Settlement home = getStartingSettlement();
 
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candidateLocs = surfaceFeatures.getExploredLocations().stream()
+		List<Coordinates> candidateLocs = surfaceFeatures.getAllRegionOfInterestLocations().stream()
 				.filter(e -> e.getNumEstimationImprovement() < 
 						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
 				.filter(s -> home.equals(s.getSettlement()))
@@ -496,19 +504,6 @@ public class Exploration extends EVAMission
 
 		return result;
 	}
-
-	
-	/**
-	 * Determine the first exploration site.
-	 *
-	 * @return first exploration site or null if none.
-	 */
-	private Coordinates determineFirstExplorationSite(double limit, int areologySkill) {
-		
-		int skillDistance = RandomUtil.getRandomRegressionInteger(10, 500 * (1 + areologySkill));
-	
-		return getStartingSettlement().getAComfortableNearbyMineralLocation(limit, skillDistance);
-	}
 	
 
 	/**
@@ -517,7 +512,7 @@ public class Exploration extends EVAMission
 	 * @return list of explored sites.
 	 */
 	public Set<ExploredLocation> getExploredSites() {
-		return exploredSites;
+		return claimedSites;
 	}
 
 	/**
@@ -529,6 +524,17 @@ public class Exploration extends EVAMission
 		return new HashMap<>(explorationSiteCompletion);
 	}
 
+	/**
+	 * Estimate the time needed at an EVA site.
+	 * 
+	 * @param buffer Add a buffer allowance
+	 * @return Estimated time per EVA site
+	 */
+	protected double getEstimatedTimeAtEVASite(boolean buffer) {
+		return STANDARD_TIME_PER_SITE;
+	}
+
+	
 	/**
 	 * Gets the estimated total mineral value of a mining site.
 	 *
@@ -561,13 +567,13 @@ public class Exploration extends EVAMission
 	 */
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
-		if (exploredSites.isEmpty()) {
+		if (claimedSites.isEmpty()) {
 			return 0D;
 		}
 
 		int count = 0;
 		double siteValue = 0D;
-		for (ExploredLocation el : exploredSites) {
+		for (ExploredLocation el : claimedSites) {
 			count++;
 			siteValue += Mining.getMiningSiteValue(el, reviewerSettlement);
 		}
@@ -586,11 +592,21 @@ public class Exploration extends EVAMission
 		return numSites;
 	}
 
+	
+	/**
+	 * Adds the site time.
+	 * 
+	 * @param time
+	 */
+	public void addSiteTime(double time) {
+		siteTime += time;
+	}
+	
 	/** 
 	 * Gets amount of time to explore a site. 
 	 */
 	public double getSiteTime() {
-		return STANDARD_TIME_PER_SITE;
+		return siteTime;
 	}
 	
 	@Override
@@ -601,5 +617,16 @@ public class Exploration extends EVAMission
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return OBJECTIVES;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		explorationSiteCompletion.clear();
+		explorationSiteCompletion = null;
+		currentSite = null;
+		claimedSites.clear();
+		claimedSites = null;
 	}
 }

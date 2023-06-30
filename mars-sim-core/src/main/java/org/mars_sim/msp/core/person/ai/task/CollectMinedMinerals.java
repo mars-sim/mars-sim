@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @date 2021-10-03
+ * @date 2023-06-30
  * @author Scott Davis
  */
 
@@ -191,9 +191,9 @@ public class CollectMinedMinerals extends EVAOperation {
 		double concentration = mission.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());	
 		double reserve = mission.getMiningSite().getRemainingMass();
 		double certainty = mission.getMiningSite().getDegreeCertainty(mineralType.getName());
-		double variancePercent = (1 + RandomUtil.getRandomDouble(100 - certainty)) / 100;
+		double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
 		
-		double mineralsCollected = variancePercent * time * reserve * MINERAL_SELECTION_RATE * concentration;
+		double mineralsCollected = variance * time * reserve * MINERAL_SELECTION_RATE * concentration;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -227,7 +227,7 @@ public class CollectMinedMinerals extends EVAOperation {
 
 		return 0;
 	}
-
+	
 	@Override
 	protected void clearDown() {
 		if (rover != null) {

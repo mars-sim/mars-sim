@@ -8,10 +8,10 @@
 package org.mars.sim.console.chat.simcommand;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Command to display details of Explored Locations. The locations are filtered
@@ -64,7 +63,7 @@ public class ExploredCommand extends ChatCommand {
 
 				if (hasMinerals) {
 					// Add new site but at maximum estimation improvement
-					ExploredLocation newSite = surface.addExploredLocation(siteLocation, 1, null);
+					ExploredLocation newSite = surface.declareRegionOfInterest(siteLocation, 1, null);
 					newSite.setExplored(true);
 				}
 				else {
@@ -88,7 +87,7 @@ public class ExploredCommand extends ChatCommand {
 	 */
 	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {
 
-		List<ExploredLocation> locations = surface.getExploredLocations();
+		Set<ExploredLocation> locations = surface.getAllRegionOfInterestLocations();
 			
 		// Filter the list if in a Settlement
 		if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
@@ -105,14 +104,14 @@ public class ExploredCommand extends ChatCommand {
 			final Settlement sFilter = filter;
 			locations = locations.stream()
 								.filter(s -> (s.getSettlement() == null) || sFilter.equals(s.getSettlement()))
-								.collect(Collectors.toList());
+								.collect(Collectors.toSet());
 		}
 		
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
 									"Settlement", 20, 
 									"Status", 8 , "Reviews", "Highest");
-		for(ExploredLocation s : locations) {
+		for (ExploredLocation s : locations) {
 			String mineral = "";
 			if (!s.getEstimatedMineralConcentrations().isEmpty()) {
 				// Create summary of minerals
