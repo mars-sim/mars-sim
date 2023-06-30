@@ -17,7 +17,10 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A utility class for finding an EVA suit from an inventory
@@ -27,6 +30,45 @@ public class EVASuitUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EVASuitUtil.class.getName());
 
+	/**
+	 * Take off EVA suit, puts on the garment and get back the thermal bottle.
+	 * 
+	 * @param person
+	 * @param entity
+	 */
+	public static void checkIn(Person person, Object entity) {
+		EquipmentOwner housing = null;
+
+		boolean inS = person.isInSettlement();
+		
+		if (inS)
+			housing = ((Building)entity).getSettlement();
+		else
+			housing = (Vehicle)entity;
+		
+		EVASuit suit = person.getSuit();
+		
+		// Transfer the EVA suit from person to the new destination
+		if (suit != null) {
+			// Doff this suit.
+			suit.transfer((Unit)housing);
+		}
+		
+		// Remove pressure suit and put on garment
+		if (inS) {
+			if (person.unwearPressureSuit(housing)) {
+				person.wearGarment(housing);
+			}
+		}
+		// Note: vehicle may or may not have garment available
+		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+			person.wearGarment(housing);
+		}
+
+		// Assign thermal bottle
+		person.assignThermalBottle();
+	}
+	
 	/**
 	 * Finds the instance of a good EVA suit in a person's container unit. 
 	 * @Note: this method does not transfer the suit.

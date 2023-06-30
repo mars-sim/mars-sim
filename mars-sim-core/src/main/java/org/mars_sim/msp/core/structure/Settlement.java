@@ -338,7 +338,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's preference modifiers map. */
 	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
 	/** A set of nearby mineral locations. */
-	private Set<Coordinates> nearbyMineralLocations;
+	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -3262,7 +3262,7 @@ public class Settlement extends Structure implements Temporal,
 			// Check if any mineral locations within rover range and obtain their
 			// concentration
 			Map<String, Integer> minerals = getNearbyMineral(rover);
-			if (!minerals.isEmpty()) {
+			if (minerals != null && !minerals.isEmpty()) {
 				mineralValue = Exploration.getTotalMineralValue(this, minerals);
 			}
 		}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadEVASuitTest.java
- * @date 2023-06-10
+ * @date 2023-06-30
  * @author Manny Kung
  */
 
@@ -101,9 +101,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		suitSettlement.transfer(person);
 		// 2. Set the person as the owner
 		suitSettlement.setLastOwner(person);
-		// 3. Register the suit the person will take into the airlock to don
-		person.registerSuit(suitSettlement);
-		
+		// 3. Load resources 
 		double percentageFull = suitSettlement.loadResources(personOwner);
 		
 		System.out.println(person.getSuit().getName() + "'s percent of lowest resource: " + Math.round(percentageFull* 100D)/100D + " %");
@@ -121,16 +119,14 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		
 		// 1. Transfer the EVA suit from to person to settlement
 		suitPerson.transfer(settlement);
-		// 2b. Doff this suit. Deregister the suit from the person
-		person.registerSuit(null);
-		
+		// 2. Get the instance of the suit
 		suitSettlement = EVASuitUtil.findRegisteredEVASuit(settlement, person);
 		
 		if (suitSettlement == null) {	
 			String suitName = suitPerson.getName();
 			System.out.println(suitName + " can't be transferred.");
 		}
-	
+		// 3. Load resources
 		percentageFull = suitSettlement.loadResources(settlementOwner);
 		
 		System.out.println(suitSettlement.getName() + "'s percent of lowest resource: " + Math.round(percentageFull* 100D)/100D + " %");

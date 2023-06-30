@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -104,7 +105,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		terrainElevation = new TerrainElevation();
 		
 		mineralMap = new RandomMineralMap();
-		regioOfInterestLocations = new HashSet<>(); 
+		regioOfInterestLocations = ConcurrentHashMap.newKeySet(); 
 		areothermalMap = new AreothermalMap();
 	}
 
@@ -718,9 +719,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			result = new ExploredLocation(location, skill, initialMineralEstimations, settlement, distance);
 			
-			synchronized (regioOfInterestLocations) {
+//			synchronized (regioOfInterestLocations)
 				regioOfInterestLocations.add(result);
-			}
 		}
 		else {
 			logger.info(settlement, location.getFormattedString() + " has no mineral concentrations.");
@@ -753,14 +753,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return
 	 */
 	public ExploredLocation getADeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
-		synchronized (regioOfInterestLocations) {
+//		synchronized (regioOfInterestLocations) {
 		return regioOfInterestLocations.stream()
 				  .filter(e -> e.getLocation().equals(coord)
 						  && e.isClaimed() == isClaimed
 						  && e.getSettlement().equals(settlement))
 				  .findFirst() //.findAny()
 				  .orElse(null);
-		}
+//		}
 	}
 
 	/**
@@ -778,9 +778,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param isClaimed
 	 * @return
 	 */
-	public Set<Coordinates> getDeclaredCoordinates(boolean isClaimed) {
+	public synchronized Set<Coordinates> getDeclaredCoordinates(boolean isClaimed) {
 		Set<Coordinates> coords = new HashSet<>();
-		
 		for (ExploredLocation el: regioOfInterestLocations) {
 			boolean claimed = el.isClaimed();
 			if (claimed == isClaimed) {

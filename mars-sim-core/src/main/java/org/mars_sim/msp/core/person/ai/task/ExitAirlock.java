@@ -926,10 +926,8 @@ public class ExitAirlock extends Task {
 			suit.transfer(person);
 			// 3. Set the person as the owner
 			suit.setLastOwner(person);
-			// 4. Register the suit the person will take into the airlock to don
-			person.registerSuit(suit);
 						
-			// Print log
+			// 4. Print log
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Just donned the " + suit.getName() + ".");
 			// 5. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
@@ -976,7 +974,7 @@ public class ExitAirlock extends Task {
 
 		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
-			checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity());
 			
 			walkAway(person, NOT_FIT + " to prebreath.");
 			return time;
@@ -1052,7 +1050,7 @@ public class ExitAirlock extends Task {
 	
 		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
-			checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity());
 			
 			walkAway(person, NOT_FIT + " to depressurize chamber.");
 			return time;
@@ -1094,7 +1092,7 @@ public class ExitAirlock extends Task {
 				for (Person p: noEVASuit) {
 					
 					// Get back the garment and thermal bottle
-					checkIn(p, airlock.getEntity());
+					EVASuitUtil.checkIn(p, airlock.getEntity());
 					
 					// Without an EVA suit, one needs to leave the airlock 
 					// while the airlock is still being pressurized 

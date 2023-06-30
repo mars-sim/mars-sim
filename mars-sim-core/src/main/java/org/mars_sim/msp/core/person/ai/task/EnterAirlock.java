@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -734,7 +735,7 @@ public class EnterAirlock extends Task {
 		
 			
 			// 1. Doff off the suit, take back the garment and thermal bottle
-			checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity());
 			
 			// 2. Records the person as the owner (if it hasn't been done)
 			suit.setLastOwner(person);

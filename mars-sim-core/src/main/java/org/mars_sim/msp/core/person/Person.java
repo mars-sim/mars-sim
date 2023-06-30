@@ -202,8 +202,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private ReportingAuthority ra;
 	/** The bed location of the person */
 	private LocalPosition bed;
-	/** The EVA suit that the person has donned on. */
-	private EVASuit suit;
 	/** The person's current scientific study. */
 	private ScientificStudy study;
 	/** The person's EquipmentInventory instance. */
@@ -844,7 +842,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			study.timePassing(pulse);
 		}
 
-		// If I have a suit then record the use
+		EVASuit suit = getSuit();
+		// Record the use of it
 		if (suit != null) {
 			suit.recordUsageTime(pulse);
 		}
@@ -1558,14 +1557,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return trainings;
 	}
 
-	/**
-	 * Registers a particular EVA suit to the person.
-	 *
-	 * @param suit the EVA suit
-	 */
-	public void registerSuit(EVASuit suit) {
-		this.suit = suit;
-	}
+//	/**
+//	 * Registers a particular EVA suit to the person.
+//	 *
+//	 * @param suit the EVA suit
+//	 */
+//	public void registerSuit(EVASuit suit) {
+//		this.suit = suit;
+//	}
 
 	/**
 	 * Gets the EVA suit the person has donned on.
@@ -1573,7 +1572,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return
 	 */
 	public EVASuit getSuit() {
-		return suit;
+		return getInventorySuit();
 	}
 
 	/**

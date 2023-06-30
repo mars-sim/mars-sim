@@ -198,17 +198,17 @@ public class AnalyzeMapData extends Task {
 //        			);
    	
         	// Get a lowest range rover
-     		Rover rover = person.getSettlement().getVehicleWithMinimalRange();
+     		Rover rover = person.getAssociatedSettlement().getVehicleWithMinimalRange();
      		
      		double rangeLimit = rover.getRange() / 100;
 
      		int skill = (int)Math.round(compositeSkill);
      		
      		// Look for the first site to be analyzed and explored
-     		Coordinates aSite = person.getSettlement().getAComfortableNearbyMineralLocation(rangeLimit, skill);
+     		Coordinates aSite = person.getAssociatedSettlement().getAComfortableNearbyMineralLocation(rangeLimit, skill);
          				
          	// Creates an initial explored site in SurfaceFeatures
-         	person.getSettlement().createARegionOfInterest(aSite, skill);
+         	person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
          				
          	logger.info(person, 50_000L, "Successfully discovered a site at " +  aSite.getFormattedString() + " .");
          	

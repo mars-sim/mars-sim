@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Task.java
- * @date 2022-07-24
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -1516,44 +1515,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	
-	/**
-	 * Take off EVA suit, puts on the garment and get back the thermal bottle.
-	 * 
-	 * @param person
-	 * @param entity
-	 */
-	protected void checkIn(Person person, Object entity) {
-		EquipmentOwner housing = null;
 
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
-		
-		EVASuit suit = person.getSuit();
-		
-		// Transfer the EVA suit from person to the new destination
-		if (suit != null && suit.transfer((Unit)housing)) {
-			// Doff this suit. Deregister the suit from the person
-			person.registerSuit(null);
-		}
-		
-		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
-		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
-	}
 	
 	/**
 	 * Puts off the garment and the thermal bottle.
