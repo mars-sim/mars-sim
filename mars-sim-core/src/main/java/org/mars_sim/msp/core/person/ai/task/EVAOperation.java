@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAOperation.java
- * @date 2022-07-18
+ * @date 2023-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

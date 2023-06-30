@@ -214,7 +214,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
     }
 
 	/**
-	 * This method will be removed ocne MarsClock is deleted.
+	 * This method will be removed once MarsClock is deleted.
 	 */
 	protected ClockPulse createPulse(MarsClock marsTime, boolean newSol) {
         return new ClockPulse(pulseID++, 1D, marsTime, null, null, newSol, true);

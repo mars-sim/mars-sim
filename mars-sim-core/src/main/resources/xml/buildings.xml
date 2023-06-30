@@ -205,7 +205,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has computation capabilities. -->
 			<!-- power-demand [kW/CU] : the power load in kW for each running CU -->
 			<!-- cooling-demand [kW/CU] : the power load in kW needed for cooling each running CU -->
-			<computation computing-unit="10.0" power-demand="0.2" cooling-demand=".05">
+			<computation computing-unit="10.0" power-demand="1.0" cooling-demand=".5">
 				<activity>
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
@@ -1579,7 +1579,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.75" yloc="-1.6" />
 				</activity>
 			</communication>
-
+			<computation computing-unit="5.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>
 			<life-support capacity="24" power-required="0.6" />
 			<management capacity="12">
 				<activity>
@@ -1633,6 +1637,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
+			<computation computing-unit="5.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -1754,6 +1763,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
+			<computation computing-unit="4.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
 			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="4">
 				<activity>
@@ -2041,6 +2055,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
+			<computation computing-unit="2.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
 			<life-support capacity="4" power-required="0.2" />
 			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
@@ -2230,6 +2249,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
+			<computation computing-unit="10.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -2397,6 +2421,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power=".3" />
 
 		<functions>
+			<computation computing-unit="4.0" power-demand="1.0" cooling-demand=".5">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />
+				</activity>
+			</computation>			
 			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
@@ -2504,7 +2533,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="3.2" yloc="-3.6" />
 				</activity>
 			</communication>
-			<computation computing-unit="10.0" power-demand="0.1" cooling-demand=".05">
+			<computation computing-unit="10.0" power-demand="1.0" cooling-demand=".5">
 				<activity>
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
