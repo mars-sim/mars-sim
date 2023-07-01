@@ -44,7 +44,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -75,7 +74,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final double FOOD_MARGIN = 1.75;
 
 	/* What is the lowest fullness of an EVASuit to be usable. */
-	private static final double EVA_LOWEST_FILL = 0.5D;
+	public static final double EVA_LOWEST_FILL = 0.5D;
 
 	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
@@ -259,35 +258,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return getVehicle().isInAGarage();
 	}
 
+
+
 	/**
-	 * Does the vehicle have at least the baseline numbers of EVA suits ?
-	 *
-	 * @param vehicle
-	 * @return
-	 */
-	protected boolean hasBaselineNumEVASuit(Vehicle vehicle) {
-		boolean result = false;
-
-		int numV = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
-
-		int baseline = (int)(getMembers().size() * 1.5);
-
-		int numP = 0;
-
-		for (Person p: ((Crewable)vehicle).getCrew()) {
-			if (p.getSuit() != null)
-				numP++;
-			else if (p.getInventorySuit() != null)
-				numP++;
-		}
-
-		if (numV + numP > baseline)
-			return true;
-
-		return result;
-	}
-
-		/**
 	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits.
 	 */
 	protected void calculateMissionCapacity(int desiredCap) {
@@ -331,6 +304,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Can depart if every is on the vehicle or time has run out
 		boolean canDepart = isEveryoneInRover();
+			
 		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
 			// Find who has not boarded
 			List<Person> ejectedMembers = new ArrayList<>();
@@ -362,8 +336,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Check if everyone is boarded
 		if (canDepart) {
-			// If the rover is in a garage, put the rover outside.
+			// If the rover is in a garage
 			if (v.isInAGarage()) {
+				
+				// Check to ensure it meets the baseline # of EVA suits
+				meetBaselineNumEVASuits(settlement, v);
+				
+				// Put the rover outside.
 				BuildingManager.removeFromGarage(v);
 			}
 
@@ -384,10 +363,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				p.getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
 		}
-		else {
-			// Add the rover to a garage if possible.
-			boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
-
+		else {			
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
@@ -403,17 +379,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						boolean canDo = assignTask(person, walk);
 						if (!canDo) {
 							logger.warning(person, "Unable to start walk to " + v + ".");
-						}
-
-						if (!isDone() && isRoverInAGarage
-							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
-							&& !hasBaselineNumEVASuit(v)) {
-
-							EVASuit suit = EVASuitUtil.findRegisteredEVASuit(settlement, person);
-							if (suit != null && !suit.transfer(v)) {
-								logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
-									+ settlement + " to " + v + ".");
-							}
 						}
 					}
 
@@ -442,7 +407,34 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Performs the disembark to settlement phase of the mission.
+	 * Meets the baseline standard for having enough EVA suits in the vehicle in garage.
+	 * 
+	 * @param settlement
+	 * @param v
+	 */
+	public void meetBaselineNumEVASuits(Settlement settlement, Vehicle v) {
+		// See if the there's enough EVA suits
+		int availableSuitNum = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+	
+		if (availableSuitNum > 1 && !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
+	
+			for (Worker w: getMembers()) {
+				// Check to see if there's enough EVA suits
+				if (UnitType.PERSON == w.getUnitType()) {
+	
+					// Check if an EVA suit is available
+					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0
+							|| !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
+						// Obtain a suit from the settlement and transfer it to vehicle
+						EVASuitUtil.fetchSettlementEVASuit((Person) w, v, settlement);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Performs the disembark to settlement phase of the mission, for a rover just returned home.
 	 *
 	 * @param member              the mission member currently performing the
 	 *                            mission.
@@ -466,7 +458,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Disembarks the vehicle and unload cargo.
+	 * Disembarks the vehicle and unload cargo, for a rover just returned home.
 	 *
 	 * @param member
 	 * @param v
@@ -492,7 +484,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Test if this rover is towing another vehicle or is being towed
         boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
 
-        // Feels like these stesp should only be done once at the start of disembarking
+        // Feels like these stessp should only be done once at the start of disembarking
 		// Add vehicle to a garage if available.
 		boolean isRoverInAGarage = false;
         if (!tethered) {
@@ -542,8 +534,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 			else {
+				// Not in a garage
+				
 				// See if this person needs an EVA suit
-				checkEVASuit(p, disembarkSettlement);
+				EVASuitUtil.checkEVASuit(p, disembarkSettlement, this);
 			}
 		}
 
@@ -591,86 +585,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (job != null) {
 			person.getMind().getTaskManager().addPendingTask(job, false);
 		}
-	}
-
-	/**
-	 * Gets an EVA suit from the Vehicle. If one can not be found; then take
-	 * one from the Settlement
-	 *
-	 * @param p
-	 * @param disembarkSettlement
-	 */
-	protected void checkEVASuit(Person p, Settlement disembarkSettlement) {
-		if (p.getSuit() == null && p.isInVehicle()) {
-
-			Vehicle v = getVehicle();
-			if (v == null)
-				v = p.getVehicle();
-				
-			EVASuit suit = null;
-			if (v != null)
-				// Checks to see if the rover has any EVA suit
-				suit = getEVASuitFromVehicle(p, v);
-			
-			if (suit == null) {
-
-				logger.warning(p, 10_000L, "Could not find a working EVA suit in " + v + " and needed to wait.");
-
-				// If the person does not have an EVA suit
-				int availableSuitNum = disembarkSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
-
-				if (availableSuitNum > 1 && !hasBaselineNumEVASuit(v)) {
-					// Deliver an EVA suit from the settlement to the rover
-					// Note: Need to generate a task for a person to hand deliver an extra suit
-					suit = EVASuitUtil.findRegisteredEVASuit(disembarkSettlement, p);
-					if (suit != null) {
-						boolean success = suit.transfer(v);
-						if (success)
-							logger.warning(p, "Just borrowed " + suit + " from " + disembarkSettlement + " to " + v);
-						else
-							logger.warning(p, "Unable to borrow a spare EVA suit from " + disembarkSettlement + " to " + v);
-					}
-				}
-			}
-		}
-	}
-
-
-	/**
-	 * Finds a EVA suit in a particular vehicle. Select one with the most resources already
-	 * loaded.
-	 *
-	 * @param person Person needing the suit
-	 * @param vehicle
-	 * @return instance of EVASuit or null if none.
-	 */
-	protected EVASuit getEVASuitFromVehicle(Person p,  Vehicle v) {
-		EVASuit goodSuit = null;
-		double goodFullness = 0D;
-		
-		for (Equipment e : v.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				EVASuit suit = (EVASuit)e;
-				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-				double fullness = suit.getFullness();
-				boolean lastOwner = p.equals(suit.getRegisteredOwner());
-
-				if (!malfunction && (fullness >= EVA_LOWEST_FILL)) {
-					if (lastOwner) {
-						// Pick this EVA suit since it has been used by the same person
-						return suit;
-					}
-					else if (fullness > goodFullness){
-						// For now, make a note of this suit but not selecting it yet.
-						// Continue to look for a better suit
-						goodSuit = suit;
-						goodFullness = fullness;
-					}
-				}
-			}
-		}
-
-		return goodSuit;
 	}
 
 	/**

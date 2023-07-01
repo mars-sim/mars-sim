@@ -59,14 +59,8 @@ import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.task.Conversation;
-import org.mars_sim.msp.core.person.ai.task.DayDream;
-import org.mars_sim.msp.core.person.ai.task.EatDrink;
-import org.mars_sim.msp.core.person.ai.task.Read;
-import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
-import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
@@ -2999,20 +2993,35 @@ public class Settlement extends Structure implements Temporal,
 //					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
 //					+ "  intersection sets:" + intersection.size());
 		
-		do {
-			Map<Coordinates, Double> weightedMap = new HashMap<>();
-			
-			for (Coordinates c : nearbyMineralLocations) {
-				double distance = Coordinates.computeDistance(getCoordinates(), c);
-	
-				// Fill up the weight map
-				weightedMap.put(c, (range - distance) / range);
-			}
-	
-			// Choose one with weighted randomness 
-			chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+		if (nearbyMineralLocations.isEmpty()) {
+			logger.info(this, "nearbyMineralLocations is empty.");
+			return null;
+		}
 		
-		} while (surfaceFeatures.isDeclaredARegionOfInterest(chosen, this, false));
+		Set<Coordinates> unclaimedLocations = new HashSet<>();
+		
+		for (Coordinates c : nearbyMineralLocations) {
+			boolean unclaimed = surfaceFeatures.isDeclaredARegionOfInterest(c, this, false);
+			if (unclaimed)
+				unclaimedLocations.add(c);
+		}
+
+		Map<Coordinates, Double> weightedMap = new HashMap<>();
+		
+		for (Coordinates c : unclaimedLocations) {
+			double distance = Coordinates.computeDistance(getCoordinates(), c);
+
+			// Fill up the weight map
+			weightedMap.put(c, (range - distance) / range);
+		}
+
+		// Choose one with weighted randomness 
+		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
+
+		if (chosen == null) {
+			logger.info(this, "Picked the first nearbyMineralLocations.");
+			return new ArrayList<>(nearbyMineralLocations).get(0);
+		}
 		
 		return chosen;
 	}

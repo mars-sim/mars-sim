@@ -925,7 +925,7 @@ public class ExitAirlock extends Task {
 			// 2. Transfer the EVA suit from entity to person
 			suit.transfer(person);
 			// 3. Set the person as the owner
-			suit.setLastOwner(person);
+			suit.setRegisteredOwner(person);
 						
 			// 4. Print log
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Just donned the " + suit.getName() + ".");
@@ -1069,17 +1069,7 @@ public class ExitAirlock extends Task {
 		}
 		
 		else if (airlock.isPressurized()) {
-				
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
-			
-			if (airlock.isOperator(id)) {
-				// Command the airlock state to be transitioned to "depressurized"
-				airlock.setTransitioning(true);
-			}
-			
+
 			// Gets a set of settlers without wearing EVA suits
 			Set<Person> noEVASuit = airlock.noEVASuit();
 
@@ -1087,9 +1077,33 @@ public class ExitAirlock extends Task {
 				// Great that everyone has an EVA suit on
 				
 				// Now just wait for the depressurization to complete
+				if (!airlock.isActivated()) {
+					// Only the airlock operator may activate the airlock
+					airlock.setActivated(true);
+				}
+				
+				if (airlock.isOperator(id)) {
+					// Command the airlock state to be transitioned to "depressurized"
+					airlock.setTransitioning(true);
+				}
+				
 			}
 			else {
 				for (Person p: noEVASuit) {
+					
+					// How to handle each of the following types of occupants:
+					//
+					// Those egressing :
+					// 1. have suit. still prebreathing.
+					// 2. have suit. done prebreathing.
+					// 3. have no suit. not yet prebreathing.
+					//
+					// Those ingressing :
+					// 4. still doffing suit. 
+					// 5. just walk in. not doffing yet. 
+					// 6. already doff the suit. 
+					// 7. still cleaning up. 
+					//					
 					
 					// Get back the garment and thermal bottle
 					EVASuitUtil.checkIn(p, airlock.getEntity());

@@ -456,7 +456,11 @@ public class EVASuit extends Equipment
 	 * @return owner
 	 */
 	public Person getOwner() {
-		return getRegisteredOwner();
+		Unit container = getContainerUnit();
+		if (UnitType.PERSON == container.getUnitType()) {
+			return (Person)container;
+		}
+		return null;
 	}
 
 	/**

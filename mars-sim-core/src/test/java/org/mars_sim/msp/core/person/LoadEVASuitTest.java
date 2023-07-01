@@ -100,7 +100,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suitSettlement.transfer(person);
 		// 2. Set the person as the owner
-		suitSettlement.setLastOwner(person);
+		suitSettlement.setRegisteredOwner(person);
 		// 3. Load resources 
 		double percentageFull = suitSettlement.loadResources(personOwner);
 		

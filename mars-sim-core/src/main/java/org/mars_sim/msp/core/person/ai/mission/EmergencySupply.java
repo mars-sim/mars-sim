@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EVASuitUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
@@ -455,13 +454,8 @@ public class EmergencySupply extends RoverMission {
 					if (v == null)
 						v = person.getVehicle();
 					
-					EVASuit suit0 = getEVASuitFromVehicle(person, v);
-					if (suit0 == null) {
-						EVASuit suit1 = EVASuitUtil.findRegisteredEVASuit(emergencySettlement, person);
-						if (!suit1.transfer(v)) {
-							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
-						}
-					}
+					// Check if an EVA suit is available
+					EVASuitUtil.fetchEVASuitFromAny(person, v, emergencySettlement);
 
 					// If person is not aboard the rover, board rover.
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);

@@ -123,6 +123,10 @@ public class AnalyzeMapData extends Task {
 		double rand1 = RandomUtil.getRandomDouble(score/60, score/30);
 		seed = Math.min(MAX_SEED, rand1);
 			
+		// If a person is in a vehicle, either the vehicle has a computing core or 
+		// it relies on some comm bandwith to connect with its settlement's computing core
+		// to handle the computation
+		
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		

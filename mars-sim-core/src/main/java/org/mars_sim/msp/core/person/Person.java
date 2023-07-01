@@ -1557,15 +1557,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return trainings;
 	}
 
-//	/**
-//	 * Registers a particular EVA suit to the person.
-//	 *
-//	 * @param suit the EVA suit
-//	 */
-//	public void registerSuit(EVASuit suit) {
-//		this.suit = suit;
-//	}
-
 	/**
 	 * Gets the EVA suit the person has donned on.
 	 *
@@ -1576,7 +1567,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Gets the EVA suit the person has in inventory.
+	 * Gets the EVA suit instance the person has in inventory.
 	 *
 	 * @return
 	 */
@@ -2259,14 +2250,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			while (i.hasNext()){
 				Equipment e = i.next();
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
-					Person owner = e.getRegisteredOwner();
-					if (owner != null && owner.equals(this)) {
+					Person originalOwner = e.getRegisteredOwner();
+					if (originalOwner != null && originalOwner.equals(this)) {
 						// Remove it from the container unit
 						i.remove();
 						// Add to this person's inventory
 						addEquipment(e);
 						// Register the person as the owner of this bottle
-						e.setLastOwner(this);
+						e.setRegisteredOwner(this);
 						
 						return;
 					}
@@ -2286,7 +2277,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				// Add to this person's inventory
 				addEquipment(aBottle);
 				// Register the person as the owner of this bottle
-				aBottle.setLastOwner(this);
+				aBottle.setRegisteredOwner(this);
 			}
 		}
 	}
@@ -2306,7 +2297,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 					// Transfer to this person's container unit 
 					((EquipmentOwner)getContainerUnit()).addEquipment(e);
 					// Register the person as the owner of this bottle if not done
-					e.setLastOwner(this);
+					e.setRegisteredOwner(this);
 					
 					break;
 				}

@@ -248,11 +248,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
     }
 
 	/**
-	 * Sets the last owner of this equipment.
+	 * Sets the registered owner of this equipment.
 	 *
 	 * @param person
 	 */
-	public void setLastOwner(Person person) {
+	public void setRegisteredOwner(Person person) {
 		if (person != null) {
 			 if (person.getIdentifier() != registeredOwner)
 				 registeredOwner = person.getIdentifier();

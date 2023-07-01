@@ -15,9 +15,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EVASuitUtil;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Deal;
@@ -463,19 +461,8 @@ public class Trade extends RoverMission implements CommerceMission {
 					if (v == null)
 						v = person.getVehicle();
 					
-					EVASuit suit0 = getEVASuitFromVehicle(person, v);
-					if (suit0 == null) {
-						if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-							EVASuit suit1 = EVASuitUtil.findRegisteredEVASuit(tradingSettlement, person);
-							if (suit1 != null) {
-								boolean done = suit1.transfer(v);
-								if (!done)
-									logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
-							} else {
-								logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
-							}
-						}
-					}
+					// Check if an EVA suit is available
+					EVASuitUtil.fetchEVASuitFromAny(person, v, tradingSettlement);
 
 					// Walk back to the vehicle and be ready to embark and go home
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);

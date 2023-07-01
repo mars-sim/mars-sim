@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2022-09-12
+ * @date 2023-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -734,11 +734,11 @@ public class EnterAirlock extends Task {
 				housing = (Vehicle)airlock.getEntity();
 		
 			
-			// 1. Doff off the suit, take back the garment and thermal bottle
+			// 1. Doff off the suit, transfer it to the entity, take back the garment and thermal bottle
 			EVASuitUtil.checkIn(person, airlock.getEntity());
 			
 			// 2. Records the person as the owner (if it hasn't been done)
-			suit.setLastOwner(person);
+			suit.setRegisteredOwner(person);
 			
 			// 3. Unload any waste
 			suit.unloadWaste(housing);
@@ -841,6 +841,7 @@ public class EnterAirlock extends Task {
 		else {
 
 			if (airlock.inAirlock(person)) {
+				// Check if the person can exit or not
 				canProceed = airlock.exitAirlock(person, id, false);
 			}
 			else {
