@@ -812,6 +812,9 @@ public class Weather implements Serializable, Temporal {
 			logger.warning(3_000L, "Weather data at " + c + " is not available.");
 			return;
 		}
+		
+		if (dailyWeatherList.isEmpty())
+			return;
 
 		int sunrise = 0;
 		int sunset = 0;

@@ -97,7 +97,7 @@ public class ConversationMeta extends FactoryMetaTask {
         
         if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.DINING)) {
         	 // Gets a list of chatty people in the same building
-        	candidate = settlement.getChattingPeople(person, true, true, true);
+        	candidate = Conversation.getChattingPeople(person, true, true, true);
         	
         	pool.addAll(candidate);
             // pool doesn't include this person
@@ -143,7 +143,7 @@ public class ConversationMeta extends FactoryMetaTask {
         	}
         	
             // Gets a list of people willing to have conversations  
-        	candidate = settlement.getChattingPeople(person, true, true, true);         
+        	candidate = Conversation.getChattingPeople(person, true, true, true);         
                  	      	              
             pool.addAll(candidate); 
             // pool doesn't include this person
@@ -160,7 +160,7 @@ public class ConversationMeta extends FactoryMetaTask {
             
             if (num == 0) {
 	            // get a list of "busy" people
-            	candidate = settlement.getChattingPeople(person, false, true, true);  
+            	candidate = Conversation.getChattingPeople(person, false, true, true);  
 	            
 	        	pool.addAll(candidate);
 	            // pool doesn't include this person
@@ -187,15 +187,13 @@ public class ConversationMeta extends FactoryMetaTask {
 	private double checkVehicle(Person person) { 
 		double result = 0;
 		
-    	Settlement s = person.getAssociatedSettlement();
-
     	Vehicle v = (Vehicle) person.getContainerUnit();
     	// get the number of people maintaining or repairing this vehicle
     	Collection<Person> affected = v.getAffectedPeople();       	
         // Collection<Person> crew = ((Rover) v).getCrew();     
         Collection<Person> talking = v.getTalkingPeople();
         // Gets a list of people willing to have conversations  
-        Collection<Person> idling = s.getChattingPeople(person, true, false, true);         
+        Collection<Person> idling = Conversation.getChattingPeople(person, true, false, true);         
         
         List<Person> pool = Stream.of(affected, talking, idling)
             .flatMap(x -> x.stream())

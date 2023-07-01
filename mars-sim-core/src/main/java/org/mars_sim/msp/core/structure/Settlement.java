@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -1037,7 +1038,7 @@ public class Settlement extends Structure implements Temporal,
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
 			// Tag available airlocks into two categories
-			checkAvailableAirlocks();
+			Walk.checkAvailableAirlocks(buildingManager);
 
 			// Check if good need updating
 			int remainder = msol % UPDATE_GOODS_PERIOD;
@@ -1284,16 +1285,7 @@ public class Settlement extends Structure implements Temporal,
 		return average;
 	}
 
-	/**
-	 * Removes all airlock reservations
-	 */
-	public void removeAllReservations() {
-		List<Airlock> airlocks = getAllAirlocks();
 
-		for (Airlock a: airlocks) {
-			a.getReservationMap().clear();
-		}
-	}
 
 	/**
 	 * Provides the daily reports for the settlement
@@ -1301,7 +1293,7 @@ public class Settlement extends Structure implements Temporal,
 	private void performEndOfDayTasks(MarsTime marsTime) {
 		int solElapsed = marsTime.getMissionSol();
 
-		removeAllReservations();
+		Walk.removeAllReservations(buildingManager);
 
 		tuneJobDeficit();
 
@@ -1355,86 +1347,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets a collection of people who are available for social conversation in the
-	 * same/another building in the same/another settlement
-	 *
-	 * @param initiator      the initiator of this conversation
-	 * @param checkIdle      true if the invitee is idling/relaxing (false if the
-	 *                       invitee is in a chat)
-	 * @param sameBuilding   true if the invitee is at the same building as the
-	 *                       initiator (false if it doesn't matter)
-	 * @param sameSettlement true if the collection includes all settlements (false
-	 *                       if only the initiator's settlement)
-	 * @return person a collection of invitee(s)
-	 */
-	public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding,
-			boolean sameSettlement) {
-		Collection<Person> people = new ArrayList<>();
-		Iterator<Person> i;
-		// Set up rules that allows
-
-		if (sameSettlement) {
-			// could be either radio (non face-to-face) conversation, don't care
-			i = unitManager.getPeople().iterator();
-			sameBuilding = false;
-		} else {
-			// the only initiator's settlement
-			// may be radio or face-to-face conversation
-			i = getIndoorPeople().iterator();
-		}
-
-		while (i.hasNext()) {
-			Person person = i.next();
-			Task task = person.getMind().getTaskManager().getTask();
-
-			if (person.isInSettlement()
-					&& initiator.isInSettlement()) {
-
-				if (sameBuilding) {
-					// face-to-face conversation
-					if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
-						addPerson(checkIdle, task, initiator, people, person);
-					}
-				}
-
-				else {
-					// may be radio (non face-to-face) conversation
-					addPerson(checkIdle, task, initiator, people, person);
-				}
-			}
-			
-			else {
-				addPerson(checkIdle, task, initiator, people, person);
-			}
-		}
-
-		return people;
-	}
-	
-	private void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
-		if (checkIdle
-			&& isIdleTask(task)
-				&& !person.equals(initiator)) {
-					people.add(person);
-	
-		} else if ((task == null 
-			|| initiator.getMind().getTaskManager().getTask() == null
-			|| task.getName().equals(initiator.getMind().getTaskManager().getTask().getName())
-			|| task instanceof Conversation)
-				&& !person.equals(initiator)) {
-				people.add(person);
-		}
-	}
-
-	private boolean isIdleTask(Task task) {
-        return task instanceof Relax
-                || task instanceof Read
-                || task instanceof DayDream
-                || task instanceof Conversation
-                || task instanceof EatDrink;
-    }
-
-	/**
 	 * Gets the settlement's building manager.
 	 *
 	 * @return building manager
@@ -1471,96 +1383,6 @@ public class Settlement extends Structure implements Temporal,
 		return goodsManager;
 	}
 
-	/**
-	 * Gets a list of airlock of this settlement
-	 *
-	 * @return
-	 */
-	private List<Airlock> getAllAirlocks() {
-		return buildingManager.getBuildings(FunctionType.EVA).stream()
-				.map(b -> b.getEVA().getAirlock())
-				.collect(Collectors.toList());
-	}
-
-
-	/**
-	 * Gets the closest available airlock to a person.
-	 *
-	 * @param person the person.
-	 * @param ingress is the person ingressing ?
-	 * @return airlock or null if none available.
-	 */
-	public Airlock getClosestAvailableAirlock(Person person, boolean ingress) {
-
-		Airlock result = null;
-
-		double leastDistance = Double.MAX_VALUE;
-
-		Set<Integer> bldgs = null;
-		if (ingress) {
-			bldgs = availableDAirlocks;
-		}
-		else {
-			bldgs = availablePAirlocks;
-		}
-		Iterator<Integer> i = bldgs.iterator();
-		while (i.hasNext()) {
-			Building nextBuilding = unitManager.getBuildingByID(i.next());
-			Airlock airlock = nextBuilding.getEVA().getAirlock();
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
-//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
-
-			// Note: ingress is not being used here
-			
-			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
-				if (result == null) {
-					result = airlock;
-					continue;
-				}
-				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
-				if (distance < leastDistance
-					&& !chamberFull) {
-						result = airlock;
-						leastDistance = distance;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Are any airlocks available for ingree or egress ?
-	 * Used by DigLocalMeta
-	 * 
-	 * @param person
-	 * @param ingress
-	 * @return
-	 */
-	public boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
-		Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EVA);
-
-		Iterator<Building> i = bldgs.iterator();
-		while (i.hasNext()) {
-			Airlock airlock = i.next().getEVA().getAirlock();
-			boolean chamberFull = airlock.areAll4ChambersFull();
-			AirlockMode airlockMode = airlock.getAirlockMode();
-			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
-			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
-			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
-
-			if (!chamberFull
-				&& (notInUse
-					|| (ingress && isIngressMode)
-					|| (!ingress && isEgressMode))) {
-						return true;
-			}
-		}
-		
-		return false;
-	}
-		
-	
 	/**
 	 * is an airlock available ? 
 	 * Note: currently not being used.
@@ -1620,6 +1442,52 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets the closest available airlock to a person.
+	 *
+	 * @param person the person.
+	 * @param ingress is the person ingressing ?
+	 * @return airlock or null if none available.
+	 */
+	public Airlock getClosestAvailableAirlock(Person person, boolean ingress) {
+
+		Airlock result = null;
+
+		double leastDistance = Double.MAX_VALUE;
+
+		Set<Integer> bldgs = null;
+		if (ingress) {
+			bldgs = availableDAirlocks;
+		}
+		else {
+			bldgs = availablePAirlocks;
+		}
+		Iterator<Integer> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Building nextBuilding = unitManager.getBuildingByID(i.next());
+			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+
+			// Note: ingress is not being used here
+			
+			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+				if (result == null) {
+					result = airlock;
+					continue;
+				}
+				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
+				if (distance < leastDistance
+					&& !chamberFull) {
+						result = airlock;
+						leastDistance = distance;
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Gets an airlock for an EVA egress, preferably an pressurized airlock.
 	 * Consider if the chambers are full and if the reservation is full.
 	 *
@@ -1671,30 +1539,6 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 
-	/**
-	 * Checks for available airlocks.
-	 */
-	private void checkAvailableAirlocks() {
-		Set<Building> pressurizedBldgs = new HashSet<>();
-		Set<Building> depressurizedBldgs = new HashSet<>();
-
-		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
-			Airlock airlock = airlockBdg.getEVA().getAirlock();
-			if (airlock.isPressurized()	|| airlock.isPressurizing())
-				pressurizedBldgs.add(airlockBdg);
-			else if (airlock.isDepressurized() || airlock.isDepressurizing())
-				depressurizedBldgs.add(airlockBdg);
-		}
-
-		if (!pressurizedBldgs.isEmpty()) {
-			trackAirlocks(pressurizedBldgs, true);
-		}
-
-		if (!depressurizedBldgs.isEmpty()) {
-			trackAirlocks(depressurizedBldgs, false);
-		}
-	}
-		
 	/**
 	 * Categorizes the state of the airlocks.
 	 * 
@@ -3102,9 +2946,10 @@ public class Settlement extends Structure implements Temporal,
 		if (tripRange < range)
 			range = tripRange;
 
-		// This will overwrite existing nearbyMineralLocations
-		nearbyMineralLocations = surfaceFeatures.getMineralMap()
+		Set<Coordinates> coords = surfaceFeatures.getMineralMap()
 				.generateMineralLocations(getCoordinates(), range / 2D);
+		
+		nearbyMineralLocations.addAll(coords);
 	}
 	
 	/**
@@ -3131,26 +2976,26 @@ public class Settlement extends Structure implements Temporal,
 		
 		// Remove coordinates that have been explored or staked by other settlements
 		
-		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getDeclaredCoordinates(false);
+//		Set<Coordinates> surfaceFeaturesSet = surfaceFeatures.getDeclaredCoordinates(false);
 		
 		// Create a set
-		Set<Coordinates> intersection = new HashSet<>(nearbyMineralLocations);
+//		Set<Coordinates> intersection = new HashSet<>(nearbyMineralLocations);
 		
-//		logger.info("1. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//		logger.info(this, "1. surfaceFeatures sets:" + surfaceFeaturesSet.size()
 //					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
 //					+ "  intersection sets:" + intersection.size());
 
 		// Execute to create the union of the two sets
-		intersection.retainAll(surfaceFeaturesSet);
+//		intersection.retainAll(surfaceFeaturesSet);
 		
-//		logger.info("2. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//		logger.info(this, "2. surfaceFeatures sets:" + surfaceFeaturesSet.size()
 //					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
 //					+ "  intersection sets:" + intersection.size());
 		
 		// Remove the union
-		nearbyMineralLocations.removeAll(intersection);
+//		nearbyMineralLocations.removeAll(intersection);
 		
-//		logger.info("3. surfaceFeatures sets:" + surfaceFeaturesSet.size()
+//		logger.info(this, "3. surfaceFeatures sets:" + surfaceFeaturesSet.size()
 //					+ "  nearbyMineralLocations sets:" + nearbyMineralLocations.size()
 //					+ "  intersection sets:" + intersection.size());
 		
@@ -3196,16 +3041,16 @@ public class Settlement extends Structure implements Temporal,
 	public ExploredLocation createARegionOfInterest(Coordinates siteLocation, int skill) {
 	
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		ExploredLocation el = surfaceFeatures.getADeclaredLocation(siteLocation, this, false);
+		ExploredLocation el = surfaceFeatures.checkDeclaredLocation(siteLocation, this, false);
 		if (el == null) {
 			// If it doesn't exist yet
 			el = surfaceFeatures.declareRegionOfInterest(siteLocation,
 					skill, this);
 		}
 
-		if (el != null)
-			// remove this coordinate from nearbyMineralLocations
-			nearbyMineralLocations.remove(siteLocation);
+//		if (el != null)
+//			// remove this coordinate from nearbyMineralLocations
+//			nearbyMineralLocations.remove(siteLocation);
 		
 		return el;
 	}
@@ -3230,6 +3075,16 @@ public class Settlement extends Structure implements Temporal,
 
 		Map<Coordinates, Double> weightedMap = new HashMap<>();
 		
+		if (nearbyMineralLocations == null || nearbyMineralLocations.isEmpty()) {
+			logger.severe(this, "nearbyMineralLocations is empty.");
+
+			// Creates a set of nearby mineral locations	
+			Set<Coordinates> coords = surfaceFeatures.getMineralMap()
+					.generateMineralLocations(getCoordinates(), range / 2D);
+			
+			nearbyMineralLocations.addAll(coords);
+		}
+			
 		for (Coordinates c : nearbyMineralLocations) {
 			double distance = Coordinates.computeDistance(getCoordinates(), c);
 

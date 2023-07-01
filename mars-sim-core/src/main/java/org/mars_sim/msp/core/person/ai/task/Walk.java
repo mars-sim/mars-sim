@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -27,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -186,7 +190,7 @@ public class Walk extends Task {
 		setupPersonWalk();
 	}
 
-
+	
 	/**
 	 * Constructor for factory method with preprocessed walking steps
 	 *
@@ -273,66 +277,7 @@ public class Walk extends Task {
 		}
 		return null;
 	}
-
-	/**
-	 * Find an emergency airlock at a person's location.
-	 *
-	 * @param person the person.
-	 * @return airlock or null if none found.
-	 */
-	public static Airlock findEmergencyAirlock(Person person) {
-
-		Airlock result = null;
-
-		// Determine airlock from other members on mission.
-		if (person.getMind().getMission() != null) {
-			Iterator<Worker> i = person.getMind().getMission().getMembers().iterator();
-			while (i.hasNext() && (result == null)) {
-				Worker member = i.next();
-				if (member != person) {
-					if (member.isInSettlement()) {
-						result = member.getSettlement().getClosestAvailableAirlock(person, true);
-					} else if (member.isInVehicle()) {
-						Vehicle vehicle = member.getVehicle();
-						if (vehicle instanceof Airlockable) {
-							result = ((Airlockable) vehicle).getAirlock();
-						}
-					}
-				}
-			}
-		}
-
-
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
-		// If not look for any settlements at person's location.
-		if (result == null) {
-			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-			while (i.hasNext() && (result == null)) {
-				Settlement settlement = i.next();
-				if (person.getCoordinates().equals(settlement.getCoordinates())) {
-					result = settlement.getClosestAvailableAirlock(person, true);
-				}
-			}
-		}
-
-		// If not look for any vehicles with airlocks at person's location.
-		if (result == null) {
-			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-			while (i.hasNext() && (result == null)) {
-				Vehicle vehicle = i.next();
-				if (person.getCoordinates().equals(vehicle.getCoordinates())) {
-					if (vehicle instanceof Airlockable) {
-						result = ((Airlockable) vehicle).getAirlock();
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Check if person can walk to a local destination.
 	 *
@@ -429,6 +374,148 @@ public class Walk extends Task {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Find an emergency airlock at a person's location.
+	 *
+	 * @param person the person.
+	 * @return airlock or null if none found.
+	 */
+	public static Airlock findEmergencyAirlock(Person person) {
+
+		Airlock result = null;
+
+		// Determine airlock from other members on mission.
+		if (person.getMind().getMission() != null) {
+			Iterator<Worker> i = person.getMind().getMission().getMembers().iterator();
+			while (i.hasNext() && (result == null)) {
+				Worker member = i.next();
+				if (member != person) {
+					if (member.isInSettlement()) {
+						result = member.getSettlement().getClosestAvailableAirlock(person, true);
+					} else if (member.isInVehicle()) {
+						Vehicle vehicle = member.getVehicle();
+						if (vehicle instanceof Airlockable) {
+							result = ((Airlockable) vehicle).getAirlock();
+						}
+					}
+				}
+			}
+		}
+
+
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+
+		// If not look for any settlements at person's location.
+		if (result == null) {
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
+			while (i.hasNext() && (result == null)) {
+				Settlement settlement = i.next();
+				if (person.getCoordinates().equals(settlement.getCoordinates())) {
+					result = settlement.getClosestAvailableAirlock(person, true);
+				}
+			}
+		}
+
+		// If not look for any vehicles with airlocks at person's location.
+		if (result == null) {
+			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+			while (i.hasNext() && (result == null)) {
+				Vehicle vehicle = i.next();
+				if (person.getCoordinates().equals(vehicle.getCoordinates())) {
+					if (vehicle instanceof Airlockable) {
+						result = ((Airlockable) vehicle).getAirlock();
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+
+
+	
+	/**
+	 * Removes all airlock reservations
+	 */
+	public static void removeAllReservations(BuildingManager buildingManager) {
+		List<Airlock> airlocks = getAllAirlocks(buildingManager);
+
+		for (Airlock a: airlocks) {
+			a.getReservationMap().clear();
+		}
+	}
+	
+	/**
+	 * Gets a list of airlock of this settlement
+	 *
+	 * @return
+	 */
+	private static List<Airlock> getAllAirlocks(BuildingManager buildingManager) {
+		return buildingManager.getBuildings(FunctionType.EVA).stream()
+				.map(b -> b.getEVA().getAirlock())
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Are any airlocks available for ingree or egress ?
+	 * Used by DigLocalMeta
+	 * 
+	 * @param person
+	 * @param ingress
+	 * @return
+	 */
+	public static boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
+		Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EVA);
+
+		Iterator<Building> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Airlock airlock = i.next().getEVA().getAirlock();
+			boolean chamberFull = airlock.areAll4ChambersFull();
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+
+			if (!chamberFull
+				&& (notInUse
+					|| (ingress && isIngressMode)
+					|| (!ingress && isEgressMode))) {
+						return true;
+			}
+		}
+		
+		return false;
+	}
+
+
+	/**
+	 * Checks for available airlocks.
+	 * 
+	 * @param buildingManager
+	 */
+	public static void checkAvailableAirlocks(BuildingManager buildingManager) {
+		Set<Building> pressurizedBldgs = new HashSet<>();
+		Set<Building> depressurizedBldgs = new HashSet<>();
+
+		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
+			Airlock airlock = airlockBdg.getEVA().getAirlock();
+			if (airlock.isPressurized()	|| airlock.isPressurizing())
+				pressurizedBldgs.add(airlockBdg);
+			else if (airlock.isDepressurized() || airlock.isDepressurizing())
+				depressurizedBldgs.add(airlockBdg);
+		}
+
+		if (!pressurizedBldgs.isEmpty()) {
+			buildingManager.getSettlement().trackAirlocks(pressurizedBldgs, true);
+		}
+
+		if (!depressurizedBldgs.isEmpty()) {
+			buildingManager.getSettlement().trackAirlocks(depressurizedBldgs, false);
+		}
 	}
 
 	@Override

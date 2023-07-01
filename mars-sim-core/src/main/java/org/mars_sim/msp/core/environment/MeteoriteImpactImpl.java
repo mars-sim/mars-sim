@@ -143,13 +143,4 @@ public class MeteoriteImpactImpl implements Serializable {
 		// different sizes and impact speed of the meteorites
 
 	}
-
-	// public double getProbabilityOfImpactPerSQMPerSol() {
-	// return probabilityOfImpactPerSQMPerSol;
-	// }
-
-	// public Meteorite getMeteorite() {
-	// return meteorite;
-	// }
-
 }

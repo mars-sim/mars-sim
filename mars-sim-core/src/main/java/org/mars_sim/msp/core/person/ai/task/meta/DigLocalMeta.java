@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -64,7 +65,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     	  result = MAX;
 
     	// Check if an airlock is available for egress
-        if (!settlement.anyAirlocksForIngressEgress(person, false)) {
+        if (!Walk.anyAirlocksForIngressEgress(person, false)) {
     		return 0;
         }
      

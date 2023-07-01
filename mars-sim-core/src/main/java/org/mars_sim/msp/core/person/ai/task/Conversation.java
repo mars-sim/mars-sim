@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -171,16 +172,15 @@ public class Conversation extends Task {
     public Person selectFromSettlement() {
     	Person invitee = null;
         Set<Person> pool = new HashSet<>();
-        Settlement s = person.getSettlement();
-
+    
         // Gets a list of idle people in the same building
-        Collection<Person> candidates = s.getChattingPeople(person, true, true, true);
+        Collection<Person> candidates = getChattingPeople(person, true, true, true);
         pool.addAll(candidates);
     	initiatorLocation = Location.SAME_BUILDING;
 
         if (pool.size() == 0) {
         	// Gets a list of busy people in the same building
-            candidates = s.getChattingPeople(person, false, true, true);
+            candidates = getChattingPeople(person, false, true, true);
         	pool.addAll(candidates);
         	initiatorLocation = Location.ANOTHER_BUILDING;
         }
@@ -192,13 +192,13 @@ public class Conversation extends Task {
             	// Walk to that building.
             	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
                 // Gets a list of chatty people in the same building
-            	candidates = s.getChattingPeople(person, true, true, true);
+            	candidates = getChattingPeople(person, true, true, true);
             	pool.addAll(candidates);
             	initiatorLocation = Location.DINING_BUILDING;
             	
                 if (pool.size() == 0) {
                 	// Gets a list of busy people in the same dining building
-                    candidates = s.getChattingPeople(person, false, true, true);
+                    candidates = getChattingPeople(person, false, true, true);
                 	pool.addAll(candidates);
                 	initiatorLocation = Location.DINING_BUILDING;
                 }
@@ -207,28 +207,28 @@ public class Conversation extends Task {
 
         if (pool.size() == 0) {
         	// Gets a list of idle people in different bldg but the same settlement
-        	candidates = s.getChattingPeople(person, true, false, true);
+        	candidates = getChattingPeople(person, true, false, true);
         	pool.addAll(candidates);
         	initiatorLocation = Location.ANOTHER_BUILDING;
         }
         
         if (pool.size() == 0) {
         	// Gets a list of busy people in different bldg but the same settlement
-            candidates = s.getChattingPeople(person, false, false, true);
+            candidates = getChattingPeople(person, false, false, true);
         	pool.addAll(candidates);
         	initiatorLocation = Location.ANOTHER_BUILDING;
         }
         
         if (pool.size() == 0) {
         	// Gets a list of idle people from other settlements
-            candidates = s.getChattingPeople(person, true, false, false);
+            candidates = getChattingPeople(person, true, false, false);
         	pool.addAll(candidates);
         	initiatorLocation = Location.ALL_SETTLEMENTS;
         }
 
         if (pool.size() == 0) {
         	// Gets a list of busy people from other settlements
-            candidates = s.getChattingPeople(person, false, false, false);
+            candidates = getChattingPeople(person, false, false, false);
         	pool.addAll(candidates);
         	initiatorLocation = Location.ALL_SETTLEMENTS;
         }
@@ -276,8 +276,8 @@ public class Conversation extends Task {
 		initiatorLocation = Location.SAME_VEHICLE;
 
         if (pool.size() == 0) {
-           	Settlement s = person.getAssociatedSettlement();
-            Collection<Person> talkingSameSettlement = s.getChattingPeople(person, false, false, true);
+ 
+            Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
         	pool.addAll(talkingSameSettlement);
         	initiatorLocation = Location.ALL_SETTLEMENTS;
         }
@@ -316,8 +316,8 @@ public class Conversation extends Task {
     	Person invitee = null;
 
         Set<Person> pool = new HashSet<>();
-    	Settlement s = person.getAssociatedSettlement();
-        Collection<Person> talkingSameSettlement = s.getChattingPeople(person, false, false, true);
+        
+        Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
 
         // remove the one who starts the conversation
         pool.remove(person);
@@ -393,5 +393,87 @@ public class Conversation extends Task {
         }
 
         return remainingTime;
+    }
+    
+	/**
+	 * Gets a collection of people who are available for social conversation in the
+	 * same/another building in the same/another settlement
+	 *
+	 * @param initiator      the initiator of this conversation
+	 * @param checkIdle      true if the invitee is idling/relaxing (false if the
+	 *                       invitee is in a chat)
+	 * @param sameBuilding   true if the invitee is at the same building as the
+	 *                       initiator (false if it doesn't matter)
+	 * @param sameSettlement true if the collection includes all settlements (false
+	 *                       if only the initiator's settlement)
+	 * @return person a collection of invitee(s)
+	 */
+	public static Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding,
+			boolean sameSettlement) {
+		Collection<Person> people = new ArrayList<>();
+		Iterator<Person> i;
+		// Set up rules that allows
+
+		if (sameSettlement) {
+			// could be either radio (non face-to-face) conversation, don't care
+			i = unitManager.getPeople().iterator();
+			sameBuilding = false;
+		} else {
+			// the only initiator's settlement
+			// may be radio or face-to-face conversation
+			i = initiator.getAssociatedSettlement().getIndoorPeople().iterator();
+		}
+
+		while (i.hasNext()) {
+			Person person = i.next();
+			Task task = person.getMind().getTaskManager().getTask();
+
+			if (person.isInSettlement()
+					&& initiator.isInSettlement()) {
+
+				if (sameBuilding) {
+					// face-to-face conversation
+					if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+						addPerson(checkIdle, task, initiator, people, person);
+					}
+				}
+
+				else {
+					// may be radio (non face-to-face) conversation
+					addPerson(checkIdle, task, initiator, people, person);
+				}
+			}
+			
+			else {
+				addPerson(checkIdle, task, initiator, people, person);
+			}
+		}
+
+		return people;
+	}
+	
+
+	private static void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
+		if (checkIdle
+			&& isIdleTask(task)
+				&& !person.equals(initiator)) {
+					people.add(person);
+	
+		} else if ((task == null 
+			|| initiator.getMind().getTaskManager().getTask() == null
+			|| task.getName().equals(initiator.getMind().getTaskManager().getTask().getName())
+			|| task instanceof Conversation)
+				&& !person.equals(initiator)) {
+				people.add(person);
+		}
+	}
+	
+
+	private static boolean isIdleTask(Task task) {
+        return task instanceof Relax
+                || task instanceof Read
+                || task instanceof DayDream
+                || task instanceof Conversation
+                || task instanceof EatDrink;
     }
 }

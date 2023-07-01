@@ -738,7 +738,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public boolean isDeclaredARegionOfInterest(Coordinates siteLocation, Settlement settlement, boolean isClaimed) {
 	
 		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		if (getADeclaredLocation(siteLocation, settlement, isClaimed) == null)
+		if (checkDeclaredLocation(siteLocation, settlement, isClaimed) == null)
 			return false;
 
 		return true;
@@ -752,7 +752,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param isClaimed
 	 * @return
 	 */
-	public ExploredLocation getADeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
+	public ExploredLocation checkDeclaredLocation(Coordinates coord, Settlement settlement, boolean isClaimed) {
 //		synchronized (regioOfInterestLocations) {
 		return regioOfInterestLocations.stream()
 				  .filter(e -> e.getLocation().equals(coord)

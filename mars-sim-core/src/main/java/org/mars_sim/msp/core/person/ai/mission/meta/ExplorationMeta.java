@@ -49,9 +49,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 		double missionProbability = 0D;
 
-		if (person.isInSettlement()) {
-
-			Settlement settlement = person.getSettlement();
+		Settlement settlement = person.getSettlement();
+		
+		if (settlement != null) {
 
             RoleType roleType = person.getRole().getType();
 

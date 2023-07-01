@@ -238,7 +238,7 @@ public class BuildingManager implements Serializable {
 
 		if (buildings.contains(oldBuilding)) {
 			// Remove building connections (hatches) to old building.
-			settlement.getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
+			getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
 			// Remove the building's functions from the settlement.
 			oldBuilding.removeFunctionsFromSettlement();
 
@@ -384,7 +384,7 @@ public class BuildingManager implements Serializable {
 			&& createBuildingConnections) {
 			List<BuildingTemplate> buildingTemplates = new ArrayList<>();
 			buildingTemplates.add(buildingTemplate);
-			settlement.getBuildingConnectorManager().initialize(settlement, buildingTemplates);
+			getBuildingConnectorManager().initialize(settlement, buildingTemplates);
 		}
 	}
 
@@ -408,7 +408,7 @@ public class BuildingManager implements Serializable {
 			
 			if (createBuildingConnections) {
 				// Note: at the star of the sim, BuildingConnectorManager is still null
-				settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
+				getBuildingConnectorManager().createBuildingConnections(newBuilding);
 				// Create an adjacent building map
 				createAdjacentBuildingMap();
 			}
@@ -2424,7 +2424,7 @@ public class BuildingManager implements Serializable {
 	public Set<Building> createAdjacentBuildings(Building building) {
 		Set<Building> buildings = new UnitSet<>();
 
-		for (BuildingConnector c : settlement.getBuildingConnectorManager().getConnectionsToBuilding(building)) {
+		for (BuildingConnector c : getBuildingConnectorManager().getConnectionsToBuilding(building)) {
 			Building b1 = c.getBuilding1();
 			Building b2 = c.getBuilding2();
 			if (b1 != building) {
@@ -2437,23 +2437,17 @@ public class BuildingManager implements Serializable {
 		return buildings;
 	}
 
-
-
 	/**
 	 * Creates a map of buildings with their lists of building connectors attached to
 	 * it.
-	 *
-	 * @return a map
 	 */
-	public Map<Building, Set<Building>> createAdjacentBuildingMap() {
+	public void createAdjacentBuildingMap() {
 		if (adjacentBuildingMap == null)
 			adjacentBuildingMap = new HashMap<>();
 		for (Building b : getBuildingSet()) {
 			Set<Building> connectors = createAdjacentBuildings(b);
 			adjacentBuildingMap.put(b, connectors);
 		}
-
-		return adjacentBuildingMap;
 	}
 
 	
@@ -2465,7 +2459,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Set<Building> getAdjacentBuildings(Building building) {
 		if (adjacentBuildingMap == null) {
-			adjacentBuildingMap = createAdjacentBuildingMap();
+			createAdjacentBuildingMap();
 		}
 		
 		if (!adjacentBuildingMap.containsKey(building)) {
@@ -2726,6 +2720,16 @@ public class BuildingManager implements Serializable {
 	 */
 	public Settlement getSettlement() {
 		return settlement;
+	}
+
+
+	/**
+	 * Returns the BuildingConnectorManager instance.
+	 * 
+	 * @return
+	 */
+	public BuildingConnectorManager getBuildingConnectorManager() {
+		return settlement.getBuildingConnectorManager();
 	}
 
 	/**
