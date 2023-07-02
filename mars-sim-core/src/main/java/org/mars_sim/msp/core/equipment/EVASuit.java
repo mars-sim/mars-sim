@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -15,6 +16,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.data.History;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -120,6 +123,7 @@ public class EVASuit extends Equipment
 	private MalfunctionManager malfunctionManager;
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
+	private History<Unit> locnHistory;
 
 	
 	/**
@@ -164,6 +168,8 @@ public class EVASuit extends Equipment
 		
 		// Sets the base mass of the bag.
 		setBaseMass(EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT));
+
+		locnHistory = new History<>(10);
 	}
 	
 	static {
@@ -263,6 +269,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return malfunction manager
 	 */
+	@Override
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
 	}
@@ -274,22 +281,23 @@ public class EVASuit extends Equipment
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
+	@Override
 	public boolean lifeSupportCheck() {
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 			if (getAmountResourceStored(OXYGEN_ID) <= MASS_O2_MINIMUM_LIMIT) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 
 			if (getAmountResourceStored(WATER_ID) <= 0D) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Ran out of water.");
 			}
 
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Oxygen flow sensor malfunction.", null);
 				return false;
 			}
@@ -297,13 +305,13 @@ public class EVASuit extends Equipment
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
 				return false;
 			}
@@ -319,6 +327,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return the capacity of the life support system.
 	 */
+	@Override
 	public int getLifeSupportCapacity() {
 		return 1;
 	}
@@ -330,6 +339,7 @@ public class EVASuit extends Equipment
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
+	@Override
 	public double provideOxygen(double oxygenTaken) {
 		double oxygenLacking = 0;
 
@@ -353,6 +363,7 @@ public class EVASuit extends Equipment
 	 * @return the amount of water actually received from system (kg)
 	 * @throws Exception if error providing water.
 	 */
+	@Override
 	public double provideWater(double waterTaken) {
 		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
 
@@ -364,6 +375,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return air pressure (Pa)
 	 */
+	@Override
 	public double getAirPressure() {
 		// Based on some pre-calculation,
 		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure
@@ -380,7 +392,7 @@ public class EVASuit extends Equipment
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-			logger.log(this, getOwner(), Level.WARNING, 30_000,
+			logger.log(this, Level.WARNING, 30_000,
 					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
 			return pp;
@@ -394,6 +406,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return temperature (degrees C)
 	 */
+	@Override
 	public double getTemperature() {
 		return NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
 //		double ambient = weather.getTemperature(getCoordinates());
@@ -450,19 +463,24 @@ public class EVASuit extends Equipment
 		return s;
 	}
 
-	/**
-	 * Gets the owner of this suit
-	 *
-	 * @return owner
-	 */
-	public Person getOwner() {
-		Unit container = getContainerUnit();
-		if (UnitType.PERSON == container.getUnitType()) {
-			return (Person)container;
+	@Override
+	public boolean setContainerUnit(Unit parent) {
+		boolean result = super.setContainerUnit(parent);
+		if (result) {
+			// Add new parent to owner history
+			locnHistory.add(parent);
 		}
-		return null;
+
+		return result;
 	}
 
+	/**
+	 * History of the EVASuit
+	 * @return
+	 */
+	public List<HistoryItem<Unit>> getHistory() {
+		return locnHistory.getChanges();
+	}
 	/**
 	 * Return the parts that normally fail on a EVA Suit
 	 * 

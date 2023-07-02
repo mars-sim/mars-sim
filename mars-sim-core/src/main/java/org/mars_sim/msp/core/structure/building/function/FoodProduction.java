@@ -394,13 +394,6 @@ public class FoodProduction extends Function {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement);
-							
-							// Place this equipment within a settlement
-							unitManager.addUnit(equipment);
-							// Add this equipment as being owned by this settlement
-							settlement.addEquipment(equipment);
-							// Set the container unit
-							equipment.setContainerUnit(settlement);
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}

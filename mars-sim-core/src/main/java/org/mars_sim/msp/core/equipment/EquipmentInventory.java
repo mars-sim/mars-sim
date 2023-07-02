@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -98,8 +99,8 @@ public class EquipmentInventory
 	public Set<Equipment> getEquipmentSet() {
 		if (equipmentSet == null)
 			equipmentSet = new UnitSet<>();
-		return equipmentSet;
-//		return Collections.unmodifiableSet(equipmentSet);
+		//return equipmentSet;
+		return Collections.unmodifiableSet(equipmentSet);
 	}
 
 	/**

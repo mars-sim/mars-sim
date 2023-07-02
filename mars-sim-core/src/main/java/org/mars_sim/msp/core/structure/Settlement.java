@@ -2070,7 +2070,6 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

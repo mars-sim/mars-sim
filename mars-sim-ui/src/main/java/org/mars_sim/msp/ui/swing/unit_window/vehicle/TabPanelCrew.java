@@ -200,6 +200,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		
 		crewNumTF = null;
 		memberTable = null;
+		memberTableModel.clearMembers();
 		memberTableModel = null;
 	}
 
@@ -313,6 +314,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
 			int index = members.indexOf(member);
+			if (index < 0) {
+				return;
+			}
 			if (type == UnitEventType.NAME_EVENT) {
 				fireTableCellUpdated(index, 0);
 			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)

@@ -390,16 +390,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 		location = newLocation;
-		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+		if (location != null) {
+			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+		}
 	}
 
-	/**
-	 * Sets unit's location coordinates to null.
-	 */
-	public void setNullCoordinates() {
-		location = null;
-		// fireUnitUpdate(UnitEventType.LOCATION_EVENT, getTopContainerUnit().getCoordinates());
-	}
 	
 	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
@@ -456,87 +451,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		}
 
 		return topID;
-	}
-
-	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 */
-	protected void setContainerUnit(Unit newContainer) {
-		if (newContainer != null && newContainer.equals(getContainerUnit())) {
-			return;
-		}
-
-		// 1. Set Coordinates
-		if (newContainer == null || newContainer.getUnitType() == UnitType.MARS) {
-			// Since it's on the surface of Mars,
-			// First set its initial location to its old parent's location as it's leaving its parent.
-			// Later it will move around and updates its coordinates by itself
-			setCoordinates(getContainerUnit().getCoordinates());
-		}
-		else {
-			// Null its coordinates since it's now slaved after its parent
-			setNullCoordinates();
-		}
-		
-		// 2. Set LocationStateType
-		if (getUnitType() == UnitType.MARS) {
-			currentStateType = LocationStateType.OUTER_SPACE;
-			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-		} else if (getUnitType() == UnitType.CONSTRUCTION) {
-			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-		} else if (getUnitType() == UnitType.BUILDING) {
-			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		} else {
-			currentStateType = LocationStateType.UNKNOWN;
-			containerID = (Integer) UNKNOWN_UNIT_ID;
-		}
-
-		// 3. Set containerID
-		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_UNIT_ID) {
-			containerID = (Integer) UNKNOWN_UNIT_ID;
-		} else {
-			containerID = newContainer.getIdentifier();
-		}
-
-		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
-	}
-
-	/**
-	 * Gets the location state type based on the type of the new container unit.
-	 *
-	 * @param newContainer
-	 * @return {@link LocationStateType}
-	 */
-	public LocationStateType getNewLocationState(Unit newContainer) {
-
-		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
-			if (getUnitType() == UnitType.PERSON 
-					|| getUnitType() == UnitType.ROBOT
-					|| getUnitType() == UnitType.CONTAINER)
-				return LocationStateType.INSIDE_SETTLEMENT;
-			else if (getUnitType() == UnitType.VEHICLE)
-				return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
-		}
-
-		if (newContainer.getUnitType() == UnitType.BUILDING)
-			return LocationStateType.INSIDE_SETTLEMENT;
-
-		if (newContainer.getUnitType() == UnitType.VEHICLE)
-			return LocationStateType.INSIDE_VEHICLE;
-
-		if (newContainer.getUnitType() == UnitType.CONSTRUCTION)
-			return LocationStateType.MARS_SURFACE; // or WITHIN_SETTLEMENT_VICINITY
-
-		if (newContainer.getUnitType() == UnitType.PERSON)
-			return LocationStateType.ON_PERSON_OR_ROBOT;
-
-		if (newContainer.getUnitType() == UnitType.MARS)
-			return LocationStateType.MARS_SURFACE;
-
-		return null;
 	}
 
 	/**

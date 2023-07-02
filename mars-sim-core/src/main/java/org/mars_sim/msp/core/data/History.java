@@ -47,12 +47,32 @@ public class History<T> implements Serializable {
 
     private static MasterClock master;
     private List<HistoryItem<T>> history = new ArrayList<>();
+    private int maxItems;
     
+    /**
+     * Create a History but define the maximum items to hold
+     * @param maxItems
+     */
+    public History(int maxItems) {
+        this.maxItems = maxItems;
+    }
+
+    /**
+     * Crete a history that hold infinite items
+     */
+    public History() {
+        this(-1);
+    }
+
     /**
      * Add a value to the history and timestamp it
      * @param value New value to add
      */
     public void add(T value) {
+        if (history.size() == maxItems) {
+            // Rrmove first item (oldest)
+            history.remove(0);
+        }
         history.add(new HistoryItem<>(master.getMarsTime(), value));
     }
 

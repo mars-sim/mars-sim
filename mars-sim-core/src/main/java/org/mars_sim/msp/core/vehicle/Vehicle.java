@@ -1749,7 +1749,6 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2008,11 +2007,10 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	@Override
-	public void setContainerUnit(Unit newContainer) {
+	public boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			if (newContainer.equals(getContainerUnit())) {
-				return;
+				return false;
 			}
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
@@ -2023,7 +2021,7 @@ public abstract class Vehicle extends Unit
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
-				setNullCoordinates();
+				setCoordinates(null);
 			}
 			// 2. Set new LocationStateType
 			updateVehicleState(newContainer);
@@ -2032,6 +2030,7 @@ public abstract class Vehicle extends Unit
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
+		return true;
 	}
 
 	/**
@@ -2070,8 +2069,7 @@ public abstract class Vehicle extends Unit
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
-	@Override
-	public LocationStateType getNewLocationState(Unit newContainer) {
+	private LocationStateType getNewLocationState(Unit newContainer) {
 
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT) {
 			if (isInAGarage()) {

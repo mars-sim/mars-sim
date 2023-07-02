@@ -906,7 +906,7 @@ public class ExitAirlock extends Task {
 			// 0. Drop off the thermal bottle 
 			person.dropOffThermalBottle();
 			// 1. Get a good EVA suit's instance from entity inventory
-			suit = EVASuitUtil.findEVASuitWithResources((EquipmentOwner)housing, person);
+			suit = EVASuitUtil.findEVASuitWithResources(housing, person);
 	
 			if (suit == null) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
