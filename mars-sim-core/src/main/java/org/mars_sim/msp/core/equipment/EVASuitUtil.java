@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -121,8 +120,7 @@ public class EVASuitUtil {
 		List<EVASuit> suits = new ArrayList<>();
 		
 		for (Equipment e : owner.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				EVASuit suit = (EVASuit)e;
+			if (e instanceof EVASuit suit) {
 				boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 				if (!malfunction) {
@@ -168,28 +166,17 @@ public class EVASuitUtil {
 		// Doesn't have enough resource
 		
 		// Picks any one of the good suits
-		int size = goodSuits.size();
-		if (size == 0)
-			; // go to noResourceSuits below
-		else if (size == 1)
-			return goodSuits.get(0);
-		else if (size > 1) {
-			if (previousSuit != null)
-				return previousSuit;
-			else
-				return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		if (previousSuit != null) {
+			return previousSuit;
 		}
-
-
-		// Picks any one of the no-resource suits
-		size = noResourceSuits.size();
-		if (size == 1)
-			return noResourceSuits.get(0);
-		if (size > 1) {
-			if (previousSuit != null)
-				return previousSuit;
-			else
-				return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
+		else if (!goodSuits.isEmpty()) {
+			int size = goodSuits.size();
+			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		}
+		else if (!noResourceSuits.isEmpty()) {
+			// Picks any one of the no-resource suits
+			int size = noResourceSuits.size();
+			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
 		}
 		
 		return null;
@@ -206,32 +193,7 @@ public class EVASuitUtil {
 	 * @return instance of EVASuit or null if none
 	 */
 	public static EVASuit findEVASuitFromVehicle(Person p,  Vehicle v) {
-		EVASuit goodSuit = null;
-		double goodFullness = 0D;
-		
-		for (Equipment e : v.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				EVASuit suit = (EVASuit)e;
-				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-				double fullness = suit.getFullness();
-				boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
-
-				if (!malfunction && (fullness >= RoverMission.EVA_LOWEST_FILL)) {
-					if (lastOwner) {
-						// Pick this EVA suit since it has been used by the same person
-						return suit;
-					}
-					else if (fullness > goodFullness){
-						// For now, make a note of this suit but not selecting it yet.
-						// Continue to look for a better suit
-						goodSuit = suit;
-						goodFullness = fullness;
-					}
-				}
-			}
-		}
-
-		return goodSuit;
+		return findEVASuitWithResources(v, p);
 	}
 	
 	

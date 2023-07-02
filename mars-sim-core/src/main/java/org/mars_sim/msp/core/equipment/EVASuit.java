@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -15,6 +16,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.data.History;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -120,6 +123,7 @@ public class EVASuit extends Equipment
 	private MalfunctionManager malfunctionManager;
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
+	private History<Unit> locnHistory;
 
 	
 	/**
@@ -164,6 +168,8 @@ public class EVASuit extends Equipment
 		
 		// Sets the base mass of the bag.
 		setBaseMass(EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT));
+
+		locnHistory = new History<>(10);
 	}
 	
 	static {
@@ -462,11 +468,19 @@ public class EVASuit extends Equipment
 		boolean result = super.setContainerUnit(parent);
 		if (result) {
 			// Add new parent to owner history
+			locnHistory.add(parent);
 		}
 
 		return result;
 	}
 
+	/**
+	 * History of the EVASuit
+	 * @return
+	 */
+	public List<HistoryItem<Unit>> getHistory() {
+		return locnHistory.getChanges();
+	}
 	/**
 	 * Return the parts that normally fail on a EVA Suit
 	 * 

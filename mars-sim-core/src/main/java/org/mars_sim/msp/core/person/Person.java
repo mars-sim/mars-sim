@@ -2243,16 +2243,12 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
-			Iterator<Equipment> i = ((EquipmentOwner)getContainerUnit()).getEquipmentSet().iterator();
-			while (i.hasNext()){
-				Equipment e = i.next();
+			for(Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
 						// Remove it from the container unit
-						i.remove();
-						// Add to this person's inventory
-						addEquipment(e);
+						e.transfer(this);
 						// Register the person as the owner of this bottle
 						e.setRegisteredOwner(this);
 						
@@ -2270,9 +2266,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			// get the first saved one 
 			if (aBottle != null) {
 				// Remove it from the container unit
-				i.remove();
-				// Add to this person's inventory
-				addEquipment(aBottle);
+				aBottle.transfer(this);
 				// Register the person as the owner of this bottle
 				aBottle.setRegisteredOwner(this);
 			}
@@ -2286,15 +2280,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		if (hasThermalBottle() && isInside()) {
 
-			Iterator<Equipment> i = getEquipmentSet().iterator();
-			while (i.hasNext()){
-				Equipment e = i.next();
+			for(Equipment e : getEquipmentSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
-					i.remove();
 					// Transfer to this person's container unit 
 					e.transfer(getContainerUnit());
-					// Register the person as the owner of this bottle if not done
-					e.setRegisteredOwner(this);
 					
 					break;
 				}
