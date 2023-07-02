@@ -71,7 +71,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private SettlementMapPanel mapPanel;
 
 	private Font font0 = new Font("Times New Roman", Font.PLAIN, 12);
-	private Font font1= new Font("Times New Roman", Font.BOLD, 13);
+	private Font font1 = new Font("Times New Roman", Font.BOLD, 13);
 	
 	/**
 	 * Constructor.
@@ -226,24 +226,11 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		mapPanel.update(pulse);
 	}
 
-
-	@Override
-	public void destroy() {
-		buildingXYLabel = null;
-		pixelXYLabel = null;
-		mapXYLabel = null;
-		popLabel = null;
-		statusBar = null;
-		mapPanel.destroy();
-		mapPanel = null;
-		desktop = null;
-
-	}
-
 	/**
-	 * Center the map panel on a position in a Settlement.
+	 * Centers the map panel on a position in a Settlement.
+	 * 
 	 * @param settlement To display
-	 * @parma position Location position within the set
+	 * @param position Location position within the set
 	 */
 	private void refocusMap(Settlement settlement, LocalPosition position) {
 		// Surely this should be simpler ?
@@ -257,8 +244,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Dispay a Vehicle in the appropirate Settlement map. The map will be switched to 
+	 * Displays a Vehicle in the appropriate Settlement map. The map will be switched to 
 	 * the appropriate Settlement and focused on the Vehicle. The Vehicle labels will be enabled.
+	 * 
 	 * @param vv Vehicle to display
 	 */
     public void displayVehicle(Vehicle vv) {
@@ -269,10 +257,11 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
     }
 
 	/**
-	 * Display a worker in the settlement map. This caters for the Worker
+	 * Displays a worker in the settlement map. This caters for the Worker.
 	 * 1. In a Building
 	 * 2. In a Vehicle
-	 * 3. Outsid edoing a local EVA
+	 * 3. Outside doing a local EVA
+	 * 
 	 * @param w Worker to display
 	 */
 	private boolean displayWorker(Worker w) {
@@ -300,9 +289,10 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Dispay a Robot in the appropirate Settlement map. The map will be switched to 
+	 * Displays a Robot in the appropriate Settlement map. The map will be switched to 
 	 * the appropriate Settlement and focused on the Robot. The Robot labels will be enabled.
-	 * @param t Robot to display
+	 * 
+	 * @param r Robot to display
 	 */
     public void displayRobot(Robot r) {
 		if (displayWorker(r)) {
@@ -314,8 +304,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
     }
 
 	/**
-	 * Dispay a Person in the appropirate Settlement map. The map will be switched to 
+	 * Displays a Person in the appropriate Settlement map. The map will be switched to 
 	 * the appropriate Settlement and focused on the Person. The Person labels will be enabled.
+	 * 
 	 * @param p Person to display
 	 */
     public void displayPerson(Person p) {
@@ -328,11 +319,29 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
     }
 
 	/**
-	 * Get the current user configured properties
+	 * Gets the current user configured properties.
 	 */
 	@Override
 	public Properties getUIProps() {
 		return mapPanel.getUIProps();
 	}
 
+
+	@Override
+	public void destroy() {
+		buildingXYLabel = null;
+		pixelXYLabel = null;
+		mapXYLabel = null;
+		popLabel = null;
+		subPanel = null;
+		
+		statusBar = null;
+		mapPanel.destroy();
+		
+		mapPanel = null;
+		desktop = null;
+
+		font0 = null;
+		font1 = null;
+	}
 }

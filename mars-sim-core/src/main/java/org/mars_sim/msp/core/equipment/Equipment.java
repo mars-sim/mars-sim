@@ -327,11 +327,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 
-//	@Override
-//	public UnitType getUnitType() {
-//		return UnitType.EQUIPMENT;
-//	}
-
 	public static String generateName(String baseName) {
 		if (baseName == null) {
 			throw new IllegalArgumentException("Must specify a baseName");

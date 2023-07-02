@@ -153,7 +153,7 @@ extends TabPanel {
 										DECIMAL_MSOLS.format(thirstCache), null);
 		energyCache = (int)condition.getEnergy();
 		energyLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.energy"),
-										StyleManager.DECIMAL_PLACES0.format(energyCache) + " kj", null);
+										StyleManager.DECIMAL_PLACES0.format(energyCache) + " kJ", null);
 		stressCache = (int)condition.getStress();	
 		stressLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.stress"),
 										StyleManager.DECIMAL_PERC.format(stressCache), null);
@@ -464,7 +464,7 @@ extends TabPanel {
 		int newEnergy = (int)condition.getEnergy();
 		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
-			energyLabel.setText(StyleManager.DECIMAL_PLACES0.format(energyCache) + " kj");
+			energyLabel.setText(StyleManager.DECIMAL_PLACES0.format(energyCache) + " kJ");
 		}
 
 		// Update stress if necessary.

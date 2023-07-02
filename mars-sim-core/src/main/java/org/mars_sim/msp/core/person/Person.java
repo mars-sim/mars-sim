@@ -1613,8 +1613,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		PersonConfig personConfig = simulationConfig.getPersonConfig();
 
 		// Check for any duplicate full Name
-		Collection<Person> people = unitManager.getPeople();
-		List<String> existingfullnames = people.stream()
+		List<String> existingfullnames = unitManager.getPeople().stream()
 				.map(Person::getName).collect(Collectors.toList());
 
 		// Prevent mars-sim from using the user defined commander's name
@@ -1650,7 +1649,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		}
 
 		// Should never get here
-		return "Person #" + people.size();
+		return "Person #" + existingfullnames.size();
 	}
 
 	/**

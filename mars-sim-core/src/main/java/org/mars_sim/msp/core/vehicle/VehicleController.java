@@ -528,10 +528,10 @@
 		 
 		 double totalEnergyUsed = (1.0 + vehicle.getVehicleSpec().getOtherEnergyUsagePercent() / 100) * (overallEnergyUsed + regenEnergyBuffer);
 		 // Add distance traveled to vehicle's odometer.
-		 logger.info(vehicle, 20_000L, "d: " + Math.round(distanceTravelled * 100.0)/100.0 
+		 logger.info(vehicle, 20_000L, "dist: " + Math.round(distanceTravelled * 100.0)/100.0 
 				 + "  totalEnergyUsed: "  + Math.round(totalEnergyUsed* 100.0)/100.0
-				 + "  totalEnergyUsed/d: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
-				 + "  ave RL Power: " + Math.round(averageRoadLoadPower * 100.0)/100.0
+				 + "  totalEnergyUsed / dist: "  + Math.round(totalEnergyUsed/distanceTravelled * 100.0)/100.0
+				 + "  averageRoadLoadPower: " + Math.round(averageRoadLoadPower * 100.0)/100.0
 				 );
 		 vehicle.addOdometerMileage(distanceTravelled, totalEnergyUsed);
 		 // Track maintenance due to distance traveled.

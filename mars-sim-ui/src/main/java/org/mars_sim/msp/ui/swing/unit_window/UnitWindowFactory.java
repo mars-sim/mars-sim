@@ -26,7 +26,7 @@ import org.mars_sim.msp.ui.swing.unit_window.vehicle.VehicleUnitWindow;
 public class UnitWindowFactory {
 
     /**
-     * Private constructor
+     * Private constructor.
      */
     private UnitWindowFactory() {}
 

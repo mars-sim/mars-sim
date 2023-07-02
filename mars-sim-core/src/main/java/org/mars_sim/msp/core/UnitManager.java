@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
@@ -535,6 +536,17 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());
 	}
 
+	/**
+	 * Get a collection of EVA suits.
+	 *
+	 * @return Collection of EVA suits
+	 */
+	public Collection<Equipment> getEVASuits() {
+		return lookupEquipment.values().stream()
+				.filter(e -> e.getUnitType() == UnitType.EVA_SUIT)
+				.collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Adds the unit for display.
 	 *

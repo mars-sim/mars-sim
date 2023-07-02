@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.equipment;
 
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -33,7 +34,7 @@ public class EquipmentUnitWindow extends UnitWindow {
 	private Equipment equipment;
 	
     /**
-     * Constructor
+     * Constructor.
      *
      * @param desktop the main desktop panel.
      * @param equipment the equipment this window is for.
@@ -43,18 +44,19 @@ public class EquipmentUnitWindow extends UnitWindow {
         super(desktop, equipment, equipment.getAssociatedSettlement().getName() + " - " + equipment.getName(), false);
         this.equipment = equipment;
 
-        // Add tab panels
+        addTabPanel(new TabPanelSuitGeneral((EVASuit)equipment, desktop));
+
         addTabPanel(new InventoryTabPanel(equipment, desktop));
 
         addTabPanel(new LocationTabPanel(equipment, desktop));
 
-        if (equipment instanceof Malfunctionable)
-        {
+        if (equipment instanceof Malfunctionable) {
             Malfunctionable m = (Malfunctionable) equipment;
 
         	addTabPanel(new MaintenanceTabPanel(m, desktop));
             addTabPanel(new MalfunctionTabPanel(m, desktop));
         }
+        
 		addTabPanel(new NotesTabPanel(equipment, desktop));
 
         salvaged = equipment.isSalvaged();

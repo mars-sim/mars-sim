@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -192,7 +193,12 @@ public class MaintenanceTabPanel extends TabPanel {
 		// TODO: compare what parts are missing and what parts are 
 		// available for swapping out (just need time)
 		Map<Integer, Integer> parts = manager.getMaintenanceParts();
-		int size = parts.size();
+		int size = 0; 
+		
+		if (parts != null)
+			size = parts.size();
+		else
+			parts = new HashMap<>();
 		
 		// Update parts label.
 		partsLabel.setText(Integer.toString(size));

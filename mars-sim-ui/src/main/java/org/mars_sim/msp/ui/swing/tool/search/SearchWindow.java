@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SearchWindow.java
- * @date 2023-05-09
+ * @date 2023-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
@@ -120,7 +120,8 @@ extends ToolWindow {
 			UnitType.PERSON,
 			UnitType.SETTLEMENT,
 			UnitType.VEHICLE,
-			UnitType.ROBOT
+			UnitType.ROBOT,
+			UnitType.EVA_SUIT
 		};
 		searchForSelect = new JComboBoxMW<>(categories);
 		searchForSelect.setRenderer(new UnitTypeRenderer());
@@ -219,8 +220,8 @@ extends ToolWindow {
 	}
 
 	/**
-	 * Search for named unit when button is pushed.
-	 * Retrieve info on all units of selected category.
+	 * Searches for named unit when button is pushed.
+	 * Retrieves info on all units of selected category.
 	 */
 	private void search() {
 		UnitType category = (UnitType) searchForSelect.getSelectedItem();
@@ -230,7 +231,8 @@ extends ToolWindow {
 		Unit unit = unitManager.getUnitByName(category, selectTextField.getText());
 		if (unit != null) {
 			foundUnit = true;
-			if (openWindowCheck.isSelected()) desktop.showDetails(unit);
+			if (openWindowCheck.isSelected()) 
+				desktop.showDetails(unit);
 			
 			if (marsNavCheck.isSelected()) {
 				NavigatorWindow nw = (NavigatorWindow) desktop.openToolWindow(NavigatorWindow.NAME);
@@ -251,9 +253,14 @@ extends ToolWindow {
 			statusLabel.setText(Msg.getString("SearchWindow.defaultSearch",tempName)); //$NON-NLS-1$
 	}
 
+	/**
+	 * Opens the unit in Mars Navigator or Settlement Map.
+	 * 
+	 * @param u
+	 */
 	public void openUnit(Unit u) {
 		
-		if (u.isInSettlement()) {	
+		if (u.isInSettlement()) {
 			showPersonRobot(u);
 		}
 		else if (u.isInVehicle()) {
@@ -292,15 +299,20 @@ extends ToolWindow {
 		}
 	}
 	
+	/**
+	 * Opens the Person or Robot Unit Window.
+	 * 
+	 * @param u
+	 */
 	private void showPersonRobot(Unit u) {
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
 		SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
-		if (u instanceof Person) {
+		if (u.getUnitType() == UnitType.PERSON) {
 			Person p = (Person) u;
 			sw.displayPerson(p);
 		} 
-		else { 
+		else if (u.getUnitType() == UnitType.ROBOT) {
 			Robot r = (Robot)u;
 			sw.displayRobot(r);
 		}
@@ -308,7 +320,8 @@ extends ToolWindow {
 	
 	
 	/**
-	 * Change the category of the unit list.
+	 * Changes the category of the unit list.
+	 * 
 	 * @param category
 	 */
 	private void changeCategory(UnitType category) {
@@ -324,8 +337,8 @@ extends ToolWindow {
 	}
 
 	/**
-	 * Make selection in list depending on what unit names
-	 * begin with the changed text.
+	 * Makes selection in list depending on what unit names.
+	 * Begins with the changed text.
 	 */
 	private void searchTextChange() {
 		if (!lockSearchText) {
@@ -432,6 +445,9 @@ extends ToolWindow {
 				case ROBOT:
 					units = CollectionUtils.sortByName(unitManager.getRobots());
 					break;
+				case EVA_SUIT:
+					units = CollectionUtils.sortByName(unitManager.getEVASuits());
+					break;	
 				default:
 			}
 			
