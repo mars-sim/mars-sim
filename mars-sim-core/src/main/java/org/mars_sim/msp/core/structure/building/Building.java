@@ -1450,15 +1450,13 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	@Override
-	public void setContainerUnit(Unit newContainer) {
+	public boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			if (newContainer.equals(getContainerUnit())) {
-				return;
+				return false;
 			}
 			// 1. Set Coordinates
-//			setCoordinates(newContainer.getCoordinates());
-			setNullCoordinates();
+			setCoordinates(null);
 			// 2. Set LocationStateType
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// 3. Set containerID
@@ -1467,18 +1465,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
-	}
 
-	/**
-	 * Gets the unit's container unit. Returns null if unit has no container unit.
-	 *
-	 * @return the unit's container unit
-	 */
-	@Override
-	public Unit getContainerUnit() {
-		if (unitManager == null) // for maven test
-			return null;
-		return unitManager.getSettlementByID(containerID);
+		return true;
 	}
 
 	/**

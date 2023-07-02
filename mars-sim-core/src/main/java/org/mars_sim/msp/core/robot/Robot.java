@@ -1027,11 +1027,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	@Override
-	public void setContainerUnit(Unit newContainer) {
+	public boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			if (newContainer.equals(getContainerUnit())) {
-				return;
+				return false;
 			}
 			// 1. Set Coordinates
 			if (newContainer.getUnitType() == UnitType.MARS) {
@@ -1042,7 +1041,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
-				setNullCoordinates();
+				setCoordinates(null);
 			}
 			// 2. Set LocationStateType
 			updateRobotState(newContainer);
@@ -1052,6 +1051,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			// 4. Fire the container unit event
 			fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 		}
+
+		return true;
 	}
 
 	/**
@@ -1074,8 +1075,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @param newContainer
 	 * @return {@link LocationStateType}
 	 */
-	@Override
-	public LocationStateType getNewLocationState(Unit newContainer) {
+	private LocationStateType getNewLocationState(Unit newContainer) {
 
 		if (newContainer.getUnitType() == UnitType.SETTLEMENT)
 			return LocationStateType.INSIDE_SETTLEMENT;

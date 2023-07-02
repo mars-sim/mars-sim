@@ -263,6 +263,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return malfunction manager
 	 */
+	@Override
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
 	}
@@ -274,6 +275,7 @@ public class EVASuit extends Equipment
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.
 	 */
+	@Override
 	public boolean lifeSupportCheck() {
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
@@ -319,6 +321,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return the capacity of the life support system.
 	 */
+	@Override
 	public int getLifeSupportCapacity() {
 		return 1;
 	}
@@ -330,6 +333,7 @@ public class EVASuit extends Equipment
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
+	@Override
 	public double provideOxygen(double oxygenTaken) {
 		double oxygenLacking = 0;
 
@@ -353,6 +357,7 @@ public class EVASuit extends Equipment
 	 * @return the amount of water actually received from system (kg)
 	 * @throws Exception if error providing water.
 	 */
+	@Override
 	public double provideWater(double waterTaken) {
 		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
 
@@ -364,6 +369,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return air pressure (Pa)
 	 */
+	@Override
 	public double getAirPressure() {
 		// Based on some pre-calculation,
 		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure
@@ -394,6 +400,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return temperature (degrees C)
 	 */
+	@Override
 	public double getTemperature() {
 		return NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
 //		double ambient = weather.getTemperature(getCoordinates());
@@ -455,6 +462,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return owner
 	 */
+	// TODO Rework this method
 	public Person getOwner() {
 		Unit container = getContainerUnit();
 		if (UnitType.PERSON == container.getUnitType()) {
@@ -462,6 +470,17 @@ public class EVASuit extends Equipment
 		}
 		return null;
 	}
+
+	@Override
+	public boolean setContainerUnit(Unit parent) {
+		boolean result = super.setContainerUnit(parent);
+		if (result) {
+			// Add new parent to owner history
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Return the parts that normally fail on a EVA Suit
