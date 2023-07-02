@@ -463,7 +463,7 @@ public class MarsTime implements Serializable {
 	 * @return time stamp string.
 	 */
 	public String toString() {
-		return getDateTimeStamp();
+		return getTruncatedDateTimeStamp();
 	}
 
 	/**

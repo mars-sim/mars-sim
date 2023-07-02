@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -85,17 +85,17 @@ public class MissionTableModel extends AbstractTableModel
 
 	private boolean monitorMissions = false;
 
-	private static MissionManager missionManager = Simulation.instance().getMissionManager();
+	private MissionManager missionManager;
 
 	static {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
-		columnTypes[DATE_FILED] = MarsClock.class;
+		columnTypes[DATE_FILED] = MarsTime.class;
 		columnNames[DATE_EMBARKED] = Msg.getString("MissionTableModel.column.embarked"); //$NON-NLS-1$
-		columnTypes[DATE_EMBARKED] = MarsClock.class;
+		columnTypes[DATE_EMBARKED] = MarsTime.class;
 		columnNames[DATE_RETURNED] = Msg.getString("MissionTableModel.column.returned"); //$NON-NLS-1$
-		columnTypes[DATE_RETURNED] = MarsClock.class;
+		columnTypes[DATE_RETURNED] = MarsTime.class;
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[TYPE_ID] = Msg.getString("MissionTableModel.column.typeID"); //$NON-NLS-1$
@@ -125,11 +125,11 @@ public class MissionTableModel extends AbstractTableModel
 	/**
 	 * Constructor.
 	 */
-	public MissionTableModel() {
+	public MissionTableModel(Simulation sim) {
 
-
+		missionManager = sim.getMissionManager();
 		if (mode == GameMode.COMMAND) {
-			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
+			commanderSettlement = sim.getUnitManager().getCommanderSettlement();
 
 			// Must take a copy
 			missionCache = new ArrayList<>(missionManager.getMissionsForSettlement(commanderSettlement));
@@ -460,7 +460,8 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case STARTING_SETTLEMENT: {
-					result = mission.getAssociatedSettlement();
+					Settlement s = mission.getAssociatedSettlement();
+					result = (s != null? s.getName() : null);
 				}
 					break;
 
@@ -530,6 +531,8 @@ public class MissionTableModel extends AbstractTableModel
 		for (int x = 0; x < missions.length; x++) {
 			removeMission((Mission) missions[x]);
 		}
+
+		missionManager.removeListener(this);
 	}
 
 	/**

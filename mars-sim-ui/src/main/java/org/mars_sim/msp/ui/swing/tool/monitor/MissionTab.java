@@ -24,7 +24,7 @@ public class MissionTab extends TableTab {
 	 */
 	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new MissionTableModel(), true, true, MissionWindow.ICON);
+		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
 		
 		super.adjustColumnWidth(table);
 
