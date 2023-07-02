@@ -134,9 +134,10 @@ public class AnalyzeMapData extends Task {
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
 		
-		logger.log(person, Level.INFO, 10_000, "Requested computing resources: " 
-				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 + " CUs for "
-				+ NAME);
+//		logger.log(person, Level.INFO, 10_000, "Requested " 
+//				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+//				+ " CUs for "
+//				+ NAME + ".");
 //				+ ". rand: " + Math.round(rand * 1000.0)/1000.0);
 // 		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
 // 		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 

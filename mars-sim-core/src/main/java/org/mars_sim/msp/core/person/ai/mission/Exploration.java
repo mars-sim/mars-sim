@@ -235,7 +235,14 @@ public class Exploration extends EVAMission
 		logger.info(getStartingSettlement(), "No explored sites found. Looking for one.");
 		
 		// Creates an random site
-		return declareARegionOfInterest(determineFirstSiteCoordinate(), 0);
+		
+		Coordinates location = determineFirstSiteCoordinate();
+		if (location == null) {
+			logger.info(getStartingSettlement(), "location is null.");
+			return null;
+		}
+		
+		return declareARegionOfInterest(location, 0);
 	}
 
 	/**

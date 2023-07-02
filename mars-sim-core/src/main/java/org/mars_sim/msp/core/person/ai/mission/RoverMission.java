@@ -426,7 +426,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0
 							|| !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
 						// Obtain a suit from the settlement and transfer it to vehicle
-						EVASuitUtil.fetchSettlementEVASuit((Person) w, v, settlement);
+						EVASuitUtil.fetchEVASuitFromSettlement((Person) w, v, settlement);
 					}
 				}
 			}
@@ -537,7 +537,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// Not in a garage
 				
 				// See if this person needs an EVA suit
-				EVASuitUtil.checkEVASuit(p, disembarkSettlement, this);
+				EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
 			}
 		}
 

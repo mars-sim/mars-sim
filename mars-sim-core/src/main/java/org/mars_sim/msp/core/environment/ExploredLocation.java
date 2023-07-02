@@ -175,16 +175,16 @@ public class ExploredLocation implements Serializable {
 				}
 				
 				// Improvement is skill based
-				double rand = RandomUtil.getRandomDouble(1, 1.15) * (1 + skill);
+				double rand = RandomUtil.getRandomDouble(.97, 1.03);
 				
-				double newCertainty = rand * certainty;
+				double newCertainty = rand * certainty * (1.03 + skill / 100);
 				
 				if (newCertainty > 100) {
 					newCertainty = 100;
 				}
 				
-				logger.info(settlement, 
-						aMineral + ": " 
+				logger.info(settlement, 20_00L,
+						aMineral + " at " 
 						+ location.getFormattedString()
 						+ " Degree of certainty improved: " 
 						+ Math.round(certainty * 100.0)/100.0 + " %"

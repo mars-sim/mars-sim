@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.equipment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -54,7 +53,16 @@ public class EVASuitUtil {
 		// Transfer the EVA suit from person to the new destination
 		if (suit != null) {
 			// Doff this suit.
-			suit.transfer((Unit)housing);
+			boolean success = suit.transfer((Unit)housing);
+			
+			if (success) {
+				logger.log((Unit)housing, person, Level.INFO, 4_000, "Just transferred back " + suit.getName() 
+						+ " to " + (Unit)housing + ".");
+			}
+			else {
+				logger.log((Unit)housing, person, Level.WARNING, 4_000,
+						"Could not transfer " + suit + " from " + person + " to " + (Unit)housing + ".");
+			}
 		}
 		
 		// Remove pressure suit and put on garment
@@ -73,58 +81,41 @@ public class EVASuitUtil {
 	}
 	
 	/**
-	 * Finds the instance of a good EVA suit in a person's container unit. 
-	 * @Note: this method does not transfer the suit.
-	 *
+	 * Finds the instance of the registered EVA suit or a good suit.
+	 * 
+	 * @Note: this method does not transfer the suit
+	 * 
 	 * @param p 	the person who's looking for an EVA Suit
 	 * @return EVA suit's instance
 	 */
-	public static EVASuit findAnyGoodEVASuit(Person p) {
+	public static EVASuit findRegisteredOrGoodEVASuit(Person p) {
+		
+		EVASuit suit = p.getSuit();
+		
+		if (suit != null)
+			return suit;
+		
 		Unit cu = p.getContainerUnit();
 		if (!(cu instanceof EquipmentOwner)) {
 			logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
 			return null;
 		}
 		
-		int numMalSuits = 0;
-		
-		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
- 		// Find suit without malfunction
-		for (Equipment e : candidates) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				if (((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
-					numMalSuits++;
-					logger.log(p, Level.WARNING, 50_000,
-							"Spotted a malfunction with " + ((EVASuit)e).getName() + " when being examined.");
-				}
-				else
-					return (EVASuit)e;
-			}
-		}
-
-		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
-
-		if (numEVASuit == 0) {
-			logger.warning(p, "Could not find any EVA suits in " + cu.getName() + ".");
-		}
-		else {
-			logger.warning(p, "Could not find a working EVA suit in " + cu.getName() 
-				+ " (Out of " + numEVASuit + " suits, "
-				+ numMalSuits + " are currently malfunctioned.");			
-		}
-
-		return null;
+		return findEVASuitWithResources((EquipmentOwner)cu, p);
 	}
 
 	/**
-	 * Finds the instance of person's registered EVA suit with or without resources from a given inventory. 
-	 * @Note: this method does not transfer the suit.
-	 *
+	 * Finds the instance of an available EVA suit (preferably the one registered by the person) 
+	 * with or without resources from a given inventory. 
+	 * 
+	 * @Note: this method does not transfer the suit
+	 * 
 	 * @param owner 	the EquipmentOwner
 	 * @param p 		the person who's looking for an EVA Suit
 	 * @return EVA suit's instance
 	 */
-	public static EVASuit findRegisteredEVASuit(EquipmentOwner owner, Person p) {
+	public static EVASuit findEVASuitWithResources(EquipmentOwner owner, Person p) {
+		EVASuit previousSuit = null;
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
@@ -132,66 +123,89 @@ public class EVASuitUtil {
 		for (Equipment e : owner.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
+				boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 				if (!malfunction) {
 					suits.add(suit);
 				}
-				else
+				else {
 					logger.log(p, Level.WARNING, 50_000,
 						"Spotted malfunction with " + suit.getName() + " when being examined.");
-
+					continue;
+				}
+				
+				if (lastOwner) {
+					// Pick this EVA suit since it has been used by the same person
+					previousSuit = suit;
+				}
+				
+				boolean hasEnoughResources = false;
+				
 				try {
-					boolean hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
-
-					if (!malfunction) {
-						if (hasEnoughResources) {
-							if (p != null && suit.getRegisteredOwner() == p) {
-								// Prefers to pick the same suit that a person has been tagged in the past
-								return suit;
-							}
-							else
-								// tag it as good suit for possible use below
-								goodSuits.add(suit);
-						}
-						else {
-							// tag it as no resource suit for possible use below
-							noResourceSuits.add(suit);
-						}
-					}
+					hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
 
 				} catch (Exception ex) {
 					logger.log(p, Level.SEVERE, 50_000,
 							"Could not find enough resources for " + suit.getName() + ".", ex);
 				}
+				
+				if (hasEnoughResources) {
+					if (p != null && lastOwner) {
+						// Prefers to pick the same suit that a person has been tagged in the past
+						return suit;
+					}
+					else
+						// tag it as good suit for possible use below
+						goodSuits.add(suit);
+				}
+				else {
+					// tag it as no resource suit for possible use below
+					noResourceSuits.add(suit);
+				}
 			}
 		}
 
+		// Doesn't have enough resource
+		
 		// Picks any one of the good suits
 		int size = goodSuits.size();
-		if (size == 1)
+		if (size == 0)
+			; // go to noResourceSuits below
+		else if (size == 1)
 			return goodSuits.get(0);
-		if (size > 1)
-			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		else if (size > 1) {
+			if (previousSuit != null)
+				return previousSuit;
+			else
+				return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		}
+
 
 		// Picks any one of the no-resource suits
 		size = noResourceSuits.size();
 		if (size == 1)
 			return noResourceSuits.get(0);
-		if (size > 1)
-			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
-
+		if (size > 1) {
+			if (previousSuit != null)
+				return previousSuit;
+			else
+				return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
+		}
+		
 		return null;
 	}
 
 	/**
 	 * Finds a EVA suit in a particular vehicle. Select one with the most resources already
 	 * loaded.
-	 *
+	 * 
+	 * @Note: this method does not transfer the suit
+	 * 
 	 * @param person Person needing the suit
 	 * @param vehicle
-	 * @return instance of EVASuit or null if none.
+	 * @return instance of EVASuit or null if none
 	 */
-	protected static EVASuit findAnyEVASuitFromVehicle(Person p,  Vehicle v) {
+	public static EVASuit findEVASuitFromVehicle(Person p,  Vehicle v) {
 		EVASuit goodSuit = null;
 		double goodFullness = 0D;
 		
@@ -200,7 +214,7 @@ public class EVASuitUtil {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 				double fullness = suit.getFullness();
-				boolean lastOwner = p.equals(suit.getRegisteredOwner());
+				boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
 
 				if (!malfunction && (fullness >= RoverMission.EVA_LOWEST_FILL)) {
 					if (lastOwner) {
@@ -232,7 +246,9 @@ public class EVASuitUtil {
 		int otherPeopleNum = 0;
 		if (owner.getHolder().getUnitType() == UnitType.SETTLEMENT)
 			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
-
+		else 
+			otherPeopleNum = ((Crewable) owner).getCrewNum();
+		
 		// Check if enough oxygen.
 		double neededOxygen = suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);
 		double availableOxygen = owner.getAmountResourceStored(ResourceUtil.oxygenID);
@@ -289,19 +305,23 @@ public class EVASuitUtil {
 	 * @param vehicle
 	 * @param settlement
 	 */
-	public static void fetchSettlementEVASuit(Person person, Vehicle vehicle, Settlement settlement) {
-		EVASuit suit1 = EVASuitUtil.findRegisteredEVASuit(settlement, person);
+	public static void fetchEVASuitFromSettlement(Person person, Vehicle vehicle, Settlement settlement) {
+		EVASuit suit1 = EVASuitUtil.findEVASuitWithResources(settlement, person);
 		// Note: In future, will need to handle this officially by coming up 
 		// with a list of parts that are missing and have a person carries them to the vehicle
 		// instead of cheating this way
 		if (suit1 != null) {
 			boolean success = suit1.transfer(vehicle);
 			if (!success)
-				logger.warning(person, "Unable to transfer " + suit1 + " from " 
+				logger.warning(person, "Unable to fetch " + suit1 + " from " 
 						+ settlement + " to " + vehicle + ".");
-			else
-				logger.warning(person, "Just transferred " + suit1 + " from " 
+			else {
+//				// Register this suit to a person
+				suit1.setRegisteredOwner(person);
+				
+				logger.info(person, "Just fetched " + suit1 + " from " 
 						+ settlement + " to " + vehicle + ".");
+			}
 		} else {
 			logger.warning(person, "No EVA suit available from " + settlement + ".");
 		}
@@ -315,10 +335,10 @@ public class EVASuitUtil {
 	 * @param settlement
 	 */
 	public static void fetchEVASuitFromAny(Person person, Vehicle vehicle, Settlement settlement) {
-		EVASuit suit0 = findAnyEVASuitFromVehicle(person, vehicle);
+		EVASuit suit0 = findEVASuitFromVehicle(person, vehicle);
 		if (suit0 == null) {
 			if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-				fetchSettlementEVASuit(person, vehicle, settlement);
+				fetchEVASuitFromSettlement(person, vehicle, settlement);
 			}
 		}
 	}
@@ -329,7 +349,7 @@ public class EVASuitUtil {
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	public static void checkEVASuit(Person p, Settlement disembarkSettlement, Mission mission) {
+	public static void metBaselineNumEVASuits(Person p, Settlement disembarkSettlement, Mission mission) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 
 			Vehicle v = p.getVehicle();

@@ -290,7 +290,7 @@ public class CollectResources extends EVAOperation {
 				carryMass += container.getBaseMass() + container.getStoredMass();
 			}
 
-			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
+			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
 			if (suit != null) {
 				// Mass include everything
 				carryMass += suit.getMass();

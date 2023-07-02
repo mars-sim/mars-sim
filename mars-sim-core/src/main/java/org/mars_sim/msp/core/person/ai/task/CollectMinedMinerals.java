@@ -279,7 +279,7 @@ public class CollectMinedMinerals extends EVAOperation {
 				carryMass += bag.getBaseMass();
 			}
 
-			EVASuit suit = EVASuitUtil.findAnyGoodEVASuit(person);
+			EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID);

@@ -87,7 +87,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		
 		EquipmentOwner personOwner = (EquipmentOwner)person;
 		
-		EVASuit suitPerson = EVASuitUtil.findRegisteredEVASuit(settlement, person);
+		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(settlement, person);
 		
 		assertEquals("EVA suit name not matched.", suitSettlement.getName(), suitPerson.getName());
 		
@@ -120,7 +120,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		// 1. Transfer the EVA suit from to person to settlement
 		suitPerson.transfer(settlement);
 		// 2. Get the instance of the suit
-		suitSettlement = EVASuitUtil.findRegisteredEVASuit(settlement, person);
+		suitSettlement = EVASuitUtil.findEVASuitWithResources(settlement, person);
 		
 		if (suitSettlement == null) {	
 			String suitName = suitPerson.getName();

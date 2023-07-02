@@ -673,6 +673,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public synchronized ExploredLocation declareRegionOfInterest(Coordinates location,
 			int skill, Settlement settlement) {
 		
+		if (location == null) {
+			logger.info(settlement, "location is null.");
+			return null;
+		}
+		
 		ExploredLocation result = null;
 		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();

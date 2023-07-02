@@ -999,7 +999,7 @@ public class Settlement extends Structure implements Temporal,
     	if (size > 0) {
 	    	double result = 1.0 * improved / size;
 	    
-			logger.info(this, "# of mineral map improvement on ave: " + result);
+			logger.info(this, "Overall average # of improvement made on all mineral locations: " + Math.round(result * 10.0)/10.0);
     	}
 	}
 	
