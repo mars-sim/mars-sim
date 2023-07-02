@@ -782,7 +782,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

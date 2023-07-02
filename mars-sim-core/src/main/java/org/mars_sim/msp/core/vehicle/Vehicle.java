@@ -1749,7 +1749,6 @@ public abstract class Vehicle extends Unit
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

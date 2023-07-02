@@ -611,7 +611,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			else if (actor.getUnitType() == UnitType.EVA_SUIT) {
 				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 				whileDoing = ""; 
-				whoAffected = ((EVASuit)actor).getOwner().getName();
+				whoAffected = ((EVASuit)actor).getContainerUnit().getName();
 			}
 			else {
 				eventType = EventType.MALFUNCTION_PARTS_FAILURE;

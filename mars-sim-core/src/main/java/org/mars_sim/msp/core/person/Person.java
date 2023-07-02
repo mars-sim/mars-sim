@@ -1739,7 +1739,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			e.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2293,7 +2292,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					i.remove();
 					// Transfer to this person's container unit 
-					((EquipmentOwner)getContainerUnit()).addEquipment(e);
+					e.transfer(getContainerUnit());
 					// Register the person as the owner of this bottle if not done
 					e.setRegisteredOwner(this);
 					

@@ -280,18 +280,18 @@ public class EVASuit extends Equipment
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 			if (getAmountResourceStored(OXYGEN_ID) <= MASS_O2_MINIMUM_LIMIT) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 
 			if (getAmountResourceStored(WATER_ID) <= 0D) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Ran out of water.");
 			}
 
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Oxygen flow sensor malfunction.", null);
 				return false;
 			}
@@ -299,13 +299,13 @@ public class EVASuit extends Equipment
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				logger.log(getOwner(), Level.WARNING, 30_000,
+				logger.log(this, Level.WARNING, 30_000,
 						"Detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
 				return false;
 			}
@@ -386,7 +386,7 @@ public class EVASuit extends Equipment
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-			logger.log(this, getOwner(), Level.WARNING, 30_000,
+			logger.log(this, Level.WARNING, 30_000,
 					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
 			return pp;
@@ -457,20 +457,6 @@ public class EVASuit extends Equipment
 		return s;
 	}
 
-	/**
-	 * Gets the owner of this suit
-	 *
-	 * @return owner
-	 */
-	// TODO Rework this method
-	public Person getOwner() {
-		Unit container = getContainerUnit();
-		if (UnitType.PERSON == container.getUnitType()) {
-			return (Person)container;
-		}
-		return null;
-	}
-
 	@Override
 	public boolean setContainerUnit(Unit parent) {
 		boolean result = super.setContainerUnit(parent);
@@ -480,7 +466,6 @@ public class EVASuit extends Equipment
 
 		return result;
 	}
-
 
 	/**
 	 * Return the parts that normally fail on a EVA Suit

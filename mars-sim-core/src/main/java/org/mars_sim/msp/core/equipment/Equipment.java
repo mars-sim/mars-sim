@@ -280,7 +280,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public int getRegisteredOwnerID() {
 		return registeredOwner;
 	}
-
+	
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
 	}
@@ -342,7 +342,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param newContainer the unit to contain this unit.
 	 * @return Was a changed applied
 	 */
-	public boolean setContainerUnit(Unit newContainer) {
+	boolean setContainerUnit(Unit newContainer) {
 		if (newContainer != null) {
 			if (newContainer.equals(getContainerUnit())) {
 				return false;
@@ -446,11 +446,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			// if the unit is on a robot
 			return ((Robot)getContainerUnit()).isInSettlement();
 		}
-
-		// Note: may consider the scenario of this unit
-		// being carried in by another person or a robot
-//		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
-//			return getContainerUnit().isInSettlement();
 
 		return false;
 	}

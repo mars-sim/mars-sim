@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
@@ -246,11 +245,7 @@ public final class SettlementBuilder {
 		for (String type : equipmentMap.keySet()) {
 			int number = equipmentMap.get(type);
 			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(type, settlement);
-				unitManager.addUnit(equipment);
-				settlement.addEquipment(equipment);
-				// Set the container unit
-				equipment.setContainerUnit(settlement);
+				EquipmentFactory.createEquipment(type, settlement);
 			}
 		}
 	}
