@@ -116,7 +116,7 @@ public class MasterClock implements Serializable {
 	/** The Martian Clock. */
 	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
-	private MarsClock initialMarsTime;
+	private MarsTime initialMarsTime;
 	/** The Earth Clock. */
 	private LocalDateTime earthTime;
 	/** The Uptime Timer. */
@@ -139,7 +139,7 @@ public class MasterClock implements Serializable {
 		marsTime = MarsTimeFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
-		initialMarsTime = new MarsClock(marsClock);
+		initialMarsTime = marsTime;
 
 		// Create an Earth clock
 		earthTime = simulationConfig.getEarthStartDate();
@@ -217,7 +217,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @return initial Mars time.
 	 */
-	public MarsClock getInitialMarsTime() {
+	public MarsTime getInitialMarsTime() {
 		return initialMarsTime;
 	}
 

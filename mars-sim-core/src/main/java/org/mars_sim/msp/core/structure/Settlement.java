@@ -388,7 +388,8 @@ public class Settlement extends Structure implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftPattern(SettlementConfig.DEFAULT_3SHIFT);
-		shiftManager = new ShiftManager(this, shifts, 0, marsClock.getMillisolInt());
+		shiftManager = new ShiftManager(this, shifts, 0,
+										masterClock.getMarsTime().getMillisolInt());
 	}
 
 	/**
@@ -508,7 +509,7 @@ public class Settlement extends Structure implements Temporal,
 		int sunRiseOffSet = (int) (100 * fraction) * 10; // Do the offset in units of 10
 
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
-										sunRiseOffSet, marsClock.getMillisolInt());
+										sunRiseOffSet, masterClock.getMarsTime().getMillisolInt());
 
 		// Initialize Credit Manager.
 		creditManager = new CreditManager(this);
@@ -1052,7 +1053,7 @@ public class Settlement extends Structure implements Temporal,
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
 				// take a sample of how much each critical resource has in store
-				sampleAllResources();
+				sampleAllResources(pulse.getMarsTime());
 			}
 
 			remainder = msol % CHECK_WATER_RATION;
@@ -1189,12 +1190,11 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param resourceType
 	 */
-	private void sampleAllResources() {
+	private void sampleAllResources(MarsTime now) {
 		int size = samplingResources.length;
-		int sol = marsClock.getMissionSol();
 		for (int i = 0; i < size; i++) {
 			int id = samplingResources[i];
-			sampleOneResource(id, sol);
+			sampleOneResource(id, now);
 		}
 	}
 
@@ -1205,8 +1205,8 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param resourceType
 	 */
-	private void sampleOneResource(int resourceType, int sol) {
-		int msol = marsClock.getMillisolInt();
+	private void sampleOneResource(int resourceType, MarsTime now) {
+		int msol = now.getMillisolInt();
 
 		if (resourceStat == null)
 			resourceStat = new HashMap<>();
@@ -1215,6 +1215,7 @@ public class Settlement extends Structure implements Temporal,
 		Map<Integer, Double> msolMap = null;
 		double newAmount = getAmountResourceStored(resourceType);
 
+		int sol = now.getMissionSol();
 		if (resourceStat.containsKey(sol)) {
 			todayMap = resourceStat.get(sol);
 			if (todayMap.containsKey(resourceType)) {
@@ -3141,7 +3142,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return range (km) limit.
 	 */
 	private double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
-		int sol = marsClock.getMissionSol();
+		int sol = masterClock.getMarsTime().getMissionSol();
 		int numSites = 2 + (int)(1.0 * sol / 20);
 		double siteTime = 250;
 		

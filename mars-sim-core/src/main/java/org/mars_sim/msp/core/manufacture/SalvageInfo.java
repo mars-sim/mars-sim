@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.manufacture;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -27,8 +27,8 @@ public class SalvageInfo implements Serializable {
 
 	private Salvagable item;
     private SalvageProcessInfo processInfo;
-    private MarsClock startTime;
-    private MarsClock finishTime;
+    private MarsTime startTime;
+    private MarsTime finishTime;
 
     private Map<Integer, Integer> partsSalvaged;
     
@@ -39,11 +39,12 @@ public class SalvageInfo implements Serializable {
      * @param item the salvaged item.
      * @param processInfo the salvage process info.
      */
-    public SalvageInfo(Salvagable item,  SalvageProcessInfo processInfo, int settlementID) {
+    public SalvageInfo(Salvagable item,  SalvageProcessInfo processInfo, int settlementID, 
+                        MarsTime startTime) {
         this.item = item;
         this.processInfo = processInfo;
         this.settlementID = settlementID;
-        startTime = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
+        this.startTime = startTime;
         finishTime = null;
         partsSalvaged = new HashMap<>(processInfo.getPartSalvageList().size());
     }
@@ -52,9 +53,9 @@ public class SalvageInfo implements Serializable {
      * Finish the salvage.
      * @param partsSalvaged a map of the parts salvaged and their number or an empty map if none.
      */
-    public void finishSalvage(Map<Integer, Integer> partsSalvaged) {
+    public void finishSalvage(Map<Integer, Integer> partsSalvaged, MarsTime finishTime) {
         this.partsSalvaged = partsSalvaged;
-        finishTime = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
+        this.finishTime = finishTime;
     }
     
     /**
@@ -77,7 +78,7 @@ public class SalvageInfo implements Serializable {
      * Gets the time when the salvage process is started.
      * @return start time.
      */
-    public MarsClock getStartTime() {
+    public MarsTime getStartTime() {
         return startTime;
     }
     
@@ -85,7 +86,7 @@ public class SalvageInfo implements Serializable {
      * Gets the time when the salvage process is finished.
      * @return finish time or null if not finished yet.
      */
-    public MarsClock getFinishTime() {
+    public MarsTime getFinishTime() {
         return finishTime;
     }
     

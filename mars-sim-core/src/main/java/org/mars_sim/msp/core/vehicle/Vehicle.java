@@ -1552,7 +1552,7 @@ public abstract class Vehicle extends Unit
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
 	public void startSalvage(SalvageProcessInfo info, int settlement) {
-		salvageInfo = new SalvageInfo(this, info, settlement);
+		salvageInfo = new SalvageInfo(this, info, settlement, masterClock.getMarsTime());
 		isSalvaged = true;
 	}
 

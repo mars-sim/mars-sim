@@ -202,24 +202,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		return createPulse(marsTime, newSol);
 	}
 
-	/**
-	 * Creates a clock pulse by advancing the simulation clock a certain duration.
-	 * 
-	 * @param duration Millisols to advanced the clock 
-	 */
-	protected ClockPulse createPulse(int duration) {
-		MarsClock marsTime = sim.getMasterClock().getMarsClock();
-		marsTime.addTime(duration);
-        return createPulse(marsTime, false);
-    }
-
-	/**
-	 * This method will be removed once MarsClock is deleted.
-	 */
-	protected ClockPulse createPulse(MarsClock marsTime, boolean newSol) {
-        return new ClockPulse(pulseID++, 1D, marsTime, null, null, newSol, true);
-    }
-
 	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol) {
 		sim.getMasterClock().setMarsTime(marsTime);
         return new ClockPulse(pulseID++, 1D, null, marsTime, null, newSol, true);

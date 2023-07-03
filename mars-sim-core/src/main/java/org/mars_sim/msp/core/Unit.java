@@ -21,8 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -73,7 +71,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 
-	protected static MarsClock marsClock;
 	protected static MasterClock masterClock;
 
 	protected static UnitManager unitManager;
@@ -109,7 +106,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	private static void logCreation(Unit entry) {
 		StringBuilder output = new StringBuilder();
-		output.append(MarsClockFormat.getDateTimeStamp(marsClock)).append(" Id:").append(entry.getIdentifier())
+		output.append(masterClock.getMarsTime().getDateTimeStamp()).append(" Id:").append(entry.getIdentifier())
 				.append(" Type:").append(entry.getUnitType()).append(" Name:").append(entry.getName());
 
 		synchronized (diagnosticFile) {
@@ -686,20 +683,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return false;
 	}
 
-//	/**
-//	 * Gets the total capacity of this unit.
-//	 *
-//	 * @return
-//	 */
-//	public double getCargoCapacity() {
-//		if (getUnitType() == UnitType.CONTAINER) {
-//			return ((Equipment) this).getCargoCapacity();
-//		}
-//
-//		// if Inventory is presents, use getGeneralCapacity
-//		return 0;
-//	}
-
 	/**
 	 * Loads instances.
 	 *
@@ -707,7 +690,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public static void initializeInstances(MasterClock c0, UnitManager um,
 			Weather w, MissionManager mm) {
 		masterClock = c0;
-		marsClock = masterClock.getMarsClock();
 		weather = w;
 		unitManager = um;
 		missionManager = mm;

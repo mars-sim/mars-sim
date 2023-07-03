@@ -370,7 +370,7 @@ public class Simulation implements ClockListener, Serializable {
 								simulationConfig.getPersonConfig());
 
 		malfunctionFactory = new MalfunctionFactory();
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 
@@ -512,7 +512,7 @@ public class Simulation implements ClockListener, Serializable {
 		Job.initializeInstances(unitManager, missionManager);
 		
 		// Initialize instances prior to UnitManager initiation
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 
@@ -647,7 +647,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		Job.initializeInstances(unitManager, missionManager);
 		
-		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
+		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 				medicalManager, eventManager,
 				simulationConfig.getPartConfiguration());
 	

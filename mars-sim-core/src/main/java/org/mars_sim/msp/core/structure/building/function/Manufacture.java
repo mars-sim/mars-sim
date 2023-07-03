@@ -677,7 +677,7 @@ public class Manufacture extends Function {
 		}
 
 		// Finish the salvage.
-		((Salvagable) process.getSalvagedUnit()).getSalvageInfo().finishSalvage(partsSalvaged);
+		((Salvagable) process.getSalvagedUnit()).getSalvageInfo().finishSalvage(partsSalvaged, masterClock.getMarsTime());
 
 		salvages.remove(process);
 

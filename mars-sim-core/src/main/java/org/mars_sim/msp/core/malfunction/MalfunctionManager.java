@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -134,7 +133,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The number of times the entity has been maintained so far. */
 	private int numberMaintenances;
 	/** The number of orbits. */
-	private int orbitCache = MarsClock.FIRST_ORBIT;
+	private int orbitCache = MarsTime.FIRST_ORBIT;
 	
 	/** The overall probability that a maintenance event is triggered by active use on this entity. */
 	private double maintenanceProbability;	
@@ -183,7 +182,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private boolean supportsInside = true;
 	
 	private static MasterClock masterClock;
-	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
 	private static HistoricalEventManager eventManager;
@@ -446,7 +444,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int numFailure = part.getCumFailure();	
 			
 			// Gets the mission sol
-			int missionSol = currentTime.getMissionSol();
+			int missionSol = masterClock.getMarsTime().getMissionSol();
 			// Gets the @ of sols in use 
 			int solsInUse = missionSol - part.getStartSol();
 			
@@ -1289,8 +1287,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
 		double avgMalfunctionsPerOrbit = 0D;
-		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
-		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+		double totalTimeOrbits = getElapsedOrbits();
 
 		if (totalTimeOrbits < 1D) {
 			avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
@@ -1298,13 +1295,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 			avgMalfunctionsPerOrbit = (1 + numberMalfunctions) / totalTimeOrbits;
 		}
 
-		int orbit = currentTime.getOrbit();
+		int orbit = masterClock.getMarsTime().getOrbit();
 		if (orbitCache != orbit) {
 			orbitCache = orbit;
 			numberMalfunctions = 0;
 		}
 		logger.info(entity, 20_000L, "avgMalfunctionsPerOrbit: " + Math.round(avgMalfunctionsPerOrbit * 100.0)/100.0);
 		return avgMalfunctionsPerOrbit;
+	}
+
+	private static double getElapsedOrbits() {
+		double totalTimeMillisols = masterClock.getMarsTime().getTimeDiff(masterClock.getInitialMarsTime());
+		return totalTimeMillisols / 1000D / MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 	}
 
 	/**
@@ -1315,9 +1317,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double getEstimatedNumberOfMaintenancesPerOrbit() {
 		double avgMaintenancesPerOrbit = 0D;
-		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
-		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-
+		double totalTimeOrbits = getElapsedOrbits();
 		if (totalTimeOrbits < 1D) {
 			avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
 		} else {
@@ -1372,15 +1372,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Initializes instances after loading from a saved sim.
 	 *
 	 * @param c0 {@link MasterClock}
-	 * @param c1 {@link MarsClock}
 	 * @param mf {@link MalfunctionFactory}
 	 * @param m {@link MedicalManager}
 	 * @param e {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf,
+	public static void initializeInstances(MasterClock c0, MalfunctionFactory mf,
 										   MedicalManager mm, HistoricalEventManager em, PartConfig pc) {
 		masterClock = c0;
-		currentTime = c1;
 		factory = mf;
 		medic = mm;
 		eventManager = em;

@@ -28,7 +28,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -85,7 +85,7 @@ public class SalvageTabPanel extends TabPanel {
         timePanel.add(startTimeLabel);
         
         // Create the finish time label.
-        MarsClock finishTime = salvageInfo.getFinishTime();
+        MarsTime finishTime = salvageInfo.getFinishTime();
         finishTimeString = "";
         if (finishTime != null) finishTimeString = finishTime.getDateTimeStamp();
         finishTimeLabel = new JLabel("Finish Time: " + finishTimeString, JLabel.LEFT);
@@ -137,7 +137,7 @@ public class SalvageTabPanel extends TabPanel {
     public void update() {
         // Update finish time.
         SalvageInfo salvageInfo = ((Salvagable) getUnit()).getSalvageInfo();
-        MarsClock finishTime = salvageInfo.getFinishTime();
+        MarsTime finishTime = salvageInfo.getFinishTime();
         String newFinishTimeString = "";
         if (finishTime != null) newFinishTimeString = finishTime.getDateTimeStamp();
         if (!finishTimeString.equals(newFinishTimeString)) {

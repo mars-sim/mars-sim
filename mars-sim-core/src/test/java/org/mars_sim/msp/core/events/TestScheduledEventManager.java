@@ -98,14 +98,15 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		int duration = 100;
 
 		// No events
-		mgr.timePassing(createPulse(1));
+		MarsTime now = sim.getMasterClock().getMarsTime();
+		mgr.timePassing(createPulse(now, false));
 
 		// Add handler in different not time order
 		TestHandler handler = new TestHandler("Handler 0", 0);
 		mgr.addEvent(duration, handler);
 
 		// Move clock forard but not past event
-		MarsTime now = sim.getMasterClock().getMarsTime().addTime(duration/2);
+		now = now.addTime(duration/2);
 		mgr.timePassing(createPulse(now, false));
 		Collection<ScheduledEvent> events = mgr.getEvents();
 		assertEquals("Events still queued", 1, events.size());

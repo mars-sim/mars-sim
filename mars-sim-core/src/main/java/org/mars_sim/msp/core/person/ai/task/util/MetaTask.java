@@ -358,6 +358,14 @@ public abstract class MetaTask {
 	}
 
 	/**
+	 * Get a reference to the master clock
+	 * @return
+	 */
+	protected static MasterClock getMasterClock() {
+		return masterClock;
+	}
+
+	/**
 	 * Attaches to the common controlling classes.
 	 * 
 	 * @param sim

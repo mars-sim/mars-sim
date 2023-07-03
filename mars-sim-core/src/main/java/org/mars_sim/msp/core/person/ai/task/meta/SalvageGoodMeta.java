@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -19,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Meta task for the SalvageGood task.
@@ -60,11 +59,11 @@ public class SalvageGoodMeta extends FactoryMetaTask {
             	return 0;
 
 	        // No salvaging goods until after the first month of the simulation.
-	        MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-	        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-	        double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-	        if (totalTimeOrbits < MarsClock.SOLS_PER_MONTH_LONG) {
+	        MarsTime startTime = getMasterClock().getInitialMarsTime();
+	        MarsTime currentTime = getMasterClock().getMarsTime();
+	        double totalTimeMillisols = currentTime.getTimeDiff(startTime);
+	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+	        if (totalTimeOrbits < MarsTime.SOLS_PER_MONTH_LONG) {
 	            return 0;
 	        }
 
