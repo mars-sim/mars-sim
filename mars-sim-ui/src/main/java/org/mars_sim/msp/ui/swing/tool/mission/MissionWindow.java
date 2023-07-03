@@ -29,6 +29,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
@@ -220,7 +221,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		abortButton.setEnabled(false);
 		abortButton.addActionListener(e -> {
 			// End the mission.
-			if (missionCache != null) missionCache.abortMission("User aborted");
+			if (missionCache != null) missionCache.abortMission(AbstractMission.MISSION_ABORTED_BY_PLAYER.getName());
 		});
 		buttonPane.add(abortButton);
 

@@ -1715,12 +1715,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Mission is aborted because of a reason. If possible return tothe starting Settlement.
+	 * Aborts the mission via established reasons and/or events.
+	 * If possible return to the starting Settlement.
+	 * 
 	 * @param status Reason for the abort.
 	 * @param eventType Optional register an event
 	 */
 	@Override
-	protected void abortMission(MissionStatus status, EventType eventType) {
+	public void abortMission(MissionStatus status, EventType eventType) {
 
 		if (addMissionStatus(status)) {
 			// If the MissionFlag is not present then do it

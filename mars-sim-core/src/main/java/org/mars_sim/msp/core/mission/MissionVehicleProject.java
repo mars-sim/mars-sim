@@ -30,7 +30,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MissionVehicleProject extends MissionProject
     implements VehicleMission {
     
-    private static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
+	private static final long serialVersionUID = 1L;
+
+	private static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
 
     private Vehicle vehicle;
     private double proposedDistance;
@@ -258,5 +260,5 @@ public class MissionVehicleProject extends MissionProject
 			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
 		}
         return result;
-    }  
+    }
 }

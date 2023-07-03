@@ -111,7 +111,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	}
 	
 	/**
-	 * Commit the modification of the mission.
+	 * Commits the modification of the mission.
 	 */
 	private void modifyMission() {
 		// Set the mission description.
@@ -126,6 +126,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	
 	/**
 	 * Sets the mission action.
+	 * 
 	 * @param action the action string.
 	 */
 	private void setAction(String action) {
@@ -134,7 +135,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	}
 	
 	/**
-	 * End the mission EVA phase at the current site.
+	 * Ends the mission EVA phase at the current site.
 	 */
 	private void endEVAPhase() {
 		if (mission != null) {
@@ -148,6 +149,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	private void returnHome() {
 		if (mission != null) {
 			mission.abortMission("Return home");
+			// Q: but what's the principle reason for returning home ?
 		}
 	}
 	

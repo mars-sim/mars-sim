@@ -161,7 +161,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		magnification = RHO_DEFAULT/RHO_DEFAULT;
 		
-		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
+//		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
 	}
 
 	

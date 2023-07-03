@@ -67,7 +67,7 @@ public abstract class MissionProject implements Mission {
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
 
     // Key for the user aborted mission
-    private static final String USER_ABORT = "Mission.status.abortedReason";
+    private static final String MISSION_ABORT = "Mission.status.abortedReason";
 
 	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
@@ -107,13 +107,13 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Abort the mission for a reason
+     * Aborts the mission for a reason.
+     * 
      * @param reason Reason why the mission aborted
      */
     @Override
     public void abortMission(String reason) {
-        abortMission(new MissionStatus(USER_ABORT, reason));
-
+        abortMission(new MissionStatus(MISSION_ABORT, reason));
     }
 
     protected void abortMission(MissionStatus reason) {
