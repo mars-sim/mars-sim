@@ -744,7 +744,7 @@ public class EnterAirlock extends Task {
 			suit.unloadWaste(housing);
 			
 			// 4. Print log
-			logger.log((Unit)housing, person, Level.INFO, 4_000, "Just doffed " + suit.getName() + ".");
+//			logger.log((Unit)housing, person, Level.INFO, 4_000, "Just doffed " + suit.getName() + ".");
 			
 			// Add experience
 			addExperience(time);

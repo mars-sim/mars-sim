@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelSchedule.java
- * @date 2022-07-09
+ * @date 2023-07-03
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -51,7 +51,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelSchedule extends TabPanel {
 
 	private static final String SCH_ICON = "schedule";
-
+	private static final String CHOOSE_SOL = "Sols";
 	private static final String SOL = "  Sol ";
 
 	private boolean isRealTimeUpdate;
@@ -124,15 +124,15 @@ public class TabPanelSchedule extends TabPanel {
 			taskManager = robot.getTaskManager();
 		}
 
-		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		// Create the shift panel.
+		JPanel shiftPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 		Unit unit = getUnit();
 		if (unit instanceof Person) {
 
 			shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
 			shiftLabel.setToolTipText(Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
-			buttonPane.add(shiftLabel);
+			shiftPane.add(shiftLabel);
 
 			shiftDescCache = getShiftDescription(taskSchedule);	
 			
@@ -140,15 +140,15 @@ public class TabPanelSchedule extends TabPanel {
 			shiftTF.setText(shiftDescCache);
 			
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(20);
+			shiftTF.setColumns(28);
 			shiftTF.setHorizontalAlignment(JTextField.CENTER);
 			
-			buttonPane.add(shiftTF);
+			shiftPane.add(shiftTF);
 		}
 
 		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
-		topPanel.add(buttonPane, BorderLayout.NORTH);
+		topPanel.add(shiftPane, BorderLayout.NORTH);
 
 		today = masterClock.getMarsTime().getMissionSol();
 		
@@ -172,20 +172,14 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<>(comboBoxModel);
-		solBox.setPreferredSize(new Dimension(80, 25));
-		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
+//		solBox.setMaximumSize(new Dimension(80, 25));
+//		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setSelectedItem(todayInteger);
 		solBox.setWide(false);
 		
-		solBox.setRenderer(new PromptComboBoxRenderer());
+		solBox.setRenderer(new PromptComboBoxRenderer(CHOOSE_SOL));
 		solBox.setMaximumRowCount(7);
-
-		JPanel solPanel = new JPanel(new BorderLayout());//FlowLayout.CENTER));	
-		solPanel.setPreferredSize(new Dimension(80, 25));
-		solPanel.add(solBox, BorderLayout.CENTER);
-
-		topPanel.add(solPanel, BorderLayout.CENTER);
-
+		
 		selectedSol = (Integer) solBox.getSelectedItem();
 		
 		if (selectedSol == null)
@@ -201,7 +195,13 @@ public class TabPanelSchedule extends TabPanel {
 				realTimeBox.setSelected(true);
 		});
 
-		// Create realTimeUpdateCheckBox.
+		JPanel midPanel = new JPanel(new BorderLayout());
+		content.add(midPanel, BorderLayout.CENTER);
+		
+		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topPanel.add(solPanel, BorderLayout.CENTER);
+		
+		// Create real time check box.
 		realTimeBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
 		realTimeBox.setSelected(true);
 		realTimeBox.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -214,13 +214,13 @@ public class TabPanelSchedule extends TabPanel {
 			} else
 				isRealTimeUpdate = false;
 		});
-		
-		topPanel.add(realTimeBox, BorderLayout.WEST);
 
-		JPanel eastPanel = new JPanel();
-		eastPanel.add(new JLabel("                    "));
-		topPanel.add(eastPanel, BorderLayout.EAST);
+		solPanel.add(realTimeBox);
 		
+		JLabel label = new JLabel("     Select a Sol: ");
+		solPanel.add(label);
+		solPanel.add(solBox);
+
 		// Create schedule table model
 		if (unit instanceof Person)
 			scheduleTableModel = new ScheduleTableModel((Person) unit);
@@ -229,7 +229,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create attribute scroll panel
 		JScrollPane scrollPanel = new JScrollPane();
-		content.add(scrollPanel);
+		midPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
 		table = new JTable(scheduleTableModel);
@@ -239,13 +239,12 @@ public class TabPanelSchedule extends TabPanel {
 		table.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
 		table.setRowSelectionAllowed(true);
-		
+
 		scrollPanel.setViewportView(table);
 		table.getColumnModel().getColumn(0).setCellRenderer(new NumberCellRenderer(2));
-		
 
 		update();
-		
+
 		// Do the following once only at the start of the sim
 		if (isRealTimeUpdate)
 			scheduleTableModel.update(todayInteger);
@@ -358,6 +357,9 @@ public class TabPanelSchedule extends TabPanel {
 		}
 	}
 
+	/**
+	 * This class allows add a prompt message to the first choice of the combo box.
+	 */
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;

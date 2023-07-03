@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractMission.java
- * @date 2023-06-09
+ * @date 2023-07-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -99,7 +99,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
-
+	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
+	
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
 
 
@@ -651,29 +652,32 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/** 
-	 * Abort the current phase; nothign on the base class
+	 * Aborts the current phase; nothing on the base class.
 	 */
 	public void abortPhase() {
 		// Do nothing
 	}
 
 	/**
-	 * Abort the mission by the user. Will stop currnet phase.
+	 * Aborts the mission by the user. Will stop current phase.
+	 * 
 	 * @param reason Cause for abort
 	 */
 	@Override
 	public final void abortMission(String reason) {
-		abortMission(MISSION_ABORTED, null);
+		aborted = true;
+		logger.info(getStartingPerson(), "Aborted " + getName() 
+			+ ": " + reason + ".");
 	}
 
 	/**
-	 * Mission is being aborted because of a problem.
+	 * Aborts the mission via established reasons and/or events.
+	 * 
 	 * @param reason Reason to abort
 	 * @param event Optional type of event to create
 	 */
-	protected void abortMission(MissionStatus reason, EventType event) {
-		aborted = true;
-		logger.info(getStartingPerson(), "Mission " + getName() + " aborted " + reason.getName());
+	public void abortMission(MissionStatus reason, EventType event) {
+		abortMission(reason.getName() + ", " + event.getName());
 	}
 
 	/**
@@ -695,7 +699,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 					else if (person.equals(startingMember)) {
 						// The mission lead receive extra bonus
 						person.addMissionExperience(missionType, 6);
-
 						// Add a leadership point to the mission lead
 						person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
 					}
@@ -783,7 +786,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		boolean canPerformTask = !task.isEffortDriven() || (person.getPerformanceRating() != 0D);
 
 		// If task is effort-driven and person too ill, do not assign task.
-
 		Task currentTask = person.getMind().getTaskManager().getTask();
 		
 		if (currentTask != null && currentTask.getName().equals(task.getName()))

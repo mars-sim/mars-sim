@@ -935,10 +935,10 @@ public class ExitAirlock extends Task {
 				suit.setRegisteredOwner(person);
 							
 				// 4. Print log
-				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000, "Just donned " + suit.getName() + ".");
+//				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000, "Just donned " + suit.getName() + ".");
 				// 5. Loads the resources into the EVA suit
 				if (suit.loadResources(housing) < 0.9D) {
-					logger.warning(suit, "Being used but not full loaded.");
+					logger.warning(suit, "Not fully loaded.");
 				}
 	
 				remainingDonningTime -= time;

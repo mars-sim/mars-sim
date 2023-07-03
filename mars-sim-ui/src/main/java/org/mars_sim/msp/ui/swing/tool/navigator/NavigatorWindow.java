@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-06-27
+ * @date 2023-07-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -35,12 +35,14 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -104,6 +106,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
+	private static final String DASH = "- ";
+	private static final String CHOOSE_SETTLEMENT = "Settlement List";
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
@@ -566,7 +570,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-
+		settlementComboBox.setRenderer(new PromptComboBoxRenderer(CHOOSE_SETTLEMENT));
+		
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(event -> {
 			if (settlementComboBox.getSelectedIndex() == -1)
@@ -1113,6 +1118,52 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		selectedSettlement = null;
 		
 	}
+	
+	/**
+	 * This class allows appending a message to each element of the combo box.
+	 */
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
+
+		private String prompt;
+		public PromptComboBoxRenderer() {
+
+			setHorizontalAlignment(CENTER);
+			setVerticalAlignment(CENTER);
+		}
+
+		public PromptComboBoxRenderer(String prompt) {
+			this.prompt = prompt;
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
+			if (index == -1 && value == null) {
+				setText(prompt);
+			}
+            else {
+    			setText(DASH + value);
+//            	setText(value.toString());
+            }
+			
+            return c;
+			
+//			if (value == null) {
+//				setText(prompt);
+//				// this.setForeground(Color.orange);
+//				// this.setBackground(new Color(184,134,11));
+//				return this;
+//			}
+//
+//			setText(CHOOSE_SETTLEMENT + value);
+//			
+//			// result.setOpaque(false);
+//			return c;
+		}
+	}
+
 	
 	class PolicyRadioActionListener implements ActionListener {
 	    @Override

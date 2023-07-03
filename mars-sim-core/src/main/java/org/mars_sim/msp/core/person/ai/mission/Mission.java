@@ -24,8 +24,17 @@ import org.mars_sim.msp.core.time.MarsTime;
  */
 public interface Mission extends Entity, Serializable {
 
+//	/**
+//	 * Aborts the mission via established reasons and/or events.
+//	 * 
+//	 * @param reason Reason to abort
+//	 * @param event Optional type of event to create
+//	 */
+//	void abortMission(MissionStatus reason, EventType event);
+
 	/**
-	 * Aborts the mission by the user. Will stop current phase.
+	 * Aborts the mission via custom reasons. Will stop current phase.
+	 * 
 	 * @param reason Reason to abort
 	 */
 	void abortMission(String reason);

@@ -55,8 +55,8 @@ public class EVASuitUtil {
 			boolean success = suit.transfer((Unit)housing);
 			
 			if (success) {
-				logger.log((Unit)housing, person, Level.INFO, 4_000, "Just transferred back " + suit.getName() 
-						+ " to " + (Unit)housing + ".");
+				; //logger.log((Unit)housing, person, Level.INFO, 4_000, "Just transferred back " + suit.getName() 
+//						+ " to " + (Unit)housing + ".");
 			}
 			else {
 				logger.log((Unit)housing, person, Level.WARNING, 4_000,
