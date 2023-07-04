@@ -99,7 +99,6 @@ public class EquipmentInventory
 	public Set<Equipment> getEquipmentSet() {
 		if (equipmentSet == null)
 			equipmentSet = new UnitSet<>();
-		//return equipmentSet;
 		return Collections.unmodifiableSet(equipmentSet);
 	}
 
@@ -127,7 +126,7 @@ public class EquipmentInventory
 	public Collection<Container> findContainersOfType(EquipmentType type) {
 		Collection<Container> result = new HashSet<>();
 		for (Equipment e : equipmentSet) {
-			if (e != null && e instanceof Container && type == e.getEquipmentType()) {
+			if (e != null && e.getUnitType() == UnitType.CONTAINER && type == e.getEquipmentType()) {
 				result.add((Container)e);
 			}
 		}

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -498,8 +498,8 @@ public class Walk extends Task {
 	 * @param buildingManager
 	 */
 	public static void checkAvailableAirlocks(BuildingManager buildingManager) {
-		Set<Building> pressurizedBldgs = new HashSet<>();
-		Set<Building> depressurizedBldgs = new HashSet<>();
+		Set<Building> pressurizedBldgs = new UnitSet<>();
+		Set<Building> depressurizedBldgs = new UnitSet<>();
 
 		for(Building airlockBdg : buildingManager.getBuildingSet(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();

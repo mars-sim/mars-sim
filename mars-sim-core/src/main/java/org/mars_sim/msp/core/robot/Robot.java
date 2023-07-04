@@ -13,8 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -24,6 +22,7 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -448,23 +447,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return collection of robots in robot's location.
 	 */
 	public Collection<Robot> getLocalRobotGroup() {
-		Collection<Robot> localRobotGroup = null;
+		Collection<Robot> localRobotGroup = new UnitSet<>();
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					localRobotGroup = new HashSet<>(building.getRoboticStation().getRobotOccupants());
+					localRobotGroup.addAll(building.getRoboticStation().getRobotOccupants());
 				}
 			}
 		} else if (isInVehicle()) {
-			localRobotGroup = new HashSet<>(((Crewable) getVehicle()).getRobotCrew());
+			localRobotGroup.addAll(((Crewable) getVehicle()).getRobotCrew());
 		}
 
-		if (localRobotGroup == null) {
-			localRobotGroup = Collections.emptyList();
-		}
-		else if (localRobotGroup.contains(this)) {
+		if (localRobotGroup.contains(this)) {
 			localRobotGroup.remove(this);
 		}
 		return localRobotGroup;
@@ -758,7 +754,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public Set<Equipment> getEquipmentSet() {
 		if (eqmInventory == null)
-			return new HashSet<>();
+			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 

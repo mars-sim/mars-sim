@@ -217,7 +217,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 		boolean result = false;
 
-		if (entity instanceof Vehicle) {
+		if (entity.getUnitType() == UnitType.VEHICLE) {
 			// Requires EVA repair on outside vehicles that the person isn't inside.
 			Vehicle vehicle = (Vehicle) entity;
 			boolean outsideVehicle = vehicle.getGarage() == null;
@@ -225,7 +225,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 			if (outsideVehicle && personNotInVehicle) {
 				result = true;
 			}
-		} else if (entity instanceof Building) {
+		} else if (entity.getUnitType() == UnitType.BUILDING) {
 			// Requires EVA repair on uninhabitable buildings.
 			Building building = (Building) entity;
 			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
@@ -261,10 +261,10 @@ public class RepairInsideMalfunction extends Task implements Repair {
 	private void addPersonOrRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
 
 		boolean isWalk = false;
-		if (malfunctionable instanceof Building) {
+		if (malfunctionable.getUnitType() == UnitType.BUILDING) {
 			Building building = (Building) malfunctionable;
 
-			if (worker instanceof Person) {
+			if (worker.getUnitType() == UnitType.PERSON) {
 
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 					// Walk to malfunctioning building.
@@ -273,7 +273,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 				}
 			}
 
-			else if (worker instanceof Robot) {
+			else if (worker.getUnitType() == UnitType.ROBOT) {
 				// Note 1 : robot doesn't need life support
 				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
 				if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
@@ -297,7 +297,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 		else if (malfunctionable instanceof Rover) {
 
-			if (worker instanceof Person) {
+			if (worker.getUnitType() == UnitType.PERSON) {
 				// Walk to malfunctioning rover.
 				walkToRandomLocInRover((Rover) malfunctionable, true);
 				isWalk = true;

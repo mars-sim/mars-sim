@@ -181,7 +181,7 @@ extends Task {
 	                    Iterator<Container> k = parent.findAllContainers().iterator();
 	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (sourceAmount > 0D)) {
 	                    	Container otherUnit = k.next();
-	                        if (otherUnit != source && otherUnit instanceof Container) {
+	                        if (otherUnit != source) { // && otherUnit instanceof Container) {
 	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);

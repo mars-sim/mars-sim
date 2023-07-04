@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -61,7 +61,6 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.Heating;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -79,6 +78,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -1046,7 +1046,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public Collection<Person> getAffectedPeople() {
 
-		Collection<Person> people = new HashSet<>();
+		Collection<Person> people = new UnitSet<>();
 		// Check all people in settlement.
 		Iterator<Person> i = settlement.getIndoorPeople().iterator();
 		while (i.hasNext()) {

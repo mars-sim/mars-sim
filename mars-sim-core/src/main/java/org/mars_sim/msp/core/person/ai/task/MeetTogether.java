@@ -8,12 +8,12 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -104,7 +104,7 @@ public class MeetTogether extends Task {
 	            return;
 	        }
 	        	
-            Set<Person> pool = new HashSet<>();
+            Set<Person> pool = new UnitSet<>();
 
             Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
             RoleType roleType = person.getRole().getType();
@@ -289,7 +289,7 @@ public class MeetTogether extends Task {
     public Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
     	RoleType candidateType = RoleUtil.getChiefSpeciality(roleType);
  
-        Set<Person> pool = new HashSet<>();
+        Set<Person> pool = new UnitSet<>();
         if (candidateType != null) {
 	        for (Person p : ppl) {
 	        	if (p.getRole().getType() == candidateType) {

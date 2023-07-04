@@ -81,7 +81,7 @@ public class TabPanelSchedule extends TabPanel {
 	/** The Robot instance. */
 	private Robot robot = null;
 	
-	private ShiftSlot taskSchedule;
+	private ShiftSlot shiftSlot;
 	private TaskManager taskManager;
 	
 	private MasterClock masterClock;
@@ -117,7 +117,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Prepare combo box
 		if (person != null) {
-			taskSchedule = person.getShiftSlot();
+			shiftSlot = person.getShiftSlot();
 			taskManager = person.getTaskManager();
 		} 
 		else {
@@ -134,7 +134,7 @@ public class TabPanelSchedule extends TabPanel {
 			shiftLabel.setToolTipText(Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
 			shiftPane.add(shiftLabel);
 
-			shiftDescCache = getShiftDescription(taskSchedule);	
+			shiftDescCache = getShiftDescription(shiftSlot);	
 			
 			shiftTF = new JTextField();
 			shiftTF.setText(shiftDescCache);
@@ -172,8 +172,6 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<>(comboBoxModel);
-//		solBox.setMaximumSize(new Dimension(80, 25));
-//		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setSelectedItem(todayInteger);
 		solBox.setWide(false);
 		
@@ -290,7 +288,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		if (person != null) {
 			
-			String shiftDesc = getShiftDescription(taskSchedule);
+			String shiftDesc = getShiftDescription(shiftSlot);
 			
 			if (shiftDescCache.equalsIgnoreCase(shiftDesc))
 				shiftTF.setText(shiftDesc);
@@ -384,7 +382,7 @@ public class TabPanelSchedule extends TabPanel {
 				return this;
 			}
 
-			setText(SOL + value);// + SPACES);
+			setText(SOL + value);
 
 			// result.setOpaque(false);
 			return c;
@@ -507,7 +505,7 @@ public class TabPanelSchedule extends TabPanel {
 		scheduleTableModel = null;
 		person = null;
 		robot = null;
-		taskSchedule = null;
+		shiftSlot = null;
 	}
 
 }

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -62,6 +63,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.util.ScheduleManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
@@ -205,7 +207,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	private ScientificStudy study;
 	/** The person's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-
+	/** The schedule manger that keeps track of scheduled appointments. */
+	private ScheduleManager scheduleManager;
+	
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
 	/** The person's paternal chromosome. */
@@ -351,6 +355,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		role = new Role(this);
 		// Create shift schedule
 		shiftSlot = getAssociatedSettlement().getShiftManager().allocationShift(this);
+		
+		scheduleManager = new ScheduleManager(this);
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -361,8 +367,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
-		
-//		eqmInventory.addCargoCapacity(carryingCapacity);
 		
 		eqmInventory.setResourceCapacity(ResourceUtil.foodID, .6);
 	}
@@ -836,6 +840,17 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			return false;
 		}
 
+		// Check to see if the person has deceased
+		if (condition.getDeathDetails() != null
+				&& condition.getDeathDetails().getBodyRetrieved()) {
+			setDeceased();
+		}
+		
+		// Check to see if the person is dead
+		if (condition.isDead()) {
+			return false;
+		}
+
 		// Primary researcher; my responsibility to update Study
 		if (study != null) {
 			study.timePassing(pulse);
@@ -847,68 +862,64 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			suit.recordUsageTime(pulse);
 		}
 
-		if (!condition.isDead()) {
-			// Mental changes with time passing.
-			mind.timePassing(pulse);
+		// Mental changes with time passing.
+		mind.timePassing(pulse);
+
+		// Check schedule
+		scheduleManager.timePassing(pulse);
+		
+		// If Person is dead, then skip
+		if (getLifeSupportType() != null) {
+			// Get the life support type
+			support = getLifeSupportType();
 		}
 
-		// If Person is dead, then skip
-		if (!condition.isDead() && getLifeSupportType() != null) {
+		circadian.timePassing(pulse, support);
+		// Pass the time in the physical condition first as this may result in death.
+		condition.timePassing(pulse, support);
 
-			support = getLifeSupportType();
+		if (pulse.isNewSol()) {
+			// Update the solCache
+			int currentSol = pulse.getMarsTime().getMissionSol();
 
-			circadian.timePassing(pulse, support);
-			// Pass the time in the physical condition first as this may result in death.
-			condition.timePassing(pulse, support);
+			if (currentSol == 1) {
+				// On the first mission sol,
+				// adjust the sleep habit according to the current work shift
+				for (int i=0; i< 15; i++) {
+					int shiftEnd = shiftSlot.getShift().getEnd();
+					int m = shiftEnd - 20 * (i+1);
+					if (m < 0)
+						m = m + 1000;
+					// suppress sleep during the work shift
+					circadian.updateSleepCycle(m, false);
 
-			if (!condition.isDead()) {
-
-				if (pulse.isNewSol()) {
-					// Update the solCache
-					int currentSol = pulse.getMarsTime().getMissionSol();
-
-					if (currentSol == 1) {
-						// On the first mission sol,
-						// adjust the sleep habit according to the current work shift
-						for (int i=0; i< 15; i++) {
-							int shiftEnd = shiftSlot.getShift().getEnd();
-							int m = shiftEnd - 20 * (i+1);
-							if (m < 0)
-								m = m + 1000;
-							// suppress sleep during the work shift
-							circadian.updateSleepCycle(m, false);
-
-							m = shiftEnd + 10 * (i+1);
-							if (m > 1000)
-								m = m - 1000;
-							// encourage sleep after the work shift
-							circadian.updateSleepCycle(m, true);
-						}
-
-						condition.increaseFatigue(RandomUtil.getRandomInt(333));
-					}
-					else {
-						// Adjust the sleep habit according to the current work shift
-						for (int i=0; i< 5; i++) {
-							int m = shiftSlot.getShift().getEnd() + 10 * (i+1);
-							if (m > 1000)
-								m = m - 1000;
-							circadian.updateSleepCycle(m, true);
-						}
-
-						// Check if a person's age should be updated
-						age = updateAge(pulse.getMasterClock().getEarthTime());
-
-						// Checks if a person has a role
-						if (role.getType() == null)
-							role.obtainNewRole();
-					}
+					m = shiftEnd + 10 * (i+1);
+					if (m > 1000)
+						m = m - 1000;
+					// encourage sleep after the work shift
+					circadian.updateSleepCycle(m, true);
 				}
+
+				condition.increaseFatigue(RandomUtil.getRandomInt(333));
+			}
+			else {
+				// Adjust the sleep habit according to the current work shift
+				for (int i=0; i< 5; i++) {
+					int m = shiftSlot.getShift().getEnd() + 10 * (i+1);
+					if (m > 1000)
+						m = m - 1000;
+					circadian.updateSleepCycle(m, true);
+				}
+
+				// Check if a person's age should be updated
+				age = updateAge(pulse.getMasterClock().getEarthTime());
+
+				// Checks if a person has a role
+				if (role.getType() == null)
+					role.obtainNewRole();
 			}
 		}
-		else
-			checkDecease();
-
+		
 		return true;
 	}
 
@@ -917,10 +928,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * 
 	 * @return
 	 */
-	public boolean checkDecease() {
-		if (!isBuried && condition.getDeathDetails() != null
-			&& condition.getDeathDetails().getBodyRetrieved()
-			&& !declaredDead) {
+	public void setDeceased() {
+		if (!isBuried && !declaredDead) {
 			// Declares the person dead
 			setDeclaredDead();
 			// Deregisters the person's quarters
@@ -928,7 +937,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			// Deactivates the person's mind
 			mind.setInactive();
 		}
-		return true;
 	}
 
 	/**
@@ -1690,7 +1698,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public Set<Equipment> getEquipmentSet() {
 		if (eqmInventory == null)
-			return new HashSet<>();
+			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 
@@ -2392,6 +2400,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	
 	public int getMeetingInvitee() {
 		return inviteeId;
+	}
+	
+	public ScheduleManager getScheduleManager() {
+		return scheduleManager;
 	}
 	
 	/**

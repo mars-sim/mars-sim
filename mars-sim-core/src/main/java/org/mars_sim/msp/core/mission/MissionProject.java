@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -36,7 +37,10 @@ import org.mars_sim.msp.core.time.MarsTime;
  * Is a Mission astraction that allows a Mission tobe defiend in terms of a number of MissionSteps.
  */
 public abstract class MissionProject implements Mission {
-    /**
+
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Controller of mission flow. Monitors the start & stop callbacks
      */
     private final class MissionController extends Project {
@@ -90,8 +94,8 @@ public abstract class MissionProject implements Mission {
 	private transient Set<MissionListener> listeners = null;
     private MarsTime stepStarted;
 
-    private Set<Worker> members = new HashSet<>();
-    private Set<Worker> signedUp = new HashSet<>();
+    private Set<Worker> members = new UnitSet<>();
+    private Set<Worker> signedUp = new UnitSet<>();
     private Set<MissionStatus> status = new HashSet<>();
 
     public MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {

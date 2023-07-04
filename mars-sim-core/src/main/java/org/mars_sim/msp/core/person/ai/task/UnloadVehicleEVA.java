@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -147,8 +145,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Set<Equipment> originalEqm = new HashSet<>(vehicle.getEquipmentSet());
-			Iterator<Equipment> k = originalEqm.iterator();
+			Iterator<Equipment> k = vehicle.getEquipmentSet().iterator();
 			while (k.hasNext() && (amountUnloading > 0D)) {	
 				Equipment equipment = k.next();
 				boolean doUnload = true;

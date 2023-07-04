@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -1381,7 +1382,7 @@ public abstract class Vehicle extends Unit
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new HashSet<>();
+		Collection<Person> people = new UnitSet<>();
 
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1412,7 +1413,7 @@ public abstract class Vehicle extends Unit
 	 * @return person collection
 	 */
 	public Collection<Person> getTalkingPeople() {
-		Collection<Person> people = new HashSet<>();
+		Collection<Person> people = new UnitSet<>();
 
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1434,7 +1435,7 @@ public abstract class Vehicle extends Unit
 	 * @return robots collection
 	 */
 	public Collection<Robot> getAffectedRobots() {
-		Collection<Robot> robots = new HashSet<>();
+		Collection<Robot> robots = new UnitSet<>();
 
 		// Check all robots.
 		Iterator<Robot> i = unitManager.getRobots().iterator();
@@ -1705,7 +1706,7 @@ public abstract class Vehicle extends Unit
 	@Override
 	public Set<Equipment> getEquipmentSet() {
 		if (eqmInventory == null)
-			return new HashSet<>();
+			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 

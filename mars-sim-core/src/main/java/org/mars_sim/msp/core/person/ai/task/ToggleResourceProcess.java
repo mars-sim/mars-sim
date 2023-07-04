@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -227,7 +227,7 @@ public class ToggleResourceProcess extends Task {
 
 		if (!mgtBuildings.isEmpty()) {
 
-			Set<Building> notFull = new HashSet<>();
+			Set<Building> notFull = new UnitSet<>();
 
 			for (Building b : mgtBuildings) {
 				if (b.hasFunction(FunctionType.ADMINISTRATION)) {

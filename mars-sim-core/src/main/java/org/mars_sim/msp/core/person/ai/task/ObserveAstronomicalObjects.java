@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -168,7 +168,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * @return observatory buildings with available observatory space.
 	 */
 	private static Set<Building> getObservatoriesWithAvailableSpace(Set<Building> buildings) {
-		Set<Building> result = new HashSet<>();
+		Set<Building> result = new UnitSet<>();
 
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {

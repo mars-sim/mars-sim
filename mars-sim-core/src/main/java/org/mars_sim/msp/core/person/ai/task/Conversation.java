@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +15,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -170,7 +170,7 @@ public class Conversation extends Task {
 
     public Person selectFromSettlement() {
     	Person invitee = null;
-        Set<Person> pool = new HashSet<>();
+        Set<Person> pool = new UnitSet<>();
     
         // Gets a list of idle people in the same building
         Collection<Person> candidates = getChattingPeople(person, true, true, true);
@@ -265,7 +265,7 @@ public class Conversation extends Task {
     public Person selectFromVehicle() {
     	Person invitee = null;
 
-        Set<Person> pool = new HashSet<>();
+        Set<Person> pool = new UnitSet<>();
         Vehicle v = (Vehicle) person.getContainerUnit();
          
         Collection<Person> candidates = v.getTalkingPeople();
@@ -314,7 +314,7 @@ public class Conversation extends Task {
     public Person selectforEVA() {
     	Person invitee = null;
 
-        Set<Person> pool = new HashSet<>();
+        Set<Person> pool = new UnitSet<>();
         
         Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
 

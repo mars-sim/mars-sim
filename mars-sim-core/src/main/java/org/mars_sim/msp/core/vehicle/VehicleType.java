@@ -52,7 +52,7 @@ public enum VehicleType {
 	 */
 	public static Set<Integer> getIDs() {
 		if (idSet == null) {
-			idSet = new HashSet<Integer>();
+			idSet = new HashSet<>();
 			for (VehicleType e : VehicleType.values()) {
 				idSet.add(e.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID);
 			}

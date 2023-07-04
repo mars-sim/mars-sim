@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -130,7 +130,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 		boolean insideTasks = MaintainVehicleMeta.getGarageSpaces(settlement) > 0;
         double modifier = settlement.getGoodsManager().getTransportationFactor();
 
-        Set<Vehicle> assessed = new HashSet<>();
+        Set<Vehicle> assessed = new UnitSet<>();
         
         // Check Vehicle Missions first
 		for (Mission mission : missionManager.getMissions()) {

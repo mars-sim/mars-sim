@@ -38,14 +38,6 @@ import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTempla
  */
 public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
 
-	/**
-	 *
-	 */
-
-	/**
-	 *
-	 */
-
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	// Element names

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -16,6 +15,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -140,7 +140,7 @@ public class ToggleFuelPowerSource extends EVAOperation {
 
 		if (!mgtBuildings.isEmpty()) {
 
-			Set<Building> notFull = new HashSet<>();
+			Set<Building> notFull = new UnitSet<>();
 
 			for (Building b : mgtBuildings) {
 				if (b.hasFunction(FunctionType.ADMINISTRATION)) {

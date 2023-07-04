@@ -7,13 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -88,7 +88,7 @@ public class ConversationMeta extends FactoryMetaTask {
    
     	Settlement settlement = person.getAssociatedSettlement();
     
-        Set<Person> pool = new HashSet<>();
+        Set<Person> pool = new UnitSet<>();
         
         int num = 0;
         
