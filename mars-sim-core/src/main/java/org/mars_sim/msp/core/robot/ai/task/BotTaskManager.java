@@ -235,7 +235,7 @@ public class BotTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(robot);
-				startTask(newTask);
+				replaceTask(newTask);
 			}
 
 			return;
@@ -253,11 +253,14 @@ public class BotTaskManager extends TaskManager {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		botMind = null;
 		robot = null;
+		chargeMap = null;
+		robotTasks.clear();
+		robotTasks = null;
 	}
 
 }
