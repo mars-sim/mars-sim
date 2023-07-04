@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2023-06-30
+ * @date 2023-07-04
  * @author Manny Kung
  */
 
@@ -82,10 +82,16 @@ public class AnalyzeMapData extends Task {
 		else {
 			compositeSkill = .5 * (1 + computingSkill + prospectingSkill/2.0);
 		}
-	
+		
+    	List<Coordinates> coords = person.getAssociatedSettlement()
+    			.getNearbyMineralLocations()
+    			.stream()
+    			.collect(Collectors.toList());  	
+    	
 		List<ExploredLocation> siteList0 = surfaceFeatures
     			.getAllRegionOfInterestLocations().stream()
-    			.filter(site -> site.isMinable())
+    			.filter(site -> site.isMinable()
+    					&& coords.contains(site.getLocation()))
     			.collect(Collectors.toList());
 
 		int num = siteList0.size();
@@ -102,8 +108,7 @@ public class AnalyzeMapData extends Task {
 			
 			num = siteList1.size();
 			if (num == 0) {
-				int rand = RandomUtil.getRandomInt(num - 1);
-				site = siteList0.get(rand);
+				endTask();
 			}
 			else if (num == 1) {
 				site = siteList1.get(0);
@@ -336,7 +341,7 @@ public class AnalyzeMapData extends Task {
 			
 			int newNum = site.getNumEstimationImprovement();
 			
-			logger.log(person, Level.INFO, 10_000,
+			logger.log(person, Level.FINE, 0,
 					"Improved " + site.getLocation().getFormattedString()
 					+ ". # of estimation: " + oldNum 
 					+ " -> " + newNum + ".");

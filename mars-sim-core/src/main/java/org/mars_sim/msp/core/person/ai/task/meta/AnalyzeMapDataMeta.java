@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapDataMeta.java
- * @date 2023-06-30
+ * @date 2023-07-04
  * @author Manny Kung
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
@@ -66,14 +67,22 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 
         	int numUnimproved = 0;
         	
-        	List<ExploredLocation> siteList = surfaceFeatures
-        			.getAllRegionOfInterestLocations().stream()
-        			.filter(site -> site.isMinable())
+        	List<Coordinates> coords = person.getAssociatedSettlement()
+        			.getNearbyMineralLocations()
+        			.stream()
         			.collect(Collectors.toList());  	
         	
-        	for (ExploredLocation el: siteList) {   	
-        		 int est = el.getNumEstimationImprovement();
-        		 numUnimproved += ExploredLocation.IMPROVEMENT_THRESHOLD - est;
+        	int numCoords = coords.size();
+        	
+    		List<ExploredLocation> siteList = surfaceFeatures
+        			.getAllRegionOfInterestLocations().stream()
+        			.filter(site -> site.isMinable()
+        					&& coords.contains(site.getLocation()))
+        			.collect(Collectors.toList());
+        	
+        	for (ExploredLocation el: siteList) {
+	        	int est = el.getNumEstimationImprovement();
+	        	numUnimproved += ExploredLocation.IMPROVEMENT_THRESHOLD - est;
         	}
         	    	
         	int num = siteList.size();
@@ -81,7 +90,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
         	if (num == 0)
         		return 0;
         	
-    		result += VALUE * numUnimproved / num;
+    		result += VALUE * numUnimproved / num + numCoords / VALUE;
 	
             // Check if person is in a moving rover.
             if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
