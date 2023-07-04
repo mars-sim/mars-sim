@@ -63,7 +63,6 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -382,12 +381,12 @@ public class Simulation implements ClockListener, Serializable {
 
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
-		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 
 		eventManager = new HistoricalEventManager(masterClock);
+		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
 
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
 			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
@@ -522,8 +521,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
-		RadiationExposure.initializeInstances(masterClock);
-
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 
@@ -658,9 +655,7 @@ public class Simulation implements ClockListener, Serializable {
 		CreditManager.initializeInstances(unitManager);
 		
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
-		
-		RadiationExposure.initializeInstances(masterClock);
-		
+				
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		

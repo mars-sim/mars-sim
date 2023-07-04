@@ -2161,6 +2161,8 @@ public class PhysicalCondition implements Serializable {
 		MIN_TEMPERATURE = personConfig.getMinTemperature();
 		MAX_TEMPERATURE = personConfig.getMaxTemperature();
 		FOOD_CONSUMPTION = personConfig.getFoodConsumptionRate();
+
+		RadiationExposure.initializeInstances(c0);
 	}
 
 	public void reinit() {
