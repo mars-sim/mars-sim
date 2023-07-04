@@ -14,6 +14,8 @@ import java.util.List;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.History;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -23,7 +25,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Manager for construction sites at a settlement.
@@ -43,7 +44,7 @@ implements Serializable {
 	private List<ConstructionSite> sites;
 	private ConstructionValues values;
 	private SalvageValues salvageValues;
-	private List<ConstructedBuildingLogEntry> constructedBuildingLog;
+	private History<String> constructedBuildingLog;
 
 	private UnitManager unitManager = Simulation.instance().getUnitManager();
 	
@@ -57,7 +58,7 @@ implements Serializable {
 		sites = new ArrayList<>();
 		values = new ConstructionValues(settlement);
 		salvageValues = new SalvageValues(settlement);
-		constructedBuildingLog = new ArrayList<>();
+		constructedBuildingLog = new History<>();
 	}
 
 	/**
@@ -227,16 +228,11 @@ implements Serializable {
 	 * Adds a building log entry to the constructed buildings list.
 	 * 
 	 * @param buildingName the building name to add.
-	 * @param builtTime the time stamp that construction was finished.
 	 */
-	void addConstructedBuildingLogEntry(String buildingName, MarsClock builtTime) {
+	void addConstructedBuildingLogEntry(String buildingName) {
 		if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
-		else if (builtTime == null) throw new IllegalArgumentException("builtTime is null");
-		else {
-			ConstructedBuildingLogEntry logEntry =
-					new ConstructedBuildingLogEntry(buildingName, builtTime);
-			constructedBuildingLog.add(logEntry);
-		}
+		
+		constructedBuildingLog.add(buildingName);
 	}
 
 	/**
@@ -244,8 +240,8 @@ implements Serializable {
 	 * 
 	 * @return list of ConstructedBuildingLogEntry
 	 */
-	public List<ConstructedBuildingLogEntry> getConstructedBuildingLog() {
-		return new ArrayList<>(constructedBuildingLog);
+	public List<HistoryItem<String>> getConstructedBuildingLog() {
+		return constructedBuildingLog.getChanges();
 	}
 
 	/**
@@ -333,7 +329,6 @@ implements Serializable {
 		values = null;
 		salvageValues.destroy();
 		salvageValues = null;
-		constructedBuildingLog.clear();
 		constructedBuildingLog = null;
 	}
 }

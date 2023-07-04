@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.StyleManager;
 
@@ -108,9 +108,9 @@ extends JPanel {
 
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
-				ConstructedBuildingLogEntry logEntry = manager.getConstructedBuildingLog().get(row);
-				if (column == 0) return logEntry.getBuildingName();
-				else if (column == 1) return logEntry.getBuiltTime().toString();
+				HistoryItem<String> logEntry = manager.getConstructedBuildingLog().get(row);
+				if (column == 0) return logEntry.getWhat();
+				else if (column == 1) return logEntry.getWhen().getTruncatedDateTimeStamp();
 				else return null;
 			}
 			else return null;

@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -27,7 +26,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
 /**
@@ -374,8 +372,7 @@ implements  LocalBoundedObject {
 
         // Record completed building name.
         constructionManager = settlement.getConstructionManager();
-        MarsClock timeStamp = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
-        constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
+        constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName());
 
         // Clear construction value cache.
         constructionManager.getConstructionValues().clearCache();
