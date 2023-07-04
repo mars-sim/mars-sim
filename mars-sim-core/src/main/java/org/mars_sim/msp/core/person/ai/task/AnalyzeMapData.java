@@ -134,18 +134,18 @@ public class AnalyzeMapData extends Task {
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
 		
-//		logger.log(person, Level.INFO, 10_000, "Requested " 
-//				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-//				+ " CUs for "
-//				+ NAME + ".");
-//				+ ". rand: " + Math.round(rand * 1000.0)/1000.0);
-// 		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
-// 		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
-// 		+ ". score: " + Math.round(score * 1000.0)/1000.0 
-// 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
-// 		+ ". seed: " + Math.round(seed * 1000.0)/1000.0 
-// 		+ ". # Candidate sites: " + num 
-// 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
+		logger.log(person, Level.FINER, 10_000, "Requested " 
+				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+				+ " CUs for "
+				+ NAME + "."
+				+ ". rand: " + Math.round(rand * 1000.0)/1000.0
+ 		+ ". compositeSkill: " + Math.round(compositeSkill * 10.0)/10.0 
+ 		+ ". certainty: " + Math.round(certainty * 1000.0)/1000.0 
+ 		+ ". score: " + Math.round(score * 1000.0)/1000.0 
+ 		+ ". rand: " + Math.round(rand1 * 1000.0)/1000.0 
+ 		+ ". seed: " + Math.round(seed * 1000.0)/1000.0 
+ 		+ ". # Candidate sites: " + num 
+ 		+ ". Selected site: " + site.getLocation().getFormattedString() + ".");
 		
 		if (rand < 2) {
 	       	// Add task phases
@@ -198,11 +198,11 @@ public class AnalyzeMapData extends Task {
     	totalWork += time * (1 + workPerMillisol);
         
         if (totalWork > getDuration() * .95) {
-//        	logger.log(person, Level.CONFIG, 10_000, 
-//        			"effort: " + Math.round(effort * 100.0)/100.0 
-//        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
-//        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
-//        			);
+        	logger.log(person, Level.FINEST, 0L, 
+        			"effort: " + Math.round(effort * 100.0)/100.0 
+        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
+        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+        			);
    	
         	// Get a lowest range rover
      		Rover rover = person.getAssociatedSettlement().getVehicleWithMinimalRange();
@@ -217,7 +217,7 @@ public class AnalyzeMapData extends Task {
          	// Creates an initial explored site in SurfaceFeatures
          	person.getAssociatedSettlement().createARegionOfInterest(aSite, skill);
          				
-         	logger.info(person, 50_000L, "Zoned up a ROI at " +  aSite.getFormattedString() + ".");
+         	logger.info(person, "Zoned up a ROI at " +  aSite.getFormattedString() + ".");
          	
          	endTask();
         }
@@ -264,7 +264,7 @@ public class AnalyzeMapData extends Task {
 	    		}
 	      	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
 	    	}
     	}
 	    else if (computingNeeded <= 0) {
@@ -286,23 +286,17 @@ public class AnalyzeMapData extends Task {
      * @throws Exception
      */
     private double analyzingPhase(double time) {
-  
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + ". Not feeling well.");
-//			endTask();
-//			return time;
-//		}
  
     	double workPerMillisol = consumeComputingResource(time);
         
         effort += time * (1 + workPerMillisol);
           
         if (effort > getDuration() / 3) {
-//        	logger.log(person, Level.CONFIG, 10_000, 
-//        			"effort: " + Math.round(effort * 100.0)/100.0 
-//        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
-//        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
-//        			);
+        	logger.log(person, Level.FINER, 10_000, 
+        			"effort: " + Math.round(effort * 100.0)/100.0 
+        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
+        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+        			);
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
         	improveMineralConcentrationEstimates(time, effort);

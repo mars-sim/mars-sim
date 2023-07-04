@@ -178,7 +178,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	 */
 	protected int executeTask(Person person, Task task, int maxCalls) {
 		PersonTaskManager tm = person.getMind().getTaskManager();
-		tm.startTask(task);
+		tm.replaceTask(task);
 		
 		int callsLeft = maxCalls;
 		while ((callsLeft > 0) && !task.isDone()) {

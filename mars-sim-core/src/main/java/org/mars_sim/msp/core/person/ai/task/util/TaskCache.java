@@ -118,4 +118,14 @@ public class TaskCache {
         // Should never get here but return the last one
         return lastEntry;
     }
+    
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		tasks.clear();
+		tasks = null;
+	    createdOn = null;
+	    lastSelected = null;
+	}
 }

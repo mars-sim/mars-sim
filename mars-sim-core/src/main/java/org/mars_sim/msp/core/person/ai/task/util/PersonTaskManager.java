@@ -241,7 +241,7 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
-				startTask(newTask);
+				replaceTask(newTask);
 			}
 
 			return;
@@ -264,10 +264,14 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		mind = null;
 		person = null;
+		defaultInsideTasks.destroy();
+		defaultInsideTasks = null;
+		defaultOutsideTasks.destroy();
+		defaultOutsideTasks = null;
 	}
 }

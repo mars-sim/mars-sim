@@ -43,6 +43,10 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
 	
+	private static final String SLEEPING = "Sleeping";
+	private static final String EVA = "EVA";
+	private static final String AIRLOCK = "Airlock";
+	
 	/*
 	 * This class represents a record of a given activity (task or mission)
 	 * undertaken by a person or a robot
@@ -352,63 +356,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 			currentTask.getSubTask().endTask();
 		}
 	}
-
-	/**
-	 * Starts a new task.
-	 * 
-	 * @param newTask
-	 */
-	public void startTask(Task newTask) {
-		if (newTask != null) {
-			// Save the current task as last task
-			lastTask = currentTask;
-			
-			// End the current task properly
-			if ((currentTask != null) && !currentTask.isDone()) {
-				String des = currentTask.getDescription();
 	
-				logger.info(worker, 20_000, "Quit '" + des + "' to start new Task '"
-							+ newTask.getDescription() + "'.");
-				currentTask.endTask();
-			}
-			
-			// Make the new task as the current task
-			currentTask = newTask;
-			
-			// Send out the task event
-			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
-		}
-	}
-	
-	/**
-	 * Adds a task to the stack of tasks.
-	 * 
-	 * @param newTask the task to be added
-	 */
-	public boolean addTask(Task newTask) {
-		
-		if (newTask == null) {
-			return false;
-		}
-		
-		if (hasActiveTask()) {
-			String currentDes = currentTask.getDescription();
 
-			// Note: make sure robot's 'Sleep Mode' won't return false
-			if (currentDes.contains("Sleeping"))
-				return false;
-			
-			if (currentDes.contains("EVA"))
-				return false;
-			
-			if (newTask.getDescription().equalsIgnoreCase(currentDes))
-				return false;	
-		}
-		
-		startTask(newTask);
-		
-		return true;
-	}
 
 	/**
 	 * Sets the current task to null.
@@ -466,15 +415,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * Re-initializes instances when loading from a saved sim
-	 */
-	public void reinit() {
-		if (currentTask != null)		
-			currentTask.reinit();
-		if (lastTask != null)
-			lastTask.reinit();
-	}
 
 	/**
 	 * Calculates and caches the probabilities.
@@ -483,46 +423,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	protected abstract TaskCache rebuildTaskCache();
 
-	/**
-	 * Starts a new task for the worker based on tasks available at their location.
-	 * Uses the task probability cache. If a task is found; then it is assigned
-	 * to the manager to start working.
-	 */
-	public void startNewTask() {
-		Task selectedTask = null;
-		TaskJob selectedJob = null;
-
-		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
-		// ignore the cache
-		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
-				|| (marsClock.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
-			taskProbCache = rebuildTaskCache();
-			
-			// Comment out to stop capturing stats
-			//captureStats();
-			
-			// Output shift
-			if (diagnosticFile != null) {
-				outputCache(taskProbCache);
-			}
-		}
-
-		if (taskProbCache.getTasks().isEmpty()) { 
-			// SHhould never happen since TaskManagers have to return a populated list
-			// with doable defaults if needed
-			logger.severe(worker, "No normal Tasks available in " + taskProbCache.getContext());
-		}
-		else {
-			selectedJob = taskProbCache.getRandomSelection();
-
-			// Call constructInstance of the selected Meta Task to commence the ai task
-			selectedTask = createTask(selectedJob);
-
-			// Start this new task
-			startTask(selectedTask);
-		}
-	}
-
+	
 	/**
 	 * Simple method to capture some stats/metrics on cache rebuilds.
 	 */
@@ -729,6 +630,105 @@ public abstract class TaskManager implements Serializable, Temporal {
 		return result;
 	}
 	
+
+	/**
+	 * Starts a new task for the worker based on tasks available at their location.
+	 * Uses the task probability cache. If a task is found; then it is assigned
+	 * to the manager to start working.
+	 */
+	public void startNewTask() {
+		Task selectedTask = null;
+		TaskJob selectedJob = null;
+
+		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
+		// ignore the cache
+		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
+				|| (marsClock.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
+			taskProbCache = rebuildTaskCache();
+			
+			// Comment out to stop capturing stats
+			//captureStats();
+			
+			// Output shift
+			if (diagnosticFile != null) {
+				outputCache(taskProbCache);
+			}
+		}
+
+		if (taskProbCache.getTasks().isEmpty()) { 
+			// Should never happen since TaskManagers have to return a populated list
+			// with doable defaults if needed
+			logger.severe(worker, "No normal Tasks available in " + taskProbCache.getContext());
+		}
+		else {
+			selectedJob = taskProbCache.getRandomSelection();
+
+			// Call constructInstance of the selected Meta Task to commence the ai task
+			selectedTask = createTask(selectedJob);
+
+			// Start this new task
+			replaceTask(selectedTask);
+		}
+	}
+
+	/**
+	 * Checks to see if it's okay to replace a task.
+	 * 
+	 * @param newTask the task to be added
+	 */
+	public boolean checkAndReplaceTask(Task newTask) {
+		
+		if (newTask == null) {
+			return false;
+		}
+		
+		if (hasActiveTask()) {
+			String currentDes = currentTask.getDescription();
+			String taskName = currentTask.getName(); //
+			
+			// Note: make sure robot's 'Sleep Mode' won't return false
+			if (currentDes.contains(SLEEPING)
+				|| currentDes.contains(EVA)
+				|| taskName.contains(AIRLOCK))
+				return false;
+			
+			if (newTask.getDescription().equalsIgnoreCase(currentDes))
+				return false;	
+		}
+		
+		replaceTask(newTask);
+		
+		return true;
+	}
+	
+	/**
+	 * Replaces old task with a new task.
+	 * 
+	 * @param newTask
+	 */
+	public void replaceTask(Task newTask) {
+		if (newTask != null) {
+			// Backup the current task as last task
+			lastTask = currentTask;
+			
+			// Inform that the current task will be termined
+			if ((currentTask != null) && !currentTask.isDone()) {
+				String des = currentTask.getDescription();
+	
+				logger.info(worker, 20_000, "Quitting '" + des + "' to start new Task '"
+							+ newTask.getDescription() + "'.");
+				
+				currentTask.endTask();
+			}
+			
+			// Make the new task as the current task
+			currentTask = newTask;
+			
+			// Send out the task event
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		}
+	}
+	
 	/**
 	 * Gets all pending tasks.
 	 *
@@ -819,5 +819,32 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		MetaTaskUtil.initialiseInstances(sim);
 		Task.initializeInstances(sim, conf.getPersonConfig());
+	}
+	
+
+	/**
+	 * Re-initializes instances when loading from a saved sim
+	 */
+	public void reinit() {
+		if (currentTask != null)		
+			currentTask.reinit();
+		if (lastTask != null)
+			lastTask.reinit();
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		worker = null;
+		currentTask = null;
+		lastTask = null;
+		taskProbCache = null;
+		allActivities = null;
+		lastActivity = null;
+		pendingTasks.clear();
+		pendingTasks = null;
+		metrics.clear();
+		metrics = null;
 	}
 }
