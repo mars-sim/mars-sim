@@ -383,7 +383,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		
-		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 
@@ -522,7 +522,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
-		RadiationExposure.initializeInstances(masterClock, marsClock);
+		RadiationExposure.initializeInstances(masterClock);
 
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -532,7 +532,7 @@ public class Simulation implements ClockListener, Serializable {
 				surfaceFeatures, missionManager, pc);	
 		MissionStep.initializeInstances(masterClock, unitManager);
 
-		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		
 		// Initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, marsClock);
@@ -659,7 +659,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
 		
-		RadiationExposure.initializeInstances(masterClock, marsClock);
+		RadiationExposure.initializeInstances(masterClock);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -668,7 +668,7 @@ public class Simulation implements ClockListener, Serializable {
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
 
-		LocalAreaUtil.initializeInstances(unitManager, marsClock);
+		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		
 		// Re-initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, marsClock);

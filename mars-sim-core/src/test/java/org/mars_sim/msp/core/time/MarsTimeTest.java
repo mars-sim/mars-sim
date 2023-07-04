@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.time;
 
+import static org.junit.Assert.assertNotEquals;
+
 import junit.framework.TestCase;
 
 public class MarsTimeTest extends TestCase {
@@ -9,6 +11,8 @@ public class MarsTimeTest extends TestCase {
 
         MarsTime later = start.addTime(1000D);
         assertEquals("New Sol of Month", start.getSolOfMonth() + 1, later.getSolOfMonth());
+        assertNotEquals("Old and new time are different", start, later);
+        assertEquals("Time difference", 1000D, later.getTimeDiff(start));
     }
 
     public void testAddTimeMonthEnd() {
@@ -17,6 +21,8 @@ public class MarsTimeTest extends TestCase {
         MarsTime later = start.addTime(1000D);
         assertEquals("New Sol of Month", 1, later.getSolOfMonth());
         assertEquals("New Month", start.getMonth() +1, later.getMonth());
+        assertNotEquals("Old and new Sol time are different", start, later);
+        assertEquals("SOl Time difference", 1000D, later.getTimeDiff(start));
     }
 
     public void testAddTimeMonthEndMSols() {

@@ -473,19 +473,11 @@ public class MarsTime implements Serializable {
 	 * @return true if equal
 	 */
 	public boolean equals(Object object) {
-		boolean result = true;
+		boolean result = false;
 		if (object instanceof MarsTime) {
 			MarsTime otherClock = (MarsTime) object;
-			if (orbit != otherClock.orbit)
-				result = false;
-			else if (month != otherClock.month)
-				result = false;
-			else if (solOfMonth != otherClock.solOfMonth)
-				result = false;
-			else if (millisol != otherClock.millisol)
-				result = false;
-		} else
-			result = false;
+			result = (totalMillisols == otherClock.totalMillisols);
+		}
 		return result;
 	}
 

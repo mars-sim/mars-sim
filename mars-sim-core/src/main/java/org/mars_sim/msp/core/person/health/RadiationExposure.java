@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -231,7 +230,6 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	private Person person;
 
-	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 
 
@@ -383,7 +381,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	public boolean isRadiationDetected(double time) {
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 		if (masterClock.getClockPulse().isNewMSol() 
-			&& marsClock.getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
+			&& masterClock.getMarsTime().getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
 
 			RadiationType radiationType = null;
 			BodyRegionType bodyRegionType = null;
@@ -516,8 +514,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1) {
-		marsClock = c1;
+	public static void initializeInstances(MasterClock c0) {
 		masterClock = c0;
 	}
 

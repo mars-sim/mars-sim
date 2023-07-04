@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -31,6 +32,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * point, such as around a settlement or rover.
  */
 public class LocalAreaUtil {
+
+	// Record representing an Area and when it was calculated
+	private record CachedArea(Area area, MarsTime when) {};
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LocalAreaUtil.class.getName());
@@ -46,13 +50,10 @@ public class LocalAreaUtil {
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.
 	 */
-	private static final Map<Coordinates, Area> obstacleAreaCache = new ConcurrentHashMap<>();
-
-	/** Time stamps for obstacle area cache. */
-	private static final Map<Coordinates, String> obstacleAreaTimestamps = new ConcurrentHashMap<>();
+	private static final Map<Coordinates, CachedArea> obstacleAreaCache = new ConcurrentHashMap<>();
 
 	private static UnitManager unitManager;
-	private static MarsClock marsClock;
+	private static MasterClock master;
 
 	/**
 	 * Private empty constructor for utility class.
@@ -658,10 +659,10 @@ public class LocalAreaUtil {
 		boolean cached = false;
 		Area obstacleArea = null;
 		if (useCache && obstacleAreaCache.containsKey(coordinates)) {
-			String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
-			if (marsClock.getDateTimeStamp().equals(cachedTimestamp)) {
+			CachedArea cachedArea = obstacleAreaCache.get(coordinates);
+			if (master.getMarsTime().equals(cachedArea.when())) {
 				cached = true;
-				obstacleArea = obstacleAreaCache.get(coordinates);
+				obstacleArea = cachedArea.area();
 			}
 		}
 
@@ -699,8 +700,7 @@ public class LocalAreaUtil {
 
 		// Store cached obstacle area for location with current timestamp if needed.
 		if (useCache && !cached && (obstacleArea != null)) {
-			obstacleAreaCache.put(coordinates, obstacleArea);
-			obstacleAreaTimestamps.put(coordinates, marsClock.getDateTimeStamp());
+			obstacleAreaCache.put(coordinates, new CachedArea(obstacleArea, master.getMarsTime()));
 		}
 
 		return result;
@@ -710,12 +710,7 @@ public class LocalAreaUtil {
 	 * Clears the obstacle area cache and time stamps.
 	 */
 	public static void clearObstacleCache() {
-		if (!obstacleAreaCache.isEmpty()) {
-			obstacleAreaCache.clear();
-		}
-		if (!obstacleAreaTimestamps.isEmpty()) {
-			obstacleAreaTimestamps.clear();
-		}
+		obstacleAreaCache.clear();
 	}
 
 	/**
@@ -753,8 +748,8 @@ public class LocalAreaUtil {
 	 * @param unitMgr
 	 * @param marsClk
 	 */
-	public static void initializeInstances(UnitManager unitMgr, MarsClock marsClk) {
+	public static void initializeInstances(UnitManager unitMgr, MasterClock clock) {
 		unitManager = unitMgr;
-		marsClock = marsClk;
+		master = clock;
 	}
 }
