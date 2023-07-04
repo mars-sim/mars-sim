@@ -537,6 +537,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize Unit related class
 		SalvageValues.initializeInstances(unitManager, marsClock);
 		
+		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
+
 		
 		doneInitializing = true;
 		
@@ -564,7 +566,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 *  Re-initialize instances after loading from a saved sim
 	 */
-	public void reinitializeInstances() {		
+	private void reinitializeInstances() {		
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 
@@ -680,7 +682,7 @@ public class Simulation implements ClockListener, Serializable {
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
-		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
+		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
 
 		
 		// Start a chain of calls to set instances
@@ -746,7 +748,9 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 		}
 
-		// Call up garbage collector System.gc(). But it's still up to the gc what it will do.
+					
+		// Re-initialize instances
+		reinitializeInstances();
 	}
 
     /**

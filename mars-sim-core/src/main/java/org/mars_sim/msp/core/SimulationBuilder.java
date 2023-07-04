@@ -368,10 +368,6 @@ public class SimulationBuilder {
 			logger.config("Loading from " + simFile.getAbsolutePath());
 
 			Simulation sim = Simulation.instance();
-					
-//			sim.createNewSimulation(userTimeRatio);
-			
-//			sim.loadSim();
 			
 			// Question : Why does it have to create some of the class instances in recreateSomeInstances(), 
 			// only later be rewritten in loadSimulation() ?
@@ -379,12 +375,8 @@ public class SimulationBuilder {
 			// Note: if skipping createNewSimulation(), it would not be deserialized correctly
 			sim.loadSimulation(simFile);		
 			
-			// Re-initialize instances
-			sim.reinitializeInstances();
-			
 			result  = true;			
-			// initialize ResupplyUtil.
-//			new ResupplyUtil();
+
 		}
 		else if (!newAllowed) {
 			// Not allowed to create a new simulation so throw error

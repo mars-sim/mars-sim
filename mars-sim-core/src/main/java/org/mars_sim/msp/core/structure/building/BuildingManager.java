@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -92,6 +91,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -112,7 +112,7 @@ public class BuildingManager implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
-	private transient MarsClock lastVPUpdateTime;
+	private transient MarsTime lastVPUpdateTime;
 
 	private Set<Building> buildings = new UnitSet<>();
 	private Set<Building> garages = new UnitSet<>();
@@ -143,12 +143,10 @@ public class BuildingManager implements Serializable {
 	
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
 	
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static SimulationConfig simulationConfig;
 	private static HistoricalEventManager eventManager;
-	private static MarsClock marsClock;
 	private static MasterClock masterClock;
-	private static UnitManager unitManager = sim.getUnitManager();
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor 1 : construct buildings from name list. Called by constructor 1.
@@ -160,12 +158,6 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 		this.settlementID = settlement.getIdentifier();
-
-		masterClock = sim.getMasterClock();
-		marsClock = masterClock.getMarsClock();
-
-		eventManager = sim.getEventManager();
-		unitManager = sim.getUnitManager();
 
 		// Construct all buildings in the settlement.
 		buildings = new UnitSet<>();
@@ -201,8 +193,6 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, String name) {
 		this.settlement = settlement;
 		this.settlementID = settlement.getIdentifier();
-
-		unitManager = sim.getUnitManager();
 
 		// Construct all buildings in the settlement.
 		buildings = new UnitSet<>();
@@ -1775,11 +1765,12 @@ public class BuildingManager implements Serializable {
 			vPOldCache = new HashMap<>();
 
 		// Update building values cache once per Sol.
+		MarsTime now = masterClock.getMarsTime();
 		if ((lastVPUpdateTime == null)
-				|| (MarsClock.getTimeDiff(marsClock, lastVPUpdateTime) > 1000D)) {
+				|| (now.getTimeDiff(lastVPUpdateTime) > 1000D)) {
 			vPNewCache.clear();
 			vPOldCache.clear();
-			lastVPUpdateTime = new MarsClock(marsClock);
+			lastVPUpdateTime = now;
 		}
 
 		if (newBuilding && vPNewCache.containsKey(buildingType)) {
@@ -2183,7 +2174,7 @@ public class BuildingManager implements Serializable {
 			farmsNeedingWorkCache = new UnitSet<>();
 
 		// Must use the absolute time otherwise it stalls after one sol day
-		double m = marsClock.getTotalMillisols();
+		double m = masterClock.getMarsTime().getTotalMillisols();
 
 		// Add caching and relocate from TendGreenhouse
 		if ((farmTimeCache + 20) >= m && !farmsNeedingWorkCache.isEmpty()) {
@@ -2756,12 +2747,10 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1,
+	public static void initializeInstances(SimulationConfig sc, MasterClock c0,
 			HistoricalEventManager e, UnitManager u) {
-		sim = s;
-		simulationConfig = SimulationConfig.instance();
+		simulationConfig = sc;
 		masterClock = c0;
-		marsClock = c1;
 		eventManager = e;
 		unitManager = u;
 	}
@@ -2793,8 +2782,6 @@ public class BuildingManager implements Serializable {
 		vPOldCache = null;
 		lastVPUpdateTime = null;
 		meteorite = null;
-		marsClock = null;
-		masterClock = null;
 	}
 
 }
