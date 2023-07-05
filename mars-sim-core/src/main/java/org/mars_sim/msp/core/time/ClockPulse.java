@@ -17,20 +17,18 @@ public class ClockPulse {
 	private boolean isNewSol;
 	private boolean isNewIntMillisol;
 	private long id;
-	private MarsClock oldMarsTime;
 	
 	/**
 	 * Creates a pulse defining a step forward in the simulation.
 	 * 
 	 * @param id Unique pulse ID. Sequential.
 	 * @param elapsed This must be a final & positive number.
-	 * @param oldMarsTime This is a deprecated argument and will be dropped once MarsClock is removed
 	 * @param marsTime
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 * @param newMSol Does this pulse start a new msol (an integer millisol) ?
 	 */
-	public ClockPulse(long id, double elapsed, MarsClock oldMarsTime,
+	public ClockPulse(long id, double elapsed, 
 					MarsTime marsTime, MasterClock master, 
 					boolean newSol, boolean newMSol) {
 		super();
@@ -42,7 +40,6 @@ public class ClockPulse {
 		this.id = id;
 		this.elapsed = elapsed;
 		this.marsTime = marsTime;
-		this.oldMarsTime = oldMarsTime;
 		this.master = master;
 		this.isNewSol = newSol;
 		this.isNewIntMillisol = newMSol;
@@ -116,7 +113,8 @@ public class ClockPulse {
 		if (isNewIntMillisol) {
 			lastIntMillisol = thisIntMillisol;
 		}
-		
-		return new ClockPulse(id, actualElapsed, oldMarsTime, marsTime, master, actualNewSol, isNewIntMillisol);
+		MarsTime newMars = marsTime.addTime(msolsSkipped);
+
+		return new ClockPulse(id, actualElapsed, newMars, master, actualNewSol, isNewIntMillisol);
 	}
 }

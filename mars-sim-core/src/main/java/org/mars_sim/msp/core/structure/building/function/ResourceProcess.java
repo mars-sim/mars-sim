@@ -15,7 +15,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -54,7 +55,7 @@ public class ResourceProcess implements Serializable {
 
 	private ResourceProcessEngine engine;
 
-	private static MarsClock marsClock;
+	private static MasterClock clock;
 
 	/**
 	 * Constructor.
@@ -139,7 +140,8 @@ public class ResourceProcess implements Serializable {
 			runningProcess = !runningProcess;
 
 			// Reset for next toggle
-			resetToggleTime(marsClock.getMissionSol(), marsClock.getMillisolInt());
+			MarsTime now = clock.getMarsTime();
+			resetToggleTime(now.getMissionSol(), now.getMillisolInt());
 			
 			return true;
 		}
@@ -358,8 +360,9 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public boolean isToggleAvailable() {
-		int sol = marsClock.getMissionSol();
-		int millisol = marsClock.getMillisolInt();
+		MarsTime now = clock.getMarsTime();
+		int sol = now.getMissionSol();
+		int millisol = now.getMillisolInt();
 		if (sol == timeLimit[0]) {
             return millisol > timeLimit[1];
 		}
@@ -382,10 +385,10 @@ public class ResourceProcess implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
-	 * @param clock
+	 * @param masterClock
 	 */
-	public static void initializeInstances(MarsClock clock) {
-		marsClock = clock;
+	public static void initializeInstances(MasterClock masterClock) {
+		clock = masterClock;
 	}
 
 	/**

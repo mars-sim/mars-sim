@@ -203,6 +203,6 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	protected ClockPulse createPulse(MarsTime marsTime, boolean newSol) {
 		sim.getMasterClock().setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, 1D, null, marsTime, null, newSol, true);
+        return new ClockPulse(pulseID++, 1D, marsTime, null, newSol, true);
     }
 }

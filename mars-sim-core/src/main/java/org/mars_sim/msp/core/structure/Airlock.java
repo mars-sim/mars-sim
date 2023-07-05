@@ -27,7 +27,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -146,7 +147,7 @@ public abstract class Airlock implements Serializable {
 
     protected static UnitManager unitManager;
     protected static MarsSurface marsSurface;
-    protected static MarsClock marsClock;
+    private static MasterClock clock;
 
 	/**
 	 * Constructs an airlock object for a unit.
@@ -183,7 +184,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public boolean hasReservation(int personInt) {
 		if (reservationMap.containsKey(personInt)) {
-			int msol = marsClock.getMillisolInt();
+			int msol = clock.getMarsTime().getMillisolInt();
 			int lastMsol = reservationMap.get(personInt);
 			int diff = 0;
 			if (lastMsol > msol)
@@ -233,10 +234,11 @@ public abstract class Airlock implements Serializable {
 	 * @return true if the id can be added or is already in reservation
 	 */
 	public boolean addReservation(int personInt) {
+		MarsTime now = clock.getMarsTime();
 		if (!reservationMap.containsKey(personInt)) {
 			// Test if the reservation map already has 4 people
 			if (reservationMap.size() <= MAX_RESERVED) {
-				int msol = marsClock.getMillisolInt();
+				int msol = now.getMillisolInt();
 				reservationMap.put(personInt, msol);
 				return true;
 			}
@@ -244,7 +246,7 @@ public abstract class Airlock implements Serializable {
 				return false;
 		}
 		else {
-			int msol = marsClock.getMillisolInt();
+			int msol = now.getMillisolInt();
 			int lastMsol = reservationMap.get(personInt);
 			int diff = 0;
 			if (lastMsol > msol)
@@ -1175,10 +1177,10 @@ public abstract class Airlock implements Serializable {
 	 * @param um {@link UnitManager}
 	 * @param ms {@link MarsSurface}
 	 */
-	public static void initializeInstances(UnitManager um, MarsSurface ms, MarsClock mc) {
+	public static void initializeInstances(UnitManager um, MarsSurface ms, MasterClock masterClock) {
 		unitManager = um;
 		marsSurface = ms;
-		marsClock = mc;
+		clock = masterClock;
 	}
 
 	/**
@@ -1192,8 +1194,5 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor.clear();
 		awaitingOuterDoor = null;
 		airlockState = null;
-		unitManager = null;
-	    marsSurface = null;
-	    marsClock = null;
 	}
 }

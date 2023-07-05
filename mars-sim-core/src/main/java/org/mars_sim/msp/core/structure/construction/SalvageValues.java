@@ -25,7 +25,8 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Calculates values for salvaging buildings at a settlement.
@@ -43,11 +44,11 @@ implements Serializable {
 	// Data members
 	private Settlement settlement;
 	private Map<Integer, Double> settlementSalvageValueCache;
-	private MarsClock settlementSalvageValueCacheTime;
+	private MarsTime settlementSalvageValueCacheTime;
 
 	private static UnitManager unitManager;
 	
-	private static MarsClock marsClock;
+	private static MasterClock clock;
 
 	/**
 	 * Constructor.
@@ -83,13 +84,13 @@ implements Serializable {
 	 * @throws Exception if error determining profit.
 	 */
 	public double getSettlementSalvageProfit(int constructionSkill) {
-
+		MarsTime now = clock.getMarsTime();
 		if ((settlementSalvageValueCacheTime == null) || 
-				(MarsClock.getTimeDiff(marsClock, settlementSalvageValueCacheTime) > 1000D)) {
+				(now.getTimeDiff(settlementSalvageValueCacheTime) > 1000D)) {
 			if (settlementSalvageValueCache == null) 
 				settlementSalvageValueCache = new HashMap<>();
 			settlementSalvageValueCache.clear();
-			settlementSalvageValueCacheTime = new MarsClock(marsClock);
+			settlementSalvageValueCacheTime = now;
 		}
 
 		if (!settlementSalvageValueCache.containsKey(constructionSkill)) {
@@ -361,9 +362,9 @@ implements Serializable {
 	 * 
 	 * @param u {@link UnitManager}
 	 */
-	public static void initializeInstances(UnitManager u, MarsClock mc) {
+	public static void initializeInstances(UnitManager u, MasterClock masterClock) {
 		unitManager = u;
-		marsClock = mc;
+		clock = masterClock;
 	}
 	
 	/**

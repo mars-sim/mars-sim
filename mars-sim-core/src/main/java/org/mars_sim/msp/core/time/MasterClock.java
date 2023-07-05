@@ -114,7 +114,7 @@ public class MasterClock implements Serializable {
 	/** The Martian Clock. */
 	private MarsTime marsTime;
 	/** The Martian Clock. */
-	private MarsClock marsClock;
+	//private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsTime initialMarsTime;
 	/** The Earth Clock. */
@@ -135,7 +135,6 @@ public class MasterClock implements Serializable {
 	public MasterClock(int userTimeRatio) {
 	
 		// Create a martian clock
-		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 		marsTime = MarsTimeFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
@@ -184,15 +183,6 @@ public class MasterClock implements Serializable {
 		// Re-evaluate the optimal width of a pulse
 		optMilliSolPerPulse = minMilliSolPerPulse 
 				+ ((maxMilliSolPerPulse - minMilliSolPerPulse) * desiredTR / MAX_TIME_RATIO);
-	}
-	
-	/**
-	 * Returns the Martian clock.
-	 *
-	 * @return Martian clock instance
-	 */
-	public MarsClock getMarsClock() {
-		return marsClock;
 	}
 
 	/**
@@ -541,7 +531,6 @@ public class MasterClock implements Serializable {
 					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
 
 					// Add time pulse to Mars clock.
-					marsClock.addTime(lastPulseTime);
 					marsTime = marsTime.addTime(lastPulseTime);
 
 					// Run the clock listener tasks that are in other package
@@ -688,7 +677,7 @@ public class MasterClock implements Serializable {
 	 */
 	private void fireClockPulse(double time) {
 
-		int currentIntMillisol = marsClock.getMillisolInt();
+		int currentIntMillisol = marsTime.getMillisolInt();
 		// Checks if this pulse starts a new integer millisol
 		boolean isNewIntMillisol = lastIntMillisol != currentIntMillisol;
 		if (isNewIntMillisol) {
@@ -696,7 +685,7 @@ public class MasterClock implements Serializable {
 		}
 	
 		// Identify if it's a new Sol
-		int currentSol = marsClock.getMissionSol();
+		int currentSol = marsTime.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
 		lastSol = currentSol;
 
@@ -709,7 +698,7 @@ public class MasterClock implements Serializable {
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
 
-		currentPulse = new ClockPulse(newPulseId, time, marsClock, marsTime, this, isNewSol, isNewIntMillisol);
+		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, isNewSol, isNewIntMillisol);
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
 
@@ -977,7 +966,6 @@ public class MasterClock implements Serializable {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		marsClock = null;
 		initialMarsTime = null;
 		uptimer = null;
 		clockThreadTask = null;

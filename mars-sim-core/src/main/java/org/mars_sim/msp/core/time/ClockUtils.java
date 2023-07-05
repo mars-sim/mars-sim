@@ -31,16 +31,6 @@ public class ClockUtils implements Serializable {
 	private static Map<Integer, String> map = new HashMap<>();
 
 	/**
-	 * Returns a date time string in orbit-month-sol format
-	 *
-	 * @param missionSol the sol since the start of the sim
-	 * @return a date time string
-	 */
-	public static String convertMissionSol2Date(int missionSol) {
-		return MarsClockFormat.getDateString(new MarsClock(missionSol));
-	}
-
-	/**
 	 * Returns a date time string in HHh MMm SS.SSs format
 	 *
 	 * @param ratio The time ratio

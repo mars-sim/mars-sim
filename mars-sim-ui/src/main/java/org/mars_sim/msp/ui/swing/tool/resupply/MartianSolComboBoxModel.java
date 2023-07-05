@@ -8,7 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTimeFormat;
 
 /**
  * A combo box model for Martian sols.
@@ -31,7 +31,7 @@ extends DefaultComboBoxModel<Integer> {
 	 * @param orbit {@link Integer} the Martian orbit number.
 	 */
 	public MartianSolComboBoxModel(int month, int orbit) {
-		maxSolNum = MarsClockFormat.getSolsInMonth(month, orbit);
+		maxSolNum = MarsTimeFormat.getSolsInMonth(month, orbit);
 		for (int x = 1; x <= maxSolNum; x++) {
 			addElement(x);
 		}
@@ -44,7 +44,7 @@ extends DefaultComboBoxModel<Integer> {
 	 * @param orbit the Martian orbit number.
 	 */
 	public void updateSolNumber(int month, int orbit) {
-		int newMaxSolNum = MarsClockFormat.getSolsInMonth(month, orbit);
+		int newMaxSolNum = MarsTimeFormat.getSolsInMonth(month, orbit);
 		if (newMaxSolNum != maxSolNum) {
 			int oldSelectedSol = (Integer) getSelectedItem();
 
