@@ -126,7 +126,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	public static final int MAP_BOX_WIDTH = 600;
+	public static final int MAP_BOX_WIDTH = 512;
 
 	private static final int HEIGHT_STATUS_BAR = 16;
 

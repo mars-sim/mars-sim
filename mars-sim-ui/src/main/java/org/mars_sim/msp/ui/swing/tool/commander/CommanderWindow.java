@@ -66,7 +66,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
-import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 
@@ -185,7 +184,7 @@ public class CommanderWindow extends ToolWindow {
 		createSafetyPanel();
 		createSciencePanel();
 
-		setSize(new Dimension(640, 640));
+		setSize(new Dimension(720, 512));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -341,16 +340,18 @@ public class CommanderWindow extends ToolWindow {
 		createTaskQueueList(midPanel);
 
 		// Create the log book panel
-		createLogBookPanel(southPanel);
+		createLogBookPanel(midPanel);
 	}
 
 	private void createEVAOVerride(JPanel panel) {
 		// Create override panel.
 		JPanel overridePanel = new JPanel(new GridLayout(1, 2));//FlowLayout(FlowLayout.CENTER));
+		overridePanel.setAlignmentX(CENTER_ALIGNMENT);		
 		panel.add(overridePanel, BorderLayout.NORTH);
 
 		// Create DIG_LOCAL_REGOLITH override check box.
 		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith");
+		overrideDigLocalRegolithCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalRegolithCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -362,6 +363,7 @@ public class CommanderWindow extends ToolWindow {
 		
 		// Create DIG_LOCAL_ICE override check box.
 		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice");
+		overrideDigLocalIceCB.setAlignmentX(CENTER_ALIGNMENT);
 		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
 		overrideDigLocalIceCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -462,16 +464,16 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private void createTaskQueueList(JPanel panel) {
 
-	    JLabel label = new JLabel("Task Queue");
-		label.setUI(new VerticalLabelUI(false));
+	    JLabel label = new JLabel("Task Queue", JLabel.CENTER);
+//		label.setUI(new VerticalLabelUI(false));
 		StyleManager.applySubHeading(label);
 		label.setBorder(new MarsPanelBorder());
 
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
 	    taskQueuePanel.add(label, BorderLayout.NORTH);
 
-	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		queueListPanel.add(taskQueuePanel);
+	    JPanel queueListPanel = new JPanel(new BorderLayout());//FlowLayout(FlowLayout.CENTER));
+		queueListPanel.add(taskQueuePanel, BorderLayout.NORTH);
 
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
@@ -490,9 +492,9 @@ public class CommanderWindow extends ToolWindow {
 		        }
 		});
 
-		queueListPanel.add(listScrollPanel);
+		queueListPanel.add(listScrollPanel, BorderLayout.CENTER);
 		
-		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+		panel.add(queueListPanel, BorderLayout.EAST); // 2nd add
 	}
 
 
@@ -503,8 +505,8 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private void createLogBookPanel(JPanel panel) {
 
-		JLabel logLabel = new JLabel("          Log Book          ");
-		logLabel.setUI(new VerticalLabelUI(false));
+		JLabel logLabel = new JLabel("Log Book", JLabel.CENTER);
+//		logLabel.setUI(new VerticalLabelUI(false));
 		StyleManager.applySubHeading(logLabel);
 		logLabel.setBorder(new MarsPanelBorder());
 
@@ -512,10 +514,10 @@ public class CommanderWindow extends ToolWindow {
 	    logPanel.add(logLabel, BorderLayout.NORTH);
 
 		// Create an text area
-		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    textPanel.add(logPanel);
+		JPanel textPanel = new JPanel(new BorderLayout()); //FlowLayout(FlowLayout.CENTER));
+	    textPanel.add(logPanel, BorderLayout.NORTH);
 
-		logBookTA = new JTextArea(10, 48);
+		logBookTA = new JTextArea(8, 25);
 		logBookTA.setOpaque(false);
 //		logBookTA.setBackground(new Color(0, 0, 0, 128));
 		logBookTA.setEditable(false);
@@ -526,7 +528,7 @@ public class CommanderWindow extends ToolWindow {
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
 
-		textPanel.add(scrollTextArea);
+		textPanel.add(scrollTextArea, BorderLayout.CENTER);
 		
 	    panel.add(textPanel, BorderLayout.CENTER);
 	}
