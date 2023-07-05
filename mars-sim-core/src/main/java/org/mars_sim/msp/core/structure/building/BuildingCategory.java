@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 public enum BuildingCategory {
 

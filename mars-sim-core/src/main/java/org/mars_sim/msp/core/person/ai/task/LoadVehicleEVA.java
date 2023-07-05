@@ -7,13 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 
+import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**

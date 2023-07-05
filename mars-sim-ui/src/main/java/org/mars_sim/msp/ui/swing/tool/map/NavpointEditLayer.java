@@ -18,8 +18,10 @@ import java.util.List;
 
 import javax.swing.Icon;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.IntPoint;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.IntPoint;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.tool.SimulationConstants;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 

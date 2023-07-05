@@ -9,9 +9,10 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.util.List;
 
-import org.mars_sim.msp.core.Direction;
+import org.mars.sim.mapdata.location.Direction;
+import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -19,7 +20,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Flyer class represents an airborne.

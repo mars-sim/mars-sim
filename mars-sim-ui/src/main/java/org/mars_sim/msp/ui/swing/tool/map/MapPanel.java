@@ -31,10 +31,12 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import org.mars_sim.mapdata.MapData;
-import org.mars_sim.mapdata.MapDataUtil;
-import org.mars_sim.mapdata.MapMetaData;
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.MapData;
+import org.mars.sim.mapdata.MapDataUtil;
+import org.mars.sim.mapdata.MapMetaData;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -51,8 +53,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public static final int MAP_BOX_HEIGHT = NavigatorWindow.MAP_BOX_WIDTH;
-	public static final int MAP_BOX_WIDTH = MAP_BOX_HEIGHT;
+	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
+	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH;
 	private static int dragx, dragy;
 
 	private transient ExecutorService executor;
@@ -514,8 +516,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		int msgWidth = messageMetrics.stringWidth(message);
 
 		// Determine message draw position
-		int x = (Map.DISPLAY_WIDTH - msgWidth) / 2;
-		int y = (Map.DISPLAY_HEIGHT + msgHeight) / 2;
+		int x = (Map.MAP_BOX_WIDTH - msgWidth) / 2;
+		int y = (Map.MAP_BOX_HEIGHT + msgHeight) / 2;
 
 		// Draw message
 		g.drawString(message, x, y);
@@ -526,8 +528,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.DISPLAY_WIDTH) - 1;
-		double yMap = y - (Map.DISPLAY_HEIGHT) - 1;
+		double xMap = x - (Map.MAP_BOX_WIDTH) - 1;
+		double yMap = y - (Map.MAP_BOX_HEIGHT) - 1;
 		
 		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
     }

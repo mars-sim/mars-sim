@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitIdentifer;
 import org.mars_sim.msp.core.UnitListener;

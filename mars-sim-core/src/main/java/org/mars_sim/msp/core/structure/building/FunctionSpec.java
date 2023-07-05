@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.LocalPosition;
 
 /**
  * Represents a specification of a Building Function in a generic fashion

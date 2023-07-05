@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.BoundedObject;
+import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars.sim.tools.Msg;
 
 /**
  * A building template information.

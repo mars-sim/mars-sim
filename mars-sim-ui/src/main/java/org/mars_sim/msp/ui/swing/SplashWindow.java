@@ -20,9 +20,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The SplashWindow class is a splash screen shown when the project is loading.

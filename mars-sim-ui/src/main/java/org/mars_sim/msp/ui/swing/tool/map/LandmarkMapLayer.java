@@ -13,8 +13,10 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.IntPoint;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.IntPoint;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.tool.SimulationConstants;

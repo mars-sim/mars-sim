@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;

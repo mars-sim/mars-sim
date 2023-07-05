@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;

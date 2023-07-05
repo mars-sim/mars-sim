@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.structure.building.connection;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**

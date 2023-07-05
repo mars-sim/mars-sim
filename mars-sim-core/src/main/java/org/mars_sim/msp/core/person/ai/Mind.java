@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.List;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -26,7 +27,6 @@ import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and

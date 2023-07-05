@@ -15,9 +15,9 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM

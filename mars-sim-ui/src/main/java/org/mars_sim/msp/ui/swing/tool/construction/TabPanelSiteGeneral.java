@@ -10,7 +10,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.ui.swing.ImageLoader;

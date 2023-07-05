@@ -22,7 +22,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.tool.SimulationConstants;
@@ -66,7 +68,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	public MineralMapLayer(Component displayComponent) {
 		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
-		mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
+		mineralConcentrationArray = new int[Map.MAP_BOX_WIDTH * Map.MAP_BOX_HEIGHT];
 		
 		mineralColors = getMineralColors();
 	}
@@ -113,9 +115,9 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 	
 			double mag = baseMap.getMagnification();
 				
-			for (int x = 0; x < Map.MAP_VIS_WIDTH; x = x + 2) {
+			for (int x = 0; x < Map.MAP_BOX_WIDTH; x = x + 2) {
 				
-				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y = y + 2) {
+				for (int y = 0; y < Map.MAP_BOX_HEIGHT; y = y + 2) {
 
 					// param (x - centerX) varies as x goes from 0 to MAP_VIS_WIDTH
 					// param (y - centerY) varies as y goes from 0 to MAP_VIS_HEIGHT
@@ -137,11 +139,11 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 								continue;
 							}
 							Color baseColor = mineralColors.get(mineralType);
-							int index = x + (y * Map.MAP_VIS_WIDTH);
+							int index = x + (y * Map.MAP_BOX_WIDTH);
 							addColorToMineralConcentrationArray(index, baseColor, concentration);
 							addColorToMineralConcentrationArray((index + 1), baseColor, concentration);
-							if (y < Map.MAP_VIS_HEIGHT - 1) {
-								int indexNextLine = x + ((y + 1) * Map.MAP_VIS_WIDTH);
+							if (y < Map.MAP_BOX_HEIGHT - 1) {
+								int indexNextLine = x + ((y + 1) * Map.MAP_BOX_WIDTH);
 								addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration);
 								addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
 										concentration);
@@ -152,8 +154,8 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			}
 
 			// Create mineral concentration image for map
-			mineralConcentrationMap = displayComponent.createImage(new MemoryImageSource(Map.MAP_VIS_WIDTH,
-					Map.MAP_VIS_HEIGHT, mineralConcentrationArray, 0, Map.MAP_VIS_WIDTH));
+			mineralConcentrationMap = displayComponent.createImage(new MemoryImageSource(Map.MAP_BOX_WIDTH,
+					Map.MAP_BOX_HEIGHT, mineralConcentrationArray, 0, Map.MAP_BOX_WIDTH));
 
 			MediaTracker mt = new MediaTracker(displayComponent);
 			mt.addImage(mineralConcentrationMap, 0);

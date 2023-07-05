@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.BoundedObject;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.BuildingTemplate;

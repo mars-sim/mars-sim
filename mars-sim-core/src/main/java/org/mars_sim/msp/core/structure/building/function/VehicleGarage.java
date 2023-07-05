@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;

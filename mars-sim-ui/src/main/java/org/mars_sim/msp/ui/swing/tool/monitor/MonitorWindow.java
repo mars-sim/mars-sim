@@ -27,11 +27,11 @@ import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;

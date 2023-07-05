@@ -27,8 +27,8 @@ import java.util.Properties;
 
 import javax.swing.JPanel;
 
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;

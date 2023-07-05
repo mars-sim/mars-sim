@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Logger;
 
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;

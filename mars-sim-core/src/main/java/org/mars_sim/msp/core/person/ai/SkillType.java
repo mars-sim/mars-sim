@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.util.Map;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 /**
  * The skill of a settler. A total of 19 types is available

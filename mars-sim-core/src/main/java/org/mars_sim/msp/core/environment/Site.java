@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 
 public class Site implements Serializable {
 

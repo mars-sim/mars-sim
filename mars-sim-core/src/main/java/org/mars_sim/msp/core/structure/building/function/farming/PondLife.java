@@ -13,7 +13,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 //import edu.colorado.simulations.*; // Provides Organism, Plant, Herbivore classes
 import java.util.Vector;
 
-import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars.sim.tools.util.RandomUtil;
 
 /******************************************************************************
 * The <CODE>PondLife</CODE> Java application runs a simple simulation that

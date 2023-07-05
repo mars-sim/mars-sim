@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.training;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 public enum TrainingType {
 

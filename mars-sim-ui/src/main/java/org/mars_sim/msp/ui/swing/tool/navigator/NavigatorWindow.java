@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -49,12 +48,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.mapdata.MapDataUtil;
-import org.mars_sim.mapdata.MapMetaData;
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.MapDataUtil;
+import org.mars.sim.mapdata.MapMetaData;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -74,7 +75,6 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
@@ -126,8 +126,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "mars";
 
-	public static final int MAP_BOX_WIDTH = 512;
-
+	public static final int MAP_BOX_WIDTH = Map.MAP_BOX_WIDTH; // Refers to Map's MAP_BOX_WIDTH in mars-sim-mapdata maven submodule
+	public static final int MAP_BOX_HEIGHT = Map.MAP_BOX_HEIGHT;
+	
 	private static final int HEIGHT_STATUS_BAR = 16;
 
 	private static final String WHITESPACE = " ";
@@ -170,7 +171,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel phiLabel;
 	private JLabel thetaLabel;
 
-	private Map<String, MapOrder> mapLayers = new HashMap<>();
+	private java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private List<Landmark> landmarks;
 	

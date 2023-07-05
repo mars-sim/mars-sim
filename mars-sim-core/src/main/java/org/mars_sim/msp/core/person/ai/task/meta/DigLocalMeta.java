@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -16,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Shift;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocal task.

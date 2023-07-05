@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Represents the current status of pending Radiation events.

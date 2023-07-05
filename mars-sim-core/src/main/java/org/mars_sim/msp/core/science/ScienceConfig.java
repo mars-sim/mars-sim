@@ -21,9 +21,9 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.tool.RandomUtil;
  
 public class ScienceConfig implements Serializable {
 

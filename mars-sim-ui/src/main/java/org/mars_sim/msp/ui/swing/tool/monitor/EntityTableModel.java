@@ -17,7 +17,7 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 /**
  * This provides a table modle implementation that allows each row to be mapped to

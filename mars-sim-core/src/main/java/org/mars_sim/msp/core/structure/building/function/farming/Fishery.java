@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HouseKeeping;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Fishery function that is responsible for aquatic farming

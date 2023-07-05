@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.resource;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 
 /**

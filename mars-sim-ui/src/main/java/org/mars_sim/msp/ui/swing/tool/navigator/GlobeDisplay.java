@@ -22,10 +22,10 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.mapdata.MapMetaData;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.MapMetaData;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.IntPoint;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;

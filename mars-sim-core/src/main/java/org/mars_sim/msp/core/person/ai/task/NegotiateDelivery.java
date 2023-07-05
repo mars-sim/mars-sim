@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Good;

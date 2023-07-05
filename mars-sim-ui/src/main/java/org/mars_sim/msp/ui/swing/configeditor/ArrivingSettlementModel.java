@@ -13,14 +13,14 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence

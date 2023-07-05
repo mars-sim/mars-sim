@@ -12,10 +12,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The CircadianClock class simulates the circadian rhythm of a person. It

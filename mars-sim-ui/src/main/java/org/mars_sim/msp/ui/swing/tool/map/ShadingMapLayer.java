@@ -12,7 +12,9 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.map.Map;
+import org.mars.sim.mapdata.map.MapLayer;
 import org.mars_sim.msp.core.tool.SimulationConstants;
 
 /**
@@ -52,7 +54,7 @@ public class ShadingMapLayer implements MapLayer, SimulationConstants {
         if (sunlight < 0.85) {	        
         	int opacity = LIGHT_THRESHOLD - sunlightInt;
             g2d.setColor(new Color(5, 0, 0, opacity)); //(0, 0, 0, 196));
-            g2d.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
+            g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
 		}
 	}
 }

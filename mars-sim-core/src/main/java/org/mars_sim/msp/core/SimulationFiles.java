@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.mars_sim.msp.common.FileLocator;
+import org.mars.sim.mapdata.common.FileLocator;
 
 /**
  * A singleton that controls where the simulation files reside on the file system.

@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.mission.predefined;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.Direction;
 import org.mars_sim.msp.core.mission.MissionStep;
 import org.mars_sim.msp.core.mission.MissionTravelStep;
 import org.mars_sim.msp.core.mission.MissionVehicleProject;

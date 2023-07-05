@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;

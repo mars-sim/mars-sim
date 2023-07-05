@@ -16,7 +16,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import org.mars_sim.msp.core.Direction;
+import org.mars.sim.mapdata.location.Direction;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 

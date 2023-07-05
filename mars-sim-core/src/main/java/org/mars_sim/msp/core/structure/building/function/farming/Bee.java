@@ -9,9 +9,9 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class Bee
 implements Serializable {

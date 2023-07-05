@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;

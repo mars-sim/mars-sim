@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Iterator;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -15,7 +16,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The PowerStorage class is a building function depicting the interworking of a grid battery for energy storage.

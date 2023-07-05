@@ -10,12 +10,12 @@ package org.mars_sim.msp.core.person.ai.fav;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class Favorite implements Serializable {
 

@@ -26,6 +26,7 @@ package org.mars_sim.msp.core.tool;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mars.sim.tools.util.RandomUtil;
 
 /**
  * <p>Generates random {@code String}s.</p>

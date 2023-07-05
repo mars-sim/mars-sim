@@ -3,7 +3,7 @@ package org.mars_sim.msp.core.structure;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;

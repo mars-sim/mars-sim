@@ -42,9 +42,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mars.sim.console.InteractiveTerm;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.SimulationListener;

@@ -33,7 +33,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 import org.mars_sim.msp.core.reportingAuthority.MissionCapability;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;

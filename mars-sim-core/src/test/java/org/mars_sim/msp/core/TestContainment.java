@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core;
 
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;

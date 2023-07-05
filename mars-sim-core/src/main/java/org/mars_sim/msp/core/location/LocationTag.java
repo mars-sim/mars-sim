@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.location;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;

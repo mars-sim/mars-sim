@@ -6,7 +6,7 @@ import java.nio.file.Files;
 
 import org.junit.After;
 import org.junit.Before;
-import org.mars_sim.msp.common.FileLocator;
+import org.mars.sim.mapdata.common.FileLocator;
 
 import junit.framework.TestCase;
 

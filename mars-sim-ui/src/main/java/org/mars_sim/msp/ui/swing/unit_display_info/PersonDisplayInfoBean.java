@@ -9,10 +9,10 @@ package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import javax.swing.Icon;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 

@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ReturnLightUtilityVehicle;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;

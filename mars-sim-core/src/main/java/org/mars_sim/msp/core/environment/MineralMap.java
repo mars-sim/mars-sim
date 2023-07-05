@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.environment;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 
 /**
  * Interface for mineral maps of Mars.

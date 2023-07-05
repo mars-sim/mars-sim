@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 public enum PlanType {
 

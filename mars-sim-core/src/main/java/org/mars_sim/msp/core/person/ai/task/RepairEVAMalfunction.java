@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.LocalBoundedObject;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;

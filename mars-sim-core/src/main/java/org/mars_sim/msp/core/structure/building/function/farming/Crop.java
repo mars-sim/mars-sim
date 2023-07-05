@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -22,7 +23,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.

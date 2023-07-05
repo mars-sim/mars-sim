@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core;
 
+import org.mars.sim.tools.Msg;
+
 public enum UnitType {
 
 	OUTER_SPACE		("UnitType.outerSpace"),

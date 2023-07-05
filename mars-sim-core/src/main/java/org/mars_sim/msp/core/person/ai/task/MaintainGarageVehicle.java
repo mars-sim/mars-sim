@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.ai.SkillType;

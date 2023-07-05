@@ -9,9 +9,9 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**

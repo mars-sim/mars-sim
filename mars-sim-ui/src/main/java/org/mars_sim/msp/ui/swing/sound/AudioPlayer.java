@@ -17,11 +17,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 

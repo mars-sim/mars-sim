@@ -14,8 +14,8 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Entity;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;

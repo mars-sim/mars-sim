@@ -2,7 +2,7 @@ package org.mars_sim.msp.core.structure.building.connection;
 
 import java.util.List;
 
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 
 import junit.framework.TestCase;

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.UnitSet;

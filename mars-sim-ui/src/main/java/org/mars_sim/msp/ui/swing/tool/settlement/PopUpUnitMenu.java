@@ -28,8 +28,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;

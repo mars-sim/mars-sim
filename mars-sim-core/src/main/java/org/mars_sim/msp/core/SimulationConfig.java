@@ -35,7 +35,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.mars_sim.msp.common.FileLocator;
+import org.mars.sim.mapdata.common.FileLocator;
 import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
 import org.mars_sim.msp.core.food.FoodProductionConfig;

@@ -31,8 +31,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.IntPoint;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.IntPoint;
+import org.mars.sim.mapdata.map.Map;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -41,7 +42,6 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
@@ -370,8 +370,8 @@ public class MiningSitePanel extends WizardPanel {
 
 		Coordinates center = getCenterCoords();
 		if (center != null) {
-			int xValue = xLoc - (Map.MAP_VIS_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
-			int yValue = yLoc - (Map.MAP_VIS_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
+			int xValue = xLoc - (Map.MAP_BOX_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
+			int yValue = yLoc - (Map.MAP_BOX_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
 			Coordinates clickedPosition = center.convertRectToSpherical((double) xValue, (double) yValue,
 								mapPane.getMap().getScale());
 

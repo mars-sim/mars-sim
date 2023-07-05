@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Relation class models the relational connection of a person toward others.

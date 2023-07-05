@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.events;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 
 public enum HistoricalEventCategory {
 

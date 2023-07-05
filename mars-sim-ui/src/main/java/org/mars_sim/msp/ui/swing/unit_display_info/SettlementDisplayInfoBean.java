@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
-import org.mars_sim.mapdata.MapMetaData;
+import org.mars.sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;

@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;

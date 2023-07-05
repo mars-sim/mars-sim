@@ -9,7 +9,7 @@ package org.mars.sim.console.chat.simcommand.unit;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 

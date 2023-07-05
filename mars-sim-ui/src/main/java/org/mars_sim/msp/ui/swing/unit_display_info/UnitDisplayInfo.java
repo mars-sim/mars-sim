@@ -12,7 +12,7 @@ import java.awt.Font;
 
 import javax.swing.Icon;
 
-import org.mars_sim.mapdata.MapMetaData;
+import org.mars.sim.mapdata.MapMetaData;
 import org.mars_sim.msp.core.Unit;
 
 /**

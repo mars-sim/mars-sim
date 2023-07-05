@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -16,7 +17,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class represents a Health problem being suffered by a Person. The class

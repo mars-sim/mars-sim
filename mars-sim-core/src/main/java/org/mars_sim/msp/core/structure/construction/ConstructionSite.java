@@ -13,10 +13,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.BoundedObject;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.LocalBoundedObject;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;

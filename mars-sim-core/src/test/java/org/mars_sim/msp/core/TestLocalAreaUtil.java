@@ -3,6 +3,7 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 
 import org.junit.Before;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;

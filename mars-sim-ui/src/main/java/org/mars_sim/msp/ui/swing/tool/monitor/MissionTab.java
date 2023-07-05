@@ -8,7 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.List;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 

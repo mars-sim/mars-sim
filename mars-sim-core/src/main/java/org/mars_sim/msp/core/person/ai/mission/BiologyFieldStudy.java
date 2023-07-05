@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.util.Task;

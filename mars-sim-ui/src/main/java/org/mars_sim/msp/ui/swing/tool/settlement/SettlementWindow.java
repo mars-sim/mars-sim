@@ -21,8 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
-import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.mapdata.location.LocalPosition;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;

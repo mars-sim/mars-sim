@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.BoundedObject;
-import org.mars_sim.msp.core.LocalPosition;
+import org.mars.sim.mapdata.location.BoundedObject;
+import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;

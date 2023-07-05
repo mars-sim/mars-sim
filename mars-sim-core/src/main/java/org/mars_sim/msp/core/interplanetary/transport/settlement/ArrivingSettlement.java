@@ -6,7 +6,8 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
 
-import org.mars_sim.msp.core.Coordinates;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -16,7 +17,6 @@ import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.time.MarsTime;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A new arriving settlement from Earth.

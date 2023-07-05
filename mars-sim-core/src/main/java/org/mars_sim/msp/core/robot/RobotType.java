@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.robot;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 public enum RobotType {

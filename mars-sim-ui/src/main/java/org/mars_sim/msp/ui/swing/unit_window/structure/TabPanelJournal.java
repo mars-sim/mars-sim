@@ -15,7 +15,7 @@ import java.net.URL;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.mars_sim.msp.core.Msg;
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

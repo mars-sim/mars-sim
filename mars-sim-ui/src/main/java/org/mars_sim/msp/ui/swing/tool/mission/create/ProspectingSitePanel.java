@@ -7,11 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.IntPoint;
+import org.mars.sim.mapdata.location.Coordinates;
+import org.mars.sim.mapdata.location.IntPoint;
+import org.mars.sim.mapdata.map.*;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.map.*;
+import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
+import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
+import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
+import org.mars_sim.msp.ui.swing.tool.map.NavpointEditLayer;
+import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
