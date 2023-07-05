@@ -380,8 +380,11 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
+		SalvageValues.initializeInstances(unitManager, masterClock);
+
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, masterClock);
+		ResourceProcess.initializeInstances(masterClock);
 
 		eventManager = new HistoricalEventManager(masterClock);
 		BuildingManager.initializeInstances(simulationConfig, masterClock, eventManager, unitManager);
