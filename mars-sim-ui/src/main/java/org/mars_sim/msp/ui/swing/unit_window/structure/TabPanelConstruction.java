@@ -87,6 +87,7 @@ extends TabPanel {
 
 	/**
 	 * Sets the settlement construction override.
+	 * 
 	 * @param constructionOverride true if construction/salvage building missions are overridden.
 	 */
 	private void setConstructionOverride(boolean constructionOverride) {

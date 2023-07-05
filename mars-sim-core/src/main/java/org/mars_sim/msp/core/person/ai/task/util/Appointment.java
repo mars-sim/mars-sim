@@ -24,20 +24,37 @@ public class Appointment implements Serializable {
 	
 	private int millisolInt = 0;
 	
+	private int duration = 0;
+	
 	private Person person = null;
 	
 	private Building building = null;
 	
-	private Task task = null;
+	private String taskName = null;
 	
-	public Appointment(Person person, int sol, int millisolInt, Building building, Task task, Set<Person> group) {
+	public Appointment(Person person, int sol, int millisolInt, int duration, Building building, String taskName, Set<Person> group) {
 		this.person = person;
 		this.sol = sol;	
 		this.millisolInt = millisolInt;
+		this.duration = duration;
 		this.building = building;
-		this.task = task;
+		this.taskName = taskName;
 		this.group = group;
-		
 	}
 	
+	public int getSol() {
+		return sol;
+	}
+	
+	public int getMillisolInt() {
+		return millisolInt;
+	}
+	
+	public int getDuration() {
+		return duration;
+	}
+	
+	public String getTaskName() {
+		return taskName;
+	}
 }

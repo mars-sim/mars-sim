@@ -85,7 +85,7 @@ public class PrescribeMedication extends Task {
             	walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
+            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false, -1, -1);
             }
             else
             	endTask();
@@ -119,7 +119,7 @@ public class PrescribeMedication extends Task {
             	walkToActivitySpotInBuilding(robot.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
+            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false, -1, -1);
             }
             else
             	endTask();

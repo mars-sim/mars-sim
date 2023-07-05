@@ -68,7 +68,7 @@ public class Sleep extends Task {
 	private boolean arrived = false;
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 *
 	 * @param person the person to perform the task
 	 */
@@ -103,6 +103,28 @@ public class Sleep extends Task {
 		}
 	}
 
+	/**
+	 * Constructor 2.
+	 *
+	 * @param person the person to perform the task
+	 * @param alarmTime
+	 */
+	public Sleep(Person person, int duration) {
+		super(NAME, person, false, false, STRESS_MODIFIER, duration);
+
+		if (person.isOutside()) {
+			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
+
+			endTask();
+		}
+
+		else {
+			// Initialize phase
+			addPhase(SLEEPING);
+			setPhase(SLEEPING);
+		}
+	}
+	
 	/**
 	 * Refers the person to sleep in a bed inside the EVA airlock
 	 *

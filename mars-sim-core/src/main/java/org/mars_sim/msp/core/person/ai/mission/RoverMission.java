@@ -629,7 +629,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 					// Note: how to force the person to receive some form of medical treatment ?
 		
-    				p.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
+    				p.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false, 0, -1);
 
 				}
 				else {

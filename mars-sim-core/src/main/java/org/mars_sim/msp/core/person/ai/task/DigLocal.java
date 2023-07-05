@@ -84,9 +84,9 @@ public abstract class DigLocal extends EVAOperation {
 	 * @param person the person performing the task.
 	 */
 	public DigLocal(String name, TaskPhase collectionPhase, int resourceID,
-					EquipmentType containerType, Person person) {
+					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, false, 100, SkillType.AREOLOGY);
+        super(name, person, false, duration, SkillType.AREOLOGY);
 
         addAdditionSkill(SkillType.PROSPECTING);
         

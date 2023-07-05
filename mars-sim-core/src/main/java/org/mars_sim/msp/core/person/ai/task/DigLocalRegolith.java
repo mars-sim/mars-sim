@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2023-06-07
+ * @date 2023-07-04
  * @author Scott Davis
  */
 
@@ -23,9 +23,11 @@ extends DigLocal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = DigLocalRegolith.class.getSimpleName();
 	
 	/** Task name */
-    private static final String NAME = Msg.getString(
+    public static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
 
     /** Task phases. */
@@ -33,14 +35,29 @@ extends DigLocal {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * 
 	 * @param person the person performing the task.
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
-        	  EquipmentType.WHEELBARROW, person);
+        	  EquipmentType.WHEELBARROW, person, 150);
+        if (!isDone()) {
+        	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
+        }
+    }
+	
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param person the person performing the task.
+	 * @param duration
+	 */
+	public DigLocalRegolith(Person person, int duration) {
+        // Use EVAOperation constructor.
+        super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
+        	  EquipmentType.WHEELBARROW, person, duration);
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
         }

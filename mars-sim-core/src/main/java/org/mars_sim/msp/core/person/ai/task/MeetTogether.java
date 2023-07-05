@@ -218,7 +218,7 @@ public class MeetTogether extends Task {
     	
     	if (invitee != null && !(invitee.getMind().getTaskManager().getTask() instanceof MeetTogether)) {
 	    	
-	    	boolean willMeet = invitee.getMind().getTaskManager().addAPendingTask(MeetTogether.SIMPLE_NAME, false);
+	    	boolean willMeet = invitee.getMind().getTaskManager().addAPendingTask(MeetTogether.SIMPLE_NAME, false, 0, (int)getDuration());
 	    	if (!willMeet) {
 	    		clearTask();
 	    		return time * .75;

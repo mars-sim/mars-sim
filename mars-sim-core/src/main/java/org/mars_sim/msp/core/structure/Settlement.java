@@ -59,7 +59,9 @@ import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.util.Appointment;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -113,6 +115,9 @@ public class Settlement extends Structure implements Temporal,
 	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(Type.CONFIGURATION,
 																	"Active Missions");
 
+	private static final int START_TIME = 400;
+	private static final int DURATION = 150;
+	
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -880,6 +885,8 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
+		int sol = pulse.getMarsTime().getMissionSol();
+
 		// Calls other time passings
 		futureEvents.timePassing(pulse);
 		powerGrid.timePassing(pulse);
@@ -931,19 +938,21 @@ public class Settlement extends Structure implements Temporal,
 						+ " was the very first exploration site chosen to be analyzed and explored.");
 			
 			checkMineralMapImprovement();
+			
+			setAppointedTask(sol);
 		}
 		
-		int rand = RandomUtil.getRandomInt(100);
-		
+//		int rand = RandomUtil.getRandomInt(100);
+	
 		// At the beginnning of a new sol,
 		// there's a chance a new site is automatically discovered
-		if (pulse.isNewSol() && rand < 5) {
+		if (pulse.isNewSol()) {
 			
 			// Perform the end of day tasks
-			performEndOfDayTasks(pulse.getMarsTime());
-			
-			int sol = pulse.getMarsTime().getMissionSol();
-			
+			performEndOfDayTasks(pulse.getMarsTime());	
+
+			setAppointedTask(sol);
+
 			int range = (int) getVehicleWithMinimalRange().getRange();
 			
 			int skill = 0;
@@ -978,6 +987,21 @@ public class Settlement extends Structure implements Temporal,
 		return true;
 	}
 
+	public void setAppointedTask(int sol) {
+		for (Person p: citizens) {
+			if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+					|| p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST
+					|| p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
+					) {
+				Appointment ap = new Appointment(p, sol, START_TIME, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
+				p.getScheduleManager().setAppointment(ap);
+				logger.info(this, p, "Just set up an appointed task '" + DigLocalRegolith.SIMPLE_NAME 
+						+ "' on Sol " + sol + ":" + START_TIME + " for " + DURATION + " millisols.");
+			}
+		}
+	}
+	
 	/**
 	 * Checks and prints the average mineral map improvement made.
 	 */

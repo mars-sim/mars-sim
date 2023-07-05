@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -48,6 +49,11 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	if (rate <= 0D) {
     		return 0D;
     	}
+    	
+        // Check if settlement has DIG_LOCAL_REGOLITH override flag set.
+        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH)) {
+        	return 0;
+        }
     	
         double settlementCap = settlement.getAmountResourceRemainingCapacity(ResourceUtil.regolithID);
         if (settlementCap < THRESHOLD_AMOUNT) {

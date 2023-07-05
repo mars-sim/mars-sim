@@ -742,10 +742,34 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Adds a pending task if it is not in the pendingTask list yet.
 	 *
 	 * @param task
-	 * @param allowDuplicate
+	 * @param countDownTime
+	 * @param duration
 	 * @return
 	 */
-	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
+	public boolean addAPendingTask(String taskName, int countDownTime, int duration) {
+		return addAPendingTask(taskName, false, countDownTime, duration);
+	}
+	
+	/**
+	 * Adds a pending task if it is not in the pendingTask list yet.
+	 *
+	 * @param task				the pending task 
+	 * @param allowDuplicate	Can this pending task be repeated in the queue
+	 * @param countDownTime 	the count down time for executing the new task
+	 * @param duration 			the duration of the new task
+	 * @return
+	 */
+	public boolean addAPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
+		
+		if (countDownTime >= 0) {
+			double oldDuration = currentTask.getDuration();
+			double newDuration = countDownTime + currentTask.getTimeCompleted();
+			currentTask.setDuration(newDuration);
+			
+			logger.info(worker, "Updating current task '" + currentTask.getName() 
+				+ "''s duration: " + oldDuration + " -> " + Math.round(newDuration * 10.0)/10.0 + "'.");
+		}
+		
 		// Potential ClassCast but only temp. measure
 		FactoryMetaTask mt = (FactoryMetaTask) MetaTaskUtil.getMetaTask(taskName);
 		if (mt == null) {
@@ -753,7 +777,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 			return false;
 		}
 
-		BasicTaskJob task = new BasicTaskJob(mt, 0);
+		BasicTaskJob task = new BasicTaskJob(mt, 0, duration);
 		return addPendingTask(task, allowDuplicate);
 	}
 	
@@ -767,7 +791,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a pending task order of '" + task.getDescription() + "'.");
+			logger.info(worker, 20_000L, "Given a pending/appointed task '" + task.getDescription() + "'.");
 			return true;
 		}
 		return false;
@@ -780,7 +804,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
-		logger.info(worker, "Removed the pending task order of '" + task + "'.");
+		logger.info(worker, "Removed the pending/appointed task '" + task + "'.");
 	}
 
 	/**

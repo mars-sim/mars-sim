@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.person.ai.task.util.BasicTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -110,6 +111,12 @@ public class CommanderWindow extends ToolWindow {
 
 	private JPanel policyMainPanel;
 
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalRegolithCB;
+	
+	/** Check box for overriding EVA. */
+	private JCheckBox overrideDigLocalIceCB;
+	
 	private JScrollPane listScrollPanel;
 
 	private JRadioButton r0;
@@ -323,7 +330,7 @@ public class CommanderWindow extends ToolWindow {
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		centerPanel.add(southPanel, BorderLayout.SOUTH);
-
+		
 		// Create the person combo box
 		createPersonCombobox(topBorderPanel);
 
@@ -337,6 +344,33 @@ public class CommanderWindow extends ToolWindow {
 		createLogBookPanel(southPanel);
 	}
 
+	private void createEVAOVerride(JPanel panel) {
+		// Create override panel.
+		JPanel overridePanel = new JPanel(new GridLayout(1, 2));//FlowLayout(FlowLayout.CENTER));
+		panel.add(overridePanel, BorderLayout.NORTH);
+
+		// Create DIG_LOCAL_REGOLITH override check box.
+		overrideDigLocalRegolithCB = new JCheckBox("Override Digging Regolith");
+		overrideDigLocalRegolithCB.setToolTipText("Can only execute this task as a planned EVA"); 
+		overrideDigLocalRegolithCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				settlement.setProcessOverride(OverrideType.DIG_LOCAL_REGOLITH, overrideDigLocalRegolithCB.isSelected());
+			}
+		});
+		overrideDigLocalRegolithCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_REGOLITH));
+		overridePanel.add(overrideDigLocalRegolithCB);
+		
+		// Create DIG_LOCAL_ICE override check box.
+		overrideDigLocalIceCB = new JCheckBox("Override Digging Ice");
+		overrideDigLocalIceCB.setToolTipText("Can only execute this task as a planned EVA"); 
+		overrideDigLocalIceCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				settlement.setProcessOverride(OverrideType.DIG_LOCAL_ICE, overrideDigLocalIceCB.isSelected());
+			}
+		});
+		overrideDigLocalIceCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE));
+		overridePanel.add(overrideDigLocalIceCB);
+	}
 	/**
 	 * Creates the person combo box.
 	 *
@@ -395,7 +429,7 @@ public class CommanderWindow extends ToolWindow {
 		addButton.addActionListener(e -> {
 				Person selected = (Person) personComboBox.getSelectedItem();
 				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
-				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D), true);
+				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D, -1), true);
 
 				logBookTA.append(masterClock.getMarsTime().getTruncatedDateTimeStamp()
 						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");
@@ -633,9 +667,12 @@ public class CommanderWindow extends ToolWindow {
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
 		panel.add(topPanel, BorderLayout.NORTH);
 
+		// Create the checkbox for dig local regolith and ice override
+		createEVAOVerride(topPanel);
+		
 		// Create a button panel
 		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
-		topPanel.add(buttonPanel);
+		topPanel.add(buttonPanel, BorderLayout.CENTER);
 
 		buttonPanel.setBorder(BorderFactory.createTitledBorder(" Pausing Interval"));
 		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");

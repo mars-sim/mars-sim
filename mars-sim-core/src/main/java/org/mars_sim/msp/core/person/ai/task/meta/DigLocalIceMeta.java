@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 
@@ -41,6 +42,7 @@ public class DigLocalIceMeta extends DigLocalMeta {
 
     @Override
     public double getProbability(Person person) {
+    	
     	if (!CollectionUtils.isSettlement(person.getCoordinates())) {
     		return 0;
     	}
@@ -50,6 +52,11 @@ public class DigLocalIceMeta extends DigLocalMeta {
     	if (rate <= 0D) {
     		return 0D;
     	}
+    	
+        // Check if settlement has DIG_LOCAL_ICE override flag set.
+        if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE)) {
+        	return 0;
+        }
     	
         double settlementCap = settlement.getAmountResourceRemainingCapacity(ResourceUtil.iceID);
         if (settlementCap < THRESHOLD_AMOUNT) {

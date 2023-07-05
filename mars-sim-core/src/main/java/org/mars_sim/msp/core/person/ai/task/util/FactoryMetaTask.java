@@ -30,12 +30,24 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * be implemented by the subclass.
 	 * 
 	 * @param person the person to perform the task.
+	 * @param duration
+	 * @return task instance.
+	 */
+	protected Task constructInstance(Person person, int duration) {
+		throw new UnsupportedOperationException("Can not create '" + getName() + "' for Person.");
+	}
+
+    /**
+	 * Constructs an instance of the associated task. Is a Factory method and should
+	 * be implemented by the subclass.
+	 * 
+	 * @param person the person to perform the task.
 	 * @return task instance.
 	 */
 	public Task constructInstance(Person person) {
-		throw new UnsupportedOperationException("Can not create " + getName() + " for Person.");
+		throw new UnsupportedOperationException("Can not create '" + getName() + "' for Person.");
 	}
-
+	
 	/**
 	 * Constructs an instance of the associated task. Is a Factory method and should
 	 * be implemented by the subclass.
@@ -78,7 +90,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Person person) {
-		return createTaskJob(getProbability(person));
+		return createTaskJob(getProbability(person), -1);
 	}
 
 	/**
@@ -88,7 +100,7 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * @return List of TasksJob specifications.
 	 */
 	public List<TaskJob> getTaskJobs(Robot robot) {
-		return createTaskJob(getProbability(robot));
+		return createTaskJob(getProbability(robot), -1);
 	}
 
 	
@@ -97,14 +109,14 @@ public abstract class FactoryMetaTask extends MetaTask {
 	 * 
 	 * @param score Score to the job to create.
 	 */
-	private List<TaskJob> createTaskJob(double score) {
+	private List<TaskJob> createTaskJob(double score, int duration) {
 		// This is to avoid a massive rework in the subclasses.
 		if (score <= 0) {
 			return null;
 		}
 
 		List<TaskJob> result = new ArrayList<>(1);
-		result.add(new BasicTaskJob(this, score));
+		result.add(new BasicTaskJob(this, score, duration));
 		return result;
 	}
 

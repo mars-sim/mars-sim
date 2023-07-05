@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalIce.java
- * @date 2023-06-07
+ * @date 2023-07-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -31,13 +31,29 @@ extends DigLocal {
             "Task.phase.collectIce")); //$NON-NLS-1$
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
+	 * 
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing the task.
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person); 
+        super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person, 150); 
+        if (!isDone()) {
+        	setCollectionRate(person.getAssociatedSettlement().getIceCollectionRate());
+        }
+	}
+	
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param person the person performing the task.
+	 * @param duration
+	 * @throws Exception if error constructing the task.
+	 */
+	public DigLocalIce(Person person, int duration) {
+        // Use EVAOperation constructor.
+        super(NAME, COLLECT_ICE, ResourceUtil.iceID, EquipmentType.BAG, person, duration); 
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getIceCollectionRate());
         }

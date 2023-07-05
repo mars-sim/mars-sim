@@ -49,9 +49,23 @@ public abstract class AbstractTaskJob implements TaskJob {
 
     /**
      * Default implementation throws an Unsupported operation exception.
+     * 
+	 * @param person the person to perform the task.
+	 * @return task instance.
      */
     @Override
     public Task createTask(Person person) {
+        throw new UnsupportedOperationException("Persons cannot do " + description);
+    }
+    
+    /**
+	 * Default implementation throws an Unsupported operation exception.
+	 * 
+	 * @param person the person to perform the task.
+	 * @param duration
+	 * @return task instance.
+	 */
+    public Task createTask(Person person, int duration) {
         throw new UnsupportedOperationException("Persons cannot do " + description);
     }
     
@@ -59,4 +73,5 @@ public abstract class AbstractTaskJob implements TaskJob {
     public String toString() {
         return getDescription();
     }
+
 }
