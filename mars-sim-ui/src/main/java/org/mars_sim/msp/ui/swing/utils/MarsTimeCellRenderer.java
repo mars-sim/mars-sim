@@ -12,8 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Simple table cell renderer that styles the values as Mars Clock according to the Stylemanager
@@ -22,7 +21,7 @@ import org.mars_sim.msp.core.time.MarsClockFormat;
 public class MarsTimeCellRenderer extends DefaultTableCellRenderer {
 
     /**
-     * Render a MarsClock value
+     * Render a MarsTime value
      */
     public MarsTimeCellRenderer() {
         setHorizontalAlignment( JLabel.RIGHT );
@@ -35,8 +34,8 @@ public class MarsTimeCellRenderer extends DefaultTableCellRenderer {
                 column);
 
         String contents = "";
-        if (value instanceof MarsClock mc) {
-            contents = MarsClockFormat.getTruncatedDateTimeStamp(mc);
+        if (value instanceof MarsTime mc) {
+            contents = mc.getTruncatedDateTimeStamp();
         }
         else if (value != null) {
             contents = value.toString();

@@ -24,7 +24,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -67,7 +67,7 @@ abstract class TableTab extends MonitorTab {
 		this.table.setDefaultRenderer(Double.class, DIGIT2_RENDERER);
 		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
 		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
-		this.table.setDefaultRenderer(MarsClock.class, TIME_RENDERER);
+		this.table.setDefaultRenderer(MarsTime.class, TIME_RENDERER);
 
 		// call it a click to display details button when user double clicks the table
 		table.addMouseListener(new MouseAdapter() {

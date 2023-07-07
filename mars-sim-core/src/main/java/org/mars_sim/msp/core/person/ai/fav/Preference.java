@@ -8,13 +8,8 @@
 package org.mars_sim.msp.core.person.ai.fav;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars.sim.tools.util.RandomUtil;
@@ -26,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Preference class determines the task preferences of a person.
@@ -36,25 +30,17 @@ public class Preference implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** A string list of Tasks. */
-	private List<String> taskList;
-	/** A map of priority scores for scheduled task. */
-	private Map<MetaTask, Integer> priorityMap;
 	/** A map of MetaTasks that can only be done once a day. */
 	private Map<MetaTask, Boolean> onceADayMap;
 	/** A map of MetaTasks that has been accomplished once a day. */
 	private Map<MetaTask, Boolean> taskAccomplishedMap;
 	/**  A string map of tasks and preference scores. */
 	private Map<String, Integer> scoreStringMap;
-	/**  A string map of future MetaTasks. */
-	private Map<MarsClock, MetaTask> futureTaskMap;
 	/**  A connection preference map. */
 	private Map<Connection, Integer> connectionMap;
 
 	/** The Person instance. */
 	private Person person;
-	/** The MarsClock instance. */
-	private static MarsClock marsClock;
 	
 	
 	/**
@@ -68,11 +54,8 @@ public class Preference implements Serializable {
 
 		// These lookups are all static in terms of the Person so they do not
 		// need to use the concurrent list/maps
-		taskList = new ArrayList<>();
 		scoreStringMap = new HashMap<>();
-		futureTaskMap = new HashMap<>();
 		taskAccomplishedMap = new HashMap<>();
-		priorityMap = new HashMap<>();
 		onceADayMap = new HashMap<>();
 		
 		connectionMap = new HashMap<>();
@@ -215,12 +198,6 @@ public class Preference implements Serializable {
 				scoreStringMap.put(s, result);
 			}
 		}
-
-		for (String key : scoreStringMap.keySet()) {
-			taskList.add(key);
-		}
-
-		Collections.sort(taskList);
 	}
 
 
@@ -238,39 +215,6 @@ public class Preference implements Serializable {
 		String s = getStringName(metaTask);
 		if (scoreStringMap.containsKey(s)) {
 			result = scoreStringMap.get(s);
-		}
-		
-		if (futureTaskMap.containsValue(metaTask) && (taskAccomplishedMap.get(metaTask) != null)
-				&& !taskAccomplishedMap.get(metaTask) && onceADayMap.get(metaTask)) {
-			// preference scores are not static. They are influenced by priority scores
-			result += obtainPrioritizedScore(metaTask);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Obtains the prioritized score of a meta task from its priority map.
-	 * 
-	 * @param metaTask
-	 * @return the prioritized score
-	 */
-	private int obtainPrioritizedScore(MetaTask metaTask) {
-		int result = 0;
-		// iterate over
-		Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
-		while (i.hasNext()) {
-			Entry<MarsClock, MetaTask> entry = i.next();
-			MarsClock sch_clock = entry.getKey();
-			MetaTask task = entry.getValue();
-			if (metaTask.equals(task)) {
-				int now = (int) marsClock.getTotalMillisols();
-				int sch = (int) sch_clock.getTotalMillisols();
-				if (now - sch > 0 && now - sch <= 5) {
-					// examine its timestamp down to within 5 millisols
-					result += priorityMap.get(task);
-				}
-			}
 		}
 
 		return result;
@@ -299,7 +243,6 @@ public class Preference implements Serializable {
 	 * @return true if it does
 	 */
 	public boolean isTaskDue(MetaTask mt) {
-		// MetaTask mt = convertTask2MetaTask(task);
 		if (taskAccomplishedMap.isEmpty()) {
 			// if it does not exist (either it is not scheduled or it have been
 			// accomplished),
@@ -323,13 +266,8 @@ public class Preference implements Serializable {
 		// if this accomplished meta task is once-a-day task, remove it.
 		if (value && onceADayMap.get(mt) != null && !onceADayMap.isEmpty())
 			if (onceADayMap.get(mt) != null && onceADayMap.get(mt)) {
-				for (MarsClock c : futureTaskMap.keySet()) {
-					if (futureTaskMap.get(c).equals(mt))
-						futureTaskMap.remove(c);
-				}
 				onceADayMap.remove(mt);
 				taskAccomplishedMap.remove(mt);
-				priorityMap.remove(mt);
 			} else
 				taskAccomplishedMap.put(mt, value);
 
@@ -339,15 +277,6 @@ public class Preference implements Serializable {
 		return scoreStringMap;
 	}
 
-	//TODO Don't need this really as it is the same for ALL People
-	public List<String> getTaskStringList() {
-		return taskList;
-	}
-
-	public int getConnectionProbability(Connection connection) {
-		return connectionMap.get(connection);
-	}
-	
 	public Connection getRandomConnection() {
 		return RandomUtil.getWeightedIntegerRandomObject(connectionMap);
 	}
@@ -357,12 +286,8 @@ public class Preference implements Serializable {
 	 */
 	public void destroy() {
 		person = null;
-		marsClock = null;
-		taskList = null;
-		priorityMap = null;
 		onceADayMap = null;
 		taskAccomplishedMap = null;
 		scoreStringMap = null;
-		futureTaskMap = null;
 	}
 }

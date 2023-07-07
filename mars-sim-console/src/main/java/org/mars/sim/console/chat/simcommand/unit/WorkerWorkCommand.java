@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /** 
  * What work in terms of Tasks is available for this Person to do
@@ -69,7 +69,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		else {
 			response.appendLabeledString("Context", tasks.getContext());
 
-			MarsClock cacheCreated = tasks.getCreatedOn();
+			MarsTime cacheCreated = tasks.getCreatedOn();
 			if (cacheCreated != null) {
 				response.appendLabeledString("Created On", cacheCreated.getDateTimeStamp());
 			}

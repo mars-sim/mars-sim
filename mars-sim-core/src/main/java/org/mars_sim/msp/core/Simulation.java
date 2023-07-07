@@ -574,9 +574,6 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
-
-		// Gets the MarsClock instance
-		//MarsClock marsClock = masterClock.getMarsClock();
 		
 		// Re-initialize the data logger
 		DataLogger.changeTime(masterClock.getMarsTime());

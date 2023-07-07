@@ -186,7 +186,7 @@ public class BotTaskManager extends TaskManager {
 		}
 		
 		// Reset taskProbCache and totalProbCache
-		TaskCache newCache = new TaskCache("Robot", marsClock);
+		TaskCache newCache = new TaskCache("Robot", getMarsTime());
 		
 		// Determine probabilities.
 		List<FactoryMetaTask> potentials = robotTasks.get(robot.getRobotType());

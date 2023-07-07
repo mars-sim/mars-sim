@@ -144,7 +144,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 
 		// Create new taskProbCache
-		TaskCache newCache = new TaskCache(shiftDesc, marsClock);
+		TaskCache newCache = new TaskCache(shiftDesc, getMarsTime());
 
 		// Determine probabilities.
 		for (FactoryMetaTask mt : mtList) {

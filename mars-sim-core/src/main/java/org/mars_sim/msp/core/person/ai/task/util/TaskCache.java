@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Class represents a set of TaskJob that can be used to select a new Task for a Work. 
@@ -20,7 +20,7 @@ public class TaskCache {
 	private List<TaskJob> tasks = new ArrayList<>();
     private double totalProb = 0;
     private String context;
-    private MarsClock createdOn;
+    private MarsTime createdOn;
     private TaskJob lastSelected;
 
     /**
@@ -30,10 +30,10 @@ public class TaskCache {
      * @param context Descriptive context of the purpose
      * @param createdOn If this is non-null then the cache works in transient mode.
      */
-    public TaskCache(String context, MarsClock createdOn) {
+    public TaskCache(String context, MarsTime createdOn) {
         this.context = context;
         if (createdOn != null) {
-            this.createdOn = new MarsClock(createdOn);
+            this.createdOn = createdOn;
         }
     }
 
@@ -56,7 +56,7 @@ public class TaskCache {
     /**
      * When was this cache instance created.
      */
-    public MarsClock getCreatedOn() {
+    public MarsTime getCreatedOn() {
         return createdOn;
     }
 

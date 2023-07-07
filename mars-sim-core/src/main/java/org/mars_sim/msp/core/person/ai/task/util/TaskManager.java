@@ -27,8 +27,8 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -115,7 +115,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/** Number of days to record Tack Activities. */
 	public static final int NUM_SOLS = 7;
 	
-	protected static MarsClock marsClock;
+	private static MasterClock master;
 
 	private static PrintWriter diagnosticFile = null;
 
@@ -161,7 +161,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	// THese are for metric capture
 	private static int totalRebuild = 0;
 	private static int reuseRebuild = 0;
-	private static Map<Settlement,MarsClock> metrics;
+	private static Map<Settlement,MarsTime> metrics;
 	
 
 	protected TaskManager(Unit worker) {
@@ -433,15 +433,16 @@ public abstract class TaskManager implements Serializable, Temporal {
 			metrics = new HashMap<>();
 		}
 		synchronized(metrics) {
-			MarsClock lastRebuild = metrics.get(scope);
+			MarsTime now = getMarsTime();
+			MarsTime lastRebuild = metrics.get(scope);
 			totalRebuild++;
 
 			// If time has not changed since last rebuild; count as a reuse
-			if ((lastRebuild != null) && lastRebuild.equals(marsClock)) {
+			if ((lastRebuild != null) && lastRebuild.equals(now)) {
 				reuseRebuild++;
 			}
 			else {
-				metrics.put(scope, new MarsClock(marsClock));
+				metrics.put(scope, now);
 			}
 
 			// LImit output
@@ -477,7 +478,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	private void outputCache(TaskCache current) {	
 		synchronized (diagnosticFile) {	
-			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
+			diagnosticFile.println(current.getCreatedOn().getDateTimeStamp());
 			diagnosticFile.println("Worker:" + worker.getName());
 			diagnosticFile.println(current.getContext());				
 			diagnosticFile.println("Total:" + current.getTotal());
@@ -642,8 +643,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
 		// ignore the cache
+		MarsTime now = getMarsTime();
 		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
-				|| (marsClock.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
+				|| (now.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
 			taskProbCache = rebuildTaskCache();
 			
 			// Comment out to stop capturing stats
@@ -729,6 +731,13 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	}
 	
+	/**
+	 * Get the current mars time.
+	 */
+	protected static MarsTime getMarsTime() {
+		return master.getMarsTime();
+	}
+
 	/**
 	 * Gets all pending tasks.
 	 *
@@ -843,6 +852,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		MetaTaskUtil.initialiseInstances(sim);
 		Task.initializeInstances(sim, conf.getPersonConfig());
+		master = sim.getMasterClock();
 	}
 	
 
