@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -56,8 +56,8 @@ public class Walk extends Task {
 	private static final double MIN_PULSE_TIME = 0.25;
 	static final double PERSON_WALKING_SPEED = 1D; // [kph].
 	static final double ROBOT_WALKING_SPEED = 0.25; // [kph].
-	static final double PERSON_WALKING_SPEED_PER_MILLISOL = PERSON_WALKING_SPEED * MarsClock.MILLISOLS_PER_HOUR; // [km per millisol].
-	static final double ROBOT_WALKING_SPEED_PER_MILLISOL = ROBOT_WALKING_SPEED * MarsClock.MILLISOLS_PER_HOUR; // [km per millisol].
+	static final double PERSON_WALKING_SPEED_PER_MILLISOL = PERSON_WALKING_SPEED * MarsTime.MILLISOLS_PER_HOUR; // [km per millisol].
+	static final double ROBOT_WALKING_SPEED_PER_MILLISOL = ROBOT_WALKING_SPEED * MarsTime.MILLISOLS_PER_HOUR; // [km per millisol].
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.25D;

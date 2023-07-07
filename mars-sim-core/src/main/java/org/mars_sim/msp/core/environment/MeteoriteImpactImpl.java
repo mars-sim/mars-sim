@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 
 /**
@@ -118,7 +118,7 @@ public class MeteoriteImpactImpl implements Serializable {
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 
 		// i. probability of impact per square meter per sol
-		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 //		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
 //						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");

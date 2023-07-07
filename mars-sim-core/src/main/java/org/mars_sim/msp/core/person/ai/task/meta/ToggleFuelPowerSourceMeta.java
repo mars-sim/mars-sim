@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Meta task for the ToggleFuelPowerSource task.
@@ -181,7 +181,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
     private static double getPowerOutputValue(Settlement settlement, FuelPowerSource fuelSource) {
         // Get settlement value for kW hr produced.
         double power = fuelSource.getMaxPower();
-        double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
+        double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
         return powerPerSol * settlement.getPowerGrid().getPowerValue();
     }
 

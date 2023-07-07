@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The LifeSupport class is a building function for life support and managing
@@ -105,7 +105,7 @@ public class LifeSupport extends Function {
 
 		// Subtract power usage cost per sol.
 		double power = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
-		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
+		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
 

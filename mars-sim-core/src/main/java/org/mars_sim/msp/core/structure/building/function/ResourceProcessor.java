@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The Abstratc class that runs ResoruceProcesses as a building function.
@@ -88,7 +88,7 @@ public abstract class ResourceProcessor extends Function {
 			}
 
 			// Subtract value of require power.
-			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL * 1000D;
+			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL * 1000D;
 			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
 

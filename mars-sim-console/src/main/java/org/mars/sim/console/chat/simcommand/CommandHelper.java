@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessor;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -77,7 +76,7 @@ public class CommandHelper {
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
     public static final String MONEY_FORMAT = "$%,.2f";
-	private static final String DUE_FORMAT = "%d:" + MarsClockFormat.TRUNCATED_TIME_FORMAT;
+	private static final String DUE_FORMAT = "%d:%03d";
 
 	
 	private CommandHelper() {

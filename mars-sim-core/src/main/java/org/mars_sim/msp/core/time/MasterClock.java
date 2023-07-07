@@ -59,7 +59,7 @@ public class MasterClock implements Serializable {
 	/** The multiplier for reducing the width of a pulse. */
 	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
-	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
+	private static final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
 
 	// Transient members
 	/** Runnable flag. */
@@ -427,7 +427,7 @@ public class MasterClock implements Serializable {
 	 */
 	private void calculateSleepTime() {
 		// Get the desired millisols per second
-		double desiredMsolPerSecond = (actualTR + desiredTR) / 2 / MarsClock.SECONDS_PER_MILLISOL;
+		double desiredMsolPerSecond = (actualTR + desiredTR) / 2 / MarsTime.SECONDS_PER_MILLISOL;
 
 		// Get the desired number of pulses
 		double desiredPulses = desiredMsolPerSecond / (optMilliSolPerPulse + lastPulseTime) * 2;

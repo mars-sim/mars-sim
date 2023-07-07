@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * A building function for observing astronomical objects.
@@ -166,7 +166,7 @@ public class AstronomicalObservation extends Function {
 
 		// Subtract power usage cost per sol.
 		double power = fSpec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
-		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
+		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 		result -= powerValue;
 

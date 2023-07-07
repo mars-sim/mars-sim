@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -549,7 +549,7 @@ public class Mining extends EVAMission
 	 */
 	private static double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
 		double tripTimeTravellingLimit = tripTimeLimit - MINING_SITE_TIME;
-		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
+		double averageSpeedMillisol = averageSpeed / MarsTime.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 

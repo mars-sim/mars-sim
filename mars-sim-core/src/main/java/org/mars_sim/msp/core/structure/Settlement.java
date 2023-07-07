@@ -83,7 +83,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -2454,7 +2454,7 @@ public class Settlement extends Structure implements Temporal,
 	private void computeWaterRationLevel() {
 		double storedWater = Math.max(1, getAmountResourceStored(WATER_ID) - getNumCitizens() * 500.0);
 		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens()
-				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				* MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		double ratio = requiredDrinkingWaterOrbit / storedWater;
 		waterRationLevel = (int) ratio;
@@ -3171,7 +3171,7 @@ public class Settlement extends Structure implements Temporal,
 		double siteTime = 250;
 		
 		double tripTimeTravellingLimit = tripTimeLimit - (numSites * siteTime);
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+		double millisolsInHour = MarsTime.convertSecondsToMillisols(60D * 60D);
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}

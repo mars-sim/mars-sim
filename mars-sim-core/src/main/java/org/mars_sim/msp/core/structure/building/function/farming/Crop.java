@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 
 /**
@@ -254,7 +254,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
 		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
 
-		conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_PER_MILLISOL;
+		conversion_factor = 1000D * wattToPhotonConversionRatio / MarsTime.SECONDS_PER_MILLISOL;
 
 		PhaseType phaseType;
 		if (!isStartup) {
@@ -913,7 +913,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		// Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
-		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_PER_MILLISOL; // in mol / m^2 within this
+		double PAR_interval = uPAR / 1_000_000D * time * MarsTime.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 
 		double dailyPARRequired = cropSpec.getDailyPAR();
 		// period of time
@@ -948,7 +948,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 			else { // if no sunlight, turn on artificial lighting
 					// double conversion_factor = 1000D * wattToPhotonConversionRatio /
-					// MarsClock.SECONDS_IN_MILLISOL ;
+					// MarsTime.SECONDS_IN_MILLISOL ;
 					// DLI is Daily Light Integral is the unit for for cumulative light -- the
 					// accumulation of all the PAR received during a day.
 				double DLI = dailyPARRequired - cumulativeDailyPAR; // [in mol / m^2 / day]

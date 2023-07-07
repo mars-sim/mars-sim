@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -984,7 +984,7 @@ public class Farming extends Function {
 	public double getAverageGrowingCyclesPerOrbit() {
 
 		double aveGrowingTime = cropConfig.getAverageCropGrowingTime();
-		double solsInOrbit = MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
+		double solsInOrbit = MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
 																				// millisols
 

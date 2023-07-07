@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -52,7 +52,7 @@ class VehicleGood extends Good {
 	private static final int LUV_VALUE = 10;
 	private static final int DRONE_VALUE = 50;
 
-    private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+    private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsTime.convertSecondsToMillisols(1D) * 1000D;
 
 	private double theoreticalRange;
 

@@ -91,7 +91,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
@@ -1913,7 +1913,7 @@ public class BuildingManager implements Serializable {
 
 			// Subtract power costs per Sol.
 			double power = spec.getBasePowerRequirement();
-			double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL;
+			double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 			result -= powerValue;
 

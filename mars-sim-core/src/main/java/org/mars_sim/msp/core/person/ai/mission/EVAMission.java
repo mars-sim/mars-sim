@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -313,7 +313,7 @@ abstract class EVAMission extends RoverMission {
 		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
 		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
+		double averageSpeedMillisol = averageSpeed / MarsTime.MILLISOLS_PER_HOUR;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 

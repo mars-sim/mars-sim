@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -606,7 +606,7 @@ public class EmergencySupply extends RoverMission {
 			if (resource.equals(FOOD_ID))
 				amountNeededSol = personConfig.getFoodConsumptionRate();
 
-			double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
+			double amountNeededOrbit = amountNeededSol * (MarsTime.SOLS_PER_MONTH_LONG * 3D);
 			int numPeople = startingSettlement.getNumCitizens();
 			result = numPeople * amountNeededOrbit;
 		} else {
@@ -680,7 +680,7 @@ public class EmergencySupply extends RoverMission {
 
 		Map<Integer, Double> result = new HashMap<>();
 
-		double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
+		double solsMonth = MarsTime.SOLS_PER_MONTH_LONG;
 		int numPeople = settlement.getNumCitizens();
 
 		// Determine oxygen amount needed.

@@ -28,7 +28,7 @@ public class PowerStorage extends Function {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PowerStorage.class.getName());
 
-	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
+	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	
 	public static final double SECONDARY_LINE_VOLTAGE = 240D;
 	

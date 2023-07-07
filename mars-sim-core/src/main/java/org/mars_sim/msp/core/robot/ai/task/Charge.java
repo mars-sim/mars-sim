@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The Charge task will replenish a Robots battery
@@ -114,7 +114,7 @@ public class Charge extends Task {
 					station.addSleeper();
 				}
 				
-				double hrs = time * MarsClock.HOURS_PER_MILLISOL;
+				double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 
 				double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
 				

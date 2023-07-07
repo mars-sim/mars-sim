@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -257,7 +257,7 @@ public class MissionVehicleProject extends MissionProject
         double result = 0D;
         double averageSpeed = vehicle.getBaseSpeed() * 0.8D;
 		if (averageSpeed > 0) {
-			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
+			result = distance / averageSpeed * MarsTime.MILLISOLS_PER_HOUR;
 		}
         return result;
     }

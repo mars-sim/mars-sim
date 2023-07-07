@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
@@ -1856,8 +1856,8 @@ public class MainScene implements ClockListener {
 		setQuickToolTip(northLabel, "The season in the Northern hemisphere of Mars");
 		setQuickToolTip(southLabel, "The season in the Southern hemisphere of Mars");
 		
-		northText = createBlendText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-		southText = createBlendText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+		northText = createBlendText(marsClock.getSeason(MarsTime.NORTHERN_HEMISPHERE));
+		southText = createBlendText(marsClock.getSeason(MarsTime.SOUTHERN_HEMISPHERE));
 		setQuickToolTip(northText, "Can be Early/Mid/Late Spring/Summer/Autumn/Winter.");
 		setQuickToolTip(southText, "Can be Early/Mid/Late Spring/Summer/Autumn/Winter.");
 
@@ -3161,8 +3161,8 @@ public class MainScene implements ClockListener {
 			} else
 				noteLabel.setEffect(null);
 
-			northText.setText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-			southText.setText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
+			northText.setText(marsClock.getSeason(MarsTime.NORTHERN_HEMISPHERE));
+			southText.setText(marsClock.getSeason(MarsTime.SOUTHERN_HEMISPHERE));
 
 		}
 

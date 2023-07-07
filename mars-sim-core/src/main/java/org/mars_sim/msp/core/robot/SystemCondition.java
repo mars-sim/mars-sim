@@ -13,7 +13,7 @@ import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.health.HealthProblem;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * This class represents the System Condition of a robot.
@@ -82,7 +82,7 @@ public class SystemCondition implements Serializable {
 
         // 3. Consume a minute amount of energy even if a robot does not perform any tasks
         if (!isCharging)
-        	consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * standbyPower);
+        	consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * standbyPower);
 
         return operable;
     }

@@ -89,7 +89,7 @@ public class MainDesktopPane extends JDesktopPane
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
+//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsTime.SECONDS_PER_MILLISOL;// 750D / MarsTime.SECONDS_IN_MILLISOL;
 
 	public final static String ORANGE_CSS = MainScene.ORANGE_CSS_THEME; 
 	public final static String BLUE_CSS = MainScene.BLUE_CSS_THEME;

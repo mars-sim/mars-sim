@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -455,7 +455,7 @@ public final class CommerceUtil {
 			// Needs a crew
 			// Get estimated trip time.
 			double averageSpeed = delivery.getBaseSpeed(); // Life support supplies are reloaded on the return trip
-			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
+			double averageSpeedMillisol = averageSpeed / MarsTime.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
 			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();

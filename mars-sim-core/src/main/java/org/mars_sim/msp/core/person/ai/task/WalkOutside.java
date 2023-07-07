@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * A subtask for walking between locations outside of a settlement or vehicle.
@@ -587,7 +587,7 @@ public class WalkOutside extends Task {
 	 */
 	private double walkingPhase(double time) {
 		double remainingTime = time - minPulseTime;
-		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
+		double timeHours = MarsTime.HOURS_PER_MILLISOL * time;
 		double speed = 0;
 
 		if (person != null) {
@@ -624,7 +624,7 @@ public class WalkOutside extends Task {
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			remainingTime = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
+			remainingTime = time - MarsTime.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {

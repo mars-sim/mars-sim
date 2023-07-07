@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingLocation;
 import org.mars_sim.msp.core.structure.building.connection.Hatch;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * A subtask for walking between two interior locations in a settlement. (Ex:
@@ -236,13 +236,13 @@ public class WalkSettlementInterior extends Task {
 		}
 		
 		// Determine walking distance.
-		double coveredMeters =  1000D * speed * MarsClock.HOURS_PER_MILLISOL * time;
+		double coveredMeters =  1000D * speed * MarsTime.HOURS_PER_MILLISOL * time;
 		double remainingPathDistance = getRemainingPathDistance();
 
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			remainingTime = time - MarsClock.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
+			remainingTime = time - MarsTime.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
 		}
 		else {
 			remainingTime = 0D; // Use all the remaining time

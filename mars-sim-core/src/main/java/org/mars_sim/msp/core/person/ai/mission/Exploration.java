@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -212,7 +212,7 @@ public class Exploration extends EVAMission
 	 */
 	private double getTripTimeRange(int numSites, double tripTimeLimit, double averageSpeed) {
 		double tripTimeTravellingLimit = tripTimeLimit - (numSites * STANDARD_TIME_PER_SITE);
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+		double millisolsInHour = MarsTime.convertSecondsToMillisols(60D * 60D);
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}

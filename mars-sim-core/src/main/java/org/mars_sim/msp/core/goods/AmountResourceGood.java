@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -656,7 +656,7 @@ class AmountResourceGood extends Good {
 			double resourceInputRate = process.getMaxInputRate(resource);
 
 			// Determine value of required process power.
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputValue - powerValue) * RESOURCE_PROCESSING_INPUT_FACTOR;
@@ -759,7 +759,7 @@ class AmountResourceGood extends Good {
 			}
 
 			// Determine value of required process power.
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			// Obtain the value of this resource
@@ -856,7 +856,7 @@ class AmountResourceGood extends Good {
 			}
 
 			// Determine value of required process power.
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputsValue - powerValue) * owner.getTradeFactor() * owner.getCropFarmFactor()
@@ -886,20 +886,20 @@ class AmountResourceGood extends Good {
 		
 		if (id == ResourceUtil.tableSaltID) {
 			// Assuming a person takes 3 meals per sol
-			return MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
 		}
 
 		else {
 			for (int oilID : Cooking.getOilMenu()) {
 				if (id == oilID) {
 					// Assuming a person takes 3 meals per sol
-					return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+					return MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 				}
 			}
 
 			// Determine total demand for cooked meal mass for the settlement.
 			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-			double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
 			double cookedMealDemand = numPeople * cookedMealDemandOrbit;
 			int numMeals = MealConfig.getDishList().size();
@@ -1107,7 +1107,7 @@ class AmountResourceGood extends Good {
 		
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
-		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		int solsInOrbit = MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double factor = totalCropArea * averageGrowingCyclesPerOrbit / solsInOrbit;
 
 		if (resource == ResourceUtil.waterID) {

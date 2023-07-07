@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * Utility class for getting food production processes.
@@ -156,7 +156,7 @@ public final class FoodProductionUtil {
 			outputsValue += getFoodProductionProcessItemValue(j.next(), settlement, true);
 
 		// Subtract power value.
-		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
+		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
 		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 		return outputsValue - inputsValue - powerValue;

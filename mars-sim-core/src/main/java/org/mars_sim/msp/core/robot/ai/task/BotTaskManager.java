@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The BotTaskManager class keeps track of a robot's current task and can randomly
@@ -80,7 +80,7 @@ public class BotTaskManager extends TaskManager {
 	 * @param time the passing time (
 	 */
     private void reduceEnergy(double time) {
-    	robot.consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * workPower);
+    	robot.consumeEnergy(time * MarsTime.HOURS_PER_MILLISOL * workPower);
     }
 
 	/**

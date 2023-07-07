@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 
 /**
  * The Heating class is a building function for regulating temperature in a settlement.
@@ -162,7 +162,7 @@ extends Function {
 	
 	private double areaFactor;
 	
-	private double timeSlice = MarsClock.SECONDS_PER_MILLISOL / PER_UPDATE;
+	private double timeSlice = MarsTime.SECONDS_PER_MILLISOL / PER_UPDATE;
 	/** The total mass of the air and moisture in this building. */	
 	private double airMass;
 

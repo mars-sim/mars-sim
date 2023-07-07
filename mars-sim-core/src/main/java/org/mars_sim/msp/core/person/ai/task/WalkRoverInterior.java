@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -123,7 +123,7 @@ public class WalkRoverInterior extends Task {
 		double remainingTime = time - minPulseTime;
 		
         // Determine walking distance.
-        double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
+        double timeHours = MarsTime.HOURS_PER_MILLISOL * time;
 		double speed = person.calculateWalkSpeed();
 		double distanceKm = speed * timeHours;
         double distanceMeters = distanceKm * 1000D;
@@ -135,7 +135,7 @@ public class WalkRoverInterior extends Task {
             // Determine time left after walking.
             if (distanceMeters >= remainingWalkingDistance) {
                 distanceMeters = remainingWalkingDistance;
-                remainingTime = time - MarsClock.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
+                remainingTime = time - MarsTime.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
             }
 
             if (distanceMeters < remainingWalkingDistance) {

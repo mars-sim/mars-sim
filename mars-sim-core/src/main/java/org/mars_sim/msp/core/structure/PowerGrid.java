@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -46,7 +46,7 @@ public class PowerGrid implements Serializable, Temporal {
 	
 	public static final double percentAverageVoltageDrop = 98D;
 
-	public static final double HOURS_PER_MILLISOL = MarsClock.HOURS_PER_MILLISOL; // equals to 0.0247;
+	public static final double HOURS_PER_MILLISOL = MarsTime.HOURS_PER_MILLISOL; // equals to 0.0247;
 
 	public double degradationRatePerSol = .0004;
 
@@ -310,7 +310,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 			sufficientPower = true;
 			// Store excess power in power storage buildings.
-			double timeHr = time * HOURS_PER_MILLISOL; // MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			double timeHr = time * HOURS_PER_MILLISOL; // MarsTime.convertMillisolsToSeconds(time) / 60D / 60D;
 			double excessEnergy = (powerGenerated - powerRequired) * timeHr * systemEfficiency;
 			storeExcessPower(excessEnergy, time);
 			
@@ -344,7 +344,7 @@ public class PowerGrid implements Serializable, Temporal {
 				return;
 			}
 			
-			double timeInHour = time * HOURS_PER_MILLISOL; // MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			double timeInHour = time * HOURS_PER_MILLISOL; // MarsTime.convertMillisolsToSeconds(time) / 60D / 60D;
 			
 			// Assume the gauge of the cable is uniformly low, as represented by percentAverageVoltageDrop
 			// TODO: account for the distance of the separation between endpoints
