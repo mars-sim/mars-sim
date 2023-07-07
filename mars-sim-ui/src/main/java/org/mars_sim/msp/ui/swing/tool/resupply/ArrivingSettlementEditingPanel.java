@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -87,13 +88,13 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private JTextField solsTF;
 	private JLabel solInfoLabel;
 	private JTextField latitudeTF;
-	private JComboBoxMW<String> latitudeDirectionCB;
+	private JComboBox<String> latitudeDirectionCB;
 	private JTextField longitudeTF;
-	private JComboBoxMW<String> longitudeDirectionCB;
+	private JComboBox<String> longitudeDirectionCB;
 	private JLabel errorLabel;
 	private JTextField populationTF;
 	private JTextField numOfRobotsTF;
-	private JComboBoxMW<String> sponsorCB;
+	private JComboBox<String> sponsorCB;
 
 	private ModifyTransportItemDialog modifyTransportItemDialog;
 	private NewTransportItemDialog newTransportItemDialog;
@@ -190,7 +191,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create sponsor CB
 		Collection<String> codes = SimulationConfig.instance().getReportingAuthorityFactory().getItemNames();
-		sponsorCB = new JComboBoxMW<String>(codes.toArray(new String[codes.size()]));
+		sponsorCB = new JComboBox<>(codes.toArray(new String[codes.size()]));
 		if (settlement != null) {
 			sponsorCB.setSelectedItem(settlement.getSponsorCode());
 		}
@@ -408,7 +409,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		landingLocationPane.add(latitudeTF);
 
 		// Create latitude direction combo box.
-		latitudeDirectionCB = new JComboBoxMW<String>();
+		latitudeDirectionCB = new JComboBox<>();
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.northShort")); //$NON-NLS-1$
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.southShort")); //$NON-NLS-1$
 		if (settlement != null) {
@@ -453,7 +454,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		landingLocationPane.add(longitudeTF);
 
 		// Create longitude direction combo box.
-		longitudeDirectionCB = new JComboBoxMW<String>();
+		longitudeDirectionCB = new JComboBox<String>();
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.westShort")); //$NON-NLS-1$
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.eastShort")); //$NON-NLS-1$
 		if (settlement != null) {

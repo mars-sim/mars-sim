@@ -33,6 +33,7 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
@@ -333,47 +334,23 @@ extends MonitorTab {
 		renderer.setSeriesPositiveItemLabelPosition(0,
 				new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER,
 						TextAnchor.BASELINE_CENTER, 0.0));
-		renderer.setItemLabelAnchorOffset(10);
-
-
-//  	// TODO: implement interval marker for the ave high and ave low
-//		IntervalMarker target = new IntervalMarker(average_low,average_high);
-//		target.setLabelFont(new Font("SansSerif", Font.ITALIC, 11));
-//		target.setLabelAnchor(RectangleAnchor.LEFT);
-//		target.setLabelTextAnchor(TextAnchor.CENTER_LEFT);
-//		((CategoryPlot) plot).addRangeMarker(target, Layer.BACKGROUND);
-
-		// Adds tooltip generator
-		// this version only work for 2D bar chart, not 3D bar chart
-//		renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
-//		    public String generateToolTip(CategoryDataset dataset, int row, int column) {
-//		        return "(1) Left click and drag a range to magnify (2) Rotate mouse wheel to zoom in/out (3) Right click to fully customize chart"
-//		     // TODO: use tooltip to show the corresponding value of a category
-//		    }
-//		});
+		renderer.setItemLabelInsets(new RectangleInsets(10, 10, 10, 10));
 
 		renderer.setDefaultToolTipGenerator(new MyToolTipGenerator());
 
-//		class CustomToolTipGenerator implements CategoryToolTipGenerator  {
-//		    public String generateToolTip(CategoryDataset dataset, int row, int column)   {
-//		           return row + ": " + column;
-//		    }
-//		}
-//		renderer.setSeriesToolTipGenerator(0,new CustomToolTipGenerator());
-
 		// Create a panel for chart
-		JComponent chartpanel = new ChartPanel(chart);
+		ChartPanel chartpanel = new ChartPanel(chart);
 		chart.setBackgroundPaint(getBackground());
 
 		// Adds zooming
-		((ChartPanel)chartpanel).setFillZoomRectangle(true);
-		((ChartPanel)chartpanel).setMouseWheelEnabled(true);
+		chartpanel.setFillZoomRectangle(true);
+		chartpanel.setMouseWheelEnabled(true);
 
 		// Prevents label scaling
-		((ChartPanel)chartpanel).setMaximumDrawHeight(10000);
-		((ChartPanel)chartpanel).setMaximumDrawWidth(10000);
-		((ChartPanel)chartpanel).setMinimumDrawWidth(20);
-		((ChartPanel)chartpanel).setMinimumDrawHeight(20);
+		chartpanel.setMaximumDrawHeight(10000);
+		chartpanel.setMaximumDrawWidth(10000);
+		chartpanel.setMinimumDrawWidth(20);
+		chartpanel.setMinimumDrawHeight(20);
 
 		// Estimate the width of the chart by multiplying the categories by the
 		// number of series. First calculate the column width as this is
@@ -387,42 +364,21 @@ extends MonitorTab {
 		// Check the width for possible scrolling
 		int chartwidth = columnWidth * barModel.getCategoryCount();
 
-		//JComponent scrollPane = null;
-
+		// Decide what to add
+		JComponent comp = chartpanel;
 		if (chartwidth > SCROLLTHRESHOLD) {
 			// Scrolling will kick in, then fix the height so that it
 			// automatically adjusts to Scroll Viewport height; the width
 			// fix so that label are not too compressed.
 			Dimension preferredSize = new Dimension(chartwidth, 0);
 			chartpanel.setPreferredSize(preferredSize);
-			chartpanel = new JScrollPane(chartpanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+			comp = new JScrollPane(chartpanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 
-	    // Added setting below to keep the aspect ratio
-        // see http://www.jfree.org/forum/viewtopic.php?f=3&t=115763
-        // Chart will always be drawn to an off-screen buffer that is the same size as the ChartPanel, so no scaling will happen when the offscreen image is copied to the panel.
-        // chartpanel.setPreferredSize(new Dimension (700, 700));
-        //chartpanel.setMinimumDrawWidth(0);
-        //chartpanel.setMaximumDrawWidth(Integer.MAX_VALUE);
-        //chartpanel.setMinimumDrawHeight(0);
-        //chartpanel.setMaximumDrawHeight(Integer.MAX_VALUE);
 
-//		JPanel fixedSizePane = new JPanel(new FlowLayout());
-//		fixedSizePane.add(chartpanel);
-//		fixedSizePane.addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//            	int w = fixedSizePane.getWidth();
-//                int h = fixedSizePane.getHeight();
-//                int size =  Math.min(w, h);
-//                chartpanel.setPreferredSize(new Dimension(size, size));
-//                fixedSizePane.revalidate();
-//            }
-//        });
-
-		chartpanel.setPreferredSize(new Dimension(800, 0));
-		add(chartpanel, BorderLayout.CENTER);
+		comp.setPreferredSize(new Dimension(800, 0));
+		add(comp, BorderLayout.CENTER);
 	}
 
 

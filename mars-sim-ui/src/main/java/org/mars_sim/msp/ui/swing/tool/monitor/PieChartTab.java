@@ -10,8 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -31,7 +28,8 @@ import javax.swing.table.TableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.util.Rotation;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.PieDataset;
@@ -63,22 +61,21 @@ class PieChartTab extends MonitorTab {
     /**
      * Basic Pie Data set with a method to recalculate.
      */
-    @SuppressWarnings("rawtypes")
     static class TablePieDataset
     extends AbstractDataset
-    implements PieDataset, TableModelListener {
+    implements PieDataset<String>, TableModelListener {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
         private TableModel model;
         private int column;
-		private Map<Comparable, Integer> dataMap;
+		private Map<String, Integer> dataMap;
         private long lastUpdateTime;
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
-            dataMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(model.getRowCount()));
+            dataMap = Collections.synchronizedMap(new LinkedHashMap<String, Integer>(model.getRowCount()));
             setModel(model);
         }
 
@@ -94,21 +91,27 @@ class PieChartTab extends MonitorTab {
 
         		int rows = model.getRowCount();
 
-        		Map<Comparable, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(dataMap));
+        		Map<String, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<String, Integer>(dataMap));
 
         		// Clear the temp map.
-        		Iterator<Comparable> iter = tempMap.keySet().iterator();
+        		Iterator<String> iter = tempMap.keySet().iterator();
         		while (iter.hasNext()) tempMap.put(iter.next(), 0);
 
 
         		// Add category values and categories.
         		for(int i = 0; i < rows; i++) {
 
-        			Comparable category = (Comparable) model.getValueAt(i, column);
-        			if (category == null) category = NONECAT;
-        			else if (!(category instanceof String)) category = category.toString();
-        			if (((String) category).trim().length() == 0) category = "None";
-
+                    Object catValue = model.getValueAt(i, column);
+        			String category = null;
+        			if (catValue == null) {
+                        category = NONECAT;
+                    }
+                    else if (catValue instanceof String s) {
+                        category = s.trim();
+                    }
+        			else {
+                        category = catValue.toString();
+                    }
         			Integer value = tempMap.get(category);
         			int count = 1;
         			if (value != null) count = value + 1;
@@ -172,13 +175,14 @@ class PieChartTab extends MonitorTab {
          * @param key the key.
          * @return the index.
          */
-        public int getIndex(Comparable key) {
+        @Override
+        public int getIndex(String key) {
             int result = -1;
 
-            Set<Comparable> keys = dataMap.keySet();
+            Set<String> keys = dataMap.keySet();
             if (keys.contains(key)) {
                 int count = 0;
-                Iterator<Comparable> i = keys.iterator();
+                Iterator<String> i = keys.iterator();
                 while (i.hasNext()) {
                     if (key == i.next()) result = count;
                     else count++;
@@ -196,7 +200,8 @@ class PieChartTab extends MonitorTab {
          * @param key the key.
          * @return the value.
          */
-        public Number getValue(Comparable key) {
+        @Override
+        public Number getValue(String key) {
             return dataMap.get(key);
         }
 
@@ -233,11 +238,12 @@ class PieChartTab extends MonitorTab {
          * @param index the item index (zero-based).
          * @return the key.
          */
-        public Comparable getKey(int index) {
-            Comparable result = null;
+        @Override
+        public String getKey(int index) {
+            String result = null;
 
             Object[] keys = dataMap.keySet().toArray();
-            if (index < keys.length) result = (Comparable) keys[index];
+            if (index < keys.length) result = (String) keys[index];
 
             return result;
         }
@@ -248,12 +254,9 @@ class PieChartTab extends MonitorTab {
          *
          * @return the keys.
          */
-        public List<Comparable> getKeys() {
-            List<Comparable> result = new ArrayList<Comparable>(dataMap.size());
-            Iterator<Comparable> i = dataMap.keySet().iterator();
-            while (i.hasNext()) result.add(i.next());
-
-            return result;
+        @Override
+        public List<String> getKeys() {
+            return new ArrayList<>(dataMap.keySet());
         }
     }
 
@@ -275,24 +278,21 @@ class PieChartTab extends MonitorTab {
 
         pieModel = new TablePieDataset(model, column);
 
-        chart = ChartFactory.createPieChart3D(null, pieModel, true, true, false);
+        chart = ChartFactory.createPieChart(null, pieModel, true, true, false);
         chart.setBackgroundPaint(getBackground());
 
         pieModel.calculate();
 
-        // Use 3D pie
-        final PiePlot3D plot = (PiePlot3D)chart.getPlot();
+        // Use pie
+        Plot rawPlot = chart.getPlot();
+        if (rawPlot instanceof PiePlot plot) {
+            plot.setStartAngle(270);
+            plot.setDirection(Rotation.ANTICLOCKWISE);
+            plot.setForegroundAlpha(0.6f);
 
-        //plot.setCircular(false);
-        //plot.setRadius(0.60);
-        //plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
+        }
+        pieModel.addChangeListener(rawPlot);
 
-        plot.setStartAngle(270);
-        plot.setDirection(Rotation.ANTICLOCKWISE);
-        plot.setForegroundAlpha(0.6f);
-        //plot.setInteriorGap(0.33);
-
-        pieModel.addChangeListener(plot);
 
         chartpanel = new ChartPanel(chart, true);
 
@@ -320,10 +320,6 @@ class PieChartTab extends MonitorTab {
         });
 
         add(fixedSizePane, BorderLayout.CENTER);
-
-        // Add rotator code
-        final Rotator rotator = new Rotator(plot);
-        rotator.start();
     }
 
     /**
@@ -365,54 +361,4 @@ class PieChartTab extends MonitorTab {
         pieModel = null;
         super.removeTab();
     }
-}
-
-
-//****************************************************************************
-//* JFREECHART DEVELOPER GUIDE                                               *
-//* The JFreeChart Developer Guide, written by David Gilbert, is available   *
-//* to purchase from Object Refinery Limited:                                *
-//*                                                                          *
-//* http://www.object-refinery.com/jfreechart/guide.html                     *
-//*                                                                          *
-//* Sales are used to provide funding for the JFreeChart project - please    *
-//* support us so that we can continue developing free software.             *
-//****************************************************************************
-
-/**
-* The rotator.
-*
-*/
-@SuppressWarnings("serial")
-class Rotator extends Timer implements ActionListener {
-
-	 /** The plot. */
-	 private PiePlot3D plot;
-
-	 /** The angle. */
-	 private int angle = 270;
-
-	 /**
-	  * Constructor.
-	  *
-	  * @param plot  the plot.
-	  */
-	 Rotator(final PiePlot3D plot) {
-	     super(100, null);
-	     this.plot = plot;
-	     addActionListener(this);
-	 }
-
-	 /**
-	  * Modifies the starting angle.
-	  *
-	  * @param event  the action event.
-	  */
-	 public void actionPerformed(final ActionEvent event) {
-	     this.plot.setStartAngle(this.angle);
-	     this.angle = this.angle + 1;
-	     if (this.angle == 360) {
-	         this.angle = 0;
-	     }
-	 }
 }
