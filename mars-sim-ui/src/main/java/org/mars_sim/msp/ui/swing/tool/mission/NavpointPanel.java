@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -75,7 +76,10 @@ implements MissionListener {
 	
 	// Private members.
 	private Mission missionCache;
+	
 	private MapPanel mapPanel;
+	private JPanel mapPane;
+	
 	private transient VehicleTrailMapLayer trailLayer;
 	private transient NavpointMapLayer navpointLayer;
     private transient MineralMapLayer mineralLayer;
@@ -101,18 +105,24 @@ implements MissionListener {
 		
 		// Create the main panel.
 		JPanel mainPane = new JPanel(new BorderLayout(0, 0));	
+		mainPane.setBackground(new Color(0, 0, 0, 128));
+		mainPane.setOpaque(false);
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
-		// Create the map display panel.
-		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
-		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		mapPane.setBackground(new Color(0, 0, 0, 128));
+		mapPane.setOpaque(false);
 		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPane.setAlignmentY(Component.TOP_ALIGNMENT);
-		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
+		// Create the map display panel.
+		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
+		mapDisplayPane.setBackground(new Color(0, 0, 0, 128));
+		mapDisplayPane.setOpaque(false);
+		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
 		// Create the navpoint table panel.
 		JPanel navpointTablePane = new JPanel(new BorderLayout());
@@ -133,9 +143,10 @@ implements MissionListener {
 	    
 		///////////////////////////////////////////////////////////
 
-	    
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop(), this);
+		mapPanel.setBackground(new Color(0, 0, 0, 128));
+		mapPanel.setOpaque(false);
 		// Set up mouse control
 //		mapPanel.setNavpointPanel(this);
 		mapPanel.setMouseDragger(false);
@@ -249,6 +260,10 @@ implements MissionListener {
 			}
         });
         navpointScrollPane.setViewportView(navpointTable);
+	}
+	
+	public void setZoomPanel(JPanel zoomPanel) {
+		mapPane.add(zoomPanel);
 	}
 	
 	/**
