@@ -118,8 +118,6 @@ public class SettlementTransparentPanel extends JComponent {
 
 	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
-
-	
 	private double temperatureCache;
 	private double opticalDepthCache;
 	private double windSpeedCache;
@@ -205,12 +203,12 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
 	@Override
-    public void paintComponent (Graphics g) {
+    public void paintComponent(Graphics g) {
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.0f)); // draw transparent background
 		super.paintComponent(g);
 		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.0f)); // turn on opacity
-		g.setColor(Color.RED);
-		g.fillRect(20, 20, 500, 300);
+//		g.setColor(Color.RED);
+//		g.fillRect(20, 20, 500, 300);
 	}
 
     public void createAndShowGUI() {
@@ -621,51 +619,94 @@ public class SettlementTransparentPanel extends JComponent {
 	}
 
 	/**
-	 * Update the weather icon
+	 * Updates the weather icon.
 	 */
 	private void updateIcon() {
 		Icon updatedIcon;
+		String tooltip = "";
 		if (temperatureCache < -40) {
 			updatedIcon = ImageLoader.getIconByName("weather/ice");
+			tooltip = "Frigid";
 		}
 		else if (temperatureCache < 0) {
 			updatedIcon = ImageLoader.getIconByName("weather/snowflake");
+			tooltip = "Freezing";
 		}
 		else if (temperatureCache < 10) {
 			updatedIcon = ImageLoader.getIconByName("weather/cloudy");
+			tooltip = "Cool";
 		}
-		else if (temperatureCache < 22)
+		else if (temperatureCache < 22) {
+			updatedIcon = ImageLoader.getIconByName("weather/spinningSun");
+			tooltip = "Balmy";
+		}
+		else {
 			updatedIcon = ImageLoader.getIconByName("weather/desert_sun");
-		else
-			updatedIcon = ImageLoader.getIconByName("weather/sun");
+			tooltip = "Sunny";
+		}
+		
 		temperatureIcon.setIcon(updatedIcon);
+		temperatureIcon.setToolTipText(tooltip);
 		
 		///////////////////////////////////////////////
-		if ((windSpeedCache > 30D) && (opticalDepthCache > 0.75)) {
-			updatedIcon = ImageLoader.getIconByName("weather/sandstorm");
-		}
-		else if ((windSpeedCache > 20D) && (opticalDepthCache > 0.75)) {
-			updatedIcon = ImageLoader.getIconByName("weather/dustDevil");
-		}
-		else if (windSpeedCache > 10D) {
-			if (temperatureCache < 0)
-				updatedIcon = ImageLoader.getIconByName("weather/frost_wind");
-			else
-				updatedIcon = ImageLoader.getIconByName("weather/cold_wind");
+		
+		if (windSpeedCache > 120) {
+			if (opticalDepthCache > 0.7) {
+				updatedIcon = ImageLoader.getIconByName("weather/sandstorm");
+				tooltip = "Sandstorm";
 			}
-		else
-			updatedIcon = emptyIcon;
-		windIcon.setIcon(updatedIcon);
-
-		///////////////////////////////////////////////
-		if (opticalDepthCache > .5)
-			updatedIcon = ImageLoader.getIconByName("weather/sand");
-		else if (opticalDepthCache > 0.3) {
-			updatedIcon = ImageLoader.getIconByName("weather/hazy");
+			else {
+				updatedIcon = ImageLoader.getIconByName("weather/highWind");
+				tooltip = "High Wind";
+			}
+			
 		}
-		else
+		else if (windSpeedCache > 80) {
+			updatedIcon = ImageLoader.getIconByName("weather/dust_devil");
+			tooltip = "Low Wind";
+		}
+		else if (windSpeedCache > 40) {
+			if (temperatureCache < 0) {
+				updatedIcon = ImageLoader.getIconByName("weather/frost_wind");
+				tooltip = "Frosty Wind";
+			}
+			else {
+				updatedIcon = ImageLoader.getIconByName("weather/cold_wind");
+				tooltip = "Cool Wind";
+			}
+		}
+		else {
+			updatedIcon = ImageLoader.getIconByName("weather/lowWind");
+			tooltip = "Low Wind";
+			
+//			updatedIcon = ImageLoader.getIconByName("weather/drySpell");
+//			tooltip = "Dry Wind";
+		}
+//		
+		windIcon.setIcon(updatedIcon);
+		windIcon.setToolTipText(tooltip);
+		
+		///////////////////////////////////////////////
+		
+		if (opticalDepthCache > 1.0) {
+			updatedIcon = ImageLoader.getIconByName("weather/sand");
+			tooltip = "Sandy";
+		}
+		else if (opticalDepthCache > 0.6) {
+			updatedIcon = ImageLoader.getIconByName("weather/hazy");
+			tooltip = "Hazy";
+		}
+		else if (opticalDepthCache > 0.3) {
+			updatedIcon = ImageLoader.getIconByName("weather/dry");
+			tooltip = "Dry";
+		}
+		else {
 			updatedIcon = emptyIcon;
+			tooltip = "Clear Line of Sight";
+		}
+		
 		opticalIcon.setIcon(updatedIcon);
+		opticalIcon.setToolTipText(tooltip);
 	}
  
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
@@ -712,7 +753,7 @@ public class SettlementTransparentPanel extends JComponent {
             public void paint(Graphics2D g, JComponent c, int w, int h) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.ORANGE.darker().darker());
+                g.setColor(Color.BLACK);//.ORANGE.darker().darker());
                 g.fillOval(1, 1, w-1, h-1);
                 g.setColor(Color.WHITE);
                 g.drawOval(1, 1, w-1, h-1);
@@ -723,14 +764,14 @@ public class SettlementTransparentPanel extends JComponent {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
                 //g.setColor(new Color(139,69,19)); // brown
-                g.setColor(Color.ORANGE.darker().darker());
+                g.setColor(Color.BLACK);//ORANGE.darker().darker());
                 g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(0, 6, w, 6, 6, 6);
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, 0, 90, 10);//-20, 30, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, 1, 90, 10);//-20, 30, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
@@ -739,16 +780,17 @@ public class SettlementTransparentPanel extends JComponent {
 		zoomSlider.setMinorTickSpacing(10);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
+		
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-
 		zoomSlider.setOpaque(false);
+		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				// Change scale of map based on slider position.
 				int sliderValue = zoomSlider.getValue();
 				if (sliderValue == 0)
-					sliderValue = 1;
+					sliderValue = 1/10;
 				mapPanel.setScale(sliderValue);
 			}
 		});

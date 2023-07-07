@@ -178,6 +178,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapLayerPanel;
 
+	private JPanel detailPane;
+	
 	private MineralMapLayer mineralLayer;
 	
 	private UnitManager unitManager;
@@ -201,19 +203,27 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
+		contentPane.setBackground(new Color(0, 0, 0, 128));
+		contentPane.setOpaque(false);
 		setContentPane(contentPane);
 		
 		// Prepare whole 
 		JPanel wholePane = new JPanel(new BorderLayout(0, 0));
+		wholePane.setBackground(new Color(0, 0, 0, 128));
+		wholePane.setOpaque(false);
 		wholePane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
+		mapPane.setBackground(new Color(0, 0, 0, 128));
+		mapPane.setOpaque(false);
 		wholePane.add(mapPane, BorderLayout.CENTER);
 	
 		// Build the Map panel first as the globe is a slave
-		JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		detailPane.setBackground(new Color(0, 0, 0, 128));
+		detailPane.setOpaque(false);
 		detailPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -221,6 +231,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPane.add(detailPane);
 		
 		mapLayerPanel = new MapPanel(desktop, this);
+		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
+		mapLayerPanel.setOpaque(false);
 		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
 		mapLayerPanel.setMouseDragger(true);
@@ -501,6 +513,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		goPane.add(goButton);
 		
 		bottomPane.add(goPane);
+	}
+	
+	public void setZoomPanel(JPanel zoomPanel) {
+		detailPane.add(zoomPanel);
 	}
 	
 	/**

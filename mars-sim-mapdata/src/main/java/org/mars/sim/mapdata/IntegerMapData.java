@@ -91,7 +91,7 @@ import com.jogamp.opencl.CLProgram;
 		
 		rho =  pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
-		MAX_RHO = RHO_DEFAULT * 4;
+		MAX_RHO = RHO_DEFAULT * 6;
 		MIN_RHO = RHO_DEFAULT / 6;
 		
 		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
