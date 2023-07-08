@@ -90,7 +90,7 @@ public class TabPanelGeneral extends TabPanel {
 		
 		// Prepare height name label
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
-					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " m", null);
+					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " cm", null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
