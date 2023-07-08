@@ -7,13 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -32,13 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.Painter;
-import javax.swing.UIDefaults;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.mars.sim.mapdata.MapData;
 import org.mars.sim.mapdata.MapDataUtil;
@@ -46,7 +36,6 @@ import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.map.Map;
 import org.mars.sim.mapdata.map.MapLayer;
-import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -75,10 +64,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //	private boolean update;
 	private boolean recreateMap = false;
 	
-	public double RHO_DEFAULT;
+	public static double RHO_DEFAULT;
 	public double MAX_RHO;
 	public double MIN_RHO;
-	private double scale;
 	
 	private final double ZOOM_STEP = 16;
 	private double multiplier;
@@ -99,7 +87,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private NavpointPanel navPanel;
 	
-	private JSlider zoomSlider;
+//	private JSlider zoomSlider;
 	
 	private Image starfield;
 	
@@ -153,12 +141,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 	
 	public void init() {
-		
-//	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//	    controlCenterPane.setBackground(new Color(0,0,0,128));
-//	    controlCenterPane.setOpaque(false);
-//	    controlCenterPane.add(zoomSlider);
-//	    controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
 	    
 		starfield = ImageLoader.getImage("map/starfield");
 		
@@ -173,19 +155,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
-		buildZoomSlider();
-		
-		JPanel zoomPane = new JPanel(new BorderLayout());
-		zoomPane.setBackground(new Color(0, 0, 0, 128));
-		zoomPane.setOpaque(false);
-		zoomPane.add(zoomSlider);
-		
-		if (navwin != null) {
-			navwin.setZoomPanel(zoomPane);//, BorderLayout.EAST);
-		}
-		else if (navPanel != null) {
-			navPanel.setZoomPanel(zoomPane);//, BorderLayout.EAST);
-		}
+//		buildZoomSlider();
+//		
+//		JPanel zoomPane = new JPanel(new BorderLayout());
+//		zoomPane.setBackground(new Color(0, 0, 0, 128));
+//		zoomPane.setOpaque(false);
+//		zoomPane.add(zoomSlider);
+//		
+//		if (navwin != null) {
+//			navwin.setZoomPanel(zoomPane);//, BorderLayout.EAST);
+//		}
+//		else if (navPanel != null) {
+//			navPanel.setZoomPanel(zoomPane);//, BorderLayout.EAST);
+//		}
 	    
 		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		setMaximumSize(getPreferredSize());
@@ -214,16 +196,16 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		double delta = e.getWheelRotation();
 		
-		if (delta > 0) {
-			// Move zoom slider down.
-			if (zoomSlider.getValue() > zoomSlider.getMinimum())
-				zoomSlider.setValue(zoomSlider.getValue() - 1);
-		}
-		else if (delta < 0) {
-			// Move zoom slider up.
-			if (zoomSlider.getValue() < zoomSlider.getMaximum())
-				zoomSlider.setValue(zoomSlider.getValue() + 1);
-		}
+//		if (delta > 0) {
+//			// Move zoom slider down.
+//			if (zoomSlider.getValue() > zoomSlider.getMinimum())
+//				zoomSlider.setValue(zoomSlider.getValue() - 1);
+//		}
+//		else if (delta < 0) {
+//			// Move zoom slider up.
+//			if (zoomSlider.getValue() < zoomSlider.getMaximum())
+//				zoomSlider.setValue(zoomSlider.getValue() + 1);
+//		}
 		
     	double rhoDelta = - multiplier * delta;
     	double newRho = oldRho + rhoDelta;
@@ -243,7 +225,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			magnification = newRho/RHO_DEFAULT;
 			
 //			logger.info("mag: " + Math.round(magnification * 1000.0)/1000.0 
-//					+ "  newRho: " + Math.round(newRho* 100.0)/100.0);
+//					+ "  rhoDelta: " + Math.round(rhoDelta* 1000.0)/1000.0
+//					+ "  newRho: " + Math.round(newRho* 1000.0)/1000.0
+//					+ "  RHO_DEFAULT: " + Math.round(RHO_DEFAULT* 1000.0)/1000.0
+//					);
 			
 	    	// Update the map scale
 //	    	setMapScale(newRho);
@@ -264,7 +249,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public void setMouseDragger(boolean isNavigator) {
 
-		// List to the mouse scroll
+		// Detect the mouse scroll
 		addMouseWheelListener(this);
 		
 		// Note: need navWin prior to calling addMouseMotionListener()
@@ -280,7 +265,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					 && x > 0 && x < MAP_BOX_WIDTH 
 					 && y > 0 && y < MAP_BOX_HEIGHT) {
 					
-					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getScale());
+					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getRho());
 					marsMap.drawMap(centerCoords, getScale());
 					repaint();
 				}
@@ -356,58 +341,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public boolean hasMapLayer(MapLayer layer) {
 		return mapLayers.contains(layer);
 	}
-
-	private void buildZoomSlider() {
-
-		UIDefaults sliderDefaults = new UIDefaults();
-
-        sliderDefaults.put("Slider.thumbWidth", 15);
-        sliderDefaults.put("Slider.thumbHeight", 15);
-        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.BLACK);//ORANGE.darker().darker());
-                g.fillOval(1, 1, w-1, h-1);
-                g.setColor(Color.WHITE);
-                g.drawOval(1, 1, w-1, h-1);
-            }
-        });
-        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
-            public void paint(Graphics2D g, JComponent c, int w, int h) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setStroke(new BasicStroke(2f));
-                //g.setColor(new Color(139,69,19)); // brown
-                g.setColor(Color.BLACK);//ORANGE.darker().darker());
-                g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
-                g.setColor(Color.WHITE);
-                g.drawRoundRect(0, 6, w, 6, 6, 6);
-            }
-        });
-
-        zoomSlider = new JSlider(JSlider.VERTICAL, 0, 95, 14);
-        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(40, 300));
-        zoomSlider.setSize(new Dimension(40, 300));
-		zoomSlider.setMajorTickSpacing(20);
-		zoomSlider.setMinorTickSpacing(5);
-		zoomSlider.setPaintTicks(true);
-		zoomSlider.setPaintLabels(true);
-		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		zoomSlider.setOpaque(false);
-		
-		zoomSlider.setVisible(true);
-		
-		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
-				// Change scale of map based on slider position.
-				int sliderValue = zoomSlider.getValue();
-
-//				logger.info("sliderValue: " + sliderValue);
-			}
-		});
-    }
 	   
 	/**
 	 * Gets the map type.
@@ -529,18 +462,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // draw transparent background
-		super.paintComponent(g);
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // turn on opacity
-		
-//		g.setColor(Color.RED);
-//		g.fillRect(20, 20, 500, 300);
-		
         if (desktop != null && isShowing() && 
         		(desktop.isToolWindowOpen(NavigatorWindow.NAME)
         		|| desktop.isToolWindowOpen(MissionWindow.NAME))) {
 	        
-        	Graphics2D g2d = (Graphics2D) g;
+        	Graphics2D g2d = (Graphics2D) g.create();
 	        
         	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -548,8 +474,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			
 	        if (wait) {
-	        	if (mapImage != null) 
-	        		g2d.drawImage(mapImage, 0, 0, this);
+//	        	if (mapImage != null) {
+//	        		g2d.drawImage(mapImage, 0, 0, this);	
+//	        	}
 	        	String message = "Generating Map";
 	        	drawCenteredMessage(message, g2d);
 	        }
@@ -564,9 +491,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                drawCenteredMessage(mapErrorMessage, g2d);
 	            }
 	        	else {
-
-	        		g2d.setComposite(AlphaComposite.SrcOver); 
-	        		
+		
 //	        		g2d.setBackground(Color.BLACK);
 	        		
 	        		// Clear the background with white
@@ -574,19 +499,31 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	        		// Paint black background
 //	        		g2d.setPaint(Color.BLACK); 
-	        		
 //	        		g2d.setColor(Color.BLACK);
-//	                
-//	        		g2d.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-//	
-	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
+	                
+//	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
 	
+	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
+	        		
+//	        		g2d.setComposite(AlphaComposite.SrcOver); 
+//	        		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
+	        		// or 0.0f)); // draw transparent background
+	        		// or 1.0f)); // turn on opacity
+	        		
+//	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+
+//	        		Graphics2D gbi = null;
+	        		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
 	                		mapImage = marsMap.getMapImage();
 	                		if (mapImage != null) {
-	                			g2d.drawImage(mapImage, 0, 0, this);
-	                		}
+//		                		gbi = (Graphics2D) mapImage.getGraphics();       
+//		                		gbi.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+//	                			g2d.clearRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+//	                			gbi.drawImage(mapImage, 0, 0, this);      
+	                			g2d.drawImage(mapImage, 0, 0, this);  
+	                		}         		
 	                	}
 	                	else
 	                		return;
@@ -600,10 +537,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	                	Iterator<MapLayer> i = mapLayers.iterator();
 	                	while (i.hasNext()) i.next().displayLayer(centerCoords, marsMap, g);
 	                	
-                		g2d.dispose();
+                		
+//                		gbi.dispose();
 	                }
 	        	}
 	        }
+	        
+	        g2d.dispose();
         }
     }
 
@@ -643,7 +583,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		double xMap = x - (Map.MAP_BOX_WIDTH) - 1;
 		double yMap = y - (Map.MAP_BOX_HEIGHT) - 1;
 		
-		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getScale());
+		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getRho());
     }
 
     /**
@@ -652,21 +592,21 @@ public class MapPanel extends JPanel implements MouseWheelListener {
      * @return
      */
     public double getScale() {
-    	return marsMap.getScale();
+    	return marsMap.getRho();
     }
-    
-	/**
-	 * Sets the map scale.
-	 *
-	 * @param scale (pixels per meter).
-	 */
-	public void setScale(double scale) {
-		this.scale = scale;
 
-		// paintDoubleBuffer();
+	/**
+	 * Sets the map rho.
+	 *
+	 * @param rho
+	 */
+	public void setRho(double rho) {
+//		marsMap.setRho(rho);
+		marsMap.drawMap(centerCoords, rho);
 		repaint();
 	}
 	
+    
     /**
      * Gets the magnification of the Mars surface map.
      * 

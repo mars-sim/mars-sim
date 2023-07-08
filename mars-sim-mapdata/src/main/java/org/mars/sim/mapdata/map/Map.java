@@ -58,11 +58,18 @@ public interface Map {
 	public Image getMapImage();
 
 	/**
-	 * Gets the scale of the Mars surface map (height pixels divided by pi).
+	 * Gets the rho of the Mars surface map (height pixels divided by pi).
 	 * 
 	 * @return
 	 */
-	public double getScale();
+	public double getRho();
+	
+	/**
+	 * sets the rho of the Mars surface map (height pixels divided by pi).
+	 * 
+	 * @return
+	 */
+	public void setRho(double rho);
 
 	/**
      * Gets the magnification of the Mars surface map.

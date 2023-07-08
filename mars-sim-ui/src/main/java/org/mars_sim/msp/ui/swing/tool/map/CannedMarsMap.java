@@ -99,14 +99,24 @@ public class CannedMarsMap extends JComponent implements Map {
 	}
 	   
 	/**
-	 * Gets the scale of the Mars surface map.
+	 * Gets the rho of the Mars surface map.
 	 * 
 	 * @return
 	 */
 	@Override
-	public double getScale() {
-		return mapData.getScale();
+	public double getRho() {
+		return mapData.getRho();
 	}
+	
+	/**
+	 * Sets the map rho.
+	 *
+	 * @param rho
+	 */
+	public void setRho(double rho) {
+		mapData.setRho(rho);
+	}
+	
 	
 	/**
 	 * Gets the height of this map in pixels.

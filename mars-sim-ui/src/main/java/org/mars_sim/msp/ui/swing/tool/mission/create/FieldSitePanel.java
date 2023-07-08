@@ -108,7 +108,7 @@ public class FieldSitePanel extends WizardPanel {
     boolean commitChanges() {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
         Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - Map.HALF_MAP_BOX, 
-                navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getScale());
+                navpointPixel.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
         getWizard().getMissionData().setFieldSite(navpoint);
         return true;
     }
@@ -129,7 +129,7 @@ public class FieldSitePanel extends WizardPanel {
             navLayer.addNavpointPosition(initialNavpointPos);
             
             Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
-                                        mapPane.getMap().getScale());
+                                        mapPane.getMap().getRho());
             locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
             mapPane.showMap(initialNavpoint);
         }
@@ -233,7 +233,7 @@ public class FieldSitePanel extends WizardPanel {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
                     Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
-                            displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getScale());
+                            displayPos.getiY() - Map.HALF_MAP_BOX, mapPane.getMap().getRho());
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();

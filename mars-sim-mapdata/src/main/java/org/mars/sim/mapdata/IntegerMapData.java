@@ -108,7 +108,7 @@ import com.jogamp.opencl.CLProgram;
 			program = getProgram("MapDataFast.cl");
 			kernel = getKernel(program, "getMapImage")
 					.setArg(11, (float) TWO_PI)
-					.setArg(12, (float) getScale());
+					.setArg(12, (float) getRho());
 		} catch(Exception e) {
 			HARDWARE_ACCELERATION = false;
 			logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while compiling: " + e.getMessage());
@@ -131,7 +131,7 @@ import com.jogamp.opencl.CLProgram;
 	 * @return
 	 */
 	@Override
-	public double getScale() {
+	public double getRho() {
 		return rho;
 	}
 	
@@ -145,11 +145,11 @@ import com.jogamp.opencl.CLProgram;
     }
     
 	/**
-	 * Sets the scale of the Mars surface map.
+	 * Sets the rho of the Mars surface map.
 	 * 
 	 * @param value
 	 */
-	public void setMapScale(double value) {
+	public void setRho(double value) {
 		double newRho = value;
 		if (newRho > MAX_RHO) {
 			newRho = MAX_RHO;
@@ -265,6 +265,7 @@ import com.jogamp.opencl.CLProgram;
 	
  		if (mapImage != null 
  				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && scale == rho)) {
+ 			// No need to recreate the mapImage when the mouse has not moved
  			return mapImage;
  		}
  		
@@ -272,13 +273,17 @@ import com.jogamp.opencl.CLProgram;
  		centerPhiCache = centerPhi;
 		// Set the new theta 		
  		centerThetaCache = centerTheta;
-		// Set the new map scale
-		setMapScale(scale);
+		// Set the new map rho
+		setRho(scale);
  		
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, 
  				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);
 
+ 		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
+
+ 		logger.info("transparency: " + result.getTransparency());
+ 		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 
@@ -295,7 +300,7 @@ import com.jogamp.opencl.CLProgram;
 				 gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 			 } catch(Exception e) {
 				 HARDWARE_ACCELERATION = false;
-				 logger.log(Level.SEVERE, "Disabling hardware acceleration due to exception caused while rendering: " + e.getMessage());
+				 logger.log(Level.SEVERE, "Disabling GPU OpenCL acceleration due to exception caused while rendering: " + e.getMessage());
 			 }
 		 }
 		 else {
@@ -306,7 +311,7 @@ import com.jogamp.opencl.CLProgram;
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 
  		mapImage = result;
- 		
+		
  		return result;
  	}
 
@@ -329,7 +334,7 @@ import com.jogamp.opencl.CLProgram;
 			 for(int x = 0; x < mapBoxWidth; x++) {
 				 int index = x + (y * mapBoxWidth);
 
-				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getScale());
+				 Point2D loc = convertRectToSpherical(x - halfWidth, y - halfHeight, centerPhi, centerTheta, getRho());
 				 mapArray[index] = getRGBColorInt(loc.getX(), loc.getY());
 
 //				 locations.add(loc);
@@ -352,7 +357,7 @@ import com.jogamp.opencl.CLProgram;
 	 private synchronized void gpu(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, int[] mapArray) {
 		 
 		 // Set the new scale arg again
-		 kernel.setArg(12, (float) getScale());
+		 kernel.setArg(12, (float) getRho());
 		 
 		 int size = mapArray.length;
 		 int globalSize = getGlobalSize(size);

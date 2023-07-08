@@ -645,7 +645,7 @@ class ExplorationSitesPanel extends WizardPanel {
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - Map.HALF_MAP_BOX, 
 						displayPos.getiY() - Map.HALF_MAP_BOX,
-						mapPane.getMap().getScale());
+						mapPane.getMap().getRho());
 
 				// Only drag navpoint flag if within ellipse range bounds.
 				if (withinBounds(displayPos, navpoint)) {

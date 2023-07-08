@@ -90,7 +90,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 		
 		String mapType = baseMap.getType().getId();
 
-		double rho = baseMap.getScale();
+		double rho = baseMap.getRho();
 		
 		int numMinerals = mineralsDisplaySet.size();
 		

@@ -204,9 +204,9 @@ public class SettlementTransparentPanel extends JComponent {
 
 	@Override
     public void paintComponent(Graphics g) {
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.0f)); // draw transparent background
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); // draw transparent background
 		super.paintComponent(g);
-		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.0f)); // turn on opacity
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // turn on opacity
 //		g.setColor(Color.RED);
 //		g.fillRect(20, 20, 500, 300);
 	}
@@ -781,8 +781,8 @@ public class SettlementTransparentPanel extends JComponent {
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		
-		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		zoomSlider.setOpaque(false);
+//		zoomSlider.setForeground(Color.ORANGE.darker().darker());
+//		zoomSlider.setOpaque(false);
 		
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
 		zoomSlider.addChangeListener(new ChangeListener() {

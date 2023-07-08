@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -13,18 +14,23 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -40,13 +46,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.Painter;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
@@ -92,7 +104,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * presents the simulation to the user.
  */
 @SuppressWarnings("serial")
-public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
+public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow, MouseWheelListener {
 
 	private static class MapOrder {
 		int order;
@@ -142,11 +154,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String SURFACE_MAP = "surface";
 
 	// Data member
-	/** The latitude combox  */
+	/** The map rho. */
+	private double rho;
+	
+	/** The latitude combox.  */
 	private JComboBoxMW<?> latCB;
 	/** The longitude combox. */
 	private JComboBoxMW<?> lonCB;
-	/** Settlement Combo box */
+	/** Settlement Combo box. */
 	private JComboBox<Settlement> settlementComboBox;
 	/** Latitude direction choice. */
 	private JComboBoxMW<?> latCBDir;
@@ -171,6 +186,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private JLabel phiLabel;
 	private JLabel thetaLabel;
 
+	private JSlider zoomSlider;
+//	private DoubleJSlider doubleSlider;
+	
 	private java.util.Map<String, MapOrder> mapLayers = new HashMap<>();
 
 	private List<Landmark> landmarks;
@@ -215,20 +233,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
+		JPanel mapPane = new JPanel();//new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
 		mapPane.setBackground(new Color(0, 0, 0, 128));
 		mapPane.setOpaque(false);
 		wholePane.add(mapPane, BorderLayout.CENTER);
 	
 		// Build the Map panel first as the globe is a slave
-		detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		detailPane.setBackground(new Color(0, 0, 0, 128));
-		detailPane.setOpaque(false);
-		detailPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
-		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
+//		detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+//		detailPane.setBackground(new Color(0, 0, 0, 128));
+//		detailPane.setOpaque(false);
+//		detailPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
+//		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
-		mapPane.add(detailPane);
+//		mapPane.add(detailPane);
 		
 		mapLayerPanel = new MapPanel(desktop, this);
 		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
@@ -251,7 +269,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		createMapLayer(EXPLORED_LAYER, 7, new ExploredSiteMapLayer(mapLayerPanel));
 
 		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
-		detailPane.add(mapLayerPanel);
+		
+		mapPane.add(mapLayerPanel);
+//		detailPane.add(mapLayerPanel);
+				
+		buildZoomSlider();
+		
+		JPanel zoomPane = new JPanel(new BorderLayout());
+		zoomPane.setBackground(new Color(0, 0, 0, 128));
+		zoomPane.setOpaque(false);
+		zoomPane.add(zoomSlider);
+		
+//		JLayeredPane layerPane = new JLayeredPane();
+//		layerPane.setLayer(zoomPane, JLayeredPane.PALETTE_LAYER);	
+//		layerPane.add(zoomPane);
+//		// Detect the mouse scroll
+//		layerPane.addMouseWheelListener(this);
+
+		mapPane.add(zoomPane);
+//		mapPane.add(layerPane);
+		mapLayerPanel.addMouseWheelListener(this);
 		
 		///////////////////////////////
 		
@@ -321,7 +358,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		////////////////////////////////////////////
 			
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel("Lat :", JLabel.RIGHT);
+		JLabel latLabel = new JLabel("   Lat :", JLabel.RIGHT);
 		topPane.add(latLabel);
 
 		Integer[] lon_degrees = new Integer[361];
@@ -339,7 +376,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
-		latCB.setPreferredSize(new Dimension(70, 25));
+		latCB.setPreferredSize(new Dimension(50, 25));
 		latCB.setSelectedItem(0);
 		topPane.add(latCB);
 
@@ -357,7 +394,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Switch to using ComboBoxMW for longitude
 		lonCB = new JComboBoxMW<Integer>(lon_degrees);
-		lonCB.setPreferredSize(new Dimension(70, 25));
+		lonCB.setPreferredSize(new Dimension(50, 25));
 		lonCB.setSelectedItem(0);
 		topPane.add(lonCB);
 
@@ -1095,6 +1132,109 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		return results;
 	}
 	
+	private void buildZoomSlider() {
+
+		UIDefaults sliderDefaults = new UIDefaults();
+
+        sliderDefaults.put("Slider.thumbWidth", 15);
+        sliderDefaults.put("Slider.thumbHeight", 15);
+        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", new Painter<JComponent>() {
+            public void paint(Graphics2D g, JComponent c, int w, int h) {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setStroke(new BasicStroke(2f));
+                g.setColor(Color.BLACK);//ORANGE.darker().darker());
+                g.fillOval(1, 1, w-1, h-1);
+                g.setColor(Color.WHITE);
+                g.drawOval(1, 1, w-1, h-1);
+            }
+        });
+        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", new Painter<JComponent>() {
+            public void paint(Graphics2D g, JComponent c, int w, int h) {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setStroke(new BasicStroke(2f));
+                //g.setColor(new Color(139,69,19)); // brown
+                g.setColor(Color.BLACK);//ORANGE.darker().darker());
+                g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
+                g.setColor(Color.WHITE);
+                g.drawRoundRect(0, 6, w, 6, 6, 6);
+            }
+        });
+
+        zoomSlider = new JSlider(JSlider.VERTICAL, 0, 98, 14);
+        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
+        zoomSlider.setPreferredSize(new Dimension(60, 400));
+        zoomSlider.setSize(new Dimension(60, 400));
+//		zoomSlider.setMajorTickSpacing(30);
+//		zoomSlider.setMinorTickSpacing(6);
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setPaintLabels(true);
+		zoomSlider.setForeground(Color.ORANGE.darker().darker());
+		zoomSlider.setBackground(new Color(0, 0, 0, 128));
+		zoomSlider.setOpaque(false);
+		
+		zoomSlider.setVisible(true);
+		
+		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+		zoomSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				// Change scale of map based on slider position.
+				int newSliderValue = zoomSlider.getValue();
+
+//				double newMag = mapLayerPanel.getMagnification();
+			
+				double newMag = (5.0/14 * newSliderValue + 1)/6;
+									
+				double newRho = MapPanel.RHO_DEFAULT * newMag;
+				
+				setRho(newRho);
+				
+//				logger.info("newSliderValue: " + newSliderValue
+//						+ "  newMag: " + Math.round(newMag * 1000.0)/1000.0
+//						+ "  newRho: " + Math.round(newRho * 1000.0)/1000.0
+//						);
+			}
+		});
+		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+		labelTable.put( Integer.valueOf(98), new JLabel("6") );
+		labelTable.put( Integer.valueOf(81), new JLabel("5") );
+		labelTable.put( Integer.valueOf(65), new JLabel("4") );
+		labelTable.put( Integer.valueOf(48), new JLabel("3") );
+		labelTable.put( Integer.valueOf(31), new JLabel("2") );
+		labelTable.put( Integer.valueOf(14), new JLabel("1") );
+		labelTable.put( Integer.valueOf(0), new JLabel("0.167") );		
+		zoomSlider.setLabelTable(labelTable);
+		
+//		doubleSlider = new DoubleJSlider(0, 95, 14, 1000);
+    }
+	
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int numClicks = e.getWheelRotation();
+		if (numClicks > 0) {
+			// Move zoom slider down.
+			if (zoomSlider.getValue() > zoomSlider.getMinimum())
+				zoomSlider.setValue(zoomSlider.getValue() - 1);
+		}
+		else if (numClicks < 0) {
+			// Move zoom slider up.
+			if (zoomSlider.getValue() < zoomSlider.getMaximum())
+				zoomSlider.setValue(zoomSlider.getValue() + 1);
+		}
+	}
+
+	/**
+	 * Sets the map rho.
+	 *
+	 * @param rho
+	 */
+	public void setRho(double rho) {
+		this.rho = rho;
+		mapLayerPanel.setRho(rho);
+	}
+	
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */	
@@ -1134,6 +1274,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		umListener = null;
 		selectedSettlement = null;
 		
+	}
+	
+	class DoubleJSlider extends JSlider {
+
+	    final int scale;
+
+	    public DoubleJSlider(int min, int max, int value, int scale) {
+	        super(min, max, value);
+	        this.scale = scale;
+	    }
+
+	    public double getScaledValue() {
+	        return ((double)super.getValue()) / this.scale;
+	    }
 	}
 	
 	/**

@@ -29,12 +29,19 @@ import java.io.IOException;
 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
 	
     /**
-     * Gets the scale of the Mars surface map.
+     * Gets the rho of the Mars surface map.
      * 
      * @return
      */
-    public double getScale();
+    public double getRho();
 
+	/**
+	 * sets the rho of the Mars surface map (height pixels divided by pi).
+	 * 
+	 * @return
+	 */
+	public void setRho(double rho);
+	
     /**
      * Gets the magnification of the Mars surface map.
      * 

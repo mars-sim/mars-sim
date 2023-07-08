@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.project.ProjectStep;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsTime;
-import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
