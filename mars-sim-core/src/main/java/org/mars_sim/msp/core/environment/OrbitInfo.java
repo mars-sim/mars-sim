@@ -41,27 +41,27 @@ public class OrbitInfo implements Serializable, Temporal {
 	// INSTANTANEOUS_RADIUS_NUMERATOR = 1.510818924D
 	// public static final double INSTANTANEOUS_RADIUS_NUMERATOR = SEMI_MAJOR_AXIS
 	// *(1 - ECCENTRICITY * ECCENTRICITY);
-	public static final double DEGREE_TO_RADIAN = Math.PI / 180; // convert a number in degrees to radians
+	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
 
 	/** Mars tilt in radians. */
-	private static final double TILT = 0.4398; // 25.2 deg // 25.2 / 180 *pi = 0.4398
+	private static final double TILT = 0.4398D; // 25.2 deg // 25.2 / 180 *pi = 0.4398
 	/** Mars tilt in sine. */
-	private static final double SINE_TILT = 0.4258; // sin (25.2 / 180 *pi) = 0.4258
+	private static final double SINE_TILT = 0.4258D; // sin (25.2 / 180 *pi) = 0.4258
 	/** Mars solar day in seconds. */
 	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
 	/** Half of PI. */
-	private static final double HALF_PI = Math.PI / 2;
+	private static final double HALF_PI = Math.PI / 2D;
 	/** Two PIs. */
-	private static final double TWO_PIs = Math.PI * 2;
+	private static final double TWO_PIs = Math.PI * 2D;
 	// On earth, use 15; On Mars, use 14.6 instead.
-	private static final double ANGLE_TO_HOURS = 90 / HALF_PI  / 14.6;
+	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D;
 
-	private static final double HRS_TO_MILLISOLS = 1.0275 * MarsTime.MILLISOLS_PER_DAY / 24; 
+	private static final double HRS_TO_MILLISOLS = 1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
 	
 	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
-	private static final double NAUTICAL_DAWN_ANGLE = 12; // in degree
+	private static final double NAUTICAL_DAWN_ANGLE = 12D; // in degree
 
 	// Date of the 2000K start second
 	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
@@ -69,7 +69,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * Adopts the nautical dawn as the angle of the sun below the horizon for calculating the zenith angle at dawn.
 	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
 	 */
-	private static final double ZENITH_ANGLE_AT_DAWN = (90 + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
+	private static final double ZENITH_ANGLE_AT_DAWN = (90D + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
 	/** The cosine of the dawn zenith angle. */
 	private static final double COSINE_ZENITH_ANGLE_AT_DAWN =  Math.cos(ZENITH_ANGLE_AT_DAWN);
 
@@ -77,7 +77,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * Adopts the nautical dusk as the angle of the sun below the horizon for calculating the zenith angle at dawn.
 	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
 	 */
-	private static final double ZENITH_ANGLE_AT_DUSK = (90 + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
+	private static final double ZENITH_ANGLE_AT_DUSK = (90D + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
 	/** The cosine of the dusk zenith angle. */
 	private static final double COSINE_ZENITH_ANGLE_AT_DUSK =  Math.cos(ZENITH_ANGLE_AT_DUSK);
 	

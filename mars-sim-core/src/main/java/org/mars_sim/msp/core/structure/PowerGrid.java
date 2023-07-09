@@ -40,15 +40,15 @@ public class PowerGrid implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PowerGrid.class.getName());
 
-	public static final double R_LOAD = 1000; // assume constant load resistance
+	public static final double R_LOAD = 1000D; // assume constant load resistance
 
-	public static final double ROLLING_FACTOR = 1.1; 
+	public static final double ROLLING_FACTOR = 1.1D; 
 	
 	public static final double percentAverageVoltageDrop = 98D;
 
 	public static final double HOURS_PER_MILLISOL = MarsTime.HOURS_PER_MILLISOL; // equals to 0.0247;
 
-	public double degradationRatePerSol = .0004;
+	public double degradationRatePerSol = .0004D;
 
 	public double systemEfficiency = 1D;
 

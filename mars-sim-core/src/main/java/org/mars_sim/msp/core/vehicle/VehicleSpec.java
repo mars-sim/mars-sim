@@ -40,7 +40,7 @@ public class VehicleSpec implements Serializable {
 	public static final String DASHES = " -----------------------------------------------------------------------";
 
 	/** The wear lifetime value is 1 orbit. */
-	private static final double WEAR_LIFETIME = 668_000;
+	private static final double WEAR_LIFETIME = 668_000D;
 	
 	// As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. 
 	// Energy Density is 8.9 kWh/L or 44-46 MJ/kg
@@ -52,11 +52,11 @@ public class VehicleSpec implements Serializable {
 	 * 
 	 * @See https://hypertextbook.com/facts/2004/BillyWan.shtml
 	 */
-	public static final double METHANE_SPECIFIC_ENERGY = 15.4167; // [in kWh/kg]
+	public static final double METHANE_SPECIFIC_ENERGY = 15.4167D; // [in kWh/kg]
 	/**
 	 * Methane's volumetric energy density [in kWh/L]. or 38.3 MJ/L with unknown wt %. 
 	 */
-	public static final double METHANE_VOLUMETRIC_ENERGY_DENSITY = 7.1689; 
+	public static final double METHANE_VOLUMETRIC_ENERGY_DENSITY = 7.1689D; 
 	
 	// 1 liter of methane weighs 0.465 kilogram. or 2.1505 L = 1 kg
 	// 
@@ -69,34 +69,34 @@ public class VehicleSpec implements Serializable {
 	 * Methanol's Specific Energy is 6.1206 kWh/kg (or 22.0342 MJ/kg)
 	 * https://en.wikipedia.org/wiki/Fuel_efficiency uses 19.9 MJ/kg and 17.9 MJ/L
 	 */
-	public static final double METHANOL_SPECIFIC_ENERGY = 6.1206; // [in kWh/kg]
+	public static final double METHANOL_SPECIFIC_ENERGY = 6.1206D; // [in kWh/kg]
 
 	/**
 	 * Methanol's volumetric energy density [in kWh/L].
 	 */
-	public static final double METHANOL_VOLUMETRIC_ENERGY_DENSITY = 4.33;
+	public static final double METHANOL_VOLUMETRIC_ENERGY_DENSITY = 4.33D;
 	/**
 	 * Methanol's gravimetric energy density [in kWh/L].
 	 */
-	public static final double METHANOL_GRAVIMETRIC_ENERGY_DENSITY = 5.53;
+	public static final double METHANOL_GRAVIMETRIC_ENERGY_DENSITY = 5.53D;
 	
 	
 	/**
 	 * Uranium oxide's specific energy [in kWh/kg].
 	 */
-	public static final double URANIUM_OXIDE_SPECIFIC_ENERGY = 49_600;
+	public static final double URANIUM_OXIDE_SPECIFIC_ENERGY = 49_600D;
 	
 	/**
 	 * Stirling conversion efficiency.
 	 */
-	public static final double STIRLING_CONVERSION_EFFICIENCY = .274;
+	public static final double STIRLING_CONVERSION_EFFICIENCY = .274D;
 	
 	/**
 	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using 
 	 * methane is dimension-less. Assume methane can be internally 
 	 * reformed within the anode of the fuel cells.
 	 */
-	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
+	public static final double SOFC_CONVERSION_EFFICIENCY = .65D;
 	
 	/**
 	 * Reformed (or indirect)-methanol fuel cells (RMFC) are a subcategory of proton-exchange 
@@ -105,21 +105,21 @@ public class VehicleSpec implements Serializable {
 	public static final double RMFC_CONVERSION_EFFICIENCY = .95;
 	
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methane. */
-	public static final double METHANE_KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
+	public static final double METHANE_KG_PER_KWH = 1.0D / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methane. */	
-	public static final double METHANE_WH_PER_KG = 1000.0 / METHANE_KG_PER_KWH;
+	public static final double METHANE_WH_PER_KG = 1000.0D / METHANE_KG_PER_KWH;
 
 	
 	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using methanol. */
-	public static final double METHANOL_KG_PER_KWH = 1.0 / RMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
+	public static final double METHANOL_KG_PER_KWH = 1.0D / RMFC_CONVERSION_EFFICIENCY / METHANOL_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using methanol. */	
-	public static final double METHANOL_WH_PER_KG = 1000.0 / METHANOL_KG_PER_KWH; 
+	public static final double METHANOL_WH_PER_KG = 1000.0D / METHANOL_KG_PER_KWH; 
 
 	
 	/** The kWh-to-Kg conversion factor for our nuclear-powered vehicles using uranium oxide. */
-	public static final double URANIUM_OXIDE_KG_PER_KWH = 1.0 / STIRLING_CONVERSION_EFFICIENCY / URANIUM_OXIDE_SPECIFIC_ENERGY; 
+	public static final double URANIUM_OXIDE_KG_PER_KWH = 1.0D / STIRLING_CONVERSION_EFFICIENCY / URANIUM_OXIDE_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our nuclear-powered vehicles using uranium oxide. */	
-	public static final double URANIUM_OXIDE_WH_PER_KG = 1000.0 / URANIUM_OXIDE_KG_PER_KWH; 
+	public static final double URANIUM_OXIDE_WH_PER_KG = 1000.0D / URANIUM_OXIDE_KG_PER_KWH; 
 	
 	
 	/** Estimated Number of hours traveled each day. **/
@@ -262,7 +262,6 @@ public class VehicleSpec implements Serializable {
 	private LocalPosition airlockExteriorLoc;
 
 	private Set<Integer> partIDs;
-	private Set<Integer> amountIDs;
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double value,
@@ -347,7 +346,6 @@ public class VehicleSpec implements Serializable {
 		}
 			
 		List<String> names = buildDetails.getInputNames();
-		amountIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
 		partIDs = ItemResourceUtil.convertNameListToResourceIDs(names);
 						
 		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part  

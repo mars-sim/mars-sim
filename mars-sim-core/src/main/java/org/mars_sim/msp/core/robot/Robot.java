@@ -75,11 +75,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
 	/** 334 Sols (1/2 orbit). */
-	private static final double WEAR_LIFETIME = 334_000;
+	private static final double WEAR_LIFETIME = 334_000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
 	/** A small amount. */
-	private static final double SMALL_AMOUNT = 0.00001;
+	private static final double SMALL_AMOUNT = 0.00001D;
 
 	/** The string tag of operable. */
 	private static final String OPERABLE = "Operable";

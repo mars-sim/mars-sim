@@ -507,7 +507,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double computeRepairPartProbability(Malfunction malfunction, String partName, double reliability) {
 		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
-		if (partList != null) {
+		if ((partList != null) && !partList.isEmpty()) {
 			Iterator<RepairPart> i = partList.iterator();
 			double totalProb = 0;
 			double oldRepairProb = 0;

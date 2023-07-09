@@ -45,7 +45,7 @@ public class PreparingDessert extends Function {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PreparingDessert.class.getName());
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
+	private static final double MIN = 0.00001D;
 
 	public static final String REFRIGERATE = "A dessert has expired. Refrigerating ";
 
@@ -64,15 +64,15 @@ public class PreparingDessert extends Function {
 	 */
 	public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
-	public static double UP = 0.01;
-	public static double DOWN = 0.007;
+	public static double UP = 0.01D;
+	public static double DOWN = 0.007D;
 
 	// SERVING_FRACTION also used in GoodsManager
 	public static final int NUM_OF_DESSERT_PER_SOL = 4;
 	// DESSERT_SERVING_FRACTION is used in every mission expedition
 	public static final double DESSERT_SERVING_FRACTION = .5D;
 	// amount of water in kg per dessert during preparation and clean-up
-	public static final double WATER_USAGE_PER_DESSERT = .5;
+	public static final double WATER_USAGE_PER_DESSERT = .5D;
 
 	private static double dessertMassPerServing;
 

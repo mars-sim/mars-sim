@@ -104,7 +104,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public static final int CARRYING_CAPACITY_FOOD = 1;
 	
 	/** A small amount. */
-	private static final double SMALL_AMOUNT = 0.00001;
+	private static final double SMALL_AMOUNT = 0.00001D;
 
 	private final static String EARTH_BIRTHPLACE = "Earth";
 	private final static String MARS_BIRTHPLACE = "Mars";

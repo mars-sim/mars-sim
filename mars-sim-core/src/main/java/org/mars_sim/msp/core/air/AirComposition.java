@@ -53,10 +53,10 @@ public class AirComposition implements Serializable {
     }
 
 	// see https://en.wikipedia.org/wiki/Gas_constant
-	private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
-	public static final double MB_PER_ATM = 1013.2501;
-	public static final double KPA_PER_ATM = 101.32501;
-	public static final double PSI_PER_ATM = 14.696;
+	private static final double R_GAS_CONSTANT = 0.082057338D; // [ in L atm K^−1 mol^−1 ]
+	public static final double MB_PER_ATM = 1013.2501D;
+	public static final double KPA_PER_ATM = 101.32501D;
+	public static final double PSI_PER_ATM = 14.696D;
 
 	/**
      * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
@@ -64,16 +64,16 @@ public class AirComposition implements Serializable {
      */
     // see http://www.collectspace.com/ubb/Forum29/HTML/001309.html
     // The partial pressures of each gas are in atm
-    private static final double CO2_PARTIAL_PRESSURE = 0.5 / MB_PER_ATM;
-    private static final double ARGON_PARTIAL_PRESSURE = 0.1 / MB_PER_ATM;
-    private static final double N2_PARTIAL_PRESSURE = 120 / MB_PER_ATM;
-    private static final double O2_PARTIAL_PRESSURE = 200 / MB_PER_ATM;
-    private static final double H2O_PARTIAL_PRESSURE = 19.4 / MB_PER_ATM;
-    private static final double H2O_MOLAR_MASS = 18.02 / 1000;
-    private static final double O2_MOLAR_MASS = 32.00 / 1000;
-    private static final double N2_MOLAR_MASS = 28.02 / 1000;
-    private static final double ARGON_MOLAR_MASS = 39.948 / 1000;
-    private static final double CO2_MOLAR_MASS = 44.0095 / 1000;
+    private static final double CO2_PARTIAL_PRESSURE = 0.5D / MB_PER_ATM;
+    private static final double ARGON_PARTIAL_PRESSURE = 0.1D / MB_PER_ATM;
+    private static final double N2_PARTIAL_PRESSURE = 120D / MB_PER_ATM;
+    private static final double O2_PARTIAL_PRESSURE = 200D / MB_PER_ATM;
+    private static final double H2O_PARTIAL_PRESSURE = 19.4D / MB_PER_ATM;
+    private static final double H2O_MOLAR_MASS = 18.02D / 1000D;
+    private static final double O2_MOLAR_MASS = 32D / 1000D;
+    private static final double N2_MOLAR_MASS = 28.02D / 1000D;
+    private static final double ARGON_MOLAR_MASS = 39.948D / 1000D;
+    private static final double CO2_MOLAR_MASS = 44.0095D / 1000D;
 	private static final int MILLISOLS_PER_UPDATE = 2;
 	private static final double CALCULATE_FREQUENCY = 2D;
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;

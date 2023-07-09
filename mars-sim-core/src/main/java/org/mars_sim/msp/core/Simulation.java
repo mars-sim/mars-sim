@@ -777,13 +777,13 @@ public class Simulation implements ClockListener, Serializable {
 			UnitSet.reinit(unitManager);
 
 		} catch (ClassNotFoundException e) {
-			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't find class when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, "Can't find class when loading " + file + " : " + e.getMessage());
 
 		} catch (ObjectStreamException e) {
-			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Can't read object stream when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, "Can't read object stream when loading " + file + " : " + e.getMessage());
 	
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, ois.getClass().getSimpleName() + ": Input/Output problem when loading " + file + " : ", e.getMessage()); 
+			logger.log(Level.SEVERE, "Input/Output problem when loading " + file + " : ", e.getMessage()); 
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());

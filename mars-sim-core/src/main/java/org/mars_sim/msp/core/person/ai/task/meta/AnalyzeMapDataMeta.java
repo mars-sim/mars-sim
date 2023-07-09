@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class AnalyzeMapDataMeta extends FactoryMetaTask {
     
 	/** Task name */
-	private static final double VALUE = 0.5;
+	private static final double VALUE = 0.5D;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -99,13 +99,13 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
             }
             
             if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
-            	result *= 1.5;
+            	result *= 1.5D;
             
             if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
-            	result *= 1.5;
+            	result *= 1.5D;
             
             else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
-            	result *= 1.25;
+            	result *= 1.25D;
         }
 
         if (result == 0) return 0;

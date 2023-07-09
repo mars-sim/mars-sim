@@ -262,20 +262,20 @@ public class ExploredLocation implements Serializable {
 	 * @return
 	 */
 	public boolean isCertaintyAverageOver50() {
-		double sum = 0;
-		double numMinerals = 0;
-		for (Entry<String, Double> i : degreeCertainty.entrySet()) {
-//			String mineral = i.getKey();
-			numMinerals ++;
-			double certainty = i.getValue();
-			sum += certainty;
+		if (!degreeCertainty.isEmpty()) {
+			double sum = 0;
+			double numMinerals = 0;
+			for (Entry<String, Double> i : degreeCertainty.entrySet()) {
+				numMinerals ++;
+				double certainty = i.getValue();
+				sum += certainty;
+			}
+			
+			double average = sum / numMinerals;
+			if (average > 50) {
+				return true;
+			}
 		}
-		
-		double average = sum / numMinerals;
-		if (average > 50) {
-			return true;
-		}
-		
 		return false;
 	}
 	
