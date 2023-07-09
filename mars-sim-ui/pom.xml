@@ -34,6 +34,13 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.netbeans.swing.outline/outline 
+		<dependency>
+		    <groupId>org.netbeans.swing.outline</groupId>
+		    <artifactId>outline</artifactId>
+		    <version>6.9.1</version>
+		</dependency-->
+		
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
@@ -89,6 +96,24 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 		<dependency>
 			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-jide-oss</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-swingx</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-extras</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
 			<version>3.1.1</version>
 		</dependency>
@@ -108,7 +133,11 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 	    </repository>
-
+	    
+	    <repository>
+		    <id>icm</id>
+		    <url>https://maven.icm.edu.pl/artifactory/repo/</url>
+	    </repository>
 	</repositories>
 
 </project>

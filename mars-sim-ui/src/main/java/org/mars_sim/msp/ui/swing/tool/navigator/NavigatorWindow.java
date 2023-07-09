@@ -119,7 +119,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
 	private static final String DASH = "- ";
-	private static final String CHOOSE_SETTLEMENT = "Settlement List";
+	private static final String CHOOSE_SETTLEMENT = "List";
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";

@@ -70,10 +70,8 @@ public class TabPanelOrganization extends TabPanel {
 	/** The Settlement instance. */
 	private Settlement settlement;
 
-//	private JPanel infoPanel;
-
 	private JTree tree;
-
+	
 	private DefaultMutableTreeNode root;
 
 	private DefaultTreeModel defaultTreeModel;

@@ -1,24 +1,32 @@
 /*
  * Mars Simulation Project
  * SearchWindow.java
- * @date 2023-07-01
+ * @date 2023-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -26,6 +34,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
@@ -47,6 +56,10 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
+
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.icons.FlatSearchIcon;
+import com.formdev.flatlaf.icons.FlatSearchWithHistoryIcon;
 
 
 /**
@@ -86,6 +99,8 @@ extends ToolWindow {
 	private JButton searchButton;
 
 	private UnitManager unitManager;
+	
+	private List<String> history = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -136,7 +151,7 @@ extends ToolWindow {
 		// Create select unit panel
 		JPanel selectUnitPane = new JPanel(new BorderLayout());
 		mainPane.add(selectUnitPane, BorderLayout.CENTER);
-
+		
 		// Create select text field
 		selectTextField = new JTextField();
 		selectTextField.getDocument().addDocumentListener(new DocumentListener() {
@@ -153,7 +168,29 @@ extends ToolWindow {
 			}
 		});
 		selectUnitPane.add(selectTextField, BorderLayout.NORTH);
-
+					
+		// search history button
+		JButton searchHistoryButton = new JButton(new FlatSearchWithHistoryIcon(true));
+		searchHistoryButton.setToolTipText("Search History");
+		searchHistoryButton.addActionListener( e -> {
+			JPopupMenu popupMenu = new JPopupMenu();
+			int size = history.size();
+			if (history.isEmpty()) {
+				popupMenu.add("(empty)");
+			}
+			else {
+				for (int i = 0; i < size; i++) {
+					popupMenu.add(history.get(i));
+				}
+			}
+			popupMenu.show(searchHistoryButton, 0, searchHistoryButton.getHeight());
+		} );
+		
+		// Add leading/trailing icons to text fields
+		selectTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search");
+		selectTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_COMPONENT, searchHistoryButton);
+		selectTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
+		
 		// Create unit list
 		unitListModel = new UnitListModel(UnitType.PERSON);
 		unitList = new JList<>(unitListModel);
@@ -226,9 +263,10 @@ extends ToolWindow {
 	private void search() {
 		UnitType category = (UnitType) searchForSelect.getSelectedItem();
 		
+		String selectedUnitName = selectTextField.getText();
 		// If entered text equals the name of a unit in this category, take appropriate action.
 		boolean foundUnit = false;
-		Unit unit = unitManager.getUnitByName(category, selectTextField.getText());
+		Unit unit = unitManager.getUnitByName(category, selectedUnitName);
 		if (unit != null) {
 			foundUnit = true;
 			if (openWindowCheck.isSelected()) 
@@ -241,6 +279,9 @@ extends ToolWindow {
 			
 			if (settlementCheck.isSelected())
 				openUnit(unit);
+			
+			if (!history.contains(selectedUnitName))
+				history.add(selectedUnitName);
 		}
 
 		String tempName = category.getName();
@@ -460,3 +501,5 @@ extends ToolWindow {
 		}
 	}
 }
+
+
