@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
@@ -77,10 +78,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
-	/* Howlong do Worker have to complete departure */
+	/* How long do Worker have to complete departure */
 	private static final int DEPARTURE_DURATION = 150;
 	private static final int DEPARTURE_PREPARATION = 15;
 
+	private boolean justArrived;
+	
 	/**
 	 * Constructor with min people and rover. Initiated by MissionDataBean.
 	 *
@@ -432,7 +435,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Performs the disembark to settlement phase of the mission, for a rover just returned home.
+	 * Performs the disembarking phase of the mission right after a rover returns home.
 	 *
 	 * @param member              the mission member currently performing the
 	 *                            mission.
@@ -442,19 +445,104 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		Vehicle v0 = getVehicle();
-		disembark(member, v0, disembarkSettlement);
-
+		
 		// If v0 is being towed by a vehicle, gets the towing vehicle
 		Vehicle v1 = v0.getTowingVehicle();
+		
+		// If v0 is towing a vehicle, gets the towed vehicle
+		Vehicle v2 = ((Rover)v0).getTowedVehicle();
+		
+		if (!justArrived) {
+			// Execute this only once upon arrival
+			justArrived = true;
+			
+			// FUTURE: should make this an actual task to be taken by a settler in Command & Control
+			registerVehicle(v0, disembarkSettlement);
+			
+			if (v1 != null) {
+				registerVehicle(v1, disembarkSettlement);
+				
+				untetherVehicle(v0, v1, disembarkSettlement);
+			}
+			
+			if (v2 != null) {
+				registerVehicle(v1, disembarkSettlement);
+				
+				untetherVehicle(v2, v0, disembarkSettlement);
+			}
+		}
+
+		// Disembark v0 - may take many frames to complete
+		disembark(member, v0, disembarkSettlement);
+
+		// Disembark v1 if exists - may take many frames to complete
 		if (v1 != null)
 			disembark(member, v1, disembarkSettlement);
 
-		// If v0 is towing a vehicle, gets the towed vehicle
-		Vehicle v2 = ((Rover)v0).getTowedVehicle();
+		// Disembark v2 if exists - may take many frames to complete
 		if (v2 != null)
 			disembark(member, v2, disembarkSettlement);
 	}
 
+	
+	/**
+	 * Enters officially into the settlement vicinity and register its presence.
+	 * 
+	 * @param v
+	 * @param disembarkSettlement
+	 */
+	public void registerVehicle(Vehicle v, Settlement disembarkSettlement) {
+		
+		Settlement currentSettlement = v.getSettlement();
+		
+		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
+			// If rover has not been parked at settlement, park it.
+			if (v.transfer(disembarkSettlement)) {
+				logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
+			}
+			else {
+				logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
+			}
+		}
+	}
+	
+	/**
+	 * Untethers the towing and towed vehicle from each other. 
+	 * 
+	 * @param v
+	 * @param disembarkSettlement
+	 */
+	public void untetherVehicle(Vehicle towed, Vehicle towing, Settlement disembarkSettlement) {
+		// Need to do these only once upon arrival 
+		Rover towedRover = (Rover) towed;
+		
+		Rover towingRover = (Rover) towing;
+		
+		// Unhook both towed and towing vehicles.
+		towingRover.setTowedVehicle(null);
+		
+		towedRover.setTowingVehicle(null);
+		
+		logger.log(towingRover, Level.INFO, 0,"Unhooked from " + towedRover + " at " + disembarkSettlement);
+		
+		logger.log(towedRover, Level.INFO, 0, "Successfully towed by " + towingRover + " to " + disembarkSettlement.getName());
+
+		// First add towed vehicle (usually more damaged) to a garage if available.
+        if (!towedRover.isBeingTowed()) {
+        	disembarkSettlement.getBuildingManager().addToGarage(towedRover);
+        }
+        
+        towedRover.setReservedForMission(false);
+		
+		// Then add towing vehicle to a garage if available.
+        if (!towingRover.isTowingAVehicle()) {
+        	disembarkSettlement.getBuildingManager().addToGarage(towingRover);
+        }
+        
+        towingRover.setReservedForMission(false);
+        
+	}
+	
 	/**
 	 * Disembarks the vehicle and unload cargo, for a rover just returned home.
 	 *
@@ -467,76 +555,62 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					+ " triggered by " + member.getName() +  ".");
 
 		Rover rover = (Rover) v;
-		Settlement currentSettlement = v.getSettlement();
 
-		if ((currentSettlement == null) || !currentSettlement.equals(disembarkSettlement)) {
-			// If rover has not been parked at settlement, park it.
-			if (v.transfer(disembarkSettlement)) {
-				logger.info(v, "Done transferring to " + disembarkSettlement.getName() + ".");
-			}
-			else {
-				logger.info(v, "Unable to transfer to " + disembarkSettlement.getName() + ".");
-			}
-		}
-
-		// Test if this rover is towing another vehicle or is being towed
-        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
-
-        // Feels like these stessp should only be done once at the start of disembarking
+		boolean hasOccupants = !rover.getCrew().isEmpty();
+		
 		// Add vehicle to a garage if available.
-		boolean isRoverInAGarage = false;
-        if (!tethered) {
-        	isRoverInAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
-        }
+		boolean isRoverInAGarage = disembarkSettlement.getBuildingManager().isInGarage(v);
 
-		// Make sure the rover chasis is not overlapping a building structure in the settlement map
-        if (!isRoverInAGarage) {
+        if (hasOccupants) {
+        	
+            if (!isRoverInAGarage) {
 
-        	// Outside so preload all EVASuits before the Unloading starts
-        	int suitsNeeded = rover.getCrew().size();
-        	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
-        	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
-        	while ((suitsNeeded > 0) && eIt.hasNext()) {
-        		Equipment e = eIt.next();
-        		if (e instanceof EVASuit) {
-        			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
-        				suitsNeeded--;
-        			}
-        		}
-        	}
-        }
-
-		for (Person p : rover.getCrew()) {
-			if (p.isDeclaredDead()) {
-				logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
-			}
-
-			// Initiate an rescue operation
-			// Future : Gets a lead person to perform it and give him a rescue badge
-			else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
-				rescueOperation(rover, p, disembarkSettlement);
-			}
-
-			else if (isRoverInAGarage) {
-				if (p.isInSettlement()) {
-					// Something is wrong because the Person is in a Settlement
-					// so it cannot be in the crew.
-					logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
-					rover.removePerson(p);
+            	// Outside so preload all EVASuits before the Unloading starts
+            	int suitsNeeded = rover.getCrew().size();
+            	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
+            	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
+            	while ((suitsNeeded > 0) && eIt.hasNext()) {
+            		Equipment e = eIt.next();
+            		if (e instanceof EVASuit) {
+            			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
+            				suitsNeeded--;
+            			}
+            		}
+            	}
+            }
+            
+			for (Person p : rover.getCrew()) {
+				if (p.isDeclaredDead()) {
+					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+				}
+	
+				// Initiate an rescue operation
+				// Future : Gets a lead person to perform it and give him a rescue badge
+				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+					rescueOperation(rover, p, disembarkSettlement);
+				}
+	
+				else if (isRoverInAGarage) {
+					if (p.isInSettlement()) {
+						// Something is wrong because the Person is in a Settlement
+						// so it cannot be in the crew.
+						logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
+						rover.removePerson(p);
+					}
+					else {
+						// Welcome this person home
+				        p.transfer(disembarkSettlement);
+						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+					}
 				}
 				else {
-					// Welcome this person home
-			        p.transfer(disembarkSettlement);
-					BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+					// Not in a garage
+					
+					// See if this person needs an EVA suit
+					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
 				}
 			}
-			else {
-				// Not in a garage
-				
-				// See if this person needs an EVA suit
-				EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
-			}
-		}
+        }
 
 		// Unload rover if necessary.
 		boolean roverUnloaded = UnloadVehicleEVA.isFullyUnloaded(rover);
@@ -549,7 +623,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 		}
-		else if (rover.getCrewNum() > 0) {
+		else if (hasOccupants) {
 			// Check to see if no one is in the rover, unload the resources and end phase.
 			for (Worker mm  : getMembers()) {
 				// Walk back to the airlock
@@ -558,7 +632,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 		}
 		else {
-			// Complete embark once everyone is out of the Vehicle
+			// Complete disembarking once everyone is out of the Vehicle
 			// Leave the vehicle.
 			releaseVehicle(rover);
 			// End the phase.
@@ -645,7 +719,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Rescue the person from the rover
+	 * Rescues the person from the rover.
 	 *
 	 * @param r the rover
 	 * @param p the person

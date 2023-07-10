@@ -98,6 +98,8 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.formdev.flatlaf.FlatLaf;
+
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
  * Mars, and various other elements. It is the primary interface component that
@@ -237,17 +239,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapPane.setBackground(new Color(0, 0, 0, 128));
 		mapPane.setOpaque(false);
 		wholePane.add(mapPane, BorderLayout.CENTER);
-	
-		// Build the Map panel first as the globe is a slave
-//		detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-//		detailPane.setBackground(new Color(0, 0, 0, 128));
-//		detailPane.setOpaque(false);
-//		detailPane.setMaximumSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
-//		detailPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		detailPane.setAlignmentY(Component.TOP_ALIGNMENT);
 
-//		mapPane.add(detailPane);
-		
 		mapLayerPanel = new MapPanel(desktop, this);
 		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
 		mapLayerPanel.setOpaque(false);
@@ -271,23 +263,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapLayerPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
 		mapPane.add(mapLayerPanel);
-//		detailPane.add(mapLayerPanel);
-				
+			
 		buildZoomSlider();
 		
 		JPanel zoomPane = new JPanel(new BorderLayout());
 		zoomPane.setBackground(new Color(0, 0, 0, 128));
 		zoomPane.setOpaque(false);
 		zoomPane.add(zoomSlider);
-		
-//		JLayeredPane layerPane = new JLayeredPane();
-//		layerPane.setLayer(zoomPane, JLayeredPane.PALETTE_LAYER);	
-//		layerPane.add(zoomPane);
-//		// Detect the mouse scroll
-//		layerPane.addMouseWheelListener(this);
 
 		mapPane.add(zoomPane);
-//		mapPane.add(layerPane);
+
 		mapLayerPanel.addMouseWheelListener(this);
 		
 		///////////////////////////////
@@ -1359,6 +1344,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 				createGoPane(false);
 	
+				FlatLaf.updateUI();
+				
 				repaint();
 				
 	        } else if (button == r1) {
@@ -1371,6 +1358,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				bottomPane.remove(goPane);
 				
 				createSettlementPane(true);
+				
+				// Call to update the all components if new theme is chosen
+				FlatLaf.updateUI();
 				
 				repaint();
 	        }

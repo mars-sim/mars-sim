@@ -110,9 +110,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {
 																	ItemResourceUtil.FIBERGLASS});
-																	
-
-	
 	// Data members
 	/** The msol cache. */
 	private int msolCache;
@@ -643,9 +640,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 		}
 		else if (DISEMBARKING.equals(phase)) {
-			// if arriving at the settlement
-			if (isCurrentNavpointSettlement())
+			// After arriving at the settlement
+			if (isCurrentNavpointSettlement()) {
 				performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
+			}
 			else
 				logger.severe(getName() + ": Current navpoint is not a settlement.");
 		}

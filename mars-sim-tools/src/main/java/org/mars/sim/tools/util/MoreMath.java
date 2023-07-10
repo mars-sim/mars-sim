@@ -1,11 +1,11 @@
-/**
+/*
  * Mars Simulation Project
  * MoreMath.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-07-09
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.tool;
+package org.mars.sim.tools.util;
 
 /**
  * The MoreMath class provides functions not contained in the java.lang.Math or

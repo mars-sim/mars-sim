@@ -286,11 +286,16 @@ public class Mining extends EVAMission
 
 	@Override
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
-		performDisembarkTo();
+		// Disconnect the LUV
+		disengageLUV();
+		
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}
 
-	protected void performDisembarkTo() {
+	/**
+	 * Disconnects the LUV and return the attachment parts prior to disembarking.
+	 */
+	protected void disengageLUV() {
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
 			Settlement settlement = getStartingSettlement();

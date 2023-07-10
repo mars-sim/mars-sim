@@ -517,14 +517,14 @@ public class Trade extends RoverMission implements CommerceMission {
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		// Unload towed vehicle if any.
-		if (!isDone() && (getRover().getTowedVehicle() != null)) {
-			Vehicle towed = getRover().getTowedVehicle();
-			towed.setReservedForMission(false);
-			getRover().setTowedVehicle(null);
-			towed.setTowingVehicle(null);
-			disembarkSettlement.addParkedVehicle(towed);
-			towed.findNewParkingLoc();
-		}
+//		if (!isDone() && (getRover().getTowedVehicle() != null)) {
+//			Vehicle towed = getRover().getTowedVehicle();
+//			towed.setReservedForMission(false);
+//			getRover().setTowedVehicle(null);
+//			towed.setTowingVehicle(null);
+//			disembarkSettlement.addParkedVehicle(towed);
+//			towed.findNewParkingLoc();
+//		}
 
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}

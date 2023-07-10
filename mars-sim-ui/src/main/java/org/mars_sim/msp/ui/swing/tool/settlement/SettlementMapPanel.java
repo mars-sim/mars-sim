@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.swing.JPanel;
 
 import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.MoreMath;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
@@ -36,7 +37,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;

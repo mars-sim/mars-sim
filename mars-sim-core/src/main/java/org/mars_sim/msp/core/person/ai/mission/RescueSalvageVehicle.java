@@ -328,83 +328,74 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) {
 
-		// Put towed vehicle and crew in settlement if necessary.
-		if (hasVehicle()) {
-			disembarkTowedVehicles(person, getRover(), disembarkSettlement);
-			super.disembark(person, getRover().getTowedVehicle(), disembarkSettlement);
-		}
+//		// Put towed vehicle and crew in settlement if necessary.
+//		if (hasVehicle()) {
+//			disembarkTowedVehicles(person, getRover(), disembarkSettlement);
+//			super.disembark(person, getRover().getTowedVehicle(), disembarkSettlement);
+//		}
 
 		super.performDisembarkToSettlementPhase(person, disembarkSettlement);
+		
+		reportMalfunction(person, getRover(), disembarkSettlement);
 	}
 
 	/**
-	 * Stores the towed vehicle and any crew at settlement.
+	 * Reports the vehicle malfunction.
 	 * 
 	 * @param rover               the towing rover.
 	 * @param disembarkSettlement the settlement to store the towed vehicle in.
 	 * @throws MissionException if error disembarking towed vehicle.
 	 */
-	private void disembarkTowedVehicles(Person person, Rover rover, Settlement disembarkSettlement) {
+	private void reportMalfunction(Person person, Rover rover, Settlement disembarkSettlement) {
 
-		if (rover.getTowedVehicle() != null) {
-			Vehicle towedVehicle = rover.getTowedVehicle();
-
-	    	logger.log(towedVehicle, Level.INFO, 0, "Has been towed to " + disembarkSettlement.getName());
-
-	    	Malfunction serious = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction();
-			if (serious != null) {
-				HistoricalEvent salvageEvent = new MissionHistoricalEvent(
-						EventType.MISSION_SALVAGE_VEHICLE, 
-						this, 
-						serious.getName(),
-					this.getName(), 
-					null,
-					towedVehicle
-					);
-				eventManager.registerNewEvent(salvageEvent);
-			}
-			
-			// Unload crew from the towed vehicle at settlement.
-			if (towedVehicle instanceof Crewable) {
-				Crewable crewVehicle = (Crewable) towedVehicle;
-
-				for (Person p : crewVehicle.getCrew()) {
-	
-					if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
-						
-						if (p.isDeclaredDead())
-							logger.log(p, Level.INFO, 0, "Body had been retrieved from the towed rover "
-										+ towedVehicle.getName() + " during an Rescue Operation.");
-						else
-							logger.log(p, Level.INFO, 0, "Was rescued from the towed rover "
-											+ towedVehicle.getName() + " during an Rescue Operation.");
-						
-						// Retrieve the dead person
-						p.transfer(disembarkSettlement);
-						
-						BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-						p.setAssociatedSettlement(disembarkSettlement.getIdentifier());
-
-						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
-								this,
-								p.getPhysicalCondition().getHealthSituation(), 
-								p.getTaskDescription(), 
-								p.getName(),
-								p
-								);
-						eventManager.registerNewEvent(rescueEvent);												
-					}
-					
-					else {					
-						logger.log(p, Level.INFO, 0, "Successfully towed the rover "+ towedVehicle.getName() + " back home.");
-					}
-				}
-			}
-			// Unhook towed vehicle.
-			rover.setTowedVehicle(null);
-			towedVehicle.setTowingVehicle(null);
-			logger.log(rover, Level.INFO, 0,"Was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
+    	Malfunction serious = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction();
+		if (serious != null) {
+			HistoricalEvent salvageEvent = new MissionHistoricalEvent(
+					EventType.MISSION_SALVAGE_VEHICLE, 
+					this, 
+					serious.getName(),
+				this.getName(), 
+				null,
+				rover
+				);
+			eventManager.registerNewEvent(salvageEvent);
 		}
+		
+		// Is the following still needed ?
+		// May have been superceded by rescueOperation() in RoverMission
+		
+		// Unload crew from the towed vehicle at settlement.
+//		if (rover instanceof Crewable) {
+//			Crewable crewVehicle = (Crewable) rover;
+//
+//			for (Person p : crewVehicle.getCrew()) {
+//
+//				if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
+//					
+//					if (p.isDeclaredDead())
+//						logger.log(p, Level.INFO, 0, "Body had been retrieved from the towed rover "
+//									+ rover.getName() + " during an Rescue Operation.");
+//					else
+//						logger.log(p, Level.INFO, 0, "Was rescued from the towed rover "
+//										+ rover.getName() + " during an Rescue Operation.");
+//					
+//					// Retrieve the dead person
+//					p.transfer(disembarkSettlement);
+//					
+//					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
+//					p.setAssociatedSettlement(disembarkSettlement.getIdentifier());
+//
+//					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
+//							this,
+//							p.getPhysicalCondition().getHealthSituation(), 
+//							p.getTaskDescription(), 
+//							p.getName(),
+//							p
+//							);
+//					eventManager.registerNewEvent(rescueEvent);												
+//				}
+//			}
+//		}
 	}
 
 	/**

@@ -283,18 +283,18 @@ public class EmergencySupply extends RoverMission {
 	@Override
 	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
-		// Unload towed vehicle if any.
-		if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle != null)) {
-			emergencyVehicle.setReservedForMission(false);
-
-			disembarkSettlement.addParkedVehicle(emergencyVehicle);
-
-			getRover().setTowedVehicle(null);
-
-			emergencyVehicle.setTowingVehicle(null);
-
-			emergencyVehicle.findNewParkingLoc();
-		}
+//		// Unload towed vehicle if any.
+//		if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle != null)) {
+//			emergencyVehicle.setReservedForMission(false);
+//
+//			disembarkSettlement.addParkedVehicle(emergencyVehicle);
+//
+//			getRover().setTowedVehicle(null);
+//
+//			emergencyVehicle.setTowingVehicle(null);
+//
+//			emergencyVehicle.findNewParkingLoc();
+//		}
 
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}

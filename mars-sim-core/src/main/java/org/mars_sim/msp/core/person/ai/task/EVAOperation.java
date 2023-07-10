@@ -296,10 +296,12 @@ public abstract class EVAOperation extends Task {
 				else {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
-					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					logger.log(person, Level.INFO, 30_000,
-							"Found " + ((Airlock)interiorObject).getEntityName()
-							+ " to enter.");
+					if (r != null) {
+						interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+						logger.log(person, Level.INFO, 30_000,
+								"Found " + ((Airlock)interiorObject).getEntityName()
+								+ " to enter.");
+					}
 				}
 			}
 

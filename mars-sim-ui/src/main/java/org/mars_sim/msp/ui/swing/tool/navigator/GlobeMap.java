@@ -20,7 +20,7 @@ import javax.swing.JComponent;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.tool.MoreMath;
+import org.mars.sim.tools.util.MoreMath;
 
 /**
  * The GlobeMap class generates a Mars globe.
