@@ -14,8 +14,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -30,6 +32,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
+import org.mars_sim.msp.ui.swing.utils.SwingHelper;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth
@@ -46,7 +49,8 @@ public class TimeWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "time";
-	
+	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
+	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$	
 	    
     private static final DateTimeFormatter DATE_TIME_FORMATTER = 
 //                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
@@ -99,16 +103,19 @@ public class TimeWindow extends ToolWindow {
 	/** label for time compression. */
 	private JLabel timeCompressionLabel;
 
+	private JLabel monthLabel;
+
+	private JLabel weeksolLabel;
+	
 	private OrbitInfo orbitInfo;
 	
 	/** Arial font. */
 	private final Font arialFont = new Font("Arial", Font.PLAIN, 14);
 
-
 	private long lastDateUpdate = 0;
 	
 	/**
-	 * Constructs a TimeWindow object
+	 * Constructs a TimeWindow object.
 	 *
 	 * @param desktop the desktop pane
 	 */
@@ -139,35 +146,63 @@ public class TimeWindow extends ToolWindow {
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		martianTimeLabel.setFont(arialFont);
-		martianTimeLabel.setForeground(new Color(135, 100, 39));
+//		martianTimeLabel.setForeground(new Color(135, 100, 39));
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
 		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime")));
 
-		// Create Martian calendar panel
-		JPanel martianCalendarPane = new JPanel(new FlowLayout());
-		mainPane.add(martianCalendarPane, BorderLayout.CENTER);
+		// Create Martian month panel
+		JPanel martianMonthPane = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
+		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth")));
+		mainPane.add(martianMonthPane, BorderLayout.CENTER);
+		
+		// Create Martian calendar label panel
+		AttributePanel labelPane = new AttributePanel(2);
+		labelPane.setAlignmentX(SwingConstants.CENTER);
+		labelPane.setAlignmentY(SwingConstants.CENTER);
+		martianMonthPane.add(labelPane, BorderLayout.NORTH);
+		
+		String mn = marsTime.getMonthName();
+		monthLabel = labelPane.addTextField("Month", mn, null);
+		
+		String wd = MarsTimeFormat.getSolOfWeekName(marsTime);
+		weeksolLabel = labelPane.addTextField("Weeksol", wd, null);
 
 		// Create Martian calendar month panel
 		JPanel calendarMonthPane = new JPanel(new BorderLayout());
-		martianCalendarPane.add(calendarMonthPane);
+		calendarMonthPane.setAlignmentX(SwingConstants.CENTER);
+		calendarMonthPane.setAlignmentY(SwingConstants.CENTER);
+		calendarMonthPane.setPreferredSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
+		calendarMonthPane.setMaximumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
+		calendarMonthPane.setMinimumSize(new Dimension(MarsCalendarDisplay.BOX_WIDTH, MarsCalendarDisplay.BOX_LENGTH + 45));
+		martianMonthPane.add(calendarMonthPane, BorderLayout.CENTER);
+		
+		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		innerCalendarPane.setAlignmentX(SwingConstants.CENTER);
+		innerCalendarPane.setAlignmentY(SwingConstants.CENTER);
 
+		
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
-		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		calendarMonthPane.setPreferredSize(new Dimension(140, 125));
-		calendarMonthPane.setMaximumSize(new Dimension(140, 125));
-		calendarMonthPane.setMinimumSize(new Dimension(140, 125));
 		innerCalendarPane.add(calendarDisplay);
-		calendarMonthPane.add(innerCalendarPane, BorderLayout.NORTH);
-		martianCalendarPane.setBorder(StyleManager.createLabelBorder("Current Month"));
+		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
+
+		JButton link = new JButton(WIKI_TEXT);
+		link.setAlignmentX(.5f);
+		link.setAlignmentY(.5f);
+		link.setToolTipText("Open the Timekeeping Wiki in GitHub");
+		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
+
+		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		linkPane.add(link, SwingConstants.CENTER);
+		martianMonthPane.add(linkPane, BorderLayout.SOUTH);
 		
-		JPanel statPane = new JPanel(new BorderLayout());//FlowLayout(FlowLayout.LEFT));
-		mainPane.add(statPane, BorderLayout.SOUTH);
+		JPanel seasonPane = new JPanel(new BorderLayout());
+		mainPane.add(seasonPane, BorderLayout.SOUTH);
 
 		// Create Martian hemisphere panel
 		AttributePanel hemiPane = new AttributePanel(3);
-		statPane.add(hemiPane, BorderLayout.NORTH);		
+		seasonPane.add(hemiPane, BorderLayout.NORTH);		
 		hemiPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianSeasons")));
 
 		String str =
@@ -183,34 +218,36 @@ public class TimeWindow extends ToolWindow {
 //		&#8201; Thin tab space
 //		&#8194; En tab space
 //		&#8195; Em tab space
-			
-		// Create areocentric longitude header label
-		lonLabel = hemiPane.addTextField("Areocentric Longitude (Ls) :", "", null);
+		
 		northernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.northernHemisphere"),
 													"", null);
 		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"),
 													"", null);
-
+		// Create areocentric longitude header label
+		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricL"), "", null);
+		
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
-		statPane.add(earthTimePane, BorderLayout.CENTER);
+		seasonPane.add(earthTimePane, BorderLayout.CENTER);
 
 		// Create Earth time label
 		earthTimeLabel = new JLabel();
 		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		earthTimeLabel.setFont(arialFont);
-		earthTimeLabel.setForeground(new Color(0, 69, 165));
+//		earthTimeLabel.setForeground(new Color(0, 69, 165));
 		earthTimeLabel.setText("");
 		earthTimeLabel.setToolTipText("Earth Timestamp in Greenwich Mean Time (GMT)");
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 		earthTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.earthTime")));
 
 		JPanel southPane = new JPanel(new BorderLayout());
-		statPane.add(southPane, BorderLayout.SOUTH);
+		seasonPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create param panel
 		AttributePanel paramPane = new AttributePanel(8);
+		paramPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam")));
+
 		southPane.add(paramPane, BorderLayout.NORTH);
 
 		ticksPerSecLabel = paramPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", null);
@@ -226,9 +263,9 @@ public class TimeWindow extends ToolWindow {
 		pack();
 
 
-		// Add 10 pixels to packed window width
+		// Add x pixels to packed window width
 		Dimension windowSize = getSize();
-		setSize(new Dimension((int) windowSize.getWidth() + 10, (int) windowSize.getHeight()));
+		setSize(new Dimension((int) windowSize.getWidth(), (int) windowSize.getHeight()));
 
 		// Update the two time labels
 		updateFastLabels(masterClock);
@@ -320,10 +357,17 @@ public class TimeWindow extends ToolWindow {
 	 * @param mc
 	 */
 	private void updateDateLabels(MasterClock mc) {
+		
+		String mn = mc.getMarsTime().getMonthName();
+		monthLabel.setText(mn);
+		
+		String wd = MarsTimeFormat.getSolOfWeekName(mc.getMarsTime());
+		weeksolLabel.setText(wd);
+		
 		// Update the calender
 		calendarDisplay.update(mc.getMarsTime());
 		// Update areocentric longitude
-		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 1_000.0)/1_000.0 + "");	
+		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 10_000.0)/10_000.0 + "");	
 		
 		// Update season
 		if (mc.getClockPulse().isNewSol()) {

@@ -1187,7 +1187,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		labelTable.put( Integer.valueOf(48), new JLabel("3") );
 		labelTable.put( Integer.valueOf(31), new JLabel("2") );
 		labelTable.put( Integer.valueOf(14), new JLabel("1") );
-		labelTable.put( Integer.valueOf(0), new JLabel("0.167") );		
+		labelTable.put( Integer.valueOf(0), new JLabel("1/6") );		
 		zoomSlider.setLabelTable(labelTable);
 		
 //		doubleSlider = new DoubleJSlider(0, 95, 14, 1000);
@@ -1341,9 +1341,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				lonCBDir.setEnabled(true);
 			
 				bottomPane.remove(settlementPane);
+				bottomPane.add(goPane);
 				
-				createGoPane(false);
-	
+//				createGoPane(false);
+				
+				// Call to update the all components if a new theme is chosen
 				FlatLaf.updateUI();
 				
 				repaint();
@@ -1356,10 +1358,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				lonCBDir.setEnabled(false);
 				
 				bottomPane.remove(goPane);
+				bottomPane.add(settlementPane);
 				
-				createSettlementPane(true);
+//				createSettlementPane(true);
 				
-				// Call to update the all components if new theme is chosen
+				// Call to update the all components if a new theme is chosen
 				FlatLaf.updateUI();
 				
 				repaint();

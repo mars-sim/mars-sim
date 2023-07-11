@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +31,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.time.MarsTime;
+import org.mars_sim.msp.core.time.MarsTimeFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
@@ -54,9 +56,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
-	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$
-
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
@@ -72,6 +71,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private MarsCalendarDisplay calendarDisplay; 
 	
 	private JLabel monthLabel;
+	private JLabel weeksolLabel;
 
 	private JLabel earthDate;
 	private JLabel missionSol;
@@ -137,7 +137,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		missionSol = createTextLabel("Simulation Sol Count");
 		add(missionSol);
 		addSeparator();
-		marsTime = createTextLabel("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'");
+		marsTime = createTextLabel("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
 		add(marsTime);
 		addSeparator();
 
@@ -186,33 +186,24 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		final JPanel outerPane = new JPanel(new BorderLayout(2, 2));
 		outerPane.add(midPane, BorderLayout.CENTER);
 
-		// Create martian month label
-    	String mn = "Month of " + marsClock.getMonthName();
+		// Create Martian month label
+    	String mn = "Month : " + marsClock.getMonthName();
     	monthLabel = new JLabel(mn, SwingConstants.CENTER);
-		JPanel monthPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+    	
+    	// Create Martian Weeksol label
+    	String wd = "Weeksol : " + MarsTimeFormat.getSolOfWeekName(marsClock);
+    	weeksolLabel = new JLabel(wd, SwingConstants.CENTER);
+
+		JPanel monthPane = new JPanel(new GridLayout(2, 1));
+		monthPane.add(weeksolLabel, SwingConstants.CENTER);
 		monthPane.add(monthLabel, SwingConstants.CENTER);
 		midPane.add(monthPane, BorderLayout.NORTH);
-
-		JButton link = new JButton(WIKI_TEXT);
-		link.setAlignmentX(.5f);
-		link.setAlignmentY(.5f);
-		link.setToolTipText("Open the Timekeeping wiki in mars-sim GitHub site");
-		link.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
-
-		JPanel linkPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-		linkPane.add(link, SwingConstants.CENTER);
-		outerPane.add(linkPane, BorderLayout.SOUTH);
-
-//    	JLabel headerLabel = new JLabel("Mars Calendar", SwingConstants.CENTER);
-//    	headerLabel.setAlignmentX(.5f);
-//    	headerLabel.setAlignmentY(.5f);
-//    	outerPane.add(headerLabel, BorderLayout.NORTH);
-
+		
     	return outerPane;
 	}
 
 	/**
-	 * Increment the label of both the earth and mars clocks
+	 * Increments the label of both the earth and mars clocks.
 	 */
 	public void incrementClocks(MasterClock master) {
 		MarsTime marsClock = master.getMarsTime();
@@ -223,7 +214,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	}
 
 	/** 
-	 * ActionListener method overridden 
+	 * ActionListener method overridden.
 	 */
 	@Override
 	public void actionPerformed(ActionEvent event) {
@@ -245,10 +236,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				MarsTime mc = masterClock.getMarsTime();
 				calendarDisplay.update(mc);
 		
-				String mn = "Month of " + mc.getMonthName();
+				String mn = "Month : " + mc.getMonthName();
 				monthLabel.setText(mn);
+				
+				String wd = "Weeksol : " + MarsTimeFormat.getSolOfWeekName(mc);
+				weeksolLabel.setText(wd);
 
-				JDialog popOver = SwingHelper.createPoupWindow(calendarPane, -1, -1, -110, 10);
+				JDialog popOver = SwingHelper.createPoupWindow(calendarPane, -1, -1, -75, 20);
 				popOver.setVisible(true);
 				break;
 			default:

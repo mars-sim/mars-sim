@@ -17,6 +17,8 @@ import java.net.URI;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import com.formdev.flatlaf.FlatLaf;
+
 
 /**
  * This is a static helper class of Swing methods
@@ -27,8 +29,10 @@ public final class SwingHelper {
 	}
 	
     /**
-     * This creates a popup window that display a content panel. It is shown below the current mouse position
+     * Creates a popup window that displays a content panel.
+     * It is shown below the current mouse position
      * but can be offset in the X & Y directions.
+     * 
      * Size will default to the preferred size of the content unless overridden.
      * @param content Content to display
      * @param width Fixed width; can be -1
@@ -64,6 +68,9 @@ public final class SwingHelper {
 			}
 		});
 
+		// Call to update the all components if a new theme is chosen
+		FlatLaf.updateUI();
+		
 		return d;
 	}
 

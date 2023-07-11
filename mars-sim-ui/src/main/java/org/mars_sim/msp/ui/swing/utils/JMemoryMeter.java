@@ -18,8 +18,9 @@ import javax.swing.event.MouseInputAdapter;
 public class JMemoryMeter extends JProgressBar {
 
     private final static long MEGA = (1024L*1024L);
-    private final String TOOLTIPFORMAT = "Used: %,d MB, Allocated: %,d MB, Maximum: %,d MB";
-
+    private final String MB = " MB";
+    private final String TOOLTIPFORMAT = "<html> Used: %,d MB <br/> Allocated: %,d MB <br/> Maximum: %,d MB";
+    		
     private int totalMemoryMB;
 
     public JMemoryMeter() {
@@ -57,7 +58,7 @@ public class JMemoryMeter extends JProgressBar {
         int freeMB = (int) (rt.freeMemory()/MEGA);
         int consumedMB = totalMemoryMB - freeMB;
         setValue(consumedMB);
-        setString(consumedMB + "MB/" + totalMemoryMB + "MB");
+        setString(consumedMB + MB + " / " + totalMemoryMB + MB);
         setToolTipText(String.format(TOOLTIPFORMAT,  consumedMB, totalMemoryMB, (int)(rt.maxMemory()/MEGA)));
     }
 }

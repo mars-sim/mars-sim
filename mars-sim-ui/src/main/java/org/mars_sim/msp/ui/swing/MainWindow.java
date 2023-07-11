@@ -355,7 +355,7 @@ public class MainWindow
 		JPanel contentPane = new JPanel(new BorderLayout());
 
 		// Add desktop to the content pane
-		// contextpane should be blocked when paused
+		// context pane should be blocked when paused
 		contentPane.add(desktop, BorderLayout.CENTER);
 		mainPane.add(contentPane, BorderLayout.CENTER);
 
@@ -408,19 +408,10 @@ public class MainWindow
 
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
-		memoryBar.setFont(new Font("Times New Roman", Font.PLAIN, 13));
+		memoryBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 		memoryBar.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
 		statusBar.addRightComponent(memoryBar, false);
-
-//		statusBar.addRightCorner();
-
-		// Blocking image that should be displayed in the overlap
-		// Icon pauseIcon = getIcon("pause_orange");
-		// blockingImage = new JLabel(
-		// pauseIcon,
-		// SwingConstants.CENTER
-		// );
 
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
@@ -461,7 +452,7 @@ public class MainWindow
 	}
 
 	/**
-	 * Update the LAF style to a new value.
+	 * Updates the LAF style to a new value.
 	 */
 	public void updateLAF(String newStyle) {
 		// Set up the look and feel library to be used
@@ -475,7 +466,8 @@ public class MainWindow
 		JButton decreaseSpeed = new JButton();
 		decreaseSpeed.setIcon(ImageLoader.getIconByName("speed/decrease"));
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
-
+		
+		
 		decreaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused()) {

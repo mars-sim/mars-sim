@@ -26,18 +26,19 @@ public class MarsTimeFormat {
 			"Idanon", "Jowani", "Kireal", "Larno", "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo",
 			"Tiunor", "Ulasja", "Vadeun", "Wakumi", "Xetual", "Zungo" };
 
-	private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol",
-	"Venusol", "Jovisol" };
+	private static final String[] WEEK_SOL_NAMES = 
+//		{ "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol" };	
+		{ "Heliosol", "Neriosol", "Libersol", "Terrasol", "Venusol", "Mercusol", "Jovisol" };
 
 	/**
-	 * Prevent object creation
+	 * Prevents object creation.
 	 */
 	private MarsTimeFormat() {
 		throw new UnsupportedOperationException("MarsTime should not be instiatated");
 	}
 
 	/**
-	 * Create a MarsTime from a data string
+	 * Creates a MarsTime from a data string.
 	 *
 	 * @param dateString format: "orbit-month-sol:millisol"
 	 * @throws Exception if dateString is invalid.
@@ -73,7 +74,7 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Returns the time string in the format of e.g. "056"
+	 * Returns the time string in the format of e.g. "056".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return String in millisols
@@ -83,7 +84,7 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Returns the martian time string in the format of e.g. "00000056"
+	 * Returns the martian time string in the format of e.g. "00000056".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return String in millisols
@@ -93,7 +94,7 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Returns formatted martian time stamp string in the format of "03-Adir-05:056.434"
+	 * Returns formatted martian time stamp string in the format of "03-Adir-05:056.434".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return formatted String
@@ -104,7 +105,7 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Returns a truncated martian time stamp string in the format of "03-Adir-05:056"
+	 * Returns a truncated martian time stamp string in the format of "03-Adir-05:056".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return formatted String
@@ -115,7 +116,7 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Gets the martian date string in the format of e.g. "03-Adir-05"
+	 * Gets the martian date string in the format of e.g. "03-Adir-05".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return date string
@@ -130,7 +131,7 @@ public class MarsTimeFormat {
 
 
 	/*
-	 * Return the sol name of the week
+	 * Returns the sol name of the week.
 	 *
 	 * @return the sol name of the week as a String
 	 */
@@ -185,7 +186,8 @@ public class MarsTimeFormat {
 	}
 
 	/**
-	 * Get the name of a month"
+	 * Gets the name of a month.
+	 * 
 	 * @param month
 	 * @return
 	 */
@@ -193,6 +195,11 @@ public class MarsTimeFormat {
 		return MONTH_NAMES[month-1];
 	}
 
+	/**
+	 * Gets an array of month names.
+	 * 
+	 * @return
+	 */
 	public static String[] getMonthNames() {
 		return MONTH_NAMES;
 	}
