@@ -65,15 +65,32 @@ public class History<T> implements Serializable {
     }
 
     /**
-     * Add a value to the history and timestamp it
+     * Add a value to the history and timestamp it. If the value is the same as the previous item 
+     * this the item is not added.
+     * If the timestamp of the previous item has not advance; then it is overwritten.
      * @param value New value to add
      */
-    public void add(T value) {
+    public boolean add(T value) {
+        MarsTime now = master.getMarsTime();
+        if (!history.isEmpty()) {
+            HistoryItem<T> previous = history.get(history.size()-1);
+            if (now.equals(previous.getWhen())) {
+                // Time has not avance so replace existing
+                history.remove(history.size()-1);
+            }
+            else if (value.equals(previous.getWhat())) {
+                // Same value as last time so ignore
+                return false;
+            }
+        }
+
         if (history.size() == maxItems) {
             // Rrmove first item (oldest)
             history.remove(0);
         }
-        history.add(new HistoryItem<>(master.getMarsTime(), value));
+        history.add(new HistoryItem<>(now, value));
+
+        return true;
     }
 
     /**

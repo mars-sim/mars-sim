@@ -25,9 +25,11 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -159,7 +161,7 @@ public abstract class Vehicle extends Unit
 	private StatusType primaryStatus;
 
 	/** The vehicle's status log. */
-	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(MAX_NUM_SOLS);
+	private History<Set<StatusType>> vehicleLog = new History<>(100);
 	/** The vehicle's road speed history. */
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
@@ -614,16 +616,16 @@ public abstract class Vehicle extends Unit
 	private void writeLog() {
 		Set<StatusType> entry = new HashSet<>(statusTypes);
 		entry.add(primaryStatus);
-		vehicleLog.addDataPoint(entry);
+		vehicleLog.add(entry);
 	}
 
 	/**
 	 * Gets the vehicle log.
 	 *
-	 * @return a map of vehicle status by sol
+	 * @return List of changes ot the status
 	 */
-	public Map<Integer, List<MSolDataItem<Set<StatusType>>>> getVehicleLog() {
-		return vehicleLog.getHistory();
+	public List<HistoryItem<Set<StatusType>>> getVehicleLog() {
+		return vehicleLog.getChanges();
 	}
 
 	/**

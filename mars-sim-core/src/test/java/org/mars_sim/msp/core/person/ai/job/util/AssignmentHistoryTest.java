@@ -60,14 +60,20 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
         Settlement home = buildSettlement();
         Person p = buildPerson("Job", home);
 
+        MasterClock master = sim.getMasterClock();
+        master.setMarsTime(master.getMarsTime().addTime(10));
+
         AssignmentHistory jh = p.getJobHistory();  
         jh.saveJob(JobType.ARCHITECT, "Name", AssignmentType.APPROVED, "Case");
+
+        master.setMarsTime(master.getMarsTime().addTime(10));
         jh.saveJob(JobType.MATHEMATICIAN, "Name", AssignmentType.PENDING, "Case");
 
         List<HistoryItem<Assignment>> history = jh.getJobAssignmentList();
         // Set the rating high on Pending to check it is ignored
         history.get(history.size()-1).getWhat().setJobRating(10, 1);
 
+        // Note Person has 1 JobAssignment as part of the constructor
         assertEquals("Hstory with pending", 3, history.size());
         assertEquals("Pending cummlative", (double)Assignment.INITIAL_RATING, jh.getCummulativeJobRating());
 

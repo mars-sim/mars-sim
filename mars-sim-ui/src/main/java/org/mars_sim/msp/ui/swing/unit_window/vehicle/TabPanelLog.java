@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.data.MSolDataItem;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -216,7 +216,7 @@ public class TabPanelLog extends TabPanel {
 			todayInteger = currentDay;
 		}
 		
-		List<MSolDataItem<Set<StatusType>>> solStatus = vehicle.getVehicleLog().get(selectedSol);
+		List<HistoryItem<Set<StatusType>>> solStatus = vehicle.getVehicleLog();
 		scheduleTableModel.update(solStatus);
 
 	}
@@ -255,7 +255,7 @@ public class TabPanelLog extends TabPanel {
 	 */
 	private class ScheduleTableModel extends AbstractTableModel {
 
-		private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
+		private List<HistoryItem<Set<StatusType>>> oneDayStatuses;
 		
 		/**
 		 * hidden constructor.
@@ -282,7 +282,7 @@ public class TabPanelLog extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
-				dataType = Integer.class;
+				dataType = String.class;
 			if (columnIndex == 1)
 				dataType = String.class;
 			return dataType;
@@ -300,14 +300,13 @@ public class TabPanelLog extends TabPanel {
 
 		@Override
 		public Object getValueAt(int row, int column) {	
-			if (oneDayStatuses != null 
-					&& !oneDayStatuses.isEmpty()) {
-				MSolDataItem<Set<StatusType>> item = oneDayStatuses.get(row);
+			if (row < oneDayStatuses.size()) {
+				HistoryItem<Set<StatusType>> item = oneDayStatuses.get(row);
 				if (column == 0) {
-					return StyleManager.DECIMAL_PLACES0.format(item.getMsol());
+					return item.getWhen();
 				} 
 				else if (column == 1) {
-					return printStatusTypes(item.getData());
+					return printStatusTypes(item.getWhat());
 				}
 			}
 
@@ -330,7 +329,7 @@ public class TabPanelLog extends TabPanel {
 		 * 
 		 * @param solStatus
 		 */
-		public void update(List<MSolDataItem<Set<StatusType>>> solStatus) {
+		public void update(List<HistoryItem<Set<StatusType>>> solStatus) {
 				
 			oneDayStatuses = solStatus;
 

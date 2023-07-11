@@ -69,4 +69,43 @@ public class Assignment implements Serializable {
 	public int getJobRating() {	
 		return jobRating;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + solRatingSubmitted;
+		result = prime * result + jobRating;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Assignment other = (Assignment) obj;
+		if (solRatingSubmitted != other.solRatingSubmitted)
+			return false;
+		if (jobRating != other.jobRating)
+			return false;
+		if (initiator == null) {
+			if (other.initiator != null)
+				return false;
+		} else if (!initiator.equals(other.initiator))
+			return false;
+		if (type != other.type)
+			return false;
+		if (authorizedBy == null) {
+			if (other.authorizedBy != null)
+				return false;
+		} else if (!authorizedBy.equals(other.authorizedBy))
+			return false;
+		if (status != other.status)
+			return false;
+		return true;
+	}
 }
