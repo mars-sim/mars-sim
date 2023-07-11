@@ -17,27 +17,26 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.time.MarsDate;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -50,13 +49,10 @@ public class TabPanelLog extends TabPanel {
 	private static final String LOG_ICON = "log"; //$NON-NLS-1$
 
 	private static final String SOL = "   Sol ";
-	
-	// Data members
-	private Integer selectedSol;
-	private Integer todayInteger;
 		
 	private JTable table;
-	private JComboBoxMW<Integer> solBox;
+	private JComboBox<MarsDate> solBox;
+	private DefaultComboBoxModel<MarsDate> solModel;
 	
 	private JLabel odometerTF;
 	private JLabel maintTF;
@@ -65,6 +61,8 @@ public class TabPanelLog extends TabPanel {
 	
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
+
+	private int lastSol = -1;
 	
 	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
@@ -79,7 +77,6 @@ public class TabPanelLog extends TabPanel {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void buildUI(JPanel content) {
 		
@@ -96,19 +93,13 @@ public class TabPanelLog extends TabPanel {
 		maintTF = springPanel.addTextField(Msg.getString("TabPanelLog.label.maintDist"),
 				 					StyleManager.DECIMAL_KM.format(vehicle.getDistanceLastMaintenance()), null);	
 		
-		todayInteger = getMarsClock().getMissionSol();
-
-		ComboBoxModel<Integer> solModel = createSolModel(todayInteger);
+		solModel = new DefaultComboBoxModel<>();
 
 		// Create comboBox
-		solBox = new JComboBoxMW<>(solModel);
-		solBox.setPreferredSize(new Dimension(80, 25));
-		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
-		solBox.setWide(true);
-		
-		solBox.setRenderer(new PromptComboBoxRenderer());
-		solBox.setMaximumRowCount(7);
-				
+		solBox = new JComboBox<>(solModel);
+		//solBox.setPreferredSize(new Dimension(80, 25));
+		//solBox.setPrototypeDisplayValue(new Dimension(80, 25));
+						
 		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		solPanel.add(solBox);
         northPanel.add(solPanel);
@@ -136,46 +127,19 @@ public class TabPanelLog extends TabPanel {
 
 		scrollPanel.setViewportView(table);
 
-		// Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-		solBox.setSelectedItem(todayInteger);
 		solBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setSolDisplayed((Integer) solBox.getSelectedItem());
+				setSolDisplayed((MarsDate) solBox.getSelectedItem());
 			}
 		});
-		selectedSol = todayInteger;
 
 		// Update will refresh data
 		update();
-		
 	}
 
-	/**
-	 * Builds a combobox box model that holds the sols in the vehicle log.
-	 * 
-	 * @return
-	 */
-	private ComboBoxModel<Integer> createSolModel(Integer today) {
-
-		// Create comboBoxModel by taking the sols from the vehicle log.
-		DefaultComboBoxModel<Integer> solModel = new DefaultComboBoxModel<>();
-
-		// Using internal iterator in lambda expression
-		for(int s = today; s > 0; s--) {
-			solModel.addElement(s);
-		}
-
-		return solModel;
-	}
-
-	protected void setSolDisplayed(Integer selectedItem) {
-		selectedSol = selectedItem;
-		update();
+	protected void setSolDisplayed(MarsDate marsDate) {
+		scheduleTableModel.update(vehicle.getVehicleLog().getChanges(), marsDate);
 	}
 
 	/**
@@ -188,7 +152,6 @@ public class TabPanelLog extends TabPanel {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 
@@ -198,57 +161,29 @@ public class TabPanelLog extends TabPanel {
 		// Update distance last maintenance 
 		maintTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
 				
-		int currentDay = getMarsClock().getMissionSol();
+		int currentSol = getMarsClock().getMissionSol();
+		History<Set<StatusType>> solStatus = vehicle.getVehicleLog();
 
 		// Update the sol combobox at the beginning of a new sol
-		if (!todayInteger.equals(currentDay)) {
+		if (lastSol != currentSol) {
 
 			// Update the solList comboBox
-			solBox.setModel(createSolModel(currentDay));
-			solBox.setRenderer(new PromptComboBoxRenderer());
-			solBox.setMaximumRowCount(7);
-			
-			// If SelectedSol is the previous current day; then automatically advance to ne day
-			if (selectedSol.equals(todayInteger)) {
-				selectedSol = currentDay;
+			Object currentSelection = solBox.getSelectedItem();
+			solModel.removeAllElements();
+			solModel.addAll(solStatus.getRange());
+			lastSol = currentSol;
+
+			if (currentSelection == null) {
+				currentSelection = getMarsClock().getDate();
 			}
-			solBox.setSelectedItem(selectedSol);
-			todayInteger = currentDay;
+			solBox.setSelectedItem(currentSelection);
 		}
 		
-		List<HistoryItem<Set<StatusType>>> solStatus = vehicle.getVehicleLog();
-		scheduleTableModel.update(solStatus);
+		MarsDate selected = (MarsDate) solBox.getSelectedItem();
+		scheduleTableModel.update(solStatus.getChanges(), selected);
 
 	}
 	
-	class PromptComboBoxRenderer extends DefaultListCellRenderer {
-
-		private String prompt;
-
-		public PromptComboBoxRenderer() {
-			setHorizontalAlignment(CENTER);
-			setVerticalAlignment(CENTER);
-		}
-
-		public PromptComboBoxRenderer(String prompt) {
-			this.prompt = prompt;
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
-			if (value == null) {
-				setText(prompt);
-				return this;
-			}
-
-			setText(SOL + value);
-
-			return c;
-		}
-	}
 	
 	/**
 	 * Internal class used as model for the attribute table.
@@ -328,27 +263,14 @@ public class TabPanelLog extends TabPanel {
 		 * Prepares a list of activities done on the selected day.
 		 * 
 		 * @param solStatus
+		 * @param selected
 		 */
-		public void update(List<HistoryItem<Set<StatusType>>> solStatus) {
+		public void update(List<HistoryItem<Set<StatusType>>> solStatus, MarsDate selected) {
 				
-			oneDayStatuses = solStatus;
+			// TODO Only update when something has changed
+			oneDayStatuses = solStatus.stream().filter(i -> i.getWhen().getDate().equals(selected)).toList();
 
 			fireTableDataChanged();
 		}
 	}
-
-	/**
-	 * Prepares for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		if (solBox != null)
-			solBox.removeAllItems();
-
-		solBox = null;
-		table = null;
-		scheduleTableModel = null;
-	}	
 }

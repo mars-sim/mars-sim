@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -161,7 +160,7 @@ public abstract class Vehicle extends Unit
 	private StatusType primaryStatus;
 
 	/** The vehicle's status log. */
-	private History<Set<StatusType>> vehicleLog = new History<>(100);
+	private History<Set<StatusType>> vehicleLog = new History<>(40);
 	/** The vehicle's road speed history. */
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
@@ -624,8 +623,8 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return List of changes ot the status
 	 */
-	public List<HistoryItem<Set<StatusType>>> getVehicleLog() {
-		return vehicleLog.getChanges();
+	public History<Set<StatusType>> getVehicleLog() {
+		return vehicleLog;
 	}
 
 	/**

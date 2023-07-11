@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.AbstractMarsSimUnitTest;
 import org.mars_sim.msp.core.data.History.HistoryItem;
+import org.mars_sim.msp.core.time.MarsDate;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -30,6 +31,32 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
 
     }
 
+    public void testRange() {
+        History<Integer> h = new History<>();
+        MasterClock master = sim.getMasterClock();
+        
+        MarsDate firstDate = master.getMarsTime().getDate();
+        h.add(1);
+        master.setMarsTime(master.getMarsTime().addTime(10));
+        h.add(2);
+        master.setMarsTime(master.getMarsTime().addTime(10));
+        h.add(3);
+
+        master.setMarsTime(master.getMarsTime().addTime(1000D));
+        MarsDate middleDate = master.getMarsTime().getDate();
+        h.add(4);
+
+        master.setMarsTime(master.getMarsTime().addTime(2000D));
+        MarsDate lastDate = master.getMarsTime().getDate();
+        h.add(5);
+
+        List<MarsDate> range = h.getRange();
+        assertEquals("Range size", 3, range.size());
+        assertEquals("1st date", firstDate, range.get(0));
+        assertEquals("2nd date", middleDate, range.get(1));
+        assertEquals("3rd date", lastDate, range.get(2));
+    }
+
     public void testAddSameTime() {
         History<Integer> h = new History<>();
         MasterClock master = sim.getMasterClock();
@@ -44,7 +71,7 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         assertEquals("Last value", Integer.valueOf(2), changes.get(0).getWhat());
     }
 
-        public void testAddSameValue() {
+    public void testAddSameValue() {
         History<Integer> h = new History<>();
         MasterClock master = sim.getMasterClock();
         

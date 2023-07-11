@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.time.MarsDate;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -99,6 +100,14 @@ public class History<T> implements Serializable {
      */
     public List<HistoryItem<T>> getChanges() {
         return history;
+    }
+
+    /**
+     * Get the range of dates covered by this history
+     * @return
+     */
+    public List<MarsDate> getRange() {
+        return history.stream().map(i -> i.getWhen().getDate()).distinct().toList();
     }
 
     /**
