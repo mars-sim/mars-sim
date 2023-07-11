@@ -76,13 +76,6 @@ public class GlobeMap {
 
 		cylindricalMapImage =  globeDisplay.getNavigatorWindow().getMapPanel().getMapData().getCylindricalMapImage();
 
-		// Locate the image file which may be downloaded from a remote site
-//		File imageFile = FileLocator.locateFile(mapType.getLoResFile());
-//		try {
-//			cylindricalMapImage = ImageIO.read(imageFile);
-//		} catch (IOException e) {
-//			logger.severe("Can't read image file ");
-//		}
 		// Prepare Sphere
 		setupSphere();
 	}
@@ -129,8 +122,8 @@ public class GlobeMap {
 		// More variable initializations
 		double col_correction = -PI_HALF - theta;
 		// double rho = map_height / Math.PI;
-		double sin_offset = MoreMath.sin(phi + Math.PI);
-		double cos_offset = MoreMath.cos(phi + Math.PI);
+		double sin_offset = Math.sin(phi + Math.PI);
+		double cos_offset = Math.cos(phi + Math.PI);
 
 		// Create array to hold image
 		imageArray = new int[MAP_H * MAP_H];
@@ -148,18 +141,18 @@ public class GlobeMap {
 
 			// Determine circumference of this row
 			int circum = sphereColor[array_y].size();
-			double row_cos =  MoreMath.cos(row);
+			double row_cos =  Math.cos(row);
 
 			// Determine visible boundary of row
 			double col_boundry = Math.PI;
 			if (phi <= PI_HALF) {
-				if ((row >= PI_HALF *  MoreMath.cos(phi)) && (row < PI_HALF)) {
+				if ((row >= PI_HALF *  Math.cos(phi)) && (row < PI_HALF)) {
 					col_boundry = PI_HALF * (1D + row_cos);
 				} else if (row >= PI_HALF) {
 					col_boundry = PI_HALF;
 				}
 			} else {
-				if ((row <= PI_HALF *  MoreMath.cos(phi)) && (row > PI_HALF)) {
+				if ((row <= PI_HALF *  Math.cos(phi)) && (row > PI_HALF)) {
 					col_boundry = PI_HALF * (1D - row_cos);
 				} else if (row <= PI_HALF) {
 					col_boundry = PI_HALF;
@@ -188,7 +181,7 @@ public class GlobeMap {
 			if (col_boundry == Math.PI)
 				end_col -= col_iterate;
 
-			double temp_buff_x = RHO * MoreMath.sin(row);
+			double temp_buff_x = RHO * Math.sin(row);
 			double temp_buff_y1 = temp_buff_x * cos_offset;
 			double temp_buff_y2 = RHO * row_cos * sin_offset;
 
@@ -207,8 +200,8 @@ public class GlobeMap {
 				double temp_col = col + col_correction;
 
 				// Determine x and y position of point on image
-				int buff_x = (int) Math.round(temp_buff_x *  MoreMath.cos(temp_col)) + HALF_MAP_HEIGHT;
-				int buff_y = (int) Math.round((temp_buff_y1 * MoreMath.sin(temp_col)) + temp_buff_y2) + HALF_MAP_HEIGHT;
+				int buff_x = (int) Math.round(temp_buff_x *  Math.cos(temp_col)) + HALF_MAP_HEIGHT;
+				int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) + temp_buff_y2) + HALF_MAP_HEIGHT;
 
 				// Put point in buffer array
 				imageArray[buff_x + (MAP_H * buff_y)] = (int) sphereColor[array_y].elementAt(array_x);
@@ -293,7 +286,8 @@ public class GlobeMap {
 		// NOTE: Replace PixelGrabber with faster method
 		
 		// Scale cylindricalMapImage down to MAP_H * MAP_W
-		PixelGrabber pixelGrabber = new PixelGrabber(cylindricalMapImage.getScaledInstance(MAP_W, MAP_H, 4), 0, 0, MAP_W, MAP_H, pixelsColorArray, 0, MAP_W);
+		PixelGrabber pixelGrabber = new PixelGrabber(
+				cylindricalMapImage.getScaledInstance(MAP_W, MAP_H, 4), 0, 0, MAP_W, MAP_H, pixelsColorArray, 0, MAP_W);
 		
 		try {
 			pixelGrabber.grabPixels();
@@ -317,7 +311,7 @@ public class GlobeMap {
 		// Go through each row and create Sphere_Color vector with it
 		for (phi = offset; phi < Math.PI; phi += (Math.PI / ih_d)) {
 			row = MoreMath.floor((float) ((phi / Math.PI) * ih_d));//(int) Math.floor((phi / Math.PI) * ih_d);
-			circum = PI_DOUBLE * (RHO * MoreMath.sin(phi));
+			circum = PI_DOUBLE * (RHO * Math.sin(phi));
 			col_num = (int) Math.round(circum);
 			sphereColor[row] = new Vector<Integer>(col_num);
 

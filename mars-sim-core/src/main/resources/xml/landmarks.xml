@@ -91,7 +91,13 @@
 	  	<landmark approvaldate="1973" diameter="201.67" latitude="46.19 S" longitude="19.11 E" name="Kaiser" origin="Frederick; Dutch astronomer (1808-1872)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="228.24" latitude="46.69 S" longitude="140.98 E" name="Kepler" origin="Johannes; German astronomer (1571-1630)." type="AA"/>
 	  	<landmark approvaldate="1985" diameter="296.67" latitude="29.56 S" longitude="141.54 W" name="Koval'sky" origin="M. A.; Russian astronomer (1821-1884)." type="AA"/>
-	  	<landmark approvaldate="1994" diameter="42.78" latitude="37.48 N" longitude="75.86 W" name="Labeatis Mons" origin="Named for albedo feature Labeatis Lacus." type="MO"/>
+	  	
+	  	<!-- https://www.wikidata.org/wiki/Q24066212  https://www.uahirise.org/ESP_053568_2175-->
+	  	<landmark name="Labeatis Mons" origin="Named for albedo feature Labeatis Lacus." type="MO"
+	  		description="Mars and its Satellites, A Detailed Commentary on the Nomenclature, 2nd edition, by Jürgen Blunck: Exposition Press, Smithtown, New York, 1982." 
+	  		location="North of Labeatis Fossae"
+	  		approvaldate="1994" diameter="42.78" latitude="37.48 N" longitude="284.14 E" />
+	  	
 	  	<landmark approvaldate="1973" diameter="202.22" latitude="51.96 S" longitude="81.5 W" name="Lowell" origin="Percival; American astronomer (1855-1916)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="221.53" latitude="50.47 N" longitude="29.34 E" name="Lyot" origin="Bernard; French astronomer (1897-1952)." type="AA"/>
 	  	<landmark approvaldate="1967" diameter="156.58" latitude="34.68 S" longitude="164.24 W" name="Mariner" origin="Named for Mariner IV spacecraft." type="AA"/>

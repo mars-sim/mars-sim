@@ -580,8 +580,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.MAP_BOX_WIDTH) - 1;
-		double yMap = y - (Map.MAP_BOX_HEIGHT) - 1;
+		double xMap = x - (Map.MAP_BOX_WIDTH / 2.0);
+		double yMap = y - (Map.MAP_BOX_HEIGHT / 2.0);
 		
 		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getRho());
     }

@@ -334,7 +334,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		createGoPane(true);
 			
 		// Create the settlement combo box
-        buildSettlementNameComboBox(setupSettlements());
+        buildSettlementComboBox(setupSettlements());
         
         // Set up the label and the settlement pane
         createSettlementPane(false);
@@ -361,7 +361,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		}
 
 		latCB = new JComboBoxMW<Integer>(lat_degrees);
-		latCB.setPreferredSize(new Dimension(50, 25));
+		latCB.setPreferredSize(new Dimension(60, 25));
 		latCB.setSelectedItem(0);
 		topPane.add(latCB);
 
@@ -379,7 +379,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 		// Switch to using ComboBoxMW for longitude
 		lonCB = new JComboBoxMW<Integer>(lon_degrees);
-		lonCB.setPreferredSize(new Dimension(50, 25));
+		lonCB.setPreferredSize(new Dimension(60, 25));
 		lonCB.setSelectedItem(0);
 		topPane.add(lonCB);
 
@@ -599,9 +599,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	/**
-	 * Builds the settlement combo box/
+	 * Builds the settlement combo box.
+	 * 
+	 * @param startingSettlements
 	 */
-	private void buildSettlementNameComboBox(List<Settlement> startingSettlements) {
+	private void buildSettlementComboBox(List<Settlement> startingSettlements) {
 
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
 		model.addAll(startingSettlements);
@@ -617,14 +619,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				return;
 			
 			Settlement newSettlement = (Settlement) event.getItem();
-			// Change to the selected settlement in SettlementMapPanel
-			if (newSettlement != selectedSettlement) {
-				setSettlement(newSettlement);
-			}
 			
-			if (selectedSettlement != null)
+			if (newSettlement != null) {
+				// Change to the selected settlement in SettlementMapPanel
+				if (selectedSettlement != newSettlement) {
+					// Set the selected settlement
+					selectedSettlement = newSettlement;
+				}
+				
 				// Need to update the coordinates
-				updateCoordsMaps(selectedSettlement.getCoordinates());
+				updateCoordsMaps(newSettlement.getCoordinates());
+				
+				// Reset it back to the prompt text
+				settlementComboBox.setSelectedIndex(-1);
+			}
 		});
 
 		// Listen for new Settlements
@@ -635,19 +643,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		};
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
-	
-	/**
-	 * Changes the map display to the selected settlement.
-	 *
-	 * @param s
-	 */
-	private void setSettlement(Settlement s) {
-		// Set the selected settlement
-		selectedSettlement = s;
-		// Set the box opaque
-		settlementComboBox.setOpaque(false);
-	}
-	
+
 	/**
 	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
 	 * necessary.
@@ -1022,10 +1018,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				.append(Math.round(h0*1000.0)/1000.0)
 				.append(KM);
 			
-			coordSB.append(pos.getFormattedString());
+			String coordStr = pos.getFormattedString();
+			coordSB.append(coordStr);
 			
 			updateStatusBar(mag, elevSB.toString(), 
-					coordSB.toString(), phi, theta);
+					coordStr, phi, theta);
 
 			boolean onTarget = false;
 
@@ -1037,7 +1034,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				if (unit.getUnitType() == UnitType.VEHICLE) {
 					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
-//						logger.info("The mouse cursor is hovering over " + unit);
+						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					}
 					else 
 						continue;
@@ -1048,7 +1045,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					double clickRange = Coordinates.computeDistance(unit.getCoordinates(), pos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-//						logger.info("The mouse cursor is hovering over " + unit);
 						mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 						onTarget = true;
 					}
@@ -1061,10 +1057,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			Iterator<Landmark> j = landmarks.iterator();
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
-//				logger.info("The mouse cursor is hovering over " + landmark);
 				double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
 				double unitClickRange = 40D;
 				if (clickRange < unitClickRange) {
+					logger.info("The mouse cursor is hovering over " + landmark);
+					mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					onTarget = true;
 				}
 			}
