@@ -18,6 +18,8 @@ import java.util.Set;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
+import org.mars_sim.msp.core.equipment.AmountResourceContainer.MicroContainer;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -27,7 +29,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * in the underlying Equipment.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, ItemHolder, Serializable {
+		implements EquipmentOwner, ItemHolder, ContainerHolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,6 +42,8 @@ public class EquipmentInventory
 
 	/** Locally held equipment set**/
 	private Set<Equipment> equipmentSet;
+	
+	private Set<AmountResourceContainer> amountResourceContainerSet;
 
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
@@ -52,10 +56,24 @@ public class EquipmentInventory
 		// Create equipment set
 		equipmentSet = new UnitSet<>();
 
+		// Create the amount resource container set
+		amountResourceContainerSet = new HashSet<>();
+		
+		//////////////////////////////////////////////
+		// Temporary Use only 
+		
+		Basket baskets = new Basket(owner, 10);
+		Crate crates = new Crate(owner, 30);
+		
+		amountResourceContainerSet.add(baskets);
+		amountResourceContainerSet.add(crates);
+		//////////////////////////////////////////////
+		
 		// Create microInventory instance
 		microInventory = new MicroInventory(owner, cargoCapacity);
 	}
 
+	
 	/**
 	 * Gets the total mass of this inventory including the total mass of any held equipment.
 	 * 
@@ -647,4 +665,199 @@ public class EquipmentInventory
 	public int getItemResourceRemainingQuantity(int resource) {
 		return microInventory.getItemResourceRemainingQuantity(resource);
 	}
+	
+	
+//	/**
+//	 * Adds an amount resource container to this container holder
+//	 * 
+//	 * @param container
+//	 * @param type
+//	 * @param resource
+//	 */
+//	void addAmountResourceContainer(ContainerType type, int resource) {
+//	}
+
+	
+	/**
+	 * Checks if it has the container type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean haveContainerType(ContainerType type) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if it has the container type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean haveContainerTypeResource(ContainerType type) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public double getAmountResourceStored(ContainerType type, int id, int resource) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					return c.getContainerMap().get(id).getAmount();
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	@Override
+	public double storeAmountResource(ContainerType type, int id, int resource, double quantity) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					MicroContainer mc = c.getContainerMap().get(id);
+					double existingAmount = mc.getAmount();
+					double capacity = c.getCapacity();
+					if (existingAmount + quantity > capacity) {
+						mc.setAmount(capacity);
+						return capacity - existingAmount - quantity;
+					}
+					else {
+						mc.setAmount(existingAmount + quantity);
+						return 0;
+					}
+				}
+			}
+		}
+		
+		return -1;
+	}
+
+	@Override
+	public double retrieveAmountResource(ContainerType type, int id, int resource, double quantity) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					MicroContainer mc = c.getContainerMap().get(id);
+					double existingAmount = mc.getAmount();
+					if (quantity > existingAmount) {
+						mc.setAmount(0);
+						return quantity - existingAmount;
+					}
+					else {
+						mc.setAmount(existingAmount - quantity);
+						return 0;
+					}
+				}
+			}
+		}
+		
+		return -1;
+	}
+
+	@Override
+	public double getAmountResourceCapacity(ContainerType type, int id, int resource) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					return c.getCapacity();
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	@Override
+	public double getAmountResourceRemainingCapacity(ContainerType type, int id, int resource) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					MicroContainer mc = c.getContainerMap().get(id);
+					double existingAmount = mc.getAmount();
+					double capacity = c.getCapacity();
+					if (existingAmount <= capacity) {
+						return capacity - existingAmount;
+					}
+					else {
+						return 0;
+					}
+				}
+			}
+		}
+		
+		return -1;
+	}
+
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(ContainerType type, int id, int resource) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar != null && c.getContainerMap().containsKey(id)) {
+					MicroContainer mc = c.getContainerMap().get(id);
+					double existingAmount = mc.getAmount();
+					double capacity = c.getCapacity();
+					if (existingAmount <= capacity) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public double getCargoCapacity(ContainerType type, int id) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type) {
+				if (c.getContainerMap().containsKey(id)) {
+					MicroContainer mc = c.getContainerMap().get(id);
+					return c.getCapacity();
+				}
+			}
+		}
+		
+		return 0;
+	}
+
+	@Override
+	public int getAmountResource(ContainerType type, int id) {
+		for (AmountResourceContainer c: amountResourceContainerSet) {
+			if (c.getContainerType() == type && c.getContainerMap().containsKey(id)) {
+				return c.getContainerMap().get(id).getAmountResource().getID();
+			}
+		}
+		
+		return 0;
+	}
+
+	@Override
+	public Unit getOwner() {
+		return owner;
+	}
+	
+	public void destroy() {
+		equipmentSet.clear();
+		equipmentSet = null;
+		microInventory = null;
+	}
+	
 }

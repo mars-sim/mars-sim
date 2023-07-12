@@ -35,6 +35,7 @@ public class ResourceUtil implements Serializable {
 	public static final int FIRST_VEHICLE_RESOURCE_ID = 1000;
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 1010;
 	public static final int FIRST_ROBOT_RESOURCE_ID = 1020;
+	public static final int FIRST_CONTAINER_RESOURCE_ID = 1040;
 	
 	public static final String OXYGEN = "oxygen";
 	public static final String WATER = "water";
