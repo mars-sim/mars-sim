@@ -59,6 +59,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private transient ExecutorService executor;
 
 	// Data members
+	private boolean mouseDragging;
 	private boolean mapError;
 	private boolean wait;
 //	private boolean update;
@@ -175,7 +176,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //		setBackground(Color.BLACK);
 //		setOpaque(true);
 		
-		RHO_DEFAULT = getScale();
+		RHO_DEFAULT = getRho();
 		MAX_RHO = RHO_DEFAULT * 6;
 		MIN_RHO = RHO_DEFAULT / 6;
 		
@@ -189,7 +190,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		// Gets the latest scale
-		double oldRho = getScale();
+		double oldRho = getRho();
 
 		// May use this if (e.isControlDown()) {} to add ctrl key
         // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
@@ -257,7 +258,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				int dx, dy, x = e.getX(), y = e.getY();
-
+			
+				
 				dx = dragx - x;
 				dy = dragy - y;
 
@@ -265,13 +267,20 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					 && x > 0 && x < MAP_BOX_WIDTH 
 					 && y > 0 && y < MAP_BOX_HEIGHT) {
 					
+					// Update the centerCoords while dragging
 					centerCoords = centerCoords.convertRectToSpherical(dx, dy, marsMap.getRho());
-					marsMap.drawMap(centerCoords, getScale());
+					// Do we really want to update the map while dragging ? 
+					// Yes. It's needed to provide smooth viewing of the surface map
+					marsMap.drawMap(centerCoords, getRho());
+					
+					mouseDragging = true;
+					
 					repaint();
 				}
 
 				dragx = x;
 				dragy = y;
+
 			}
 		});
 
@@ -280,6 +289,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			public void mousePressed(MouseEvent e) {
 				dragx = e.getX();
 				dragy = e.getY();
+
+				mouseDragging = true;
+				
 				setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			}
 
@@ -287,18 +299,25 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			public void mouseReleased(MouseEvent e) {
 				dragx = 0;
 				dragy = 0;
-				if (isNavigator) {
-					navwin.updateCoordsMaps(centerCoords);
-				}
-				else {
-					navPanel.updateCoords(centerCoords);
-				}
+				
+				mouseDragging = false;
+				
+//				if (isNavigator) {
+//					navwin.updateCoordsMaps(centerCoords);
+//				}
+//				else {
+//					navPanel.updateCoords(centerCoords);
+//				}
 
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 	}
 
+	public boolean isMouseDragging() {
+		return mouseDragging;
+	}
+	
 	/**
 	 * Adds a new map layer.
 	 * 
@@ -377,7 +396,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			recreateMap = true;
 		}
 			
-		showMap(centerCoords, getScale());
+		showMap(centerCoords, getRho());
 		return true;
 	}
 
@@ -386,7 +405,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 	
 	public void showMap(Coordinates newCenter) {
-		showMap(newCenter, getScale());
+		showMap(newCenter, getRho());
 	}
 	
 	/**
@@ -400,7 +419,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		if (centerCoords == null
 			|| !centerCoords.equals(newCenter)
-			|| scale != getScale()) {
+			|| scale != getRho()) {
 				recreateMap = true;
 				centerCoords = newCenter;
 		}
@@ -416,7 +435,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	public void updateDisplay() {
-		updateDisplay(getScale());
+		updateDisplay(getRho());
 	}
 
 	public void updateDisplay(double scale) {
@@ -579,19 +598,26 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		updateDisplay();
 	}
 
+	/**
+	 * Gets the true surface lat and lon coordinates of the mouse pointer.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
     public Coordinates getMouseCoordinates(int x, int y) {
-		double xMap = x - (Map.MAP_BOX_WIDTH / 2.0);
-		double yMap = y - (Map.MAP_BOX_HEIGHT / 2.0);
+		double xMap = x - Map.MAP_BOX_WIDTH / 2.0;
+		double yMap = y - Map.MAP_BOX_HEIGHT / 2.0;
 		
 		return centerCoords.convertRectToSpherical(xMap, yMap, marsMap.getRho());
     }
 
     /**
-     * Gets the scale of the Mars surface map.
+     * Gets the rho of the Mars surface map.
      * 
      * @return
      */
-    public double getScale() {
+    public double getRho() {
     	return marsMap.getRho();
     }
 

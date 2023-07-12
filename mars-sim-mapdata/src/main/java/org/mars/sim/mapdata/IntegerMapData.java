@@ -14,9 +14,11 @@ import static org.mars.sim.mapdata.OpenCL.getProgram;
 import static org.mars.sim.mapdata.OpenCL.getQueue;
 
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.MemoryImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -288,10 +290,10 @@ import com.jogamp.opencl.CLProgram;
  	 * @param centerTheta Center theta value on the image
 	 * @param mapBoxWidth The Width of the requested image
 	 * @param mapBoxHeight The Height of the requested image
-	 * @param scale The map scale
+	 * @param newRho The map rho
  	 */
  	@Override
- 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale) {
+ 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
 	
 		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
 		 if (invalid) {
@@ -300,7 +302,7 @@ import com.jogamp.opencl.CLProgram;
 		 }
 	 
  		if (mapImage != null 
- 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && scale == rho)) {
+ 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && newRho == rho)) {
  			// No need to recreate the mapImage when the mouse has not moved
  			return mapImage;
  		}
@@ -310,10 +312,10 @@ import com.jogamp.opencl.CLProgram;
 		// Set the new theta 		
  		centerThetaCache = centerTheta;
 		// Set the new map rho
-		setRho(scale);
+		setRho(newRho);
  		
 		logger.log(Level.INFO, "centerPhiCache: " + centerPhiCache + "  centerThetaCache: " + centerThetaCache
-				+ "  scale: " + scale);
+				+ "  scale: " + newRho);
 		
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, 
@@ -321,7 +323,7 @@ import com.jogamp.opencl.CLProgram;
 
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
- 		logger.config("transparency: " + result.getTransparency());
+// 		logger.config("transparency: " + result.getTransparency());
  		
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
@@ -338,6 +340,21 @@ import com.jogamp.opencl.CLProgram;
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 		}
 
+//		mapImage = displayComponent.createImage(new MemoryImageSource(mapBoxWidth,
+//				mapBoxHeight, mapArray, 0, mapBoxWidth));
+//
+//		MediaTracker mt = new MediaTracker(displayComponent);
+//		mt.addImage(mapImage, 0);
+//		try {
+//			mt.waitForID(0);
+//		} catch (InterruptedException e) {
+//			logger.log(Level.SEVERE, "MineralMapLayer interrupted: " + e);
+//			// Restore interrupted state
+//		    Thread.currentThread().interrupt();
+//		}
+//		
+//		return mapImage;
+		
  		// Create new map image.
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
 

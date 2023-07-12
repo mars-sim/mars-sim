@@ -641,6 +641,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				settlementComboBox.addItem((Settlement) event.getUnit());
 			}
 		};
+		
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 
@@ -1186,8 +1187,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		labelTable.put( Integer.valueOf(14), new JLabel("1") );
 		labelTable.put( Integer.valueOf(0), new JLabel("1/6") );		
 		zoomSlider.setLabelTable(labelTable);
-		
-//		doubleSlider = new DoubleJSlider(0, 95, 14, 1000);
     }
 	
 

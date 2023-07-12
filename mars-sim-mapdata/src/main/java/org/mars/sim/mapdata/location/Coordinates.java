@@ -274,6 +274,52 @@ public final class Coordinates implements Serializable {
 	}
 
 	/**
+	 * Computes the x and y displacement distance in km between the two given coordinates.
+	 *
+	 * @param c0
+	 * @param c1
+	 * @return Point2D
+	 */
+	public static Point2D computeDeltaDistance(Coordinates c0, Coordinates c1) {
+		double c0Phi = c0.getPhi();
+		double c1Phi = c1.getPhi();
+		double c0Theta = c0.getTheta();
+		double c1Theta = c1.getTheta();
+	
+		double y = new Coordinates(c1Phi, 0).getDistance(new Coordinates(c0Phi, 0));	
+		double x = new Coordinates(0, c1Theta).getDistance(new Coordinates(0, c0Theta));
+		
+		if (c1Phi < c0Phi) {
+			y = -y;
+		}
+		
+		if (c1Theta < c0Theta) {
+			x = -x;
+		}
+		
+		return new Point2D.Double(x, y);
+	}
+	
+	/**
+	 * Computes the x and y displacement distance in km between the two given coordinates.
+	 *
+	 * @param c0
+	 * @param c1
+	 * @return Point2D
+	 */
+	public static Point2D computeDeltaPixels(Coordinates c0, Coordinates c1, double halfHeight) {
+		double c0Phi = c0.getPhi();
+		double c1Phi = c1.getPhi();
+		double c0Theta = c0.getTheta();
+		double c1Theta = c1.getTheta();
+	
+		double y = halfHeight * (c1Phi - c0Phi);	
+		double x = halfHeight * (c1Theta - c0Theta);
+
+		return new Point2D.Double(x, y);
+	}
+	
+	/**
 	 * Gets a common formatted string to represent this location.
 	 * e.g. "3.1244 E 34.4352 S"
 	 *
