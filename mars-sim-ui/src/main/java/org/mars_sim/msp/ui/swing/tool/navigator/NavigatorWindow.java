@@ -1058,9 +1058,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
 				double clickRange = Coordinates.computeDistance(landmark.getLandmarkCoord(), pos);
-				double unitClickRange = 40D;
+				double unitClickRange = 20;
 				if (clickRange < unitClickRange) {
-					logger.info("The mouse cursor is hovering over " + landmark);
+//					logger.info("The mouse cursor is hovering over " + landmark.getLandmarkName());
 					mapLayerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					onTarget = true;
 				}

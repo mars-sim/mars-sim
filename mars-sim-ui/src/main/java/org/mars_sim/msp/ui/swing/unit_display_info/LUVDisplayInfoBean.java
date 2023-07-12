@@ -25,7 +25,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public LUVDisplayInfoBean() {
 		// Use VehicleDisplayInfoBean

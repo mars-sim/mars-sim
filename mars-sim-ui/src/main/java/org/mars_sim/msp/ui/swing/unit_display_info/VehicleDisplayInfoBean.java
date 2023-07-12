@@ -35,7 +35,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     private Font mapLabelFont;
     
     /**
-     * Constructor
+     * Constructor.
      */
     VehicleDisplayInfoBean() {
         normalMapIcon = ImageLoader.getIconByName("map/vehicle");

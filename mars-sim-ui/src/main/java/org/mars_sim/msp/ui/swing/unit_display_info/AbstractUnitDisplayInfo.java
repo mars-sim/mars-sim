@@ -48,7 +48,7 @@ abstract class AbstractUnitDisplayInfo implements UnitDisplayInfo {
 
     @Override
     public double getMapClickRange() {
-        return 0;
+        return 15;
     }
 
     @Override

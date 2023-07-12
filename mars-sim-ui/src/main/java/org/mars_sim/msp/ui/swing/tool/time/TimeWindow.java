@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;

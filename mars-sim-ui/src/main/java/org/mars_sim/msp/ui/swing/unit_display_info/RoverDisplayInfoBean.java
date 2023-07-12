@@ -20,7 +20,7 @@ abstract class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	//private Icon buttonIcon;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public RoverDisplayInfoBean() {
 		super();

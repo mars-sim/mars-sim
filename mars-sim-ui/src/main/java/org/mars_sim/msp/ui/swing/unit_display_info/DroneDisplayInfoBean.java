@@ -25,7 +25,7 @@ public class DroneDisplayInfoBean extends VehicleDisplayInfoBean {
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public DroneDisplayInfoBean() {
 		// Use VehicleDisplayInfoBean

@@ -22,7 +22,7 @@ import java.awt.Font;
 class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     // Navigator click range in km.
-    private static double SETTLEMENT_CLICK_RANGE = 90D;
+    private static double SETTLEMENT_CLICK_RANGE = 50D;
         
     private Icon buttonIcon;
     private Font mapLabelFont;
@@ -122,7 +122,6 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     @Override
     public Color getGlobeColor(MapMetaData type) {
         return (type.isColourful() ? Color.black : Color.green);
-
     }
 
   
