@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -17,7 +16,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.History;
-import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -478,8 +476,8 @@ public class EVASuit extends Equipment
 	 * History of the EVASuit
 	 * @return
 	 */
-	public List<HistoryItem<Unit>> getHistory() {
-		return locnHistory.getChanges();
+	public History<Unit> getHistory() {
+		return locnHistory;
 	}
 	/**
 	 * Return the parts that normally fail on a EVA Suit

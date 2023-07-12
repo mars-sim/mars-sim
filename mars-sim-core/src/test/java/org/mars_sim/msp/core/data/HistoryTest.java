@@ -47,8 +47,12 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         h.add(4);
 
         master.setMarsTime(master.getMarsTime().addTime(2000D));
-        MarsDate lastDate = master.getMarsTime().getDate();
         h.add(5);
+
+        master.setMarsTime(master.getMarsTime().addTime(2D));
+        MarsDate lastDate = master.getMarsTime().getDate();
+        h.add(6);
+        
 
         List<MarsDate> range = h.getRange();
         assertEquals("Range size", 3, range.size());
