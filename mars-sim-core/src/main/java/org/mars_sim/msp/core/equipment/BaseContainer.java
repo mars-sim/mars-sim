@@ -7,10 +7,15 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Unit;
 
 
-public class BaseContainer {
+public class BaseContainer implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	private double capacity;
 	
