@@ -14,11 +14,9 @@ import static org.mars.sim.mapdata.OpenCL.getProgram;
 import static org.mars.sim.mapdata.OpenCL.getQueue;
 
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.MemoryImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -69,7 +67,7 @@ import com.jogamp.opencl.CLProgram;
  	private final double RHO_DEFAULT;
 
  	// Data members.
- 	private int[][] pixels = null;
+ 	private int[][] baseMapPixels = null;
  	// # of pixels in the width of the map image
 	private int pixelWidth;
  	// # of pixels in the height of the map image
@@ -103,7 +101,8 @@ import com.jogamp.opencl.CLProgram;
 		this.meta = newMeta;
 		
 		// Load data files
-		pixels = loadMapData(newMeta.getHiResFile());
+		
+		baseMapPixels = loadMapData(newMeta.getHiResFile());
 		
 		rho =  pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
@@ -217,19 +216,27 @@ import com.jogamp.opencl.CLProgram;
 		} catch (IOException e) {
 			logger.severe("Can't read image file: " + imageFile + ".");
 		}
+		
+		// Use getRaster() is fastest
+	    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
+		// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
+		
+		final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
+// 		int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
 
- 		final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
  		pixelWidth = cylindricalMapImage.getWidth();
  		pixelHeight = cylindricalMapImage.getHeight();
  		
  		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
- 		logger.config("hasAlphaChannel: " + hasAlphaChannel);
- 		
+	
  		int[][] result = new int[pixelHeight][pixelWidth];
  		
  		if (hasAlphaChannel) {
  			final int pixelLength = 4;
- 			for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
+ 			
+ 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
+ 			
+ 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
  				int argb = 0;
  				
  				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
@@ -240,10 +247,10 @@ import com.jogamp.opencl.CLProgram;
  				// 2. 0xff is an int literal (00 00 00 ff).
  				// 3. The '&' is applied to yield the desired value for result.
 
- 				argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
- 				argb += ((int) pixels[pixel + 1] & 0xff); // blue
- 				argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
- 				argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
+ 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
+ 				argb += ((int) pixels[pos + 1] & 0xff); // blue
+ 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
+ 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
  				
 // 				The Red and Blue channel comments are flipped. 
 // 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
@@ -319,7 +326,7 @@ import com.jogamp.opencl.CLProgram;
 		
  		// Create a new buffered image to draw the map on.
  		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, 
- 				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);
+ 				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);TYPE_INT_ARGB_PRE);
 
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
 
@@ -355,14 +362,36 @@ import com.jogamp.opencl.CLProgram;
 //		
 //		return mapImage;
 		
+//		mapArray = result.getRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+
  		// Create new map image.
  		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
-
+ 		
+ 		// If alpha value is 255, it is fully opaque.
+ 		//  A value of 1 would mean it is (almost) fully transparent.
+// 		setAlpha((byte)127, result);
+ 		
  		mapImage = result;
 		
  		return result;
  	}
 
+ 	
+ 	public void setAlpha(byte alpha, BufferedImage image) {       
+ 		// alpha is in 0-255 range
+ 		alpha %= 0xff; 
+ 	    for (int i = 0; i < image.getWidth(); i++) {          
+ 	        for (int j = 0; j < image.getHeight(); j++) {
+ 	        	int color = image.getRGB(i, j);
+
+ 	        	// According to Java API, the alpha value is at 24-31 bit.
+ 	            int mc = (alpha << 24) | 0x00ffffff; // shift blue tp alpha
+ 	            int newcolor = color & mc;
+ 	            image.setRGB(i, j, newcolor);            
+ 	        }
+ 	    }
+ 	}
+ 	
 
  	/**
  	 * Constructs a map array for display with CPU.
@@ -715,7 +744,7 @@ import com.jogamp.opencl.CLProgram;
 		 colBuffer.getBuffer().get(cols);
 
 		 for(int i = 0; i < size; i++) {
-			 mapArray[i] = pixels[rows[i]][cols[i]];
+			 mapArray[i] = baseMapPixels[rows[i]][cols[i]];
 		 }
 
 		 rowBuffer.release();
@@ -767,11 +796,6 @@ import com.jogamp.opencl.CLProgram;
 		 return new Point2D.Double(phiNew, thetaNew);
 	 }
 
-// 	@Override
-// 	public Color getRGBColor(double phi, double theta) {
-// 		return new Color(getRGBColorInt(phi, theta));
-// 	}
-
  	/**
  	 * Gets the RGB map color as an integer at a given location.
  	 * 
@@ -799,15 +823,19 @@ import com.jogamp.opencl.CLProgram;
  		while (theta < 0)
  			theta += TWO_PI;
 
- 		int row = (int) Math.round(phi * ((double) pixels.length / Math.PI));
- 		if (row >= pixels.length - 1)
- 			row = pixels.length - 1;
+ 		int row = (int) Math.round(phi * ((double) baseMapPixels.length / Math.PI));
+ 		if (row >= baseMapPixels.length - 1)
+ 			row = baseMapPixels.length - 1;
 
- 		int column = (int) Math.round(theta * ((double) pixels[0].length / TWO_PI));
- 		if (column >= pixels[0].length - 1)
- 			column = pixels[0].length - 1;
+ 		int column = (int) Math.round(theta * ((double) baseMapPixels[0].length / TWO_PI));
+ 		if (column >= baseMapPixels[0].length - 1)
+ 			column = baseMapPixels[0].length - 1;
  		
- 		return pixels[row][column];
+ 		int pixel = baseMapPixels[row][column];
+ 		
+ 		int pixelWithAlpha = (pixel >> 24) & 0xFF; 
+ 		
+ 		return pixelWithAlpha;
  	}
 
  	
@@ -816,18 +844,14 @@ import com.jogamp.opencl.CLProgram;
  	}
  	
  	public int[][] getPixels() {
- 		return pixels;
+ 		return baseMapPixels;
  	}
- 	
-// 	public static List<Point2D> getLocations() {
-// 		return locations;
-// 	}
- 	
+
 	/**
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
-	 	pixels = null;
+	 	baseMapPixels = null;
 	 	meta = null;
 		cylindricalMapImage = null;
 		program = null;

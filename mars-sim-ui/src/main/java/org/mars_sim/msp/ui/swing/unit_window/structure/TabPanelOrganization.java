@@ -1,9 +1,10 @@
 /*
  * Mars Simulation Project
  * TabPanelOrganization.java
- * @date 2021-09-27
+ * @date 2023-07-12
  * @author Manny Kung
  */
+
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
@@ -51,6 +52,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
+import org.mars_sim.msp.ui.swing.tool.treetable.JTreeTable;
+import org.mars_sim.msp.ui.swing.tool.treetable.OrganizationTreeTableModel;
+import org.mars_sim.msp.ui.swing.tool.treetable.TreeTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -76,6 +80,9 @@ public class TabPanelOrganization extends TabPanel {
 
 	private DefaultTreeModel defaultTreeModel;
 
+	private TreeTableModel treeTableModel; 
+	private JTreeTable treeTable;
+	
 	private DefaultMutableTreeNode commanderStaffNode;
 	private DefaultMutableTreeNode commanderNode;
 	private DefaultMutableTreeNode subCommanderNode;
@@ -168,6 +175,7 @@ public class TabPanelOrganization extends TabPanel {
 		
 		tree = new JTree(defaultTreeModel);
 		// Note : will allow changing role name in future : tree.setEditable(true);
+		
 		tree.getSelectionModel().setSelectionMode
 		        (TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setShowsRootHandles(true);
@@ -176,10 +184,19 @@ public class TabPanelOrganization extends TabPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(tree);
 		content.add(scrollPane, BorderLayout.CENTER);
-
+		
 		buildTreeNodes();
 
 		initNodes();
+		
+		treeTableModel = OrganizationTreeTableModel.createModel(settlement); 
+		
+		treeTable = new JTreeTable(treeTableModel);
+		
+		JScrollPane scrollTreePane = new JScrollPane();
+		scrollTreePane.setViewportView(treeTable);
+		content.add(scrollTreePane, BorderLayout.SOUTH);
+		
 	}
 
 	/**
@@ -210,7 +227,7 @@ public class TabPanelOrganization extends TabPanel {
 
 	public void buildTreeNodes() {
 
-		commanderStaffNode = new DefaultMutableTreeNode("A. Command Staff");
+		commanderStaffNode = new DefaultMutableTreeNode("(A). Command Staff");
 		commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
 		subCommanderNode = new DefaultMutableTreeNode(RoleType.SUB_COMMANDER.toString());
 
@@ -218,13 +235,13 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(commanderNode);
 		nodes.add(subCommanderNode);
 
-		divisionNode = new DefaultMutableTreeNode("B. Division");
+		divisionNode = new DefaultMutableTreeNode("(B). Division");
 		mayorNode = new DefaultMutableTreeNode(RoleType.MAYOR.toString());
 
 		nodes.add(divisionNode);
 		nodes.add(mayorNode);
 
-		agricultureNode = new DefaultMutableTreeNode("1. Agriculture");
+		agricultureNode = new DefaultMutableTreeNode("(1). Agriculture");
 		agricultureSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.AGRICULTURE_SPECIALIST.toString());
 		agricultureChiefNode = new DefaultMutableTreeNode(
@@ -234,7 +251,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(agricultureSpecialistNode);
 		nodes.add(agricultureChiefNode);
 
-		computingNode = new DefaultMutableTreeNode("2. Computing");
+		computingNode = new DefaultMutableTreeNode("(2). Computing");
 		computingSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.COMPUTING_SPECIALIST.toString());
 		computingChiefNode = new DefaultMutableTreeNode(
@@ -244,7 +261,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(computingSpecialistNode);
 		nodes.add(computingChiefNode);
 
-		engineeringNode = new DefaultMutableTreeNode("3. Engineering");
+		engineeringNode = new DefaultMutableTreeNode("(3). Engineering");
 		engineeringSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.ENGINEERING_SPECIALIST.toString());
 		engineeringChiefNode = new DefaultMutableTreeNode(
@@ -254,7 +271,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(engineeringSpecialistNode);
 		nodes.add(engineeringChiefNode);
 
-		logisticNode = new DefaultMutableTreeNode("4. Logistic");
+		logisticNode = new DefaultMutableTreeNode("(4). Logistic");
 		logisticSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.LOGISTIC_SPECIALIST.toString());
 		logisticChiefNode = new DefaultMutableTreeNode(
@@ -264,7 +281,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(logisticSpecialistNode);
 		nodes.add(logisticChiefNode);
 
-		missionNode = new DefaultMutableTreeNode("5. Mission");
+		missionNode = new DefaultMutableTreeNode("(5). Mission");
 		missionSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.MISSION_SPECIALIST.toString());
 		missionChiefNode = new DefaultMutableTreeNode(
@@ -274,7 +291,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(missionSpecialistNode);
 		nodes.add(missionChiefNode);
 
-		safetyNode = new DefaultMutableTreeNode("6. Safety");
+		safetyNode = new DefaultMutableTreeNode("(6). Safety");
 		safetySpecialistNode = new DefaultMutableTreeNode(RoleType.SAFETY_SPECIALIST.toString());
 		safetyChiefNode = new DefaultMutableTreeNode(
 				RoleType.CHIEF_OF_SAFETY_N_HEALTH.toString());
@@ -283,7 +300,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(safetySpecialistNode);
 		nodes.add(safetyChiefNode);
 
-		scienceNode = new DefaultMutableTreeNode("7. Science");
+		scienceNode = new DefaultMutableTreeNode("(7). Science");
 		scienceSpecialistNode = new DefaultMutableTreeNode(
 				RoleType.SCIENCE_SPECIALIST.toString());
 		scienceChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SCIENCE);
@@ -292,7 +309,7 @@ public class TabPanelOrganization extends TabPanel {
 		nodes.add(scienceSpecialistNode);
 		nodes.add(scienceChiefNode);
 
-		supplyNode = new DefaultMutableTreeNode("8. Supply");
+		supplyNode = new DefaultMutableTreeNode("(8). Supply");
 		supplySpecialistNode = new DefaultMutableTreeNode(
 				RoleType.RESOURCE_SPECIALIST.toString());
 		supplyChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);

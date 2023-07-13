@@ -241,6 +241,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	    	// which in turns calls marsMap.drawMap(centerCoords, getScale());
 
 			marsMap.drawMap(centerCoords, newRho);
+			
 			repaint();
 		}
     }
@@ -518,11 +519,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	        		// Paint black background
 //	        		g2d.setPaint(Color.BLACK); 
-//	        		g2d.setColor(Color.BLACK);
+	        		g2d.setColor(Color.BLACK);
 	                
-//	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
-	
-	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
+	        		g2d.fillRect(0, 0, Map.MAP_BOX_WIDTH, Map.MAP_BOX_HEIGHT);
+
+	        		g2d.drawImage(starfield, 0, 0, Color.black, null);
+	        		
+//	        		g2d.drawImage(starfield, 0, 0, Color.BLACK, this);
 	        		
 //	        		g2d.setComposite(AlphaComposite.SrcOver); 
 //	        		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f)); 
