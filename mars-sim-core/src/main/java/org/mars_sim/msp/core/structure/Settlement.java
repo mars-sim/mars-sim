@@ -986,6 +986,11 @@ public class Settlement extends Structure implements Temporal,
 		return true;
 	}
 
+	/**
+	 * Sets up the daily appointed task of doing EVA.
+	 * 
+	 * @param sol
+	 */
 	public void setAppointedTask(int sol) {
 		for (Person p: citizens) {
 			if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
@@ -993,10 +998,24 @@ public class Settlement extends Structure implements Temporal,
 					|| p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
 					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
 					) {
-				Appointment ap = new Appointment(p, sol, START_TIME, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
+				
+				int startTimeEVA = (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
+				int numDigits = ("" + startTimeEVA).length();
+				String startTimeEVAString = ""; 
+				if (numDigits == 1) {
+					startTimeEVAString = "00" + startTimeEVA;
+				}
+				else if (numDigits == 2) {
+					startTimeEVAString = "0" + startTimeEVA;
+				}
+				else if (numDigits == 3) {
+					startTimeEVAString = "" + startTimeEVA;
+				}		
+				
+				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
 				p.getScheduleManager().setAppointment(ap);
-				logger.info(this, p, "Just set up an appointed task '" + DigLocalRegolith.SIMPLE_NAME 
-						+ "' on Sol " + sol + ":" + START_TIME + " for " + DURATION + " millisols.");
+				logger.info(this, p, "Authorized the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME 
+						+ "' at sol " + sol + ":" + startTimeEVAString + " for " + DURATION + " millisols.");
 			}
 		}
 	}

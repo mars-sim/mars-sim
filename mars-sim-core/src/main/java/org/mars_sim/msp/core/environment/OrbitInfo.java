@@ -698,7 +698,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * Gets the hour angle from a given location [in millisols]
 	 * Note: the hour angle has not been adjusted with longitude yet.
 	 * 
-	 * Reference : Solar radiation on Mars: Stataionary Photovoltaic Array. 
+	 * @Reference : Solar radiation on Mars: Stationary Photovoltaic Array. 
 	 * NASA Technical Memo. 1993.
 	 * 
 	 * @param location.
@@ -707,19 +707,14 @@ public class OrbitInfo implements Serializable, Temporal {
 	public double getHourAngle(Coordinates location) {
 		computeSineSolarDeclinationAngle();
 		double phi = location.getPhi();
+		
+		// For the geographical latitude geoLat (in radians)
+		// Going Northward from equator is positive
+		// Going Southward from equator is negative
 		double geoLat = 0;
-		// For the geographical latitude
-		// Northward is positive
-		// Southward is negative
-
-		if (phi == 0.0) {
-			geoLat = HALF_PI; 
-		}
-		else if (phi < HALF_PI) {
+		
+		if (phi <= HALF_PI) {
 			geoLat = HALF_PI - phi; 
-		}
-		else if (phi == HALF_PI) {
-			geoLat = 0; 
 		}
 		else if (phi > HALF_PI) {
 			geoLat = - (phi - HALF_PI); 
@@ -733,16 +728,17 @@ public class OrbitInfo implements Serializable, Temporal {
 		
 		double omega = tanSDA * tanPhi;
 		if (- omega > 1) {
-			logger.info(location + " The sun will not rise. No daylight. Polar night.");
+			logger.info("At " + location + ", the sun will not rise. No daylight. Polar night.");
 			return -10;
 		}
 		else if (omega == 1 || omega == -1) {
-			logger.info(location + " The sun will be on the horizon for an instant only.");
+			logger.info("At " + location + ", the sun will be on the horizon for an instant only.");
 		}
 		else if (- omega < -1) {
-			logger.info(location + " The sun will not set. Daylight all day. Polar day.");
+			logger.info("At " + location + ", the sun will not set. Daylight all day. Polar day.");
 			return 10;
 		}
+		
 		return - Math.acos(-omega);
 	}
 
@@ -754,32 +750,38 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return
 	 */
 	public double[] getSunriseSunsetTime(Coordinates location) {
-		double lon = location.getTheta();
+
 		double omegaSunrise = getHourAngle(location);
 		if (omegaSunrise == 10) {
+			// the sun will not set. Daylight all day. Polar day.
 			return new double[] {-1, -1, 1000};
 		}
 		if (omegaSunrise == -10) {
+			// the sun will not rise. No daylight. Polar night.
 			return new double[] {-1, -1, 0};
 		}
-		double sunriseMillisol = 0;
-		double sunsetMillisol = 0;
+	
+		// The sunrise and sunset time will need to be adjusted according to the longitude
+		// of the location of interest.
+		double lon = location.getTheta();
 		
+		// Find the time for sunrise 
 		double sunriseHrs = 12 + (omegaSunrise - lon) * ANGLE_TO_HOURS;
 		if (sunriseHrs < 0)
 			sunriseHrs = 24 + sunriseHrs;
 		
-		sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
+		double sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
 		if (sunriseMillisol < 0)
 			sunriseMillisol = 1000 + sunriseMillisol;
 		if (sunriseMillisol > 999)
 			sunriseMillisol = sunriseMillisol - 1000;
-
-		double sunsetHrs = 12 - (omegaSunrise + lon) * ANGLE_TO_HOURS;
-		if (sunriseHrs > 24)
-			sunriseHrs = sunriseHrs - 24;
 		
-		sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
+		// Find the time for sunset 
+		double sunsetHrs = 12 - (omegaSunrise + lon) * ANGLE_TO_HOURS;
+		if (sunsetHrs > 24)
+			sunsetHrs = sunsetHrs - 24;
+
+		double sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
 		if (sunsetMillisol < 0)
 			sunsetMillisol = 1000 + sunsetMillisol;
 		if (sunsetMillisol > 999)

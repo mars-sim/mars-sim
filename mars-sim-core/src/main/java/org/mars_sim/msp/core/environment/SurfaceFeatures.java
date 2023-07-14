@@ -805,6 +805,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the orbit info instance.
+	 * 
+	 * @return
+	 */
+	public OrbitInfo getOrbitInfo() {
+		return orbitInfo;
+	}
+	
+	/**
 	 * Time passing in the simulation.
 	 *
 	 * @param time time in millisols
