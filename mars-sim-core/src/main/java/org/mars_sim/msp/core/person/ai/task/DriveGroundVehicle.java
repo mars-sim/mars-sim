@@ -168,11 +168,10 @@ public class DriveGroundVehicle extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			logger.log(worker, Level.WARNING, 10_000, 
-					"Unknown phase. Just called endTask() in OperateVehicle.");
+    	    logger.warning(worker, "No longer piloting " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
-			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
-			// recursively.
+			// WARNING: do NOT call endTask() here or 
+    	    // it will end up calling endTask() again recursively.
 			return time;		
 			
 		} else if (AVOID_OBSTACLE.equals(getPhase())) {

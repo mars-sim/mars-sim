@@ -91,13 +91,13 @@ public class MasterClock implements Serializable {
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
 	
-	/** The time taken to execute one frame in the game loop [in ms] */
+	/** The time taken to execute one frame in the game loop [in ms]. */
 	private long executionTime;
-	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
+	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last. */
 	private long nextPulseId = 1;
-	// Duration of last sleep
+	/** Duration of last sleep. */
 	public long sleepTime;
-	// Records the real milli time when a pulse is execited
+	/** Records the real milli time when a pulse is excited. */
 	private long[] pulseLog = new long[MAX_PULSE_LOG];
 	
 	/** The current simulation time ratio. */

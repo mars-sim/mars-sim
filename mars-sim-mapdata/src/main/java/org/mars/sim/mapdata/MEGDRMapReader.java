@@ -34,38 +34,67 @@ public class MEGDRMapReader {
 	
 	static final int LEVEL = 1;
 	
+	private int DIAMETER = 21_338; // Radius is 3_396;
+
 //	NOTE: (Do not delete)
 //	
 //	LEVEL 0 :
-// `megt90n000cb.img` provides 
-//	map resolution of 1440x720
-//	4 pixels per degree (or 0.25 by 0.25 degrees)
-//	map scale of 14.818 km per pixel
+//  File name: megt90n000cb.img  
+//	Pixels: 1440 x 720
+//	Resolution: 4 pixels per degree (or 0.25 by 0.25 degrees)
+//	Scale: 14.818 km per pixel (=1/4)
+//  File size: 2.025 MB
 //	
 //	LEVEL 1 :
-// `megt90n000eb.img` provides
-//	map resolution of 5760x2880
-//	16 pixels per degree (or 0.0625by 0.0625 degrees)
-//	map scale of 3.705 km per pixel	
+//  File name: megt90n000eb.img
+//	Pixels: 5760 x 2880
+//	Resolution: 16 pixels per degree (or 0.0625by 0.0625 degrees)
+//	Scale: 3.705 km per pixel (=1/16)	
+//  File size: 32.4 MB
 //	
 //	LEVEL 2 :
-// `megt90n000fb.img` provides
-//	map resolution of 11520x5760
-//	32 pixels per degree (or 0.03125 by 0.03125 degrees)
-//	map scale of 1.853 km per pixel		
-	 
-	/** meg004 is Low resolutions. */
+//  File name: megt90n000fb.img
+//	Pixels: 11520 x 5760
+//	Resolution: 32 pixels per degree (or 0.03125 by 0.03125 degrees)
+//	Scale: 1.853 km per pixel (=1/32) 	
+//  File size: 129.6 MB
+//	
+//	LEVEL 3 :
+//  Divided into 4 quadrants
+//  File name: 4 separate files with `megt__n___gb.img
+//	Pixels: 23040 x 5760
+//	Resolution: 64 pixels per degree (or 0.015625 by 0.015625 degrees)
+//  Scale: 0.926 km per pixel (=1/64)		
+//  File size: 132.7 MB
+//	
+//	LEVEL 4 :
+//  Divided into 16 quadrants
+//  File name: 16 separate files with `megt__n___hb.img
+//	Pixels: 23040 x 5632
+//	Resolution: 128 pixels per degree (or 0.00781 by 0.00781 degrees)
+//  Scale: 0.463 km per pixel (=1/128)		
+//  File size: 129.8 MB
+	
+	/** meg004 is level 0 resolutions. */
 	private static final String meg004 = "megt90n000cb.img";
 
-	/** meg004 is mid resolutions. */
+	/** meg004 is level 1 resolutions. */
 	private static final String meg016 = "megt90n000eb.img";
 
-	/** meg032 is high resolutions. */
+	/** meg032 is level 2 resolutions. */
 	private static final String meg032 = "megt90n000fb.img";
+	
+	/** meg032 is level 3 resolutions. */
+	private static final String[] meg064 = {
+										"megt90n000gb.img",
+										"megt90n180gb.img",
+										"megt00n000gb.img",
+										"megt00n180gb.img"
+										};
 	
 	private static final String PATH = "/maps/";
 	
-	static final String FILE = PATH + meg004;
+	static final String FILE = PATH + meg016;
 	
 	private String[] maps = {PATH + meg004, PATH + meg016, PATH + meg032};
 	
@@ -108,7 +137,12 @@ public class MEGDRMapReader {
 			mapWidth = (short) (mapHeight * 2);
 			
 			logger.info("Reading elevation dataset from '" + file + "' (" + mapWidth + " by " + mapHeight + ").");
-	            
+	        
+			double resolution = Math.round(1.0 * DIAMETER / mapWidth * 100.0)/100.0; 
+			
+			logger.info("Horizontal resolution is " + resolution + " km between two pixels at the equator.");
+			
+			
 		} catch (Exception e) {
 			 System.out.println("Problems in inputStream: " + e.getMessage());
 		}
