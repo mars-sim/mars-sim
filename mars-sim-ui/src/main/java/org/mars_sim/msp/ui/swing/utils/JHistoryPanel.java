@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.data.History;
@@ -30,6 +31,11 @@ import org.mars_sim.msp.core.time.MarsTime;
  */
 public abstract class JHistoryPanel<T> extends JPanel {
     /**
+	 *
+	 */
+	private static final int TIME_WIDTH = 90;
+
+	/**
      * Table model that holds the items in the history
      */
 	private class ItemModel extends AbstractTableModel {
@@ -65,7 +71,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 			if (row < items.size()) {
 				HistoryItem<T> item = items.get(row);
 				if (column == 0) {
-					return item.getWhen();
+					return item.getWhen().getDateTimeStamp();
 				} 
 				return getValueFrom(item.getWhat(), column-1);
 			}
@@ -120,12 +126,15 @@ public abstract class JHistoryPanel<T> extends JPanel {
 
 		// Create schedule table
 		JTable table = new JTable(itemModel);
-		table.getColumnModel().getColumn(0).setPreferredWidth(30);
+		TableColumn timeColumn = table.getColumnModel().getColumn(0);
+		timeColumn.setMinWidth(TIME_WIDTH);
+		timeColumn.setPreferredWidth(TIME_WIDTH);
+
 		table.setRowSelectionAllowed(true);
 
 		scrollPanel.setViewportView(table);
 
-		solBox.addActionListener(e -> refresh());
+		solBox.addActionListener(e -> itemModel.reload());
 	}
 
     /**
@@ -139,11 +148,13 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		// or the timestamp of 1st item has changed
 		if ((lastSize != newItems.size()) 
 			|| !newItems.get(0).getWhen().equals(lastTime)) {
+			
+			Object currentSelection = solBox.getSelectedItem();
 
+			// Reload the sol combo if the range has changed
 			List<MarsDate> newRange = source.getRange();
 			if (newRange.size() != solModel.getSize()) {
 				// Update the solList comboBox
-				Object currentSelection = solBox.getSelectedItem();
 				solModel.removeAllElements();
 				solModel.addAll(newRange);
 				lastTime = newItems.get(0).getWhen();
@@ -153,7 +164,12 @@ public abstract class JHistoryPanel<T> extends JPanel {
 				}
 				solBox.setSelectedItem(currentSelection);
 			}
-			itemModel.reload();
+
+			// If the new item is visible; then reload table
+			MarsDate newItemDate = newItems.get(newItems.size()-1).getWhen().getDate();
+			if (newItemDate.equals(currentSelection)) {
+				itemModel.reload();
+			}
 		}
 	}
 

@@ -34,6 +34,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.History.HistoryItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -289,7 +290,7 @@ implements InternalFrameListener, ActionListener {
 		private static final long serialVersionUID = 1L;
 
 		private TaskManager taskSchedule;
-		private List<OneActivity> activities;
+		private List<HistoryItem<OneActivity>> activities;
 
 		/**
 		 * hidden constructor.
@@ -299,7 +300,7 @@ implements InternalFrameListener, ActionListener {
 	        
 			taskSchedule = worker.getTaskManager();
 
-	        activities = taskSchedule.getTodayActivities();
+	        activities = taskSchedule.getAllActivities().getChanges();
 		}
 
 		@Override

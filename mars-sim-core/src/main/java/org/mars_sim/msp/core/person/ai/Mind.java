@@ -113,7 +113,6 @@ public class Mind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
-			taskManager.timePassing(pulse);
 			// Decides what tasks to inject time
 			if (pulse.getElapsed() > 0)
 				decideTask(pulse.getElapsed());
