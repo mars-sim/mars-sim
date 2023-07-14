@@ -34,7 +34,7 @@ public class MEGDRMapReader {
 	
 	static final int LEVEL = 1;
 	
-	private int DIAMETER = 21_338; // Radius is 3_396;
+	private double DIAMETER = 2 * Math.PI * 3376.2;
 
 //	NOTE: (Do not delete)
 //	
@@ -138,7 +138,7 @@ public class MEGDRMapReader {
 			
 			logger.info("Reading elevation dataset from '" + file + "' (" + mapWidth + " by " + mapHeight + ").");
 	        
-			double resolution = Math.round(1.0 * DIAMETER / mapWidth * 100.0)/100.0; 
+			double resolution = Math.round(DIAMETER / mapWidth * 100.0)/100.0; 
 			
 			logger.info("Horizontal resolution is " + resolution + " km between two pixels at the equator.");
 			

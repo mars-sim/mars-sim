@@ -16,6 +16,7 @@ import java.util.Collection;
  	
 	private static final double PI = Math.PI;
  	private static final double TWO_PI = Math.PI * 2D;
+ 	private static final double DEG_PER_RADIAN = 180/Math.PI;
 
 	// Singleton instance.
 	private static MapDataUtil instance;
@@ -85,14 +86,50 @@ import java.util.Collection;
  		return elevationArray()[index];
  	}
      
-     /**
-      * Gets the surface map data.
-      * 
-      * @return surface map data.
-      */
-     public MapData getMapData(String mapType) {
-         return mapDataFactory.getMapData(mapType);
-     }
+ 	/**
+ 	 * Transforms the pixel i and j into lat and lon coordinate.
+ 	 * 
+ 	 * @param i sample coordinate
+ 	 * @param j line coordinate
+ 	 * @param n the number of lines or samples per line in the image
+       (the images are square)
+ 	 * @param res the map resolution in pixels per degree
+ 	 * @return
+ 	 */
+ 	public double[] convertToLatLon(int i, int j, int n, int res) {
+ 		// The transformation from line and sample coordinates to planetocentric
+ 		// latitude and longitude is given by these equations.
+ 		
+ 		// Convert to Cartesian coordinate system with (0,0) at center
+ 		double x = (i - n/2.0 - 0.5)/res;
+ 		double y = (j - n/2.0 - 0.5)/res;
+
+ 		// The radius from center of map to pixel i,j
+ 		double r = Math.sqrt(x*x + y*y);
+
+ 		// The east longitude of pixel i,j in degrees
+ 		double lon = Math.atan2(x,y) * DEG_PER_RADIAN;
+ 		// The latitude of pixel i,j in degrees
+ 		double lat = 0;
+ 		
+ 		// For northern hemisphere
+ 		if (y > 0)
+ 			lat = 90 - 2 * Math.atan(r * PI/360) * DEG_PER_RADIAN;
+ 		else if (y < 0)
+ 			// For southern hemisphere
+ 			lat = -90 + 2 * Math.atan(r * PI/360) * DEG_PER_RADIAN;
+
+ 		return new double[] {lat, lon};
+ 	}
+ 	
+ 	/**
+ 	 * Gets the surface map data.
+ 	 * 
+ 	 * @return surface map data.
+ 	 */
+ 	public MapData getMapData(String mapType) {
+ 		return mapDataFactory.getMapData(mapType);
+ 	}
 
      /**
       * Gets the map types available.

@@ -43,7 +43,7 @@ import org.mars.sim.mapdata.common.FileLocator;
 
 			for(String id : mapProps.stringPropertyNames()) {
 				// Split the details into the parts
-				String[] value = mapProps.getProperty(id).split(",");
+				String[] value = mapProps.getProperty(id).split(", ");
 				boolean isColour = Boolean.parseBoolean(value[1]);
 				String hiRes = value[2];
 				String loRes = value[3];
