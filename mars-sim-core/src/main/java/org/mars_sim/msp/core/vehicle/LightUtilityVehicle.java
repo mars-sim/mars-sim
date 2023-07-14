@@ -58,9 +58,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
 		crewCapacity = spec.getCrewSize();
 		robotCrewCapacity = spec.getCrewSize();
-
-		// Set rover terrain modifier
-		setTerrainHandlingCapability(spec.getTerrainHandling());
 	}
 
 	@Override

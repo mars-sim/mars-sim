@@ -90,8 +90,7 @@ public abstract class OperateVehicle extends Task {
 	private int fuelTypeID;
 	/** The distance [km] to the destination at the start of the trip. */
 	private double startTripDistance; 
-	
-	
+
 	/** The vehicle to operate. */ 
 	private Vehicle vehicle;
 	/** The location of the destination of the trip. */
@@ -240,7 +239,8 @@ public abstract class OperateVehicle extends Task {
     @Override
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
-    	    throw new IllegalArgumentException("Task phase is null");
+    	    logger.warning(worker, "No longer piloting " + getVehicle() + ".");
+    	    return time;
     	}
     	else if (MOBILIZE.equals(getPhase())) {
     	    return mobilizeVehiclePhase(time);

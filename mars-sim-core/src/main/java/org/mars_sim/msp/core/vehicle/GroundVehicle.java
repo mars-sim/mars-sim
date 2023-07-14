@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-07-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -22,8 +22,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
- * The GroundVehicle class represents a ground-type vehicle. It is abstract and
- * should be extended to a particular type of ground vehicle.
+ * This abstract class represents a ground-type vehicle and 
+ * must be extended to a concrete vehicle type.
  */
 public abstract class GroundVehicle extends Vehicle {
 
@@ -32,13 +32,7 @@ public abstract class GroundVehicle extends Vehicle {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(GroundVehicle.class.getName());
-	
-	public static final String LANDER_HAB = "Lander Hab";
-	public static final String OUTPOST_HUB = "Outpost Hub";
-			
-	// public final static String STUCK = "Stuck - using winch";
-
-	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
+		
     public static final double LEAST_AMOUNT = .001D;
     
     public static final double VEHICLE_CLEARANCE_0 = 1.4;
@@ -64,10 +58,7 @@ public abstract class GroundVehicle extends Vehicle {
 		// use Vehicle constructor
 		super(name, spec, settlement, maintenanceWorkTime);
 
-		// Add scope to malfunction manager.
-//		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");
-
-		setTerrainHandlingCapability(0D); // Default terrain capability
+		terrainHandlingCapability = spec.getTerrainHandling();
 	}
 
 	/**
@@ -107,7 +98,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Gets the average angle of terrain over next 7.4km distance in direction
+	 * Gets the average angle of terrain over a sample distance in direction
 	 * vehicle is traveling.
 	 * 
 	 * @return ground vehicle's current terrain grade angle from horizontal
@@ -118,7 +109,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Gets the average angle of terrain over next 7.4km distance in a given
+	 * Gets the average angle of terrain over a sample distance in a given
 	 * direction from the vehicle.
 	 * 
 	 * @return ground vehicle's current terrain grade angle from horizontal
@@ -153,7 +144,7 @@ public abstract class GroundVehicle extends Vehicle {
 	}
 
 	/**
-	 * Find a new parking location and facing
+	 * Finds a new parking location and facing.
 	 */
 	@Override
 	public void findNewParkingLoc() {

@@ -248,7 +248,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="30.0" />
 		<base-power value="15" />
 		<empty-mass value="1200.0" />
-		<terrain-handling value="6.0"/>
+		<terrain-handling value="4.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2000.0">
 			<capacity resource="methanol" value="50.0" />

@@ -76,7 +76,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 
 		// Draw trail.
 		IntPoint oldSpot = null;
-		Iterator<Coordinates> j = (new ArrayList<Coordinates>(vehicle.getTrail())).iterator();
+		Iterator<Coordinates> j = (new ArrayList<>(vehicle.getTrail())).iterator();
 		while (j.hasNext()) {
 			Coordinates trailSpot = j.next();
 			if (trailSpot != null) {

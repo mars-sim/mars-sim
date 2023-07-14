@@ -560,61 +560,57 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Set<Person> crew = rover.getCrew();
 		
 		if (!crew.isEmpty()) {
-//			boolean hasOccupants = !crew.isEmpty();
 			
 			// Add vehicle to a garage if available.
 			boolean isRoverInAGarage = disembarkSettlement.getBuildingManager().isInGarage(v);
-	
-//	        if (hasOccupants) {
-	        	
-	            if (!isRoverInAGarage) {
-	
-	            	// Outside so preload all EVASuits before the Unloading starts
-	            	int suitsNeeded = rover.getCrew().size();
-	            	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
-	            	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
-	            	while ((suitsNeeded > 0) && eIt.hasNext()) {
-	            		Equipment e = eIt.next();
-	            		if (e instanceof EVASuit) {
-	            			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
-	            				suitsNeeded--;
-	            			}
-	            		}
-	            	}
-	            }
-	            
-				for (Person p : rover.getCrew()) {
-					if (p.isDeclaredDead()) {
-						logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
-					}
 		
-					// Initiate an rescue operation
-					// Future : Gets a lead person to perform it and give him a rescue badge
-					else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
-						rescueOperation(rover, p, disembarkSettlement);
-					}
-		
-					else if (isRoverInAGarage) {
-						if (p.isInSettlement()) {
-							// Something is wrong because the Person is in a Settlement
-							// so it cannot be in the crew.
-							logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
-							rover.removePerson(p);
-						}
-						else {
-							// Welcome this person home
-					        p.transfer(disembarkSettlement);
-							BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
-						}
+            if (!isRoverInAGarage) {
+
+            	// Outside so preload all EVASuits before the Unloading starts
+            	int suitsNeeded = crew.size();
+            	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
+            	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
+            	while ((suitsNeeded > 0) && eIt.hasNext()) {
+            		Equipment e = eIt.next();
+            		if (e instanceof EVASuit) {
+            			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
+            				suitsNeeded--;
+            			}
+            		}
+            	}
+            }
+            
+			for (Person p : crew) {
+				if (p.isDeclaredDead()) {
+					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+				}
+	
+				// Initiate an rescue operation
+				// Future : Gets a lead person to perform it and give him a rescue badge
+				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+					rescueOperation(rover, p, disembarkSettlement);
+				}
+	
+				else if (isRoverInAGarage) {
+					if (p.isInSettlement()) {
+						// Something is wrong because the Person is in a Settlement
+						// so it cannot be in the crew.
+						logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
+						rover.removePerson(p);
 					}
 					else {
-						// Not in a garage
-						
-						// See if this person needs an EVA suit
-						EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
+						// Welcome this person home
+				        p.transfer(disembarkSettlement);
+						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
 					}
 				}
-//	        }
+				else {
+					// Not in a garage
+					
+					// See if this person needs an EVA suit
+					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
+				}
+			}
 		}
 		
 		// Unload rover if necessary.
@@ -646,7 +642,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Give a person the task from unloading the vehicle
+	 * Gives a person the task from unloading the vehicle.
 	 *
 	 * @param p
 	 * @param rover

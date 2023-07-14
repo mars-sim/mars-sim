@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentInventory;
@@ -1296,6 +1297,8 @@ public abstract class Vehicle extends Unit
 		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse);
+			// Add the location to the trail if outside on a mission
+			addToTrail(getCoordinates());
 		}
 
 		// If it's back at a settlement and is NOT in a garage
@@ -1322,9 +1325,7 @@ public abstract class Vehicle extends Unit
 			&& malfunctionManager.getMalfunctions().size() == 0) {
 				removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
-
-		// Add the location to the trail if outside on a mission
-		addToTrail(getCoordinates());
+		
 		// Check once per msol (millisol integer)
 		if (pulse.isNewMSol()) {
 			int count = 0;
@@ -1477,15 +1478,15 @@ public abstract class Vehicle extends Unit
 	 */
 	public void addToTrail(Coordinates location) {
 
-		if (getSettlement() != null) {
-			if (trail.size() > 0)
-				trail.clear();
-		} else if (trail.size() > 0) {
+		if (!trail.isEmpty()) {
 			Coordinates lastLocation = trail.get(trail.size() - 1);
-			if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D))
+			if (!lastLocation.equals(location) 
+					&& (lastLocation.getDistance(location) >= TerrainElevation.STEP_KM
+					&& !trail.contains(location)))
 				trail.add(location);
-		} else
+		} else if (!trail.contains(location)) {
 			trail.add(location);
+		}
 	}
 
 	/**

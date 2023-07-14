@@ -39,7 +39,7 @@ public class TerrainElevation implements Serializable {
 
 //	Will add back SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName())
 	
-	private static final double STEP_KM = 2;
+	public static final double STEP_KM = 2;
 	
 	private static final double DEG_TO_RAD = Math.PI/180;
 
