@@ -20,23 +20,21 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.data.SolListDataLogger;
+import org.mars_sim.msp.core.data.History;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /*
  * The TaskManager class keeps track of a Worker's current task and can randomly
  * assign a new task based on a list of possible tasks and the current situation.
  */
-public abstract class TaskManager implements Serializable, Temporal {
+public abstract class TaskManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -61,23 +59,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 		private String missionName;
 		private String description;
 		private String phase;
-		private double startTime;
 
-
-		public OneActivity(double startTime, String taskName, String description, String phase, String missionName) {
+		public OneActivity(String taskName, String description, String phase, String missionName) {
 			this.taskName = taskName;
 			this.description = description;
-			this.startTime = startTime;
 			this.phase = phase;
-		}
-
-		/**
-		 * Gets the start time of the task.
-		 * 
-		 * @return start time
-		 */
-		public double getStartTime() {
-			return startTime;
 		}
 
 		/**
@@ -110,11 +96,50 @@ public abstract class TaskManager implements Serializable, Temporal {
 		public String getMission() {
 			return missionName;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((taskName == null) ? 0 : taskName.hashCode());
+			result = prime * result + ((phase == null) ? 0 : phase.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			OneActivity other = (OneActivity) obj;
+			if (taskName == null) {
+				if (other.taskName != null)
+					return false;
+			} else if (!taskName.equals(other.taskName))
+				return false;
+			if (missionName == null) {
+				if (other.missionName != null)
+					return false;
+			} else if (!missionName.equals(other.missionName))
+				return false;
+			if (description == null) {
+				if (other.description != null)
+					return false;
+			} else if (!description.equals(other.description))
+				return false;
+			if (phase == null) {
+				if (other.phase != null)
+					return false;
+			} else if (!phase.equals(other.phase))
+				return false;
+			return true;
+		}
 	}
 
-	/** Number of days to record Tack Activities. */
-	public static final int NUM_SOLS = 7;
-	
+	/** Number of days to record Tack Activities. */	
 	private static MasterClock master;
 
 	private static PrintWriter diagnosticFile = null;
@@ -146,15 +171,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	private transient TaskCache taskProbCache = null;
 
-	// Data members
-	/** The timestamp (with 2 decimal place) of the task to be recorded. */
-	private double now = -1;
-
 
 	/** The history of tasks. */
-	private SolListDataLogger<OneActivity> allActivities;
-	/** The last activity. */
-	private OneActivity lastActivity = null;
+	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
 	private List<TaskJob> pendingTasks;
 
@@ -166,7 +185,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
-		allActivities = new SolListDataLogger<>(NUM_SOLS);
+		allActivities = new History<>(150);   // Equivalent of 3 days
 		pendingTasks = new CopyOnWriteArrayList<>();
 	}
 
@@ -492,27 +511,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
-	 */
-	public boolean timePassing(ClockPulse pulse) {
-		// Create a timestamp with 2 decimal place
-		now = Math.round(pulse.getMarsTime().getMillisol() * 100.0)/100.0;
-		
-		// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
-		if (pulse.isNewSol() && lastActivity != null) {
-			// Save the first activity at the start of the day
-			// Note: it could be the previous activity from previous day
-			OneActivity firstActivity = new OneActivity(0,
-											lastActivity.getTaskName(),
-											lastActivity.getDescription(),
-											lastActivity.getPhase(),
-											lastActivity.getMission());
-			allActivities.addData(firstActivity);
-		}
-		return true;
-	}
-	
-	/**
 	 * Records a task onto the schedule.
 	 * 
 	 * @param changed The active task.
@@ -536,51 +534,37 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Record an activity on the Task Activity log
 	 */
 	public void recordActivity(String newTask, String newPhase, String newDescription, Mission mission) {
-		// Also compare to the last activity
-		if (lastActivity == null 
-				|| !newDescription.equals(lastActivity.description)
-				|| !newPhase.equals(lastActivity.phase)) {
-			String missionName = (mission != null ? mission.getName() : null);
-			
-			// This is temp.
-			String location = " in";
-			if (worker.isInVehicle()) {
-				location += " V";
-			}
-			if (worker.isInSettlement()) {
-				location += " S";
-			}
-			if (worker.isOutside()) {
-				location += " O";
-			}
-
-			OneActivity newActivity = new OneActivity(now, 
-												newTask + location,
-												newDescription,
-												newPhase, 
-												missionName);
-
-			allActivities.addData(newActivity);
-			lastActivity = newActivity;
+		String missionName = (mission != null ? mission.getName() : null);
+		
+		// This is temp.
+		String location = " in";
+		if (worker.isInVehicle()) {
+			location += " V";
 		}
+		if (worker.isInSettlement()) {
+			location += " S";
+		}
+		if (worker.isOutside()) {
+			location += " O";
+		}
+
+		OneActivity newActivity = new OneActivity(
+											newTask + location,
+											newDescription,
+											newPhase, 
+											missionName);
+
+		allActivities.add(newActivity);
 	}
 	
-	/**
-	 * Gets the today's activities.
-	 * 
-	 * @return a list of today's activities
-	 */
-	public List<OneActivity> getTodayActivities() {
-		return allActivities.getTodayData();
-	}
 	
 	/**
 	 * Gets all activities of all days a person.
 	 * 
 	 * @return all activity schedules
 	 */
-	public Map<Integer, List<OneActivity>> getAllActivities() {
-		return allActivities.getHistory();
+	public History<OneActivity> getAllActivities() {
+		return allActivities;
 	}
 	
 	/**
@@ -875,7 +859,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 		lastTask = null;
 		taskProbCache = null;
 		allActivities = null;
-		lastActivity = null;
 		pendingTasks.clear();
 		pendingTasks = null;
 		metrics.clear();

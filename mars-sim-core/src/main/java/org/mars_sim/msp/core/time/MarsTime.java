@@ -334,6 +334,14 @@ public class MarsTime implements Serializable {
 	}
 
 	/**
+	 * Get teh Mars date element of this timestamp.
+	 * @return
+	 */
+	public MarsDate getDate() {
+		return new MarsDate(orbit, month, solOfMonth);
+	}
+
+	/**
 	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349".
 	 *
 	 * @return formatted time stamp string
@@ -368,7 +376,7 @@ public class MarsTime implements Serializable {
 	 * @param millisol total millisols
 	 * @return
 	 */
-	private static double calculateTotalMillisols(int orbit, int month, int sol, double millisol) {
+	static double calculateTotalMillisols(int orbit, int month, int sol, double millisol) {
 		double result = 0D;
 
 		// Add millisols up to current orbit

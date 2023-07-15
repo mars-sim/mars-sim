@@ -204,4 +204,9 @@ public class MarsTimeFormat {
 		return MONTH_NAMES;
 	}
 
+    public static String getDateStamp(MarsDate date) {
+		return String.format(DATE_FORMAT, date.getOrbit(), getMonthName(date.getMonth()),
+										            date.getSolOfMonth());
+    }
+
 }
