@@ -237,7 +237,8 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	/**
-	 * By default score is always accepted
+	 * By default score is always accepted.
+	 * 
 	 * @param score This score may be use for further computation in overriding classes
 	 * @return
 	 */
@@ -254,13 +255,13 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *
 	 * @return resource amount (kg).
 	 */
-	public Map<Integer,Double> getResourcesCollected() {
+	public Map<Integer, Double> getResourcesCollected() {
 		return collected;
 	}
 
 
 	/**
-	 * Updates the resources collected
+	 * Updates the resources collected.
 	 *
 	 * @param inv
 	 * @return
@@ -287,6 +288,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	/**
 	 * what resources can be collected once on site. By default this is just
 	 * the main resource but could be others.
+	 * 
 	 * @return
 	 */
 	public abstract int [] getCollectibleResources();

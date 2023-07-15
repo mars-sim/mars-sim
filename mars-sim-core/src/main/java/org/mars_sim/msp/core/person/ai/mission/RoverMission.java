@@ -579,38 +579,44 @@ public abstract class RoverMission extends AbstractVehicleMission {
             		}
             	}
             }
+
+            // Check the crew again since it's possible that in the same frame, all the crew
+            // have been vacated
+            crew = rover.getCrew();
             
-			for (Person p : crew) {
-				if (p.isDeclaredDead()) {
-					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
-				}
-	
-				// Initiate an rescue operation
-				// Future : Gets a lead person to perform it and give him a rescue badge
-				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
-					rescueOperation(rover, p, disembarkSettlement);
-				}
-	
-				else if (isRoverInAGarage) {
-					if (p.isInSettlement()) {
-						// Something is wrong because the Person is in a Settlement
-						// so it cannot be in the crew.
-						logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
-						rover.removePerson(p);
-					}
-					else {
-						// Welcome this person home
-				        p.transfer(disembarkSettlement);
-						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
-					}
-				}
-				else {
-					// Not in a garage
-					
-					// See if this person needs an EVA suit
-					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
-				}
-			}
+            if (!crew.isEmpty()) {
+            	for (Person p : crew) {
+    				if (p.isDeclaredDead()) {
+    					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
+    				}
+    	
+    				// Initiate an rescue operation
+    				// Future : Gets a lead person to perform it and give him a rescue badge
+    				else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
+    					rescueOperation(rover, p, disembarkSettlement);
+    				}
+    	
+    				else if (isRoverInAGarage) {
+    					if (p.isInSettlement()) {
+    						// Something is wrong because the Person is in a Settlement
+    						// so it cannot be in the crew.
+    						logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
+    						rover.removePerson(p);
+    					}
+    					else {
+    						// Welcome this person home
+    				        p.transfer(disembarkSettlement);
+    						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+    					}
+    				}
+    				else {
+    					// Not in a garage
+    					
+    					// See if this person needs an EVA suit
+    					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
+    				}
+    			}
+            }
 		}
 		
 		// Unload rover if necessary.

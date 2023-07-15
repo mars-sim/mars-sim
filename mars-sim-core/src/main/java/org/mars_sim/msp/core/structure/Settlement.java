@@ -103,6 +103,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
+
 	private static final String DETECTOR_GRID = "The detector grid forecast a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
@@ -113,7 +114,8 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(Type.CONFIGURATION,
 																	"Active Missions");
-
+	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
+	
 	private static final int START_TIME = 400;
 	private static final int DURATION = 150;
 	
@@ -999,7 +1001,7 @@ public class Settlement extends Structure implements Temporal,
 					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
 					) {
 				
-				int startTimeEVA = (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
+				int startTimeEVA = WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
 				int numDigits = ("" + startTimeEVA).length();
 				String startTimeEVAString = ""; 
 				if (numDigits == 1) {
