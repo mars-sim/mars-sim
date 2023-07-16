@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -44,7 +45,6 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -73,7 +73,7 @@ extends ToolWindow {
 	private boolean lockSearchText;
 	
 	/** Category selector. */
-	private JComboBoxMW<UnitType> searchForSelect;
+	private JComboBox<UnitType> searchForSelect;
 	/** List of selectable units. */
 	private JList<Unit> unitList;
 	/** Model for unit select list. */
@@ -131,7 +131,7 @@ extends ToolWindow {
 			UnitType.ROBOT,
 			UnitType.EVA_SUIT
 		};
-		searchForSelect = new JComboBoxMW<>(categories);
+		searchForSelect = new JComboBox<>(categories);
 		searchForSelect.setRenderer(new UnitTypeRenderer());
 		searchForSelect.setSelectedIndex(0);
 		searchForSelect.addItemListener(new ItemListener() {

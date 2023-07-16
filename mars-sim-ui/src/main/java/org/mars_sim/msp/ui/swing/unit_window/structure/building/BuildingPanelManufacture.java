@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -44,7 +45,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
@@ -75,7 +75,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** List of salvage processes in building. */
 	private List<SalvageProcess> salvageCache;
 	/** Process selector. */
-	private JComboBoxMW<?> processComboBox;
+	private JComboBox<Object> processComboBox;
 	/** List of available processes. */
 	private List<ManufactureProcessInfo> processComboBoxCache;
 	/** List of available salvage processes. */
@@ -156,7 +156,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		
 		// Create new manufacture process selection.
 		processComboBoxCache = getAvailableProcesses();
-		processComboBox = new JComboBoxMW<>();
+		processComboBox = new JComboBox<>();
 		
 		Iterator<ManufactureProcessInfo> k = processComboBoxCache.iterator();
 		while (k.hasNext()) processComboBox.addItem(k.next());

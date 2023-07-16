@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -42,7 +43,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
@@ -68,7 +68,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	/** List of foodProduction processes in building. */
 	private List<FoodProductionProcess> processCache;
 	/** Process selector. */
-	private JComboBoxMW<FoodProductionProcessInfo> processComboBox;
+	private JComboBox<FoodProductionProcessInfo> processComboBox;
 	/** List of available processes. */
 	private Vector<FoodProductionProcessInfo> processComboBoxCache;
 
@@ -142,7 +142,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		// Create new foodProduction process selection.
 		processComboBoxCache = getAvailableProcesses();
-		processComboBox = new JComboBoxMW<>(processComboBoxCache);
+		processComboBox = new JComboBox<>(processComboBoxCache);
 
 		processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
 		processComboBox.setToolTipText("Select An Available Food Production Process");
