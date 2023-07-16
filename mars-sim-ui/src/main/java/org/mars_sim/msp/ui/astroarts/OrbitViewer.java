@@ -124,23 +124,15 @@ implements ActionListener {
 	/**
 	 * Time step
 	 */
-	static final int timeStepCount = 8;
-	String[] timeStepLabel = {
-        "1 Hour",
-		"1 Day",   "3 Days",   "10 Days",
-		"1 Month", "3 Months", "6 Months",
-		"1 Year"
-	};
-
-	static final TimeSpan timeStepSpan[] = {
-		new TimeSpan(0, 0,  0, 1, 0, 0.0),
-		new TimeSpan(0, 0,  1, 0, 0, 0.0),
-		new TimeSpan(0, 0,  3, 0, 0, 0.0),
-		new TimeSpan(0, 0, 10, 0, 0, 0.0),
-		new TimeSpan(0, 1,  0, 0, 0, 0.0),
-		new TimeSpan(0, 3,  0, 0, 0, 0.0),
-		new TimeSpan(0, 6,  0, 0, 0, 0.0),
-		new TimeSpan(1, 0,  0, 0, 0, 0.0),
+	private static final TimeSpan timeStepSpan[] = {
+		new TimeSpan("1 Hour", 0, 0,  0, 1, 0, 0.0),
+		new TimeSpan("1 Day", 0, 0,  1, 0, 0, 0.0),
+		new TimeSpan("3 Days", 0, 0,  3, 0, 0, 0.0),
+		new TimeSpan("10 Days", 0, 0, 10, 0, 0, 0.0),
+		new TimeSpan("1 Month", 0, 1,  0, 0, 0, 0.0),
+		new TimeSpan("3 Months", 0, 3,  0, 0, 0, 0.0),
+		new TimeSpan("6 Months", 0, 6,  0, 0, 0, 0.0),
+		new TimeSpan("1 Year", 1, 0,  0, 0, 0, 0.0),
 	};
 
 	public TimeSpan timeStep = timeStepSpan[1];
@@ -149,28 +141,25 @@ implements ActionListener {
     /**
      * Centered Object
      */
-    static final int centerObjectCount = 11;
-    static final String centerObjectLabel[] = {
+    private static final String centerObjectLabel[] = {
             "Sun", "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    public int centerObjectSelected = 0;
+    private int centerObjectSelected = 0;
 
     /**
      * Orbits Displayed
      */
-    static final int orbitDisplayCount = 14;
-    static final String orbitDisplayLabel[] = {
+    private static final String orbitDisplayLabel[] = {
             "Default Orbits", "All Orbits", "No Orbits", "------",
             "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    public int orbitCount = 11;
-    public boolean orbitDisplay[] = {false, true, true, true, true, true, true,
+    private boolean orbitDisplay[] = {false, true, true, true, true, true, true,
                                      false, false, false, false };
-    public boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
+    private boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
                                      false, false, false, false };
 
 	/**
@@ -181,8 +170,6 @@ implements ActionListener {
 
 
 
-	static final int initialScrollZoom = 67;
-	static final int fontSize = 14;
 	private static final String SELECT_DATE = "SelectDate";
 	private static final String PLAY = "Play";
 	private static final String REV_PLAY = "RevPay";
@@ -498,7 +485,7 @@ implements ActionListener {
         ctrlPanel.add(stepLabel);
 
 		// Step choice box
-		JComboBox<String> choiceTimeStep = new JComboBox<>(timeStepLabel);
+		JComboBox<TimeSpan> choiceTimeStep = new JComboBox<>(timeStepSpan);
 		gbcCtrlPanel.gridx = 2;
 		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
@@ -569,11 +556,11 @@ implements ActionListener {
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
         ctrlPanel.add(choiceOrbitObject);
-        for (int i = 0; i < orbitCount; i++) {
+        for (int i = 0; i < OrbitDisplayDefault.length; i++) {
                 orbitDisplay[i] = OrbitDisplayDefault[i];
         }
         choiceOrbitObject.setSelectedIndex(1);
-        orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
+        orbitCanvas.selectOrbits(orbitDisplay);
 
 
 		// Date Label Checkbox
@@ -906,51 +893,41 @@ implements ActionListener {
 				orbitCanvas.repaint();
 				break;
 			case STEP_CHOICE:
-				for (int i = 0; i < timeStepCount; i++) {
-					String object = (String)(((JComboBox<String>)source).getSelectedItem());
-					if (object.equalsIgnoreCase(timeStepLabel[i])) {
-						timeStep = timeStepSpan[i];
-						break;
-					}
+				if (source instanceof JComboBox jc) {
+					timeStep = (TimeSpan)jc.getSelectedItem();
 				}
 				break;
 			case CENTER_CHOICE:
-				for (int i = 0; i < centerObjectCount; i++) {
-					String object = (String)(((JComboBox<String>)source).getSelectedItem());
-					if (object.equalsIgnoreCase(centerObjectLabel[i])) {
-						centerObjectSelected = i;
-						orbitCanvas.selectCenterObject(i);
-						orbitCanvas.repaint();
-						break;
-					}
+				if (source instanceof JComboBox jc) {
+					centerObjectSelected = jc.getSelectedIndex();
+					orbitCanvas.selectCenterObject(centerObjectSelected);
+					orbitCanvas.repaint();
 				} break;
 			case ORBIT_CHOICE:
-				for (int i = 0; i < orbitDisplayCount; i++) {
-					String object = (String)(((JComboBox<String>)source).getSelectedItem()); 
-					if (object.equalsIgnoreCase(orbitDisplayLabel[i])) {
-						if (i == 1) {
-							for (int j = 0; j < orbitCount; j++) {
+				if (source instanceof JComboBox jc) {
+					int i = jc.getSelectedIndex();
+					switch(i) {
+						case 1 : 
+							for (int j = 0; j < orbitDisplay.length; j++) {
 								orbitDisplay[j] = true;
-							}
-						}
-						else if (i == 2) {
-							for (int j = 0; j < orbitCount; j++) {
+							} break;
+						case 2:
+							for (int j = 0; j < orbitDisplay.length; j++) {
 								orbitDisplay[j] = false;
-							}
-						}
-						else if (i == 0) {
-							for (int j = 0; j < orbitCount; j++) {
+							} break;
+						case 0: 
+							for (int j = 0; j < orbitDisplay.length; j++) {
 								orbitDisplay[j] = OrbitDisplayDefault[j];
-							}
-						}
-						else if (i > 3) {
+							} break;
+						case 3:
+							break;
+						default:
                             orbitDisplay[i-3] = !orbitDisplay[i - 3];
+							break;
 						}
-						orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
+						orbitCanvas.selectOrbits(orbitDisplay);
 						orbitCanvas.repaint();
-						break;
 					}
-				}
 				break;
 		}
     }

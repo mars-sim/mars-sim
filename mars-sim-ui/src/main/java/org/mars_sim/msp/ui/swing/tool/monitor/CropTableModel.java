@@ -32,8 +32,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 	// Column indexes
 	private static final int GREENHOUSE_NAME = 0;
-	private static final int SETTLEMENT_NAME = 1;
-	private static final int INITIAL_COLS = 2;
+	private static final int INITIAL_COLS = 1;
 
 	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
 	
@@ -41,7 +40,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 	private static int numCropCat = CropCategory.values().length;
 	
 	/** The number of Columns. */
-	private static int column_count = numCropCat + 3;
+	private static int column_count = numCropCat + FIRST_CROP_CAT;
 
 	/** Names of Columns. */
 	private static String[] columnNames;
@@ -53,8 +52,6 @@ public class CropTableModel extends UnitTableModel<Building> {
 		columnTypes = new Class[column_count];
 		columnNames[GREENHOUSE_NAME] = "Name of Greenhouse";
 		columnTypes[GREENHOUSE_NAME] = String.class;
-		columnNames[SETTLEMENT_NAME] = "Settlement";
-		columnTypes[SETTLEMENT_NAME] = String.class;
 		columnNames[INITIAL_COLS] = "# Crops";
 		columnTypes[INITIAL_COLS] = Integer.class;
 
@@ -136,9 +133,6 @@ public class CropTableModel extends UnitTableModel<Building> {
 			case GREENHOUSE_NAME: 
 				result = greenhouse.getNickName();
 				break;
-			case SETTLEMENT_NAME: 
-				result = greenhouse.getSettlement().getName();
-				break;
 			case INITIAL_COLS: 
 				result = getTotalNumOfAllCrops(greenhouse);
 				break;
@@ -175,9 +169,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 		Object target = event.getTarget();
 
 		int columnNum = -1;
-		if (eventType == UnitEventType.NAME_EVENT)
-			columnNum = SETTLEMENT_NAME; // = 0
-		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+		if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			if (target instanceof Farming)
 				columnNum = GREENHOUSE_NAME; // = 1
 		}

@@ -14,17 +14,24 @@ public class TimeSpan {
 	public int    nYear, nMonth, nDay;
 	public int    nHour, nMin;
 	public double fSec;
+	private String label;
 
 	/**
 	 * Constructor
 	 */
-	public TimeSpan(int nYear, int nMonth, int nDay,
+	public TimeSpan(String label, int nYear, int nMonth, int nDay,
 					int nHour, int nMin, double fSec) {
+		this.label = label;
 		this.nYear  = nYear;
 		this.nMonth = nMonth;
 		this.nDay   = nDay;
 		this.nHour  = nHour;
 		this.nMin   = nMin;
 		this.fSec   = fSec;
+	}
+
+	@Override
+	public String toString() {
+		return label;
 	}
 }

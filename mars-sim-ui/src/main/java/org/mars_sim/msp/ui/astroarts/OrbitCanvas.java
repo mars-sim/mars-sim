@@ -206,8 +206,8 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * Select Orbits
 	 */
-	public void selectOrbits(boolean orbitDisplay[], int OrbitCount) {
-	   for (int i=0; i< OrbitCount; i++) {
+	public void selectOrbits(boolean orbitDisplay[]) {
+	   for (int i=0; i< orbitDisplay.length; i++) {
 	        this.orbitDisplay[i] = orbitDisplay[i];
 	   }
 	}

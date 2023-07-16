@@ -20,6 +20,7 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -40,7 +41,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ConfigurableWindow;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
@@ -97,7 +97,7 @@ public class MonitorWindow extends ToolWindow
 	private JButton buttonProps;
 
 	/** Settlement Combo box */
-	private JComboBoxMW<Settlement> settlementComboBox;
+	private JComboBox<Settlement> settlementComboBox;
 	private JPanel statusPanel;
 
 	private Settlement selectedSettlement;
@@ -328,7 +328,7 @@ public class MonitorWindow extends ToolWindow
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
 		model.addAll(startingSettlements);
 		model.setSelectedItem(selectedSettlement);
-		settlementComboBox = new JComboBoxMW<Settlement>(model);
+		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementComboBox.setPreferredSize(new Dimension(100, 25));

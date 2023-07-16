@@ -33,8 +33,8 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
-			T unit = (T) event.getUnit();
 
+			@SuppressWarnings("unchecked") T unit = (T) event.getUnit();
 			switch(event.getEventType()) {
 				case ADD_UNIT:
 					addEntity(unit);
