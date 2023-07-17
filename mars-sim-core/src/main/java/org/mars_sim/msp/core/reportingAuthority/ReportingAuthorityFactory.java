@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 
 /**
  * Factory method for creating/managing Reporting Authorities.

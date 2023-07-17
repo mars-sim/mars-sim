@@ -74,58 +74,58 @@ public class SimulationConfig implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(SimulationConfig.class.getName());
 
 	/** The version.txt denotes the xml build version. */
-	public static final String VERSION_FILE = "version.txt";
+	public final String VERSION_FILE = "version.txt";
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */
-	public static final String EXCEPTION_FILE = "exception.txt";
+	public final String EXCEPTION_FILE = "exception.txt";
 
-	public static final String XML_FOLDER = "xml";
-	public static final String XML_EXTENSION = ".xml";
-	private static final String SIMULATION_FILE = "simulation";
-	private static final String GOVERNANCE_FILE = "governance";
-	private static final String PEOPLE_FILE = "people";
-	private static final String VEHICLE_FILE = "vehicles";
-	private static final String SETTLEMENT_FILE = "settlements";
-	private static final String RESUPPLY_FILE = "resupplies";
-	private static final String MEDICAL_FILE = "medical";
-	private static final String MALFUNCTION_FILE = "malfunctions";
-	private static final String CROP_FILE = "crops";
-	private static final String LANDMARK_FILE = "landmarks";
-	private static final String MINERAL_MAP_FILE = "minerals";
-	private static final String RESPROCESS_FILE = "resourceprocess";
-	private static final String BUILDING_FILE = "buildings";
-	private static final String PART_FILE = "parts";
-	private static final String PART_PACKAGE_FILE = "part_packages";
-	private static final String RESOURCE_FILE = "resources";
-	private static final String MANUFACTURE_FILE = "manufacturing";
-	private static final String CONSTRUCTION_FILE = "construction";
-	private static final String FOODPRODUCTION_FILE = "foodProduction";
-	private static final String MEAL_FILE = "meals";
-	private static final String ROBOT_FILE = "robots";
-	private static final String QUOTATION_FILE = "quotations";
-	private static final String VALUE = "value";
+	public final String XML_FOLDER = "xml";
+	public final String XML_EXTENSION = ".xml";
+	private final String SIMULATION_FILE = "simulation";
+	private final String GOVERNANCE_FILE = "governance";
+	private final String PEOPLE_FILE = "people";
+	private final String VEHICLE_FILE = "vehicles";
+	private final String SETTLEMENT_FILE = "settlements";
+	private final String RESUPPLY_FILE = "resupplies";
+	private final String MEDICAL_FILE = "medical";
+	private final String MALFUNCTION_FILE = "malfunctions";
+	private final String CROP_FILE = "crops";
+	private final String LANDMARK_FILE = "landmarks";
+	private final String MINERAL_MAP_FILE = "minerals";
+	private final String RESPROCESS_FILE = "resourceprocess";
+	private final String BUILDING_FILE = "buildings";
+	private final String PART_FILE = "parts";
+	private final String PART_PACKAGE_FILE = "part_packages";
+	private final String RESOURCE_FILE = "resources";
+	private final String MANUFACTURE_FILE = "manufacturing";
+	private final String CONSTRUCTION_FILE = "construction";
+	private final String FOODPRODUCTION_FILE = "foodProduction";
+	private final String MEAL_FILE = "meals";
+	private final String ROBOT_FILE = "robots";
+	private final String QUOTATION_FILE = "quotations";
+	private final String VALUE = "value";
 
-    public static final String EXPERIMENTS_FILE = "/" + "json" + "/" + "experiments.json";
+    public final String EXPERIMENTS_FILE = "/" + "json" + "/" + "experiments.json";
 
 	// Simulation element names.
-	private static final String TIME_CONFIGURATION = "time-configuration";
+	private final String TIME_CONFIGURATION = "time-configuration";
 
-	private static final String ACCURACY_BIAS = "accuracy-bias";
-	private static final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
-	private static final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
+	private final String ACCURACY_BIAS = "accuracy-bias";
+	private final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
+	private final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
 
-	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
-	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
+	private final String EARTH_START_DATE_TIME = "earth-start-date-time";
+	private final String MARS_START_DATE_TIME = "mars-start-date-time";
 
-	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
-	private static final String AUTOSAVE_NUMBER = "autosave-number";
-	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
-	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
-	private static final String BASE_TIME_RATIO = "base-time-ratio";
-	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
+	private final String AUTOSAVE_INTERVAL = "autosave-interval";
+	private final String AUTOSAVE_NUMBER = "autosave-number";
+	private final String AVERAGE_TRANSIT_TIME = "average-transit-time";
+	private final String DEFAULT_TIME_PULSE = "default-time-pulse";
+	private final String BASE_TIME_RATIO = "base-time-ratio";
+	private final String DEFAULT_UNUSEDCORES = "unused-cores";
 
-	private static final String MISSION_CONFIGURATION = "mission-configuration";
-	private static final String EVA_LIGHT = "min-eva-light";
-	private static final String CONTENT_URL = "content-url";
+	private final String MISSION_CONFIGURATION = "mission-configuration";
+	private final String EVA_LIGHT = "min-eva-light";
+	private final String CONTENT_URL = "content-url";
 
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
@@ -475,7 +475,7 @@ public class SimulationConfig implements Serializable {
 	 * @param child Value element
 	 * @return String value found
 	 */
-	private static String loadValue(Element parentConfig, String child) {
+	private String loadValue(Element parentConfig, String child) {
 		Element childItem = parentConfig.getChild(child);
 		String str = childItem.getAttributeValue(VALUE);
 
@@ -492,7 +492,7 @@ public class SimulationConfig implements Serializable {
 	 * @param minValue Minimum allowable value
 	 * @param maxValue Maximum allowable value
 	 */
-	private static int loadIntValue(Element parent, String child,
+	private int loadIntValue(Element parent, String child,
 									   int minValue, int maxValue) {
 		String str = loadValue(parent, child);
 		int i = 0;

@@ -138,11 +138,12 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 	
 	/**
-	 * Add a single UserConfigurable to a Zip as a seperate Zip Entry.
+	 * Adds a single UserConfigurable to a Zip as a separate Zip Entry.
+	 * 
 	 * @param manifest 
 	 * @throws IOException
 	 */
-	private static void extractUserConfigurable(UserConfigurableConfig<? extends UserConfigurable> factory, 
+	private void extractUserConfigurable(UserConfigurableConfig<? extends UserConfigurable> factory, 
 										UserConfigurable item,
 										ZipOutputStream zos,
 										List<String> manifest) throws IOException {

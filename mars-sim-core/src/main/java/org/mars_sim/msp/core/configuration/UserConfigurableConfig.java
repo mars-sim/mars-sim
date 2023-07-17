@@ -52,8 +52,10 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
 
-	private static final String BACKUP = ".bak";
+	private final String BACKUP = ".bak";
 
+	public final String XML_EXTENSION = ".xml";
+	
 	private static Namespace xsiNameSpace;
 
 	/**
@@ -98,7 +100,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		String[] found = configDir.list();
 		if (found != null) {
 			for (String userFile : configDir.list()) {
-				if (userFile.startsWith(itemPrefix) && userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+				if (userFile.startsWith(itemPrefix) && userFile.endsWith(XML_EXTENSION)) {
 					try {
 						loadItem(userFile, false);
 					} catch (Exception e) {
@@ -212,7 +214,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 */
 	protected String getItemFilename(String name) {
 		// Replace spaces
-		return itemPrefix + '_' + name.toLowerCase().replace(' ', '_') + SimulationConfig.XML_EXTENSION;
+		return itemPrefix + '_' + name.toLowerCase().replace(' ', '_') + XML_EXTENSION;
 	}
 
 	/**
@@ -221,9 +223,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param configFile
 	 * @return
 	 */
-	protected static String getEstimateName(String configFile) {
+	protected String getEstimateName(String configFile) {
 		return Conversion.capitalize(configFile.replace('_', ' ').substring(0,
-				configFile.length() - SimulationConfig.XML_EXTENSION.length()));
+				configFile.length() - XML_EXTENSION.length()));
 	}
 
 	/**

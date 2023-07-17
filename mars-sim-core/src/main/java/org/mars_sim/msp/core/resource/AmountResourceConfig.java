@@ -8,9 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,7 +17,6 @@ import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.food.FoodType;
 import org.mars_sim.msp.core.goods.GoodType;
-import org.mars_sim.msp.core.vehicle.VehicleSpec;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM
