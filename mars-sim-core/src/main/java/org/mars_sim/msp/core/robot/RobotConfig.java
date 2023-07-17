@@ -60,7 +60,7 @@ public class RobotConfig {
 	// freezing-time
 	private double ft;
 	/** A map of various robot specs. */
-	private List<RobotSpec> specs;
+	private transient List<RobotSpec> specs;
 
 	/**
 	 * Constructor

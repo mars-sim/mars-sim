@@ -102,7 +102,8 @@ public class CropConfig {
 	}
 	
 	/**
-	 * Parse the crops configured in the XML and make an internal representation
+	 * Parses the crops configured in the XML and make an internal representation.
+	 * 
 	 * @param rootDoc
 	 */
 	private synchronized void parseCropTypes(Document rootDoc) {

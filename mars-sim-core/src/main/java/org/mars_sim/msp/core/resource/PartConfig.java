@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,13 +54,13 @@ public final class PartConfig implements Serializable {
 
 	/** The next global part ID. */
 	private int nextID;
+	
 	/** The set of parts. */
-	private Set<Part> partSet = new TreeSet<>();
+	private transient Set<Part> partSet;
 	/** The map of maintenance scopes. */
-	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
-
+	private transient Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
 	/** The collection of standard scopes. */
-	private static Set<String> STANDARD_SCOPES = new TreeSet<>();
+	private transient Set<String> STANDARD_SCOPES = new TreeSet<>();
 	
 	/**
 	 * Constructor.
@@ -74,6 +75,14 @@ public final class PartConfig implements Serializable {
 		loadItemResources(itemResourceDoc);
 	}
 
+	/**
+	 * The collection of standard scopes.
+	 */
+	public Set<String> getScopes() {
+		return STANDARD_SCOPES;	 
+	}
+	
+	
 	/**
 	 * Creates a set of standard scopes.
 	 */
@@ -104,11 +113,11 @@ public final class PartConfig implements Serializable {
 		}
 	}
 	
-	public static void addScopes(Set<String> newScopes) {
+	public void addScopes(Set<String> newScopes) {
 		STANDARD_SCOPES.addAll(newScopes);
 	}
 	
-	public static void addScopes(String newScope) {
+	public void addScopes(String newScope) {
 		STANDARD_SCOPES.add(newScope);
 	}
 	
@@ -119,16 +128,16 @@ public final class PartConfig implements Serializable {
 	 * @throws Exception if error loading item resources.
 	 */
 	private synchronized void loadItemResources(Document itemResourceDoc) {
-//		if (partSet != null) {
-//			// just in case if another thread is being created
-//			return;
-//		}
+		if (partSet != null) {
+			// just in case if another thread is being created
+			return;
+		}
 
 		// First build a standard scope set for scope comparison
 		createStandardScope();
 		
 		// Build the global list in a temp to avoid access before it is built
-//		Set<Part> newPartSet = new TreeSet<>();
+		Set<Part> newPartSet = new TreeSet<>();
 		
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);
@@ -175,7 +184,7 @@ public final class PartConfig implements Serializable {
 				p = new Part(name, nextID, description, goodType, mass, 1);
 //			}
 
-			for (Part pp: partSet) {
+			for (Part pp: newPartSet) {
 				if (pp.getName().equalsIgnoreCase(name))
 					throw new IllegalStateException(
 						"PartConfig detected an duplicated part entry in parts.xml : " + name);
@@ -208,13 +217,13 @@ public final class PartConfig implements Serializable {
 			
 
 			// Add part to newPartSet.
-//			newPartSet.add(p);
-			partSet.add(p);
+			newPartSet.add(p);
+//			partSet.add(p);
 			
 		}
 		
 		// Assign the partSet now built
-//		partSet = Collections.unmodifiableSet(newPartSet);
+		partSet = Collections.unmodifiableSet(newPartSet);
 		
 	}
 

@@ -101,7 +101,7 @@ public class TabPanelLog extends TabPanel {
 		@Override
 		protected Object getValueFrom(Set<StatusType> value, int columnIndex) {
 			String s = Conversion.capitalize(value.toString());
-			return s.substring(1 , s.length() - 1).toLowerCase();
+			return s.substring(1 , s.length() - 1);
 		}
 	}
 }

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
 
 /**
  * Factory method for creating/managing Reporting Authorities.
@@ -46,7 +47,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private static final String PERFERENCE_EL = "preference";
 	private static final String TYPE_ATTR = "type";
 	
-	private Map<String,MissionAgenda> agendas;
+	private transient Map<String,MissionAgenda> agendas;
 
 	public ReportingAuthorityFactory(Document governanceDoc) {
 		super("authority");
@@ -61,9 +62,14 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	/**
 	 * Loads the Reporting authorities from an external XML.
 	 */
-	private void loadGovernanceDetails(Document doc) {
-
-		agendas = new HashMap<>();
+	private synchronized void loadGovernanceDetails(Document doc) {
+		if (agendas != null) {
+			// just in case if another thread is being created
+			return;
+		}
+			
+		// Build the global list in a temp to avoid access before it is built
+		Map<String,MissionAgenda> newAgendas = new HashMap<>();
 		
 		// Load the Agendas into a temp Map
 		Element agendasNode = doc.getRootElement().getChild(AGENDAS_EL);
@@ -95,15 +101,18 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 			}	
 				
 			// Add the agenda
-			agendas.put(name, new MissionAgenda(name, objective, subs, findings, data));
+			newAgendas.put(name, new MissionAgenda(name, objective, subs, findings, data));
 		}
 	
 		// Load the Reporting authorities
 		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
 		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
 		for (Element authorityNode : authorityNodes) {
-			addItem(parseXMLAuthority(authorityNode, true));
+			addItem(parseXMLAuthority(newAgendas, authorityNode, true));
 		}
+		
+		// Assign the agendas
+		agendas = Collections.unmodifiableMap(newAgendas);
 	}
 	
 	/**
@@ -113,7 +122,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	 * @param predefined Is this a repdefined RA
 	 * @return
 	 */
-	private ReportingAuthority parseXMLAuthority(Element authorityNode, boolean predefined) {
+	private ReportingAuthority parseXMLAuthority(Map<String, MissionAgenda> agendas, Element authorityNode, boolean predefined) {
 		String code = authorityNode.getAttributeValue(CODE_ATTR);
 		String name = authorityNode.getAttributeValue(NAME_ATTR);
 		String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
@@ -193,7 +202,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	@Override
 	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
-		return parseXMLAuthority(doc.getRootElement(), false);
+		return parseXMLAuthority(agendas, doc.getRootElement(), false);
 	}
 
 	/**

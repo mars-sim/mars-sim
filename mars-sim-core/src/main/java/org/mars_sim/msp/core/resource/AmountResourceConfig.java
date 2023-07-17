@@ -7,7 +7,10 @@
 
 package org.mars_sim.msp.core.resource;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,6 +19,7 @@ import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.food.FoodType;
 import org.mars_sim.msp.core.goods.GoodType;
+import org.mars_sim.msp.core.vehicle.VehicleSpec;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM
@@ -35,8 +39,8 @@ public class AmountResourceConfig {
 	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
 
 	// Data members.
-	private static Set<AmountResource> resourceSet = new TreeSet<>();
-	private static Set<Integer> tissueCultureSet = new TreeSet<>();
+	private transient Set<AmountResource> resourceSet = new TreeSet<>();
+	private transient Set<Integer> tissueCultureSet = new TreeSet<>();
 
 	/**
 	 * Constructor
@@ -54,66 +58,74 @@ public class AmountResourceConfig {
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
-	private static void loadAmountResources(Document amountResourceDoc) {
-		if (resourceSet.isEmpty()) {
-			Element root = amountResourceDoc.getRootElement();
-			List<Element> resourceNodes = root.getChildren(RESOURCE);
-			for (Element resourceElement : resourceNodes) {
+	private synchronized void loadAmountResources(Document amountResourceDoc) {
+		if (!resourceSet.isEmpty()) {
+			// just in case if another thread is being created
+			return;
+		}
 
-				String name = resourceElement.getAttributeValue(NAME);
+		// Build the global list in a temp to avoid access before it is built
+		Set<AmountResource> newResources = new TreeSet<>();
+		
+		Element root = amountResourceDoc.getRootElement();
+		List<Element> resourceNodes = root.getChildren(RESOURCE);
+		for (Element resourceElement : resourceNodes) {
 
-				String type = resourceElement.getAttributeValue(TYPE);
+			String name = resourceElement.getAttributeValue(NAME);
 
-				GoodType goodType = GoodType.valueOf(ConfigHelper.convertToEnumName(type));
-						
-				String description = resourceElement.getText();
-				// Get phase 
-				String phaseString = resourceElement.getAttributeValue(PHASE);
-				PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
+			String type = resourceElement.getAttributeValue(TYPE);
 
-				// Get the demand modifier
-				double demand = 0;
-				String demandString = resourceElement.getAttributeValue(DEMAND);
-				if (demandString != null)
-				demand = Double.parseDouble(demandString);
-				
-				// Get life support
-				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
+			GoodType goodType = GoodType.valueOf(ConfigHelper.convertToEnumName(type));
+					
+			String description = resourceElement.getText();
+			// Get phase 
+			String phaseString = resourceElement.getAttributeValue(PHASE);
+			PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
 
-				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
+			// Get the demand modifier
+			double demand = 0;
+			String demandString = resourceElement.getAttributeValue(DEMAND);
+			if (demandString != null)
+			demand = Double.parseDouble(demandString);
+			
+			// Get life support
+			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
-				AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
+			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
-				if (phaseString == null || phaseType == null)
+			AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
+
+			if (phaseString == null || phaseType == null)
+				throw new IllegalStateException(
+						"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
+
+			for (AmountResource r: resourceSet) {
+				if (r.getName().equalsIgnoreCase(resource.getName()))
 					throw new IllegalStateException(
-							"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
+							"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + resource.getName());
+			}
+
+			newResources.add(resource);
+
+			// Create a tissue culture object for each crop
+			if (goodType != null && goodType == GoodType.CROP) {
+				// Note: may set edible to true
+				// Assume the demand multiplier of a crop tissue is twice as much
+				AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
+						description, phaseType, demand * 2, lifeSupport, false);
+				tissueCultureSet.add(nextID++);
 
 				for (AmountResource r: resourceSet) {
-					if (r.getName().equalsIgnoreCase(resource.getName()))
+					if (r.getName().equalsIgnoreCase(tissue.getName()))
 						throw new IllegalStateException(
-								"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + resource.getName());
+								"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + tissue.getName());
 				}
 
-				resourceSet.add(resource);
-
-				// Create a tissue culture object for each crop
-				if (goodType != null && goodType == GoodType.CROP) {
-					// Note: may set edible to true
-					// Assume the demand multiplier of a crop tissue is twice as much
-					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
-							description, phaseType, demand * 2, lifeSupport, false);
-					tissueCultureSet.add(nextID++);
-
-					for (AmountResource r: resourceSet) {
-						if (r.getName().equalsIgnoreCase(tissue.getName()))
-							throw new IllegalStateException(
-									"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + tissue.getName());
-					}
-
-					resourceSet.add(tissue);
-				}
+				newResources.add(tissue);
 			}
 		}
+		
+		resourceSet = Collections.unmodifiableSet(newResources);
 	}
 
 	/**

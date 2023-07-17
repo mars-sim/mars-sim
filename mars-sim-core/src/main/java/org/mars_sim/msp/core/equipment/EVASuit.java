@@ -82,6 +82,8 @@ public class EVASuit extends Equipment
 	private static final SimLogger logger = SimLogger.getLogger(EVASuit.class.getName());
 
 	// Static members
+	public final String EVA = "EVA";
+	
 	/** String name of an EVA suit. */	
 	public static final String TYPE = SystemType.EVA_SUIT.getName();
 
@@ -121,6 +123,7 @@ public class EVASuit extends Equipment
 	private MalfunctionManager malfunctionManager;
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
+	
 	private History<Unit> locnHistory;
 
 	
@@ -139,14 +142,16 @@ public class EVASuit extends Equipment
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		
+		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+		
 		// Add "EVA" to the standard scope
-		PartConfig.addScopes("EVA");
+		partConfig.addScopes(EVA);
 
 		// Add TYPE to the standard scope
-		PartConfig.addScopes(TYPE);
+		partConfig.addScopes(TYPE);
 
 		// Add "EVA" to malfunction manager scope
-		malfunctionManager.addScopeString("EVA");
+		malfunctionManager.addScopeString(EVA);
 		
 		// Add TYPE to malfunction manager scope
 		malfunctionManager.addScopeString(TYPE);

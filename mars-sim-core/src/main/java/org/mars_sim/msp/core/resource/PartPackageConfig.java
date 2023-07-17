@@ -41,7 +41,7 @@ public class PartPackageConfig implements Serializable {
 	private Collection<PartPackage> partPackages;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document
@@ -56,7 +56,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document.
 	 */
-	private void loadPartPackages(Document partPackageDoc) {
+	private synchronized void loadPartPackages(Document partPackageDoc) {
 		if (partPackages != null) {
 			// just in case if another thread is being created
 			return;
@@ -88,7 +88,6 @@ public class PartPackageConfig implements Serializable {
 		
 		// Assign the newList now built
 		partPackages = Collections.unmodifiableList(newList);
-
 	}
 
 	/**
@@ -118,7 +117,7 @@ public class PartPackageConfig implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		Iterator<PartPackage> i = partPackages.iterator();

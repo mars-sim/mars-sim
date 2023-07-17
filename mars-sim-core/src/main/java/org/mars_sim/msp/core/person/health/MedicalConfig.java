@@ -74,7 +74,7 @@ public class MedicalConfig {
 	}
 	
 	/**
-	 * Build the treatment list
+	 * Builds the treatment list.
 	 * 
 	 * @param configDoc
 	 */

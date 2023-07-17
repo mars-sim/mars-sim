@@ -77,7 +77,7 @@ public class VehicleConfig {
 	private static final String VALUE = "value";
 	private static final String NUMBER = "number";
 
-	private Map<String, VehicleSpec> map;
+	private transient Map<String, VehicleSpec> vehicleSpecMap;
 	
 	/**
 	 * Constructor.
@@ -96,7 +96,7 @@ public class VehicleConfig {
 	 * @param manuConfig 
 	 */
 	private synchronized void loadVehicleSpecs(Document vehicleDoc, ManufactureConfig manuConfig) {
-		if (map != null) {
+		if (vehicleSpecMap != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -265,7 +265,7 @@ public class VehicleConfig {
 			newMap.put(name.toLowerCase(), v);
 		}
 		
-		map = Collections.unmodifiableMap(newMap);
+		vehicleSpecMap = Collections.unmodifiableMap(newMap);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class VehicleConfig {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
 	public Collection<VehicleSpec> getVehicleSpecs() {
-		return Collections.unmodifiableCollection(map.values());
+		return Collections.unmodifiableCollection(vehicleSpecMap.values());
 	}
 
 	/**
@@ -285,15 +285,15 @@ public class VehicleConfig {
 	 * @return {@link VehicleSpec}
 	 */
 	public VehicleSpec getVehicleSpec(String vehicleType) {
-		return map.get(vehicleType.toLowerCase());
+		return vehicleSpecMap.get(vehicleType.toLowerCase());
 	}
 	
 	/**
 	 * Prepares object for garbage collection. or simulation reboot.
 	 */
 	public void destroy() {
-		if (map != null) {
-			map = null;
+		if (vehicleSpecMap != null) {
+			vehicleSpecMap = null;
 		}
 	}
 }
