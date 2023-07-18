@@ -490,12 +490,12 @@ public abstract class OperateVehicle extends Task {
     	
     	if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
          	// Allow only 50% impact from lightMod
-    		topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (.5 * .5 * lightMod);
+    		topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (0.5 * 0.5 * lightMod);
     	}
     	else {
         	// Gets top speed in kph allowed by this pilot 
     		// Allow only 30% impact from lightMod and 30% from terrain
-        	topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() *(.4 + .3 * lightMod + 3 * terrainMod);
+        	topSpeedKPH = vehicle.getBaseSpeed() * getSkillMod() * (0.4 + 0.3 * lightMod + 0.3 * terrainMod);
     	}
     	
     	// Gets the ideal speed after acceleration. v^2 = u^2 + 2*a*d

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -585,7 +586,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
             crew = rover.getCrew();
             
             if (!crew.isEmpty()) {
-            	for (Person p : crew) {
+//            	for (Person p : new HashSet<>(crew)) {
+            	Person p = (Person)member;    	
     				if (p.isDeclaredDead()) {
     					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
     				}
@@ -615,7 +617,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
     					// See if this person needs an EVA suit
     					EVASuitUtil.metBaselineNumEVASuits(p, disembarkSettlement, this);
     				}
-    			}
+//    			}
             }
 		}
 		

@@ -113,7 +113,7 @@ public class Relation implements Serializable {
 			opinion = 100;
 		
 		if (!opinionMap.containsKey(personID)) {
-			Map<String, Double> dimensionMap = new HashMap<>();
+			Map<String, Double> dimensionMap = new HashMap<>(3);
 			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
 			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
 			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
@@ -147,7 +147,7 @@ public class Relation implements Serializable {
 			opinion = 100;
 		
 		if (!opinionMap.containsKey(personID)) {
-			Map<String, Double> dimensionMap = new HashMap<>();
+			Map<String, Double> dimensionMap = new HashMap<>(3);
 			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
 			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
 			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));

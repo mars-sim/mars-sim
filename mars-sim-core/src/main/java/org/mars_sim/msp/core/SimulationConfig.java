@@ -845,7 +845,8 @@ public class SimulationConfig implements Serializable {
 
 
 	/**
-	 * Get teh manager to the ReportingAuthority
+	 * Gets the manager to the ReportingAuthority.
+	 * 
 	 * @return
 	 */
 	public ReportingAuthorityFactory getReportingAuthorityFactory() {

@@ -27,8 +27,6 @@
 	 /** default logger. */
 	 private static SimLogger logger = SimLogger.getLogger(VehicleController.class.getName());
  
-	 /** Speed in kph */
-	 public static final double SPEED_BUFFER = .01;
 	 
 	 /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
 	 public static final int OXYGEN_ID = ResourceUtil.oxygenID;
@@ -52,6 +50,11 @@
 	 /** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	 private static final double KPH_CONV = 3.6;
 		
+	 /** Speed buffer in kph. */
+	 public final double SPEED_BUFFER = .01;
+	 /** The outside average air density. */
+	 public final double airDensity = 0.02;
+	 
 	 private static final String KG = " kg  ";
 	 private static final String N = " N  ";
 	 private static final String KM_KG = " km/kg  ";
@@ -96,8 +99,9 @@
 	  *
 	  * @param hrsTime
 	  * @param distToCover the distance that can be covered [in km]
-//	  * @param navpointDist the total distance to the next navpoint [in km]
 	  * @param vKPH
+	  * @param remainingFuel
+	  * @param remainingOxidizer
 	  * @return
 	  */
 	 public double consumeFuelEnergy(double hrsTime, double distToCover, double vKPH, double remainingFuel, double remainingOxidizer) {
@@ -132,6 +136,7 @@
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
 		 }
+		 
 		 // distance in km
 		 double distanceTravelled = distToCover; //vKPH * hrsTime;
 			
@@ -161,8 +166,28 @@
 		 if (vehicle instanceof Drone) {
 			 // For drones, it needs energy to ascend into the air and hover in the air
 			 // Note: Refine this equation for drones 
+			 
 			 // in km
 			 double currentHeight = ((Drone) vehicle).getHoveringHeight();
+			 
+			 // Airflow velocity (V1)  // V1 = V0 + v1
+//			 double V1;
+			 // UAV flight speed (V0) // 
+//			 double V0;
+			 // Propeller induced velocity (v1)
+//			 double v1;
+			 // Thrust coefficient CT = 2 * (V0 + v1) * v1
+//			 double CT;
+			 // propeller length in meter
+//			 double radiusPropeller = .5;
+
+			 // Rev per minutes
+//			 double rotationalSpeedRPM = 0; 
+//			 double dragForceD = 0;
+//			 double weightForceW = 0;
+//			 double liftForceL = 0;
+//			 double thrustForceT = 0;
+//			 double liftToDragRatio = 0; 
 			 
 			 fGravity = - mg;
 			 
@@ -173,37 +198,65 @@
 			  // Also need to account for the use of fuel or battery's power to ascend and descend 
 			 
 			 if (uMS < vMS) {
-				 // Scenario A : During ascent
-				   if (currentHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
-					   // Do NOT ascent anymore
-					   potentialEnergyDrone = 0;
+				 // Scenario A : Ascent
+				 if (currentHeight >= Flyer.ELEVATION_ABOVE_GROUND) {
+					 // Case A1 : hovering
+					 // Thus UAV flight speed (V0) is zero
+//					 V0 = 0;
+					 // Airflow velocity V1 = V0 + v1 = 0 + v1
+//					 V1 = v1;
+					 
+					 // Do NOT ascent anymore. Hover at the this height and travel horizontally
+					 potentialEnergyDrone = 0;
+					 
+					 // Hover airflow velocity V1 = v1 = sqrt (CT /2)
+//					 v1 = Math.sqrt(CT/2);	
+					 // Hover thrust coefficient: CT = 2 * v1^2
+//					 CT = 2 * v1 * v1;
+					 // Hover thrust: T = 2 * density * pi * r^2 * v1^2
+//					 thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * v1 * v1;
+//					 liftToDragRatio = liftForceL / dragForceD;				 
+//					 thrustForceT = weightForceW / liftToDragRatio;
+					 
 				 }
-				   else {
+				 else {
+					 // Case A2 : lifting up
 					 // For ascent, assume the height gained is the same as distanceTravelled
-					   potentialEnergyDrone = mg * 1000 * distanceTravelled;
-				   }
+					 potentialEnergyDrone = mg * 1000 * distanceTravelled;
+					 	 
+					 // Lifting up thrust T = 2 * density * pi * r^2 * (V0 + v1) * v1
+//					 thrustForceT =  2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (V0 + v1) * v1;
+				 }
 			 }
  
 			 else {
-				 // Scenario B : During controlled descent
+				 // Scenario B : During controlled descent / going down
 				 if (currentHeight <= 0) {
-					   // Do NOT ascent anymore
+					 // Case B1 : landed
+					 // Do NOT ascent anymore
 					 potentialEnergyDrone = 0;
 				 }
-				   else {
-						// Assume using about 25% of energy gain in potenial energy to maintain optimal descent,
-					   // avoid instability and perform a controlled descent
+				 else {
+					 // Case B2 : descending or preparing for landing
+					 // Assume using about 25% of energy gain in potential energy to maintain optimal descent,
+					 // avoid instability and perform a controlled descent
 					   
-					   // See detail strategies on https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
-					   if (currentHeight < distanceTravelled) {
-						   // Assume the height lost is the same as distanceTravelled
-						   potentialEnergyDrone = .25 * mg * 1000 * currentHeight;
-					   }
-					   else {
-						 // For descent, assume the height lost is the same as distanceTravelled
-						   potentialEnergyDrone = .25 * mg * 1000 * distanceTravelled;
-					   }
-				   }
+					 // See detail strategies on https://aviation.stackexchange.com/questions/64055/how-much-energy-is-wasted-in-an-aeroplanes-descent
+					 if (currentHeight < distanceTravelled) {
+						 // Assume the height lost is the same as distanceTravelled
+						 distanceTravelled = currentHeight;
+			 
+						 // Landing airflow velocity V1 = v1 - abs(V0)
+//						 V1 = v1 - Math.abs(vMS);					 
+						 // Landing thrust coefficient: CT = −2(V0_bar + v1_bar)．v1_bar
+						 // Landing induced velocity: v1_bar = −v0_bar / 2 - sqrt((v0_bar/2)^2 - CT/2))
+						 // Landing thrust T = - 2 * density * pi * r^2 * ( V0 + v1) * v1
+//						 thrustForceT =  - 2 * airDensity * Math.PI * radiusPropeller * radiusPropeller * (vMS + v1) * v1;
+					 }
+
+					 // For descent, assume the height lost is the same as distanceTravelled
+					 potentialEnergyDrone = .25 * mg * 1000 * distanceTravelled;
+				 }
 			 }
 		 }
 	 
@@ -219,12 +272,12 @@
 		 }
 		 
 		 double fInitialFriction = - 5.0 / (0.5 + averageSpeed);  // [in N]
-		 // Note : Aerodynamic drag force = 0.5 * air drag coeff * air density * vehicle frontal area * vehicle speed ^2 
-		 // https://x-engineer.org/aerodynamic-drag
 		 
 		 double frontalArea = vehicle.getWidth() * vehicle.getWidth() * .9;
-				 
-		 double fAeroDrag = - 0.5 * 0.4 * 0.02 * frontalArea * averageSpeedSQ;
+		 // https://x-engineer.org/aerodynamic-drag
+		 
+		 // Note : Aerodynamic drag force = 0.5 * air drag coeff * air density * vehicle frontal area * vehicle speed ^2 
+		 double fAeroDrag = - 0.5 * 0.4 * airDensity * frontalArea * averageSpeedSQ;
 		 // Gets the summation of all the forces acting against the forward motion of the vehicle
 		 double totalForce = fInitialFriction + fAeroDrag + fGravity + fRolling + fRoadSlope;
 		 // Gets the natural deceleration due to these forces
@@ -245,20 +298,20 @@
 			 if (uKPH - vKPH > SPEED_BUFFER || vKPH - uKPH < SPEED_BUFFER) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
 					 "Scenario 1A: Need to exert power just to maintain the speed at "
-					 + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
-					 + "accelMotor: " + Math.round(accelMotor * 1_000.0)/1_000.0 + " m/s2  "
-					 + "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
-					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
+					 + Math.round(vKPH * 100.0)/100.0 + KPH
+					 + "accelMotor: " + Math.round(accelMotor * 100.0)/100.0 + " m/s2  "
+					 + "accelTarget: " + Math.round(accelTarget * 100.0)/100.0 + " m/s2  "
+					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 100.0)/100.0 + " m/s2."
 					 );
 			 }
 			 else {
 				 logger.log(vehicle, Level.INFO, 20_000,  
 					 "Scenario 1B: Need to accelerate and increase the speed from "
-					 +  Math.round(uKPH * 1_000.0)/1_000.0 + " kph "
-					 + "to " + Math.round(vKPH * 1_000.0)/1_000.0 + " kph  "
-					 + "accelMotor: " + Math.round(accelMotor * 1_000.0)/1_000.0 + " m/s2  "
-					 + "accelTarget: " + Math.round(accelTarget * 1_000.0)/1_000.0 + " m/s2  "
-					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_000.0)/1_000.0 + " m/s2."
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH
+					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH
+					 + "accelMotor: " + Math.round(accelMotor * 100.0)/100.0 + " m/s2  "
+					 + "accelTarget: " + Math.round(accelTarget * 100.0)/100.0 + " m/s2  "
+					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_0.0)/100.0 + " m/s2."
 					 );
 			 }        
   
@@ -272,13 +325,13 @@
 			 overallEnergyUsed = totalEnergyNeeded;
 			 
 			 // Scenario 2A : Battery has enough juice for the acceleration
-			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 1000.0)/1000.0) {
+			 if (Math.round(totalEnergyNeeded * 1000.0)/1000.0 == Math.round(energyByBattery * 100.0)/100.0) {
 				 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2A: Use on-board battery only. "
-						 + "energyByBattery: " + Math.round(energyByBattery * 1000.0)/1000.0 + WH
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
-						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH 						 
-						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
+						 + "energyByBattery: " + Math.round(energyByBattery * 100.0)/100.0 + WH
+						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH 						 
+						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
 						 );  
 			 }
 			  
@@ -294,12 +347,12 @@
 					 // Scenario 2B: fuel is sufficient
 					 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2B: Partial battery with sufficient fuel.  " 
-						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
-						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH 						
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
-						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH  						 
-						 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
-						 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + " km."
+						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
+						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH 						
+						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH  						 
+						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
+						 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + " km."
 						 );
 				 }
 				 else {				
@@ -330,26 +383,26 @@
 							 
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 2C: Partial battery and insufficient fuel.  " 
-							 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
-							 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
-							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH
-							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH							 
-							 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
-							 + "iPower: " 			+ Math.round(iPower * 1_000.0)/1_000.0 + W							
-							 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH   							
+							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
+							 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
+							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
+							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
+							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
+							 + "iPower: " 			+ Math.round(iPower * 100.0)/100.0 + W							
+							 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH   							
 //							 + "navpointDist: " +  Math.round(navpointDist * 1000.0)/1000.0  + KM 
-							 + "distanceTravelled: " +  Math.round(distanceTravelled * 1000.0)/1000.0  + KM
+							 + "distanceTravelled: " +  Math.round(distanceTravelled * 100.0)/100.0  + KM
 							 );
 				 }
 			 }
 			 else { // Scenario 2D : is this normal ?
 				  logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2D: Unknown.  " 
-						 + "energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
-						 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH
-						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH	
-						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH							 
-						 + "fuelNeeded: " +  Math.round(fuelNeeded * 1000.0)/1000.0  + KG
+						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
+						 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
+						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
+						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
+						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
 						 );
 			 }
 			 
@@ -388,8 +441,8 @@
 //					  + "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					  + "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 10.0)/10.0 + " secs  "
-					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH);
+					 + "uKPH: "				+ Math.round(uKPH * 100.0)/100.0 + KPH
+					 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH);
 			 
 			 logger.log(vehicle, Level.INFO, 20_000,
 					vehicle.getSpecName()	
@@ -405,7 +458,7 @@
 			logger.log(vehicle, Level.INFO, 20_000,
 					vehicle.getSpecName()					 
 					 + "  angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg  "
-					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N    					 
+					 + "totalForce: " 		+ Math.round(totalForce * 100.0)/100.0 + N    					 
 					 + "fInitialF: " 		+ Math.round(fInitialFriction * 1_000.0)/1_000.0 + N
 					 + "fGravity: " 			+ Math.round(fGravity * 1_000.0)/1_000.0 + N
 					 + "fAeroDrag: " 		+ Math.round(fAeroDrag * 1_000.0)/1_000.0 + N
@@ -456,9 +509,9 @@
 					 "Scenario 2: Need to decelerate and reduce the speed from " 
 					 +  Math.round(uKPH * 10.0)/10.0 + KPH
 					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH
-					 + "regen decel: " + Math.round(accelRegen * 1_000.0)/1_000.0 
+					 + "regen decel: " + Math.round(accelRegen * 100.0)/100.0 
 					 + " m/s2.  "
-					 + "target decel: " + Math.round(accelTarget * 1_000.0)/1_000.0 
+					 + "target decel: " + Math.round(accelTarget * 100.0)/100.0 
 					 + " m/s2."			
 			 );
 			 

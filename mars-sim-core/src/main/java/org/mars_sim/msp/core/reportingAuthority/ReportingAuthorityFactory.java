@@ -27,26 +27,26 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public final class ReportingAuthorityFactory extends UserConfigurableConfig<ReportingAuthority> {
 	
-	private static final String AUTHORITY_EL = "authority";
-	private static final String AUTHORITIES_EL = "authorities";
-	private static final String CODE_ATTR = "code";
-	private static final String MODIFIER_ATTR = "modifier";
-	private static final String DESCRIPTION_ATTR = "description";
-	private static final String CAPABILITY_EL = "capability";
-	private static final String DATA_ATTR = "data";
-	private static final String FINDINGS_ATTR = "findings";
-	private static final String OBJECTIVE_ATTR = "objective";
-	private static final String AGENDA_EL = "agenda";
-	private static final String AGENDAS_EL = "agendas";
-	private static final String COUNTRY_EL = "country";
-	private static final String NAME_ATTR = "name";
-	private static final String SETTLEMENTNAME_EL = "settlement-name";
-	private static final String ROVERNAME_EL = "rover-name";
-	private static final String GENDER_ATTR = "gender-ratio";
-	private static final String PERFERENCE_EL = "preference";
-	private static final String TYPE_ATTR = "type";
+	private final String AUTHORITY_EL = "authority";
+	private final String AUTHORITIES_EL = "authorities";
+	private final String CODE_ATTR = "code";
+	private final String MODIFIER_ATTR = "modifier";
+	private final String DESCRIPTION_ATTR = "description";
+	private final String CAPABILITY_EL = "capability";
+	private final String DATA_ATTR = "data";
+	private final String FINDINGS_ATTR = "findings";
+	private final String OBJECTIVE_ATTR = "objective";
+	private final String AGENDA_EL = "agenda";
+	private final String AGENDAS_EL = "agendas";
+	private final String COUNTRY_EL = "country";
+	private final String NAME_ATTR = "name";
+	private final String SETTLEMENTNAME_EL = "settlement-name";
+	private final String ROVERNAME_EL = "rover-name";
+	private final String GENDER_ATTR = "gender-ratio";
+	private final String PERFERENCE_EL = "preference";
+	private final String TYPE_ATTR = "type";
 	
-	private transient Map<String,MissionAgenda> agendas;
+	private Map<String,MissionAgenda> agendas;
 
 	public ReportingAuthorityFactory(Document governanceDoc) {
 		super("authority");
