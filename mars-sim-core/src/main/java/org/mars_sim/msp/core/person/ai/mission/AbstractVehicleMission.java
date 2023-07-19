@@ -835,7 +835,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected abstract void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement);
 
 	/**
-	 * Call the members to join the mission.
+	 * Calls the members to join the mission.
+	 * 
 	 * @param deadline How many mSols to they have to join; could be zero if no deadline
 	 */
 	protected void callMembersToMission(int deadline) {
@@ -844,7 +845,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		for (Worker m : getMembers()) {
 			if (m.getUnitType() == UnitType.PERSON) {
 				Person pp = (Person) m;
-				// If first time this person has been caleld and there is a limit interrupt them
+				// If first time this person has been called and there is a limit interrupt them
 				if (!pp.getShiftSlot().setOnCall(true) && (deadline > 0)) {
 					// First call so 
 					Task active = pp.getTaskManager().getTask();

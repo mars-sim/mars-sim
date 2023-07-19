@@ -62,6 +62,7 @@
 	 private static final String KM = " km  ";
 	 private static final String KW = " kW  ";
 	 private static final String KPH = " kph  ";
+	 private static final String KPH_ = " kph ";
 	 private static final String WH = " Wh  ";
 	 private static final String KWH = " kWh  ";
 	 private static final String W = " W  ";		
@@ -307,8 +308,8 @@
 			 else {
 				 logger.log(vehicle, Level.INFO, 20_000,  
 					 "Scenario 1B: Need to accelerate and increase the speed from "
-					 +  Math.round(uKPH * 100.0)/100.0 + KPH
-					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH
+					 +  Math.round(uKPH * 100.0)/100.0 + KPH_
+					 + "to " + Math.round(vKPH * 100.0)/100.0 + KPH_
 					 + "accelMotor: " + Math.round(accelMotor * 100.0)/100.0 + " m/s2  "
 					 + "accelTarget: " + Math.round(accelTarget * 100.0)/100.0 + " m/s2  "
 					 + "accelForcesAgainst: " + Math.round(accelForcesAgainst * 1_0.0)/100.0 + " m/s2."
@@ -507,8 +508,8 @@
 					 
 			 logger.log(vehicle, Level.INFO, 20_000, 
 					 "Scenario 2: Need to decelerate and reduce the speed from " 
-					 +  Math.round(uKPH * 10.0)/10.0 + KPH
-					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH
+					 +  Math.round(uKPH * 10.0)/10.0 + KPH_
+					 + "to " + Math.round(vKPH * 10.0)/10.0 + KPH_
 					 + "regen decel: " + Math.round(accelRegen * 100.0)/100.0 
 					 + " m/s2.  "
 					 + "target decel: " + Math.round(accelTarget * 100.0)/100.0 
@@ -551,8 +552,8 @@
 //					+ "navpointDist: " 		+ Math.round(navpointDist * 1_000.0)/1_000.0 + KM
 					+ "distanceTravelled: " + Math.round(distanceTravelled * 1_000.0)/1_000.0 + KM
 					 + "time: "				+ Math.round(secs * 1_000.0)/1_000.0 + " secs  "
-					 + "uKPH: "				+ Math.round(uKPH * 1_000.0)/1_000.0 + KPH
-					 + "vKPH: " 				+ Math.round(vKPH * 1_000.0)/1_000.0 + KPH);     
+					 + "uKPH: "				+ Math.round(uKPH * 100.0)/100.0 + KPH
+					 + "vKPH: " 				+ Math.round(vKPH * 100.0)/100.0 + KPH);     
 
 			 logger.log(vehicle, Level.INFO, 20_000,
 						vehicle.getSpecName()				 

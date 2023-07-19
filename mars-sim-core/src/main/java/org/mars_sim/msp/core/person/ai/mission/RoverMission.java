@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2021-10-29
+ * @date 2023-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -555,7 +554,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	public void disembark(Worker member, Vehicle v, Settlement disembarkSettlement) {
 		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
 					+ " triggered by " + member.getName() +  ".");
-
+		
+		Person p = (Person)member; 
+		
 		Rover rover = (Rover) v;
 
 		Set<Person> crew = rover.getCrew();
@@ -586,8 +587,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
             crew = rover.getCrew();
             
             if (!crew.isEmpty()) {
-//            	for (Person p : new HashSet<>(crew)) {
-            	Person p = (Person)member;    	
+//            	for (Person p : new HashSet<>(crew)) {	
     				if (p.isDeclaredDead()) {
     					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
     				}
@@ -626,19 +626,19 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (!roverUnloaded) {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things
-			for (Worker mm : getMembers()) {
+//			for (Worker mm : getMembers()) {
 				if (RandomUtil.lessThanRandPercent(50)) {
-					unloadCargo(((Person)mm), rover);
+					unloadCargo(p, rover);
 				}
-			}
+//			}
 		}
 		else if (!crew.isEmpty()) {
 			// Check to see if no one is in the rover, unload the resources and end phase.
-			for (Worker mm  : getMembers()) {
+//			for (Worker mm  : getMembers()) {
 				// Walk back to the airlock
-				if (((Person)mm).isInVehicle() || ((Person)mm).isOutside())
-					walkToAirlock(rover, ((Person)mm), disembarkSettlement);
-			}
+				if (p.isInVehicle() || p.isOutside())
+					walkToAirlock(rover, p, disembarkSettlement);
+//			}
 		}
 		else {
 			// Complete disembarking once everyone is out of the Vehicle

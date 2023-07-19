@@ -17,6 +17,9 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import javax.swing.JOptionPane;
+
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
@@ -34,32 +37,36 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
-/*
- * Help for finding the absolute path of the html help files 
- */
 
-// First, use the command line argument -html for generating new html help files (Or run the eclipse launcher
-// "MarsProject -html.launch" in Eclipse IDE to do the same).
+//
+// *** Help for finding the absolute path of the html help files ***
+//
+// (1) Run HelpGenarator's main() or run eclipse launcher
+// "MarsProject -html.launch" in Eclipse IDE to do the same to generate a new set of html help files 
 //	 
-// In Windows OS, the html help files are kept inside the src folder hierarchy as follows : 
+// In Windows OS, existing html help files are kept inside the 'src' folder hierarchy as follows : 
 //
 // At \mars-sim\mars-sim-ui\src\main\resources\docs\help\$[DIR]
 // e.g. D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help\$[DIR]
 //
-// However, after running "MarsProject -html.launch" in mars-sim-main submodule in Eclipse, 
-// the newly generated htmls will be saved inside the 'target' folder hierarchy,
-// instead of the 'src' folder as follows :
+// However, the newly generated htmls will be saved inside the 'target' folder hierarchy
+// (instead of the 'src' folder) as follows :
 //
 // At \mars-sim-ui\target\classes\docs\help\$[DIR]
 // e.g. D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help\$[DIR]
 //
-// Note : the newly generated html files are located within the mars-sim-ui's 'target' folder
+// In conclusion, the newly generated html files are located within the mars-sim-ui's 'target' folder
 // and NOT the mars-sim-ui's 'src' folder.
 //
-// You will need to "manually" copy the newly generated htmls from the \target\$[DIR] to the \src\$[DIR] 
-// and then commit the changes.
-//   
-// A total of 652 newly generated htmls using this HelpGenerator class can be broken into the followings :
+// (2) Use Window Explorer to DELETE the old htmls in \src\$[DIR] in your local machine.
+//
+// (3) Use Window Explorer to COPY over the new htmls available in the \target\$[DIR] to the \src\$[DIR] in your local machine.
+//
+// (4) Commit the changes and upload it upstream to GitHub mars-sim's repo.
+//
+//
+// A total of 728 newly generated htmls using this HelpGenerator class can be broken into the followings :
+//
 // 1. food_production*.html
 // 2. process*.html       
 // 3. part*.html
@@ -67,6 +74,7 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 // 5. $[vehicle type].html
 //
 // They are stored inside their respective directory $[DIR] as follows : 
+//
 // 1. food
 // 2. processes
 // 3. parts
@@ -74,22 +82,27 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 // 5. vehicles
 //
 // The base directory \help contains other important html pages such as the tutorial pages. They do not
-// need to be overwritten in this case.
+// need to be copied over and be overwritten.
 //
-// In order to include a clean set of htmls, it is recommended that one should delete the old set of 
-// htmls (1-5 above) in the \src\$[DIR] right before copying the new set of htmls from the \target\$[DIR]. 
+// In order to include a clean set of htmls, it is recommended that one should first DELETE the old set of 
+// htmls (1-5 above) in \src\$[DIR]. Afterward, COPY OVER the new set of htmls from \target\$[DIR]
+// to \src\$[DIR].
 // 
-// There may be a time delay and refresh issue with Eclipse, if you use the Windows Explorer outside of 
-// Eclipse IDE to manually delete the old html pages and then copy over the new html files.
+// There may be a time delay and refresh issue with Eclipse IDE, especially if you use the Windows Explorer 
+// (outside of Eclipse IDE) to manually delete the old html pages and copy over the new html files.
 //
-// Afterward, make sure you "refresh" the Project Explorer in Eclipse so that it will intelligently compare which 
+// Afterward, make sure you "refresh" the Project Explorer in Eclipse IDE so that it will intelligently compare which 
 // particular html files have been changed/updated and which ones stay the same. Eclipse will compare the new
-// ones against the local copies. In this manner, during "Git Staging", Eclipse will properly tag and post only 
-// the html files that need to be updated in the mars-sim codebase. 
+// ones against the local copies. 
 //
-// For if you delete all 652 old html files in $[DIR] and copy over the new 652 html files, Eclipse would 
-// intelligently detect the 20 html files that need to be updated in the codebase during "Git Staging".
+// This way, during "Git Staging", Eclipse will properly tag and post only the html files that need to be updated
+// in the codebase. 
 //
+// Note that if you delete all 728 old html files in $[DIR] and copy over the new 728 html files, Eclipse would 
+// intelligently detect which html files need to be updated in the codebase during "Git Staging".
+// Chances are not all 728 html needs to be going upstream. Only those that have been updated.
+//
+
 
 
 
@@ -1204,5 +1217,44 @@ public class HelpGenerator {
 					.toString()
 			);
 		System.exit(0);
+	}
+	
+	/**
+	 * Exits the simulation with an error message.
+	 *
+	 * @param message the error message.
+	 * @param e       the thrown exception or null if none.
+	 */
+	private static void exitWithError(String message, Exception e) {
+		if (e != null) {
+			logger.log(Level.SEVERE, message, e);
+		} else {
+			logger.log(Level.SEVERE, message);
+		}
+
+		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+		
+		System.exit(1);
+	}
+	
+	/**
+	 * The main starting method for generating html files.
+	 *
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
+
+		try {
+			// Load config files
+			SimulationConfig.instance().loadConfig();
+			// this will generate html files for in-game help
+			HelpGenerator.generateHtmlHelpFiles();
+			logger.config("Done creating help files.");
+			System.exit(1);
+
+		} catch (Exception e) {
+			exitWithError("Could not generate help files ", e);
+		}
 	}
 }
