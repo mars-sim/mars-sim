@@ -45,20 +45,7 @@ public class Relation implements Serializable {
 	public Relation(Person person)  {
 	}
 	
-	/**
-	 * Gets the opinion regarding a person.
-	 * 
-	 * @param personID
-	 * @return
-	 */
-	public double getOpinion(int personID, String type) {
-		if (opinionMap.containsKey(personID)) {
-			return opinionMap.get(personID).get(type);
-		}
-		else
-			return 50 + RandomUtil.getRandomDouble(-10, 10);
-	}
-	
+
 	/**
 	 * Gets the opinion regarding a person.
 	 * 
@@ -85,7 +72,7 @@ public class Relation implements Serializable {
 	 * @param personID
 	 * @return
 	 */
-	public double[] getOpinions(int personID) {
+	double[] getOpinions(int personID) {
 		Map<String, Double> dimensionMap = null;
 		if (opinionMap.containsKey(personID)) {
 			dimensionMap = opinionMap.get(personID);
@@ -106,7 +93,7 @@ public class Relation implements Serializable {
 	 * @param personID
 	 * @param opinion
 	 */
-	public void setOpinion(int personID, double opinion) {
+	void setOpinion(int personID, double opinion) {
 		if (opinion < 1)
 			opinion = 1;
 		if (opinion > 100)
@@ -134,30 +121,6 @@ public class Relation implements Serializable {
 		}
 	}
 	
-	/**
-	 * Sets the opinion regarding a person.
-	 * 
-	 * @param personID
-	 * @param opinion
-	 */
-	public void setOpinion(int personID, String type, double opinion) {
-		if (opinion < 1)
-			opinion = 1;
-		if (opinion > 100)
-			opinion = 100;
-		
-		if (!opinionMap.containsKey(personID)) {
-			Map<String, Double> dimensionMap = new HashMap<>(3);
-			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			opinionMap.put(personID, dimensionMap);
-		}
-		else {
-			Map<String, Double> dimensionMap = opinionMap.get(personID);
-			dimensionMap.put(type, opinion);
-		}
-	}
 	
 	/**
 	 * Changes the opinion regarding a person.
@@ -165,7 +128,7 @@ public class Relation implements Serializable {
 	 * @param personID
 	 * @param mod
 	 */
-	public void changeOpinion(int personID, double mod) {
+	void changeOpinion(int personID, double mod) {
 		double result = getOpinion(personID) + mod;
 		if (result < 1)
 			result = 1;
@@ -175,37 +138,13 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Changes the opinion regarding a person.
-	 * 
-	 * @param personID
-	 * @param mod
-	 */
-	public void changeOpinion(int personID, double mod, String type) {
-		double result = getOpinion(personID, type) + mod;
-		if (result < 1)
-			result = 1;
-		if (result > 100)
-			result = 100;
-		setOpinion(personID, type, result);
-	}
-	
-	/**
-	 * Gets a set of people's ids.
-	 * 
-	 * @return a set of people's ids
-	 */
-	public Set<Integer> getPeopleIDs() {
-		return opinionMap.keySet();
-	}
-	
-	/**
 	 * Gets all the people that a person knows (has met).
 	 * 
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public Set<Person> getAllKnownPeople(Person person) {
-		return getPeopleIDs().stream()
+	Set<Person> getAllKnownPeople(Person person) {
+		return opinionMap.keySet().stream()
 				.map(id -> unitManager.getPersonByID(id))
 				.collect(Collectors.toUnmodifiableSet());
 	}
@@ -217,7 +156,6 @@ public class Relation implements Serializable {
 	 */
 	public static void initializeInstances(UnitManager um) {
 		unitManager = um;		
-		RelationshipUtil.initializeInstances(um);
 	}
 	
 	/**

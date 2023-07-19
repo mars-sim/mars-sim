@@ -20,7 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
@@ -61,9 +60,6 @@ public class RelationshipUtil implements Serializable {
 	 * with each other.
 	 */
 	private static final double SETTLER_MODIFIER = .02D;
-
-	/** The Unit Manager instance. */
-	private static UnitManager unitManager;
 	
 	/**
 	 * Adds a new relationship between two people.
@@ -73,7 +69,7 @@ public class RelationshipUtil implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static
 	 *                         members)
 	 */
-	public static void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
+	private static void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
 		if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
 			setOpinion(person1, person2, getFirstImpression(person1, person2));
 			setOpinion(person2, person1, getFirstImpression(person2, person1));
@@ -93,7 +89,7 @@ public class RelationshipUtil implements Serializable {
 	 * @param person2
 	 * @param opinion
 	 */
-	public static void setOpinion(Person person1, Person person2, double opinion) {
+	private static void setOpinion(Person person1, Person person2, double opinion) {
 		person1.getRelation().setOpinion(person2.getIdentifier(), opinion);
 	}
 	
@@ -115,30 +111,8 @@ public class RelationshipUtil implements Serializable {
 	 * @param person2
 	 * return opinion
 	 */
-	public static double getOpinion(Person person1, Person person2) {
+	private static double getOpinion(Person person1, Person person2) {
 		return person1.getRelation().getOpinion(person2.getIdentifier());
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1ID
-	 * @param person2ID
-	 * return opinion
-	 */
-	public static double getOpinion(int person1ID, int person2ID) {
-		return unitManager.getPersonByID(person1ID).getRelation().getOpinion(person2ID);
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1
-	 * @param person2ID
-	 * return opinion
-	 */
-	public static double getOpinion(Person person1, int person2ID) {
-		return person1.getRelation().getOpinion(person2ID);
 	}
 	
 	/**
@@ -148,30 +122,8 @@ public class RelationshipUtil implements Serializable {
 	 * @param person2
 	 * return opinion
 	 */
-	public static double[] getOpinions(Person person1, Person person2) {
+	private static double[] getOpinions(Person person1, Person person2) {
 		return person1.getRelation().getOpinions(person2.getIdentifier());
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1ID
-	 * @param person2ID
-	 * return opinion
-	 */
-	public static double[] getOpinions(int person1ID, int person2ID) {
-		return unitManager.getPersonByID(person1ID).getRelation().getOpinions(person2ID);
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1
-	 * @param person2ID
-	 * return opinion
-	 */
-	public static double[] getOpinions(Person person1, int person2ID) {
-		return person1.getRelation().getOpinions(person2ID);
 	}
 	
 	/**
@@ -181,7 +133,7 @@ public class RelationshipUtil implements Serializable {
 	 * @param person2 the second person (order isn't important)
 	 * @return true if the two people have a relationship
 	 */
-	public static boolean hasRelationship(Person person1, Person person2) {
+	private static boolean hasRelationship(Person person1, Person person2) {
 		return (person1.getRelation().getOpinion(person2.getIdentifier()) != -1
 				&& person2.getRelation().getOpinion(person1.getIdentifier()) != -1);
 	}
@@ -743,21 +695,4 @@ public class RelationshipUtil implements Serializable {
 
 		return result;
 	}
-	
-	/**
-	 * Initializes instances.
-	 * 
-	 * @param um the unitManager instance
-	 */
-	public static void initializeInstances(UnitManager um) {
-		unitManager = um;		
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		logger = null;
-	}
-
 }
