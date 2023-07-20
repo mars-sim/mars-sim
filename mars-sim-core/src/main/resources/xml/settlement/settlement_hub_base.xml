@@ -1,230 +1,74 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Alpha Base" 
+        name="Hub Base" 
         default-population="24" number-of-robots="14" sponsor="MS"
-        description="Large Base">
-    <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
-        facing="0.0">
+        description="Base With Central Hub">
+
+        
+    <building id="0" type="Central Hub A" xloc="-100.0" yloc="100.0" facing="0.0">
+        <connection-list>
+            <connection id="1" xloc="0.0" yloc="-10" />
+        </connection-list>
+    </building>
+            
+    <building id="1" type="Hallway" length="4.0" xloc="-100.0" yloc="88" facing="0.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="2.0" />
+            <connection id="2" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+      
+    <building id="2" type="Machinery Hab" xloc="-100.0" yloc="81.5" facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="4.5" />
-            <connection id="5" xloc="-4.5" yloc="0.0" />
-            <connection id="27" xloc="4.5" yloc="0.0" />
-        </connection-list>
-    </building>
-    <building id="1" type="Hallway" length="4.0" xloc="0.0"
-        yloc="6.5" facing="0.0">
-        <connection-list>
-            <connection id="0" xloc="0.0" yloc="-2.0" />
-            <connection id="2" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="2" type="Lander Hab" xloc="0.0" yloc="13.0"
-        facing="0.0">
-        <connection-list>
-            <connection id="1" xloc="0.0" yloc="-4.5" />
-            <connection id="3" xloc="0.0" yloc="4.5" />
-            <connection id="7" xloc="-4.5" yloc="0.0" />
-        </connection-list>
-    </building>
-    <building id="3" type="Hallway" length="4.0" xloc="0.0"
-        yloc="19.5" facing="0.0">
-        <connection-list>
-            <connection id="2" xloc="0.0" yloc="-2.0" />
-            <connection id="4" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="4" type="Lander Hab" xloc="0.0" yloc="26.0"
-        facing="0.0">
-        <connection-list>
             <connection id="3" xloc="0.0" yloc="-4.5" />
-            <connection id="11" xloc="0.0" yloc="4.5" />
-            <connection id="9" xloc="-4.5" yloc="0.0" />
-            <connection id="30" xloc="4.5" yloc="0.0" />
-        </connection-list>
-    </building>
-    <building id="5" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="0.0" facing="270.0">
-        <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
-            <connection id="6" xloc="0.0" yloc="-1.5" />
-        </connection-list>
-    </building>
-    <building id="6" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="0.0" facing="270.0">
-        <connection-list>
-            <connection id="5" xloc="0.0" yloc="4.5" />
-        </connection-list>
-    </building>
-    <building id="7" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="13.0" facing="270.0">
-        <connection-list>
-            <connection id="2" xloc="0.0" yloc="1.5" />
-            <connection id="8" xloc="0.0" yloc="-1.5" />
-        </connection-list>
-    </building>
-    <building id="8" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="13.0" facing="270.0">
-        <connection-list>
-            <connection id="7" xloc="0.0" yloc="4.5" />
-        </connection-list>
-    </building>
-    <building id="9" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="26.0" facing="270.0">
-        <connection-list>
-            <connection id="4" xloc="0.0" yloc="1.5" />
-            <connection id="10" xloc="0.0" yloc="-1.5" />
-        </connection-list>
-    </building>
-    <building id="10" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="26.0" facing="270.0">
-        <connection-list>
-            <connection id="9" xloc="0.0" yloc="4.5" />
-        </connection-list>
-    </building>
-    <building id="11" type="Hallway" length="4.0" xloc="0.0"
-        yloc="32.5" facing="0.0">
-        <connection-list>
-            <connection id="4" xloc="0.0" yloc="-2.0" />
-            <connection id="12" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="12" type="Command and Control" xloc="0.0"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="11" xloc="3.5" yloc="0.0" />
-            <connection id="13" xloc="0.0" yloc="-4.5" />
-        </connection-list>
-    </building>
-    <building id="13" type="Hallway" length="2.0" xloc="-5.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="12" xloc="0.0" yloc="1.0" />
-            <connection id="14" xloc="0.0" yloc="-1.0" />
-        </connection-list>
-    </building>
-    <building id="14" type="Lounge" xloc="-11.0" yloc="38"
-        facing="270.0">
-        <connection-list>
-            <connection id="13" xloc="0.0" yloc="4.5" />
-            <connection id="15" xloc="0.0" yloc="-4.5" />
-        </connection-list>
-    </building>
-    <building id="15" type="Hallway" length="2.0" xloc="-16.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="14" xloc="0.0" yloc="1.0" />
-            <connection id="16" xloc="0.0" yloc="-1.0" />
-        </connection-list>
-    </building>
-    <building id="16" type="Residential Quarters" xloc="-22.0"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="15" xloc="0.0" yloc="4.5" />
-            <connection id="17" xloc="0.0" yloc="-4.5" />
-        </connection-list>
-    </building>
-    <building id="17" type="Hallway" length="2.0" xloc="-27.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="16" xloc="0.0" yloc="1.0" />
-            <connection id="18" xloc="0.0" yloc="-1.0" />
-        </connection-list>
-    </building>
-    <building id="18" type="Infirmary" xloc="-33.0" yloc="38"
-        facing="270.0">
-        <connection-list>
-            <connection id="17" xloc="0.0" yloc="4.5" />
-            <connection id="19" xloc="0.0" yloc="-4.5" />
-            <connection id="23" xloc="-3.5" yloc="0.0" />
-        </connection-list>
-    </building>
-    <building id="19" type="Hallway" length="2.0" xloc="-38.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="18" xloc="0.0" yloc="1.0" />
-            <connection id="20" xloc="0.0" yloc="-1.0" />
-        </connection-list>
-    </building>
-    <building id="20" type="Laboratory" xloc="-44.0" yloc="38"
-        facing="270.0">
-        <connection-list>
-            <connection id="19" xloc="0.0" yloc="4.5" />
-            <connection id="21" xloc="0.0" yloc="-4.5" />
-        </connection-list>
-    </building>
-    <building id="21" type="Hallway" length="2.0" xloc="-49.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="20" xloc="0.0" yloc="1.0" />
-            <connection id="22" xloc="0.0" yloc="-1.0" />
-        </connection-list>
-    </building>
-    <building id="22" type="Workshop" xloc="-55.0" yloc="38"
-        facing="270.0">
-        <connection-list>
-            <connection id="21" xloc="0.0" yloc="4.5" />
-            <connection id="25" xloc="-3.5" yloc="0.0" />
-        </connection-list>
-    </building>
-    <building id="23" type="Hallway" length="4.0" xloc="-33.0"
-        yloc="44.0" facing="0.0">
-        <connection-list>
-            <connection id="18" xloc="0.0" yloc="-2.0" />
-            <connection id="24" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="24" type="Large Greenhouse" xloc="-33.0"
-        yloc="55.0" facing="0.0">
-        <connection-list>
-            <connection id="23" xloc="0.0" yloc="-9.0" />
-        </connection-list>
-    </building>
-    <building id="25" type="Hallway" length="4.0" xloc="-55.0"
-        yloc="43.5" facing="0.0">
-        <connection-list>
-            <connection id="22" xloc="0.0" yloc="-2.0" />
-            <connection id="26" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="26" type="Garage" xloc="-55.0" yloc="53.5"
-        facing="0.0">
-        <connection-list>
-            <connection id="25" xloc="0.0" yloc="-8.0" />
+            <connection id="4" xloc="4.5" yloc="0.0" />           
         </connection-list>
     </building>
 
+    <building id="3" type="Hallway" length="4.0" xloc="-100.0" yloc="75.0" facing="0.0">
+        <connection-list>
+            <connection id="2" xloc="0.0" yloc="2.0" />
+            <connection id="5" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+    
+    <!-- EVA Airlock is attached to the 1st Research hab -->
+    <building id="4" type="EVA Airlock" xloc="-92.5" yloc="81.5" facing="0.0">
+        <connection-list>
+            <connection id="2" xloc="-3.0" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <building id="5" type="Lander Hab" xloc="-100.0" yloc="68.5" facing="0.0">
+        <connection-list>
+            <connection id="3" xloc="0.0" yloc="4.5" />
+            <connection id="6" xloc="4.5" yloc="0.0" />           
+        </connection-list>
+    </building>
+    
     <!-- EVA Airlock is attached to the 1st lander hab -->
-    <building id="27" type="EVA Airlock" xloc="7.5" yloc="0.0"
-        facing="0.0">
+    <building id="6" type="EVA Airlock" xloc="-92.5" yloc="68.5" facing="0.0">
         <connection-list>
-            <connection id="0" xloc="-3.0" yloc="0.0" />
+            <connection id="5" xloc="-3.0" yloc="0.0" />
         </connection-list>
     </building>
 
-    <building id="28" zone="1" type="Astronomy Observatory" xloc="-55.0"
+    <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0"
         yloc="-20.0" facing="180.0">
         <connection-list>
-            <connection id="29" xloc="-3.5" yloc="0.0" />
+            <connection id="8" xloc="-3.5" yloc="0.0" />
         </connection-list>
     </building>
 
     <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="29" type="EVA Airlock" xloc="-48.5"
+    <building id="8" type="EVA Airlock" xloc="-48.5"
         yloc="-20.0" facing="0.0">
         <connection-list>
-            <connection id="28" xloc="-3.0" yloc="0.0" />
+            <connection id="7" xloc="-3.0" yloc="0.0" />
         </connection-list>
     </building>
-
-    <!-- EVA Airlock is attached to the 3rd lander hab -->
-    <building id="30" type="EVA Airlock" xloc="7.5" yloc="26.0"
-        facing="0.0">
-        <connection-list>
-            <connection id="4" xloc="-3.0" yloc="0.0" />
-        </connection-list>
-    </building>
-
-
+    
 
     <building type="MD4 Nuclear Reactor" xloc="510.0"
         yloc="-500" facing="0.0" />

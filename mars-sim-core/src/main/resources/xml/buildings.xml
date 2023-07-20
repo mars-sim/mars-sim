@@ -510,6 +510,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Lander Hab-->
 
+
 	<building type="EVA Airlock" width="6.0" length="4.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="1500"
 			category="EVA_AIRLOCK">
@@ -559,7 +560,152 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-<!-- end of Storage Shed -->
+<!-- end of EVA Airlock -->
+
+	<building type="Central Hub A" width="20.0" length="20.0" construction="INFLATABLE" base-level="0"
+		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="10000">
+		<description> The Central Hub serves to a nexus for connecting other building modules. 
+			It has a flexible air dome and is designed to be a place of gathering and relaxation. 
+		</description>
+
+		<power-required base-power="5.0" base-power-down-power="1.0"/>
+
+		<functions>
+			<cooking capacity="4">
+				<activity>
+					<activity-spot xloc="1.7"  yloc="-2.42" />
+					<activity-spot xloc="0.4" yloc="-2.42" />
+				</activity>
+			</cooking>
+
+			<!-- The building has facilities for eating meals. -->
+			<dining capacity="28">
+				<activity>
+					<activity-spot xloc="1.02" yloc="-0.73" />
+					<activity-spot xloc="1.02" yloc="-2.02" />
+					<activity-spot xloc="1.7" yloc="-1.41" />
+					<activity-spot xloc="0.37" yloc="-1.41" />
+				</activity>
+			</dining>
+						
+			<exercise capacity="6">
+				<activity>
+					<activity-spot xloc="2.1" yloc="2.2" />
+					<activity-spot xloc="2.8" yloc="1.5" />
+				</activity>
+			</exercise>
+
+			<food-production tech-level="4" concurrent-processes="6">
+				<activity>
+					<activity-spot xloc="1.12" yloc="-3.28" />
+					<activity-spot xloc="0.36" yloc="-3.28" />
+					<activity-spot xloc="0.76" yloc="-3.79" />
+				</activity>
+			</food-production>
+						
+			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="300.0" >
+				<activity>
+					<activity-spot xloc="1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="1.25" />
+					<activity-spot xloc="1.5" yloc="-2.25" />
+					<activity-spot xloc="1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="-3.5" />
+				</activity>
+			</farming>
+
+			<fishery capacity="500">
+				<activity>
+					<activity-spot xloc="1.6" yloc="4.9" />
+					<activity-spot xloc="1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="-4.9" />
+				</activity>
+			</fishery>
+
+			<life-support capacity="30" power-required="1.5" />
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				fuel-type="methane"	consumption-rate="7.9897" />
+			</power-generation>
+			
+			<power-storage capacity="40"  discharge-rate="1.25"/>
+	
+			<preparing-dessert capacity="3">
+				<activity>
+					<activity-spot xloc="2.25"  yloc="-3.05" />
+				</activity>
+			</preparing-dessert>
+			
+			<!-- The building has recreation facilities (movies, games, music, etc.). -->
+			<recreation capacity="4">
+				<activity>
+					<activity-spot xloc="2.76" yloc="-0.69" />
+					<activity-spot xloc="2.76" yloc="-2.01" />
+				</activity>
+			</recreation>
+			
+			<research tech-level="3" capacity="2">
+				<research-specialty name="BOTANY" />
+				<research-specialty name="BIOLOGY" />
+				<activity>
+					<activity-spot xloc="-1.0" yloc="1.3" />
+					<activity-spot xloc="-2.0" yloc="1.3" />
+				</activity>
+			</research>
+
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Carbon Dioxide Pump"/>
+				<activity>
+					<activity-spot xloc="-1.47" yloc="3.68" />
+				</activity>
+			</resource-processing>
+
+			<robotic-station capacity="4">
+				<activity>
+					<activity-spot xloc="2.2" yloc="4.1" />
+					<activity-spot xloc="-2.2" yloc="4.1" />
+				</activity>
+			</robotic-station>
+
+			<storage capacity="20000">
+				<!-- gases -->
+				<resource-storage resource="carbon dioxide" capacity="2500.0" />
+				<resource-storage resource="oxygen" capacity="5000.0" />				
+				<resource-storage resource="nitrogen" capacity="2500.0" />
+				<resource-storage resource="ammonia" capacity="500.0" />
+
+				<!-- soil related -->
+				<!-- crop food -->
+				<resource-storage resource="fertilizer" capacity="500.0" />
+				<resource-storage resource="nitrate" capacity="500.0" />
+				<resource-storage resource="nitrite" capacity="500.0" />
+				
+				<resource-storage resource="grey water" capacity="500.0" />
+				<resource-storage resource="water" capacity="2500.0" />					
+
+				<!-- soil related -->
+				<resource-storage resource="soil" capacity="500.0" />
+				<resource-storage resource="compost" capacity="500.0" />
+				<resource-storage resource="crop waste" capacity="500.0" />
+
+				<!-- Supplies -->
+				<resource-initial resource="carbon dioxide" amount="500.0" />
+
+			</storage>
+
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
+			</thermal-generation>
+			
+		</functions>
+	</building>
+<!-- end for Central Hub Type A -->
+
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="3000">

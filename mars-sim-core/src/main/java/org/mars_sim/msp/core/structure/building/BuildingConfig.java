@@ -526,7 +526,7 @@ public class BuildingConfig {
 	public BuildingSpec getBuildingSpec(String buildingType) {
 		BuildingSpec result = buildSpecMap.get(generateSpecKey(buildingType));
 		if (result == null) {
-			throw new IllegalArgumentException("Building Type not known :" + buildingType);
+			throw new IllegalArgumentException("Building Type not known: " + buildingType);
 		}
 		return result;
 	}
