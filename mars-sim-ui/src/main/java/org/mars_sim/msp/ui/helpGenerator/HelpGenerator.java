@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HelpGenerator.java
- * @date 2023-05-17
+ * @date 2023-07-19
  * @author stpa
  */
 
@@ -103,12 +103,9 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 // Chances are not all 728 html needs to be going upstream. Only those that have been updated.
 //
 
-
-
-
 /**
- * Generates html files for the in-game help. 
- * Note : run "MarsProject -html.launch" in Eclipse 
+ * This class generates a set of html files that defines which input resources are needed 
+ * to generate output resources in various processes modeled in mars-sim.
  */
 public class HelpGenerator {
 
@@ -117,12 +114,14 @@ public class HelpGenerator {
 
 //	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
 
+	private static final String DIR = "\\docs\\help\\";
+
 //	private static final String DIR = "\\docs\\help\\";
-	private static final String VEHICLE_DIR = "\\docs\\help\\vehicles\\";
-	private static final String RESOURCE_DIR = "\\docs\\help\\resources\\";
-	private static final String PART_DIR = "\\docs\\help\\parts\\";
-	private static final String PROCESS_DIR = "\\docs\\help\\processes\\";
-	private static final String FOOD_DIR = "\\docs\\help\\food\\";
+	private static final String VEHICLE_DIR = DIR + "vehicles\\";
+	private static final String RESOURCE_DIR = DIR + "resources\\";
+	private static final String PART_DIR = DIR + "parts\\";
+	private static final String PROCESS_DIR = DIR + "processes\\";
+	private static final String FOOD_DIR = DIR + "food\\";
 //	private static final String EQUIPMENT_DIR = "\\docs\\help\\equipment";
 		
 	private static final String SUFFIX = ".html";

@@ -51,7 +51,7 @@ public class AnalyzeMapData extends Task {
 	/** The seed value. */
     private double seed;
 	/** The total computing resources needed for this task. */
-	private final double TOTAL_COMPUTING_NEEDED;
+	private double TOTAL_COMPUTING_NEEDED;
 	/** The composite score for a multi-disciplinary of skills. */
 	private double compositeSkill;
 	/** The portion of effort spent. */
@@ -97,18 +97,22 @@ public class AnalyzeMapData extends Task {
 		int num = siteList0.size();
 		if (num == 0) {
 			endTask();
-		} else if (num == 1) {
+			return;
+		} 
+		else if (num == 1) {
 			site = siteList0.get(0);
 		}
 		else {
 			List<ExploredLocation> siteList1 = siteList0.stream()
 	    			.filter(site -> site.getNumEstimationImprovement() < 
-	    					RandomUtil.getRandomDouble(0, Mining.MATURE_ESTIMATE_NUM * 10))
+	    					RandomUtil.getRandomDouble(Mining.MATURE_ESTIMATE_NUM / 1.5, 
+	    							Mining.MATURE_ESTIMATE_NUM * 1.5))
 	    			.collect(Collectors.toList());
 			
 			num = siteList1.size();
 			if (num == 0) {
 				endTask();
+				return;
 			}
 			else if (num == 1) {
 				site = siteList1.get(0);
@@ -117,6 +121,11 @@ public class AnalyzeMapData extends Task {
 				int rand = RandomUtil.getRandomInt(num - 1);
 				site = siteList1.get(rand);
 			}
+		}
+		
+		if (site == null) {
+			endTask();
+			return;
 		}
 		
 		double certainty = site.getAverageCertainty() / 100.0;

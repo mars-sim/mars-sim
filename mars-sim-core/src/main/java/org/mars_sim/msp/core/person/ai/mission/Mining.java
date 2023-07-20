@@ -77,7 +77,7 @@ public class Mining extends EVAMission
 	 * The minimum number of mineral concentration estimation improvements for an
 	 * exploration site for it to be considered mature enough to mine.
 	 */
-	public static final int MATURE_ESTIMATE_NUM = 50;
+	public static final int MATURE_ESTIMATE_NUM = 75;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
 
