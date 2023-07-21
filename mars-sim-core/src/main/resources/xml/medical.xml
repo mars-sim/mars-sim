@@ -272,7 +272,7 @@
 		<!-- The effects do not last long, however. (See "high-fatigue-collapse-chance" in people.xml.)-->
 		<medical-complaint name="High Fatigue Collapse">
 			<seriousness value="60" />
-			<degrade-time value="3.0" />
+			<degrade-time value="1.0" />
 			<recovery-time value="3.0" />
 			<probability value="0.0" />
 			<performance-percent value="20.0" />
@@ -285,7 +285,7 @@
 		<!-- The effects do not last long, however. (See Food Contamination in malfunctions.xml.)-->
 		<medical-complaint name="Food Poisoning">
 			<seriousness value="55" />
-			<degrade-time value="3.0" />
+			<degrade-time value="2.0" />
 			<recovery-time value="3.0" />
 			<probability value="2.0" />
 			<performance-percent value="40.0" />
@@ -333,6 +333,17 @@
 			<treatment-type value="Radioprotective Agent" />
 		</medical-complaint>
 
+		<!-- 2023-07-21 Heart attack prones to happen in individuals who have very little exerciseb 
+		     maintain one's cardiovascular health poorly but have to cope with high stress situations 
+		     frequently. -->
+		<medical-complaint name="Heart Attack">
+			<seriousness value="90" />
+			<degrade-time value="0.25" />
+			<recovery-time value="7.0" />
+			<probability value="0.5" />
+			<performance-percent value="1.0" />
+			<bed-rest-recovery value="true" />
+		</medical-complaint>
 <!-- Future:
 	1. Medium cut
 -->

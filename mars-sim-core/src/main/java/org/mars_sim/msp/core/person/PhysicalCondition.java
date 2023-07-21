@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PhysicalCondition.java
- * @date 2021-12-09
+ * @date 2023-07-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.HealthRiskType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -181,9 +183,11 @@ public class PhysicalCondition implements Serializable {
 	private List<HealthProblem> problems;
 	/** Record of Illness frequency. */
 	private Map<ComplaintType, Integer> healthLog;
-	// /** Record of illness start time. */
-	// private Map<ComplaintType, List<String>> healthHistory;
 
+	/** Health Risk probability. */
+	private Map<HealthRiskType, Double> healthRisks;
+	
+	
 	/** 
 	 * The amount a person consumes on each sol.
 	 * 0: food (kg), 1: meal (kg), 2: dessert (kg), 3: water (kg), 4: oxygen (kg)
@@ -230,7 +234,7 @@ public class PhysicalCondition implements Serializable {
 
 		problems = new CopyOnWriteArrayList<>();
 		healthLog = new ConcurrentHashMap<>();
-		//healthHistory = new ConcurrentHashMap<>();
+		healthRisks = new HashMap<>();
 		medicationList = new CopyOnWriteArrayList<>();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
@@ -298,6 +302,21 @@ public class PhysicalCondition implements Serializable {
 				- (50 - thirst) * .002;
 	}
 
+	
+	/**
+	 * Initializes the health risk probability map.
+	 * 
+	 * @return
+	 */
+	public void initializeHealthRisks() {
+		
+		for (HealthRiskType type: HealthRiskType.values()) {
+			double probability = RandomUtil.getRandomDouble(5);
+			healthRisks.put(type, probability);
+		}
+	}
+	
+	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
@@ -305,6 +324,7 @@ public class PhysicalCondition implements Serializable {
 	private void initialize() {
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
+		
 		// Modify personalMaxEnergy at the start of the sim
 		int d1 = 2 * (35 - person.getAge());
 		// Assume that after age 35, metabolism slows down
@@ -314,6 +334,9 @@ public class PhysicalCondition implements Serializable {
 		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + 50 * (d1 + d2 + preference);
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
+		
+		// Set up the initial values for health risks
+		initializeHealthRisks();
 	}
 
 	/**
@@ -1789,7 +1812,7 @@ public class PhysicalCondition implements Serializable {
 	public List<Medication> getMedicationList() {
 		return new CopyOnWriteArrayList<>(medicationList);
 	}
-
+	
 	/**
 	 * Checks if the person is affected by the given medication.
 	 *
@@ -1822,6 +1845,17 @@ public class PhysicalCondition implements Serializable {
 		medicationList.add(medication);
 	}
 
+	
+	/**
+	 * Gets the health risk probability map.
+	 * 
+	 * @return
+	 */
+	public Map<HealthRiskType, Double> getHealthRisks() {
+		return healthRisks;
+	}
+	
+	
 	/**
 	 * Gets the oxygen consumption rate per Sol.
 	 *

@@ -10,9 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 
 import org.mars.sim.tools.Msg;
@@ -23,8 +21,8 @@ import org.mars_sim.msp.core.person.ai.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelPersonality is a tab panel for personality information about a person.
@@ -86,40 +84,19 @@ public class TabPanelPersonality extends TabPanel {
 		int ns = p.getScores().get(1);
 		int ft = p.getScores().get(2);
 		int jp = p.getScores().get(3);
-
 		
 		String[] types = new String[4];
 		int[] scores = new int[4];
+
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(5);
 		
-		// Prepare MBTI text area
-		JTextArea ta = new JTextArea();
-		ta.setAlignmentX(Component.CENTER_ALIGNMENT);
-		ta.setAlignmentY(Component.CENTER_ALIGNMENT);
-		String tip =  "<html>Introvert (I) / Extrovert  (E) : -50 to 0 / 0 to 50" 
-					  + "<br>Intuitive (N) / Sensing    (S) : -50 to 0 / 0 to 50"
-					  + "<br>  Feeling (F) / Thinking   (T) : -50 to 0 / 0 to 50"
-					  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
-		ta.setToolTipText(tip);
-		ta.setEditable(false);
-		ta.setColumns(15);
-		ta.setBorder(new MarsPanelBorder());
-		
-		JPanel mbtiPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mbtiPanel.add(ta);
-		
-		JPanel listPanel = new JPanel(new BorderLayout(1, 1));
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // BorderLayout(1, 1));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		listPanel.add(mbtiPanel, BorderLayout.NORTH);
+		listPanel.add(attributePanel, BorderLayout.CENTER);
 		
-		String type = p.getTypeString();
-		String descriptor = p.getDescriptor();
-		JLabel descriptorLabel = new JLabel(type + " : " + descriptor, JLabel.CENTER);
-		descriptorLabel.setToolTipText(Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));//$NON-NLS-1$
-		listPanel.add(descriptorLabel, BorderLayout.CENTER);
-		
-		addBorder(listPanel, "Myers & Briggs Type Indicator");
-		
+		addBorder(listPanel, Msg.getString("TabPanelPersonality.mbti.title"));
 		
 		if (ie < 0) {
 			types[0] = "Introvert (I)";
@@ -156,19 +133,21 @@ public class TabPanelPersonality extends TabPanel {
 			types[3] = "Perceiving (P)";
 			scores[3] = jp;
 		}
-	
+		
+		String tip =  "<html>Introvert (I) / Extrovert  (E) : -50 to 0 / 0 to 50" 
+				  + "<br>Intuitive (N) / Sensing    (S) : -50 to 0 / 0 to 50"
+				  + "<br>  Feeling (F) / Thinking   (T) : -50 to 0 / 0 to 50"
+				  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
+		
 		for (int i = 0; i < 4; i++) {
-			String s = types[i];
-			int size = 14 - s.length();
-			while (size > 0) {
-				ta.append(" ");
-				size--;
-			}
-			ta.append(" " + s + " : " + scores[i] + "  ");
-			if (i < 3)
-				//if it's NOT the last one
-				ta.append("\n");
+			attributePanel.addTextField(types[i], Math.round(scores[i] * 10.0)/10.0 + " %", tip);
 		}
+		
+		
+		String type = p.getTypeString();
+		String descriptor = p.getDescriptor();
+		
+		attributePanel.addTextField(type, descriptor, Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));
 		
 		return listPanel;
 	}
@@ -189,40 +168,24 @@ public class TabPanelPersonality extends TabPanel {
     		types[t.ordinal()] = t.getName();
     		scores[t.ordinal()] = p.getPersonalityTrait(t);
     	}
+
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(5);
     	
-		// Prepare MBTI text area
-		JTextArea ta = new JTextArea();
-		ta.setAlignmentX(Component.CENTER_ALIGNMENT);
-		ta.setAlignmentY(Component.CENTER_ALIGNMENT);
-		ta.setEditable(false);
-		ta.setColumns(15);
-		ta.setBorder(new MarsPanelBorder());
-		
-		String tip =  "<html>          Openness : 0 to 100" 
-				  	  + "<br> Conscientiousness : 0 to 100"
-				  	  + "<br>      Extraversion : 0 to 100"
-				  	  + "<br>       Neuroticism : 0 to 100</html>";
-		ta.setToolTipText(tip);
-	
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		listPanel.setToolTipText(Msg.getString("TabPanelPersonality.bigFive.label"));//$NON-NLS-1$
-		//listPanel.setPreferredSize(110, 160);
-		listPanel.add(ta);
-
-		addBorder(listPanel, "Big Five Personality Traits");
+		listPanel.setToolTipText(Msg.getString("TabPanelPersonality.bigFive.tip"));//$NON-NLS-1$
+		listPanel.add(attributePanel, BorderLayout.CENTER);
 		
+		addBorder(listPanel, Msg.getString("TabPanelPersonality.bigFive.title"));
+		
+		String tip =  "<html>          Openness : 0 to 100" 
+			  	  + "<br> Conscientiousness : 0 to 100"
+			  	  + "<br>      Extraversion : 0 to 100"
+			  	  + "<br>       Neuroticism : 0 to 100</html>";
+
 		for (int i = 0; i < 5; i++) {
-			String s = types[i];
-			int size = 18 - s.length();
-			while (size > 0) {
-				ta.append(" ");
-				size--;
-			}
-			ta.append(" " + s + " : " + scores[i] + "  ");
-			if (i < 4)
-				//if it's NOT the last one
-				ta.append("\n");
+			attributePanel.addTextField(types[i], Math.round(scores[i] * 10.0)/10.0 + " %", tip);
 		}
 		
 		return listPanel;

@@ -57,7 +57,7 @@ public class TabPanelGeneral extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 
-		// Prepare spring layout info panel.
+		// Prepare attribute panel.
 		AttributePanel infoPanel = new AttributePanel(8);
 		
 		content.add(infoPanel, BorderLayout.NORTH);

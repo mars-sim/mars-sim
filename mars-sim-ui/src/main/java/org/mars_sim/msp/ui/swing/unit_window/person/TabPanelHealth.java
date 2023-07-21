@@ -7,12 +7,15 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.HealthRiskType;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.person.health.RadiationExposure.DoseHistory;
@@ -58,7 +62,6 @@ extends TabPanel {
 	private static final String ANNUAL = "Annual";
 	private static final String CAREER = "Career";
 	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
-
 
 	private int fatigueCache;
 	private int thirstCache;
@@ -205,15 +208,18 @@ extends TabPanel {
 	
 		content.add(northPanel, BorderLayout.NORTH);
 		
-		// Panel of vertical tables
-        JPanel tablesPanel = new JPanel(new BorderLayout());
-        tablesPanel.setLayout(new BoxLayout(tablesPanel, BoxLayout.Y_AXIS));
-		content.add(tablesPanel, BorderLayout.CENTER);
+		// Prepare middle panel
+        JPanel midPanel = new JPanel(new BorderLayout());
+        midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.Y_AXIS));
+		content.add(midPanel, BorderLayout.CENTER);
 
-
+		// Prepare bottom panel
+		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
+		content.add(bottomPanel, BorderLayout.SOUTH);
+		
 		// Prepare sleep time panel
 		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
-		tablesPanel.add(sleepPanel, BorderLayout.CENTER);
+		midPanel.add(sleepPanel, BorderLayout.NORTH);
 
 		// Prepare sleep time label
 		JLabel sleepLabel = new JLabel(Msg.getString("TabPanelHealth.sleepExercise"), SwingConstants.CENTER); //$NON-NLS-1$
@@ -249,16 +255,16 @@ extends TabPanel {
 	
 		/////////////////////////////////////////////////////////
 		
-		// Prepare exercise time panel
+		// Prepare food panel
 		JPanel foodPanel = new JPanel(new BorderLayout(0, 0));
-		tablesPanel.add(foodPanel, BorderLayout.SOUTH);
+		midPanel.add(foodPanel, BorderLayout.CENTER);
 
-		// Prepare exercise time label
+		// Prepare food label
 		JLabel foodLabel = new JLabel(Msg.getString("TabPanelHealth.food"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(foodLabel);
 		foodPanel.add(foodLabel, BorderLayout.NORTH);
 
-		// Prepare exercise time scroll panel
+		// Prepare food scroll panel
 		JScrollPane foodScrollPanel = new JScrollPane();
 		foodPanel.add(foodScrollPanel, BorderLayout.CENTER);
 
@@ -289,13 +295,14 @@ extends TabPanel {
 		// Add sorting
 		foodTable.setAutoCreateRowSorter(true);
 
-		///////////////////////////
+		
+		/////////////////////////////////////////////////////////
 		
 
 		// Add radiation dose info
 		// Prepare radiation panel
 		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
-		tablesPanel.add(radiationPanel, BorderLayout.NORTH);
+		midPanel.add(radiationPanel, BorderLayout.SOUTH);
 
 		// Prepare radiation label
 		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelHealth.rad"), SwingConstants.CENTER); //$NON-NLS-1$
@@ -345,12 +352,38 @@ extends TabPanel {
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
 
-		/////////////////////////////////////////////////////////		
+		/////////////////////////////////////////////////////////
+		
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(10);
+		
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //BorderLayout(1, 1));
+		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		listPanel.add(attributePanel, BorderLayout.CENTER);
+		bottomPanel.add(listPanel, BorderLayout.NORTH);
+		
+		addBorder(listPanel, Msg.getString("TabPanelHealth.healthRisks.title"));
+
+		Map<HealthRiskType, Double> riskMap = condition.getHealthRisks();
+		
+		List<HealthRiskType> riskList = new ArrayList<>(riskMap.keySet());
+		
+		Collections.sort(riskList);
+		
+		for (int i = 0; i < 10; i++) {
+			HealthRiskType type = riskList.get(i);
+			attributePanel.addTextField(type.getName(), Math.round(riskMap.get(type) * 100.0)/100.0 + " %", null);
+		}
+
+		
+		/////////////////////////////////////////////////////////	
+		
 		
 		// Prepare medication panel.
 		JPanel medicationPanel = new JPanel(new BorderLayout());
-		tablesPanel.add(medicationPanel);
-	
+		bottomPanel.add(medicationPanel, BorderLayout.SOUTH);
+		
 		// Prepare medication label.
 		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(medicationLabel);
@@ -376,8 +409,8 @@ extends TabPanel {
 		
 		// Prepare health problem panel
 		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
-		tablesPanel.add(healthProblemPanel);
-
+		bottomPanel.add(healthProblemPanel, BorderLayout.CENTER);
+		
 		// Prepare health problem label
 		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), SwingConstants.CENTER); //$NON-NLS-1$
 		//healthProblemLabel.setPadding(7, 0, 0, 0);

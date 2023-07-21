@@ -1,10 +1,11 @@
-/**
+/*
  * Mars Simulation Project
  * ComplaintType.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-07-21
  * @author Manny Kung
  *
  */
+
 package org.mars_sim.msp.core.person.health;
 
 import org.mars.sim.tools.Msg;
@@ -31,6 +32,7 @@ public enum ComplaintType {
 	FROSTNIP						(Msg.getString("ComplaintType.frostnip")), //$NON-NLS-1$
 	FROSTBITE						(Msg.getString("ComplaintType.frostbite")), //$NON-NLS-1$
 	GANGRENE						(Msg.getString("ComplaintType.gangrene")), //$NON-NLS-1$
+	HEART_ATTACK					(Msg.getString("ComplaintType.heartAttack")), //$NON-NLS-1$
 	HEARTBURN						(Msg.getString("ComplaintType.heartburn")), //$NON-NLS-1$
 	HIGH_FATIGUE_COLLAPSE			(Msg.getString("ComplaintType.highFatigueCollapse")), //$NON-NLS-1$
 	HYPOXEMIA  						(Msg.getString("ComplaintType.hypoxemia")), //$NON-NLS-1$
@@ -43,6 +45,7 @@ public enum ComplaintType {
 	RADIATION_SICKNESS				(Msg.getString("ComplaintType.radiationSickness")), //$NON-NLS-1$
 	RUPTURED_APPENDIX				(Msg.getString("ComplaintType.rupturedAppendix")), //$NON-NLS-1$
 	SUICIDE							(Msg.getString("ComplaintType.suicide")) //$NON-NLS-1$
+	
 	;
 
 	private String name;
