@@ -71,10 +71,12 @@ public class TrainingUtils {
 	private final static void addTraining(Map<KeyClass,Integer> m, TrainingType t,
 										  int agr, int com, int eng, int mis, 
 										  int log, int res, int saf, int sci) {
+		
 		m.put(new KeyClass(t, RoleType.AGRICULTURE_SPECIALIST), agr);
 		m.put(new KeyClass(t, RoleType.COMPUTING_SPECIALIST), com);
 		m.put(new KeyClass(t, RoleType.ENGINEERING_SPECIALIST), eng);
 		m.put(new KeyClass(t, RoleType.MISSION_SPECIALIST), mis);
+		
 		m.put(new KeyClass(t, RoleType.LOGISTIC_SPECIALIST), log);
 		m.put(new KeyClass(t, RoleType.RESOURCE_SPECIALIST), res);
 		m.put(new KeyClass(t, RoleType.SAFETY_SPECIALIST), saf);
@@ -108,6 +110,9 @@ public class TrainingUtils {
 		addTraining(modifiers, TrainingType.ANTARCTICA_EDEN_ISS, 8, 5, 7, 4, 4, 6, 2, 9);   		
 		addTraining(modifiers, TrainingType.MARS_TWO_FINAL_100, 5, 5, 4, 6, 4, 5, 2, 3); 
 		addTraining(modifiers, TrainingType.UNDERGROUND_CAVES_EXPLORATION, 5, 3, 5, 4, 8, 4, 7, 6); 
+		
+		addTraining(modifiers, TrainingType.NASA_CHAPEA, 5, 2, 2, 5, 6, 4, 2, 7);
+		addTraining(modifiers, TrainingType.MARS_V_GOBI, 3, 2, 4, 4, 5, 4, 3, 6);
 	}
 
 	/**

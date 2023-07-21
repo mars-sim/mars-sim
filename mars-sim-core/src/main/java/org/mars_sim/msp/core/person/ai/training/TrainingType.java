@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TrainingType.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-07-21
  * @author Manny Kung
  */
 
@@ -33,7 +33,11 @@ public enum TrainingType {
 	AVIATION_CERTIFICATION				(Msg.getString("TrainingType.aviationCert")), //$NON-NLS-1$
 	ANTARCTICA_EDEN_ISS					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
 	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")), //$NON-NLS-1$
-	UNDERGROUND_CAVES_EXPLORATION      	(Msg.getString("TrainingType.undergroundCaves")) //$NON-NLS-1$
+	UNDERGROUND_CAVES_EXPLORATION      	(Msg.getString("TrainingType.undergroundCaves")), //$NON-NLS-1$
+	
+	NASA_CHAPEA      					(Msg.getString("TrainingType.NASACHAPEA")), //$NON-NLS-1$
+	// https://www.marssociety.org/news/2022/07/15/space-nomads-why-mongolians-are-destined-to-go-to-mars/
+	MARS_V_GOBI							(Msg.getString("TrainingType.marsGobi")) //$NON-NLS-1$
 	;
 	
 	// References : 
@@ -48,7 +52,17 @@ public enum TrainingType {
 	//    Ground Demonstration of Plant Cultivation Technologies for Safe Food Production in Space
 	//    https://eden-iss.net/
 	//    https://www.youtube.com/watch?v=KOeSlwwuvWQ
-	
+	// 4. MARS-500 was intended to study the psychological, physiological, and technological challenges inherent to long-duration 
+	//    space flight. Among other hurdles to overcome, the experiment examined the physiological effects of long-term weightlessness,
+	//    the effectiveness of resource management, and the effects of isolation in a hermetically sealed environment. 
+	//    MARS-500's communication systems were designed with an average delay of 13 min, to simulate the actual transmission time 
+	//    to and from a Mars-bound spacecraft.
+	//    https://en.wikipedia.org/wiki/MARS-500
+	// 5. NASA CHAPEA allow researchers to collect cognitive and physical performance data to give us more insight into the 
+	//    potential impacts of long-duration missions to Mars on crew health and performance.
+	//    https://www.space.com/nasa-year-long-mars-simulation-chapea
+	//    https://www.wearethemighty.com/military-news/chapea-nasa-first-mars-simulation-crew-includes-a-navy-microbiologist/
+
 	private String name;
 
 	/** hidden constructor. */

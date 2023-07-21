@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * Training.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-07-21
  * @author Manny Kung
  */
-
 
 package org.mars_sim.msp.core.person.ai.training;
 
@@ -19,8 +18,6 @@ public class Training {
 	int like;
 
 	public Training(Person person, String trainingName, String area, int score, int like) {
-
-
 	}
 
 }

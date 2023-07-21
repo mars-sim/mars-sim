@@ -687,8 +687,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="42" power-required="2.1" />
 			
 			<power-generation>
-				<power-source type="Solar Power Source" power="10.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				<power-source type="Solar Power Source" power="20.0" />
+				<power-source type="Fuel Power Source" toggle="false" power="20.0"
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
 			
