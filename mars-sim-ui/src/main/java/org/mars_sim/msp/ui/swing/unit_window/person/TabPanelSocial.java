@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
+import org.mars_sim.msp.core.person.ai.social.Relation.Opinion;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -183,14 +184,14 @@ implements ListSelectionListener {
 			else if (column == 1) 
 				return p;
 			else if (column == 2) {
-				double[] opinions = RelationshipUtil.getOpinionsOfPerson(person, p);
-				return "  T " + (int)Math.round(opinions[0])
-						+ ",  C " + (int)Math.round(opinions[1])
-						+ ",  R " + (int)Math.round(opinions[2]) + "  ";
+				Opinion opinion = person.getRelation().getOpinion(p);
+				return "  T " + (int)Math.round(opinion.trust())
+						+ ",  C " + (int)Math.round(opinion.care())
+						+ ",  R " + (int)Math.round(opinion.respect()) + "  ";
 			}
 			else if (column == 3) {
-				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);
-				return " " + getRelationshipString(opinion);	
+				Opinion opinion = person.getRelation().getOpinion(p);
+				return " " + getRelationshipString(opinion.getAverage());	
 			}
 
 			return null;

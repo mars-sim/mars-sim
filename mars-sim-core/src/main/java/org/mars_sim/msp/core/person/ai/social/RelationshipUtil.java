@@ -70,28 +70,15 @@ public class RelationshipUtil implements Serializable {
 	 *                         members)
 	 */
 	private static void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
-		if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
-			setOpinion(person1, person2, getFirstImpression(person1, person2));
-			setOpinion(person2, person1, getFirstImpression(person2, person1));
-		} else if (RelationshipType.FACE_TO_FACE_COMMUNICATION == startingRelationship) {
-			setOpinion(person1, person2, getExistingRelationship(person1, person2));
-			setOpinion(person2, person1, getExistingRelationship(person2, person1));
-		} else if (RelationshipType.REMOTE_COMMUNICATION == startingRelationship) {
-			setOpinion(person1, person2, getRemoteRelationship(person1, person2));
-			setOpinion(person2, person1, getRemoteRelationship(person2, person1));
-		}
+		double opinion = switch(startingRelationship) {
+			case FIRST_IMPRESSION -> getFirstImpression(person1, person2);
+			case FACE_TO_FACE_COMMUNICATION -> getExistingRelationship(person1, person2);
+			case REMOTE_COMMUNICATION -> getRemoteRelationship(person1, person2);
+			default -> 1D;
+		};
+		person1.getRelation().setOpinion(person2, opinion);
 	}
 
-	/**
-	 * Sets the opinion of person1 toward person2.
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @param opinion
-	 */
-	private static void setOpinion(Person person1, Person person2, double opinion) {
-		person1.getRelation().setOpinion(person2.getIdentifier(), opinion);
-	}
 	
 	/**
 	 * Changes the opinion of person1 toward person2.
@@ -101,29 +88,7 @@ public class RelationshipUtil implements Serializable {
 	 * @param opinion
 	 */
 	public static void changeOpinion(Person person1, Person person2, double mod) {
-		person1.getRelation().changeOpinion(person2.getIdentifier(), mod);
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1
-	 * @param person2
-	 * return opinion
-	 */
-	private static double getOpinion(Person person1, Person person2) {
-		return person1.getRelation().getOpinion(person2.getIdentifier());
-	}
-	
-	/**
-	 * Gets the opinion of person1 toward person2.
-	 * 
-	 * @param person1
-	 * @param person2
-	 * return opinion
-	 */
-	private static double[] getOpinions(Person person1, Person person2) {
-		return person1.getRelation().getOpinions(person2.getIdentifier());
+		person1.getRelation().changeOpinion(person2, mod);
 	}
 	
 	/**
@@ -134,8 +99,7 @@ public class RelationshipUtil implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	private static boolean hasRelationship(Person person1, Person person2) {
-		return (person1.getRelation().getOpinion(person2.getIdentifier()) != -1
-				&& person2.getRelation().getOpinion(person1.getIdentifier()) != -1);
+		return (person1.getRelation().getOpinion(person2).getAverage() > 0);
 	}
 
 	/**
@@ -325,32 +289,7 @@ public class RelationshipUtil implements Serializable {
 	 *         friend).
 	 */
 	public static double getOpinionOfPerson(Person person1, Person person2) {
-		double result = 50D;
-
-		if (hasRelationship(person1, person2)) {
-			result = getOpinion(person1, person2);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the opinion that a person has of another person. Note: If the people
-	 * don't have a relationship, return default value of 50.
-	 * 
-	 * @param person1 the person holding the opinion.
-	 * @param person2 the person who the opinion is of.
-	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
-	 *         friend).
-	 */
-	public static double[] getOpinionsOfPerson(Person person1, Person person2) {
-		double[] result = {50D, 50D};
-
-		if (hasRelationship(person1, person2)) {
-			result = getOpinions(person1, person2);
-		}
-
-		return result;
+		return person1.getRelation().getOpinion(person2).getAverage();
 	}
 	
 	/**
