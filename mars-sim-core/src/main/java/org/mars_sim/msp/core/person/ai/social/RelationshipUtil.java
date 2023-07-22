@@ -8,15 +8,12 @@ package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
@@ -26,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The RelationshipUtil class computes the changes in social relationships between people.
@@ -139,41 +135,17 @@ public class RelationshipUtil implements Serializable {
 	 * @return {@link Person} map
 	 */
 	public static Map<Person, Double> getMyOpinionsOfThem(Person person) {
-		Map<Person, Double> friends = new ConcurrentHashMap<>();
+		Map<Person, Double> friends = new HashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 		double highestScore = 0;
-		if (!list.isEmpty()) {
-			for (Person pp : list) {
-				double score = getOpinionOfPerson(person, pp);
-				if (highestScore <= score)
-					highestScore = score;
-				friends.put(pp, score);
-			}
+		for (Person pp : list) {
+			double score = getOpinionOfPerson(person, pp);
+			if (highestScore <= score)
+				highestScore = score;
+			friends.put(pp, score);
 		}
 
-		return sortByValue(friends);
-	}
-	
-	/**
-	 * Gets a map of their opinions over a person.
-	 * 
-	 * @param person
-	 * @return {@link Person} map
-	 */
-	public static Map<Person, Double> getTheirOpinionsOfMe(Person person) {
-		Map<Person, Double> friends = new ConcurrentHashMap<>();
-		Collection<Person> list = getAllKnownPeople(person);
-		double highestScore = 0;
-		if (!list.isEmpty()) {
-			for (Person pp : list) {
-				double score = getOpinionOfPerson(pp, person);
-				if (highestScore <= score)
-					highestScore = score;
-				friends.put(pp, score);
-			}
-		}
-
-		return sortByValue(friends);
+		return friends;
 	}
 	
 	/**
@@ -217,30 +189,7 @@ public class RelationshipUtil implements Serializable {
 		
 		return 50;
 	}
-	
-	/**
-	 * Sorts the map according to the value of each entry.
-	 * 
-	 * @param map
-	 * @return a map
-	 */
-	private static <K, V> Map<K, V> sortByValue(Map<K, V> map) {
-	    List<Entry<K, V>> list = new CopyOnWriteArrayList<>(map.entrySet());
-	    Collections.sort(list, new Comparator<Object>() {
-	        @SuppressWarnings("unchecked")
-	        public int compare(Object o1, Object o2) {
-	            return ((Comparable<V>) ((Map.Entry<K, V>) (o1)).getValue()).compareTo(((Map.Entry<K, V>) (o2)).getValue());
-	        }
-	    });
 
-	    Map<K, V> result = new ConcurrentHashMap<>();
-	    for (Iterator<Entry<K, V>> it = list.iterator(); it.hasNext();) {
-	        Map.Entry<K, V> entry = it.next();
-	        result.put(entry.getKey(), entry.getValue());
-	    }
-
-	    return result;
-	}
 	
 	/**
 	 * Gets the best friends, the ones having the highest relationship score.
@@ -256,25 +205,11 @@ public class RelationshipUtil implements Serializable {
 		}
 		
 		else if (size > 1) {
-			double hScore = 0;
-			for (Entry<Person, Double> entry : bestFriends.entrySet()) {
-				Person p = entry.getKey();
-				double score = bestFriends.get(p);
-				if (hScore < score) {
-					hScore = score;
-				}
-			}	
-			Map<Person, Double> list = new ConcurrentHashMap<>();
-			for (Entry<Person, Double> entry : bestFriends.entrySet()) {
-				Person p = entry.getKey();
-				double score = bestFriends.get(p);
-				if (score >= hScore) {
-					// in case if more than one person has the same score
-					list.put(p, score);
-				}
-			}
-			return list;
-			
+			Optional<Double> hScore = bestFriends.values().stream().max(Double::compareTo);
+			double highValue = hScore.get();
+			bestFriends = bestFriends.entrySet().stream()
+									.filter(a -> (a.getValue() >= highValue))
+                       	 			.collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));			
 		}
 		return bestFriends;
 	}
@@ -459,47 +394,21 @@ public class RelationshipUtil implements Serializable {
 	 * @return the description
 	 */
 	public static String describeRelationship(double opinion) {
-		String result = null;
-		if (opinion < 5) result = Msg.getString("TabPanelSocial.opinion.0"); //$NON-NLS-1$
-		else if (opinion < 15) result = Msg.getString("TabPanelSocial.opinion.1"); //$NON-NLS-1$
-		else if (opinion < 25) result = Msg.getString("TabPanelSocial.opinion.2"); //$NON-NLS-1$
-		else if (opinion < 35) result = Msg.getString("TabPanelSocial.opinion.3"); //$NON-NLS-1$
-		else if (opinion < 45) result = Msg.getString("TabPanelSocial.opinion.4"); //$NON-NLS-1$
-		else if (opinion < 55) result = Msg.getString("TabPanelSocial.opinion.5"); //$NON-NLS-1$
-		else if (opinion < 65) result = Msg.getString("TabPanelSocial.opinion.6"); //$NON-NLS-1$
-		else if (opinion < 75) result = Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
-		else if (opinion < 85) result = Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$
-		else if (opinion < 95) result = Msg.getString("TabPanelSocial.opinion.9"); //$NON-NLS-1$			
-		else result = Msg.getString("TabPanelSocial.opinion.10"); //$NON-NLS-1$	
-		return result.toLowerCase();
-	}
-	
-	/**
-	 * Computes the overall relationship score of a settlement.
-	 * 
-	 * @param s Settlement
-	 * @return the score
-	 */
-	public static double getRelationshipScore(Settlement s) {
-		double score = 0;
+		int score = ((int)opinion - 5)/10;
 
-		int count = 0;
-		for (Person pp : s.getAllAssociatedPeople()) {
-			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);
-			if (!friends.isEmpty()) {	
-				for (Entry<Person, Double> entry : friends.entrySet()) {
-					Person p = entry.getKey();
-					score += friends.get(p);
-					count++;
-				}
-			}
-		}
-		
-		if (count > 0) {
-			score = Math.round(score/count *100.0)/100.0;
-		}
-		
-		return score;
+		return switch(score) {
+			case 0 -> Msg.getString("TabPanelSocial.opinion.0"); //$NON-NLS-1$
+			case 1 -> Msg.getString("TabPanelSocial.opinion.1"); //$NON-NLS-1$
+			case 2 -> Msg.getString("TabPanelSocial.opinion.2"); //$NON-NLS-1$
+			case 3 -> Msg.getString("TabPanelSocial.opinion.3"); //$NON-NLS-1$
+			case 4 -> Msg.getString("TabPanelSocial.opinion.4"); //$NON-NLS-1$
+			case 5 -> Msg.getString("TabPanelSocial.opinion.5"); //$NON-NLS-1$
+			case 6 -> Msg.getString("TabPanelSocial.opinion.6"); //$NON-NLS-1$
+			case 7 -> Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
+			case 8 -> Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$
+			case 9 -> Msg.getString("TabPanelSocial.opinion.9"); //$NON-NLS-1$			
+			default -> Msg.getString("TabPanelSocial.opinion.10"); //$NON-NLS-1$	
+		};
 	}
 	
 	/**
