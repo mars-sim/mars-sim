@@ -100,7 +100,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	/**
 	 * Any fix arguments for the command. These are used in the AutoComplete operation.
 	 * This should be Overridden by subclasses if they what to return a dynamic list of options. 
-	 * A static list of optinos can be specified in {@link #setArguments(List)}
+	 * A static list of options can be specified in {@link #setArguments(List)}
+	 * 
 	 * @param context Current context
 	 * @return
 	 */
@@ -109,8 +110,9 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Set and fixed arguments to this command. Dynamic arguments the {@link #getAutoComplete(Conversation, String)}
-	 * method should be overriden.
+	 * Sets and fixes arguments to this command. Dynamic arguments the {@link #getAutoComplete(Conversation, String)}
+	 * method should be overridden.
+	 * 
 	 * @param arguments
 	 */
 	protected void setArguments(List<String> arguments) {
@@ -118,7 +120,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Get the list of options that match the partial input. 
+	 * Gets the list of options that match the partial input. 
+	 * 
 	 * @param partialInput
 	 * @return List of potential full commands or maybe null.
 	 */
@@ -144,7 +147,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 	
 	/**
-	 * Is this command interactive and requestes user input?
+	 * Is this command interactive and requesting user input?
+	 * 
 	 * @return
 	 */
 	public boolean isInteractive() {
@@ -152,7 +156,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 	
 	/**
-	 * Is this command interactive and prompt the user?
+	 * Sets this command interactive.
+	 * 
 	 * @param b
 	 */
 	protected void setInteractive(boolean b) {
@@ -162,6 +167,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	
 	/**
 	 * User must should have at least one of these roles to use this Command.
+	 * 
 	 * @return
 	 */
 	public Set<ConversationRole> getRequiredRoles() {
@@ -174,7 +180,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * Sort on keyword.
+	 * Sorts on keyword.
 	 */
 	@Override
 	public int compareTo(ChatCommand other) {

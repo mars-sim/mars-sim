@@ -67,8 +67,9 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	}
 	
 	/**
-	 * Converter method that converts a collection of Unit Identifers into a
-	 * Collection of T
+	 * Converter method that converts a collection of Unit Identifiers into a
+	 * collection of T.
+	 * 
 	 * @param ids Unit ids
 	 * @return
 	 */

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementChat.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-07-22
  * @author Barry Evans
  */
 
@@ -17,6 +17,7 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars.sim.console.chat.simcommand.unit.EquipmentCommand;
 import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
+import org.mars.sim.console.chat.simcommand.unit.PartFurnishedCommand;
 import org.mars.sim.console.chat.simcommand.unit.ResourceHolderRefillCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitSunlightCommand;
@@ -47,6 +48,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	LevelCommand.LEVEL,
 																	TradeCommand.TRADE,
 																	new ResourceHolderRefillCommand(SETTLEMENT_GROUP),
+																	new PartFurnishedCommand(SETTLEMENT_GROUP),
 																	new EquipmentCommand(SETTLEMENT_GROUP),
 																	new InventoryCommand(SETTLEMENT_GROUP),
 																	new UnitLocationCommand(SETTLEMENT_GROUP),

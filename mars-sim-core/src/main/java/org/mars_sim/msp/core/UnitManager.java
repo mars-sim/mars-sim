@@ -203,8 +203,8 @@ public class UnitManager implements Serializable, Temporal {
 		UnitType type = getTypeFromIdentifier(id);
 		Unit found = getUnitMap(type).get(id);
 		if (found == null) {
-			logger.warning("Unit not found " + id + ". Type of unit : " + type
-			               + " (Base ID:" + (id >>> TYPE_BITS) + ").");
+			logger.warning("Unit not found. id: " + id + ". Type of unit: " + type
+			               + " (Base ID: " + (id >>> TYPE_BITS) + ").");
 		}
 		return found;
 	}

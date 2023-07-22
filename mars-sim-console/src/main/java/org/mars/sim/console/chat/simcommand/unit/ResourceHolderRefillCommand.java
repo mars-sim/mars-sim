@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResourceHolderRefillCommand.java
- * @version 3.1.2 2021-11-20
+ * @date 2023-07-22
  * @author Barry Evans
  */
 
@@ -15,17 +15,19 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
- * Command to get the refill a Resource Holder in expert mode
+ * Command to get the refill a Resource Holder in expert mode.
  */
 public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 
 
 	public ResourceHolderRefillCommand(String commandGroup) {
-		super(commandGroup, "rf", "refill", "Refill a Unit with a resource. Takes 'resource name'quantity' as arguments, e.g. oxygen@100");
+		super(commandGroup, "rf", "refill", "Refill a Unit with a resource. Specify '[command] [resource]:[quantity]'. e.g. /rf oxygen:100");
 		addRequiredRole(ConversationRole.EXPERT);
 	}
 
 	/** 
+	 * Executes the command.
+	 * 
 	 * @return 
 	 */
 	@Override
@@ -35,12 +37,12 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			context.println("Sorry this Unit does not hold resources");
 		}
 		else if (input == null) {
-			context.println("Specify a 'resource@quantity' as an argument");
+			context.println("Specify '[command] [resource]:[quantity]'. e.g. /rf oxygen:100");
 		}
 		else {
-			String [] args = input.split("@");
+			String [] args = input.split(":");
 			if (args.length != 2) {
-				context.println("Argument format is 'resource@quantity'");
+				context.println("Argument format is '[command] [resource]:[quantity]'. e.g. /rf oxygen:100");
 			}
 			else {
 				ResourceHolder rh = (ResourceHolder) source;
@@ -50,9 +52,19 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 					context.println(input + " is an unknown resource.");
 				}
 				else {
-					int quantity = Integer.parseInt(args[1]);
+					double existingAmount = rh.getAllAmountResourceStored(resource.getID());
+	
+					double quantity = Double.parseDouble(args[1]);
 					rh.storeAmountResource(resource.getID(), quantity);
-					context.println("Added " + quantity + " kg of " + resource.getName());
+					
+					double newAmount = rh.getAllAmountResourceStored(resource.getID());
+					
+					context.println(Math.round(quantity * 1000.0)/1000.0 + " kg " + resource.getName() + " added.");
+					
+					context.println(resource.getName() + ": " 
+							+ Math.round(existingAmount * 1000.0)/1000.0 
+							+ " kg -> " + Math.round(newAmount * 1000.0)/1000.0 + " kg.");
+
 					result = true;
 				}
 			}

@@ -39,7 +39,7 @@ public class ExpertCommand extends ChatCommand {
 				dropExpert = true;
 			}
 			else {
-				context.println("Do not understand the argument " + input);
+				context.println("I do not understand the argument " + input + ".");
 				return false;
 			}
 		}

@@ -40,6 +40,7 @@
         </connection-list>
     </building>
 
+
     <building id="5" type="Lander Hab" xloc="-100.0" yloc="68.5" facing="0.0">
         <connection-list>
             <connection id="3" hatch-facing="north" />
@@ -53,6 +54,7 @@
             <connection id="5" hatch-facing="east" />
         </connection-list>
     </building>
+
 
     <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.0" facing="0.0">
         <connection-list>

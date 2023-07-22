@@ -213,7 +213,7 @@ public class UnitSet<T extends UnitIdentifer>
 			for(int id : ids) {
 				T found = (T) mgr.getUnitByID(id);
 				if (found == null) {
-					throw new IllegalStateException("Can not find Unit for id=" + id);
+					throw new IllegalStateException("Can not find Unit for id: " + id);
 				}
 				units.add(found);
 			}
