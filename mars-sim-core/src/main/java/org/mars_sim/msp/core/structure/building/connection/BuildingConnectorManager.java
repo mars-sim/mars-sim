@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @date 2022-06-28
+ * @date 2023-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
- * Manages all the building connectors at a settlement.
+ * This class manages all building connectors at a settlement.
  */
 public class BuildingConnectorManager implements Serializable {
 
@@ -79,6 +79,12 @@ public class BuildingConnectorManager implements Serializable {
 		initialize(settlement, buildingTemplates);
 	}
 	
+	/**
+	 * Initializes a list of building templates for a settlement. 
+	 * 
+	 * @param settlement
+	 * @param buildingTemplates
+	 */
 	public void initialize(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		
 		buildingConnections = ConcurrentHashMap.newKeySet();
@@ -121,40 +127,139 @@ public class BuildingConnectorManager implements Serializable {
 				if (hatchFace != null) {
 					
 					int bFacing = (int)building.getFacing();	
-					if (bFacing != 0) {
-						throw new IllegalStateException(
-								"On buildingTemplate " + buildingTemplate
-								+ "   buildingID: " + buildingID
-								+ "   connectionID: " + connectionID 
-								+ ", to use hatch-facing attribute, the building face must be zero in settlement " 
-								+ settlement.getName());
+//					if (bFacing != 0) throw new IllegalStateException(
+//								"On buildingTemplate " + buildingTemplate + "  buildingID: " + buildingID + "  connectionID: " + connectionID 
+//								+ ", to use hatch-facing attribute, the building face must be zero in settlement " + settlement.getName());
+					
+					if (bFacing < 0D) {
+						bFacing += 360D;
+					}
+	
+					if (bFacing > 360D) {
+						bFacing -= 360D;
 					}
 					
-					if (hatchFace.equalsIgnoreCase("north")) {
-						connectionFacing = 0;
-						connectionXLoc = 0;
-						// going north is +y
-						connectionYLoc = building.getLength() / 2;
-					}
-					else if (hatchFace.equalsIgnoreCase("east")) {
-						connectionFacing = 90;
-						// going west is -x
-						connectionXLoc = - building.getWidth() / 2;
-						connectionYLoc = 0;
-					}
-					else if (hatchFace.equalsIgnoreCase("south")) {
-						connectionFacing = 0;
-						connectionXLoc = 0;
-						// going south is -y
-						connectionYLoc = - building.getLength() / 2;
-					}
-					else if (hatchFace.equalsIgnoreCase("west")) {
-						connectionFacing = 90;
-						// going west is +x
-						connectionXLoc = building.getWidth() / 2;
-						connectionYLoc = 0;
-					}
+					double halfL = building.getLength() / 2;
+					double halfW = building.getWidth() / 2;
 					
+					if (bFacing == 0) {
+						if (hatchFace.equalsIgnoreCase("north")) {
+							// verified as good
+							connectionFacing = 0;
+							connectionXLoc = 0;
+							// building face is 0, going north is +ve length 
+							connectionYLoc = halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("east")) {
+							// verified as good
+							connectionFacing = 90;
+							// building face is 0, going east is -ve wdith
+							connectionXLoc = - halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("south")) {
+							// verified as good
+							connectionFacing = 0;
+							connectionXLoc = 0;
+							// building face is 0, going south is -ve length
+							connectionYLoc = - halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("west")) {
+							// verified as good
+							connectionFacing = 90;
+							// building face is 0, going west is +ve width
+							connectionXLoc = halfW;
+							connectionYLoc = 0;
+						}
+					}
+					else if (bFacing == 180) {
+						if (hatchFace.equalsIgnoreCase("north")) {
+							// verified as good
+							connectionFacing = 0;
+							connectionXLoc = 0;
+							// building face is 180, going north is -ve length
+							connectionYLoc = - halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("east")) {
+							// verified as good
+							connectionFacing = 90;
+							// building face is 180, going east is +ve width
+							connectionXLoc = halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("south")) {
+							connectionFacing = 0;
+							connectionXLoc = 0;
+							// building face is 180, going south is +ve length
+							connectionYLoc = halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("west")) {
+							// verified as good
+							connectionFacing = 90;
+							// building face is 180, going west is -ve width
+							connectionXLoc = - halfW;
+							connectionYLoc = 0;
+						}
+					}
+					else if (bFacing == 90) {
+						if (hatchFace.equalsIgnoreCase("north")) {
+							// verifying
+							connectionFacing = 90;
+							// building face is 90, going north is +ve width
+							connectionXLoc = halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("east")) {
+							// verified as good
+							connectionFacing = 90;
+							connectionXLoc = 0;
+							// building face is 90, going east is +ve length 
+							connectionYLoc = halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("south")) {
+							// verified as good
+							connectionFacing = 0;
+							// building face is 90, going south is -ve width
+							connectionXLoc = - halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("west")) {
+							// verified as good
+							connectionFacing = 90; // both 90 or 270 are fine
+							connectionXLoc = 0;
+							// building face is 90, going west is -ve length
+							connectionYLoc = - halfL;
+						}
+					}
+					else if (bFacing == 270) {
+						if (hatchFace.equalsIgnoreCase("north")) {
+							// verified as good
+							connectionFacing = 0;
+							// building face is 270, going north is -ve width
+							connectionXLoc = - halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("east")) {
+							// verified as good
+							connectionFacing = 90;
+							// building face is 270, going west is -ve length
+							connectionXLoc = 0;
+							connectionYLoc = - halfL;
+						}
+						else if (hatchFace.equalsIgnoreCase("south")) {
+							connectionFacing = 0;
+							// building face is 270, going south is +ve width
+							connectionXLoc = halfW;
+							connectionYLoc = 0;
+						}
+						else if (hatchFace.equalsIgnoreCase("west")) {
+							// verified as good
+							connectionFacing = 90; // both 90 or 270 are fine
+							connectionXLoc = 0;
+							// building face is 270, going west is +ve length
+							connectionYLoc = halfL;
+						}
+					}
 					connectionTemplate.setPosition(connectionXLoc, connectionYLoc);
 				}
 				

@@ -56,17 +56,57 @@
 
     <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.0" facing="0.0">
         <connection-list>
-            <connection id="8" hatch-facing="west" />
+            <connection id="9" hatch-facing="south" />
         </connection-list>
     </building>
 
-    <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="8" type="EVA Airlock" xloc="-48.5" yloc="-20.0" facing="0.0">
+    <!-- EVA Airlock is attached to the Astronomy Observatory. With hallway in between --> 
+    <building id="8" zone="1" type="EVA Airlock" xloc="-55.0" yloc="-30.5" facing="270.0">
+        <connection-list>
+            <connection id="9" hatch-facing="north" />
+        </connection-list>
+    </building>
+    <!-- This hallway is between the EVA Airlock and the Astronomy Observatory -->
+    <building id="9" zone="1" type="Hallway" length="4.0" xloc="-55.0" yloc="-25.5" facing="0.0">
+        <connection-list>
+            <connection id="7" hatch-facing="north" />
+            <connection id="8" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+
+    <!-- EVA Airlock is attached to the Astronomy Observatory
+    <building id="8" zone="1" type="EVA Airlock" xloc="-55.0" yloc="-13.5" facing="90.0">
+        <connection-list>
+            <connection id="7" hatch-facing="south" />
+        </connection-list>
+    </building>
+	-->
+
+    <!-- EVA Airlock is attached to the Astronomy Observatory
+    <building id="8" zone="1" type="EVA Airlock" xloc="-48.5" yloc="-20.0" facing="0.0">
         <connection-list>
             <connection id="7" hatch-facing="east" />
         </connection-list>
     </building>
-    
+     --> 
+     
+    <!-- EVA Airlock is attached to the Astronomy Observatory. With hallway in between, increase xloc="-61.5" to xloc="-65.5" 
+    <building id="8" zone="1" type="EVA Airlock" xloc="-65.5" yloc="-20.0" facing="180.0">
+        <connection-list>
+            <connection id="9" hatch-facing="west" />
+        </connection-list>
+    </building>
+    -->
+    <!-- This hallway is between the EVA Airlock and the Astronomy Observatory
+    <building id="9" zone="1" type="Hallway" length="4.0" xloc="-60.5" yloc="-20.0" facing="90.0">
+        <connection-list>
+            <connection id="7" hatch-facing="west" />
+            <connection id="8" hatch-facing="east" />
+        </connection-list>
+    </building>
+	--> 
+
 
     <building type="MD4 Nuclear Reactor" xloc="510.0"
         yloc="-500" facing="0.0" />
