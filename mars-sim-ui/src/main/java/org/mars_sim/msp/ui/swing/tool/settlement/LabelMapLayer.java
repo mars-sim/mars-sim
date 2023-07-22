@@ -74,7 +74,7 @@ implements SettlementMapLayer {
 	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
 	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_COLOR.darker();
 	
-	static final Color MALE_COLOR = new Color(0, 0, 128); //navy blue //(154, 204, 255) light blue
+	static final Color MALE_COLOR = Color.cyan.brighter(); //new Color(0, 0, 128); //navy blue //(154, 204, 255) light blue
 	static final Color MALE_SELECTED_COLOR = Color.cyan.darker();
 	static final Color MALE_OUTLINE_COLOR = Color.cyan; // (210, 210, 210, 190).brighter();
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_COLOR;
@@ -427,9 +427,8 @@ implements SettlementMapLayer {
 		Person selectedPerson = mapPanel.getSelectedPerson();
 		int xoffset = 10;
 		double scale = mapPanel.getScale();
-		int size = (int)(scale / 2.0);
+		float size = (float)(scale / 2.0);
 		size = Math.max(size, 12);
-		
 
 		Color sColor = FEMALE_SELECTED_COLOR;
 		Color soColor = FEMALE_SELECTED_OUTLINE_COLOR;
@@ -443,26 +442,30 @@ implements SettlementMapLayer {
 		
 			// Draw selected person.
 			if (people.contains(selectedPerson)) {
+				float originalFontSize = 10f;
 				// Draw person name.
-				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getPosition(), sColor, soColor,
-					xoffset, 0);
+				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getPosition(), Color.BLACK, soColor,
+						originalFontSize, xoffset, 0);
 
+				originalFontSize = 8f;
+				
 				// Draw task.
-				String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
-				if (taskString != null && !taskString.equals(""))
+				String taskString = "- " + Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
+				if (taskString != null && !taskString.equals("")) {
 					drawPersonRobotLabel(
-//						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
-						g2d, taskString, selectedPerson.getPosition(), sColor, soColor,
-						xoffset, size);
-
+						g2d, taskString, selectedPerson.getPosition(), Color.DARK_GRAY, soColor,
+						originalFontSize, xoffset, size);
+				}
+				
 				// Draw mission.
 				Mission mission = selectedPerson.getMind().getMission();
 				if (mission != null) {
-					String missionString = Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
-					if (missionString != null && !missionString.equals(""))
+					String missionString = "-- " + Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
+					if (missionString != null && !missionString.equals("")) {
 						drawPersonRobotLabel(
-							g2d, missionString, selectedPerson.getPosition(), sColor, soColor,
-							xoffset, 2 * (size));
+							g2d, missionString, selectedPerson.getPosition(), sColor.darker(), soColor,
+							originalFontSize, xoffset, 1.8f * size);
+					}
 				}
 			}
 		}
@@ -484,9 +487,12 @@ implements SettlementMapLayer {
 						else n += " " + words[j].substring(0, 1) + ".";
 					}	
 					boolean male = person.getGender() == GenderType.MALE;
+					float originalFontSize = 10f;
 					drawPersonRobotLabel(g2d, n, person.getPosition(),
 								(male ? MALE_COLOR : FEMALE_COLOR),
-								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), xoffset, 0);
+								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), 
+								originalFontSize,
+								xoffset, 0);
 				}
 			}
 		}
@@ -494,7 +500,7 @@ implements SettlementMapLayer {
 
 
 	/**
-	 * Draw labels for all robots at the settlement.
+	 * Draws labels for all robots at the settlement.
 	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
@@ -507,54 +513,52 @@ implements SettlementMapLayer {
 
 		List<Robot> robots = RobotMapLayer.getRobotsToDisplay(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
-		int xoffset = 10;
+		float xoffset = 10L;
 		double scale = mapPanel.getScale();
-		int size = (int)(scale);
-		size = Math.max(size, 12);
+		float yoffset = (float)(scale / 2.0);
+		yoffset = Math.max(yoffset, 12);
 		
 		// Draw all robots except selected robot.
 		if (showNonSelectedRobots) {
 			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) {
 				Robot robot = i.next();
-
+				float originalFontSize = 10f;
 				if (!robot.equals(selectedRobot)) {
-//					String words[] = robot.getName().split(" ");
-//					int s = words.length;
-//					for (int j = 0; j < s; j++)
-//						drawPersonRobotLabel(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
-//								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
 					drawPersonRobotLabel(g2d, robot.getName(), robot.getPosition(),
-							ROBOT_COLOR, ROBOT_OUTLINE_COLOR, xoffset, 0);
+							ROBOT_COLOR.darker(), ROBOT_OUTLINE_COLOR, 
+							originalFontSize, xoffset, 0);
 				}
 			}
 		}
 
 		// Draw selected robot.
-		if (robots.contains(selectedRobot)) {
+		if (selectedRobot != null) { //robots.contains(selectedRobot)) {
+			float originalFontSize = 10f;
 			// Draw robot name.
 			drawPersonRobotLabel(
 				g2d, selectedRobot.getName(), selectedRobot.getPosition(),
-				ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
-				xoffset, 0);
+				Color.BLACK, ROBOT_SELECTED_OUTLINE_COLOR,
+				originalFontSize, xoffset, 0);
 
+			originalFontSize = 8f;
 			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(false)); //$NON-NLS-1$
+			String taskString = "- " + Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getBotTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 			if (taskString != null && !taskString.equals(""))
 				drawPersonRobotLabel(
 					g2d, taskString, selectedRobot.getPosition(),
-					ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
-					xoffset, size);
+					Color.DARK_GRAY, ROBOT_SELECTED_OUTLINE_COLOR,
+					originalFontSize, xoffset, yoffset);
 
 			// Draw mission.
 			Mission mission = selectedRobot.getBotMind().getMission();
 			if (mission != null) {
-				String missionString = Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
+				String missionString = "-- " + Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
 				if (missionString != null && !missionString.equals(""))
 					drawPersonRobotLabel(
 						g2d, missionString, selectedRobot.getPosition(),
-						ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
-						xoffset, 2 * (size));
+						ROBOT_SELECTED_COLOR.darker(), ROBOT_SELECTED_OUTLINE_COLOR,
+						originalFontSize, xoffset, 1.8f * yoffset);
 			}
 		}
 	}
@@ -633,20 +637,20 @@ implements SettlementMapLayer {
 	 */
 	private void drawPersonRobotLabel(
 		Graphics2D g2d, String label, LocalPosition loc,
-		Color labelColor, Color labelOutlineColor, int xOffset, int yOffset
+		Color labelColor, Color labelOutlineColor, float originalFontSize, float xOffset, float yOffset
 	) {
 
 		double scale = mapPanel.getScale();
 		float fontSize = Math.round(scale / 2.5);
-		int size = (int)(fontSize / 2.0);
-		size = Math.max(size, 1);
+//		int size = (int)(fontSize / 2.0);
+//		size = Math.max(size, 1);
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-		Font font = g2d.getFont().deriveFont(Font.PLAIN, 12f + fontSize);
+		Font font = g2d.getFont().deriveFont(Font.PLAIN, originalFontSize + fontSize);
 		g2d.setFont(font);
 		
 		BufferedImage labelImage = getLabelImage(
@@ -667,8 +671,8 @@ implements SettlementMapLayer {
 		g2d.setTransform(newTransform);
 
 		// Draw image label.
-		int widthOffset = (int)((centerX + fontSize) / 1.5) + xOffset;
-		int heightOffset = (int)((centerY + fontSize) / 1.5 ) + yOffset;
+		int widthOffset = (int)((centerX + fontSize) + xOffset * 1.25);
+		int heightOffset = (int)((centerY + fontSize) / 0.25 + yOffset * 1.25);
 		g2d.drawImage(labelImage, widthOffset, heightOffset, mapPanel);
 
 		// Restore original graphic transforms.

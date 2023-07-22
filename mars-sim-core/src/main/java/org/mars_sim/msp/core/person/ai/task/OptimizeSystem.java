@@ -135,8 +135,7 @@ public class OptimizeSystem extends Task {
 
 		// If person is in a settlement, try to find a building with a function type.
 		if (person.isInSettlement()) {
-			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			Set<Building> bldgs = buildingManager.getBuildingSet(functionType); 
+			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT, functionType); 
 			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
 			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
 
