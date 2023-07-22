@@ -56,26 +56,6 @@ public class SocialCommand extends AbstractPersonCommand {
 			}
 			response.appendLabeledString("Ave. option of them", "" + sum/list.size());
 			response.appendBlankLine();
-
-			response.appendHeading("Their Opinion of me");
-
-			// Their opinions of me
-			friends = RelationshipUtil.getTheirOpinionsOfMe(person);
-			list = new ArrayList<>(friends.keySet());
-			
-			response.appendTableHeading("Person towards me", CommandHelper.PERSON_WIDTH, "Score", "Their Attitude");
-
-			sum = 0;
-			for (Person friend : list) {
-				double score = friends.get(friend);
-				sum += score;
-				String relation = RelationshipUtil.describeRelationship(score);
-
-				score = Math.round(score * 10.0) / 10.0;
-
-				response.appendTableRow(friend.getName(), score, relation);
-			}
-			response.appendLabeledString("Ave. option of me", "" + sum/list.size());
 			
 			context.println(response.getOutput());
 		}

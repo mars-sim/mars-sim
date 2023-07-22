@@ -21,18 +21,24 @@ import org.mars_sim.msp.core.person.Person;
  */
 public class Relation implements Serializable {
 
+	/**
+	 * Details of a specific relationship to a Person
+	 */
+	public record Opinion(double trust, double care, double respect) implements Serializable {
+		public double getAverage() {
+			return (trust + care + respect)/3D;
+		}
+	};
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-	// How trustworthy is that person toward this person
-	private static final String TRUST = "trust";
-	// How caring is that person  toward this person
-	private static final String CARE = "care";
-	// How respecting is that person  toward this person 
-	private static final String RESPECT = "respect";
+
+
+	private static final Opinion EMPTY_OPINION = new Opinion(0, 0, 0);
+
 	
 	/** The person's opinion of another person. */
-	private Map<Integer, Map<String, Double>> opinionMap = new HashMap<>();
+	private Map<Integer, Opinion> opinionMap = new HashMap<>();
 	
 	/** The Unit Manager instance. */
 	private static UnitManager unitManager;
@@ -45,96 +51,68 @@ public class Relation implements Serializable {
 	public Relation(Person person)  {
 	}
 	
-
 	/**
-	 * Gets the opinion regarding a person.
+	 * Gets the Opinion regarding a person.
 	 * 
-	 * @param personID
+	 * @param p Person to get an opnion on
 	 * @return
 	 */
-	public double getOpinion(int personID) {
-		Map<String, Double> dimensionMap = null;
-		if (opinionMap.containsKey(personID)) {
-			dimensionMap = opinionMap.get(personID);
-		}
-		else {
-			return -1.0;
-		}
-		double average = (dimensionMap.get(TRUST) 
-				+ dimensionMap.get(CARE)
-				+ dimensionMap.get(RESPECT)) / 3.0;
-		return average;
-	}
-
-	/**
-	 * Gets the opinion array regarding a person.
-	 * 
-	 * @param personID
-	 * @return
-	 */
-	double[] getOpinions(int personID) {
-		Map<String, Double> dimensionMap = null;
-		if (opinionMap.containsKey(personID)) {
-			dimensionMap = opinionMap.get(personID);
-		}
-		else {
-			return new double[]{-1.0, -1.0, -1.0};
-		}
-		double[] dim = new double[3];
-		dim[0] = dimensionMap.get(TRUST);
-		dim[1] = dimensionMap.get(CARE);
-		dim[2] = dimensionMap.get(RESPECT);
-		return dim;
+	public Opinion getOpinion(Person p) {
+		return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
 	}
 	
 	/**
 	 * Sets the opinion regarding a person.
 	 * 
-	 * @param personID
+	 * @param p
 	 * @param opinion
 	 */
-	void setOpinion(int personID, double opinion) {
+	void setOpinion(Person p, double opinion) {
 		if (opinion < 1)
 			opinion = 1;
 		if (opinion > 100)
 			opinion = 100;
-		
-		if (!opinionMap.containsKey(personID)) {
-			Map<String, Double> dimensionMap = new HashMap<>(3);
-			dimensionMap.put(TRUST, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(CARE, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			dimensionMap.put(RESPECT, 50.0 + RandomUtil.getRandomDouble(-10, 10));
-			opinionMap.put(personID, dimensionMap);
+		double care, trust, respect;
+		int personID = p.getIdentifier();
+		Opinion found = opinionMap.get(personID);
+		if (found == null) {
+			trust = 50.0 + RandomUtil.getRandomDouble(-10, 10);
+			care = 50.0 + RandomUtil.getRandomDouble(-10, 10);
+			respect = 50.0 + RandomUtil.getRandomDouble(-10, 10);
 		}
 		else {
-			Map<String, Double> dimensionMap = opinionMap.get(personID);
+			care = found.care;
+			trust = found.trust;
+			respect = found.respect;
 			int rand = RandomUtil.getRandomInt(2);
 			if (rand == 0) {
-				dimensionMap.put(TRUST, opinion);
+				trust = opinion;
 			}
 			else if (rand == 1) {
-				dimensionMap.put(CARE, opinion);
+				care = opinion;
 			}
 			else {
-				dimensionMap.put(RESPECT, opinion);
+				respect = opinion;
 			}
 		}
+
+		opinionMap.put(personID, new Opinion(trust, care, respect));
 	}
 	
 	
 	/**
 	 * Changes the opinion regarding a person.
 	 * 
-	 * @param personID
+	 * @param p
 	 * @param mod
 	 */
-	void changeOpinion(int personID, double mod) {
-		double result = getOpinion(personID) + mod;
+	void changeOpinion(Person p, double mod) {
+		double result = getOpinion(p).getAverage() + mod;
 		if (result < 1)
 			result = 1;
 		if (result > 100)
 			result = 100;
-		setOpinion(personID, result);
+		setOpinion(p, result);
 	}
 	
 	/**
