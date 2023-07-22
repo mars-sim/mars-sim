@@ -62,6 +62,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
 	private static final String BUILDING = "building";
 	private static final String ID = "id";
+	private static final String HATCH_FACE = "hatch-facing";
 	private static final String ZONE = "zone";
 	private static final String TYPE = "type";
 	private static final String CONNECTION_LIST = "connection-list";
@@ -380,8 +381,16 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 										+ " in settlement template: " + settlementTemplateName);
 					}
 
-					LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
-					buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
+					String hatchFace = connectionElement.getAttributeValue(HATCH_FACE);
+					
+					if (hatchFace == null) {
+						LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
+						buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
+					}
+					else {
+						buildingTemplate.addBuildingConnection(connectionID, hatchFace);
+					}
+
 				}
 			}
 		}

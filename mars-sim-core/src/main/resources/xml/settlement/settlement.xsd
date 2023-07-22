@@ -8,7 +8,8 @@
                     <xs:complexType>
                         <xs:attribute name="xloc" type="xs:decimal"/>
                         <xs:attribute name="yloc" type="xs:decimal"/>
-                        <xs:attribute name="id" type="xs:integer"/>
+                        <xs:attribute name="hatch-facing" type="xs:string"/>
+                        <xs:attribute name="id" type="xs:integer"/>                   
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>

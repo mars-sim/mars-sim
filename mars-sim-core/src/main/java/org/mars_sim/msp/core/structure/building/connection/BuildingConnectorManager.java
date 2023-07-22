@@ -96,7 +96,7 @@ public class BuildingConnectorManager implements Serializable {
 				throw new IllegalStateException(
 						"On buildingTemplate " + buildingTemplate
 						+ "    buildingID " + buildingID 
-						+ " does not exist for settlement " + settlement.getName());
+						+ " does not exist in settlement " + settlement.getName());
 			}
 
 			Iterator<BuildingConnectionTemplate> j = buildingTemplate.getBuildingConnectionTemplates().iterator();
@@ -109,32 +109,81 @@ public class BuildingConnectorManager implements Serializable {
 							"On buildingTemplate " + buildingTemplate
 							+ "    buildingID " + buildingID 
 							+ "    connectionID " + connectionID 
-							+ " does not exist for settlement " + settlement.getName());
+							+ " does not exist in settlement " + settlement.getName());
 				}
 
-				double connectionXLoc = connectionTemplate.getPosition().getX();
-				double connectionYLoc = connectionTemplate.getPosition().getY();
+				double connectionFacing = 0;		
+				double connectionXLoc = 0;
+				double connectionYLoc = 0;
+						
+				String hatchFace = connectionTemplate.getHatchFace();
+						
+				if (hatchFace != null) {
+					
+					int bFacing = (int)building.getFacing();	
+					if (bFacing != 0) {
+						throw new IllegalStateException(
+								"On buildingTemplate " + buildingTemplate
+								+ "   buildingID: " + buildingID
+								+ "   connectionID: " + connectionID 
+								+ ", to use hatch-facing attribute, the building face must be zero in settlement " 
+								+ settlement.getName());
+					}
+					
+					if (hatchFace.equalsIgnoreCase("north")) {
+						connectionFacing = 0;
+						connectionXLoc = 0;
+						// going north is +y
+						connectionYLoc = building.getLength() / 2;
+					}
+					else if (hatchFace.equalsIgnoreCase("east")) {
+						connectionFacing = 90;
+						// going west is -x
+						connectionXLoc = - building.getWidth() / 2;
+						connectionYLoc = 0;
+					}
+					else if (hatchFace.equalsIgnoreCase("south")) {
+						connectionFacing = 0;
+						connectionXLoc = 0;
+						// going south is -y
+						connectionYLoc = - building.getLength() / 2;
+					}
+					else if (hatchFace.equalsIgnoreCase("west")) {
+						connectionFacing = 90;
+						// going west is +x
+						connectionXLoc = building.getWidth() / 2;
+						connectionYLoc = 0;
+					}
+					
+					connectionTemplate.setPosition(connectionXLoc, connectionYLoc);
+				}
+				
+				else {
+						
+					connectionXLoc = connectionTemplate.getPosition().getX();
+					connectionYLoc = connectionTemplate.getPosition().getY();
+
+					if (connectionXLoc == (building.getWidth() / 2D)) {
+						connectionFacing = building.getFacing() - 90D;
+					} else if (connectionXLoc == (building.getWidth() / -2D)) {
+						connectionFacing = building.getFacing() + 90D;
+					} else if (connectionYLoc == (building.getLength() / 2D)) {
+						connectionFacing = building.getFacing();
+					} else if (connectionYLoc == (building.getLength() / -2D)) {
+						connectionFacing = building.getFacing() + 180D;
+					}
+	
+					if (connectionFacing < 0D) {
+						connectionFacing += 360D;
+					}
+	
+					if (connectionFacing > 360D) {
+						connectionFacing -= 360D;
+					}
+				}
+				
 				LocalPosition connectionSettlementLoc = LocalAreaUtil.getLocalRelativePosition(connectionTemplate.getPosition(), building);
-
-				double connectionFacing = 0D;
-				if (connectionXLoc == (building.getWidth() / 2D)) {
-					connectionFacing = building.getFacing() - 90D;
-				} else if (connectionXLoc == (building.getWidth() / -2D)) {
-					connectionFacing = building.getFacing() + 90D;
-				} else if (connectionYLoc == (building.getLength() / 2D)) {
-					connectionFacing = building.getFacing();
-				} else if (connectionYLoc == (building.getLength() / -2D)) {
-					connectionFacing = building.getFacing() + 180D;
-				}
-
-				if (connectionFacing < 0D) {
-					connectionFacing += 360D;
-				}
-
-				if (connectionFacing > 360D) {
-					connectionFacing -= 360D;
-				}
-
+				
 				PartialBuildingConnector partialConnector = new PartialBuildingConnector(building,
 						connectionSettlementLoc, connectionFacing, connectionBuilding);
 				partialBuildingConnectorList.add(partialConnector);

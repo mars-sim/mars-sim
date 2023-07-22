@@ -109,6 +109,21 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		}
 	}
 
+	/**
+	 * Adds a new building connection.
+	 * 
+	 * @param id        the unique id of the building being connected to.
+	 * @param hatchFace the facing of the hatch.
+	 */
+	public void addBuildingConnection(int id, String hatchFace) {
+		BuildingConnectionTemplate template = new BuildingConnectionTemplate(id, hatchFace);
+		if (!connectionList.contains(template)) {
+			connectionList.add(template);
+		} else {
+			throw new IllegalArgumentException(Msg.getString("BuildingTemplate.error.connectionAlreadyExists")); //$NON-NLS-1$
+		}
+	}
+	
 	public void addEVAAttachedBuildingID(int id) {
 		eVAAttachedBuildingID = id;
 	}
@@ -136,10 +151,11 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 
 		// Data members
 		private int id;
+		private String hatchFace;
 		private LocalPosition location;
 
 		/**
-		 * Constructor.
+		 * Constructor 1.
 		 * 
 		 * @param id        the unique id of the building being connected to.
 		 * @param xLocation the x axis location (local to the building) (meters).
@@ -148,6 +164,17 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		private BuildingConnectionTemplate(int id, LocalPosition loc) {
 			this.id = id;
 			this.location = loc;
+		}
+		
+		/**
+		 * Constructor 2.
+		 * 
+		 * @param id        the unique id of the building being connected to.
+		 * @param hatchFace the face of the hatch .
+		 */
+		private BuildingConnectionTemplate(int id, String hatchFace) {
+			this.id = id;
+			this.hatchFace = hatchFace;
 		}
 
 
@@ -159,13 +186,24 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 			return location;
 		}
 
+		public String getHatchFace() {
+			return hatchFace;
+		}
+		
+		public void setPosition(double x, double y) {
+			location = new LocalPosition(x, y);
+		}
+		
+		
 		@Override
 		public boolean equals(Object otherObject) {
 			boolean result = false;
 
 			if (otherObject instanceof BuildingConnectionTemplate) {
 				BuildingConnectionTemplate template = (BuildingConnectionTemplate) otherObject;
-				if ((id == template.id) && location.equals(template.location)) {
+				if ((id == template.id) 
+						&& location.equals(template.location)
+						&& hatchFace.equals(template.hatchFace)) {
 					result = true;
 				}
 			}

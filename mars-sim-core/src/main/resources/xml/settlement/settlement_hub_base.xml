@@ -7,65 +7,63 @@
         
     <building id="0" type="Central Hub A" xloc="-100.0" yloc="100.0" facing="0.0">
         <connection-list>
-            <connection id="1" xloc="0.0" yloc="-10" />
+            <connection id="1" hatch-facing="south" />
         </connection-list>
     </building>
             
     <building id="1" type="Hallway" length="4.0" xloc="-100.0" yloc="88" facing="0.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="2.0" />
-            <connection id="2" xloc="0.0" yloc="-2.0" />
+            <connection id="0" hatch-facing="north" />
+            <connection id="2" hatch-facing="south" />
         </connection-list>
     </building>
       
     <building id="2" type="Machinery Hab" xloc="-100.0" yloc="81.5" facing="0.0">
         <connection-list>
-            <connection id="1" xloc="0.0" yloc="4.5" />
-            <connection id="3" xloc="0.0" yloc="-4.5" />
-            <connection id="4" xloc="4.5" yloc="0.0" />           
+            <connection id="1" hatch-facing="north" />
+            <connection id="3" hatch-facing="south" />
+            <connection id="4" hatch-facing="west" />           
         </connection-list>
     </building>
 
     <building id="3" type="Hallway" length="4.0" xloc="-100.0" yloc="75.0" facing="0.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="2.0" />
-            <connection id="5" xloc="0.0" yloc="-2.0" />
+            <connection id="2" hatch-facing="north" />
+            <connection id="5" hatch-facing="south" />
         </connection-list>
     </building>
     
     <!-- EVA Airlock is attached to the 1st Research hab -->
     <building id="4" type="EVA Airlock" xloc="-92.5" yloc="81.5" facing="0.0">
         <connection-list>
-            <connection id="2" xloc="-3.0" yloc="0.0" />
+            <connection id="2" hatch-facing="east" />
         </connection-list>
     </building>
 
     <building id="5" type="Lander Hab" xloc="-100.0" yloc="68.5" facing="0.0">
         <connection-list>
-            <connection id="3" xloc="0.0" yloc="4.5" />
-            <connection id="6" xloc="4.5" yloc="0.0" />           
+            <connection id="3" hatch-facing="north" />
+            <connection id="6" hatch-facing="west" />           
         </connection-list>
     </building>
     
     <!-- EVA Airlock is attached to the 1st lander hab -->
     <building id="6" type="EVA Airlock" xloc="-92.5" yloc="68.5" facing="0.0">
         <connection-list>
-            <connection id="5" xloc="-3.0" yloc="0.0" />
+            <connection id="5" hatch-facing="east" />
         </connection-list>
     </building>
 
-    <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0"
-        yloc="-20.0" facing="180.0">
+    <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.0" facing="0.0">
         <connection-list>
-            <connection id="8" xloc="-3.5" yloc="0.0" />
+            <connection id="8" hatch-facing="west" />
         </connection-list>
     </building>
 
     <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="8" type="EVA Airlock" xloc="-48.5"
-        yloc="-20.0" facing="0.0">
+    <building id="8" type="EVA Airlock" xloc="-48.5" yloc="-20.0" facing="0.0">
         <connection-list>
-            <connection id="7" xloc="-3.0" yloc="0.0" />
+            <connection id="7" hatch-facing="east" />
         </connection-list>
     </building>
     
