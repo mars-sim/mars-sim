@@ -19,6 +19,58 @@ public class TestCoordinates extends TestCase {
     private static final double ERROR_MARGIN_RAD = .00001D;
 	
     /**
+     * Finds the distance resolution for one degree at the equator.
+     */
+    public void testResolution() {
+    	
+        // 59.21 km resolution
+    	
+    	Coordinates c0 = new Coordinates("0", "0");
+        Coordinates c1 = new Coordinates("1", "0");
+    	
+        double dist = c0.getDistance(c1);
+        
+//        System.out.println("one degree at the equator is " + dist + " km");
+        
+        double expected = 59.219_021_520;
+        double error = Math.abs(dist - expected);
+        assertTrue(error < ERROR_MARGIN_KM);
+
+        /////////////////////////////////////////////////////////
+        // 5.92 m resolution
+        
+        Coordinates c2 = new Coordinates("0.0000", "0");
+        Coordinates c3 = new Coordinates("0.0001", "0");
+    	
+        double dist4Dec = c2.getDistance(c3) * 1000 ;
+        
+//        System.out.println("one degree at the equator is " + dist4Dec + " m");
+        
+        double expected1 = 5.921_902_152;
+        
+        double error1 = Math.abs(dist4Dec - expected1);
+        
+        assertTrue(error1 < ERROR_MARGIN_KM);
+        
+        /////////////////////////////////////////////////////////
+        // 4.18 m resolution
+        
+        Coordinates c4 = new Coordinates("45", "0.0000");
+        Coordinates c5 = new Coordinates("45", "0.0001");
+    	
+        double dist45 = c4.getDistance(c5) * 1000 ;
+        
+//        System.out.println("one degree at latitude 45 deg is " + dist45 + " m");
+        
+        double expected2 = 4.187_417_169;
+        
+        double error2 = Math.abs(dist45 - expected2);
+        
+        assertTrue(error2 < ERROR_MARGIN_KM);
+        
+    }
+    
+    /**
      * Test the getDistance method.
      */
     public void testGetDistance() {

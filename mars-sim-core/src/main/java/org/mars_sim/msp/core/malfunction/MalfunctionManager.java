@@ -445,13 +445,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			// Gets the mission sol
 			int missionSol = masterClock.getMarsTime().getMissionSol();
-			// Gets the @ of sols in use 
-			int solsInUse = missionSol - part.getStartSol();
+			
+			double millisols = masterClock.getMarsTime().getMillisol();
+			// Gets the fractional sols in use 
+			double solsInUse = missionSol + millisols/1000 - part.getStartSol();
 			
 			// Recompute the MTBF for this part
-			double newMTBF = part.computeMTBF(missionSol);
+			double newMTBF = part.computeMTBF(solsInUse);
 			// Recompute the reliability for this part
-			double newRel = part.computeReliability(missionSol);
+			double newRel = part.computeReliability(solsInUse);
 			// Recompute the failure rate
 			double newFailure = part.computeFailureRate();
 			// Update all part's repair probability

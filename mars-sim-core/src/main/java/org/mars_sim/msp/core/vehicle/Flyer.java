@@ -103,7 +103,7 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Gets the average angle of attack over next 7.4km distance in direction
+	 * Gets the average angle of attack over over a sample distance in direction
 	 * vehicle is traveling.
 	 * 
 	 * @return airborne vehicle's current angle of attack in radians from horizontal plane
@@ -113,7 +113,7 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Gets the average angle of terrain over next 7.4km distance in direction
+	 * Gets the average angle of terrain over over a sample distance in direction
 	 * vehicle is traveling.
 	 * 
 	 * @return vehicle's current terrain grade angle from horizontal
@@ -124,10 +124,10 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Gets the average angle of terrain over next 7.4km distance in a given
+	 * Gets the average angle of terrain over over a sample distance in a given
 	 * direction from the vehicle.
 	 * 
-	 * @return ground vehicle's current terrain grade angle from horizontal
+	 * @return vehicle's current terrain grade angle from horizontal
 	 *         (radians)
 	 */
 	public double getTerrainGrade(Direction direction) {

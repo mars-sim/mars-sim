@@ -68,17 +68,16 @@ public class Part extends ItemResource {
 	/**
 	 * Computes the percent reliability.
 	 * 
+	 * @param solsInUse
 	 * @return 
 	 */
-	public double computeReliability(int missionSol) {
-		// Find the number of sols that have been in use
-		int numSols = missionSol - getStartSol();
+	public double computeReliability(double solsInUse) {
 
 		if (mtbf == 0) {
 			percentReliability = 0;
 		}
 		else {
-			percentReliability = Math.min(MAX_RELIABILITY, Math.exp(-numSols / mtbf) * 100);
+			percentReliability = Math.min(MAX_RELIABILITY, Math.exp(-solsInUse / mtbf) * 100);
 		}
 		
 		return percentReliability;
@@ -87,18 +86,15 @@ public class Part extends ItemResource {
 	/**
 	 * Computes the MTBF.
 	 * 
-	 * @param missionSol
+	 * @param solsInUse
 	 * @return 
 	 */
-	public double computeMTBF(int missionSol) {
-		// Find the number of sols that have been in use
-		int numSols = missionSol - getStartSol();
+	public double computeMTBF(double solsInUse) {
 		
 		if (cumFailures == 0)
 			mtbf = MAX_MTBF;
 		else {
-			numSols = Math.max(1, numSols);
-			mtbf = updateMTBF(numSols);
+			mtbf = updateMTBF(solsInUse);
 		}
 		
 		return mtbf;
