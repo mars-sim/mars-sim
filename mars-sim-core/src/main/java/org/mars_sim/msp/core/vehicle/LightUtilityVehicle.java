@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -26,8 +25,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final int METHANOL_ID = ResourceUtil.methanolID;
-	
 	/** Vehicle name. */
 	public static final String NAME = VehicleType.LUV.getName();
 
@@ -60,17 +57,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		robotCrewCapacity = spec.getCrewSize();
 	}
 
-	@Override
-	public int getFuelTypeID() {
-		return METHANOL_ID;
-	}
-
 	/**
 	 * Gets the number of crewmembers the vehicle can carry.
 	 * 
 	 * @return capacity
 	 */
-	@Override
 	public int getCrewCapacity() {
 		return crewCapacity;
 	}
@@ -80,7 +71,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return capacity
 	 */
-	@Override
 	public int getRobotCrewCapacity() {
 		return robotCrewCapacity;
 	}
