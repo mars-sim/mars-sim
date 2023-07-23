@@ -81,7 +81,7 @@ public abstract class Function implements Serializable, Temporal {
 		this.type = type;
 		this.building = building;
 
-		// load any activity hotspots
+		// load any activity spots
 		if (spec != null) {
 			activitySpots = spec.getActivitySpots();
 		}
@@ -163,6 +163,7 @@ public abstract class Function implements Serializable, Temporal {
 	public double getFullHeatRequired() {
 		return 0;
 	}
+	
 	/**
 	 * Gets the amount of heat required when function is at heat down level.
 	 *
@@ -191,7 +192,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Perform any actions needed when removing this building function from the
+	 * Performs any actions needed when removing this building function from the
 	 * settlement.
 	 */
 	public void removeFromSettlement() {
@@ -305,7 +306,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if an activity spot is empty/unoccupied
+	 * Checks if an activity spot is empty/unoccupied.
 	 *
 	 * @param s as a {@link Point2D}
 	 * @return true if this activity spot is empty.
@@ -372,7 +373,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check if this building function has any activity spots.
+	 * CheckS if this building function has any activity spots.
 	 *
 	 * @return true if building function has activity spots.
 	 */
@@ -385,7 +386,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the number of currently empty activity spots
+	 * Gets the number of currently empty activity spots.
 	 *
 	 * @return
 	 */
@@ -401,7 +402,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if an empty activity spot is available
+	 * Checks if an empty activity spot is available.
 	 *
 	 * @return
 	 */
@@ -416,7 +417,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the number of currently occupied activity spots
+	 * Gets the number of currently occupied activity spots.
 	 *
 	 * @return
 	 */
@@ -433,7 +434,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param bc {@link BuildingConfig}
 	 * @param c0 {@link MasterClock}
@@ -451,7 +452,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;

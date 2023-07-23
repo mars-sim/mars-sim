@@ -403,7 +403,7 @@ implements SettlementMapLayer {
 						int s = words.length;
 						for (int j = 0; j < s; j++) {
 							drawStructureLabel(g2d, words[j], vehicle.getPosition(),
-								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size));
+								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * size);
 						}
 					}
 				}
@@ -425,10 +425,10 @@ implements SettlementMapLayer {
 
 		List<Person> people = CollectionUtils.getPeopleToDisplay(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
-		int xoffset = 10;
+		int xoffset = 5;
 		double scale = mapPanel.getScale();
-		float size = (float)(scale / 2.0);
-		size = Math.max(size, 12);
+		float yoffset = (float)(scale / 2.0);
+		yoffset = Math.max(yoffset, 12);
 
 		Color sColor = FEMALE_SELECTED_COLOR;
 		Color soColor = FEMALE_SELECTED_OUTLINE_COLOR;
@@ -454,7 +454,7 @@ implements SettlementMapLayer {
 				if (taskString != null && !taskString.equals("")) {
 					drawPersonRobotLabel(
 						g2d, taskString, selectedPerson.getPosition(), Color.DARK_GRAY, soColor,
-						originalFontSize, xoffset, size);
+						originalFontSize, xoffset, yoffset);
 				}
 				
 				// Draw mission.
@@ -464,7 +464,7 @@ implements SettlementMapLayer {
 					if (missionString != null && !missionString.equals("")) {
 						drawPersonRobotLabel(
 							g2d, missionString, selectedPerson.getPosition(), sColor.darker(), soColor,
-							originalFontSize, xoffset, 1.8f * size);
+							originalFontSize, xoffset, 1.8f * yoffset);
 					}
 				}
 			}
@@ -574,12 +574,11 @@ implements SettlementMapLayer {
 	 */
 	private void drawStructureLabel(
 		Graphics2D g2d, String label, LocalPosition loc,
-		Color labelColor, Color labelOutlineColor, int yOffset
+		Color labelColor, Color labelOutlineColor, float yOffset
 	) {
 		double scale = mapPanel.getScale();
 		float fontSize = Math.round(scale / 1.2);
-		int size = (int)(fontSize / 2.0);
-		size = Math.max(size, 2);
+		float size = (float) Math.max(fontSize / 30.0, 1.2);
 		
 		// If the scale is smaller than 5, then 
 		// there is no need of using labelOutlineColor 
@@ -617,7 +616,7 @@ implements SettlementMapLayer {
 		g2d.setTransform(newTransform);
 
 		// Draw image label with yOffset
-		g2d.drawImage(labelImage, 0, yOffset, mapPanel);
+		g2d.drawImage(labelImage, 0, Math.round(yOffset * size), mapPanel);
 		
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -642,8 +641,7 @@ implements SettlementMapLayer {
 
 		double scale = mapPanel.getScale();
 		float fontSize = Math.round(scale / 2.5);
-//		int size = (int)(fontSize / 2.0);
-//		size = Math.max(size, 1);
+		float size = (float)(Math.max(fontSize / 30.0, 1.25));
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
@@ -671,8 +669,8 @@ implements SettlementMapLayer {
 		g2d.setTransform(newTransform);
 
 		// Draw image label.
-		int widthOffset = (int)((centerX + fontSize) + xOffset * 1.25);
-		int heightOffset = (int)((centerY + fontSize) / 0.25 + yOffset * 1.25);
+		int widthOffset =  (int)Math.round((centerX + fontSize) + xOffset);
+		int heightOffset = (int)Math.round((centerY + fontSize) + yOffset * size);
 		g2d.drawImage(labelImage, widthOffset, heightOffset, mapPanel);
 
 		// Restore original graphic transforms.

@@ -2371,9 +2371,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
+			<astronomical-observation tech-level="4" capacity="2" power-required="4.0">
 				<activity>
-					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="0.0" yloc="0.7" />
+					<activity-spot xloc="0.0" yloc="-0.7" />					
 				</activity>
 			</astronomical-observation>
 

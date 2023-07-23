@@ -68,6 +68,7 @@ public class LocalPosition implements Serializable {
         return new LocalPosition((x + other.x) / 2D,
         						 (y + other.y) / 2D);
 	}
+	
 	/**
 	 * Gets the rotation direction to another Position.
 	 * 
