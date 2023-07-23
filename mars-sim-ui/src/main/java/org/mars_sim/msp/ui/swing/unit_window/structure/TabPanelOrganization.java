@@ -52,9 +52,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.StyleManager;
-import org.mars_sim.msp.ui.swing.tool.treetable.JTreeTable;
-import org.mars_sim.msp.ui.swing.tool.treetable.OrganizationTreeTableModel;
-import org.mars_sim.msp.ui.swing.tool.treetable.TreeTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -80,8 +77,8 @@ public class TabPanelOrganization extends TabPanel {
 
 	private DefaultTreeModel defaultTreeModel;
 
-	private TreeTableModel treeTableModel; 
-	private JTreeTable treeTable;
+//	private TreeTableModel treeTableModel; 
+//	private JTreeTable treeTable;
 	
 	private DefaultMutableTreeNode commanderStaffNode;
 	private DefaultMutableTreeNode commanderNode;
@@ -130,8 +127,6 @@ public class TabPanelOrganization extends TabPanel {
 
 	private LocalUnitManagerListener unitManagerListener;
 
-//	private Font labelFont;
-	
 	/**
 	 * Constructor.
 	 *
@@ -147,8 +142,7 @@ public class TabPanelOrganization extends TabPanel {
 			desktop);
 
 		settlement = unit;
-		
-//		labelFont = StyleManager.getLabelFont();
+
 	}
 
 	@Override
@@ -189,14 +183,13 @@ public class TabPanelOrganization extends TabPanel {
 
 		initNodes();
 		
-		treeTableModel = OrganizationTreeTableModel.createModel(settlement); 
-		
-		treeTable = new JTreeTable(treeTableModel);
-		
-		JScrollPane scrollTreePane = new JScrollPane();
-		scrollTreePane.setViewportView(treeTable);
-		content.add(scrollTreePane, BorderLayout.SOUTH);
-		
+//		treeTableModel = OrganizationTreeTableModel.createModel(settlement); 
+//		
+//		treeTable = new JTreeTable(treeTableModel);
+//		
+//		JScrollPane scrollTreePane = new JScrollPane();
+//		scrollTreePane.setViewportView(treeTable);
+//		content.add(scrollTreePane, BorderLayout.SOUTH);
 	}
 
 	/**

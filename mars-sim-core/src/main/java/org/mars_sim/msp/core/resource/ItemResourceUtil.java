@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,10 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String EXTINGUISHER = "fire extinguisher";
+	private static final String PATCH = "airleak patch";
+	private static final String GLOVE = "work gloves";
+	
 	private static final String PRESSURE_SUIT = "pressure suit";
 	private static final String GARMENT = "garment";
 	
@@ -58,7 +63,10 @@ public class ItemResourceUtil implements Serializable {
 	private static ManufactureConfig manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 	
 	public static Set<Integer> evaSuitPartIDs;
-	
+
+	/** A set of common parts that will be consumed during a malfunction repair. */
+	public static Set<Integer> consumablePartIDs;
+
 	/**
 	 * Constructor.
 	 */
@@ -66,6 +74,21 @@ public class ItemResourceUtil implements Serializable {
 		partSet = getItemResources();
 		createMaps();
 		createIDs();
+	}
+	
+	/**
+	 * Initializes the consumable parts for use during malfunction.
+	 */
+	public static void initConsumableParts() {
+		if (consumablePartIDs == null || consumablePartIDs.isEmpty()) {
+
+			List<String> parts = new ArrayList<>();
+			parts.add(EXTINGUISHER);
+			parts.add(PATCH);
+			parts.add(GLOVE);
+			
+			consumablePartIDs = convertNameListToResourceIDs(parts);
+		}
 	}
 	
 	/**
@@ -124,7 +147,7 @@ public class ItemResourceUtil implements Serializable {
 
 	
 	/**
-	 * Convert a list of string into their equivalent IDs.
+	 * Converts a list of string into their equivalent IDs.
 	 * 
 	 * @param string list
 	 * @return a set of ids
@@ -136,6 +159,7 @@ public class ItemResourceUtil implements Serializable {
 	
 	/**
 	 * Converts a array of string names into their equivalent IDs.
+	 * Note: Currently, it will look for parts only.
 	 * 
 	 * @param name array
 	 * @return a set of ids
@@ -146,6 +170,7 @@ public class ItemResourceUtil implements Serializable {
 			
 			AmountResource ar = ResourceUtil.findAmountResource(n);
 			if (ar != null) {
+				// Not including amount resources
 //				ids.add(ar.getID());
 			}		
 			else {

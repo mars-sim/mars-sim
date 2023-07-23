@@ -77,7 +77,7 @@ import org.mars_sim.msp.core.time.Temporal;
  */
 public class MalfunctionManager implements Serializable, Temporal {
 
-	private static final String PERC_CHANGE = "%.1f %% --> %.1f %%";
+	private static final String PERC_CHANGE = "%.3f %% --> %.3f %%";
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -186,7 +186,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static MalfunctionFactory factory;
 	private static HistoricalEventManager eventManager;
 	private static PartConfig partConfig;
-
+	
 	/**
 	 * Constructor.
 	 *
@@ -195,7 +195,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *                            before the entity is worn out.
 	 * @param maintWorkTime the amount of work time (millisols) required for
 	 *                            maintenance.
-	 * Note: for buildigns, see maintenance-time in buildings.xml                           
+	 * Note: for buildings, see maintenance-time in buildings.xml                           
 	 */
 	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, double maintWorkTime) {
 
@@ -422,26 +422,35 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param malfunction
 	 */
 	public void calculateNewReliability(Malfunction malfunction) {
+		
+		ItemResourceUtil.initConsumableParts();
+		
 		// Register the failure of the Parts involved
-		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {
-			int num = p.getValue();
-
+		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {	
+	
 			// Compute the new reliability and failure rate for this malfunction
 			Part part = ItemResourceUtil.findItemResource(p.getKey());
 			String partName = part.getName();
 
+			if (ItemResourceUtil.consumablePartIDs.contains(part.getID())) {
+				// No need to calculate the consumable parts since they are tools needed 
+				// for repairing malfunctions and are not broken
+				return;
+			}
+			
+			// Record the number of failure
+			int numFailed = p.getValue();
+			part.recordCumFailure(numFailed);	
+			
 			double oldRel = part.getReliability();
 			double oldRepairProb = getRepairPartProbability(malfunction, partName);
 			double oldFailure = part.getFailureRate();
 			double oldMalProb = malfunction.getProbability();
 			
 			double oldMTBF = part.getMTBF();
-
-			// Record the number of failure
-			part.recordCumFailure(num);	
 			
-			// Record the number of failure
-			int numFailure = part.getCumFailure();	
+			// Retrieve the cumulative number of failure
+			int cumFailure = part.getCumFailure();	
 			
 			// Gets the mission sol
 			int missionSol = masterClock.getMarsTime().getMissionSol();
@@ -451,7 +460,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double solsInUse = missionSol + millisols/1000 - part.getStartSol();
 			
 			// Recompute the MTBF for this part
-			double newMTBF = part.computeMTBF(solsInUse);
+			double newMTBF = part.computeMTBF(solsInUse, numFailed);
 			// Recompute the reliability for this part
 			double newRel = part.computeReliability(solsInUse);
 			// Recompute the failure rate
@@ -459,20 +468,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Update all part's repair probability
 			double newRepairProb = computeRepairPartProbability(malfunction, partName, newRel);
 			// Recompute the malfunction failure 
-			double newMalProb = 0.1 * oldMalProb * + 0.9 * newFailure;
+			double newMalProb = Math.max(oldMalProb * 1.1, oldMalProb * + 0.1 * newFailure);
 			// Update the probability of failure for this particular malfunction
 			malfunction.setProbability(newMalProb);
 			
 			logger.warning("           *** Part : " + partName + " ***");
-			logger.warning(" (1).         Num of Failures : " + numFailure);	
-			logger.warning(" (2).             Sols in Use : " + solsInUse);
-			logger.warning(" (3).                    MTBF : " + String.format("%.1f millisols --> %.1f millisols", oldMTBF, newMTBF));	
-			logger.warning(" (4).            Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));			
-			logger.warning(" (5).     Percent Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
-			logger.warning(" (6).      Repair Probability : " + String.format(PERC_CHANGE, oldRepairProb, newRepairProb));			
-			logger.warning(" (7). Malfunction Probability : " + String.format(PERC_CHANGE, oldMalProb, newMalProb));
-
-
+			logger.warning(" (0). Cumulative # of Failures : " + cumFailure);
+			logger.warning(" (1).         Current # Failed : " + numFailed);			
+			logger.warning(" (2).              Sols in Use : " + Math.round(solsInUse * 100.0)/100.0);
+			logger.warning(" (3).                     MTBF : " + String.format("%.2f sols --> %.2f sols", oldMTBF, newMTBF));	
+			logger.warning(" (4).             Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));			
+			logger.warning(" (5).      Percent Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
+			logger.warning(" (6).       Repair Probability : " + String.format(PERC_CHANGE, oldRepairProb, newRepairProb));			
+			logger.warning(" (7).  Malfunction Probability : " + String.format(PERC_CHANGE, oldMalProb, newMalProb));
 		}
 	}
 	

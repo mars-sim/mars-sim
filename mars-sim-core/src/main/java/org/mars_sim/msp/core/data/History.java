@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Represents the history a value that changes over time.
- * Whenever a value is added it is timestamped with teh current marian time.
+ * Whenever a value is added it is timestamped with the current martian time.
  */
 public class History<T> implements Serializable {
 
@@ -51,7 +51,8 @@ public class History<T> implements Serializable {
     private int maxItems;
     
     /**
-     * Create a History but define the maximum items to hold
+     * Creates a History but define the maximum items to hold.
+     * 
      * @param maxItems
      */
     public History(int maxItems) {
@@ -59,16 +60,17 @@ public class History<T> implements Serializable {
     }
 
     /**
-     * Crete a history that hold infinite items
+     * Creates a history that hold infinite items.
      */
     public History() {
         this(-1);
     }
 
     /**
-     * Add a value to the history and timestamp it. If the value is the same as the previous item 
+     * Adds a value to the history and timestamp it. If the value is the same as the previous item 
      * this the item is not added.
      * If the timestamp of the previous item has not advance; then it is overwritten.
+     * 
      * @param value New value to add
      */
     public boolean add(T value) {
@@ -95,7 +97,8 @@ public class History<T> implements Serializable {
     }
 
     /**
-     * Get the changes that have occured over time
+     * Gets the changes that have occurred over time.
+     * 
      * @return List of changes.
      */
     public List<HistoryItem<T>> getChanges() {
@@ -103,7 +106,8 @@ public class History<T> implements Serializable {
     }
 
     /**
-     * Get the range of dates covered by this history
+     * Gets the range of dates covered by this history.
+     * 
      * @return
      */
     public List<MarsDate> getRange() {
@@ -111,7 +115,8 @@ public class History<T> implements Serializable {
     }
 
     /**
-     * Load up the reference to the master clock
+     * Loads up the reference to the master clock.
+     * 
      * @param mc
      */
     public static void initializeInstances(MasterClock mc) {

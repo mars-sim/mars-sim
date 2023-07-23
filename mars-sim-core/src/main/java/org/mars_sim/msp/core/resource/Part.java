@@ -29,8 +29,8 @@ public class Part extends ItemResource {
 
 	// The cumulative number of failures
 	private int cumFailures = 0;
-	// The current MTBF [in sols]. Initially, set it to 1/3 of the MAX_MTBF
-	private double mtbf = .3 * MAX_MTBF;
+	// The current MTBF [in sols]
+	private double mtbf = MAX_MTBF;
 	// The number of failure per sol
 	private double failureRate = 1.0/mtbf;
 	// The current percent reliability
@@ -87,14 +87,15 @@ public class Part extends ItemResource {
 	 * Computes the MTBF.
 	 * 
 	 * @param solsInUse
+	 * @param numFailed
 	 * @return 
 	 */
-	public double computeMTBF(double solsInUse) {
+	public double computeMTBF(double solsInUse, int numFailed) {
 		
 		if (cumFailures == 0)
 			mtbf = MAX_MTBF;
 		else {
-			mtbf = updateMTBF(solsInUse);
+			mtbf = updateMTBF(solsInUse, numFailed);
 		}
 		
 		return mtbf;
@@ -103,19 +104,20 @@ public class Part extends ItemResource {
 	/**
 	 * Computes the MTBF.
 	 *
-	 * @param numSols
+	 * @param solsInUse
+	 * @param numFailed
 	 * @return
 	 */
-	private double updateMTBF(double numSols) {
+	private double updateMTBF(double solsInUse, int numFailed) {
 		// Obtain the total # of this part in used from all settlements
 		int numItem = CollectionUtils.getTotalNumPart(getID());
 
 		// Take the average between the field measured mtbf and factory/max mtbf 
-		return Math.min(MAX_MTBF, (0.25 * numItem * numSols / cumFailures + 0.75 * MAX_MTBF));
+		return Math.min(MAX_MTBF, (0.25 * Math.min(numItem / numFailed, 10) * solsInUse / cumFailures + 0.75 * MAX_MTBF));
 	}
 
 	/**
-	 * Computes the failure rate [in 1/sols]
+	 * Computes the failure rate [per sol].
 	 * 
 	 * @return
 	 */
@@ -153,12 +155,12 @@ public class Part extends ItemResource {
 	
 	/**
 	 * Records the cumulative number of failures.
+	 * Note: should call computeMTBF and then computeReliability after this.
 	 * 
 	 * @param num
 	 */
 	public void recordCumFailure(int num) {
 		cumFailures += num;
-		// Note: typically call computeMTBF and then computeReliability after this.
 	}
 
 	/**

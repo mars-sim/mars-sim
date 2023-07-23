@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 
 /**
- * The class represent a date on Mars
+ * This class represents a date on Mars
  */
 public class MarsDate implements Serializable {
 

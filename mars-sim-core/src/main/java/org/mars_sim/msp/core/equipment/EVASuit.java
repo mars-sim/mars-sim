@@ -125,8 +125,44 @@ public class EVASuit extends Equipment
 	private MicroInventory microInventory;
 	
 	private History<Unit> locnHistory;
-
 	
+	static {
+
+		// Initialize the parts
+		ItemResourceUtil.initEVASuit();
+		
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		
+		double o2Consumed = personConfig.getHighO2ConsumptionRate();
+		double co2Expelled = personConfig.getCO2ExpelledRate();
+		
+		GAS_RATIO = co2Expelled / o2Consumed;
+				
+		MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
+		
+		FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
+		
+		MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
+		
+		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
+		
+		logger.config(DASHES);
+//		logger.config(" Suit's Unloaded Weight : " + Math.round(getBaseMass() * 1_000.0)/1_000.0 + " kg");
+		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
+		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
+					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
+		logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
+					+ Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
+		logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
+					+ Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
+		logger.config(DASHES);
+			
+			// 66.61 kPa -> 1      kg (full tank O2 pressure)
+			// 20.7  kPa -> 0.3107 kg
+			// 17    kPa -> 0.2552 kg (target O2 pressure)
+			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
+	}
+		
 	/**
 	 * Constructor.
 	 * 
@@ -173,43 +209,6 @@ public class EVASuit extends Equipment
 		setBaseMass(EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT));
 
 		locnHistory = new History<>(10);
-	}
-	
-	static {
-
-		// Initialize the parts
-		ItemResourceUtil.initEVASuit();
-		
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-		
-		double o2Consumed = personConfig.getHighO2ConsumptionRate();
-		double co2Expelled = personConfig.getCO2ExpelledRate();
-		
-		GAS_RATIO = co2Expelled / o2Consumed;
-				
-		MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
-		
-		FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
-		
-		MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
-		
-		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
-		
-		logger.config(DASHES);
-//		logger.config(" Suit's Unloaded Weight : " + Math.round(getBaseMass() * 1_000.0)/1_000.0 + " kg");
-		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
-		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
-					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
-		logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-					+ Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
-		logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
-					+ Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
-		logger.config(DASHES);
-			
-			// 66.61 kPa -> 1      kg (full tank O2 pressure)
-			// 20.7  kPa -> 0.3107 kg
-			// 17    kPa -> 0.2552 kg (target O2 pressure)
-			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 	}
 	
 	/**

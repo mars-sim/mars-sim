@@ -306,10 +306,11 @@ public class MalfunctionTabPanel extends TabPanel {
 		else {
 			offset = 1;
 		}
-		columnModel.getColumn(NAME).setPreferredWidth(100);
+		columnModel.getColumn(NAME).setPreferredWidth(80);
         columnModel.getColumn(EVA_WORK - offset).setMaxWidth(50);
-        columnModel.getColumn(INSIDE_WORK- offset).setMaxWidth(50);
+        columnModel.getColumn(INSIDE_WORK - offset).setMaxWidth(50);
         columnModel.getColumn(COMPLETED- offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
+        
 		columnModel.getColumn(COMPLETED- offset).setCellRenderer(new PercentageCellRenderer(true));
 
 
