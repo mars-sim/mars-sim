@@ -518,6 +518,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				totalProb += prob;	
 				if (part.getName().equalsIgnoreCase(partName)) {
 					oldRepairProb = prob;
+					num = part.getNumber();
 				}
 			}
 			
@@ -537,7 +538,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				}
 				else {
 					double oldProb = part.getRepairProbability();
-					double newProb = (oldProb + spreadRepairProb )* totalProb / 100;			
+					double newProb = (oldProb + spreadRepairProb) * totalProb / 100;		
 					part.setRepairProbability(newProb);
 				}
 			}
@@ -545,30 +546,30 @@ public class MalfunctionManager implements Serializable, Temporal {
 			return newRepairProb;
 		}
 		
-		return -1;
+		return 0;
 	}
 	
 	
-	/**
-	 * Sets the probability of a repair part for a malfunction.
-	 *
-	 * @param malfunctionName the name of the malfunction.
-	 * @param partName        the name of the part.
-	 * @return the probability of the repair part.
-	 */
-	public void setRepairPartProbability(Malfunction malfunction, String partName, double repairProbability) {
-		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
-		if (partList != null) {
-			Iterator<RepairPart> i = partList.iterator();
-			while (i.hasNext()) {
-				RepairPart part = i.next();
-				if (part.getName().equalsIgnoreCase(partName)) {
-					part.setRepairProbability(repairProbability);
-					break;
-				}
-			}
-		}
-	}
+//	/**
+//	 * Sets the probability of a repair part for a malfunction.
+//	 *
+//	 * @param malfunctionName the name of the malfunction.
+//	 * @param partName        the name of the part.
+//	 * @return the probability of the repair part.
+//	 */
+//	public void setRepairPartProbability(Malfunction malfunction, String partName, double repairProbability) {
+//		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
+//		if (partList != null) {
+//			Iterator<RepairPart> i = partList.iterator();
+//			while (i.hasNext()) {
+//				RepairPart part = i.next();
+//				if (part.getName().equalsIgnoreCase(partName)) {
+//					part.setRepairProbability(repairProbability);
+//					break;
+//				}
+//			}
+//		}
+//	}
 	
 	/**
 	 * Sets up a malfunction event.
