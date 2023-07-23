@@ -1,0 +1,116 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+ name="Germany">
+    <first-name-list>
+
+        <!-- Extracted from https://en.wikipedia.org/wiki/German_name -->
+
+        <first-name value="Ben" gender="male" />
+        <first-name value="Jonas" gender="male" />
+        <first-name value="Leon" gender="male" />
+        <first-name value="Elias" gender="male" />
+        <first-name value="Finn" gender="male" />
+
+        <first-name value="Fynn" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Paul" gender="male" />
+        <first-name value="Luis" gender="male" />
+        <first-name value="Louis" gender="male" />
+
+        <first-name value="Lukas" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Luka" gender="male" />
+        <first-name value="Felix" gender="male" />
+
+        <first-name value="Maximilian" gender="male" />
+        <first-name value="Niklas" gender="male" />
+        <first-name value="Niklas" gender="male" />
+        <first-name value="Jannik" gender="male" />
+        <first-name value="Yannik" gender="male" />
+
+        <first-name value="Jan" gender="male" />
+        <first-name value="Tobias" gender="male" />
+        <first-name value="Christian" gender="male" />
+        <first-name value="Alexander" gender="male" />
+        <first-name value="Sebastian" gender="male" />
+
+        <first-name value="Philipp" gender="male" />
+        <first-name value="Marcel" gender="male" />
+        <first-name value="Daniel" gender="male" />
+        <first-name value="Yannic" gender="male" />
+        <first-name value="Thomas" gender="male" />
+
+
+        <first-name value="Mia" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Hannah" gender="female" />
+        <first-name value="Hanna" gender="female" />
+        <first-name value="Sofia" gender="female" />
+
+        <first-name value="Sophia" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Emilia" gender="female" />
+        <first-name value="Lina" gender="female" />
+        <first-name value="Marie" gender="female" />
+
+        <first-name value="Lena" gender="female" />
+        <first-name value="Mila" gender="female" />
+        <first-name value="Lea" gender="female" />
+        <first-name value="Leah" gender="female" />
+        <first-name value="Emily" gender="female" />
+
+        <first-name value="Anna" gender="female" />
+        <first-name value="Lili" gender="female" />
+        <first-name value="Lina" gender="female" />
+        <first-name value="Julia" gender="female" />
+        <first-name value="Lara" gender="female" />
+
+        <first-name value="Sara" gender="female" />
+        <first-name value="Katharina" gender="female" />
+        <first-name value="Jessika" gender="female" />
+        <first-name value="Melanie" gender="female" />
+        <first-name value="Michelle" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- https://en.wikipedia.org/wiki/List_of_the_most_common_surnames_in_Germany -->
+
+        <last-name value="Müller" />
+        <last-name value="Schmidt" />
+        <last-name value="Schneider" />
+        <last-name value="Fischer" />
+        <last-name value="Weber" />
+
+        <last-name value="Meyer" />
+        <last-name value="Wagner" />
+        <last-name value="Becker" />
+        <last-name value="Schulz" />
+        <last-name value="Hoffmann" />
+
+
+        <last-name value="Schäfer" />
+        <last-name value="Koch" />
+        <last-name value="Bauer" />
+        <last-name value="Richter" />
+        <last-name value="Klein" />
+
+        <last-name value="Wolf" />
+        <last-name value="Schröder" />
+        <last-name value="Neumann" />
+        <last-name value="Schwarz" />
+        <last-name value="Zimmermann" />
+
+
+        <last-name value="Becker" />
+        <last-name value="Fischer" />
+        <last-name value="Hoffmann" />
+        <last-name value="Meyer" />
+        <last-name value="Müller" />
+
+        <last-name value="Braun" />
+        <last-name value="Krüger" />
+        <last-name value="Hofmann" />
+        <last-name value="Hartmann" />
+        <last-name value="Lange" />
+    </last-name-list>
+</country>

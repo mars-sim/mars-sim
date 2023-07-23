@@ -1,0 +1,49 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+ name="Greece">
+    <first-name-list>
+        <first-name value="Georgios" gender="male" />
+        <first-name value="Ioannis" gender="male" />
+        <first-name value="Konstantinos" gender="male" />
+        <first-name value="Kostas" gender="male" />
+        <first-name value="Dimitrios" gender="male" />
+        <first-name value="Nikolaos" gender="male" />
+        <first-name value="Panagiotis" gender="male" />
+        <first-name value="Vasileios" gender="male" />
+        <first-name value="Christos" gender="male" />
+        <first-name value="Athanasios" gender="male" />
+        <first-name value="Michail" gender="male" />
+
+        <first-name value="Maria" gender="female" />
+        <first-name value="Eleni" gender="female" />
+        <first-name value="Aikaterini" gender="female" />
+        <first-name value="Katerina" gender="female" />
+        <first-name value="Vasikiki" gender="female" />
+        <first-name value="Basiliki" gender="female" />
+        <first-name value="Vaso" gender="female" />
+        <first-name value="Sophia" gender="female" />
+        <first-name value="Angeliki" gender="female" />
+        <first-name value="Georgia" gender="female" />
+        <first-name value="Giorgia" gender="female" />
+        <first-name value="Gogo" gender="female" />
+        <first-name value="Dimitra" gender="female" />
+        <first-name value="Konstantina" gender="female" />
+        <first-name value="Kostantina" gender="female" />
+        <first-name value="Paraskevi" gender="female" />
+        <first-name value="Paraskeui" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Greek surnames -->
+
+        <last-name value="Angelopoulos" />
+        <last-name value="Athanasiadis" />
+        <last-name value="Dimitriadis" />
+        <last-name value="Georgiou" />
+        <last-name value="Nikolaidis" />
+        <last-name value="Panagiotopoulos" />
+        <last-name value="Papadakis" />
+        <last-name value="Papadopoulos" />
+        <last-name value="Petridis" />
+        <last-name value="Vlachos" />
+    </last-name-list>
+</country>

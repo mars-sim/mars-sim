@@ -1,0 +1,58 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Norway">
+    <first-name-list>
+        <first-name value="William" gender="male" />
+        <first-name value="Mathias" gender="male" />
+        <first-name value="Matias" gender="male" />
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Jakob" gender="male" />
+        <first-name value="Jacob" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Lukas" gender="male" />
+        <first-name value="Filip" gender="male" />
+        <first-name value="Fillip" gender="male" />
+        <first-name value="Philip" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Aksel" gender="male" />
+        <first-name value="Axel" gender="male" />
+        <first-name value="Emil" gender="male" />
+        <first-name value="Oskar" gender="male" />
+        <first-name value="Oscar" gender="male" />
+
+
+        <first-name value="Emma" gender="female" />
+        <first-name value="Nora" gender="female" />
+        <first-name value="Norah" gender="female" />
+        <first-name value="Sara" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Sahra" gender="female" />
+        <first-name value="Sofie" gender="female" />
+        <first-name value="Sophie" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Sophia" gender="female" />
+        <first-name value="Emilie" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Leah" gender="female" />
+        <first-name value="Lea" gender="female" />
+        <first-name value="Maja" gender="female" />
+        <first-name value="Maia" gender="female" />
+        <first-name value="Maya" gender="female" />
+        <first-name value="Anna" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Norwegian surnames -->
+
+        <last-name value="Andersen" />
+        <last-name value="Hansen" />
+        <last-name value="Jensen" />
+        <last-name value="Johansen" />
+        <last-name value="Karlsen" />
+        <last-name value="Kristiansen" />
+        <last-name value="Larsen" />
+        <last-name value="Nilsen" />
+        <last-name value="Olsen" />
+        <last-name value="Pedersen" />
+    </last-name-list>
+</country>

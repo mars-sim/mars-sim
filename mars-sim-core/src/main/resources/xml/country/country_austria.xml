@@ -1,0 +1,40 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Austria">
+    <first-name-list>
+        <first-name value="Lukas" gender="male" />
+        <first-name value="Maximilian" gender="male" />
+        <first-name value="Jakob" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Tobias" gender="male" />
+        <first-name value="Paul" gender="male" />
+        <first-name value="Jonas" gender="male" />
+        <first-name value="Felix" gender="male" />
+        <first-name value="Alexander" gender="male" />
+        <first-name value="Elias" gender="male" />
+
+        <first-name value="Anna" gender="female" />
+        <first-name value="Hannah" gender="female" />
+        <first-name value="Sophia" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Marie" gender="female" />
+        <first-name value="Lena" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Sophie" gender="female" />
+        <first-name value="Laura" gender="female" />
+        <first-name value="Mia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Austrian surnames -->
+        <last-name value="Bauer" />
+        <last-name value="Gruber" />
+        <last-name value="Hofer" />
+        <last-name value="Huber" />
+        <last-name value="Mayer" />
+        <last-name value="Moser" />
+        <last-name value="Muller" />
+        <last-name value="Pichler" />
+        <last-name value="Steiner" />
+        <last-name value="Wagner" />
+    </last-name-list>
+</country>

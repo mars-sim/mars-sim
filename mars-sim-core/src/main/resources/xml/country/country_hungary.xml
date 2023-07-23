@@ -1,0 +1,42 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+         name="Hungary">
+    <first-name-list>
+        <first-name value="Bence" gender="male" />
+        <first-name value="Máté" gender="male" />
+        <first-name value="Levente" gender="male" />
+        <first-name value="Ádám" gender="male" />
+        <first-name value="Dávid" gender="male" />
+        <first-name value="Dániel" gender="male" />
+        <first-name value="Marcell" gender="male" />
+        <first-name value="Balázs" gender="male" />
+        <first-name value="Milán" gender="male" />
+        <first-name value="Dominik" gender="male" />
+
+
+        <first-name value="Hanna" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Jázmin" gender="female" />
+        <first-name value="Lili" gender="female" />
+        <first-name value="Zsófia" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Luca" gender="female" />
+        <first-name value="Boglárka" gender="female" />
+        <first-name value="Zoé" gender="female" />
+        <first-name value="Nóra" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Hungarian surnames -->
+
+        <last-name value="Farkas" />
+        <last-name value="Horváth" />
+        <last-name value="Kiss" />
+        <last-name value="Kovács" />
+        <last-name value="Molnár" />
+        <last-name value="Nagy" />
+        <last-name value="Németh" />
+        <last-name value="Szabó" />
+        <last-name value="Tóth" />
+        <last-name value="Varga" />
+    </last-name-list>
+</country>

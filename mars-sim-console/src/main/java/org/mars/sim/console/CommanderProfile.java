@@ -28,6 +28,7 @@ import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.PersonNameSpecConfig;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 
 /**
@@ -80,7 +81,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal = term.getTerminal();
 
     	// Get Country list from known PersonConfig
-    	countryList = new ArrayList<>(config.getPersonConfig().getKnownCountries());
+        PersonNameSpecConfig nameConfig = new PersonNameSpecConfig();
+    	countryList = new ArrayList<>(nameConfig.getItemNames());
     	Collections.sort(countryList);
 
         authorities = new ArrayList<>(config.getReportingAuthorityFactory().getItemNames());

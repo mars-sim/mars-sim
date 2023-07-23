@@ -1609,57 +1609,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Generates a unique name for a person based on a country.
-	 *
-	 * @param country
-	 * @param gender
-	 * @return the unique name
-	 */
-	public static String generateName(String country, GenderType gender) {
-		boolean isUniqueName = false;
-		PersonConfig personConfig = simulationConfig.getPersonConfig();
-
-		// Check for any duplicate full Name
-		List<String> existingfullnames = unitManager.getPeople().stream()
-				.map(Person::getName).collect(Collectors.toList());
-
-		// Prevent mars-sim from using the user defined commander's name
-		String userName = personConfig.getCommander().getFullName();
-		if (userName != null)
-			existingfullnames.add(userName);
-
-		// Setup name ranges
-		PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
-		List<String> last_list = nameSpec.getLastNames();
-		List<String> first_list = null;
-		if (gender == GenderType.MALE) {
-			first_list = nameSpec.getMaleNames();
-		} else {
-			first_list = nameSpec.getFemaleNames();
-		}
-
-		// Attempt to find a unique combination
-		while (!isUniqueName) {
-			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
-			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
-
-			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
-
-			// double checking if this name has already been in use
-			if (existingfullnames.contains(fullname)) {
-				isUniqueName = false;
-				logger.config(fullname + " is a duplicate name. Choose another one.");
-			}
-			else {
-				return fullname;
-			}
-		}
-
-		// Should never get here
-		return "Person #" + existingfullnames.size();
-	}
-
-	/**
 	 * Gets the remaining carrying capacity available.
 	 *
 	 * @return capacity (kg).

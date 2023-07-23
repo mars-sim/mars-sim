@@ -1,0 +1,63 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Finland">
+    <first-name-list>
+        <first-name value="Leo" gender="male" />
+        <first-name value="Elias" gender="male" />
+        <first-name value="Onni" gender="male" />
+        <first-name value="Eino" gender="male" />
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Niilo" gender="male" />
+        <first-name value="Väinö" gender="male" />
+        <first-name value="Eetu" gender="male" />
+        <first-name value="Leevi" gender="male" />
+        <first-name value="Daniel" gender="male" />
+
+        <first-name value="Emil" gender="male" />
+        <first-name value="William" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Max" gender="male" />
+        <first-name value="Benjamin" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Casper" gender="male" />
+        <first-name value="Anton" gender="male" />
+        <first-name value="Axel" gender="male" />
+
+        <first-name value="Venla" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Aada" gender="female" />
+        <first-name value="Aino" gender="female" />
+        <first-name value="Elsa" gender="female" />
+        <first-name value="Helmi" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Eevi" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Emilia" gender="female" />
+
+        <first-name value="Louise" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Chloé" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Inès" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Jeanne" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Adèle" gender="female" />
+        <first-name value="Juliette" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Finnish surnames -->
+
+        <last-name value="Heikkinen" />
+        <last-name value="Hämäläinen" />
+        <last-name value="Järvinen" />
+        <last-name value="Korhonen" />
+        <last-name value="Koskinen" />
+        <last-name value="Laine" />
+        <last-name value="Mäkelä" />
+        <last-name value="Mäkinen" />
+        <last-name value="Nieminen" />
+        <last-name value="Virtanen" />
+    </last-name-list>
+</country>

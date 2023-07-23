@@ -1,0 +1,61 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+     name="Denmark">
+    <first-name-list>
+        <first-name value="William" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Malthe" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Emil" gender="male" />
+        <first-name value="Victor" gender="male" />
+        <first-name value="Oscar" gender="male" />
+        <first-name value="Alfred" gender="male" />
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Frederik" gender="male" />
+        <first-name value="Carl" gender="male" />
+        <first-name value="Elias" gender="male" />
+
+        <first-name value="Sofie" gender="female" />
+        <first-name value="Alma" gender="female" />
+        <first-name value="Freja" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Laura" gender="female" />
+        <first-name value="Clara" gender="female" />
+        <first-name value="Maja" gender="female" />
+        <first-name value="Alberte" gender="female" />
+        <first-name value="Ida" gender="female" />
+        <first-name value="Agnes" gender="female" />
+
+        <first-name value="Eva" gender="female" />
+        <first-name value="Hanne" gender="female" />
+        <first-name value="Marie" gender="female" />
+        <first-name value="Rosa" gender="female" />
+        <first-name value="Else" gender="female" />
+        <first-name value="Lea" gender="female" />
+        <first-name value="Ronja" gender="female" />
+        <first-name value="Isabella" gender="female" />
+        <first-name value="Lilja" gender="female" />
+        <first-name value="Liva" gender="female" />
+        <first-name value="Mia" gender="female" />
+        <first-name value="Gitte" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Danish surnames plus a little more -->
+
+        <last-name value="Andersen" />
+        <last-name value="Christensen" />
+        <last-name value="Hansen" />
+        <last-name value="Jensen" />
+        <last-name value="Jørgensen" />
+        <last-name value="Larsen" />
+        <last-name value="Nielsen" />
+        <last-name value="Pedersen" />
+        <last-name value="Rasmussen" />
+        <last-name value="Sørensen" />
+        <last-name value="Rovsing" />
+        <last-name value="Krogh" />
+        <last-name value="Lund" />
+    </last-name-list>
+</country>

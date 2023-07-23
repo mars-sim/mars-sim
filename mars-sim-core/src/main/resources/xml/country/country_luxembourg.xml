@@ -1,0 +1,38 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Luxembourg">
+    <first-name-list>
+        <first-name value="Gabriel" gender="male" />
+        <first-name value="Leo" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Tom" gender="male" />
+        <first-name value="Ben" gender="male" />
+        <first-name value="Fränk" gender="male" />
+        <first-name value="Andy" gender="male" />
+        <first-name value="Teo" gender="male" />
+
+        <first-name value="Emma" gender="female" />
+        <first-name value="Lara" gender="female" />
+        <first-name value="Zoé" gender="female" />
+        <first-name value="Amy" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Charlotte" gender="female" />
+        <first-name value="Emily" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Luxembourgish surnames -->
+
+        <last-name value="Hoffmann" />
+        <last-name value="Klein" />
+        <last-name value="Muller" />
+        <last-name value="Reuter" />
+        <last-name value="Schmit" />
+        <last-name value="Schmitz" />
+        <last-name value="Schroeder" />
+        <last-name value="Thill" />
+        <last-name value="Wagner" />
+        <last-name value="Weber" />
+    </last-name-list>
+</country>

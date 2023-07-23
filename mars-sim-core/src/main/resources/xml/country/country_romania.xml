@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+            name="Romania">
+    <first-name-list>
+        <first-name value="Andrei" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Alexandru" gender="male" />
+        <first-name value="Gabriel" gender="male" />
+        <first-name value="Mihai" gender="male" />
+        <first-name value="Cristian" gender="male" />
+        <first-name value="Stefan" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Ionuţ" gender="male" />
+        <first-name value="Darius" gender="male" />
+
+        <first-name value="Maria" gender="female" />
+        <first-name value="Elena" gender="female" />
+        <first-name value="Ioana" gender="female" />
+        <first-name value="Andreea" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Alexandra" gender="female" />
+        <first-name value="Antonia" gender="female" />
+        <first-name value="Daria" gender="female" />
+        <first-name value="Ana" gender="female" />
+        <first-name value="Gabriela" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Romanian surnames -->
+
+        <last-name value="Ciobanu" />
+        <last-name value="Dumitru" />
+        <last-name value="Gheorghe" />
+        <last-name value="Matei" />
+        <last-name value="Pop" />
+        <last-name value="Popa" />
+        <last-name value="Popescu" />
+        <last-name value="Radu" />
+        <last-name value="Stan" />
+        <last-name value="Stoica" />
+    </last-name-list>
+</country>

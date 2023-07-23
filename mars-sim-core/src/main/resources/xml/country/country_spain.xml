@@ -1,0 +1,82 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Spain">
+    <first-name-list>
+        <first-name value="Hugo" gender="male" />
+        <first-name value="Daneil" gender="male" />
+        <first-name value="Pablo" gender="male" />
+        <first-name value="Martín" gender="male" />
+        <first-name value="Alejandro" gender="male" />
+        <first-name value="Adrián" gender="male" />
+        <first-name value="Álvaro" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Mario" gender="male" />
+
+        <first-name value="Markel" gender="male" />
+        <first-name value="Aimar" gender="male" />
+        <first-name value="Jon" gender="male" />
+        <first-name value="Ibai" gender="male" />
+        <first-name value="Julen" gender="male" />
+        <first-name value="Ander" gender="male" />
+        <first-name value="Unax" gender="male" />
+        <first-name value="Oier" gender="male" />
+        <first-name value="Mikel" gender="male" />
+        <first-name value="Iker" gender="male" />
+
+        <first-name value="Marc" gender="male" />
+        <first-name value="Àlex" gender="male" />
+        <first-name value="Marti" gender="male" />
+        <first-name value="Hugo" gender="male" />
+        <first-name value="Biel" gender="male" />
+        <first-name value="Èric" gender="male" />
+        <first-name value="Nil" gender="male" />
+        <first-name value="Jan" gender="male" />
+        <first-name value="Pol" gender="male" />
+        <first-name value="Pau" gender="male" />
+
+
+        <first-name value="Lucia" gender="female" />
+        <first-name value="Maria" gender="female" />
+        <first-name value="Martina" gender="female" />
+        <first-name value="Paula" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Daniela" gender="female" />
+        <first-name value="Alba" gender="female" />
+        <first-name value="Julia" gender="female" />
+        <first-name value="Carla" gender="female" />
+        <first-name value="Sara" gender="female" />
+
+        <first-name value="Ane" gender="female" />
+        <first-name value="June" gender="female" />
+        <first-name value="Nahia" gender="female" />
+        <first-name value="Irati" gender="female" />
+        <first-name value="Laia" gender="female" />
+        <first-name value="Nora" gender="female" />
+        <first-name value="Izaro" gender="female" />
+
+        <first-name value="Malen" gender="female" />
+        <first-name value="Uxue" gender="female" />
+
+        <first-name value="Júlia" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Aina" gender="female" />
+        <first-name value="Paula" gender="female" />
+        <first-name value="Noa" gender="female" />
+        <first-name value="Carla" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Spanish surnames -->
+
+        <last-name value="Fernández" />
+        <last-name value="García" />
+        <last-name value="González" />
+        <last-name value="Gómez" />
+        <last-name value="López" />
+        <last-name value="Martín" />
+        <last-name value="Martínez" />
+        <last-name value="Pérez" />
+        <last-name value="Rodríguez" />
+        <last-name value="Sánchez" />
+    </last-name-list>
+</country>

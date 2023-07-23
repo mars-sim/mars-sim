@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+         name="France">
+    <first-name-list>
+        <first-name value="Adam" gender="male" />
+        <first-name value="Gabriel" gender="male" />
+        <first-name value="Raphaël" gender="male" />
+        <first-name value="Paul" gender="male" />
+        <first-name value="Louis" gender="male" />
+        <first-name value="Arthur" gender="male" />
+        <first-name value="Alexandre" gender="male" />
+        <first-name value="Victor" gender="male" />
+        <first-name value="Jules" gender="male" />
+        <first-name value="Mohammed" gender="male" />
+
+        <first-name value="Louise" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Chloé" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Inès" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Jeanne" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Adèle" gender="female" />
+        <first-name value="Juliette" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common French surnames -->
+
+        <last-name value="Bernard" />
+        <last-name value="Dubois" />
+        <last-name value="Durand" />
+        <last-name value="Leroy" />
+        <last-name value="Martin" />
+        <last-name value="Moreau" />
+        <last-name value="Petit" />
+        <last-name value="Richard" />
+        <last-name value="Robert" />
+        <last-name value="Thomas" />
+    </last-name-list>
+</country>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="last-name">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="first-name">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+            <xs:attribute name="gender" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="country">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="first-name-list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="first-name" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="last-name-list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="last-name" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

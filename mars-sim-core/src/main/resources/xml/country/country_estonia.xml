@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Estonia">
+    <first-name-list>
+        <first-name value="Rasmus" gender="male" />
+        <first-name value="Robin" gender="male" />
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Maksim" gender="male" />
+        <first-name value="Robert" gender="male" />
+        <first-name value="Martin" gender="male" />
+        <first-name value="Kaspar" gender="male" />
+        <first-name value="Oskar" gender="male" />
+        <first-name value="Henri" gender="male" />
+        <first-name value="Markus" gender="male" />
+
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Eliise" gender="female" />
+        <first-name value="Maria" gender="female" />
+        <first-name value="Sandra" gender="female" />
+        <first-name value="Laura" gender="female" />
+        <first-name value="Mia" gender="female" />
+        <first-name value="Alisa" gender="female" />
+        <first-name value="Milana" gender="female" />
+        <first-name value="Lenna" gender="female" />
+        <first-name value="Polina" gender="female" />
+        <first-name value="Liisa" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Emilia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Estonian surnames -->
+
+        <last-name value="Ilves" />
+        <last-name value="Kask" />
+        <last-name value="Koppel" />
+        <last-name value="Kukk" />
+        <last-name value="Pärn" />
+        <last-name value="Rebane" />
+        <last-name value="Saar" />
+        <last-name value="Sepp" />
+        <last-name value="Tamm" />
+    </last-name-list>
+</country>

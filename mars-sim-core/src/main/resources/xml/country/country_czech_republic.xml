@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Czech Republic">
+    <first-name-list>
+
+        <first-name value="Jakub" gender="male" />
+        <first-name value="Jan" gender="male" />
+        <first-name value="Tomáš" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Adam" gender="male" />
+        <first-name value="Matyáš" gender="male" />
+        <first-name value="Filip" gender="male" />
+        <first-name value="Vojtěch" gender="male" />
+        <first-name value="Ondřej" gender="male" />
+        <first-name value="Lukáš" gender="male" />
+        <first-name value="Eliška" gender="female" />
+        <first-name value="Tereza" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Adéla" gender="female" />
+        <first-name value="Natálie" gender="female" />
+        <first-name value="Sofie" gender="female" />
+        <first-name value="Kristýna" gender="female" />
+        <first-name value="Karolína" gender="female" />
+        <first-name value="Viktorie" gender="female" />
+        <first-name value="Barbora" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Czech surnames (male only) -->
+
+        <last-name value="Dvořák" />
+        <last-name value="Horák" />
+        <last-name value="Kučera" />
+        <last-name value="Novotný" />
+        <last-name value="Novák" />
+        <last-name value="Němec" />
+        <last-name value="Procházka" />
+        <last-name value="Svoboda" />
+        <last-name value="Veselý" />
+        <last-name value="Černý" />
+    </last-name-list>
+</country>

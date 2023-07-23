@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PersonNameSpecConfig;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -363,9 +364,6 @@ public class CrewEditor implements ActionListener {
 	private SimulationConfigEditor simulationConfigEditor;
 
 	private ReportingAuthorityFactory raFactory;
-
-	private PersonConfig pc;
-
 	
 	/**
 	 * Constructor.
@@ -382,7 +380,6 @@ public class CrewEditor implements ActionListener {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 		this.raFactory = raFactory;
-		this.pc = pc;
 		
 		createGUI(config);
 	}
@@ -655,7 +652,8 @@ public class CrewEditor implements ActionListener {
 
 		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
 			// Load all known countries
-			model.addAll(pc.getKnownCountries());			
+			PersonNameSpecConfig nameConfig = new PersonNameSpecConfig();
+			model.addAll(nameConfig.getItemNames());			
 		}
 		else {
 			// Load the countries from RA

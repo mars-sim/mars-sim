@@ -1,0 +1,428 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="China">
+    <first-name-list>
+        <!-- Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts
+            http://www.20000-names.com/male_chinese_names.htm -->
+        <first-name value="Boming" gender="male" />
+        <first-name value="Chongfu" gender="male" />
+        <first-name value="Dazhe" gender="male" />
+        <first-name value="Donghai" gender="male" />
+
+        <first-name value="Enlai" gender="male" />
+        <first-name value="Haipeng" gender="male" />
+        <first-name value="Haisheng" gender="male" />
+        <first-name value="Hongliang" gender="male" />
+        <first-name value="Junlong" gender="male" />
+
+        <first-name value="Liwei" gender="male" />
+        <first-name value="Ming" gender="male" />
+        <first-name value="Qinghua" gender="male" />
+        <first-name value="Qiu" gender="male" />
+        <first-name value="Rongsen" gender="male" />
+
+        <first-name value="Senlin" gender="male" />
+        <first-name value="Shichang" gender="male" />
+        <first-name value="Shuying" gender="male" />
+        <first-name value="Wang" gender="male" />
+        <first-name value="Xiaoguang" gender="male" />
+
+        <first-name value="Xiaohai" gender="male" />
+        <first-name value="Xingrui" gender="male" />
+        <first-name value="Yaping" gender="male" />
+        <first-name value="Zhigang" gender="male" />
+        <!-- Derived from http://www.top-100-baby-names-search.com/chinese-male-names.html -->
+
+        <first-name value="Aiguo" gender="male" />
+        <first-name value="An" gender="male" />
+        <first-name value="Anguo" gender="male" />
+        <first-name value="Bai" gender="male" />
+        <first-name value="Bingwen" gender="male" />
+
+        <first-name value="Bo" gender="male" />
+        <first-name value="Bohai" gender="male" />
+        <first-name value="Bojing" gender="male" />
+        <first-name value="Bolin" gender="male" />
+        <first-name value="Boqin" gender="male" />
+
+        <first-name value="Changpu" gender="male" />
+        <first-name value="Chanming" gender="male" />
+        <first-name value="Chao" gender="male" />
+        <first-name value="Chaoxiang" gender="male" />
+        <first-name value="Chen" gender="male" />
+
+        <first-name value="Cheng" gender="male" />
+        <first-name value="Chenglei" gender="male" />
+        <first-name value="Cheung" gender="male" />
+        <first-name value="Chi" gender="male" />
+        <first-name value="Chongan" gender="male" />
+
+        <first-name value="Chongkun" gender="male" />
+        <first-name value="Chonglin" gender="male" />
+        <first-name value="Chuanli" gender="male" />
+        <first-name value="Chung" gender="male" />
+        <first-name value="Deli" gender="male" />
+
+        <first-name value="Deshi" gender="male" />
+        <first-name value="Dewei" gender="male" />
+        <first-name value="Da" gender="male" />
+        <first-name value="Dai" gender="male" />
+        <first-name value="Delun" gender="male" />
+
+        <first-name value="Deming" gender="male" />
+        <first-name value="Dingbang" gender="male" />
+        <first-name value="Dingxiang" gender="male" />
+        <first-name value="Dong" gender="male" />
+        <first-name value="Donghai" gender="male" />
+
+        <first-name value="Duyi" gender="male" />
+        <first-name value="Enlai" gender="male" />
+        <first-name value="Fa" gender="male" />
+        <first-name value="Fai" gender="male" />
+        <first-name value="Fang" gender="male" />
+
+        <first-name value="Feng" gender="male" />
+        <first-name value="Fengge" gender="male" />
+        <first-name value="Fu" gender="male" />
+        <first-name value="Fuhua" gender="male" />
+        <first-name value="Gan" gender="male" />
+
+        <first-name value="Gang" gender="male" />
+        <first-name value="Geming" gender="male" />
+        <first-name value="Gen" gender="male" />
+        <first-name value="Genghis" gender="male" />
+        <first-name value="Guang" gender="male" />
+
+        <first-name value="Guangli" gender="male" />
+        <first-name value="Gui" gender="male" />
+        <first-name value="Guiren" gender="male" />
+        <first-name value="Guoliang" gender="male" />
+        <first-name value="Guotin" gender="male" />
+
+        <first-name value="Guowei" gender="male" />
+        <first-name value="Guozhi" gender="male" />
+        <first-name value="Hai" gender="male" />
+        <first-name value="He" gender="male" />
+        <first-name value="Heng" gender="male" />
+
+        <first-name value="Ho" gender="male" />
+        <first-name value="Hong" gender="male" />
+        <first-name value="Honghui" gender="male" />
+        <first-name value="Hongqi" gender="male" />
+        <first-name value="Hop" gender="male" />
+
+        <first-name value="Huan" gender="male" />
+        <first-name value="Huangfu" gender="male" />
+        <first-name value="Hui" gender="male" />
+        <first-name value="Hulin" gender="male" />
+        <first-name value="Hung" gender="male" />
+
+        <first-name value="Huojin" gender="male" />
+        <first-name value="Jawlong" gender="male" />
+        <first-name value="Jian" gender="male" />
+        <first-name value="Jianguo" gender="male" />
+        <first-name value="Jianjun" gender="male" />
+
+        <first-name value="Jianyu" gender="male" />
+        <first-name value="Jin" gender="male" />
+        <first-name value="Jing" gender="male" />
+        <first-name value="Jingguo" gender="male" />
+        <first-name value="Jinhai" gender="male" />
+
+        <first-name value="Jinjing" gender="male" />
+        <first-name value="Jun" gender="male" />
+        <first-name value="Junjie" gender="male" />
+        <first-name value="Kang" gender="male" />
+        <first-name value="Keung" gender="male" />
+
+        <first-name value="Kong" gender="male" />
+        <first-name value="Lei" gender="male" />
+        <first-name value="Liko" gender="male" />
+        <first-name value="Ling" gender="male" />
+        <first-name value="Lok" gender="male" />
+
+        <first-name value="Longwei" gender="male" />
+        <first-name value="Manchu" gender="male" />
+        <first-name value="Minghua" gender="male" />
+        <first-name value="Mingli" gender="male" />
+        <first-name value="Mingtun" gender="male" />
+
+        <first-name value="Mingsheng" gender="male" />
+        <first-name value="Minzhe" gender="male" />
+        <first-name value="Niazu" gender="male" />
+        <first-name value="On" gender="male" />
+        <first-name value="Park" gender="male" />
+
+        <first-name value="Peng" gender="male" />
+        <first-name value="Pengfei" gender="male" />
+        <first-name value="Ping" gender="male" />
+        <first-name value="Qi" gender="male" />
+        <first-name value="Qianfan" gender="male" />
+
+        <first-name value="Qiang" gender="male" />
+        <first-name value="Qingshan" gender="male" />
+        <first-name value="Qingsheng" gender="male" />
+        <first-name value="Qiquiang" gender="male" />
+        <first-name value="Qiu" gender="male" />
+
+        <!-- Derived from http://www.20000-names.com/female_chinese_names.htm -->
+
+        <first-name value="Cuifen" gender="female" />
+        <first-name value="Haimei" gender="female" />
+        <first-name value="Huiling" gender="female" />
+        <first-name value="Jingfei" gender="female" />
+        <first-name value="Juan" gender="female" />
+
+        <first-name value="Lanfen" gender="female" />
+        <first-name value="Lihua" gender="female" />
+        <first-name value="Meifeng" gender="female" />
+        <first-name value="Meilin" gender="female" />
+        <first-name value="Meirong" gender="female" />
+
+        <first-name value="MingZhu" gender="female" />
+        <first-name value="Qianyi" gender="female" />
+        <first-name value="Suling" gender="female" />
+        <first-name value="Yang" gender="female" />
+
+        <!-- Derived from http://www.top-100-baby-names-search.com/female-chinese-names.html -->
+
+        <first-name value="Ahkum" gender="female" />
+        <first-name value="Ahlam" gender="female" />
+        <first-name value="Baozhai" gender="female" />
+        <first-name value="Bik" gender="female" />
+        <first-name value="Biyu" gender="female" />
+
+        <first-name value="Changchang" gender="female" />
+        <first-name value="Changying" gender="female" />
+        <first-name value="Chaoxing" gender="female" />
+        <first-name value="Chenguang" gender="female" />
+        <first-name value="Chuhua" gender="female" />
+
+        <first-name value="Chunhua" gender="female" />
+        <first-name value="Chuntao" gender="female" />
+        <first-name value="Cuifen" gender="female" />
+        <first-name value="DaChun" gender="female" />
+        <first-name value="Daitai" gender="female" />
+
+        <first-name value="Daiyu" gender="female" />
+        <first-name value="Dandan" gender="female" />
+        <first-name value="Daxia" gender="female" />
+        <first-name value="Dongmei" gender="female" />
+        <first-name value="Eufunh" gender="female" />
+
+        <first-name value="Eumeh" gender="female" />
+        <first-name value="Fang" gender="female" />
+        <first-name value="Far" gender="female" />
+        <first-name value="Fenfang" gender="female" />
+        <first-name value="Fung" gender="female" />
+
+        <first-name value="Guanyin" gender="female" />
+        <first-name value="Huifang" gender="female" />
+        <first-name value="Howin" gender="female" />
+        <first-name value="Hu" gender="female" />
+        <first-name value="Hua" gender="female" />
+
+        <first-name value="Hualing" gender="female" />
+        <first-name value="Huan" gender="female" />
+        <first-name value="Huian" gender="female" />
+        <first-name value="Huidai" gender="female" />
+        <first-name value="Huifang" gender="female" />
+
+        <first-name value="Huifen" gender="female" />
+        <first-name value="Huilang" gender="female" />
+        <first-name value="Huiliang" gender="female" />
+        <first-name value="Huiqing" gender="female" />
+        <first-name value="Huizhong" gender="female" />
+
+        <first-name value="Hweiru" gender="female" />
+        <first-name value="Jia" gender="female" />
+        <first-name value="Jiahui" gender="female" />
+        <first-name value="Jiao" gender="female" />
+        <first-name value="Jiayi" gender="female" />
+
+        <first-name value="Jiaying" gender="female" />
+        <first-name value="Jie" gender="female" />
+        <first-name value="Jingfei" gender="female" />
+        <first-name value="Jinghua" gender="female" />
+        <first-name value="Ju" gender="female" />
+
+        <first-name value="Juan" gender="female" />
+        <first-name value="Jun" gender="female" />
+        <first-name value="Kuaihua" gender="female" />
+        <first-name value="Kueching" gender="female" />
+        <first-name value="Kwong" gender="female" />
+
+        <first-name value="Lihua" gender="female" />
+        <first-name value="Lixue" gender="female" />
+        <first-name value="Lan" gender="female" />
+        <first-name value="Lanfen" gender="female" />
+        <first-name value="Lanying" gender="female" />
+
+        <first-name value="Mingxia" gender="female" />
+        <first-name value="Mingyu" gender="female" />
+        <first-name value="Mingzhu" gender="female" />
+        <first-name value="Mulan" gender="female" />
+        <first-name value="Mutan" gender="female" />
+
+        <first-name value="Ning" gender="female" />
+        <first-name value="Ninghong" gender="female" />
+        <first-name value="Niu" gender="female" />
+        <first-name value="Nuo" gender="female" />
+        <first-name value="Nuwa" gender="female" />
+
+        <first-name value="Peijing" gender="female" />
+        <first-name value="Peizhi" gender="female" />
+        <first-name value="Ping" gender="female" />
+        <first-name value="Qianru" gender="female" />
+        <first-name value="Qiao" gender="female" />
+
+        <first-name value="Qiaohui" gender="female" />
+        <first-name value="Qiaolian" gender="female" />
+        <first-name value="Qingge" gender="female" />
+        <first-name value="Qingling" gender="female" />
+        <first-name value="Qingzhao" gender="female" />
+
+        <first-name value="Qiuyue" gender="female" />
+        <first-name value="Rufen" gender="female" />
+        <first-name value="Renxiang" gender="female" />
+        <first-name value="Rou" gender="female" />
+        <first-name value="Ruiling" gender="female" />
+
+        <first-name value="Ruolan" gender="female" />
+        <first-name value="Ruomei" gender="female" />
+        <first-name value="Shaoqing" gender="female" />
+        <first-name value="Shufuh" gender="female" />
+        <first-name value="Shihong" gender="female" />
+
+        <first-name value="Shuang" gender="female" />
+        <first-name value="Song" gender="female" />
+        <first-name value="Suyin" gender="female" />
+        <first-name value="Sya" gender="female" />
+        <first-name value="Sying" gender="female" />
+
+
+        <first-name value="Te" gender="female" />
+        <first-name value="Tao" gender="female" />
+        <first-name value="Ting" gender="female" />
+        <first-name value="Tu" gender="female" />
+        <first-name value="Ushi" gender="female" />
+
+        <first-name value="Weici" gender="female" />
+        <first-name value="Wen" gender="female" />
+        <first-name value="Wenling" gender="female" />
+        <first-name value="Wenquian" gender="female" />
+        <first-name value="Xia" gender="female" />
+
+        <first-name value="Xiaodan" gender="female" />
+        <first-name value="Xiaofan" gender="female" />
+        <first-name value="Xiaohui" gender="female" />
+        <first-name value="Xiaojian" gender="female" />
+        <first-name value="Xiaojing" gender="female" />
+
+        <first-name value="Xiaoli" gender="female" />
+        <first-name value="Xiaolian" gender="female" />
+        <first-name value="Xiaoling" gender="female" />
+        <first-name value="Xiaoqing" gender="female" />
+        <first-name value="Xiaosheng" gender="female" />
+
+
+        <first-name value="Xiaotong" gender="female" />
+        <first-name value="Xiaozhi" gender="female" />
+        <first-name value="Xifeng" gender="female" />
+        <first-name value="Xingjuan" gender="female" />
+        <first-name value="Xiumei" gender="female" />
+
+        <first-name value="Xiulan" gender="female" />
+        <first-name value="Xiurong" gender="female" />
+        <first-name value="Xiuying" gender="female" />
+        <first-name value="Xueman" gender="female" />
+        <first-name value="Yuying" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <last-name value="Yee" />
+        <last-name value="Toy" />
+        <last-name value="Pun" />
+        <last-name value="Tang" />
+        <last-name value="Tien" />
+        <last-name value="Chang" />
+
+        <last-name value="Fung" />
+
+        <last-name value="Hui" />
+        <last-name value="Tse" />
+        <last-name value="Law" />
+        <last-name value="Ye" />
+
+        <last-name value="Ting" />
+        <last-name value="Sum" />
+        <last-name value="So" />
+        <last-name value="Yip" />
+
+        <last-name value="Wong" />
+        <last-name value="Chan" />
+        <last-name value="Lee" />
+
+
+        <!-- https://en.wikipedia.org/wiki/List_of_common_Chinese_surnames -->
+        <last-name value="Wang" />
+        <last-name value="Li" />
+        <last-name value="Zhang" />
+        <last-name value="Liu" />
+        <last-name value="Chen" />
+
+        <last-name value="Yang" />
+        <last-name value="Huang" />
+        <last-name value="Zhao" />
+        <last-name value="Wu" />
+        <last-name value="Zhou" />
+
+        <last-name value="Xu" />
+        <last-name value="Sun" />
+        <last-name value="Ma" />
+        <last-name value="Zhu" />
+        <last-name value="Hu" />
+
+        <last-name value="Guo" />
+        <last-name value="He" />
+        <last-name value="Gao" />
+        <last-name value="Lin" />
+        <last-name value="Luo" />
+
+        <last-name value="Zheng" />
+        <last-name value="Liang" />
+        <last-name value="Xie" />
+        <last-name value="Song" />
+        <last-name value="Tang" />
+
+        <last-name value="Xu" />
+        <last-name value="Han" />
+        <last-name value="Feng" />
+        <last-name value="Deng" />
+        <last-name value="Cao" />
+
+        <last-name value="Peng" />
+        <last-name value="Zeng" />
+        <last-name value="Xiao" />
+        <last-name value="Tian" />
+        <last-name value="Dong" />
+
+        <last-name value="Yuan" />
+        <last-name value="Pan" />
+        <last-name value="Yu" />
+        <last-name value="Jiang" />
+        <last-name value="Cai" />
+
+        <last-name value="Yu" />
+        <last-name value="Tu" />
+        <last-name value="Yeh" />
+        <last-name value="Cheng" />
+        <last-name value="Su" />
+
+        <last-name value="Wei" />
+        <last-name value="Lu" />
+        <last-name value="Ding" />
+        <last-name value="Ren" />
+        <last-name value="Shen" />
+
+    </last-name-list>
+</country>
