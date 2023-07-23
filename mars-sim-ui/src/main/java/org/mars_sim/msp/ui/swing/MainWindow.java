@@ -99,7 +99,7 @@ public class MainWindow
 
 	/** WebSwitch for the control of play or pause the simulation */
 	private JToggleButton pauseSwitch;
-	private JCheckBox blockingSwitch;
+//	private JCheckBox blockingSwitch;
 
 	private Dimension selectedSize;
 
@@ -403,8 +403,8 @@ public class MainWindow
 		createSpeedButtons(statusBar);
 
 		// Create overlay button
-		blockingSwitch = createOverlayCheckBox();
-		statusBar.addLeftComponent(blockingSwitch, false);
+//		blockingSwitch = createOverlayCheckBox();
+//		statusBar.addLeftComponent(blockingSwitch, false);
 
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
@@ -417,16 +417,16 @@ public class MainWindow
 		masterClock.addClockListener(this, 1000L);
 	}
 
-	private JCheckBox createOverlayCheckBox() {
-		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
-		checkBox.setToolTipText("Turn on/off pause overlay in desktop");
+//	private JCheckBox createOverlayCheckBox() {
+//		JCheckBox checkBox = new JCheckBox("Pause Overlay On/Off", true);
+//		checkBox.setToolTipText("Turn on/off pause overlay in desktop");
+//
+//		checkBox.addItemListener(e -> displayOverlay());
+//
+//		return checkBox;
+//	}
 
-		checkBox.addItemListener(e -> displayOverlay());
-
-		return checkBox;
-	}
-
-	private void displayOverlay() {
+//	private void displayOverlay() {
 		//boolean isPaused = pauseSwitch.isSelected();
 		//boolean isBlocking = blockingSwitch.isSelected();
 
@@ -440,7 +440,7 @@ public class MainWindow
 		// layeredContent.remove(blockingImage);
 		// }
 		// };
-	}
+//	}
 
 	private void createPauseSwitch() {
 		pauseSwitch = new JToggleButton(PAUSE_ICON);
@@ -727,7 +727,7 @@ public class MainWindow
 		if (isPaused != pauseSwitch.isSelected()) {
 			pauseSwitch.setSelected(isPaused);
 		}
-		displayOverlay();
+//		displayOverlay();
 	}
 
 	public static void setInteractiveTerm(InteractiveTerm i) {

@@ -72,15 +72,18 @@ public class TabPanelGeneral extends TabPanel {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}
 		
+		JPanel specsPanel = new JPanel(new BorderLayout());
+		center.add(specsPanel, BorderLayout.CENTER);
+		
 		// Prepare spring layout info panel.
 		AttributePanel typePanel = new AttributePanel(2);
-		center.add(typePanel, BorderLayout.NORTH);
+		specsPanel.add(typePanel, BorderLayout.NORTH);
 		
 		typePanel.addTextField( "Type", v.getVehicleType().getName(), null);
 		typePanel.addTextField( "Specification", v.getSpecName(), null);
 		
 		AttributePanel labelGrid = new AttributePanel(15, 2);
-		center.add(labelGrid, BorderLayout.CENTER);
+		specsPanel.add(labelGrid, BorderLayout.CENTER);
 	
 		labelGrid.addTextField( "Crew Size", v.getVehicleSpec().getCrewSize() + "", null);
 		labelGrid.addTextField( "Fuel Cell Stack", v.getFuellCellStack() + "", null);	

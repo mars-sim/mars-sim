@@ -40,9 +40,7 @@ public class VehicleUnitWindow extends UnitWindow {
 		// Use UnitWindow constructor
 		super(desktop, vehicle, vehicle.getAssociatedSettlement().getName() + " - " + vehicle.getNickName(), true);
 		this.vehicle = vehicle;
-
-		// Add tab panels
-		addTabPanel(new TabPanelGeneral(vehicle, desktop));
+		
 		if (vehicle instanceof Crewable) {
 			Crewable crewableVehicle = (Crewable) vehicle;
 			if (crewableVehicle.getCrewCapacity() > 0)
@@ -61,12 +59,12 @@ public class VehicleUnitWindow extends UnitWindow {
 			if (rover.hasLab())
 				addTabPanel(new LaboratoryTabPanel(rover, desktop));		
 			// Future: Add sickbay tab panel.
-		}		
-
+		}
 
 		addTabPanel(new TabPanelLog(vehicle, desktop));
 		addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
 		addTabPanel(new MalfunctionTabPanel(vehicle, desktop));
+		addTabPanel(new NavigationTabPanel(vehicle, desktop));
 		addTabPanel(new TabPanelMission(vehicle, desktop));	
 		addTabPanel(new NotesTabPanel(vehicle, desktop));
 
@@ -78,7 +76,8 @@ public class VehicleUnitWindow extends UnitWindow {
 		
 		sortTabPanels();
 
-		addFirstPanel(new NavigationTabPanel(vehicle, desktop));
+		// Add general tab panel as the first tab
+		addFirstPanel(new TabPanelGeneral(vehicle, desktop));
 		
 		// Add to tab panels. 
 		addTabIconPanels();
