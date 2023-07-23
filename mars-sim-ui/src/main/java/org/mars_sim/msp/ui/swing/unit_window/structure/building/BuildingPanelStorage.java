@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +21,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -35,43 +38,60 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 	private static final String STORE_ICON = "stock";
 
 	private static class StorageTableModel extends AbstractTableModel {
-		private List<String> name = new ArrayList<>();
-		private List<Integer> caps = new ArrayList<>();
+		private List<String> nameList = new ArrayList<>();
+		private Map<String, Double> buildingStorage = new HashMap<>();
+		private Map<String, Double> settlementStorage = new HashMap<>();
 		
 		public StorageTableModel(Storage storage) {
 			Map<Integer, Double> resourceStorage = storage.getResourceStorageCapacity();
 			for (Entry<Integer, Double> resource : resourceStorage.entrySet()) {
-				// Create resource label.
-				name.add(ResourceUtil.findAmountResourceName(resource.getKey()));
-				caps.add(resource.getValue().intValue());
+				int id = resource.getKey();
+				String name = ResourceUtil.findAmountResourceName(id);
+				nameList.add(name);
+				buildingStorage.put(name, resource.getValue());
+				
+				ResourceHolder rh = (ResourceHolder)storage.getBuilding().getSettlement();
+				settlementStorage.put(name, rh.getAmountResourceCapacity(id));
 			}
+			
+			Collections.sort(nameList);
 		}
 
 		
 		public int getRowCount() {
-			return name.size();
+			return nameList.size();
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
-		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 0) return String.class;
+		public Class<?> getColumnClass(int column) {
+			if (column == 0) return String.class;
 			else return Integer.class;
 		}
 
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Resource";
-			else return "Capacity (kg)";
+		public String getColumnName(int column) {
+			if (column == 0) {
+				return "Resource";
+			}
+			else if (column == 1) {
+				return "Building Capacity (kg)";
+			}
+			else {
+				return "Settlement Capacity (kg)";
+			}
 		}
 
 		public Object getValueAt(int row, int column) {
 			if (column == 0) {
-				return name.get(row);
+				return nameList.get(row);
+			}
+			else if (column == 1) {
+				return buildingStorage.get(nameList.get(row));
 			}
 			else {
-				return caps.get(row);
+				return settlementStorage.get(nameList.get(row));
 			}
 		}
 
@@ -100,7 +120,7 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
