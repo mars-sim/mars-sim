@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +14,19 @@ import java.util.Set;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.training.TrainingType;
 
 /**
  * Provides configuration information about people units. Uses a JDOM document
  * to get the information.
  */
-public class PersonConfig implements Serializable {
+public class PersonConfig {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+
+	// Key class to combine role & training types
+	private static final record KeyClass(RoleType r, TrainingType t) {};
 
 	// Element names
 	private static final String LAST_NAME_LIST = "last-name-list";
@@ -79,8 +82,6 @@ public class PersonConfig implements Serializable {
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	private static final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
 
-	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
-
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
 
@@ -91,6 +92,11 @@ public class PersonConfig implements Serializable {
 
 	/** Default Country to use for name creation */
 	private static final String DEFAULT_COUNTRY = "USA";
+	private static final String TRAINING_LIST = "training-list";
+	private static final String TRAINING = "training";
+	private static final String BENEFITS = "benefit";
+	private static final String MODIFIER = "modifier";
+	private static final String ROLE = "role";
 
 	/** The base load-carrying capacity. */
 	private transient double baseCap = -1;
@@ -127,6 +133,7 @@ public class PersonConfig implements Serializable {
 	private transient Commander commander;
 
 	private transient Map<String, String> personAttributes = new HashMap<>();
+	private Map<KeyClass, Integer> trainingMods = new HashMap<>();
 
 
 	/**
@@ -140,6 +147,21 @@ public class PersonConfig implements Serializable {
 		parsePersonAttrs(personDoc);
 		parseNames(personDoc);
 		createPersonalityDistribution(personDoc);
+		loadTrainingMods(personDoc);
+	}
+
+	private void loadTrainingMods(Document doc) {
+		Element trainingListEl = doc.getRootElement().getChild(TRAINING_LIST);
+		List<Element> trainingsList = trainingListEl.getChildren(TRAINING);
+		for (Element trainingElement : trainingsList) {
+			String trainingName = trainingElement.getAttributeValue(NAME);
+			TrainingType tType = TrainingType.valueOf(ConfigHelper.convertToEnumName(trainingName));
+			for(Element benefit : trainingElement.getChildren(BENEFITS)) {
+				RoleType rType = RoleType.valueOf(ConfigHelper.convertToEnumName(benefit.getAttributeValue(ROLE)));
+				int mod = ConfigHelper.getOptionalAttributeInt(benefit, MODIFIER, 0);
+				trainingMods.put(new KeyClass(rType, tType), mod);
+			}
+		}
 	}
 
 	private void parsePersonAttrs(Document personDoc) {
@@ -689,6 +711,26 @@ public class PersonConfig implements Serializable {
 	 */
 	public Commander getCommander() {
 		return commander;
+	}
+
+	/**
+	 * Finds the training modifiers for a combination of training and role.
+	 * 
+	 * @param role
+	 * @param tt
+	 * @return
+	 */
+	public int getTrainingModifier(RoleType role, TrainingType tt) {
+
+		// lookup in modifier table
+		KeyClass k = new KeyClass(role, tt);
+		Integer v = trainingMods.get(k);
+		if (v == null) {
+			return 0;
+		}
+		else {
+			return v;
+		}
 	}
 
 	/**

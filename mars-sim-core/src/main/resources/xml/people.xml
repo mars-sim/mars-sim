@@ -3,7 +3,7 @@
 	<!ELEMENT people-configuration (
 	person-attributes,
 	personality-types,
-	person-name-list,
+	training-list,
 	country-list)>
 
 	<!ELEMENT person-attributes (
@@ -125,12 +125,13 @@
 	<!ELEMENT mbti EMPTY>
 	<!ATTLIST mbti type CDATA #REQUIRED>
 	<!ATTLIST mbti percentage CDATA #REQUIRED>
-
-	<!ELEMENT person-name-list (person-name*)>
-	<!ELEMENT person-name EMPTY>
-	<!ATTLIST person-name value CDATA #REQUIRED>
-	<!ATTLIST person-name gender (male|female) #REQUIRED>
-	<!ATTLIST person-name sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>
+	
+	<!ELEMENT training-list (training*)>
+	<!ELEMENT training (benefit*)>
+	<!ATTLIST training name CDATA #REQUIRED>
+	<!ELEMENT benefit EMPTY>
+	<!ATTLIST benefit role CDATA #REQUIRED>
+	<!ATTLIST benefit modifier CDATA #REQUIRED>
 
 	<!ELEMENT country-list (country*)>
 	<!ELEMENT country (first-name-list, last-name-list)>
@@ -346,435 +347,219 @@
 		<mbti type="ENFJ" percentage="5.0" />
 	</personality-types>
 
-	<!-- The standard Mars Society name list -->
-	<person-name-list>
-
-		<person-name value="Aaron Wolfe" gender="male"
-			sponsor="MS" />
-		<person-name value="Adelina Shaneyfelt" gender="female"
-			sponsor="MS" />
-		<person-name value="Adrian Chan" gender="male"
-			sponsor="MS" />
-		<person-name value="Aki Sashava" gender="female"
-			sponsor="MS" />
-		<person-name value="Al Haldemann" gender="male"
-			sponsor="MS" />
-		<person-name value="Alene Spagnola" gender="female"
-			sponsor="MS" />
-		<person-name value="Alessandra Kucharski" gender="female"
-			sponsor="MS" />
-		<person-name value="Alex Krol" gender="male" sponsor="MS" />
-		<person-name value="Alexandria Luciano" gender="female"
-			sponsor="MS" />
-		<person-name value="Alison Tom" gender="female"
-			sponsor="MS" />
-		<person-name value="Allan Schwister" gender="male"
-			sponsor="MS" />
-		<person-name value="Allison Nowakowski" gender="female"
-			sponsor="MS" />
-		<person-name value="Alvina Hosack" gender="female"
-			sponsor="MS" />
-		<person-name value="Amy Lentz" gender="female"
-			sponsor="MS" />
-		<person-name value="Anna Harmon" gender="female"
-			sponsor="MS" />
-		<person-name value="Anson Nichols" gender="male"
-			sponsor="MS" />
-		<person-name value="Anthony Holmgren" gender="male"
-			sponsor="MS" />
-		<person-name value="Barb Follman" gender="female"
-			sponsor="MS" />
-		<person-name value="Barry Evans" gender="male"
-			sponsor="MS" />
-		<person-name value="Bella Rollie" gender="female"
-			sponsor="MS" />
-		<person-name value="Beth Miller" gender="female"
-			sponsor="MS" />
-		<person-name value="Beth Wilkins" gender="female"
-			sponsor="MS" />
-		<person-name value="Bill Hensley" gender="male"
-			sponsor="MS" />
-		<person-name value="Bill Krushas" gender="male"
-			sponsor="MS" />
-		<person-name value="Boris Debic" gender="male"
-			sponsor="MS" />
-		<person-name value="Brian Cody" gender="male" sponsor="MS" />
-		<person-name value="Brian Donovan" gender="male"
-			sponsor="MS" />
-		<person-name value="Bruce Franke" gender="male"
-			sponsor="MS" />
-		<person-name value="Candida Brandner" gender="female"
-			sponsor="MS" />
-		<person-name value="Carla Deprey" gender="female"
-			sponsor="MS" />
-		<person-name value="Carlita Voytek" gender="female"
-			sponsor="MS" />
-		<person-name value="Cathrine Boria" gender="female"
-			sponsor="MS" />
-		<person-name value="Cathrine Crafford" gender="female"
-			sponsor="MS" />
-		<person-name value="Cathrine Troop" gender="female"
-			sponsor="MS" />
-		<person-name value="Chamal Perera" gender="male"
-			sponsor="MS" />
-		<person-name value="Charla Padmore" gender="female"
-			sponsor="MS" />
-		<person-name value="Charles Emery" gender="male"
-			sponsor="MS" />
-		<person-name value="Charles Kwiatkowski" gender="male"
-			sponsor="MS" />
-		<person-name value="Charlie Elston" gender="male"
-			sponsor="MS" />
-		<person-name value="Cheryl Halvorson" gender="female"
-			sponsor="MS" />
-		<person-name value="Chris Sundberg" gender="male"
-			sponsor="MS" />
-		<person-name value="Clair Steele" gender="female"
-			sponsor="MS" />
-		<person-name value="Colleen Lane" gender="female"
-			sponsor="MS" />
-		<person-name value="Connie Carrol" gender="female"
-			sponsor="MS" />
-		<person-name value="Craig Jeffords" gender="male"
-			sponsor="MS" />
-		<person-name value="Criselda Kendzierski" gender="female"
-			sponsor="MS" />
-		<person-name value="Dale Morrell" gender="male"
-			sponsor="MS" />
-		<person-name value="Dalen Kruse" gender="male"
-			sponsor="MS" />
-		<person-name value="Dalia Huddleson" gender="female"
-			sponsor="MS" />
-		<person-name value="Dan Folker" gender="male" sponsor="MS" />
-		<person-name value="Daniel Frankowiak" gender="male"
-			sponsor="MS" />
-		<person-name value="Daniel Thomas" gender="male"
-			sponsor="MS" />
-		<person-name value="Daniela Eisenbeisz" gender="female"
-			sponsor="MS" />
-		<person-name value="David Blundon" gender="male"
-			sponsor="MS" />
-		<person-name value="David Coen" gender="male" sponsor="MS" />
-		<person-name value="David Kern" gender="male" sponsor="MS" />
-		<person-name value="David Ksiciski" gender="male"
-			sponsor="MS" />
-		<person-name value="Dawn Tucker" gender="female"
-			sponsor="MS" />
-		<person-name value="Dean Gluege" gender="male"
-			sponsor="MS" />
-		<person-name value="Denise Gregory" gender="female"
-			sponsor="MS" />
-		<person-name value="Dima Stepanchuk" gender="male"
-			sponsor="MS" />
-		<person-name value="Don Allen" gender="male" sponsor="MS" />
-		<person-name value="Donna Hanson" gender="female"
-			sponsor="MS" />
-		<person-name value="Dorothy Piatek" gender="female"
-			sponsor="MS" />
-		<person-name value="Doug Armstrong" gender="male"
-			sponsor="MS" />
-		<person-name value="Douglas McMartin" gender="male"
-			sponsor="MS" />
-		<person-name value="Dushan Novakovich" gender="male"
-			sponsor="MS" />
-		<person-name value="Eddie Hintz" gender="male"
-			sponsor="MS" />
-		<person-name value="Edgar Crisostomo" gender="male"
-			sponsor="MS" />
-		<person-name value="Edward Bliese" gender="male"
-			sponsor="MS" />
-		<person-name value="Elizabeth Marshell" gender="female"
-			sponsor="MS" />
-		<person-name value="Ellan Schadegg" gender="female"
-			sponsor="MS" />
-		<person-name value="Ellie Rochel" gender="female"
-			sponsor="MS" />
-		<person-name value="Elmer Brow" gender="male" sponsor="MS" />
-		<person-name value="Enrique Deorbeta" gender="male"
-			sponsor="MS" />
-		<person-name value="Eric McGuire" gender="male"
-			sponsor="MS" />
-		<person-name value="Erinn Thayne" gender="female"
-			sponsor="MS" />
-		<person-name value="Ernest Coletti" gender="male"
-			sponsor="MS" />
-		<person-name value="Evelyn Clinton" gender="female"
-			sponsor="MS" />
-		<person-name value="Evelyn Garcia" gender="female"
-			sponsor="MS" />
-		<person-name value="Fae Glaza" gender="female"
-			sponsor="MS" />
-		<person-name value="Frank Alioto" gender="male"
-			sponsor="MS" />
-		<person-name value="Frank Crossman" gender="male"
-			sponsor="MS" />
-		<person-name value="Frank Di Pierro" gender="male"
-			sponsor="MS" />
-		<person-name value="Frank Krawczyk" gender="male"
-			sponsor="MS" />
-		<person-name value="Fred Luehrs" gender="male"
-			sponsor="MS" />
-		<person-name value="Gerardo Marinez" gender="male"
-			sponsor="MS" />
-		<person-name value="Greg Whelan" gender="male"
-			sponsor="MS" />
-		<person-name value="Gregory Brown" gender="male"
-			sponsor="MS" />
-		<person-name value="Harry Martin" gender="male"
-			sponsor="MS" />
-		<person-name value="Hartmut Prochaska" gender="male"
-			sponsor="MS" />
-		<person-name value="Heidi Hensley" gender="female"
-			sponsor="MS" />
-		<person-name value="Heidi Miller" gender="female"
-			sponsor="MS" />
-		<person-name value="Hizue Miyo" gender="female"
-			sponsor="MS" />
-		<person-name value="Isabella Carrol" gender="female"
-			sponsor="MS" />
-		<person-name value="Ivo Mesić" gender="male" sponsor="MS" />
-		<person-name value="Izu Ishizuy" gender="female"
-			sponsor="MS" />
-		<person-name value="James Barnard" gender="male"
-			sponsor="MS" />
-		<person-name value="James Hoppe" gender="male"
-			sponsor="MS" />
-		<person-name value="James Silkworth" gender="male"
-			sponsor="MS" />
-		<person-name value="Janay Benko" gender="female"
-			sponsor="MS" />
-		<person-name value="Jani Patokallio" gender="male"
-			sponsor="MS" />
-		<person-name value="Janice Garver" gender="female"
-			sponsor="MS" />
-		<person-name value="Jarred McCaffrey" gender="male"
-			sponsor="MS" />
-		<person-name value="Jason Slack" gender="male"
-			sponsor="MS" />
-		<person-name value="Jay Bondowzewski" gender="male"
-			sponsor="MS" />
-		<person-name value="Jean Backes" gender="female"
-			sponsor="MS" />
-		<person-name value="Jeanne Marak" gender="female"
-			sponsor="MS" />
-		<person-name value="Jeff Teplin" gender="male"
-			sponsor="MS" />
-		<person-name value="Jennifer Hare" gender="female"
-			sponsor="MS" />
-		<person-name value="Jennifer Lorbeck" gender="female"
-			sponsor="MS" />
-		<person-name value="Jennifer Proctor" gender="female"
-			sponsor="MS" />
-		<person-name value="Jens Martin Knudsen" gender="male"
-			sponsor="MS" />
-		<person-name value="Jeri Axberg" gender="female"
-			sponsor="MS" />
-		<person-name value="Jill Anglin" gender="female"
-			sponsor="MS" />
-		<person-name value="Jill Babbitz" gender="female"
-			sponsor="MS" />
-		<person-name value="Jim Brown" gender="male" sponsor="MS" />
-		<person-name value="Joe Cifaldi" gender="male"
-			sponsor="MS" />
-		<person-name value="John Derkson" gender="male"
-			sponsor="MS" />
-		<person-name value="John Durst" gender="male" sponsor="MS" />
-		<person-name value="John McGowan" gender="male"
-			sponsor="MS" />
-		<person-name value="Joseph Alioto" gender="male"
-			sponsor="MS" />
-		<person-name value="Joseph Wagner" gender="male"
-			sponsor="MS" />
-		<person-name value="Kamrabh Purati" gender="female"
-			sponsor="MS" />
-		<person-name value="Karen Neder" gender="female"
-			sponsor="MS" />
-		<person-name value="Katie Riffe" gender="female"
-			sponsor="MS" />
-		<person-name value="Kelly Huckaby" gender="female"
-			sponsor="MS" />
-		<person-name value="Kelly Youngs" gender="female"
-			sponsor="MS" />
-		<person-name value="Kendra Hensley" gender="female"
-			sponsor="MS" />
-		<person-name value="Kent Primrose" gender="male"
-			sponsor="MS" />
-		<person-name value="Kerrie Stolpman" gender="female"
-			sponsor="MS" />
-		<person-name value="Kerrie Vaughan" gender="female"
-			sponsor="MS" />
-		<person-name value="Keyur Thadeshwar" gender="male"
-			sponsor="MS" />
-		<person-name value="Kira Arman" gender="female"
-			sponsor="MS" />
-		<person-name value="Kira Rydberg" gender="female"
-			sponsor="MS" />
-		<person-name value="Kisha Gallina" gender="female"
-			sponsor="MS" />
-		<person-name value="Larry Ponda" gender="male"
-			sponsor="MS" />
-		<person-name value="Lars Næsbye" gender="male"
-			sponsor="MS" />
-		<person-name value="Lashawn Conrow" gender="female"
-			sponsor="MS" />
-		<person-name value="Lauretta Munnis" gender="female"
-			sponsor="MS" />
-		<person-name value="Libby Parker" gender="female"
-			sponsor="MS" />
-		<person-name value="Lois Walling" gender="female"
-			sponsor="MS" />
-		<person-name value="Loretta Thomas" gender="female"
-			sponsor="MS" />
-		<person-name value="Lucinda Offer" gender="female"
-			sponsor="MS" />
-		<person-name value="Lyn Abelar" gender="female"
-			sponsor="MS" />
-		<person-name value="Madonna Makinson" gender="female"
-			sponsor="MS" />
-		<person-name value="Manny Kung" gender="male" sponsor="MS" />
-		<person-name value="Marc Benoit" gender="male"
-			sponsor="MS" />
-		<person-name value="Marina Plavnick" gender="female"
-			sponsor="MS" />
-		<person-name value="Mark Chiappetta" gender="male"
-			sponsor="MS" />
-		<person-name value="Martin Coello" gender="male"
-			sponsor="MS" />
-		<person-name value="Mary Carlson" gender="female"
-			sponsor="MS" />
-		<person-name value="Mary Hirn" gender="female"
-			sponsor="MS" />
-		<person-name value="Matilde Ewton" gender="female"
-			sponsor="MS" />
-		<person-name value="Matthew Giovanelli" gender="male"
-			sponsor="MS" />
-		<person-name value="Michael Lucus" gender="male"
-			sponsor="MS" />
-		<person-name value="Michael Sobecke" gender="male"
-			sponsor="MS" />
-		<person-name value="Michael Zummo" gender="male"
-			sponsor="MS" />
-		<person-name value="Mihaly Gyulai" gender="male"
-			sponsor="MS" />
-		<person-name value="Mika Masuko" gender="female"
-			sponsor="MS" />
-		<person-name value="Mikaela Backman" gender="female"
-			sponsor="MS" />
-		<person-name value="Mike Halder" gender="male"
-			sponsor="MS" />
-		<person-name value="Mike Jones" gender="male" sponsor="MS" />
-		<person-name value="Natalie Ainsworth" gender="female"
-			sponsor="MS" />
-		<person-name value="Nathan Ellis" gender="male"
-			sponsor="MS" />
-		<person-name value="Nia Savikaj" gender="female"
-			sponsor="MS" />
-		<person-name value="Olivia Lander" gender="female"
-			sponsor="MS" />
-		<person-name value="Oscar Carrol" gender="male"
-			sponsor="MS" />
-		<person-name value="Ozella Flegel" gender="female"
-			sponsor="MS" />
-		<person-name value="Patrick O'Hara" gender="male"
-			sponsor="MS" />
-		<person-name value="Paul Bockay" gender="male"
-			sponsor="MS" />
-		<person-name value="Paula Jenkins" gender="female"
-			sponsor="MS" />
-		<person-name value="Peter Kokh" gender="male" sponsor="MS" />
-		<person-name value="Rachel Heron" gender="female"
-			sponsor="MS" />
-		<person-name value="Rakesh Ramadas" gender="male"
-			sponsor="MS" />
-		<person-name value="Ralph Radske" gender="male"
-			sponsor="MS" />
-		<person-name value="Ramiro Ferrucci" gender="male"
-			sponsor="MS" />
-		<person-name value="Randy Jorden" gender="male"
-			sponsor="MS" />
-		<person-name value="Ray Kerchoff" gender="male"
-			sponsor="MS" />
-		<person-name value="Reginia Thomas" gender="female"
-			sponsor="MS" />
-		<person-name value="Reiko Budnick" gender="female"
-			sponsor="MS" />
-		<person-name value="Reina Fierman" gender="female"
-			sponsor="MS" />
-		<person-name value="Renita Orlikowski" gender="female"
-			sponsor="MS" />
-		<person-name value="Robert Laloggia" gender="male"
-			sponsor="MS" />
-		<person-name value="Ron Johnson" gender="male"
-			sponsor="MS" />
-		<person-name value="Rory Wright" gender="male"
-			sponsor="MS" />
-		<person-name value="Roxanna Nanni" gender="female"
-			sponsor="MS" />
-		<person-name value="Roy Sweeny" gender="male" sponsor="MS" />
-		<person-name value="Sally Krueger" gender="female"
-			sponsor="MS" />
-		<person-name value="Salvatorie Schifano" gender="male"
-			sponsor="MS" />
-		<person-name value="Sandi Russett" gender="female"
-			sponsor="MS" />
-		<person-name value="Sandra Blunt" gender="female"
-			sponsor="MS" />
-		<person-name value="Sasha Sarmini" gender="female"
-			sponsor="MS" />
-		<person-name value="Scott Davis" gender="male"
-			sponsor="MS" />
-		<person-name value="Scott Kaszuba" gender="male"
-			sponsor="MS" />
-		<person-name value="Scott Walsh" gender="male"
-			sponsor="MS" />
-		<person-name value="Shanda Pichette" gender="female"
-			sponsor="MS" />
-		<person-name value="Shawn Malmarowski" gender="male"
-			sponsor="MS" />
-		<person-name value="Sheldon Burchman" gender="male"
-			sponsor="MS" />
-		<person-name value="Shelley Neilson" gender="female"
-			sponsor="MS" />
-		<person-name value="Shiela Jollie" gender="female"
-			sponsor="MS" />
-		<person-name value="Shiromu Sae" gender="female"
-			sponsor="MS" />
-		<person-name value="Shizhe Li" gender="male" sponsor="MS" />
-		<person-name value="Soni Jyogita" gender="female"
-			sponsor="MS" />
-		<person-name value="Stephanie Drennen" gender="female"
-			sponsor="MS" />
-		<person-name value="Steve Marley" gender="male"
-			sponsor="MS" />
-		<person-name value="Steven Hirth" gender="male"
-			sponsor="MS" />
-		<person-name value="Stjepan Debic" gender="male"
-			sponsor="MS" />
-		<person-name value="Suzan Robideau" gender="female"
-			sponsor="MS" />
-		<person-name value="Tana Favreau" gender="female"
-			sponsor="MS" />
-		<person-name value="Theola Binsfeld" gender="female"
-			sponsor="MS" />
-		<person-name value="Tim Kaplan" gender="male" sponsor="MS" />
-		<person-name value="Tom Zanoni" gender="male" sponsor="MS" />
-		<person-name value="Tony Hudy" gender="male" sponsor="MS" />
-		<person-name value="Tracy Hauck" gender="female"
-			sponsor="MS" />
-		<person-name value="Tracy Kilmar" gender="female"
-			sponsor="MS" />
-		<person-name value="Trati Tamtani" gender="female"
-			sponsor="MS" />
-		<person-name value="Troy Lane" gender="male" sponsor="MS" />
-		<person-name value="Valencia Vant" gender="female"
-			sponsor="MS" />
-		<person-name value="Venessa Whitmire" gender="female"
-			sponsor="MS" />
-		<person-name value="Victor Plantico" gender="male"
-			sponsor="MS" />
-		<person-name value="William Hickson" gender="male"
-			sponsor="MS" />
-	</person-name-list>
+	<training-list>
+		<training name="MARS_V_GOBI">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="3"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="2"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="4"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="5"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="3"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="6"/>
+		</training>
+		<training name="NASA_CHAPEA">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="5"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="2"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="5"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="6"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="7"/>
+		</training>
+		<training name="UNDERGROUND_CAVES_EXPLORATION">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="5"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="3"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="5"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="7"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="6"/>
+		</training>
+		<training name="BIOETHICAL">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="8"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="7"/>
+			<benefit role="MISSION_SPECIALIST" modifier="2"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="2"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="5"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="6"/>
+		</training>
+		<training name="EXTREME_ENV_OPS">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="6"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="2"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="6"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="3"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="8"/>
+		</training> 
+		<training name="NASA_DESERT_RATS">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="2"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="3"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="6"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="3"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="8"/>
+		</training>
+		<training name="SURVIVAL_TRAINING">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="6"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="7"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="5"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="3"/>
+		</training>
+		<training name="SCUBA_DIVING_MASTER">
+			<benefit role="COMPUTING_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="5"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="6"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="6"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="2"/>
+		</training>
+		<training name="FLIGHT_SAFETY">
+			<benefit role="COMPUTING_SPECIALIST" modifier="4"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="6"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="2"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="8"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="5"/>
+		</training>	
+		<training name="SEARCH_AND_RESCUE">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="3"/>
+			<benefit role="MISSION_SPECIALIST" modifier="8"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="7"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="1"/>
+		</training>
+		<training name="MOUNTAINEERING_MASTER">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="1"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="7"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="9"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="4"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="8"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="2"/>
+		</training>
+		<training name="AIRBORNE_AND_RANGER_SCHOOL">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="4"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="9"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="6"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="8"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="4"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="1"/>
+		</training>
+		<training name="HAUGHTON_MARS_GEOLOGICAL">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="6"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="5"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="6"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="3"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="8"/>
+		</training>
+		<training name="HALO_JUMPMASTER">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="1"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="3"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="9"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="8"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="2"/>
+		</training>
+		<training name="MISHAP_INVESTIGATION">
+			<benefit role="COMPUTING_SPECIALIST" modifier="3"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="7"/>
+			<benefit role="MISSION_SPECIALIST" modifier="5"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="2"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="9"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="5"/>
+		</training>
+		<training name="MARS_500_C">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="6"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="4"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="4"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="7"/>
+		</training>
+		<training name="MARS_ANALOG_ENVIRONMENT">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="7"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="4"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="5"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="8"/>
+		</training>
+		<training name="UNDERSEA_MISSION">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="3"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="3"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="6"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="3"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="8"/>
+		</training>
+		<training name="MILITARY_DEPLOYMENT">
+			<benefit role="COMPUTING_SPECIALIST" modifier="2"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="2"/>
+			<benefit role="MISSION_SPECIALIST" modifier="9"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="8"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="5"/>
+		</training>
+		<training name="AVIATION_CERTIFICATION">
+			<benefit role="COMPUTING_SPECIALIST" modifier="5"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="4"/>
+			<benefit role="MISSION_SPECIALIST" modifier="3"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="3"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="9"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="2"/>
+		</training>
+		<training name="ANTARCTICA_EDEN_ISS">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="8"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="5"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="7"/>
+			<benefit role="MISSION_SPECIALIST" modifier="4"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="6"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="9"/>
+		</training> 		
+		<training name="MARS_TWO_FINAL_100">
+			<benefit role="AGRICULTURE_SPECIALIST" modifier="5"/>
+			<benefit role="COMPUTING_SPECIALIST" modifier="5"/>
+			<benefit role="ENGINEERING_SPECIALIST" modifier="4"/>
+			<benefit role="MISSION_SPECIALIST" modifier="6"/>
+			<benefit role="LOGISTIC_SPECIALIST" modifier="4"/>
+			<benefit role="RESOURCE_SPECIALIST" modifier="5"/>
+			<benefit role="SAFETY_SPECIALIST" modifier="2"/>
+			<benefit role="SCIENCE_SPECIALIST" modifier="3"/>
+		</training>
+	</training-list>	
 
 	<country-list>
 		<country name="Brazil">

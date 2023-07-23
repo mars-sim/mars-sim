@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars.sim.mapdata.location.Coordinates;
@@ -1539,8 +1539,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	private void generatePriorTraining() {
 		if (trainings == null) {
-			trainings = new CopyOnWriteArrayList<>();
-			List<TrainingType> lists = new CopyOnWriteArrayList<>(Arrays.asList(TrainingType.values()));
+			trainings = new ArrayList<>();
+			List<TrainingType> lists = new ArrayList<>(Arrays.asList(TrainingType.values()));
 			int size = lists.size();
 			int num = RandomUtil.getRandomRegressionInteger(4);
 			// Guarantee at least one training
