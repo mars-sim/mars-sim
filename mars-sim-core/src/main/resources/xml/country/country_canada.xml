@@ -1,0 +1,291 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Canada">
+    <first-name-list>
+        <!-- http://www.babynamewizard.com/name-list/canadian-boys-names-most-popular-names-for-boys-in-canada-quebec- -->
+        <first-name value="William" gender="male" />
+        <first-name value="Thomas" gender="male" />
+        <first-name value="Felix" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Nathan" gender="male" />
+
+        <first-name value="Jacob" gender="male" />
+        <first-name value="Alexis" gender="male" />
+        <first-name value="Logan" gender="male" />
+        <first-name value="Olivier" gender="male" />
+        <first-name value="Samuel" gender="male" />
+
+        <first-name value="Gabriel" gender="male" />
+        <first-name value="Raphael" gender="male" />
+        <first-name value="Antoine" gender="male" />
+        <first-name value="Emile" gender="male" />
+        <first-name value="Noah" gender="male" />
+
+        <first-name value="Benjamin" gender="male" />
+        <first-name value="Charles" gender="male" />
+        <first-name value="Xavier" gender="male" />
+        <first-name value="Leo" gender="male" />
+        <first-name value="Adam" gender="male" />
+
+        <first-name value="Edouard" gender="male" />
+        <first-name value="Mathis" gender="male" />
+        <first-name value="Zachary" gender="male" />
+        <first-name value="Zack" gender="male" />
+        <first-name value="Louis" gender="male" />
+
+        <first-name value="Loic" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Victor" gender="male" />
+        <first-name value="Elliot" gender="male" />
+        <first-name value="Anthony" gender="male" />
+
+        <first-name value="Alexandre" gender="male" />
+        <first-name value="Jayden" gender="male" />
+        <first-name value="Theo" gender="male" />
+        <first-name value="Justin" gender="male" />
+        <first-name value="Arthur" gender="male" />
+
+        <first-name value="Nicolas" gender="male" />
+        <first-name value="James" gender="male" />
+        <first-name value="Tristan" gender="male" />
+        <first-name value="Nolan" gender="male" />
+        <first-name value="Jeremy" gender="male" />
+
+        <first-name value="Arnaud" gender="male" />
+        <first-name value="Ethan" gender="male" />
+        <first-name value="Etienne" gender="male" />
+        <first-name value="Dylan" gender="male" />
+        <first-name value="Philippe" gender="male" />
+
+        <first-name value="Malik" gender="male" />
+        <first-name value="Vincent" gender="male" />
+        <first-name value="Henri" gender="male" />
+        <first-name value="Laurent" gender="male" />
+        <first-name value="David" gender="male" />
+
+        <first-name value="Hugo" gender="male" />
+        <first-name value="Eli" gender="male" />
+        <first-name value="Alex" gender="male" />
+        <first-name value="Isaac" gender="male" />
+        <first-name value="Maxime" gender="male" />
+
+        <first-name value="Derek" gender="male" />
+        <first-name value="Ryan" gender="male" />
+        <first-name value="Ludovic" gender="male" />
+        <first-name value="Simon" gender="male" />
+        <first-name value="Damien" gender="male" />
+
+        <first-name value="Zackary" gender="male" />
+        <first-name value="Rafael" gender="male" />
+        <first-name value="Eliot" gender="male" />
+        <first-name value="Evan" gender="male" />
+        <first-name value="Julien" gender="male" />
+
+        <first-name value="Caleb" gender="male" />
+        <first-name value="Hubert" gender="male" />
+        <first-name value="Michael" gender="male" />
+        <first-name value="Louka" gender="male" />
+        <first-name value="Milan" gender="male" />
+
+        <first-name value="Loik" gender="male" />
+        <first-name value="Daniel" gender="male" />
+        <first-name value="Eloi" gender="male" />
+        <first-name value="Jules" gender="male" />
+        <first-name value="Hayden" gender="male" />
+
+        <first-name value="Matheo" gender="male" />
+        <first-name value="Jake" gender="male" />
+        <first-name value="Rayan" gender="male" />
+        <first-name value="Leonard" gender="male" />
+        <first-name value="Jordan" gender="male" />
+
+        <first-name value="Mathieu" gender="male" />
+        <first-name value="Tyler" gender="male" />
+        <first-name value="Eliott" gender="male" />
+        <first-name value="Joshua" gender="male" />
+        <first-name value="Mathias" gender="male" />
+
+        <first-name value="Emrick" gender="male" />
+        <first-name value="Maxence" gender="male" />
+        <first-name value="Luka" gender="male" />
+        <first-name value="Lyam" gender="male" />
+        <first-name value="Nathaniel" gender="male" />
+
+        <first-name value="Elie" gender="male" />
+        <first-name value="Mikael" gender="male" />
+        <first-name value="Tommy" gender="male" />
+        <first-name value="Jackson" gender="male" />
+        <first-name value="Alexander" gender="male" />
+
+        <first-name value="Enzo" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Mathys" gender="male" />
+        <first-name value="Matteo" gender="male" />
+        <first-name value="Cedric" gender="male" />
+
+
+        <!-- http://www.babynamewizard.com/name-list/canadian-girls-names-most-popular-names-for-girls-in-canada-quebec- -->
+        <first-name value="Lea" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Florence" gender="female" />
+        <first-name value="Chloe" gender="female" />
+
+        <first-name value="Alice" gender="female" />
+        <first-name value="Zoe" gender="female" />
+        <first-name value="Rosalie" gender="female" />
+        <first-name value="Charlie" gender="female" />
+        <first-name value="Charlotte" gender="female" />
+
+        <first-name value="Victoria" gender="female" />
+        <first-name value="Camille" gender="female" />
+        <first-name value="Juliette" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Eva" gender="female" />
+
+        <first-name value="Mia" gender="female" />
+        <first-name value="Jade" gender="female" />
+        <first-name value="Beatrice" gender="female" />
+        <first-name value="Maeva" gender="female" />
+        <first-name value="Sarah" gender="female" />
+
+        <first-name value="Laurence" gender="female" />
+        <first-name value="Clara" gender="female" />
+        <first-name value="Alicia" gender="female" />
+        <first-name value="Coralie" gender="female" />
+        <first-name value="Rose" gender="female" />
+
+        <first-name value="Gabrielle" gender="female" />
+        <first-name value="Anais" gender="female" />
+        <first-name value="Annabelle" gender="female" />
+        <first-name value="Raphaelle" gender="female" />
+        <first-name value="Elizabeth" gender="female" />
+
+        <first-name value="Livia" gender="female" />
+        <first-name value="Elodie" gender="female" />
+        <first-name value="Laurie" gender="female" />
+        <first-name value="Maelie" gender="female" />
+        <first-name value="Noemie" gender="female" />
+
+        <first-name value="Amelia" gender="female" />
+        <first-name value="Leonie" gender="female" />
+        <first-name value="Mila" gender="female" />
+        <first-name value="Romy" gender="female" />
+        <first-name value="Alexia" gender="female" />
+
+        <first-name value="Flavie" gender="female" />
+        <first-name value="Aurelie" gender="female" />
+        <first-name value="Sophia" gender="female" />
+        <first-name value="Eve" gender="female" />
+        <first-name value="Adele" gender="female" />
+
+        <first-name value="Emilie" gender="female" />
+        <first-name value="Emy" gender="female" />
+        <first-name value="Megane" gender="female" />
+        <first-name value="Sophie" gender="female" />
+        <first-name value="Justine" gender="female" />
+
+        <first-name value="Jasmine" gender="female" />
+        <first-name value="Julia" gender="female" />
+        <first-name value="Jeanne" gender="female" />
+        <first-name value="Maya" gender="female" />
+        <first-name value="Oceane" gender="female" />
+
+        <first-name value="Marianne" gender="female" />
+        <first-name value="Maika" gender="female" />
+        <first-name value="Melodie" gender="female" />
+        <first-name value="Eliane" gender="female" />
+        <first-name value="Ariane" gender="female" />
+
+        <first-name value="Mya" gender="female" />
+        <first-name value="Ophelie" gender="female" />
+        <first-name value="Megan" gender="female" />
+        <first-name value="Delphine" gender="female" />
+        <first-name value="Lexie" gender="female" />
+
+        <first-name value="Sara" gender="female" />
+        <first-name value="Eloise" gender="female" />
+        <first-name value="Leanne" gender="female" />
+        <first-name value="Arielle" gender="female" />
+        <first-name value="Daphnee" gender="female" />
+
+        <first-name value="Lily" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Elisabeth" gender="female" />
+        <first-name value="Ellie" gender="female" />
+        <first-name value="Alycia" gender="female" />
+
+        <first-name value="Elena" gender="female" />
+        <first-name value="Emily" gender="female" />
+        <first-name value="Magalie" gender="female" />
+        <first-name value="Mathilde" gender="female" />
+        <first-name value="Simone" gender="female" />
+
+        <first-name value="Naomie" gender="female" />
+        <first-name value="Maely" gender="female" />
+        <first-name value="Yasmine" gender="female" />
+        <first-name value="Fredrique" gender="female" />
+        <first-name value="Eleonore" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_North_America#Canada -->
+
+        <last-name value="Brown" />
+        <last-name value="Gagnon" />
+        <last-name value="Lam" />
+        <last-name value="Lee" />
+        <last-name value="Li" />
+        <last-name value="Martin" />
+        <last-name value="Roy" />
+        <last-name value="Smith" />
+        <last-name value="Tremblay" />
+        <last-name value="Wilson" />
+
+        <!-- http://www.mesaieux.com/an/Noms.asp -->
+
+        <last-name value="Cote" />
+        <last-name value="Gauthier" />
+        <last-name value="Morin" />
+        <last-name value="Belanger" />
+        <last-name value="Bouchard" />
+
+        <last-name value="Pelletier" />
+        <last-name value="Gagne" />
+        <last-name value="Lavoie" />
+        <last-name value="Fortin" />
+        <last-name value="Levesque" />
+
+        <last-name value="Boucher" />
+        <last-name value="Bergeron" />
+        <last-name value="Simard" />
+        <last-name value="Girard" />
+        <last-name value="Caron" />
+
+        <last-name value="Ouellet" />
+        <last-name value="Leblanc" />
+        <last-name value="Lefebvre" />
+        <last-name value="Fournier" />
+        <last-name value="Cloutier" />
+
+        <last-name value="Dube" />
+        <last-name value="Poirier" />
+        <last-name value="Poulin" />
+        <last-name value="Thibault" />
+        <last-name value="Martel" />
+
+
+        <last-name value="Beaulieu" />
+        <last-name value="Bedard" />
+        <last-name value="Leclerc" />
+        <last-name value="Nadeau" />
+        <last-name value="Grenier" />
+
+        <last-name value="Lapointe" />
+        <last-name value="Landry" />
+        <last-name value="Hebert" />
+        <last-name value="Demers" />
+        <last-name value="Richard" />
+
+        <last-name value="Desjardins" />
+    </last-name-list>
+</country>

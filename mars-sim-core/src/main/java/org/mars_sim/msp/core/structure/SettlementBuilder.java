@@ -9,10 +9,12 @@ package org.mars_sim.msp.core.structure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -31,6 +33,8 @@ import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonNameSpec;
+import org.mars_sim.msp.core.person.PersonNameSpecConfig;
 import org.mars_sim.msp.core.person.ai.fav.Favorite;
 import org.mars_sim.msp.core.person.ai.job.util.AssignmentType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -68,6 +72,7 @@ public final class SettlementBuilder {
 	private RobotConfig robotConfig;
 	private UserConfigurableConfig<Crew> crewConfig;
 	private ReportingAuthorityFactory raFactory;
+	private PersonNameSpecConfig namingSpecs;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
@@ -75,6 +80,7 @@ public final class SettlementBuilder {
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
+		this.namingSpecs = new PersonNameSpecConfig();
 	}
 
 	/**
@@ -341,6 +347,10 @@ public final class SettlementBuilder {
 		long males = settlement.getAllAssociatedPeople().stream()
 												.filter(p -> p.getGender() == GenderType.MALE).count();
 		int targetMales = (int) (sponsor.getGenderRatio() * targetPopulation);
+		
+		// Who exists already
+		Set<String> existingfullnames = new HashSet<>(unitManager.getPeople().stream()
+								.map(Person::getName).collect(Collectors.toSet()));
 
 		// Fill up the settlement by creating more people
 		while (settlement.getNumCitizens() < targetPopulation) {
@@ -356,9 +366,11 @@ public final class SettlementBuilder {
 
 			// This is random and may change on each call
 			String country = sponsor.getDefaultCountry();
+			PersonNameSpec spec = namingSpecs.getItem(country);
 
 			// Make sure settlement name isn't already being used.
-			String fullname = Person.generateName(country, gender);
+			String fullname = spec.generateName(gender, existingfullnames);
+			existingfullnames.add(fullname);
 
 			// Use Builder Pattern for creating an instance of Person
 			Person person = Person.create(fullname, settlement)

@@ -1,0 +1,40 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="The Netherlands">
+    <first-name-list>
+        <first-name value="Liam" gender="male" />
+        <first-name value="Sem" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Luuk" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Milan" gender="male" />
+        <first-name value="Daan" gender="male" />
+        <first-name value="Levi" gender="male" />
+        <first-name value="Finn" gender="male" />
+        <first-name value="Jesse" gender="male" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Julia" gender="female" />
+        <first-name value="Sophie" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Mila" gender="female" />
+        <first-name value="Eva" gender="female" />
+        <first-name value="Tess" gender="female" />
+        <first-name value="Lotte" gender="female" />
+        <first-name value="Sara" gender="female" />
+        <first-name value="Zoë" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Dutch surnames -->
+
+        <last-name value="Bakker" />
+        <last-name value="De Boer" />
+        <last-name value="De Jong" />
+        <last-name value="De Vries" />
+        <last-name value="Janssen" />
+        <last-name value="Meijer" />
+        <last-name value="Smit" />
+        <last-name value="Van den Berg" />
+        <last-name value="Van Dijk" />
+        <last-name value="Visser" />
+    </last-name-list>
+</country>

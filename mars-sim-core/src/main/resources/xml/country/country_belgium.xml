@@ -1,0 +1,77 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Belgium">
+    <first-name-list>
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Louis" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Nathan" gender="male" />
+        <first-name value="Adam" gender="male" />
+        <first-name value="Arthur" gender="male" />
+        <first-name value="Mohamed" gender="male" />
+        <first-name value="Victor" gender="male" />
+        <first-name value="Mathis" gender="male" />
+        <first-name value="Liam" gender="male" />
+
+
+        <first-name value="Emma" gender="female" />
+        <first-name value="Louise" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Elise" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Juliette" gender="female" />
+        <first-name value="Mila" gender="female" />
+        <first-name value="Lucie" gender="female" />
+        <first-name value="Marie" gender="female" />
+        <first-name value="Camille" gender="female" />
+
+        <first-name value="Maria" gender="female" />
+        <first-name value="Dominique" gender="female" />
+        <first-name value="Martine" gender="female" />
+        <first-name value="Nathalie" gender="female" />
+        <first-name value="Anne" gender="female" />
+        <first-name value="Rita" gender="female" />
+        <first-name value="Nicole" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Christiane" gender="female" />
+
+        <first-name value="Julie" gender="female" />
+        <first-name value="Noor" gender="female" />
+        <first-name value="Lotte" gender="female" />
+        <first-name value="Fien" gender="female" />
+        <first-name value="Nina" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Lore" gender="female" />
+
+        <first-name value="Léa" gender="female" />
+        <first-name value="Zoé" gender="female" />
+        <first-name value="Manon" gender="female" />
+        <first-name value="Chloé" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Clara" gender="female" />
+
+        <first-name value="Aya" gender="female" />
+        <first-name value="Yasmine" gender="female" />
+        <first-name value="Lina" gender="female" />
+        <first-name value="Sara" gender="female" />
+        <first-name value="Sarah" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Nour" gender="female" />
+        <first-name value="Malak" gender="female" />
+
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Belgium surnames -->
+
+        <last-name value="Claes" />
+        <last-name value="De Smet" />
+        <last-name value="Goossens" />
+        <last-name value="Jacobs" />
+        <last-name value="Janssens" />
+        <last-name value="Maes" />
+        <last-name value="Mertens" />
+        <last-name value="Peeters" />
+        <last-name value="Willems" />
+        <last-name value="Wouters" />
+    </last-name-list>
+</country>

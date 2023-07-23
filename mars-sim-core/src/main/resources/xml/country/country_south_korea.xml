@@ -1,0 +1,202 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="South Korea">
+    <first-name-list>
+
+        <!-- https://en.wikipedia.org/wiki/List_of_the_most_popular_given_names_in_South_Korea -->
+        <first-name value="Ijun" gender="male" />
+        <first-name value="Seojun" gender="male" />
+        <first-name value="Hajun" gender="male" />
+        <first-name value="Doyun" gender="male" />
+        <first-name value="Eunu" gender="male" />
+        <first-name value="Siu" gender="male" />
+        <first-name value="Jiho" gender="male" />
+        <first-name value="Yejun" gender="male" />
+        <first-name value="Yujun" gender="male" />
+        <first-name value="Suho" gender="male" />
+
+        <first-name value="Minjun" gender="male" />
+        <first-name value="Yejun" gender="male" />
+        <first-name value="Junu" gender="male" />
+        <first-name value="Joon-woo" gender="male" />
+        <first-name value="Chuwon" gender="male" />
+        <first-name value="Ji-ju" gender="male" />
+        <first-name value="Jun-seo" gender="male" />
+        <first-name value="Ji-ho" gender="male" />
+        <first-name value="Ha-joon" gender="male" />
+        <first-name value="Toyun" gender="male" />
+        
+        <first-name value="Chunso" gender="male" />
+        <first-name value="Chuso" gender="male" />
+        <first-name value="Hyonu" gender="male" />
+        <first-name value="Do-yun" gender="male" />
+        <first-name value="Konu" gender="male" />
+        <first-name value="Gun-woo" gender="male" />
+        <first-name value="Ye-jun" gender="male" />
+        <first-name value="Hyun-woo" gender="male" />
+        <first-name value="Si-woo" gender="male" />
+        <first-name value="Ujin" gender="male" />
+        
+        
+        
+        <first-name value="Ji-a" gender="female" />
+        <first-name value="Eunseo" gender="female" />
+        <first-name value="Unso" gender="female" />
+        <first-name value="Subin" gender="female" />
+        <first-name value="Min-seo" gender="female" />
+        <first-name value="Chi-u" gender="female" />
+        <first-name value="Ji-u" gender="female" />
+        <first-name value="Ji-min" gender="female" />
+        <first-name value="Eun-ji" gender="female" />
+        <first-name value="Unji" gender="female" />
+        
+        <first-name value="Seoa" gender="female" />
+        <first-name value="Hayun" gender="female" />
+        <first-name value="Iseo" gender="female" />
+        <first-name value="Jian" gender="female" />
+        <first-name value="Seoyun" gender="female" />
+        <first-name value="Arin" gender="female" />
+        <first-name value="Ayun" gender="female" />
+        <first-name value="Haeun" gender="female" />
+        <first-name value="Harin" gender="female" />
+        <first-name value="Soa" gender="female" />
+
+        <first-name value="Haun" gender="female" />
+        <first-name value="Chiyu" gender="female" />
+        <first-name value="Jiyu" gender="female" />
+        <first-name value="Jiu" gender="female" />
+        <first-name value="Sua" gender="female" />
+        <first-name value="Jia" gender="female" />
+        <first-name value="Chia" gender="female" />
+        <first-name value="Sua" gender="female" />
+        <first-name value="Ji-yoo" gender="female" />
+        <first-name value="Ji-woo" gender="female" />
+        
+    </first-name-list>
+    <last-name-list>
+        <!-- https://parenting.firstcry.com/articles/110-korean-last-names-or-surnames/ -->
+        <last-name value="Ahn" />
+        <last-name value="Bae" />
+        <last-name value="Bak" />
+        <last-name value="Baek" />
+        <last-name value="Bang" />
+
+        <last-name value="Byun" />
+        <last-name value="Cha" />
+        <last-name value="Chai" />
+        <last-name value="Chang" />
+        <last-name value="Chay" />
+
+        <last-name value="Cheong" />
+        <last-name value="Chew" />
+        <last-name value="Chi" />
+        <last-name value="Chin" />
+        <last-name value="Cho" />
+
+        <last-name value="Choi" />
+        <last-name value="Chong" />
+        <last-name value="Chu" />
+        <last-name value="Chun" />
+        <last-name value="Do" />
+
+        <last-name value="Gang" />
+        <last-name value="Gim" />
+        <last-name value="Geo" />
+        <last-name value="Ha" />
+        <last-name value="Hahm" />
+
+        <last-name value="Han" />
+        <last-name value="Heo" />
+        <last-name value="Ho" />
+        <last-name value="Hong" />
+        <last-name value="Hwang" />
+
+        <last-name value="Hyun" />
+        <last-name value="Im" />
+        <last-name value="In" />
+        <last-name value="Jang" />
+        <last-name value="Jee" />
+        <last-name value="Jeong" />
+        <last-name value="Jin" />
+        <last-name value="Joh" />
+        <last-name value="Ju" />
+        <last-name value="Jue" />
+
+        <last-name value="Jun" />
+        <last-name value="Jung" />
+        <last-name value="Kang" />
+        <last-name value="Keng" />
+        <last-name value="Ki" />
+        <last-name value="Kil" />
+        <last-name value="Kim" />
+        <last-name value="Ko" />
+        <last-name value="Kong" />
+        <last-name value="Ku" />
+
+        <last-name value="Kuk" />
+        <last-name value="Kwack" />
+        <last-name value="Kwan" />
+        <last-name value="Kwock" />
+        <last-name value="Kwon" />
+        <last-name value="Lee" />
+        <last-name value="Lin" />
+        <last-name value="Ma" />
+        <last-name value="Min" />
+        <last-name value="Mok" />
+        
+        <last-name value="Moon" />
+        <last-name value="Mun" />
+        <last-name value="Myung" />
+        <last-name value="Na" />
+        <last-name value="Nahm" />
+        <last-name value="No" />
+        <last-name value="Oh" />
+        <last-name value="Ock" />
+        <last-name value="Pae" />
+        <last-name value="Paek" />
+
+        <last-name value="Pai" />
+        <last-name value="Pak" />
+        <last-name value="Pan" />
+        <last-name value="Park" />
+        <last-name value="Pu" />
+        <last-name value="Quon" />
+        <last-name value="Ra" />
+        <last-name value="Reeh" />
+        <last-name value="Rim" />
+        <last-name value="Roh" />				
+
+        <last-name value="Ryu" />
+        <last-name value="Sa" />
+        <last-name value="Seo" />
+        <last-name value="Shin" />
+        <last-name value="Sim" />
+        <last-name value="Sin" />
+        <last-name value="So" />
+        <last-name value="Son" />
+        <last-name value="Song" />
+        <last-name value="Suh" />
+
+        <last-name value="Suk" />
+        <last-name value="Sun" />
+        <last-name value="Sung" />
+        <last-name value="Tak" />
+        <last-name value="Tan" />
+        <last-name value="Tang" />
+        <last-name value="To" />
+        <last-name value="Toh" />
+        <last-name value="Wang" />
+        <last-name value="Whang" />	
+
+        <last-name value="Woo" />
+        <last-name value="Yang" />
+        <last-name value="Ye" />
+        <last-name value="Yee" />
+        <last-name value="Yeon" />
+        <last-name value="Yoon" />
+        <last-name value="You" />
+        <last-name value="Yu" />
+        <last-name value="Yun" />
+                                        
+    </last-name-list>
+</country>

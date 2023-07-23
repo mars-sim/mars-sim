@@ -1,0 +1,172 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Russia">
+    <first-name-list>
+        <!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality -->
+
+        <first-name value="Aleksandr" gender="male" />
+        <first-name value="Aleksei" gender="male" />
+        <first-name value="Alexander" gender="male" />
+        <first-name value="Anatoly" gender="male" />
+        <first-name value="Andrei" gender="male" />
+        <first-name value="Andriyan" gender="male" />
+        <first-name value="Boris" gender="male" />
+        <first-name value="Dmitri" gender="male" />
+        <first-name value="Fyodor" gender="male" />
+        <first-name value="Gennadi" gender="male" />
+        <first-name value="Gennady" gender="male" />
+        <first-name value="Georgi" gender="male" />
+        <first-name value="Gherman" gender="male" />
+        <first-name value="Igor" gender="male" />
+        <first-name value="Konstantin" gender="male" />
+        <first-name value="Leonid" gender="male" />
+        <first-name value="Lev" gender="male" />
+        <first-name value="Maksim" gender="male" />
+        <first-name value="Mikhail" gender="male" />
+        <first-name value="Musa" gender="male" />
+        <first-name value="Nikolai" gender="male" />
+        <first-name value="Oleg" gender="male" />
+        <first-name value="Pavel" gender="male" />
+        <first-name value="Pyotr" gender="male" />
+        <first-name value="Salizhan" gender="male" />
+        <first-name value="Sergei" gender="male" />
+        <first-name value="Talgat" gender="male" />
+        <first-name value="Toktar" gender="male" />
+        <first-name value="Valery" gender="male" />
+        <first-name value="Vasili" gender="male" />
+        <first-name value="Viktor" gender="male" />
+        <first-name value="Vitali" gender="male" />
+        <first-name value="Vladimir" gender="male" />
+        <first-name value="Vyacheslav" gender="male" />
+        <first-name value="Yevgeny" gender="male" />
+        <first-name value="Yuri" gender="male" />
+        <first-name value="Yury" gender="male" />
+
+
+        <!-- http://www.babynamewizard.com/name-list/russian-boys-names-most-popular-names-for-boys-in-russia -->
+        <first-name value="Aleksander" gender="male" />
+        <first-name value="Maxim" gender="male" />
+        <first-name value="Artem" gender="male" />
+        <first-name value="Mikhail" gender="male" />
+        <first-name value="Ivan" gender="male" />
+        <first-name value="Daniil" gender="male" />
+        <first-name value="Dmitri" gender="male" />
+        <first-name value="Kirill" gender="male" />
+        <first-name value="Andrei" gender="male" />
+        <first-name value="Igor" gender="male" />
+
+        <first-name value="Nikita" gender="male" />
+        <first-name value="Ilya" gender="male" />
+        <first-name value="Alexei" gender="male" />
+        <first-name value="Matvei" gender="male" />
+        <first-name value="Timofei" gender="male" />
+        <first-name value="Roman" gender="male" />
+        <first-name value="Vladimir" gender="male" />
+        <first-name value="Yaroslav" gender="male" />
+        <first-name value="Fyodor" gender="male" />
+        <first-name value="Gleb" gender="male" />
+
+
+        <!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality -->
+
+        <first-name value="Irina" gender="female" />
+        <first-name value="Nadezhda" gender="female" />
+        <first-name value="Svetlana" gender="female" />
+        <first-name value="Valentina" gender="female" />
+        <first-name value="Yatyana" gender="female" />
+        <first-name value="Yelena" gender="female" />
+        <first-name value="Zhanna" gender="female" />
+
+        <!-- http://www.babynamewizard.com/name-list/russian-girls-names-most-popular-names-for-girls-in-russia -->
+
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Maria" gender="female" />
+        <first-name value="Anastasia" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Elizaveta" gender="female" />
+        <first-name value="Vikoria" gender="female" />
+        <first-name value="Darya" gender="female" />
+        <first-name value="Polina" gender="female" />
+        <first-name value="Varvara" gender="female" />
+        <first-name value="Alisa" gender="female" />
+
+        <first-name value="Aleksandra" gender="female" />
+        <first-name value="Yekaterina" gender="female" />
+        <first-name value="Ksenia" gender="female" />
+        <first-name value="Arina" gender="female" />
+        <first-name value="Veronika" gender="female" />
+        <first-name value="Vasilia" gender="female" />
+        <first-name value="Valeria" gender="female" />
+        <first-name value="Milana" gender="female" />
+        <first-name value="Uliana" gender="female" />
+        <first-name value="Yeva" gender="female" />
+
+        <first-name value="Kira" gender="female" />
+        <first-name value="Vera" gender="female" />
+        <first-name value="Margarita" gender="female" />
+        <first-name value="Aliena" gender="female" />
+        <first-name value="Kristina" gender="female" />
+        <first-name value="Alina" gender="female" />
+        <first-name value="Taisia" gender="female" />
+        <first-name value="Olga" gender="female" />
+        <first-name value="Diana" gender="female" />
+        <first-name value="Yulia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <last-name value="Afanasyev" />
+        <last-name value="Aksyonov" />
+        <last-name value="Aleksandrov" />
+        <last-name value="Artsebarsky" />
+        <last-name value="Artyukhin" />
+        <last-name value="Atkov" />
+        <last-name value="Avdeyev" />
+        <last-name value="Balandin" />
+        <last-name value="Baturin" />
+        <last-name value="Belyayev" />
+        <last-name value="Beregovoi" />
+        <last-name value="Berezovoy" />
+        <last-name value="Borisenko" />
+        <last-name value="Budarin" />
+        <last-name value="Bykovsky" />
+        <last-name value="Dezhurov" />
+        <last-name value="Dobrovolski" />
+        <last-name value="Dyomin" />
+        <last-name value="Dzhanibekov" />
+        <last-name value="Feoktistov" />
+        <last-name value="Filipchenko" />
+        <last-name value="Gargarin" />
+        <last-name value="Gidzenko" />
+
+        <!-- top 10 http://www.foreigndocuments.com/russian_common.html -->
+
+        <last-name value="Smirnov" />
+        <last-name value="Ivanov" />
+        <last-name value="Kuznetsov" />
+        <last-name value="Sokolov" />
+        <last-name value="Popov" />
+
+        <last-name value="Lebedev" />
+        <last-name value="Kozlov" />
+        <last-name value="Novikov" />
+        <last-name value="Morozov" />
+        <last-name value="Solovyov" />
+
+        <!-- http://todiscoverrussia.com/top-20-most-common-russian-family-names-and-their-meaning/ -->
+
+        <last-name value="Vasiliev" />
+        <last-name value="Petrov" />
+        <last-name value="Mikhailov" />
+        <last-name value="Fedorov" />
+        <last-name value="Volkov" />
+
+        <last-name value="Alexeev" />
+        <last-name value="Semenov" />
+        <last-name value="Egorov" />
+        <last-name value="Pavlov" />
+        <last-name value="Stepanov" />
+
+        <last-name value="Nikolaev" />
+        <last-name value="Orlov" />
+
+    </last-name-list>
+</country>

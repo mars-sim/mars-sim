@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Sweden">
+    <first-name-list>
+
+        <first-name value="William" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Oscar" gender="male" />
+        <first-name value="Elias" gender="male" />
+        <first-name value="Hugo" gender="male" />
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Charlie" gender="male" />
+        <first-name value="Axel" gender="male" />
+        <first-name value="Vincent" gender="male" />
+
+        <first-name value="Elsa" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Maja" gender="female" />
+        <first-name value="Saga" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Lily" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Ebba" gender="female" />
+        <first-name value="Wilma" gender="female" />
+        <first-name value="Julia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Swedish surnames -->
+
+        <last-name value="Andersson" />
+        <last-name value="Eriksson" />
+        <last-name value="Gustafsson" />
+        <last-name value="Johansson" />
+        <last-name value="Karlsson" />
+        <last-name value="Larsson" />
+        <last-name value="Nilsson" />
+        <last-name value="Olsson" />
+        <last-name value="Persson" />
+        <last-name value="Svensson" />
+
+    </last-name-list>
+</country>

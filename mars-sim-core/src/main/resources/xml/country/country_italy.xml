@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Italy">
+    <first-name-list>
+        <first-name value="Francesco" gender="male" />
+        <first-name value="Alessandro" gender="male" />
+        <first-name value="Mattia" gender="male" />
+        <first-name value="Lorenzo" gender="male" />
+        <first-name value="Leonardo" gender="male" />
+        <first-name value="Andrea" gender="male" />
+        <first-name value="Gabriele" gender="male" />
+        <first-name value="Matteo" gender="male" />
+        <first-name value="Tommaso" gender="male" />
+        <first-name value="Riccardo" gender="male" />
+
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Aurora" gender="female" />
+        <first-name value="Giulia" gender="female" />
+        <first-name value="Giorgia" gender="female" />
+        <first-name value="Alice" gender="female" />
+        <first-name value="Martina" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Greta" gender="female" />
+        <first-name value="Chiara" gender="female" />
+        <first-name value="Anna" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Italian surnames -->
+
+        <last-name value="Bianchi" />
+        <last-name value="Colombo" />
+        <last-name value="Esposito" />
+        <last-name value="Ferrari" />
+        <last-name value="Greco" />
+        <last-name value="Marino" />
+        <last-name value="Ricci" />
+        <last-name value="Romano" />
+        <last-name value="Rossi" />
+        <last-name value="Russo" />
+    </last-name-list>
+</country>

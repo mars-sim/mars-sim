@@ -16,12 +16,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
-import org.mars_sim.msp.core.person.ai.training.TrainingUtils;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 
 /**
@@ -189,9 +190,12 @@ public class RoleUtil implements Serializable {
 
 		List<TrainingType> trainings = person.getTrainings();
 
+		// Really should be passed in
+		PersonConfig pc = SimulationConfig.instance().getPersonConfig();
+		
 		int trainingScore = 0;
 		for (TrainingType tt : trainings) {
-			trainingScore += TrainingUtils.getModifier(role, tt);
+			trainingScore += pc.getTrainingModifier(role, tt);
 		}
 
 		return trainingScore;

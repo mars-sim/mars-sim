@@ -1,0 +1,192 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Japan">
+    <first-name-list>
+
+        <!-- http://www.babynamewizard.com/name-list/japanese-boys-names-most-popular-names-for-boys-in-japan -->
+        <first-name value="Haruto" gender="male" />
+        <first-name value="Yuto" gender="male" />
+        <first-name value="Sota" gender="male" />
+        <first-name value="Yuki" gender="male" />
+        <first-name value="Hayato" gender="male" />
+        <first-name value="Haruki" gender="male" />
+        <first-name value="Ryusei" gender="male" />
+        <first-name value="Koki" gender="male" />
+        <first-name value="Sora" gender="male" />
+        <first-name value="Sosuke" gender="male" />
+
+        <first-name value="Riku" gender="male" />
+        <first-name value="Soma" gender="male" />
+        <first-name value="Ryota" gender="male" />
+        <first-name value="Rui" gender="male" />
+        <first-name value="Kaito" gender="male" />
+        <first-name value="Haru" gender="male" />
+        <first-name value="Kota" gender="male" />
+        <first-name value="Yusei" gender="male" />
+        <first-name value="Yuito" gender="male" />
+        <first-name value="Yuma" gender="male" />
+
+        <first-name value="Ren" gender="male" />
+        <first-name value="Takumi" gender="male" />
+        <first-name value="Minato" gender="male" />
+        <first-name value="Eita" gender="male" />
+        <first-name value="Shota" gender="male" />
+        <first-name value="Daiki" gender="male" />
+        <first-name value="Hiroto" gender="male" />
+        <first-name value="Kosei" gender="male" />
+        <first-name value="Takeru" gender="male" />
+        <first-name value="Hinata" gender="male" />
+
+        <first-name value="Toma" gender="male" />
+        <first-name value="Monato" gender="male" />
+        <first-name value="Ryuki" gender="male" />
+        <first-name value="Rikuto" gender="male" />
+        <first-name value="Aoto" gender="male" />
+        <first-name value="Ibuki" gender="male" />
+        <first-name value="Tatsuki" gender="male" />
+        <first-name value="Haruma" gender="male" />
+        <first-name value="Yamato" gender="male" />
+        <first-name value="Ryuto" gender="male" />
+
+        <first-name value="Taisei" gender="male" />
+        <first-name value="Yuta" gender="male" />
+        <first-name value="Itsuki" gender="male" />
+        <first-name value="Soshi" gender="male" />
+        <first-name value="Taiga" gender="male" />
+        <first-name value="Kosuke" gender="male" />
+        <first-name value="Shoma" gender="male" />
+        <first-name value="Yushin" gender="male" />
+        <first-name value="Ryuga" gender="male" />
+        <first-name value="Ryo" gender="male" />
+
+        <!-- http://www.babynamewizard.com/name-list/japanese-girls-names-most-popular-names-for-girls-in-japan -->
+        <first-name value="Yui" gender="female" />
+        <first-name value="Rio" gender="female" />
+        <first-name value="Yuna" gender="female" />
+        <first-name value="Hina" gender="female" />
+        <first-name value="Koharu" gender="female" />
+        <first-name value="Hinata" gender="female" />
+        <first-name value="Mei" gender="female" />
+        <first-name value="Mio" gender="female" />
+        <first-name value="Saki" gender="female" />
+        <first-name value="Miyu" gender="female" />
+
+        <first-name value="Kokona" gender="female" />
+        <first-name value="Haruka" gender="female" />
+        <first-name value="Rin" gender="female" />
+        <first-name value="Akari" gender="female" />
+        <first-name value="Yuna" gender="female" />
+        <first-name value="Honoka" gender="female" />
+        <first-name value="Momoka" gender="female" />
+        <first-name value="Aoi" gender="female" />
+        <first-name value="Ichika" gender="female" />
+        <first-name value="Sakura" gender="female" />
+
+        <first-name value="Himari" gender="female" />
+        <first-name value="Yume" gender="female" />
+        <first-name value="Airi" gender="female" />
+        <first-name value="Sara" gender="female" />
+        <first-name value="Nanami" gender="female" />
+        <first-name value="Ayaka" gender="female" />
+        <first-name value="Yuka" gender="female" />
+        <first-name value="Riko" gender="female" />
+        <first-name value="Noa" gender="female" />
+        <first-name value="Mao" gender="female" />
+
+        <first-name value="Yua" gender="female" />
+        <first-name value="Ayane" gender="female" />
+        <first-name value="Hiyori" gender="female" />
+        <first-name value="Misaki" gender="female" />
+        <first-name value="Yuzuki" gender="female" />
+        <first-name value="Rina" gender="female" />
+        <first-name value="Sana" gender="female" />
+        <first-name value="Ria" gender="female" />
+        <first-name value="Ruka" gender="female" />
+        <first-name value="Kanon" gender="female" />
+
+
+        <first-name value="Kaho" gender="female" />
+        <first-name value="Hana" gender="female" />
+        <first-name value="Karin" gender="female" />
+        <first-name value="Risa" gender="female" />
+        <first-name value="Shiori" gender="female" />
+        <first-name value="Fuka" gender="female" />
+        <first-name value="Rino" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Natsuki" gender="female" />
+        <first-name value="Nana" gender="female" />
+    </first-name-list>
+    <last-name-list>
+
+        <!-- http://www.japantimes.co.jp/life/2009/10/11/lifestyle/japans-top-100-most-common-family-names/ -->
+
+        <last-name value="Sato" />
+        <last-name value="Suzuki" />
+        <last-name value="Takahashi" />
+        <last-name value="Tanaka" />
+        <last-name value="Watanabe" />
+
+        <last-name value="Ito" />
+        <last-name value="Yamamoto" />
+        <last-name value="Nakamura" />
+        <last-name value="Kobayashi" />
+        <last-name value="Kato" />
+
+        <last-name value="Yoshida" />
+        <last-name value="Yamada" />
+        <last-name value="Sasaki" />
+        <last-name value="Yamaguchi" />
+        <last-name value="Saito" />
+
+        <last-name value="Matsumoto" />
+        <last-name value="Inoue" />
+        <last-name value="Kimura" />
+        <last-name value="Hayashi" />
+        <last-name value="Shimizu" />
+
+        <last-name value="Yamazaki" />
+        <last-name value="Mori" />
+        <last-name value="Abe" />
+        <last-name value="Ikeda" />
+        <last-name value="Hashimoto" />
+
+        <last-name value="Yamashita" />
+        <last-name value="Ishikawa" />
+        <last-name value="Nakajima" />
+        <last-name value="Maeda" />
+        <last-name value="Fujita" />
+
+        <last-name value="Ogawa" />
+        <last-name value="Goto" />
+        <last-name value="Okada" />
+        <last-name value="Hasegawa" />
+        <last-name value="Murakami" />
+        <last-name value="Kondo" />
+        <last-name value="Ishii" />
+        <last-name value="Saito" />
+        <last-name value="Sakamoto" />
+        <last-name value="Endo" />
+
+        <last-name value="Aoki" />
+        <last-name value="Fujii" />
+        <last-name value="Nishimura" />
+        <last-name value="Fukuda" />
+        <last-name value="Ota" />
+        <last-name value="Miura" />
+        <last-name value="Fujiwara" />
+        <last-name value="Okamoto" />
+        <last-name value="Matsuda" />
+        <last-name value="Nakagawa" />
+
+        <last-name value="Nakano" />
+        <last-name value="Harada" />
+        <last-name value="Ono" />
+        <last-name value="Tamura" />
+        <last-name value="Takeuchi" />
+        <last-name value="Kaneko" />
+        <last-name value="Wada" />
+        <last-name value="Nakayama" />
+        <last-name value="Ishida" />
+        <last-name value="Ueda" />
+    </last-name-list>
+</country>

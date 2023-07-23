@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+        name="Poland">
+    <first-name-list>
+        <first-name value="Jan" gender="male" />
+        <first-name value="Antoni" gender="male" />
+        <first-name value="Jakub" gender="male" />
+        <first-name value="Aleksander" gender="male" />
+        <first-name value="Franciszek" gender="male" />
+        <first-name value="Adam" gender="male" />
+        <first-name value="Filip" gender="male" />
+        <first-name value="Stanisław" gender="male" />
+        <first-name value="Szymon" gender="male" />
+        <first-name value="Mikołaj" gender="male" />
+
+
+        <first-name value="Zofia" gender="female" />
+        <first-name value="Zuzanna" gender="female" />
+        <first-name value="Julia" gender="female" />
+        <first-name value="Hanna" gender="female" />
+        <first-name value="Alicja" gender="female" />
+        <first-name value="Maria" gender="female" />
+        <first-name value="Maja" gender="female" />
+        <first-name value="Natalia" gender="female" />
+        <first-name value="Aleksandra" gender="female" />
+        <first-name value="Amelia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Polish surnames -->
+
+        <last-name value="Kamiński" />
+        <last-name value="Kowalczyk" />
+        <last-name value="Kowalski" />
+        <last-name value="Lewandowski" />
+        <last-name value="Nowak" />
+        <last-name value="Szymański" />
+        <last-name value="Wiśniewski" />
+        <last-name value="Wójcik" />
+        <last-name value="Woźniak" />
+        <last-name value="Zieliński" />
+
+    </last-name-list>
+</country>

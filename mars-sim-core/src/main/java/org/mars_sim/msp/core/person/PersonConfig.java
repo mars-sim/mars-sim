@@ -6,36 +6,26 @@
  */
 package org.mars_sim.msp.core.person;
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.training.TrainingType;
 
 /**
  * Provides configuration information about people units. Uses a JDOM document
  * to get the information.
  */
-public class PersonConfig implements Serializable {
+public class PersonConfig {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	// Key class to combine role & training types
+	private static final record KeyClass(RoleType r, TrainingType t) {};
 
 	// Element names
-	private static final String LAST_NAME_LIST = "last-name-list";
-	private static final String FIRST_NAME_LIST = "first-name-list";
-	private static final String LAST_NAME = "last-name";
-	private static final String FIRST_NAME = "first-name";
-
-	private static final String GENDER = "gender";
-
-	private static final String COUNTRY = "country";
-	private static final String COUNTRY_LIST = "country-list";
-
 	private static final String NAME = "name";
 
 	private static final String PERSON_ATTRIBUTES = "person-attributes";
@@ -79,8 +69,6 @@ public class PersonConfig implements Serializable {
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	private static final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
 
-	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
-
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
 
@@ -90,7 +78,11 @@ public class PersonConfig implements Serializable {
 	private static final String PERCENTAGE = "percentage";
 
 	/** Default Country to use for name creation */
-	private static final String DEFAULT_COUNTRY = "USA";
+	private static final String TRAINING_LIST = "training-list";
+	private static final String TRAINING = "training";
+	private static final String BENEFITS = "benefit";
+	private static final String MODIFIER = "modifier";
+	private static final String ROLE = "role";
 
 	/** The base load-carrying capacity. */
 	private transient double baseCap = -1;
@@ -122,11 +114,10 @@ public class PersonConfig implements Serializable {
 	/** The personality distribution map. */
 	private transient Map<String, Double> personalityDistribution;
 
-	private transient Map<String, PersonNameSpec> namesByCountry = new HashMap<>();
-
 	private transient Commander commander;
 
 	private transient Map<String, String> personAttributes = new HashMap<>();
+	private Map<KeyClass, Integer> trainingMods = new HashMap<>();
 
 
 	/**
@@ -138,8 +129,22 @@ public class PersonConfig implements Serializable {
 		commander = new Commander();
 
 		parsePersonAttrs(personDoc);
-		parseNames(personDoc);
 		createPersonalityDistribution(personDoc);
+		loadTrainingMods(personDoc);
+	}
+
+	private void loadTrainingMods(Document doc) {
+		Element trainingListEl = doc.getRootElement().getChild(TRAINING_LIST);
+		List<Element> trainingsList = trainingListEl.getChildren(TRAINING);
+		for (Element trainingElement : trainingsList) {
+			String trainingName = trainingElement.getAttributeValue(NAME);
+			TrainingType tType = TrainingType.valueOf(ConfigHelper.convertToEnumName(trainingName));
+			for(Element benefit : trainingElement.getChildren(BENEFITS)) {
+				RoleType rType = RoleType.valueOf(ConfigHelper.convertToEnumName(benefit.getAttributeValue(ROLE)));
+				int mod = ConfigHelper.getOptionalAttributeInt(benefit, MODIFIER, 0);
+				trainingMods.put(new KeyClass(rType, tType), mod);
+			}
+		}
 	}
 
 	private void parsePersonAttrs(Document personDoc) {
@@ -149,47 +154,6 @@ public class PersonConfig implements Serializable {
 			String str = personAttr.getAttributeValue(VALUE);
 
 			personAttributes.put(personAttr.getName(), str);
-		}
-	}
-
-	/**
-	 * Parses the names element of the document.
-	 * 
-	 * @param doc XML document
-	 */
-	private void parseNames(Document doc) {
-
-		// Scan the countries
-		Element countryListEl = doc.getRootElement().getChild(COUNTRY_LIST);
-		List<Element> countriesList = countryListEl.getChildren(COUNTRY);
-		for (Element countryElement : countriesList) {
-
-			String country = countryElement.getAttributeValue(NAME);
-			PersonNameSpec countrySpec = new PersonNameSpec();
-
-			// Scan first names
-			Element firstNameEl = countryElement.getChild(FIRST_NAME_LIST);
-			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
-			for (Element nameElement : firstNamesList) {
-
-				String gender = nameElement.getAttributeValue(GENDER);
-				String name = nameElement.getAttributeValue(VALUE);
-
-				if (gender.equals("male")) {
-					countrySpec.addMaleName(name);
-				} else if (gender.equals("female")) {
-					countrySpec.addFemaleName(name);
-				}
-			}
-
-			// Scan last names
-			Element lastNameEl = countryElement.getChild(LAST_NAME_LIST);
-			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
-			for (Element nameElement : lastNamesList) {
-				countrySpec.addLastName(nameElement.getAttributeValue(VALUE));
-			}
-
-			namesByCountry.put(country, countrySpec);
 		}
 	}
 
@@ -692,27 +656,22 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the naming rules for a particular Country. If there are
-	 * no names defined for the Country then the DEFAULT_COUNTRY is used.
+	 * Finds the training modifiers for a combination of training and role.
 	 * 
-	 * @param country
+	 * @param role
+	 * @param tt
 	 * @return
 	 */
-	public PersonNameSpec getNamesByCountry(String country) {
-		PersonNameSpec result = namesByCountry.get(country);
-		if (result == null) {
-			result = namesByCountry.get(DEFAULT_COUNTRY);
-			namesByCountry.put(country, result);
-		}
-		return result;
-	}
+	public int getTrainingModifier(RoleType role, TrainingType tt) {
 
-	/**
-	 * Gets the list of known Countries.
-	 * 
-	 * @return
-	 */
-	public Set<String> getKnownCountries() {
-		return Collections.unmodifiableSet(namesByCountry.keySet());
+		// lookup in modifier table
+		KeyClass k = new KeyClass(role, tt);
+		Integer v = trainingMods.get(k);
+		if (v == null) {
+			return 0;
+		}
+		else {
+			return v;
+		}
 	}
 }

@@ -1,0 +1,304 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="India">
+    <first-name-list>
+
+        <!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html
+            https://www.quora.com/Which-is-the-most-common-surname-and-first-name-in-India -->
+        <first-name value="Nikhil" gender="male" />
+        <first-name value="Talan" gender="male" />
+        <first-name value="Raj" gender="male" />
+        <first-name value="Rahul" gender="male" />
+        <first-name value="Rakesh" gender="male" />
+
+        <first-name value="Abhishek" gender="male" />
+        <first-name value="Yash" gender="male" />
+        <first-name value="Rohit" gender="male" />
+        <first-name value="Rajesh" gender="male" />
+        <first-name value="Harish" gender="male" />
+
+        <!-- http://www.babycenter.in/a25018013/most-popular-indian-boy-names-of-2015 -->
+        <first-name value="Aarav" gender="male" />
+        <first-name value="Reyansh" gender="male" />
+        <first-name value="Muhammad" gender="male" />
+        <first-name value="Vivaan" gender="male" />
+        <first-name value="Ayaan" gender="male" />
+
+        <first-name value="Vihaan" gender="male" />
+        <first-name value="Atharv" gender="male" />
+        <first-name value="Sai" gender="male" />
+        <first-name value="Advik" gender="male" />
+        <first-name value="Arjun" gender="male" />
+
+        <first-name value="Dhruv" gender="male" />
+        <first-name value="Ayansh" gender="male" />
+        <first-name value="Aarush" gender="male" />
+        <first-name value="Shaurya" gender="male" />
+        <first-name value="Aryan" gender="male" />
+
+        <first-name value="Ishaan" gender="male" />
+        <first-name value="Parth" gender="male" />
+        <first-name value="Ryan" gender="male" />
+        <first-name value="Armav" gender="male" />
+        <first-name value="Rudra" gender="male" />
+
+        <first-name value="Kiaan" gender="male" />
+        <first-name value="Viaan" gender="male" />
+        <first-name value="Advait" gender="male" />
+        <first-name value="Kabir" gender="male" />
+        <first-name value="Rithvik" gender="male" />
+
+        <first-name value="Aditya" gender="male" />
+        <first-name value="Shivansh" gender="male" />
+        <first-name value="Shlok" gender="male" />
+        <first-name value="Riaan" gender="male" />
+        <first-name value="Veer" gender="male" />
+
+        <first-name value="Viraj" gender="male" />
+        <first-name value="Ahaan" gender="male" />
+        <first-name value="Ansh" gender="male" />
+        <first-name value="Krishna" gender="male" />
+        <first-name value="Ethan" gender="male" />
+
+        <first-name value="Siddharth" gender="male" />
+        <first-name value="Om" gender="male" />
+        <first-name value="Neil" gender="male" />
+        <first-name value="Anay" gender="male" />
+        <first-name value="David" gender="male" />
+
+        <first-name value="Hridaan" gender="male" />
+        <first-name value="Ivaan" gender="male" />
+        <first-name value="Nathan" gender="male" />
+        <first-name value="Nivaan" gender="male" />
+        <first-name value="Noah" gender="male" />
+
+        <first-name value="Pranav" gender="male" />
+        <first-name value="Samar" gender="male" />
+        <first-name value="Samarth" gender="male" />
+        <first-name value="Yuvaan" gender="male" />
+        <first-name value="Agastya" gender="male" />
+
+        <first-name value="Ahmed" gender="male" />
+        <first-name value="Aiden" gender="male" />
+        <first-name value="Daksh" gender="male" />
+        <first-name value="Rishaan" gender="male" />
+        <first-name value="Tarun" gender="male" />
+
+        <first-name value="Abeer" gender="male" />
+        <first-name value="Ayush" gender="male" />
+        <first-name value="Abhinav" gender="male" />
+        <first-name value="Dev" gender="male" />
+        <first-name value="Divit" gender="male" />
+
+
+        <!-- http://www.babycenter.in/a25018003/most-popular-indian-girl-names-of-2015 -->
+
+        <first-name value="Anjali" gender="female" />
+        <first-name value="Naima" gender="female" />
+        <first-name value="Sneha" gender="female" />
+        <first-name value="Priyanka" gender="female" />
+        <first-name value="Aditi" gender="female" />
+
+        <first-name value="Kavitha" gender="female" />
+        <first-name value="Tanya" gender="female" />
+        <first-name value="Nishi" gender="female" />
+        <first-name value="Rhea" gender="female" />
+
+        <!-- http://www.babycenter.in/a25018003/most-popular-indian-girl-names-of-2015 -->
+
+        <first-name value="Aadya" gender="female" />
+        <first-name value="Diya" gender="female" />
+        <first-name value="Saanvi" gender="female" />
+        <first-name value="Amaira" gender="female" />
+        <first-name value="Angel" gender="female" />
+
+        <first-name value="Myra" gender="female" />
+        <first-name value="Aaradhya" gender="female" />
+        <first-name value="Anaya" gender="female" />
+        <first-name value="Riya" gender="female" />
+        <first-name value="Shanaya" gender="female" />
+
+        <first-name value="Aahana" gender="female" />
+        <first-name value="Ananya" gender="female" />
+        <first-name value="Anvi" gender="female" />
+        <first-name value="Aarohi" gender="female" />
+        <first-name value="Sarah" gender="female" />
+
+        <first-name value="Swara" gender="female" />
+        <first-name value="Tanvi" gender="female" />
+        <first-name value="Aarna" gender="female" />
+        <first-name value="Kavya" gender="female" />
+        <first-name value="Navya" gender="female" />
+
+        <first-name value="Prisha" gender="female" />
+        <first-name value="Pari" gender="female" />
+        <first-name value="Aanya" gender="female" />
+        <first-name value="Anika" gender="female" />
+        <first-name value="Arya" gender="female" />
+
+        <first-name value="Ayesha" gender="female" />
+        <first-name value="Avantika" gender="female" />
+        <first-name value="Sai" gender="female" />
+        <first-name value="Aairah" gender="female" />
+        <first-name value="Avni" gender="female" />
+
+        <first-name value="Fatima" gender="female" />
+        <first-name value="Gianna" gender="female" />
+        <first-name value="Jiya" gender="female" />
+        <first-name value="Kiara" gender="female" />
+        <first-name value="Mishka" gender="female" />
+
+        <first-name value="Aditi" gender="female" />
+        <first-name value="Advika" gender="female" />
+        <first-name value="Eva" gender="female" />
+        <first-name value="Isha" gender="female" />
+        <first-name value="Samaira" gender="female" />
+
+        <first-name value="Anaisha" gender="female" />
+        <first-name value="Avika" gender="female" />
+        <first-name value="Ira" gender="female" />
+        <first-name value="Ishani" gender="female" />
+        <first-name value="Khushi" gender="female" />
+
+        <first-name value="Nishka" gender="female" />
+        <first-name value="Rianshi" gender="female" />
+        <first-name value="Sia" gender="female" />
+        <first-name value="Tanishka" gender="female" />
+        <first-name value="Vaanya" gender="female" />
+
+        <first-name value="Aashvi" gender="female" />
+        <first-name value="Advita" gender="female" />
+        <first-name value="Amaya" gender="female" />
+        <first-name value="Anvitha" gender="female" />
+        <first-name value="Aradhana" gender="female" />
+
+        <first-name value="Cherry" gender="female" />
+        <first-name value="Hannah" gender="female" />
+        <first-name value="Leah" gender="female" />
+        <first-name value="Nakshatra" gender="female" />
+        <first-name value="Shreya" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- top 22 common Indian surnames http://www.lowchensaustralia.com/names/popular-indian-names.htm -->
+
+        <last-name value="Kumar" />
+        <last-name value="Lal" />
+        <last-name value="Sharma" />
+        <last-name value="Shan" />
+        <last-name value="Jai" />
+
+        <last-name value="Pal" />
+        <last-name value="Aggarwal" />
+        <last-name value="Raje" />
+        <last-name value="Chande" />
+        <last-name value="Chander" />
+
+        <last-name value="Nara" />
+        <last-name value="Rai" />
+        <last-name value="Nath" />
+        <last-name value="Goel" />
+        <last-name value="Bhat" />
+
+        <last-name value="Raji" />
+        <last-name value="Anand" />
+        <last-name value="Suri" />
+        <last-name value="Kappor" />
+        <last-name value="Chandra" />
+
+        <last-name value="Patel" />
+        <last-name value="Verma" />
+        <last-name value="Malhotra" />
+        <last-name value="Sai" />
+        <last-name value="Engineer" />
+
+        <last-name value="Arun" />
+        <last-name value="Madan" />
+        <last-name value="Srini" />
+        <last-name value="Prasad" />
+        <last-name value="Sara" />
+
+        <last-name value="Rana" />
+        <last-name value="Raman" />
+        <last-name value="Subram" />
+        <last-name value="Mehta" />
+        <last-name value="Subramani" />
+
+        <last-name value="Sethi" />
+        <last-name value="Vijaya" />
+        <last-name value="Malik" />
+        <last-name value="Narayan" />
+        <last-name value="Mittal" />
+
+        <last-name value="Nita" />
+        <last-name value="Kishore" />
+        <last-name value="Roy" />
+        <last-name value="Chaudhary" />
+        <last-name value="Charan" />
+
+        <last-name value="Nigam" />
+        <last-name value="Sen" />
+        <last-name value="Subramanian" />
+        <last-name value="Nirmal" />
+        <last-name value="Pawan" />
+
+        <last-name value="Manohar" />
+        <last-name value="Sahni" />
+        <last-name value="Lalit" />
+        <last-name value="Rajan" />
+        <last-name value="Sehgal" />
+
+        <last-name value="Uddin" />
+        <last-name value="Saini" />
+        <last-name value="Neel" />
+        <last-name value="Jana" />
+        <last-name value="Darsha" />
+
+        <last-name value="Ranga" />
+        <last-name value="Vish" />
+        <last-name value="Mehra" />
+        <last-name value="Puri" />
+        <last-name value="Muthu" />
+
+        <last-name value="Gandhi" />
+        <last-name value="Lata" />
+        <last-name value="Chauhan" />
+        <last-name value="Saxena" />
+        <last-name value="Swami" />
+
+        <last-name value="Neela" />
+        <last-name value="Chandrasekar" />
+        <last-name value="Soni" />
+        <last-name value="Dhawan" />
+        <last-name value="Nagpal" />
+
+        <last-name value="Joshi" />
+        <last-name value="Krishnamurthy" />
+        <last-name value="Persaud" />
+        <last-name value="Punj" />
+        <last-name value="Veena" />
+
+        <last-name value="Mahajan" />
+        <last-name value="Manju" />
+        <last-name value="Dutta" />
+        <last-name value="Sandeep" />
+        <last-name value="Narang" />
+
+        <last-name value="Naran" />
+        <last-name value="Veer" />
+        <last-name value="Tyagi" />
+        <last-name value="Samuel" />
+        <last-name value="Srivastava" />
+
+        <last-name value="Sudha" />
+        <last-name value="Srivas" />
+        <last-name value="Mati" />
+        <last-name value="Neelam" />
+        <last-name value="Rastogi" />
+
+        <last-name value="Bhatt" />
+        <last-name value="Rajagopal" />
+        <last-name value="Srivastav" />
+        <last-name value="Ganesh" />
+        <last-name value="Jindal" />
+    </last-name-list>
+</country>

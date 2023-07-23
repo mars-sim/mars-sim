@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="Switzerland">
+    <first-name-list>
+        <first-name value="Noah" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Gabriel" gender="male" />
+        <first-name value="Leon" gender="male" />
+        <first-name value="David" gender="male" />
+        <first-name value="Matteo" gender="male" />
+        <first-name value="Elias" gender="male" />
+        <first-name value="Louis" gender="male" />
+        <first-name value="Levin" gender="male" />
+
+
+
+        <first-name value="Mia" gender="female" />
+        <first-name value="Emma" gender="female" />
+        <first-name value="Lara" gender="female" />
+        <first-name value="Lena" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Mila" gender="female" />
+        <first-name value="Anna" gender="female" />
+        <first-name value="Elena" gender="female" />
+        <first-name value="Laura" gender="female" />
+        <first-name value="Lina" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 most common Swiss surnames (5 Italian, 5 German) -->
+
+        <last-name value="Bernasconi" />
+        <last-name value="Bianchi" />
+        <last-name value="Crivelli" />
+        <last-name value="Fontana" />
+        <last-name value="Galli" />
+        <last-name value="Keller" />
+        <last-name value="Meier" />
+        <last-name value="Müller" />
+        <last-name value="Schmid" />
+        <last-name value="Weber" />
+    </last-name-list>
+</country>

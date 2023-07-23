@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<country xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="country.xsd"
+    name="UK">
+    <first-name-list>
+        <first-name value="Oliver" gender="male" />
+        <first-name value="Jacob" gender="male" />
+        <first-name value="Charlie" gender="male" />
+        <first-name value="Jack" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Alfie" gender="male" />
+        <first-name value="Oscar" gender="male" />
+        <first-name value="William" gender="male" />
+        <first-name value="George" gender="male" />
+        <first-name value="Harry" gender="male" />
+
+        <first-name value="Amelia" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Emily" gender="female" />
+        <first-name value="Isla" gender="female" />
+        <first-name value="Ava" gender="female" />
+        <first-name value="Jessica" gender="female" />
+        <first-name value="Ella" gender="female" />
+        <first-name value="Isabella" gender="female" />
+        <first-name value="Poppy" gender="female" />
+        <first-name value="Mia" gender="female" />
+    </first-name-list>
+    <last-name-list>
+        <!-- 10 common UK surnames, taking into account individual countries -->
+
+        <last-name value="Brown" />
+        <last-name value="Campbell" />
+        <last-name value="Davies" />
+        <last-name value="Evans" />
+        <last-name value="Jones" />
+        <last-name value="Robertson" />
+        <last-name value="Smith" />
+        <last-name value="Taylor" />
+        <last-name value="Thomson" />
+        <last-name value="Wilson" />
+    </last-name-list>
+</country>
