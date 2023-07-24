@@ -3063,7 +3063,7 @@ public class Settlement extends Structure implements Temporal,
 		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 
 		if (chosen == null) {
-			logger.info(this, "Picked the first nearbyMineralLocations.");
+			logger.info(this, "Picked a nearby mineral location.");
 			return new ArrayList<>(nearbyMineralLocations).get(0);
 		}
 		

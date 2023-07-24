@@ -400,7 +400,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		if (malfunction.getRepairParts().isEmpty()) { 
-			logger.info(actor, 20_000L, "'" + malfunction.getName() + "' needs no repair parts.");	
+			logger.info(actor, 0, malfunction.getName() + " triggered repair work but with no repair parts needed.");	
 		}
 //		else if (m.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) { 
 //			logger.info(actor, "'" + malfunction.getName() + "' needs no repair parts.");	

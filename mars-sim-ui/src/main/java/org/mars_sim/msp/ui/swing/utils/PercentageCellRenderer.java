@@ -21,7 +21,7 @@ import org.mars_sim.msp.ui.swing.StyleManager;
 public class PercentageCellRenderer extends DefaultTableCellRenderer {
 
     /**
-     * The default width for a cell usin this renderer
+     * The default width for a cell using this renderer
      */
     public static int DEFAULT_WIDTH = 40;
 

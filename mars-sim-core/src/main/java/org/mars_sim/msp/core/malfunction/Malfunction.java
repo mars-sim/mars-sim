@@ -199,8 +199,8 @@ public class Malfunction implements Serializable {
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				logger.info(10_000, "'" + name + "' " + type.toString() + " repair - Estimated work time: "
-								+ Math.round(actualEffort*10.0)/10.0 + " millisol");
+				logger.info(10_000, name + ". " + type.toString() + " repair triggered. Estimated work time: "
+								+ Math.round(actualEffort * 10.0)/10.0 + " millisols.");
 				work.put(type, new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
 			}
 		}

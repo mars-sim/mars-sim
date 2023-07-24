@@ -209,7 +209,7 @@
     </building>
 
     <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="29" type="EVA Airlock" xloc="-48.5"
+    <building id="29" zone="1" type="EVA Airlock" xloc="-48.5"
         yloc="-20.0" facing="0.0">
         <connection-list>
             <connection id="28" xloc="-3.0" yloc="0.0" />

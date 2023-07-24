@@ -1129,95 +1129,110 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			moment_of_impact = RandomUtil.getRandomInt(1000);
 		}
 
-		if (isImpactImminent) {
-
-			int now = pulse.getMarsTime().getMillisolInt();
-			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
-			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
+		if (!isImpactImminent) {
+			// The impact is not or no longer imminent.
+			// Note: if the impact has already once. isImpactImminent will be set back to false.
+			return;
+		}
+		
+		int now = pulse.getMarsTime().getMillisolInt();
+		// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
+		// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
+		int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
+		
+		if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
+			// Yes the impact event occurs in the vicinity
 			
-			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
-				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
+			logger.log(this, Level.INFO, 0, "A meteorite impact event was imminent.");
 
-				// Reset the boolean immediately for keeping track of whether 
-				// the impact has occurred
-				isImpactImminent = false;
-				// Find the length this meteorite can penetrate
-				double penetrated_length = getBuildingManager().getWallPenetration();
+			// Reset the boolean immediately for keeping track of whether 
+			// the impact has occurred
+			isImpactImminent = false;
+			
+			// Find the length this meteorite can penetrate
+			double penetrated_length = getBuildingManager().getWallPenetration();
 
-				if (penetrated_length >= getWallThickness()) {
-					// Yes it's breached !
-					// Simulate the meteorite impact as a malfunction event for now
-					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
-							.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
-							true, this);
+			if (penetrated_length < getWallThickness()) {
+				// No it's not breached
+				logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but no building was breached. Damage not detected.");
+				return ;
+			}
+			
+			// Yes it's breached !	
+			
+			// Simulate the meteorite impact as a malfunction event for now
+			Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
+					.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
+					true, this);
 
-					logger.log(this, Level.INFO, 0, mal.getName() + " just occurred.");
-					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
-					
-					String victimNames = null;
+			logger.log(this, Level.INFO, 0, mal.getName() + " registered.");
+//					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
+			
+			String victimNames = null;
 //					String task = "N/A";
 
-					// check if someone under this roof may have seen/affected by the impact
-					for (Person person : getInhabitants()) {
-						if (person.getBuildingLocation() == this
-								&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
+			// check if someone under this roof may have seen/affected by the impact
+			for (Person person : getInhabitants()) {
+				
+				if (person.getBuildingLocation() == this
+					&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
 
-							// Note 1: someone got hurt, declare medical emergency
-							// Note 2: delineate the accidents from those listed in malfunction.xml
-							// currently, malfunction whether a person gets hurt is handled by Malfunction
-							// above
-							int resilience = person.getNaturalAttributeManager()
-									.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-							int courage = person.getNaturalAttributeManager()
-									.getAttribute(NaturalAttributeType.COURAGE);
-							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100D - courage / 100D;
-							PhysicalCondition pc = person.getPhysicalCondition();
-							if (factor > 1)
-								pc.setStress(pc.getStress() * factor);
+					// Note 1: someone got hurt, declare medical emergency
+					// Note 2: delineate the accidents from those listed in malfunction.xml
+					// currently, malfunction whether a person gets hurt is handled by Malfunction
+					// above
+					int resilience = person.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+					int courage = person.getNaturalAttributeManager()
+							.getAttribute(NaturalAttributeType.COURAGE);
+					double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100D - courage / 100D;
+					PhysicalCondition pc = person.getPhysicalCondition();
+					if (factor > 1)
+						pc.setStress(pc.getStress() * factor);
 
-							if (victimNames != null)
-								victimNames += ", " + person.getName();
-							else
-								victimNames = person.getName();
-							
-							mal.setTraumatized(victimNames);
-
-							// Store the meteorite fragment in the settlement
-							settlement.storeAmountResource(ResourceUtil.meteoriteID, getBuildingManager().getDebrisMass());
-
-							logger.log(this, Level.INFO, 0, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
-									+ " kg of meteorite fragments in " + getNickName() + ".");
-
-							if (pc.getStress() > 30)
-								logger.log(this, Level.WARNING, 0, victimNames + " was traumatized by the meteorite impact");
-
-						}
-						
-					} // loop for persons
-
-					// If it's not breached, how to record the damage
-					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
-
-					if (victimNames == null)
-						victimNames = "";
-						
-					HistoricalEvent hEvent = new HazardEvent(
-							EventType.HAZARD_ACTS_OF_GOD,
-							this,
-							mal.getMalfunctionMeta().getName(),
-							"",
-							victimNames,
-							this);
-
-					if (eventManager == null)
-						eventManager = Simulation.instance().getEventManager();
+					if (victimNames != null)
+						victimNames += ", " + person.getName();
+					else
+						victimNames = person.getName();
 					
-					eventManager.registerNewEvent(hEvent);
+					mal.setTraumatized(victimNames);
 
-					fireUnitUpdate(UnitEventType.METEORITE_EVENT);
-				}
-			}
+					// Store the meteorite fragment in the settlement
+					settlement.storeAmountResource(ResourceUtil.meteoriteID, getBuildingManager().getDebrisMass());
+
+					logger.log(this, Level.INFO, 0, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
+							+ " kg of meteorite fragments in " + getNickName() + ".");
+
+					if (pc.getStress() > 30)
+						logger.log(this, Level.WARNING, 0, victimNames + " was traumatized by the meteorite impact");
+
+				} // check if this person happens to be inside the affected building
+				
+			} // loop for persons
+
+
+			if (victimNames == null)
+				victimNames = "";
+				
+			HistoricalEvent hEvent = new HazardEvent(
+					EventType.HAZARD_ACTS_OF_GOD,
+					this,
+					mal.getMalfunctionMeta().getName(),
+					"",
+					victimNames,
+					this);
+
+			if (eventManager == null)
+				eventManager = Simulation.instance().getEventManager();
+			
+			eventManager.registerNewEvent(hEvent);
+
+			fireUnitUpdate(UnitEventType.METEORITE_EVENT);
+		}
+		
+		else {
+			// No the impact does not occur in the vicinity
+			logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but did not occur in the vicinity.");
 		}
 	}
 

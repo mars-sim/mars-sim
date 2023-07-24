@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.LocalPosition;
