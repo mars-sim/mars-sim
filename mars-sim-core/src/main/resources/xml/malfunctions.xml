@@ -1126,6 +1126,11 @@
 		<system-list>
 			<system name="building" />
 		</system-list>
+		<effect-list>
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+			<effect type="resource" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
+		</effect-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" medical-probability="15.0" />
 			<medical-complaint name="Laceration" medical-probability="30.0" />

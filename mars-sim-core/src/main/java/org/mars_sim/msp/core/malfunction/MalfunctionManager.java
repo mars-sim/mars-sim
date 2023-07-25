@@ -777,7 +777,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 
 		// Check if life support modifiers are still in effect.
-//		setLifeSupportModifiers(time);
+		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
 		depleteResources(time);
@@ -848,7 +848,17 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
 				if (!malfunction.isFixed()) {
+				
+					if (entity instanceof Building building) {
+						if (building.getLifeSupport() == null) {
+							// If this entity is a building and it has no life support,
+							// there is no need to look at life support leaking
+							return;
+						}
+					}
+					
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
+					
 					if (effects.get(OXYGEN) != null)
 						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
 //					if (effects.get(WATER) != null)
@@ -882,11 +892,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			for (Malfunction malfunction : malfunctions) {
 				if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
 					// Resources are depleted according to how much of the repair is remaining
-					double remaining = (100.0 - malfunction.getPercentageFixed())/100D;
+					double percent = (100.0 - malfunction.getPercentageFixed())/100D;
 					for (Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
 						Integer resource = entry.getKey();
 						double amount = entry.getValue();
-						double amountDepleted = amount * time * remaining;
+						double amountDepleted = amount * time * percent / 100;
 						ResourceHolder rh = (ResourceHolder)entity;
 						double amountStored = rh.getAmountResourceStored(resource);
 
@@ -895,9 +905,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 						}
 						if (amountDepleted >= 0) {
 							rh.retrieveAmountResource(resource, amountDepleted);
-							logger.log(entity, Level.WARNING, 15_000, "Leaking "
-											+ Math.round(amountDepleted*100.0)/100.0 + " of  "
-											+ ResourceUtil.findAmountResource(resource));
+							logger.log(entity, Level.WARNING, 15_000L, "Leaking "
+											+ Math.round(amountDepleted * 100.0)/100.0 + " kg of  "
+											+ ResourceUtil.findAmountResource(resource) + ".");
 						}
 					}
 				}
