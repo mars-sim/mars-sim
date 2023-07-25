@@ -41,7 +41,19 @@ public class SplashWindow extends JComponent {
 	private static final String[] AUTHOR_STRING = {
 			"Picture from NASA Ames Research Center, 2005", 
 			"Family Watching News on Terraforming Mars, Tiago da Silva",
-			"Underground Oasis in Martian Lava Tube, Shane Powers & Linjie Wang, Marstopia Design Contest"
+			"Underground Oasis in Martian Lava Tube, Shane Powers & Linjie Wang, Marstopia Design Contest",
+			"3D-printed habitats allow for light entering through trough-shaped ports on the sides and top. Team SEArch+/Apis Cor",
+			"Internal view of ‘Mars Habitat’. Hassell + Eckersley O’Callaghan",
+			"Desolate life at a homestead on Mars, Settlers (2021) British movie. humanmars.net"
+	};
+	
+	private static String[] FILE_NAME = {
+			"splash/Mars_Canyon.jpg",
+			"splash/News_Terraforming_Mars.jpg",
+			"splash/Underground_Oasis_Martian_Lava_Tube.jpg",
+			"splash/3D_printed_habitat.jpg",
+			"splash/interior_home.jpg",
+			"splash/greenhouse_lady.jpg"
 	};
 	
 	/** The font for displaying {@link #MSP_STRING}. */
@@ -75,16 +87,11 @@ public class SplashWindow extends JComponent {
 	/** The font for displaying {@link #AUTHOR_STRING}. */
 	private final Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
 
-	private static String[] FILE_NAME = {
-			"splash/Mars_Canyon.jpg",
-			"splash/News_Terraforming_Mars.jpg",
-			"splash/Underground_Oasis_Martian_Lava_Tube.jpg"
-	};
+
 
 	private Image splashImage;
 	private int w;
 	private int h;
-
 
 	@SuppressWarnings("serial")
 	public SplashWindow() {
@@ -126,7 +133,7 @@ public class SplashWindow extends JComponent {
 				else {
 					g2d.setFont(versionStringFont1);
 					g2d.setColor(Color.WHITE);
-					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 70);
+					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 55);
 				}
 				
 				g2d.setColor(Color.WHITE);
@@ -141,7 +148,7 @@ public class SplashWindow extends JComponent {
 				g2d.setFont(buildStringFont);
 				
 				if (rand == 2)
-					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 45);
+					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 35);
 				else 
 					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 15);
 
