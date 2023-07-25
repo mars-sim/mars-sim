@@ -19,7 +19,7 @@ import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -472,7 +472,7 @@ implements  LocalBoundedObject {
      */
 	public void relocateSite() {
 		Coordinates coord = getCoordinates();
-		BuildingConstructionMission.positionNewSite(this);
+		ConstructionMission.positionNewSite(this);
 		logger.info(this, "Manually relocated by player from " 
 				+ coord.getFormattedString() + " to "
 				+ getCoordinates().getFormattedString());

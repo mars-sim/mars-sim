@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @date 2022-08-20
+ * @date 2023-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;

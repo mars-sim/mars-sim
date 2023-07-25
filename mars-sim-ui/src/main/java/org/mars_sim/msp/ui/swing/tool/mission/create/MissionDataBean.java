@@ -20,8 +20,8 @@ import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
@@ -119,8 +119,8 @@ class MissionDataBean {
 	                rover, fieldSite);
 	    }
 	    
-	    else if (MissionType.BUILDING_CONSTRUCTION == missionType) {
-	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
+	    else if (MissionType.CONSTRUCTION == missionType) {
+	        mission = new ConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
 	                constructionVehicles);
 	    }
@@ -167,8 +167,8 @@ class MissionDataBean {
 	        mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
 	    }
 	    
-	    else if (MissionType.BUILDING_SALVAGE == missionType) {
-	        mission = new BuildingSalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
+	    else if (MissionType.SALVAGE == missionType) {
+	        mission = new SalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
 	                salvageVehicles);
 	    }
 	    
@@ -183,7 +183,7 @@ class MissionDataBean {
 	    
 	    else throw new IllegalStateException("Mission type: " + type + " unknown");
 
-		mission.setName(description);
+//		mission.setName(description);
 	    missionManager.addMission(mission);
 	}
  
@@ -195,8 +195,8 @@ class MissionDataBean {
     	MissionType[] result = { 
     			MissionType.AREOLOGY,
     			MissionType.BIOLOGY,
-    			MissionType.BUILDING_CONSTRUCTION,
-    			MissionType.BUILDING_SALVAGE,
+    			MissionType.CONSTRUCTION,
+    			MissionType.SALVAGE,
     			MissionType.COLLECT_ICE,
     			
     			MissionType.COLLECT_REGOLITH,
@@ -216,6 +216,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets mission description based on a mission type.
+	 * 
 	 * @param missionType the mission type.
 	 * @return the mission description.
 	 */
@@ -258,6 +259,7 @@ class MissionDataBean {
     
 	/**
 	 * Gets the mission description.
+	 * 
 	 * @return description.
 	 */
     protected String getDescription() {
@@ -266,6 +268,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the mission designation.
+	 * 
 	 * @return designation.
 	 */
     protected String getDesignation() {
@@ -274,6 +277,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the mission description.
+	 * 
 	 * @param description the mission description.
 	 */
     protected void setDescription(String description) {
@@ -282,6 +286,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the starting settlement.
+	 * 
 	 * @return settlement.
 	 */
     protected Settlement getStartingSettlement() {
@@ -290,6 +295,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the starting settlement.
+	 * 
 	 * @param startingSettlement starting settlement.
 	 */
     protected void setStartingSettlement(Settlement startingSettlement) {
@@ -298,6 +304,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the rover.
+	 * 
 	 * @return rover.
 	 */
     protected Rover getRover() {
@@ -306,6 +313,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the rover.
+	 * 
 	 * @param rover the rover.
 	 */
     protected void setRover(Rover rover) {
@@ -314,6 +322,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the drone.
+	 * 
 	 * @return drone.
 	 */
     protected Drone getDrone() {
@@ -322,6 +331,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the drone.
+	 * 
 	 * @param drone the drone.
 	 */
     protected void setDrone(Drone drone) {
@@ -330,6 +340,7 @@ class MissionDataBean {
     
 	/**
 	 * Gets the mission members.
+	 * 
 	 * @return the members.
 	 */
     protected Collection<Worker> getMixedMembers() {
@@ -337,14 +348,17 @@ class MissionDataBean {
 	}
     
 	/**
+	 * 
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
     protected void addMixedMembers(Collection<Worker> mm) {
     	this.mixedMembers.addAll(mm);
 	}
+    
 	/**
 	 * Gets the destination settlement.
+	 * 
 	 * @return destination settlement.
 	 */
     protected Settlement getDestinationSettlement() {
@@ -353,6 +367,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the destination settlement.
+	 * 
 	 * @param destinationSettlement the destination settlement.
 	 */
     protected void setDestinationSettlement(Settlement destinationSettlement) {
@@ -361,16 +376,16 @@ class MissionDataBean {
 
 	/**
 	 * Gets the rescue rover.
+	 * 
 	 * @return the rescue rover.
 	 */
     protected Rover getRescueRover() {
 		return rescueRover;
 	}
 
-
-
 	/**
 	 * Sets the rescue rover.
+	 * 
 	 * @param rescueRover the rescue rover.
 	 */
     protected void setRescueRover(Rover rescueRover) {
@@ -379,6 +394,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the ice collection site.
+	 * 
 	 * @return ice collection site.
 	 */
     protected Coordinates getIceCollectionSite() {
@@ -387,6 +403,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the ice collection site.
+	 * 
 	 * @param iceCollectionSite the ice collection site.
 	 */
     protected void setIceCollectionSite(Coordinates iceCollectionSite) {
@@ -395,6 +412,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the regolith collection site.
+	 * 
 	 * @return regolith collection site.
 	 */
     protected Coordinates getRegolithCollectionSite() {
@@ -403,6 +421,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the regolith collection site.
+	 * 
 	 * @param regolithCollectionSite the regolith collection site.
 	 */
     protected void setRegolithCollectionSite(Coordinates regolithCollectionSite) {
@@ -411,6 +430,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the exploration sites.
+	 * 
 	 * @return exploration sites.
 	 */
     protected Coordinates[] getExplorationSites() {
@@ -419,6 +439,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the exploration sites.
+	 * 
 	 * @param explorationSites the exploration sites.
 	 */
     protected void setExplorationSites(Coordinates[] explorationSites) {
@@ -427,6 +448,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the sell goods.
+	 * 
 	 * @return map of goods and integer amounts.
 	 */
     protected Map<Good, Integer> getSellGoods() {
@@ -435,6 +457,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the sell goods.
+	 * 
 	 * @param sellGoods map of goods and integer amounts.
 	 */
     protected void setSellGoods(Map<Good, Integer> sellGoods) {
@@ -443,6 +466,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the buy goods.
+	 * 
 	 * @return map of goods and integer amounts.
 	 */
     protected Map<Good, Integer> getBuyGoods() {
@@ -451,6 +475,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the buy goods.
+	 * 
 	 * @param buyGoods map of goods and integer amounts.
 	 */
 	protected void setBuyGoods(Map<Good, Integer> buyGoods) {
@@ -459,6 +484,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the light utility vehicle.
+	 * 
 	 * @return light utility vehicle
 	 */
 	protected LightUtilityVehicle getLUV() {
@@ -466,7 +492,8 @@ class MissionDataBean {
 	}
 
 	/**
-	 * Sets the light utility vehicle
+	 * Sets the light utility vehicle.
+	 * 
 	 * @param luv the light utility vehicle
 	 */
 	protected void setLUV(LightUtilityVehicle luv) {
@@ -475,6 +502,7 @@ class MissionDataBean {
 
 	/**
 	 * Gets the mining site.
+	 * 
 	 * @return mining site.
 	 */
 	protected ExploredLocation getMiningSite() {
@@ -483,6 +511,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the mining site.
+	 * 
 	 * @param miningSite the mining site.
 	 */
 	protected void setMiningSite(ExploredLocation miningSite) {
@@ -491,6 +520,7 @@ class MissionDataBean {
 
     /**
      * Gets the salvage settlement.
+     * 
      * @return settlement.
      */
 	protected Settlement getSalvageSettlement() {
@@ -499,6 +529,7 @@ class MissionDataBean {
 
     /**
      * Sets the salvage settlement.
+     * 
      * @param salvageSettlement the salvage settlement.
      */
 	protected void setSalvageSettlement(Settlement salvageSettlement) {
@@ -507,6 +538,7 @@ class MissionDataBean {
 
     /**
      * Gets the salvage site.
+     * 
      * @return salvage site.
      */
 	protected ConstructionSite getSalvageSite() {
@@ -515,6 +547,7 @@ class MissionDataBean {
 
     /**
      * Sets the salvage site.
+     * 
      * @param salvageSite the salvage site.
      */
     protected void setSalvageSite(ConstructionSite salvageSite) {
@@ -523,6 +556,7 @@ class MissionDataBean {
 
     /**
      * Gets the salvage building.
+     * 
      * @return salvage building.
      */
     protected Building getSalvageBuilding() {
@@ -531,6 +565,7 @@ class MissionDataBean {
 
     /**
      * Sets the salvage building.
+     * 
      * @param salvageBuilding the salvage building.
      */
     protected void setSalvageBuilding(Building salvageBuilding) {
@@ -539,6 +574,7 @@ class MissionDataBean {
 
     /**
      * Gets the salvage vehicles.
+     * 
      * @return list of ground vehicles.
      */
     protected List<GroundVehicle> getSalvageVehicles() {
@@ -547,6 +583,7 @@ class MissionDataBean {
 
     /**
      * Sets the salvage vehicles.
+     * 
      * @param salvageVehicles list of ground vehicles.
      */
     protected void setSalvageVehicles(List<GroundVehicle> salvageVehicles) {
@@ -555,6 +592,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction settlement.
+     * 
      * @return settlement.
      */
     protected Settlement getConstructionSettlement() {
@@ -563,6 +601,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction settlement.
+     * 
      * @param constructionSettlement the construction settlement.
      */
     protected void setConstructionSettlement(Settlement constructionSettlement) {
@@ -571,6 +610,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction site.
+     * 
      * @return construction site.
      */
     protected ConstructionSite getConstructionSite() {
@@ -579,6 +619,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction site.
+     * 
      * @param constructionSite the construction site.
      */
     protected void setConstructionSite(ConstructionSite constructionSite) {
@@ -587,6 +628,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction stage info.
+     * 
      * @return construction stage info.
      */
     protected ConstructionStageInfo getConstructionStageInfo() {
@@ -595,6 +637,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction stage info.
+     * 
      * @param constructionStageInfo the construction stage info.
      */
     protected void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
@@ -603,6 +646,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction site X location.
+     * 
      * @return X location (meters).
      */
     protected double getConstructionSiteXLocation() {
@@ -611,6 +655,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction site X location.
+     * 
      * @param constructionSiteXLoc X location (meters).
      */
     protected void setConstructionSiteXLocation(double constructionSiteXLoc) {
@@ -619,6 +664,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction site Y location.
+     * 
      * @return Y location (meters).
      */
     protected double getConstructionSiteYLocation() {
@@ -627,6 +673,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction site Y location.
+     * 
      * @param constructionSiteYLoc Y Location (meters).
      */
     protected void setConstructionSiteYLocation(double constructionSiteYLoc) {
@@ -635,6 +682,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction site facing.
+     * 
      * @return the construction site facing (degrees clockwise from North).
      */
     protected double getConstructionSiteFacing() {
@@ -643,6 +691,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction site facing.
+     * 
      * @param constructionSiteFacing facing (degrees clockwise from North).
      */
     protected void setConstructionSiteFacing(double constructionSiteFacing) {
@@ -651,6 +700,7 @@ class MissionDataBean {
 
     /**
      * Gets the construction vehicles.
+     * 
      * @return list of ground vehicles.
      */
     protected List<GroundVehicle> getConstructionVehicles() {
@@ -659,6 +709,7 @@ class MissionDataBean {
 
     /**
      * Sets the construction vehicles.
+     * 
      * @param constructionVehicles list of ground vehicles.
      */
     protected void setConstructionVehicles(List<GroundVehicle> constructionVehicles) {
@@ -667,6 +718,7 @@ class MissionDataBean {
 
     /**
      * Gets the field site.
+     * 
      * @return field site location.
      */
     protected Coordinates getFieldSite() {
@@ -675,6 +727,7 @@ class MissionDataBean {
 
     /**
      * Sets the field site.
+     * 
      * @param fieldSite the field site location.
      */
     protected void setFieldSite(Coordinates fieldSite) {
@@ -683,6 +736,7 @@ class MissionDataBean {
 
     /**
      * Gets the lead researcher for the mission.
+     * 
      * @return lead researcher.
      */
     protected Person getLeadResearcher() {
@@ -691,6 +745,7 @@ class MissionDataBean {
 
     /**
      * Sets the lead researcher for the mission.
+     * 
      * @param leadResearcher the lead researcher.
      */
     protected void setLeadResearcher(Person leadResearcher) {
@@ -699,6 +754,7 @@ class MissionDataBean {
 
     /**
      * Gets the scientific study.
+     * 
      * @return the scientific study.
      */
     protected ScientificStudy getStudy() {
@@ -707,6 +763,7 @@ class MissionDataBean {
 
     /**
      * Sets the scientific study.
+     * 
      * @param study the scientific study.
      */
     protected void setScientificStudy(ScientificStudy study) {
@@ -715,6 +772,7 @@ class MissionDataBean {
 
     /**
      * Gets the emergency resources map.
+     * 
      * @return map of resources and amounts (kg).
      */
     protected Map<Good, Integer> getEmergencyGoods() {
@@ -723,6 +781,7 @@ class MissionDataBean {
 
     /**
      * Sets the emergency resources.
+     * 
      * @param emergencyGoods map of resources and amounts (kg).
      */
     protected void setEmergencyGoods(Map<Good, Integer> emergencyGoods) {
@@ -760,11 +819,11 @@ class MissionDataBean {
 	}
 
 	protected boolean isConstructionMission() {
-    	return missionType == MissionType.BUILDING_CONSTRUCTION;
+    	return missionType == MissionType.CONSTRUCTION;
 	}
 
 	protected boolean isBuildingSalvageMission() {
-    	return missionType == MissionType.BUILDING_SALVAGE;
+    	return missionType == MissionType.SALVAGE;
 	}
 
 	protected boolean requiresFieldSite() {
@@ -783,15 +842,17 @@ class MissionDataBean {
 	/**
 	 * Describes if the mission requires a vehicle for transportation or is executed
 	 * on-site.
+	 * 
 	 * @return true, if a mission takes place outside the starting base
 	 */
 	protected boolean isRemoteMission() {
-        return missionType != MissionType.BUILDING_CONSTRUCTION
-                && missionType != MissionType.BUILDING_SALVAGE;
+        return missionType != MissionType.CONSTRUCTION
+                && missionType != MissionType.SALVAGE;
 	}
 
 	/**
 	 * Missions that require meeting another rover.
+	 * 
 	 * @return true, when a on-ground rendezvous is needed
 	 */
 	protected boolean isRescueRendezvousMission() {

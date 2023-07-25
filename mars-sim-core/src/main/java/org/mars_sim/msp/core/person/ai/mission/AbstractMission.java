@@ -592,15 +592,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If current phase is over, decide what to do next.
 		if (phaseEnded && !determineNewPhase()) {
-			logger.warning(member, "New phase for " + getName()
-							+ " cannot be determined for " + phase.getName());
+			logger.warning(member, 20_000L, "New phase for " + getName()
+					+ " cannot be determined for " + phase.getName() + ".");
 		}
 
 		// Perform phase.
 		if (!done) {
 			// Check for issue #786
 			if (member.isInSettlement() && (phase.getStage() == Stage.ACTIVE) && (member instanceof Person)) {
-				logger.severe(member, "In a Settlement during ACTIVE mission phase " + phase.getName());
+				logger.info(member, 20_000L, "In a Settlement during ACTIVE mission phase " 
+						+ phase.getName() + ".");
 			}
 
 			performPhase(member);

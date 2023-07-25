@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionSettlementPanel.java
- * @date 2021-10-21
+ * @date 2023-07-24
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -47,6 +48,7 @@ class ConstructionSettlementPanel extends WizardPanel {
     
     /**
      * Constructor.
+     * 
      * @param wizard the create mission wizard.
      */
     public ConstructionSettlementPanel(final CreateMissionWizard wizard) {
@@ -60,7 +62,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         setBorder(new MarsPanelBorder());
         
         // Create the select settlement label.
-        JLabel selectSettlementLabel = createTitleLabel("Select a settlement to construct a building.");
+        JLabel selectSettlementLabel = createTitleLabel(Msg.getString("ConstructionSettlementPanel.title")); //$NON-NLS-1$
         add(selectSettlementLabel);
         
         // Create the settlement panel.
@@ -89,7 +91,7 @@ class ConstructionSettlementPanel extends WizardPanel {
                         int index = settlementTable.getSelectedRow();
                         if (index > -1) {
                             if (settlementTableModel.isFailureRow(index)) {
-                                errorMessageLabel.setText("Settlement cannot be used in the mission (see red cells).");
+                                errorMessageLabel.setText(Msg.getString("ConstructionSettlementPanel.error")); //$NON-NLS-1$
                                 getWizard().setButtons(false);
                             }
                             else {
@@ -101,6 +103,7 @@ class ConstructionSettlementPanel extends WizardPanel {
                 }
             }
         );
+        
 		// call it a click to next button when user double clicks the table
 		settlementTable.addMouseListener(
 			new MouseListener() {
@@ -115,6 +118,7 @@ class ConstructionSettlementPanel extends WizardPanel {
 				}
 			}
 		);
+		
         settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
         settlementScrollPane.setViewportView(settlementTable);
         
@@ -167,7 +171,6 @@ class ConstructionSettlementPanel extends WizardPanel {
             super();
             
             // Add all settlements to table sorted by name.
-//            UnitManager manager = Simulation.instance().getUnitManager();
             Collection<Settlement> settlements = CollectionUtils.sortByName(unitManager.getSettlements());
             Iterator<Settlement> i = settlements.iterator();
             while (i.hasNext()) units.add(i.next());
@@ -182,6 +185,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         
         /**
          * Returns the value for the cell at columnIndex and rowIndex.
+         * 
          * @param row the row whose value is to be queried
          * @param column the column whose value is to be queried
          * @return the value Object at the specified cell
@@ -220,6 +224,7 @@ class ConstructionSettlementPanel extends WizardPanel {
         
         /**
          * Checks if a table cell is a failure cell.
+         * 
          * @param row the table row.
          * @param column the table column.
          * @return true if cell is a failure cell.
@@ -230,7 +235,8 @@ class ConstructionSettlementPanel extends WizardPanel {
             
             try {
                 if (column == 1) {
-                    if (settlement.getIndoorPeopleCount() == 0) result = true;
+                    if (settlement.getIndoorPeopleCount() == 0) 
+                    	result = true;
                 }
             }
             catch (Exception e) {}

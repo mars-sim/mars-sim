@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BuildingSalvageMission.java
+ * SalvageMission.java
  * @date 2021-10-20
  * @author Scott Davis
  */
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.mission.ConstructionMission;
+import org.mars_sim.msp.core.mission.Construction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
@@ -47,17 +47,17 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**s
  * Mission for salvaging a construction stage at a building construction site.
  */
-public class BuildingSalvageMission extends AbstractMission 
-	implements ConstructionMission {
+public class SalvageMission extends AbstractMission 
+	implements Construction {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
+	private static final Logger logger = Logger.getLogger(SalvageMission.class.getName());
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
+	public static final MissionType missionType = MissionType.SALVAGE;
 	
 	/** Mission phases. */
 	private static final MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareSalvageSite");
@@ -97,7 +97,7 @@ public class BuildingSalvageMission extends AbstractMission
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public BuildingSalvageMission(Worker startingMember) {
+	public SalvageMission(Worker startingMember) {
 		// Use Mission constructor.
 		super(missionType, startingMember);
 
@@ -199,7 +199,7 @@ public class BuildingSalvageMission extends AbstractMission
 	 * @param site       the existing salvage construction site. (null if none)
 	 * @param vehicles   the construction vehicles.
 	 */
-	public BuildingSalvageMission(Collection<Worker> members, Settlement settlement, Building building,
+	public SalvageMission(Collection<Worker> members, Settlement settlement, Building building,
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.

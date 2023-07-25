@@ -50,12 +50,11 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
@@ -414,13 +413,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create custom construction mission panel.
 		MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
-		String constructionMissionName = BuildingConstructionMission.class.getName();
+		String constructionMissionName = ConstructionMission.class.getName();
 		customInfoPanels.put(constructionMissionName, constructionPanel);
 		missionCustomPane.add(constructionPanel, constructionMissionName);
 
 		// Create custom salvage mission panel.
 		MissionCustomInfoPanel salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
-		String salvageMissionName = BuildingSalvageMission.class.getName();
+		String salvageMissionName = SalvageMission.class.getName();
 		customInfoPanels.put(salvageMissionName, salvagePanel);
 		missionCustomPane.add(salvagePanel, salvageMissionName);
 
@@ -653,7 +652,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				}
 				currentVehicle = null;
 			}
-		} else if (mission instanceof BuildingConstructionMission constructionMission) {
+		} else if (mission instanceof ConstructionMission constructionMission) {
 			// Display first of mission's list of construction vehicles.
 			List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
 			if (!constVehicles.isEmpty()) {

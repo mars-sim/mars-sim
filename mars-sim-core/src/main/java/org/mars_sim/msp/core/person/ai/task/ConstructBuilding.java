@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructBuilding.java
- * @date 2021-10-21
+ * @date 2023-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -17,8 +17,8 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -64,14 +64,14 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructBuilding(Person person) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
+		super(NAME, person, true, RandomUtil.getRandomDouble(10) + 150D, SkillType.CONSTRUCTION);
 
-		if (person.isUnFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
         	return;
 		}
 
-		BuildingConstructionMission mission = getMissionNeedingAssistance(person);
+		ConstructionMission mission = getMissionNeedingAssistance(person);
 
 		if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
 
@@ -111,7 +111,7 @@ public class ConstructBuilding extends EVAOperation {
 		this.site = site;
 		this.vehicles = vehicles;
 
-		if (person.isUnFit()) {
+		if (person.isSuperUnFit()) {
 			checkLocation();
         	return;
 		}
@@ -158,15 +158,15 @@ public class ConstructBuilding extends EVAOperation {
 	 *
 	 * @return construction mission or null if none found.
 	 */
-	public static BuildingConstructionMission getMissionNeedingAssistance(Person person) {
+	public static ConstructionMission getMissionNeedingAssistance(Person person) {
 
-		BuildingConstructionMission result = null;
+		ConstructionMission result = null;
 
-		List<BuildingConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
+		List<ConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
 
 		if (constructionMissions.size() > 0) {
 			int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
-			result = (BuildingConstructionMission) constructionMissions.get(index);
+			result = (ConstructionMission) constructionMissions.get(index);
 		}
 
 		return result;
@@ -179,14 +179,14 @@ public class ConstructBuilding extends EVAOperation {
 	 * @param settlement the settlement.
 	 * @return list of building construction missions.
 	 */
-	public static List<BuildingConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
+	public static List<ConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
 
-		List<BuildingConstructionMission> result = new CopyOnWriteArrayList<BuildingConstructionMission>();
+		List<ConstructionMission> result = new CopyOnWriteArrayList<>();
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
-			if (mission instanceof BuildingConstructionMission bcMission) {
+			if (mission instanceof ConstructionMission bcMission) {
 				result.add(bcMission);
 			}
 		}
@@ -195,7 +195,7 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	/**
-	 * Determine location to go to at construction site.
+	 * Determines location to go to at construction site.
 	 *
 	 * @return location.
 	 */
@@ -223,7 +223,7 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	/**
-	 * Perform the construction phase of the task.
+	 * Performs the construction phase of the task.
 	 *
 	 * @param time amount (millisols) of time to perform the phase.
 	 * @return time (millisols) remaining after performing the phase.
@@ -368,5 +368,14 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructionStage getConstructionStage() {
 		return stage;
+	}
+
+	public void destroy() {
+		stage = null;
+		site = null;
+		luv = null;
+		
+		vehicles.clear();
+		vehicles = null;
 	}
 }

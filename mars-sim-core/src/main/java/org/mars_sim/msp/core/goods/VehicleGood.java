@@ -386,8 +386,8 @@ class VehicleGood extends Good {
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		// TODO should come from MissionMeta classes
 		switch(missionType) {
-			case BUILDING_CONSTRUCTION:
-			case BUILDING_SALVAGE:
+			case CONSTRUCTION:
+			case SALVAGE:
 				return JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
 		case TRAVEL_TO_SETTLEMENT:

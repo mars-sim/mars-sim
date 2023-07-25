@@ -19,7 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -44,7 +44,7 @@ implements ConstructionListener {
 
 	// Data members.
 	private MainDesktopPane desktop;
-	private BuildingSalvageMission mission;
+	private SalvageMission mission;
 	private ConstructionSite site;
 	private JLabel stageLabel;
 	private BoundedRangeModel progressBarModel;
@@ -113,8 +113,8 @@ implements ConstructionListener {
 		// Remove as construction listener if necessary.
 		if (site != null) site.removeConstructionListener(this);
 
-		if (mission instanceof BuildingSalvageMission) {
-			this.mission = (BuildingSalvageMission) mission;
+		if (mission instanceof SalvageMission) {
+			this.mission = (SalvageMission) mission;
 			site = this.mission.getConstructionSite();
 			if (site != null) site.addConstructionListener(this);
 

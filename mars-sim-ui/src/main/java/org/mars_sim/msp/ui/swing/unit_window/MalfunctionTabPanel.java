@@ -301,15 +301,15 @@ public class MalfunctionTabPanel extends TabPanel {
 		int offset = 0;
 		if (showSource) {
 			mTable.addMouseListener(new UnitTableLauncher(getDesktop()));
-			columnModel.getColumn(SOURCE).setPreferredWidth(40);
+			columnModel.getColumn(SOURCE).setPreferredWidth(100);
 		}
 		else {
 			offset = 1;
 		}
-		columnModel.getColumn(NAME).setPreferredWidth(60);
-        columnModel.getColumn(EVA_WORK - offset).setMaxWidth(30);
-        columnModel.getColumn(INSIDE_WORK - offset).setMaxWidth(30);
-        columnModel.getColumn(COMPLETED- offset).setPreferredWidth(40);
+		columnModel.getColumn(NAME).setPreferredWidth(90);
+        columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
+        columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
+        columnModel.getColumn(COMPLETED - offset).setPreferredWidth(40);
         columnModel.getColumn(COMPLETED- offset).setMaxWidth(PercentageCellRenderer.DEFAULT_WIDTH);
         
 		columnModel.getColumn(COMPLETED- offset).setCellRenderer(new PercentageCellRenderer(true));

@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -68,7 +68,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
         	return 0;
         }
 
-		BuildingConstructionMission mission = ConstructBuilding.getMissionNeedingAssistance(person);
+		ConstructionMission mission = ConstructBuilding.getMissionNeedingAssistance(person);
 		if (mission == null)
 			return 0;
 
@@ -95,7 +95,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
             }
 
             // Check all building construction missions occurring at the settlement.
-            List<BuildingConstructionMission> missions = ConstructBuilding.
+            List<ConstructionMission> missions = ConstructBuilding.
                     getAllMissionsNeedingAssistance(settlement);
 
             int size = missions.size();

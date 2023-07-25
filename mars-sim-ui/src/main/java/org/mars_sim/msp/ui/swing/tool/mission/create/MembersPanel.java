@@ -297,10 +297,10 @@ implements ActionListener {
 	 */
 	void updateVehicleCapacityLabel() {
 		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.BUILDING_CONSTRUCTION == type) {
+		if (MissionType.CONSTRUCTION == type) {
 			vehicleCapacityLabel.setText(" ");
 		}
-		else if (MissionType.BUILDING_SALVAGE == type) { 
+		else if (MissionType.SALVAGE == type) { 
 			vehicleCapacityLabel.setText(" ");
 		}
 		else {
@@ -320,8 +320,8 @@ implements ActionListener {
 	 */
 	int getRemainingVehicleCapacity() {
 		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.BUILDING_CONSTRUCTION == type) return Integer.MAX_VALUE;
-		else if (MissionType.BUILDING_SALVAGE == type) return Integer.MAX_VALUE;
+		if (MissionType.CONSTRUCTION == type) return Integer.MAX_VALUE;
+		else if (MissionType.SALVAGE == type) return Integer.MAX_VALUE;
 		else {
 			if (MissionType.DELIVERY == type) {
 				return 1;
@@ -396,9 +396,9 @@ implements ActionListener {
 			units.clear();
 			MissionDataBean missionData = getWizard().getMissionData();
 			Settlement settlement = missionData.getStartingSettlement();
-			if (MissionType.BUILDING_CONSTRUCTION == missionData.getMissionType())
+			if (MissionType.CONSTRUCTION == missionData.getMissionType())
 				settlement = missionData.getConstructionSettlement();
-			else if (MissionType.BUILDING_SALVAGE == missionData.getMissionType())
+			else if (MissionType.SALVAGE == missionData.getMissionType())
 				settlement = missionData.getSalvageSettlement();
 			Collection<Person> people = CollectionUtils.sortByName(settlement.getIndoorPeople());
 			Iterator<Person> i = people.iterator();

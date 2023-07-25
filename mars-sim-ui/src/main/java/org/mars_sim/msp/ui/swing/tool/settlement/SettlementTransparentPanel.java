@@ -743,6 +743,9 @@ public class SettlementTransparentPanel extends JComponent {
 		    }
 	}
 
+	/**
+	 * Builds the zoom slider.
+	 */
     private void buildZoomSlider() {
 
         UIDefaults sliderDefaults = new UIDefaults();
@@ -753,9 +756,9 @@ public class SettlementTransparentPanel extends JComponent {
             public void paint(Graphics2D g, JComponent c, int w, int h) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.BLACK);//.ORANGE.darker().darker());
+                g.setColor(Color.WHITE);//.ORANGE.darker().darker());
                 g.fillOval(1, 1, w-1, h-1);
-                g.setColor(Color.WHITE);
+                g.setColor(Color.ORANGE);
                 g.drawOval(1, 1, w-1, h-1);
             }
         });
@@ -764,9 +767,9 @@ public class SettlementTransparentPanel extends JComponent {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
                 //g.setColor(new Color(139,69,19)); // brown
-                g.setColor(Color.BLACK);//ORANGE.darker().darker());
+                g.setColor(Color.WHITE);//ORANGE.darker().darker());
                 g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
-                g.setColor(Color.WHITE);
+                g.setColor(Color.ORANGE);
                 g.drawRoundRect(0, 6, w, 6, 6, 6);
             }
         });
@@ -811,7 +814,6 @@ public class SettlementTransparentPanel extends JComponent {
 				}
 			}
 		});
-
     }
 
     private void buildInfoP() {

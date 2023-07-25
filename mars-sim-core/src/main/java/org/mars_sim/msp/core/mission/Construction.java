@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ConstructionMission.java
+ * Construction.java
  * @date 2023-05-12
  * @author Barry Evans
  */
@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 /**
  * A mission with the behaviour of doing Construction that uses GroundVehicles
  */
-public interface ConstructionMission extends Mission {
+public interface Construction extends Mission {
 
     /**
 	 * Gets a list of all construction vehicles used by the mission.

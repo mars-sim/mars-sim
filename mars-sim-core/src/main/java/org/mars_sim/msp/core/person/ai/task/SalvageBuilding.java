@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -78,7 +78,7 @@ public class SalvageBuilding extends EVAOperation {
 			return;
 		}
 
-        BuildingSalvageMission mission = getMissionNeedingAssistance();
+        SalvageMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canSalvage(person)) {
 
             // Initialize data members.
@@ -158,16 +158,16 @@ public class SalvageBuilding extends EVAOperation {
      * Gets a random building salvage mission that needs assistance.
      * @return salvage mission or null if none found.
      */
-    private BuildingSalvageMission getMissionNeedingAssistance() {
+    private SalvageMission getMissionNeedingAssistance() {
 
-        BuildingSalvageMission result = null;
+        SalvageMission result = null;
 
-        List<BuildingSalvageMission> salvageMissions = getAllMissionsNeedingAssistance(
+        List<SalvageMission> salvageMissions = getAllMissionsNeedingAssistance(
                 worker.getSettlement());
 
         if (salvageMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(salvageMissions.size() - 1);
-            result = (BuildingSalvageMission) salvageMissions.get(index);
+            result = (SalvageMission) salvageMissions.get(index);
         }
 
         return result;
@@ -178,17 +178,17 @@ public class SalvageBuilding extends EVAOperation {
      * @param settlement the settlement.
      * @return list of building salvage missions.
      */
-    public static List<BuildingSalvageMission> getAllMissionsNeedingAssistance(
+    public static List<SalvageMission> getAllMissionsNeedingAssistance(
             Settlement settlement) {
 
-        List<BuildingSalvageMission> result = new ArrayList<BuildingSalvageMission>();
+        List<SalvageMission> result = new ArrayList<SalvageMission>();
 
         MissionManager manager = Simulation.instance().getMissionManager();
         Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = (Mission) i.next();
-            if (mission instanceof BuildingSalvageMission) {
-                result.add((BuildingSalvageMission) mission);
+            if (mission instanceof SalvageMission) {
+                result.add((SalvageMission) mission);
             }
         }
 

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * BuildingConstructionMission.java
+ * ConstructionMission.java
  * @date 2023-06-06
  * @author Scott Davis
  */
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.mission.ConstructionMission;
+import org.mars_sim.msp.core.mission.Construction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
@@ -59,17 +59,17 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * Mission for construction a stage for a settlement building. TODO externalize
  * strings
  */
-public class BuildingConstructionMission extends AbstractMission
-	implements ConstructionMission {
+public class ConstructionMission extends AbstractMission
+	implements Construction {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(BuildingConstructionMission.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(ConstructionMission.class.getName());
 
 	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;
+	public static final MissionType missionType = MissionType.CONSTRUCTION;
 
 	/** Mission phases. */
 	private static final MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
@@ -121,7 +121,7 @@ public class BuildingConstructionMission extends AbstractMission
 	 *
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public BuildingConstructionMission(Worker startingMember) {
+	public ConstructionMission(Worker startingMember) {
 		// Use Mission constructor.
 		super(missionType, startingMember);
 
@@ -286,7 +286,7 @@ public class BuildingConstructionMission extends AbstractMission
 	 * @param facing
 	 * @param vehicles
 	 */
-	public BuildingConstructionMission(Collection<Worker> members, Settlement settlement,
+	public ConstructionMission(Collection<Worker> members, Settlement settlement,
 			ConstructionSite no_site, ConstructionStageInfo stageInfo, 
 			double xLoc, double yLoc, double facing,
 			List<GroundVehicle> vehicles) {

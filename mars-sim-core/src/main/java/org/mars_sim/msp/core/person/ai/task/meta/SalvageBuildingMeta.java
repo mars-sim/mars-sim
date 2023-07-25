@@ -14,7 +14,7 @@ import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
@@ -70,7 +70,7 @@ public class SalvageBuildingMeta extends FactoryMetaTask {
 
             // Check all building salvage missions occurring at the settlement.
             try {
-                List<BuildingSalvageMission> missions = SalvageBuilding.
+                List<SalvageMission> missions = SalvageBuilding.
                         getAllMissionsNeedingAssistance(person.getSettlement());
                 result = 100D * missions.size();
             }

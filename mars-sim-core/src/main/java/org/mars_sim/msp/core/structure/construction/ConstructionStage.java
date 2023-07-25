@@ -32,14 +32,23 @@ public class ConstructionStage implements Serializable {
     private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
 
     // Data members
+    private boolean isSalvaging;
+    
+    private double completedWorkTime;
+    private double completableWorkTime;
+
     private ConstructionStageInfo info;
     private ConstructionSite site;
-    private double completedWorkTime;
-    private boolean isSalvaging;
-    private double completableWorkTime;
+    
     private Map<Integer, Integer> remainingParts;
     private Map<Integer, Double> remainingResources;
 
+    private Map<Integer, Integer> originalReqParts;
+    private Map<Integer, Double> originalReqResources;
+    
+//    private Map<Integer, Integer> consumedParts;
+//    private Map<Integer, Double> consumedResources;
+    
     /**
      * Constructor.
      * 
@@ -51,9 +60,12 @@ public class ConstructionStage implements Serializable {
         completedWorkTime = 0D;
         isSalvaging = false;
         completableWorkTime = 0D;
+        originalReqParts = new HashMap<>(info.getParts());
+        originalReqResources = new HashMap<>(info.getResources());
+
         remainingParts = new HashMap<>(info.getParts());
         remainingResources = new HashMap<>(info.getResources());
-
+        
         // Update the remaining completable work time.
         updateCompletableWorkTime();
     }
@@ -156,6 +168,24 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
+     * Gets the original parts needed for construction.
+     * 
+     * @return map of parts and their numbers.
+     */
+    public Map<Integer, Integer> getOriginalParts() {
+        return new HashMap<>(originalReqParts);
+    }
+
+    /**
+     * Gets the original resources needed for construction.
+     * 
+     * @return map of resources and their amounts (kg).
+     */
+    public Map<Integer, Double> getOriginalResources() {
+        return new HashMap<>(originalReqResources);
+    }
+
+    /**
      * Gets the remaining parts needed for construction.
      * 
      * @return map of parts and their numbers.
@@ -172,7 +202,7 @@ public class ConstructionStage implements Serializable {
     public Map<Integer, Double> getRemainingResources() {
         return new HashMap<>(remainingResources);
     }
-
+    
     /**
      * Adds parts to the construction stage.
      * 
@@ -313,7 +343,14 @@ public class ConstructionStage implements Serializable {
 	public void destroy() {
 		info = null;
 	    site = null;
+	    remainingParts.clear();
+	    remainingResources.clear();
+	    originalReqParts.clear();
+	    originalReqResources.clear();
+	    
 	    remainingParts = null;
 	    remainingResources = null;
+	    originalReqParts = null;
+	    originalReqResources = null;
 	}
 }

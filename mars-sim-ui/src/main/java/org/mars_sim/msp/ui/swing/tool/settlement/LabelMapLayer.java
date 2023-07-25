@@ -301,13 +301,14 @@ implements SettlementMapLayer {
 		if (settlement != null) {
 			
 			double scale = mapPanel.getScale();
-			int size = (int)(scale / 2.0);
-			size = Math.max(size, 12);
-					
+			float yOffset = (float)(scale / 2.0);
+			yOffset = Math.max(yOffset, 12);
+
 			Iterator<ConstructionSite> i = settlement
-			.getConstructionManager()
-			.getConstructionSites()
-			.iterator();
+				.getConstructionManager()
+				.getConstructionSites()
+				.iterator();
+			
 			while (i.hasNext()) {
 				ConstructionSite site = i.next();
 				String siteLabel = getConstructionLabel(site);
@@ -315,28 +316,37 @@ implements SettlementMapLayer {
 				// e.g. foundation name="subsurface foundation 5m x 10m x 3m"
 				String words[] = siteLabel.split(" ");
 				int s = words.length;
-				String last1 = words[s-1];
-				String last2 = words[s-2];
-				String last3 = words[s-3];
-				int s1 = last1.length();
-				String test_1 = last1.substring(s1-1);
-				int s2 = last2.length();
-				String test_2 = last2.substring(s2-1);
-				int s3 = last3.length();
-				String test_3 = last3.substring(s3-1);
-				words[s-3] = last3 + " " + last2 + " " + last1;
-				s = s-2;
-				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {
-					for (int j = 0; j < s; j++) {
-						drawStructureLabel(g2d, words[j], site.getPosition(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, 0);
+
+				// more than one whitespace
+				String last_1 = words[s-1];
+				String last_2 = words[s-2];		
+				words[s-2] = last_2 + " " + last_1;
+				s = s-1;
+					
+				// Split up the name into multiple lines
+				for (int j = 0; j < s; j++) {
+					
+					float y = 0;
+					
+					if (s == 2) {
+
+						if (j == 0)
+							y = - yOffset;
+						else
+							y = yOffset;
 					}
-				}
-				else {
-					for (int j = 0; j < s; j++) {
-						drawStructureLabel(g2d, words[j], site.getPosition(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
+					else { //if (s == 3) {
+						if (j == 0)
+							y = - (int)(yOffset * 2);
+						else if (j == 1)
+							y = 0;
+						else
+							y = (int)(yOffset * 2);	
 					}
+					
+					drawStructureLabel(g2d, words[j], site.getPosition(),
+							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR,
+							y);
 				}
 			}
 		}

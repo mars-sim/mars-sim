@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.SalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
@@ -32,12 +32,12 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
 
     BuildingSalvageMissionMeta() {
-    	super(MissionType.BUILDING_SALVAGE, Set.of(JobType.ARCHITECT));
+    	super(MissionType.SALVAGE, Set.of(JobType.ARCHITECT));
     }
     
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
-        return new BuildingSalvageMission(person);
+        return new SalvageMission(person);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
         double missionProbability = 0D;
   
       
-        if (getMarsTime().getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
+        if (getMarsTime().getMissionSol() < SalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
 
         // Check if person is in a settlement.
@@ -58,7 +58,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
             	return 0;
             
             // Check if available light utility vehicles.
-            if (!BuildingSalvageMission.isLUVAvailable(settlement))
+            if (!SalvageMission.isLUVAvailable(settlement))
                 return 0;
             
 	        RoleType roleType = person.getRole().getType();
@@ -85,11 +85,11 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 	                }
 	            }
 	
-	            if (availablePeopleNum < BuildingSalvageMission.MIN_PEOPLE)
+	            if (availablePeopleNum < SalvageMission.MIN_PEOPLE)
 	                return 0;
 	
 	            // Check if min number of EVA suits at settlement.
-	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
+	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < SalvageMission.MIN_PEOPLE) {
 	            	return 0;
 	            }
 	

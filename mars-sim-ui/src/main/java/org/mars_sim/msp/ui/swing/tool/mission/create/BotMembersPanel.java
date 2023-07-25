@@ -350,9 +350,9 @@ implements ActionListener {
 			units.clear();
 			MissionDataBean missionData = getWizard().getMissionData();
 			Settlement settlement = missionData.getStartingSettlement();
-			if (MissionType.BUILDING_CONSTRUCTION == missionData.getMissionType())
+			if (MissionType.CONSTRUCTION == missionData.getMissionType())
 				settlement = missionData.getConstructionSettlement();
-			else if (MissionType.BUILDING_SALVAGE == missionData.getMissionType())
+			else if (MissionType.SALVAGE == missionData.getMissionType())
 				settlement = missionData.getSalvageSettlement();
 			// Pick only deliverybot for delivery mission
 			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots(RobotType.DELIVERYBOT));

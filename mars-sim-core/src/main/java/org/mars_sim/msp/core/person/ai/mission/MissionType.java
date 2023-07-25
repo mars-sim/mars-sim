@@ -26,8 +26,8 @@ public enum MissionType {
 
 	TRADE					(Msg.getString("Mission.description.trade")), //$NON-NLS-1$
 	TRAVEL_TO_SETTLEMENT	(Msg.getString("Mission.description.travelToSettlement")), //$NON-NLS-1$
-	BUILDING_CONSTRUCTION	(Msg.getString("Mission.description.buildingConstructionMission")), //$NON-NLS-1$
-	BUILDING_SALVAGE		(Msg.getString("Mission.description.buildingSalvageMission")), //$NON-NLS-1$
+	CONSTRUCTION			(Msg.getString("Mission.description.construction")), //$NON-NLS-1$
+	SALVAGE					(Msg.getString("Mission.description.salvage")), //$NON-NLS-1$
 	;
 
 	private String name;

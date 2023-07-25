@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
@@ -35,12 +35,12 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
     BuildingConstructionMissionMeta() {
-    	super(MissionType.BUILDING_CONSTRUCTION, Set.of(JobType.ARCHITECT));
+    	super(MissionType.CONSTRUCTION, Set.of(JobType.ARCHITECT));
     }
     
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
-        return new BuildingConstructionMission(person);
+        return new ConstructionMission(person);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
         double missionProbability = 0D;
          
         // No construction until after the x sols of the simulation.
-        if (getMarsTime().getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL) {
+        if (getMarsTime().getMissionSol() < ConstructionMission.FIRST_AVAILABLE_SOL) {
         	return 0;
         }
         
@@ -75,7 +75,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	            }
 	            
 	            // Check if available light utility vehicles.
-	            if (!BuildingConstructionMission.isLUVAvailable(settlement)) {
+	            if (!ConstructionMission.isLUVAvailable(settlement)) {
 	            	return 0;
 	            }
 	            
@@ -90,13 +90,13 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	            }
 	
 	            // Check if enough available people at settlement for mission.
-	            if (availablePeopleNum < BuildingConstructionMission.MIN_PEOPLE) {
+	            if (availablePeopleNum < ConstructionMission.MIN_PEOPLE) {
 	            	return 0;
 	            }
 	            
 	            // Check if min number of EVA suits at settlement.
 	        	if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
-	                    BuildingConstructionMission.MIN_PEOPLE) {
+	                    ConstructionMission.MIN_PEOPLE) {
 	        		return 0;
 	            }
 	        	
