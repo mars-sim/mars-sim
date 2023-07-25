@@ -599,16 +599,41 @@ public abstract class RoverMission extends AbstractVehicleMission {
     				}
     	
     				else if (isRoverInAGarage) {
+    					String roverName = "None";
+    					
+    					if (p.getVehicle() != null)
+    						roverName = p.getVehicle().getName();
+    					
     					if (p.isInSettlement()) {
-    						// Something is wrong because the Person is in a Settlement
-    						// so it cannot be in the crew.
-    						logger.warning(rover, "Reports " + p.getName() + " is in the crew but already in a Settlement");
-    						rover.removePerson(p);
+    						String settlementName = p.getSettlement().getName();
+    						String buildingName = "None";
+    						
+    						if (p.getBuildingLocation() != null)
+    							buildingName = p.getBuildingLocation().getName();
+    						
+    						// This person is already in the settlement. 
+    						// Since the rover is in the garage and the person is in the rover,
+    						// need to check if the person can walk out of the rover without having to go through EVA
+    						
+    						logger.info(rover, "Status report on " + p.getName() 
+	    							+ ".  Settlement: " + settlementName
+	    							+ ".  Building: " + buildingName
+	    							+ ".  Rover: " + roverName
+	    							);
+//    						rover.removePerson(p);
     					}
     					else {
     						// Welcome this person home
-    				        p.transfer(disembarkSettlement);
-    						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
+    						
+    						// Is the manual transfer below needed ?
+    						
+   							logger.info(rover, "Status report on " + p.getName() 
+								+ ".  Rover: " + roverName
+								+ ".  Rover's Location: " + rover.getBuildingLocation().getName()
+								);
+    						
+//    				        p.transfer(disembarkSettlement);
+//    						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());
     					}
     				}
     				else {

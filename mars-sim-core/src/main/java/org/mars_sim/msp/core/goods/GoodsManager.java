@@ -480,7 +480,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the nth power
+	 * Gets the nth power.
 	 *
 	 * @return
 	 */
@@ -650,7 +650,7 @@ public class GoodsManager implements Serializable {
 	 * @param good
 	 * @param newValue
 	 */
-	void setDemandValue(Good good, double newValue) {
+	public void setDemandValue(Good good, double newValue) {
 		double clippedValue = limitMaxMin(newValue, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
 	}

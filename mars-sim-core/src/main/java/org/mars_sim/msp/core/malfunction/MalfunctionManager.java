@@ -777,7 +777,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 
 		// Check if life support modifiers are still in effect.
-//		setLifeSupportModifiers(time);
+		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
 		depleteResources(time);
@@ -797,7 +797,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// compare from previous modifier
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
-			logger.log(entity, Level.WARNING, 20_000L, "The oxygen flow retrictor had been fixed");
+			logger.log(entity, Level.WARNING, 20_000L, "The oxygen flow retrictor had been fixed.");
 		}
 	}
 
@@ -807,7 +807,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	void removeFixedMalfunction(Malfunction fixed) {
 		if (!malfunctions.remove(fixed)) {
-			logger.warning(entity, 20_000L, "Fixed malfunction is unknown " + fixed.getName());
+			logger.warning(entity, 20_000L, "Fixed malfunction is unknown " + fixed.getName() + ".");
 		}
 		else {
 			Map<String, Double> effects = fixed.getLifeSupportEffects();
@@ -864,7 +864,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (oxygenFlowModifier < 0)
 					oxygenFlowModifier = 0;
 				logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
-								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity");
+								+ Math.round(oxygenFlowModifier * 10.0)/10.0 + " % capacity.");
 			}
 		}
 	}

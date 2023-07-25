@@ -46,7 +46,9 @@ import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
+import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Commander;
@@ -140,7 +142,9 @@ public class Settlement extends Structure implements Temporal,
 	
 	public static final int ICE_MAX = 4000;
 	public static final int WATER_MAX = 4000;
+	public static final int OXYGEN_MAX = 4000;
 	
+	public static final int MIN_OXYGEN_RESERVE = 200; // per person
 	public static final int MIN_WATER_RESERVE = 400; // per person
 	public static final int MIN_ICE_RESERVE = 400; // per person
 
@@ -486,7 +490,7 @@ public class Settlement extends Structure implements Temporal,
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
 
-		final double INITIAL_FREE_OXYGEN = 1_000;
+		final double INITIAL_FREE_OXYGEN = 5_000;
 		// Stores limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN);
 
@@ -1076,6 +1080,9 @@ public class Settlement extends Structure implements Temporal,
 		// due to high cpu util during the change of day
 		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
+			// Check on demand and supply and amount of oxygen
+			checkOxygenDemand();
+			
 			// Tag available airlocks into two categories
 			Walk.checkAvailableAirlocks(buildingManager);
 
@@ -2675,7 +2682,7 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
-	/***
+	/**
 	 * Computes the probability of the presence of ice
 	 *
 	 * @return probability of finding ice
@@ -2742,6 +2749,65 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
+	/**
+	 * Checks the demand of oxygen.
+	 *
+	 * @return 
+	 */
+	private void checkOxygenDemand() {
+		double result = 0;
+
+		int pop = numCitizens;
+		
+		double demand = goodsManager.getDemandValueWithID(OXYGEN_ID);
+		if (demand > OXYGEN_MAX)
+			demand = OXYGEN_MAX;
+		if (demand < 1)
+			demand = 1;
+		
+		// Compare the available amount of oxygen
+		double supply = goodsManager.getSupplyValue(OXYGEN_ID);
+
+		double reserve = getAmountResourceStored(OXYGEN_ID);
+	
+		if (reserve + supply * pop > (MIN_OXYGEN_RESERVE + demand) * pop) {
+			result = (MIN_OXYGEN_RESERVE + demand - supply) * pop - reserve;
+		}
+
+		else if (reserve + supply * pop > MIN_OXYGEN_RESERVE * pop) {
+			result = (MIN_OXYGEN_RESERVE - supply) * pop - reserve;
+		}
+
+		else {
+			result = (MIN_OXYGEN_RESERVE + demand - supply) * pop - reserve;
+		}
+		
+		if (result < 0)
+			result = 0;
+				
+		if (result > OXYGEN_MAX)
+			result = OXYGEN_MAX;
+
+		double delta = result - demand;
+
+		if (delta > 50) {
+			
+			// Limit each increase to 10 only to avoid an abrupt increase 
+			delta = 50;
+			
+			logger.info(this, 10_000L, 
+					"oxygen demand: " + Math.round(demand * 10.0)/10.0 
+					+ "  supply: " + Math.round(supply * 10.0)/10.0 
+					+ "  reserve: " + Math.round(reserve * 10.0)/10.0		
+					+ "  delta: " + Math.round(delta * 10.0)/10.0
+					+ "  new demand: " + Math.round((demand + delta) * 10.0)/10.0 + ".");
+			
+			// Inject a sudden change of demand
+			goodsManager.setDemandValue(GoodsUtil.getGood(OXYGEN_ID), (demand + delta));
+		}
+		
+	}
+	
 	/**
 	 * Checks if the last 20 mission scores are above the threshold.
 	 *
@@ -2856,8 +2922,9 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Gets the daily average water usage of the last x sols Not: most weight on
-	 * yesterday's usage. Least weight on usage from x sols ago
+	 * yesterday's usage. Least weight on usage from x sols ago.
 	 *
+	 * @param type
 	 * @return
 	 */
 	public double getDailyWaterUsage(WaterUseType type) {
@@ -2879,7 +2946,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Tune up the settlement with unique job position
+	 * Tunes up the settlement with unique job position.
 	 */
 	public void tuneJobDeficit() {
 		int numEngs = JobUtil.numJobs(JobType.ENGINEER, this);
