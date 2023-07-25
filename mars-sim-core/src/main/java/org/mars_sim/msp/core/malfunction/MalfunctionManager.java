@@ -777,7 +777,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 
 		// Check if life support modifiers are still in effect.
-		setLifeSupportModifiers(time);
+//		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
 		depleteResources(time);
@@ -789,7 +789,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Resets one or more flow modifier
+	 * Resets one or more flow modifier.
 	 *
 	 * @param type
 	 */
@@ -802,7 +802,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * REmove a malfunction that has been fixed
+	 * Removes a malfunction that has been fixed.
+	 * 
 	 * @param fixed Malfunction fixed. 
 	 */
 	void removeFixedMalfunction(Malfunction fixed) {
@@ -832,7 +833,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 
 	/**
-	 * Determine life support modifiers for given time.
+	 * Determines life support modifiers for given time.
 	 *
 	 * @param time amount of time passing (in millisols)
 	 */
@@ -1008,7 +1009,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Add work time to maintenance.
+	 * Adds work time to maintenance.
 	 *
 	 * @param time (in millisols)
 	 */

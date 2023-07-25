@@ -165,7 +165,6 @@
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
-
 	<!-- Class B fires are fires in flammable liquids such as liquid hydrogen
 		and oxygen and flammable gases such as methane.  -->
 	<malfunction name="Class B Fire">
@@ -211,7 +210,7 @@
 			<system name="power storage" />
 		</system-list>
 		<effect-list>
-			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			<effect type="life-support" name="Temperature" change-rate="+.02" />
 		</effect-list>
 		<medical-complaint-list>
@@ -244,7 +243,7 @@
 			<system name="storage" />
 		</system-list>
 		<effect-list>
-			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			<effect type="life-support" name="Temperature" change-rate="+.02" />
 		</effect-list>
 		<medical-complaint-list>
@@ -279,7 +278,7 @@
 			<system name="food production" />
 		</system-list>
 		<effect-list>
-			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			<effect type="life-support" name="Temperature" change-rate="+.02" />
 		</effect-list>
 		<medical-complaint-list>
@@ -717,9 +716,6 @@
 			<system name="manufacture" />
 			<system name="research" />
 		</system-list>
-		<effect-list>
-			<effect type="life-support" name="Oxygen" change-rate="-.01" />
-		</effect-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" medical-probability="10.0" />
 			<medical-complaint name="Hypoxemia" medical-probability="3.0" />
@@ -1128,13 +1124,8 @@
 		<repair-inside time="200.0" />
 		<repair-eva time="100.0" />
 		<system-list>
-			<system name="Building" />
+			<system name="building" />
 		</system-list>
-		<effect-list>
-			<effect type="life-support" name="Oxygen" change-rate="-.02" />
-			<effect type="resource" name="Oxygen" change-rate="-.02" />
-			<effect type="life-support" name="Air Pressure" change-rate="-.02" />
-		</effect-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" medical-probability="15.0" />
 			<medical-complaint name="Laceration" medical-probability="30.0" />
