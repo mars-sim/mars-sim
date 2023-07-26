@@ -405,7 +405,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Constructor 3 for creating settlements. Called by UnitManager to create the
 	 * initial settlement Called by ArrivingSettlement to create a brand new
-	 * settlement
+	 * settlement.
 	 *
 	 * @param name
 	 * @param id
@@ -442,7 +442,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * The static factory method called by UnitManager and ArrivingSettlement to
-	 * create a brand new settlement
+	 * create a brand new settlement.
 	 *
 	 * @param name
 	 * @param id
@@ -459,7 +459,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Initialize field data, class and maps
+	 * Initializes field data, class and maps.
 	 */
 	public void initialize() {
 		if (surfaceFeatures == null) 
@@ -469,7 +469,10 @@ public class Settlement extends Structure implements Temporal,
 		
 //		// Get the elevation and terrain gradient factor
 		terrainProfile = terrainElevation.getTerrainProfile(location);
-
+		
+		logger.config(this, "elevation: " + Math.round(terrainProfile[0] * 100.0)/100.0
+				+ " km. gradient: " + Math.round(terrainProfile[1] * 100.0)/100.0);
+		
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 

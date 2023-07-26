@@ -7,7 +7,8 @@
 
  package org.mars.sim.mapdata;
 
- import java.awt.Image;
+ import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -87,4 +88,14 @@ import java.io.IOException;
  	 */
  	public int[][] getPixels();
  	
+	
+ 	/**
+ 	 * Gets the RGB map color as an integer at a given location.
+ 	 * 
+ 	 * @param phi   the phi location.
+ 	 * @param theta the theta location.
+ 	 * @return the RGB map color.
+ 	 */
+ 	public int getRGBColorInt(double phi, double theta);
+
  }

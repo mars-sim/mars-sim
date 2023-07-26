@@ -146,7 +146,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		northPanel.add(lcdLat);
 
-		elevationCache = Math.round(TerrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
+		elevationCache = Math.round(TerrainElevation.getAverageElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
 
 		logger.info(unit.getName()
 				+ "'s coordinates: " + unit.getCoordinates()
@@ -466,7 +466,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-			double elevationCache = Math.round(TerrainElevation.getMOLAElevation(location)
+			double elevationCache = Math.round(TerrainElevation.getAverageElevation(location)
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);

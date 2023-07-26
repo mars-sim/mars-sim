@@ -68,19 +68,19 @@ import java.util.Collection;
  	 */
  	public short getElevation(double phi, double theta) {
  		// Note that row 0 and column 0 are at top left 
- 		short row = (short) Math.round(phi * height / PI);
+ 		int row = (int)Math.round(phi * height / PI);
  		
  		if (row == height) 
  			row--;
  		
- 		short column = (short) (width / 2 + Math.round(theta * width / TWO_PI));
+ 		int column = (int)Math.round(theta * width / TWO_PI);
 
  		if (column == width)
  			column--;
 
  		int index = row * width + column;
  		
- 		if (index > height * width)
+ 		if (index > height * width - 1)
  			index = height * width - 1;
 
  		return elevationArray()[index];

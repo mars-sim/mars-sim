@@ -52,6 +52,10 @@ public class ElevationCommand extends ChatCommand {
 		elevationMOLA = TerrainElevation.getMOLAElevation(location);
 		context.println("MOLA Elevation: " + Math.round(elevationMOLA * 1000.0)/1000.0 + " km.");
 
+    	double elevationTopo = TerrainElevation.getRGBElevation(location);
+		context.println("Topo Elevation: " + Math.round(elevationTopo * 1000.0)/1000.0 + " km.");
+
+		
 		return result;
 	}
 

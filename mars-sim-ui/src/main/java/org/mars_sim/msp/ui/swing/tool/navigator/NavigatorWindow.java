@@ -1007,8 +1007,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 			double phi = pos.getPhi();
 			double theta = pos.getTheta();			
-			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
 			
+			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
+			double h1 = TerrainElevation.getRGBElevation(pos);
+
 			double mag = mapLayerPanel.getMagnification();
 			
 			phi = Math.round(phi*1000.0)/1000.0;
@@ -1017,6 +1019,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 			elevSB.append(ELEVATION)
 				.append(Math.round(h0*1000.0)/1000.0)
+				.append(" (")
+				.append(Math.round(h1*1000.0)/1000.0)
+				.append(")")
 				.append(KM);
 			
 			String coordStr = pos.getFormattedString();

@@ -19,6 +19,7 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 
 // Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg
@@ -37,7 +38,7 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-//	Will add back SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName())
+	public static final SimLogger logger = SimLogger.getLogger(TerrainElevation.class.getName());
 	
 	public static final double STEP_KM = 2;
 	
@@ -83,7 +84,7 @@ public class TerrainElevation implements Serializable {
 		double newY = - 1.5 * currentDirection.getCosDirection();
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
+		double elevationChange = getAverageElevation(sampleLocation) - elevation;
 		double steepness = Math.atan(elevationChange / STEP_KM);
 //		logger.config("elevation: " + elevation + "  1.  steepness: " + Math.round(steepness * 100.0)/100.0);
 		return steepness;
@@ -102,7 +103,7 @@ public class TerrainElevation implements Serializable {
 		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
+		double elevationChange = getAverageElevation(sampleLocation) - elevation;
 		return Math.atan(elevationChange / STEP_KM);
 	}
 
@@ -117,7 +118,7 @@ public class TerrainElevation implements Serializable {
 		
 		if (!terrainCacheMap.containsKey(currentLocation)) {
 			double steepness = 0;
-			double elevation = getMOLAElevation(currentLocation);
+			double elevation = getAverageElevation(currentLocation);
 			for (int i=0 ; i <= 360 ; i++) {
 				double rad = i * DEG_TO_RAD;
 				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
@@ -266,7 +267,67 @@ public class TerrainElevation implements Serializable {
 		return site.getRegolithCollectionRate();
 	}
 
-	public static float[] getHSB(int[] rgb) {
+//	/**
+//	 * Compute the RGB Topo map based Elevation.
+//	 * 
+//	 * @param location
+//	 * @return
+//	 */
+//	public static int getRGBIntElevation(Coordinates location) {	
+//		// Find hue and saturation color components at location.
+//		int color = mapDataUtil.getMapData("topo").getRGBColorInt(location.getPhi(), location.getTheta());
+//
+//		// The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). 
+//		// The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L"). The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid. 
+//		
+//		double height = (color - 9000) / 10_000;
+//
+//		return (int)Math.round(height);
+//	}
+	
+	/**
+	 * Compute the RGB Topo map based Elevation.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public static double getRGBElevation(Coordinates location) {	
+		// Find hue and saturation color components at location.
+		Color color = new Color(mapDataUtil.getMapData("topo").getRGBColorInt(location.getPhi(), location.getTheta()));
+		int red = color.getRed();
+		int green = color.getGreen();
+		int blue = color.getBlue();
+		
+		int[] rgb = {red, green, blue};
+		
+		// Returns the hue value only
+		float[] hsb = getHSB(rgb);
+		
+		double height = hsb[0];
+
+		return height;
+	}
+	
+    /** 
+     * Returns the average elevation using both the topo map and MOLA data set.
+     * 
+     *  @return elevation in km.
+     */
+    public static double getAverageElevation(Coordinates location) {
+//    	double elevationTopo = getRGBElevation(location);
+    	double elevationMOLA = getMOLAElevation(location);
+//		logger.info(20_000L, "elevationTopo: " + elevationTopo + " km.  " + "elevationMOLA: " + (int)elevationMOLA + " km.");
+    	return elevationMOLA;
+    }
+    
+	
+    /**
+     * Returns the HSB array.
+     * 
+     * @param rgb
+     * @return
+     */
+    public static float[] getHSB(int[] rgb) {
 		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 		float hue = hsb[0];
 		float saturation = hsb[1];
@@ -287,14 +348,18 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getMOLAElevation(Coordinates location) {
+	public static double getMOLAElevation(Coordinates location) {	
 		// Check if this location is a settlement
 		Settlement s = CollectionUtils.findSettlement(location);
+		double MOLAHeight = 0;
 		if (s != null) {
-			return s.getElevation();
+			MOLAHeight = s.getElevation();
 		}
-		else
-			return getMOLAElevation(location.getPhi(), location.getTheta());
+		else {
+			MOLAHeight = getMOLAElevation(location.getPhi(), location.getTheta());	
+		}
+			
+		return MOLAHeight;
 	}
 
 	/**

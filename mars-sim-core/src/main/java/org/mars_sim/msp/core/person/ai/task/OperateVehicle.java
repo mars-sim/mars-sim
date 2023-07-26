@@ -841,8 +841,8 @@ public abstract class OperateVehicle extends Task {
      * 
      *  @return elevation in km.
      */
-    protected double getGroundElevation() {
-        return TerrainElevation.getMOLAElevation(vehicle.getCoordinates());
+    protected double getGroundElevation() {  	
+    	return TerrainElevation.getAverageElevation(vehicle.getCoordinates());
     }
     
     /**
