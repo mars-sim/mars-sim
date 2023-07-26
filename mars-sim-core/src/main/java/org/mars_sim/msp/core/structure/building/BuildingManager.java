@@ -1052,7 +1052,7 @@ public class BuildingManager implements Serializable {
 					.collect(Collectors.toSet());
 
 		if (set.isEmpty()) {
-			logger.warning(person, "No habitable buildings available (except the astronomy observatory if available.");
+			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 		
@@ -1066,7 +1066,7 @@ public class BuildingManager implements Serializable {
 		}
 
 		if (!found) {
-			logger.warning(person, "No habitable buildings with empty activity spot available.");
+			logger.warning(person, "No habitable buildings with empty activity spot available in zone 0.");
 		}
 	}
 
@@ -1141,7 +1141,7 @@ public class BuildingManager implements Serializable {
 			List<Building> robotStations = manager.getBuildings(FunctionType.LIFE_SUPPORT);
 			destination = robotStations.get(0);
 
-			logger.warning(robot, "Initially placed in random building " + destination.getName());
+			logger.warning(robot, "Initially placed in random building " + destination.getName() + ".");
 		}
 		
 		addRobotToRoboticStation(robot, destination);
@@ -1476,9 +1476,8 @@ public class BuildingManager implements Serializable {
 
 		Set<Building> result = new UnitSet<>();
 		for (Building building : buildingList) {
-			LifeSupport lifeSupport = building.getLifeSupport();
 			int numPeople = 0;
-			for (Person occupant : lifeSupport.getOccupants()) {
+			for (Person occupant : building.getLifeSupport().getOccupants()) {
 				if (occupant.getMind().getTaskManager().getTask() instanceof Conversation) {
 					numPeople++;
 				}

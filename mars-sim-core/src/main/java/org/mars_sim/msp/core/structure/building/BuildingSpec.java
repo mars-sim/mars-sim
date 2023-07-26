@@ -27,8 +27,8 @@ public class BuildingSpec {
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
 	private static final List<ResourceProcessEngine> EMPTY_RESOURCE = new ArrayList<>();
 	
-	/** is the building inhabitable. */
-	boolean isInhabitable = false;
+	/** is the building non-habitable. */
+	private boolean isInhabitable = true;
 	
 	private int baseLevel;
 	private int maintenanceTime;
@@ -87,6 +87,9 @@ public class BuildingSpec {
 		this.basePowerRequirement = basePowerRequirement;
 		this.basePowerDownPowerRequirement = basePowerDownPowerRequirement;
 		this.supportedFunctions = supportedFunctions;
+		
+		if (supportedFunctions.containsKey(FunctionType.LIFE_SUPPORT))
+			isInhabitable = false;
 	}
 
 	/**

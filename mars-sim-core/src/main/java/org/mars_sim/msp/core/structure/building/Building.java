@@ -152,8 +152,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
-	
-	private BuildingSpec spec;
 
 	private Administration admin;
 	private AstronomicalObservation astro;
@@ -207,10 +205,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		settlement = manager.getSettlement();
 		settlementID = settlement.getIdentifier();
 
-		this.spec = buildingConfig.getBuildingSpec(template.getBuildingType());
-		
 		// NOTE: needed for setting inhabitable id
-		if (!spec.isInhabitable) {
+		if (!buildingConfig.getBuildingSpec(template.getBuildingType()).isInhabitable()) {
 			// Set the instance of life support
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 		}
@@ -1539,7 +1535,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return
 	 */
 	public boolean isInhabitable() {
-		return spec.isInhabitable();
+		return buildingConfig.getBuildingSpec(buildingType).isInhabitable();
 	}
 	
 	@Override
@@ -1554,8 +1550,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		// Get the building's functions
 		if (functions == null) {
-			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
-			functions = buildFunctions(spec);
+			functions = buildFunctions(buildingConfig.getBuildingSpec(buildingType));
 		}
 	}
 	
