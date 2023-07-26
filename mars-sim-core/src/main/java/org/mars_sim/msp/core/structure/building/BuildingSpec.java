@@ -27,6 +27,9 @@ public class BuildingSpec {
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
 	private static final List<ResourceProcessEngine> EMPTY_RESOURCE = new ArrayList<>();
 	
+	/** is the building inhabitable. */
+	boolean isInhabitable = false;
+	
 	private int baseLevel;
 	private int maintenanceTime;
 	private int wearLifeTime;
@@ -86,6 +89,15 @@ public class BuildingSpec {
 		this.supportedFunctions = supportedFunctions;
 	}
 
+	/**
+	 * Checks if this building is isInhabitable.
+	 * 
+	 * @return
+	 */
+	public boolean isInhabitable() {
+		return isInhabitable;
+	}
+	
 	/**
 	 * What functions are supported by this building type.
 	 * 

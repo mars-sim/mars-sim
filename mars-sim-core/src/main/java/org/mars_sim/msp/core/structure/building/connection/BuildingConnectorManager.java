@@ -615,13 +615,10 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public void createBuildingConnections(Building newBuilding) {
 
-		boolean isBuildingConnector = newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION);
-		boolean hasLifeSupport = newBuilding.hasFunction(FunctionType.LIFE_SUPPORT);
-
-		// Only create building connections for inhabitable buildings.
-		if (hasLifeSupport) {
+		// Only create building connections for habitable buildings.
+		if (!newBuilding.isInhabitable()) {
 			// If building connector, determine end connections first.
-			if (isBuildingConnector) {
+			if (newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION)) {
 				// Try to create connections at North and South ends.
 				createBuildingConnectorEndConnections(newBuilding);
 

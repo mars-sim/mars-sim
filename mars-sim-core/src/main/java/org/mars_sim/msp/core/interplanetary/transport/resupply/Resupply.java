@@ -347,7 +347,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		int leastDistance = 0;
 		// TOD: also check if
 		Set<FunctionType> supported = spec.getFunctionSupported();
-		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
+		boolean hasLifeSupport = !spec.isInhabitable(); //supported.contains(FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
 			if (supported.contains(FunctionType.ASTRONOMICAL_OBSERVATION)) {
@@ -463,7 +463,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// Note : only hallway and tunnel has "building-connection" function
 		Set<FunctionType> supported = spec.getFunctionSupported();
 		boolean isBuildingConnector = supported.contains(FunctionType.BUILDING_CONNECTION);
-		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
+		boolean hasLifeSupport = !spec.isInhabitable(); // supported.contains(FunctionType.LIFE_SUPPORT);
 
 		if (isBuildingConnector) {
 			// Case 0 : a hallway or tunnel

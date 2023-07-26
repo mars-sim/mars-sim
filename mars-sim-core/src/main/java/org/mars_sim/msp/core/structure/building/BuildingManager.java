@@ -1018,7 +1018,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person/robot to a random inhabitable building within a settlement.
+	 * Adds a person/robot to a random habitable building within a settlement.
 	 *
 	 * @param unit       the person/robot to add.
 	 * @param s the settlement to find a building.
@@ -1035,7 +1035,7 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Adds a person to a random inhabitable building within a settlement.
+	 * Adds a person to a random habitable building within a settlement.
 	 * Note: excluding the astronomical observation building
 	 *
 	 * @param unit       the person to add.
@@ -1043,12 +1043,16 @@ public class BuildingManager implements Serializable {
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
 	public static void addPersonToRandomBuilding(Person person, Settlement s) {
-
-		Set<Building> set = s.getBuildingManager()
-				.getBuildingsF1NoF2(FunctionType.LIFE_SUPPORT, FunctionType.ASTRONOMICAL_OBSERVATION);
+		
+		// Go to the default zone 0 only
+		Set<Building> set = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT)
+					.stream()
+					.filter(b -> b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
 
 		if (set.isEmpty()) {
-			logger.warning(person, "No inhabitable buildings available (except the astronomy observatory if available.");
+			logger.warning(person, "No habitable buildings available (except the astronomy observatory if available.");
 			return;
 		}
 		
@@ -1062,12 +1066,12 @@ public class BuildingManager implements Serializable {
 		}
 
 		if (!found) {
-			logger.warning(person, "No inhabitable buildings with empty activity spot available.");
+			logger.warning(person, "No habitable buildings with empty activity spot available.");
 		}
 	}
 
 	/**
-	 * Adds a robot to a random inhabitable building within a settlement.
+	 * Adds a robot to a random habitable building within a settlement.
 	 *
 	 * @param robot       the robot to add.
 	 * @throws BuildingException if robot cannot be added to any building.
@@ -1104,13 +1108,13 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Adds a robot to a random inhabitable building within a settlement.
+	 * Adds a robot to a random habitable building within a settlement.
 	 *
 	 * @param unit       the robot to add.
 	 * @param s the settlement to find a building.
 	 * @throws BuildingException if robot cannot be added to any building.
 	 */
-	public static void addRobotToRandomBuilding(Robot robot, Settlement s ) {
+	public static void addRobotToRandomBuilding(Robot robot, Settlement s) {
 		BuildingManager manager = s.getBuildingManager();
 		
 		final FunctionType function = FunctionType.getDefaultFunction(robot.getRobotType());
@@ -1120,7 +1124,9 @@ public class BuildingManager implements Serializable {
 		Building destination = null;
 		for (Building bldg : functionBuildings) {
 			RoboticStation roboticStation = bldg.getRoboticStation();
-			if (roboticStation != null) {
+			
+			// Go to the default zone 0 only
+			if (bldg.getZone() == 0 && roboticStation != null) {
 				BuildingCategory category = bldg.getCategory();
 				// Do not add robot to hallway, tunnel
 				if ((category != BuildingCategory.HALLWAY)
@@ -1669,7 +1675,7 @@ public class BuildingManager implements Serializable {
 				// Add the robot to the station
 				roboticStation.addRobot(robot);
 				// Find an empty spot
-				LocalPosition loc = LocalAreaUtil.getRandomLocalRelativePosition(building); //roboticStation.getAvailableActivitySpot(robot);
+				LocalPosition loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 							
 				if (loc == null) {
 					Function fct = building.getEmptyActivitySpotFunction();

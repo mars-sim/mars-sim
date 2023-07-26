@@ -179,7 +179,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
-	private boolean supportsInside = true;
+	private boolean supportInsideRepair = true;
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
@@ -237,10 +237,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Does this malfunctionable support inside repairs?
 	 * 
-	 * @param supported New inside repairs supported
+	 * @param supported inside repairs supported
 	 */
-	public void setSupportsInside(boolean supported) {
-		this.supportsInside = supported;
+	public void setSupportInsideRepair(boolean supported) {
+		this.supportInsideRepair = supported;
 	}
 	
 	/**
@@ -388,7 +388,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Unit actor) {
-		Malfunction malfunction = new Malfunction(this, factory.getNewIncidentNum(), m, supportsInside);
+		Malfunction malfunction = new Malfunction(this, factory.getNewIncidentNum(), m, supportInsideRepair);
 
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
@@ -850,7 +850,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (!malfunction.isFixed()) {
 				
 					if (entity instanceof Building building) {
-						if (building.getLifeSupport() == null) {
+						if (building.isInhabitable()) {
 							// If this entity is a building and it has no life support,
 							// there is no need to look at life support leaking
 							return;
