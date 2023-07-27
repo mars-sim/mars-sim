@@ -148,7 +148,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map instance as surf map
-		setMapType(DEFAULT_MAPTYPE);
+		setMapType(DEFAULT_MAPTYPE, NavigatorWindow.getMapResolution());
 		
 		mapError = false;
 		wait = false;
@@ -384,9 +384,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @return map type set successfully
 	 */
-	public boolean setMapType(String mapStringType) {
+	public boolean setMapType(String mapStringType, int selectedMapResolution) {
 		
 		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
+			
+			mapUtil.setMapData(mapStringType, selectedMapResolution);
+			
 			MapData data = mapUtil.getMapData(mapStringType);
 			this.mapStringType = mapStringType;
 			if (data == null) {

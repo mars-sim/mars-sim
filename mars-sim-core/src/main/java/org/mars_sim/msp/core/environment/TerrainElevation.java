@@ -46,6 +46,8 @@ public class TerrainElevation implements Serializable {
 
 	private static final double RATE = 1;
 
+	private static final String TOPO_MAP_TYPE = "topo";
+	
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 
 	private static Set<CollectionSite> sites;
@@ -293,7 +295,7 @@ public class TerrainElevation implements Serializable {
 	 */
 	public static double getRGBElevation(Coordinates location) {	
 		// Find hue and saturation color components at location.
-		Color color = new Color(mapDataUtil.getMapData("topo").getRGBColorInt(location.getPhi(), location.getTheta()));
+		Color color = new Color(mapDataUtil.getMapData(TOPO_MAP_TYPE).getRGBColorInt(location.getPhi(), location.getTheta()));
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();

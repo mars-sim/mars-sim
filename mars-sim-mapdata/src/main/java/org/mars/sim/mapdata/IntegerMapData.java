@@ -13,7 +13,6 @@ import static org.mars.sim.mapdata.OpenCL.getLocalSize;
 import static org.mars.sim.mapdata.OpenCL.getProgram;
 import static org.mars.sim.mapdata.OpenCL.getQueue;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -85,15 +84,16 @@ import com.jogamp.opencl.CLProgram;
 		this.meta = newMeta;
 		
 		// Load data files
+		String metaMap = newMeta.getFile();
 		
-		baseMapPixels = loadMapData(newMeta.getHiResFile());
+		baseMapPixels = loadMapData(metaMap);
 		
 		rho =  pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
 		MAX_RHO = RHO_DEFAULT * 6;
 		MIN_RHO = RHO_DEFAULT / 6;
 		
-		logger.info("Loaded " + meta.getHiResFile() + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
+		logger.info("Loaded " + metaMap + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
 		
 		setKernel();
  	}
@@ -194,84 +194,89 @@ import com.jogamp.opencl.CLProgram;
  	private int[][] loadMapData(String imageName) throws IOException {
 
  		File imageFile = FileLocator.locateFile(imageName);
+ 		
  		cylindricalMapImage = null;
+ 		
+ 		int[][] mapPixels = null;
+ 		
 		try {
 			cylindricalMapImage = ImageIO.read(imageFile);
+			
+			// Use getRaster() is fastest
+		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
+			// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
+			
+			final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
+//	 		int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
+
+	 		pixelWidth = cylindricalMapImage.getWidth();
+	 		pixelHeight = cylindricalMapImage.getHeight();
+	 		
+	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
+		
+	 		mapPixels = new int[pixelHeight][pixelWidth];
+	 		
+	 		if (hasAlphaChannel) {
+	 			final int pixelLength = 4;
+	 			
+	 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
+	 			
+	 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
+	 				int argb = 0;
+	 				
+	 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
+	 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
+	 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
+	 				//
+	 				// 1. value is promoted to an int (ff ff ff fe).
+	 				// 2. 0xff is an int literal (00 00 00 ff).
+	 				// 3. The '&' is applied to yield the desired value for result.
+
+	 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
+	 				argb += ((int) pixels[pos + 1] & 0xff); // blue
+	 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
+	 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
+	 				
+//	 				The Red and Blue channel comments are flipped. 
+//	 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
+	 				
+//	 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
+//	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
+//	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
+	 						
+	 				mapPixels[row][col] = argb;
+	 				col++;
+	 				if (col == pixelWidth) {
+	 					col = 0;
+	 					row++;
+	 				}
+	 			}
+	 		}
+	 		
+	 		else {
+	 			final int pixelLength = 3;
+	 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
+	 				int argb = 0;
+	 				
+	 				argb += -16777216; // 255 alpha
+	 				argb += ((int) pixels[pixel] & 0xff); // blue
+	 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+	 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
+	 				
+	 				mapPixels[row][col] = argb;
+	 				col++;
+	 				if (col == pixelWidth) {
+	 					col = 0;
+	 					row++;
+	 				}
+	 			}
+	 		}
+	 		
 		} catch (IOException e) {
 			logger.severe("Can't read image file: " + imageFile + ".");
 		}
-		
-		// Use getRaster() is fastest
-	    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
-		// See https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
-		
-		final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
-// 		int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
 
- 		pixelWidth = cylindricalMapImage.getWidth();
- 		pixelHeight = cylindricalMapImage.getHeight();
- 		
- 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
-	
- 		int[][] result = new int[pixelHeight][pixelWidth];
- 		
- 		if (hasAlphaChannel) {
- 			final int pixelLength = 4;
- 			
- 			// Note: int pos = (y * pixelLength * width) + (x * pixelLength);
- 			
- 			for (int pos = 0, row = 0, col = 0; pos + 3 < pixels.length; pos += pixelLength) {
- 				int argb = 0;
- 				
- 				// See https://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
- 				// When applying '& 0xff', it would end up with the value ff ff ff fe instead of 00 00 00 fe. 
- 				// A further subtlety is that '&' is defined to operate only on int values. As a result, 
- 				//
- 				// 1. value is promoted to an int (ff ff ff fe).
- 				// 2. 0xff is an int literal (00 00 00 ff).
- 				// 3. The '&' is applied to yield the desired value for result.
-
- 				argb += (((int) pixels[pos] & 0xff) << 24); // alpha
- 				argb += ((int) pixels[pos + 1] & 0xff); // blue
- 				argb += (((int) pixels[pos + 2] & 0xff) << 8); // green
- 				argb += (((int) pixels[pos + 3] & 0xff) << 16); // red
- 				
-// 				The Red and Blue channel comments are flipped. 
-// 				Red should be +1 and blue should be +3 (or +0 and +2 respectively in the No Alpha code).
- 				
-// 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
-// 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
-// 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
- 						
- 				result[row][col] = argb;
- 				col++;
- 				if (col == pixelWidth) {
- 					col = 0;
- 					row++;
- 				}
- 			}
- 		}
- 		
- 		else {
- 			final int pixelLength = 3;
- 			for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
- 				int argb = 0;
- 				
- 				argb += -16777216; // 255 alpha
- 				argb += ((int) pixels[pixel] & 0xff); // blue
- 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
- 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
- 				
- 				result[row][col] = argb;
- 				col++;
- 				if (col == pixelWidth) {
- 					col = 0;
- 					row++;
- 				}
- 			}
- 		}
-
- 		return result;
+ 		return mapPixels;
  	}
  	
  	/**

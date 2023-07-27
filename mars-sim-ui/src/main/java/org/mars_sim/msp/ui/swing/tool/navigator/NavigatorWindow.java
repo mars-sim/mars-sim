@@ -60,6 +60,7 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mars.sim.mapdata.MapData;
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
@@ -123,6 +124,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
 	private static final String MAPTYPE_ACTION = "mapType";
+	private static final String RESOLUTION_ACTION = "resolution";
 	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
@@ -154,8 +156,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String KM = " km";
 
 	private static final String SURFACE_MAP = "surface";
+	private static final String RESOLUTION = "2";
 
 	// Data member
+	/** map resolution: 0 (hi); 1(mid); 2(low). */
+	private static int selectedMapResolution = 2;
 	/** The map rho. */
 	private double rho;
 	
@@ -207,6 +212,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private UnitManagerListener umListener;
 	
 	private Settlement selectedSettlement;
+	
+	private MapDataUtil mapDataUtil = MapDataUtil.instance();
 
 	/**
 	 * Constructor.
@@ -469,8 +476,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Apply user choice from xml config file
 		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
-			// Type of Map
-			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP));
+			
+			String resolutionString = userSettings.getProperty(RESOLUTION_ACTION, RESOLUTION);
+			
+			int resolution = selectedMapResolution;
+			
+			if (resolutionString != null) {
+				resolution = Integer.parseInt(resolutionString);
+			}
+			
+			// Set the map type
+			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP), resolution);
 
 			for (Object key : userSettings.keySet()) {
 				String prop = (String) key;
@@ -739,13 +755,21 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			if (command.startsWith(MAPTYPE_ACTION)) {
 				String newMapType = command.substring(MAPTYPE_ACTION.length());
 				if (((JCheckBoxMenuItem) source).isSelected()) {
-					setMapType(newMapType);
+					setMapType(newMapType, selectedMapResolution);
 				}
 			}
 			else if (command.startsWith(MAPTYPE_UNLOAD_ACTION)) {
 				if (((JCheckBoxMenuItem) source).isSelected()) {
 					String newMapType = command.substring(MAPTYPE_UNLOAD_ACTION.length());
-					selectUnloadedMap(newMapType);
+					int reply = selectUnloadedMap(newMapType);
+					
+					// 0: hi res; 1: mid res; 2: low res
+					if (reply < 3) {
+						// Set to the new map resolution
+						selectedMapResolution = reply;
+						setMapType(newMapType, selectedMapResolution);
+						
+					}
 				}
 			}
 			else if (command.startsWith(LAYER_ACTION)) {
@@ -766,23 +790,38 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * 
 	 * @param newMapType
 	 */
-	private void selectUnloadedMap(String newMapType) {
-		int reply = JOptionPane.showConfirmDialog(null,
-								"Download the map data?", "Download map",
-								JOptionPane.YES_NO_OPTION);
-		if (reply == JOptionPane.YES_OPTION) {
-			// This method will take a few seconds
-			setMapType(newMapType);
-		}
+	private int selectUnloadedMap(String newMapType) {
+		String def = " (default)";
+		
+		MapData mapData = mapDataUtil.getMapData(newMapType);
+		
+		int resolution = mapData.getMetaData().getResolution();
+				
+		Object[] options = {
+				"High Resolution",
+                "Mid Resolution",
+                "Low Resolution"};
+		
+		options[resolution] = options[resolution] + def;
+		
+		return JOptionPane.showOptionDialog(null,
+								"Choose map resolution for '" + newMapType + "' map type ? (Will need internet to download maps)", 
+								"Surface Map Resolution",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								options,
+								options[2]);
 	}
 
 	/**
 	 * Changes the MapType.
 	 * 
 	 * @param newMapType New map Type
+	 * @param selectedResolution
 	 */
-	private void setMapType(String newMapType) {
-		if (mapLayerPanel.setMapType(newMapType)) {
+	private void setMapType(String newMapType, int selectedResolution) {
+		if (mapLayerPanel.setMapType(newMapType, selectedResolution)) {
 			// Update dependent panels
 			MapMetaData metaType = mapLayerPanel.getMapType();
 			
@@ -851,16 +890,41 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		JPopupMenu optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 
+		
+		
 		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
-		for (MapMetaData mapType : MapDataUtil.instance().getMapTypes()) {
-			boolean loaded = mapType.isLocallyAvailable();
-			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(mapType.getName()
-															+ (!loaded ? " (not loaded)" : ""),
-															mapType.equals(mapLayerPanel.getMapType()));
+		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
+			
+			metaData.checkMapLocalAvailability();
+	
+			boolean loaded = false;
+			boolean loaded0 = metaData.isLocallyAvailable(0);
+			boolean loaded1 = metaData.isLocallyAvailable(1);
+//			boolean loaded2 = metaData.isLocallyAvailable(2);
+			
+			if (loaded0)
+				metaData.setResolution(0);
+			else if (loaded1)
+				metaData.setResolution(1);
+			
+			int currentResolution = metaData.getResolution();
+			String resolutionString = "Low Res";
+			if (currentResolution == 0)
+				resolutionString = "High Res";
+			else if (currentResolution == 1)
+				resolutionString = "Mid Res";
+			
+			if (currentResolution != 0 || !loaded0)
+				loaded = false;
+			
+			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getName() + " (" +  resolutionString + ")"
+//															+ (!loaded ? " (Not loaded)" : "")
+															, metaData.equals(mapLayerPanel.getMapType()));
 			// Different action for unloaded maps
 			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_UNLOAD_ACTION)
-										+ mapType.getId());
+										+ metaData.getId());
+			
 			mapItem.addActionListener(this);
 			optionsMenu.add(mapItem);
 			group.add(mapItem);
@@ -1101,19 +1165,24 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	public Properties getUIProps() {
 		Properties results = new Properties();
 
-		// Type of Map
+		// Record the map type
 		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapType().getId());
+		// Record the resolution
+		results.setProperty(RESOLUTION_ACTION, "" + mapLayerPanel.getMapType().getResolution());
 		Coordinates center = mapLayerPanel.getCenterLocation();
+		// Record the longitude
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
+		// Record the latitude
 		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());
 
 		// Additional layers
 		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
+			// Record the choice of layers
 			results.setProperty(LAYER_ACTION + e.getKey(),
 							Boolean.toString(mapLayerPanel.hasMapLayer(e.getValue().layer)));
 		}
 
-		// Mineral Layers
+		// Record the mineral layers
 		for (String mineralName : mineralLayer.getMineralColors().keySet()) {
 			results.setProperty(MINERAL_ACTION + mineralName, Boolean.toString(mineralLayer.isMineralDisplayed(mineralName)));
 		}
@@ -1220,6 +1289,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		mapLayerPanel.setRho(rho);
 	}
 	
+	public static int getMapResolution() {
+		return selectedMapResolution;
+	}
 	
 	/**
 	 * Prepares tool window for deletion.

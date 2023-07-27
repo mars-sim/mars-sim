@@ -123,14 +123,26 @@ import java.util.Collection;
  	}
  	
  	/**
- 	 * Gets the surface map data.
+ 	 * Gets the map data.
  	 * 
- 	 * @return surface map data.
+ 	 * @param mapType
+ 	 * @param selectedResolution
+ 	 * @return
  	 */
  	public MapData getMapData(String mapType) {
  		return mapDataFactory.getMapData(mapType);
  	}
 
+ 	/**
+ 	 * Sets the map data.
+ 	 * 
+ 	 * @param mapType
+ 	 * @param resolution
+ 	 */
+ 	public void setMapData(String mapType, int resolution) {
+ 		mapDataFactory.setMapData(mapType, resolution);
+ 	}
+ 	
      /**
       * Gets the map types available.
       * 
@@ -139,4 +151,14 @@ import java.util.Collection;
     public Collection<MapMetaData> getMapTypes() {
         return mapDataFactory.getLoadedTypes();
     }
+    
+	/**
+	 * Prepares objects for deletion.
+	 */
+	public void destroy() {
+	 	instance = null;
+		mapDataFactory = null;
+		reader = null;
+	}
+ 	
  }

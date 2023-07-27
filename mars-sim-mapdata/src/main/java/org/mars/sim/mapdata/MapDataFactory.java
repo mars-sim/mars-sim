@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataFactory.java
- * @date 2023-05-02
+ * @date 2023-07-26
  * @author Scott Davis
  */
 
@@ -16,8 +16,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars.sim.mapdata.common.FileLocator;
-
 /**	
   * A factory for map data.
   */
@@ -29,7 +27,7 @@ import org.mars.sim.mapdata.common.FileLocator;
 	private static final String SURF_MAP = "surface";
 	private static final String MAP_PROPERTIES = "/mapdata.properties";
 
-	private Map<String, MapMetaData> metaData = new HashMap<>();
+	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
 
 	private transient MapData mapData = null;
 	
@@ -46,31 +44,50 @@ import org.mars.sim.mapdata.common.FileLocator;
 				String[] value = mapProps.getProperty(id).split(", ");
 				boolean isColour = Boolean.parseBoolean(value[1]);
 				String hiRes = value[2];
-				String loRes = value[3];
+				String midRes = value[3];
+				String loRes = value[4];
 
 				// Locally available is based on hires image which will be bigger
-				boolean isLocal = FileLocator.isLocallyAvailable(hiRes);
-				metaData.put(id, new MapMetaData(id, value[0], isLocal, isColour, hiRes, loRes));
+//				boolean isLocal = FileLocator.isLocallyAvailable(hiRes);
+				metaDataMap.put(id, new MapMetaData(id, value[0], isColour, hiRes, midRes, loRes));
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot load " + MAP_PROPERTIES, e);
 		}
 
-		if (!metaData.containsKey(SURF_MAP)) {
-			throw new IllegalStateException("There is no map data for '" + SURF_MAP + "' defined");
+		if (!metaDataMap.containsKey(SURF_MAP)) {
+			throw new IllegalStateException("There is no map data for '" + SURF_MAP + "' defined.");
 		}
  	}
 
  	/**
  	 * Gets map data of the requested type.
  	 * 
- 	 * @param mapType the map type.
- 	 * @return the map data. Maybe null if problems
+ 	 * @param mapType the map type
+ 	 * @param selectedResolution
+ 	 * @return the map data
+ 	 */
+ 	void setMapData(String mapType, int selectedResolution) {
+
+		MapMetaData metaData = metaDataMap.get(mapType);
+ 		if (metaData == null) {
+			logger.warning("Map type " + mapType + " unknown.");
+		};
+		
+ 		// Change the map resolution
+ 		metaData.setResolution(selectedResolution);
+ 	}
+ 	
+ 	/**
+ 	 * Gets map data of the requested type.
+ 	 * 
+ 	 * @param mapType the map type
+ 	 * @return the map data
  	 */
  	MapData getMapData(String mapType) {
 
-		MapMetaData mt = metaData.get(mapType);
- 		if (mt == null) {
+		MapMetaData metaData = metaDataMap.get(mapType);
+ 		if (metaData == null) {
 			logger.warning("Map type " + mapType + " unknown.");
 			return null;
 		};
@@ -78,15 +95,18 @@ import org.mars.sim.mapdata.common.FileLocator;
  		MapData result = null;
  		
 		if (mapData == null 
-				|| !mapData.getMetaData().getName().equals(mt.getName())) {
+				|| !mapData.getMetaData().getName().equals(metaData.getName())) {
 
 			try {
 				// Obtain a new MapData instance
-				result = new IntegerMapData(mt);
+				result = new IntegerMapData(metaData);
+				
 				// Save the result into the mapData cache
 				this.mapData = result;
+				
 				// Patch the metadata to be locally available
-				mt.setLocallyAvailable(true);
+				metaData.setLocallyAvailable(true);
+				
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, "Could not find the map file.", e);
 			}
@@ -103,6 +123,13 @@ import org.mars.sim.mapdata.common.FileLocator;
 	 * @return
 	 */
 	public Collection<MapMetaData> getLoadedTypes() {
-		return metaData.values();
+		return metaDataMap.values();
 	}
+	
+	public void destroy() {
+		metaDataMap.clear();
+		metaDataMap = null;
+		mapData = null;
+	}
+	
  }
