@@ -60,7 +60,6 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mars.sim.mapdata.MapData;
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;

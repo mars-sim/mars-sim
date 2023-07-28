@@ -88,7 +88,7 @@ public class History<T> implements Serializable {
         }
 
         if (history.size() == maxItems) {
-            // Rrmove first item (oldest)
+            // Remove first item (oldest)
             history.remove(0);
         }
         history.add(new HistoryItem<>(now, value));

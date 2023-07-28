@@ -145,7 +145,8 @@ public abstract class TaskManager implements Serializable {
 	private static PrintWriter diagnosticFile = null;
 
 	/**
-	 * Enable the detailed diagnostics
+	 * Enables the detailed diagnostics.
+	 * 
 	 * @throws FileNotFoundException 
 	 */
 	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
@@ -464,7 +465,7 @@ public abstract class TaskManager implements Serializable {
 				metrics.put(scope, now);
 			}
 
-			// LImit output
+			// Limit output
 			if ((totalRebuild % 1000) == 0) {
 				String message = String.format("---- Cache Reuse stats %d/%d (%d%%)",
 									reuseRebuild, totalRebuild, (100*reuseRebuild/totalRebuild));

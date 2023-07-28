@@ -24,6 +24,7 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 
 	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
+	private static final String CREW_XSD = "crew.xsd";
 	private static final String CREW_PREFIX = "crew";
 	
 	// Element or attribute names
@@ -44,9 +45,9 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	private static final String NAME_ATTR = "name";
 	private static final String DESC_ATTR = "description";
 	private static final String JOB = "job";
-	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
-	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
-	private static final String VALUE = "value";
+//	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
+//	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
+//	private static final String VALUE = "value";
 	private static final String SKILL_LIST = "skill-list";
 	private static final String SKILL = "skill";
 	private static final String LEVEL = "level";
@@ -61,25 +62,27 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	private static final String ACTIVITY = "favorite-activity";
 
 	/** 
-	 * Crew files preloaded in the code
+	 * Crew files preloaded in the code.
 	 */
 	private static final String [] PREDEFINED_CREWS = {"Alpha", "Founders"};
-	private Map<String, Integer> bigFiveMap = new HashMap<>();
+	
+//	private Map<String, Integer> bigFiveMap = new HashMap<>();
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public CrewConfig() {
 		super(CREW_PREFIX);
 		
-		setXSDName("crew.xsd");
+		setXSDName(CREW_XSD);
 		
 		loadDefaults(PREDEFINED_CREWS);
 		loadUserDefined();
 	}
 
 	/**
-	 * Parse an XML document to create an Crew instance.
+	 * Parses an XML document to create an Crew instance.
+	 * 
 	 * @param doc
 	 * @param predefined
 	 * @return
@@ -182,48 +185,50 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
         return doc;
 	}
 
-	/**
-	 * Gets a map of the configured person's natural attributes.
-	 * 
-	 * @param index the person's index.
-	 * @return map of natural attributes (empty map if not found).
-	 * @throws Exception if error in XML parsing.
-	 */
-	private Map<String, Integer> computeNaturalAttributeMap(Document doc, int index) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element personList = doc.getRootElement().getChild(CREW_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
+//	DO NOT DELETE. WILL REUSE
+//	/**
+//	 * Gets a map of the configured person's natural attributes.
+//	 * 
+//	 * @param index the person's index.
+//	 * @return map of natural attributes (empty map if not found).
+//	 * @throws Exception if error in XML parsing.
+//	 */
+//	private Map<String, Integer> computeNaturalAttributeMap(Document doc, int index) {
+//		Map<String, Integer> result = new HashMap<>();
+//		Element personList = doc.getRootElement().getChild(CREW_LIST);
+//		Element personElement = (Element) personList.getChildren(PERSON).get(index);
+//		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
+//
+//		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.size() > 0)) {
+//			Element naturalAttributeList = naturalAttributeListNodes.get(0);
+//			int attributeNum = naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).size();
+//
+//			for (int x = 0; x < attributeNum; x++) {
+//				Element naturalAttributeElement = (Element) naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).get(x);
+//				String name = naturalAttributeElement.getAttributeValue(NAME_ATTR);
+////				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+//				String value = naturalAttributeElement.getAttributeValue(VALUE);
+//				int intValue = Integer.parseInt(value);
+//				result.put(name, intValue);
+//			}
+//		}
+//		return result;
+//	}
 
-		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.size() > 0)) {
-			Element naturalAttributeList = naturalAttributeListNodes.get(0);
-			int attributeNum = naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).size();
-
-			for (int x = 0; x < attributeNum; x++) {
-				Element naturalAttributeElement = (Element) naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).get(x);
-				String name = naturalAttributeElement.getAttributeValue(NAME_ATTR);
-//				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
-				String value = naturalAttributeElement.getAttributeValue(VALUE);
-				int intValue = Integer.parseInt(value);
-				result.put(name, intValue);
-			}
-		}
-		return result;
-	}
-
-	public Map<String, Integer> getBigFiveMap(int index) {
-		return bigFiveMap;
-	}
+//	public Map<String, Integer> getBigFiveMap(int index) {
+//		return bigFiveMap;
+//	}
 	
-	/**
-	 * Gets a map of the configured person's traits according to the Big Five Model.
-	 * 
-	 * @param index the person's index.
-	 * @return map of Big Five Model (empty map if not found).
-	 * @throws Exception if error in XML parsing.
-	 */
+//	DO NOT DELETE. WILL REUSE
+//	/**
+//	 * Gets a map of the configured person's traits according to the Big Five Model.
+//	 * 
+//	 * @param index the person's index.
+//	 * @return map of Big Five Model (empty map if not found).
+//	 * @throws Exception if error in XML parsing.
+//	 */
 //	public Map<String, Integer> computeBigFiveMap(Document doc, int index) {
-//		Map<String, Integer> result = new HashMap<String, Integer>();
+//		Map<String, Integer> result = new HashMap<>();
 //		Element personList = doc.getRootElement().getChild(CREW_LIST);
 //		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 //		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
@@ -244,8 +249,14 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 //		return result;
 //	}
 
+	/**
+	 * Parses the skill map.
+	 * 
+	 * @param personElement
+	 * @return
+	 */
 	private Map<String, Integer> parseSkillsMap(Element personElement) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new HashMap<>();
 
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
@@ -263,8 +274,14 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	}
 
 
+	/**
+	 * Parses relationship.
+	 * 
+	 * @param personElement
+	 * @return
+	 */
 	private Map<String, Integer> parseRelationshipMap(Element personElement) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new HashMap<>();
 
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {

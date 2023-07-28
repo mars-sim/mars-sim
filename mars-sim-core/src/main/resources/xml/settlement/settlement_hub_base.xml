@@ -8,8 +8,11 @@
     <building id="0" type="Central Hub A" xloc="-100.0" yloc="100.0" facing="0.0">
         <connection-list>
             <connection id="1" hatch-facing="south" />
+            <connection id="9" hatch-facing="east" />
         </connection-list>
     </building>
+            
+    <!-- SOUTH WING -->            
             
     <building id="1" type="Hallway" length="4.0" xloc="-100.0" yloc="88" facing="0.0">
         <connection-list>
@@ -18,7 +21,7 @@
         </connection-list>
     </building>
       
-    <building id="2" type="Machinery Hab" xloc="-100.0" yloc="81.5" facing="0.0">
+    <building id="2" type="Storage Hab" xloc="-100.0" yloc="81.5" facing="0.0">
         <connection-list>
             <connection id="1" hatch-facing="north" />
             <connection id="3" hatch-facing="south" />
@@ -33,18 +36,18 @@
         </connection-list>
     </building>
     
-    <!-- EVA Airlock is attached to the 1st Research hab -->
+    <!-- EVA Airlock is attached to the Storage hab -->
     <building id="4" type="EVA Airlock" xloc="-92.5" yloc="81.5" facing="0.0">
         <connection-list>
             <connection id="2" hatch-facing="east" />
         </connection-list>
     </building>
 
-
-    <building id="5" type="Lander Hab" xloc="-100.0" yloc="68.5" facing="0.0">
+    <building id="5" type="Research Hab" xloc="-100.0" yloc="68.5" facing="0.0">
         <connection-list>
             <connection id="3" hatch-facing="north" />
-            <connection id="6" hatch-facing="west" />           
+            <connection id="6" hatch-facing="west" />     
+            <connection id="7" hatch-facing="south" />                   
         </connection-list>
     </building>
     
@@ -55,27 +58,126 @@
         </connection-list>
     </building>
 
-
-    <building id="7" zone="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.0" facing="0.0">
+    <building id="7" type="Hallway" length="4.0" xloc="-100.0" yloc="62.0" facing="0.0">
         <connection-list>
-            <connection id="9" hatch-facing="south" />
-        </connection-list>
-    </building>
-
-    <!-- EVA Airlock is attached to the Astronomy Observatory. With hallway in between --> 
-    <building id="8" zone="1" type="EVA Airlock" xloc="-55.0" yloc="-30.5" facing="270.0">
-        <connection-list>
-            <connection id="9" hatch-facing="north" />
-        </connection-list>
-    </building>
-    <!-- This hallway is between the EVA Airlock and the Astronomy Observatory -->
-    <building id="9" zone="1" type="Hallway" length="4.0" xloc="-55.0" yloc="-25.5" facing="0.0">
-        <connection-list>
-            <connection id="7" hatch-facing="north" />
+            <connection id="5" hatch-facing="north" />
             <connection id="8" hatch-facing="south" />
         </connection-list>
     </building>
     
+    <building id="8" type="Lander Hab" xloc="-100.0" yloc="55.5" facing="0.0">
+        <connection-list>
+            <connection id="7" hatch-facing="north" />          
+        </connection-list>
+    </building>
+
+    
+    <!-- End of SOUTH WING -->
+    
+
+	<!-- EAST WING -->
+
+    <building id="9" type="Hallway" length="4.0" xloc="-112" yloc="100" facing="90.0">
+        <connection-list>
+            <connection id="0" hatch-facing="west" />
+            <connection id="10" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+	<building id="10" type="Command and Control" xloc="-118.5"  yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="9" hatch-facing="west" />
+            <connection id="11" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="11" type="Hallway" length="4.0" xloc="-125.0" yloc="100" facing="90.0">
+        <connection-list>
+            <connection id="10" hatch-facing="west" />
+            <connection id="12" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="12" type="Lounge" xloc="-131.5" yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="11" hatch-facing="west" />
+            <connection id="13" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="13" type="Hallway" length="4.0" xloc="-138.0" yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="12" hatch-facing="west" />
+            <connection id="14" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="14" type="Infirmary" xloc="-144.5" yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="13" hatch-facing="west" />
+            <connection id="15" hatch-facing="east" />          
+        </connection-list>
+    </building>
+    
+    <building id="15" type="Hallway" length="4.0" xloc="-151.0" yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="14" hatch-facing="west" />
+            <connection id="16" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="16" type="Laboratory" xloc="-157.5" yloc="100"  facing="270.0">
+        <connection-list>
+            <connection id="15" hatch-facing="west" />
+            <connection id="17" hatch-facing="east" />  
+        </connection-list>
+    </building>
+    
+    <building id="17" type="Hallway" length="4.0" xloc="-164.0" yloc="100" facing="270.0">
+        <connection-list>
+           <connection id="16" hatch-facing="west" />
+           <connection id="18" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="18" type="Workshop" xloc="-170.5" yloc="100" facing="270.0">
+        <connection-list>
+            <connection id="17" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <!-- End of EAST WING -->
+    
+    
+    
+    
+	<!-- ZONE 1 -->
+
+    <building id="19" zone="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.0" facing="0.0">
+        <connection-list>
+            <connection id="20" hatch-facing="south" />
+        </connection-list>
+    </building>
+
+    <!-- This hallway is between the EVA Airlock and the Astronomy Observatory -->
+    <building id="20" zone="1" type="Hallway" length="4.0" xloc="-55.0" yloc="-25.5" facing="0.0">
+        <connection-list>
+            <connection id="19" hatch-facing="north" />
+            <connection id="21" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+        <!-- EVA Airlock is attached to the Astronomy Observatory. With hallway in between --> 
+    <building id="21" zone="1" type="EVA Airlock" xloc="-55.0" yloc="-30.5" facing="270.0">
+        <connection-list>
+            <connection id="20" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+	<!-- End of ZONE 1 -->
+
+
+	<!-- TEST ONLY SECTION -->
 
     <!-- EVA Airlock is attached to the Astronomy Observatory
     <building id="8" zone="1" type="EVA Airlock" xloc="-55.0" yloc="-13.5" facing="90.0">
@@ -109,6 +211,8 @@
     </building>
 	--> 
 
+	<!-- End of TEST ONLY SECTION -->
+	
 
     <building type="MD4 Nuclear Reactor" xloc="510.0"
         yloc="-500" facing="0.0" />

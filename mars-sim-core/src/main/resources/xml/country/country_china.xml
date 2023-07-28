@@ -338,21 +338,21 @@
         <first-name value="Xueman" gender="female" />
         <first-name value="Yuying" gender="female" />
     </first-name-list>
+    
     <last-name-list>
         <last-name value="Yee" />
         <last-name value="Toy" />
         <last-name value="Pun" />
         <last-name value="Tang" />
         <last-name value="Tien" />
+        
         <last-name value="Chang" />
-
         <last-name value="Fung" />
-
         <last-name value="Hui" />
         <last-name value="Tse" />
         <last-name value="Law" />
+        
         <last-name value="Ye" />
-
         <last-name value="Ting" />
         <last-name value="Sum" />
         <last-name value="So" />
@@ -361,7 +361,7 @@
         <last-name value="Wong" />
         <last-name value="Chan" />
         <last-name value="Lee" />
-
+        <last-name value="Tan" />
 
         <!-- https://en.wikipedia.org/wiki/List_of_common_Chinese_surnames -->
         <last-name value="Wang" />
@@ -423,6 +423,25 @@
         <last-name value="Ding" />
         <last-name value="Ren" />
         <last-name value="Shen" />
-
+        
+        <!-- Miscs. -->
+        <last-name value="Chin" />
+        <last-name value="Vong" />
+        <last-name value="Chu" />
+        <last-name value="Eng" />
+        <last-name value="Gong" />
+        
+        <last-name value="Yeoh" />
+        <last-name value="Wan" />
+        <last-name value="Yin" />
+        <last-name value="Lui" />       
+        <last-name value="Shi" />            
+ 
+        <last-name value="Mao" />       
+        <last-name value="Hao" />  
+        <last-name value="Kwong" />       
+        <last-name value="Kung" />  
+        <last-name value="Shao" />        
+               
     </last-name-list>
 </country>

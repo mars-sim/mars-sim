@@ -8,7 +8,6 @@
  package org.mars.sim.mapdata;
 
  import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
  /**
@@ -77,7 +76,7 @@ import java.io.IOException;
  	 * @return
  	 * @throws IOException
  	 */
- 	public short[][] getPixels();
+ 	public int[][] getPixels();
  	
 	
  	/**
