@@ -39,10 +39,25 @@ public class MapMetaData {
         checkMapLocalAvailability();
     }
 
+    /**
+     * Checks if the maps are available locally.
+     */
     public void checkMapLocalAvailability() {
-        locallyAvailableMap.put(hiResFilename, FileLocator.isLocallyAvailable(hiResFilename));
-        locallyAvailableMap.put(midResFilename, FileLocator.isLocallyAvailable(midResFilename));
-        locallyAvailableMap.put(loResFilename, FileLocator.isLocallyAvailable(loResFilename));
+		boolean loaded0 = FileLocator.isLocallyAvailable(hiResFilename);
+		boolean loaded1 = FileLocator.isLocallyAvailable(midResFilename);
+		boolean loaded2 = FileLocator.isLocallyAvailable(loResFilename);
+		
+        locallyAvailableMap.put(hiResFilename, loaded0);
+        locallyAvailableMap.put(midResFilename, loaded1);
+        locallyAvailableMap.put(loResFilename, loaded2);
+        
+		// Sync up with the resolution data member
+		if (loaded0)
+			setResolution(0);
+		else if (loaded1)
+			setResolution(1);
+		else if (loaded2)
+			setResolution(2);
     }
     
     public String getId() {

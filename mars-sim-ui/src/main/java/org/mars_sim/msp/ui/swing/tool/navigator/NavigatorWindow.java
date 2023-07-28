@@ -230,26 +230,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
-		contentPane.setBackground(new Color(0, 0, 0, 128));
-		contentPane.setOpaque(false);
+//		contentPane.setBackground(new Color(0, 0, 0, 128));
+//		contentPane.setOpaque(false);
 		setContentPane(contentPane);
 		
 		// Prepare whole 
 		JPanel wholePane = new JPanel(new BorderLayout(0, 0));
-		wholePane.setBackground(new Color(0, 0, 0, 128));
-		wholePane.setOpaque(false);
+//		wholePane.setBackground(new Color(0, 0, 0, 128));
+//		wholePane.setOpaque(false);
 		wholePane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel mapPane = new JPanel();//new FlowLayout(FlowLayout.CENTER, 0, 0));//new GridLayout(1, 2));
-		mapPane.setBackground(new Color(0, 0, 0, 128));
-		mapPane.setOpaque(false);
+//		mapPane.setBackground(new Color(0, 0, 0, 128));
+//		mapPane.setOpaque(false);
 		wholePane.add(mapPane, BorderLayout.CENTER);
 
 		mapLayerPanel = new MapPanel(desktop, this);
-		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
-		mapLayerPanel.setOpaque(false);
+//		mapLayerPanel.setBackground(new Color(0, 0, 0, 128));
+//		mapLayerPanel.setOpaque(false);
 		mapLayerPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_WIDTH));
 		
 		mapLayerPanel.setMouseDragger(true);
@@ -274,8 +274,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		buildZoomSlider();
 		
 		JPanel zoomPane = new JPanel(new BorderLayout());
-		zoomPane.setBackground(new Color(0, 0, 0, 128));
-		zoomPane.setOpaque(false);
+//		zoomPane.setBackground(new Color(0, 0, 0, 128));
+//		zoomPane.setOpaque(false);
 		zoomPane.add(zoomSlider);
 
 		mapPane.add(zoomPane);
@@ -804,7 +804,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		options[resolution] = options[resolution] + def;
 		
 		return JOptionPane.showOptionDialog(null,
-								"Choose map resolution for '" + newMapType + "' map type ? (If not available locally, will need internet to download maps)", 
+								"Choose map resolution for '" + newMapType + "' map type ? (Need to download the map if not available locally)", 
 								"Surface Map Resolution",
 								JOptionPane.YES_NO_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE,
@@ -839,7 +839,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 													"Problem loading Map",
 													JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 		boolean selected = mineralsButton.isEnabled();
 		
 		printMineralText(selected);
@@ -888,34 +888,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		// Create map options menu.
 		JPopupMenu optionsMenu = new JPopupMenu();
 		optionsMenu.setToolTipText(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
-
-		
 		
 		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
 			
+			// In case mars-sim has just been loaded
 			metaData.checkMapLocalAvailability();
-	
-			boolean loaded = false;
-			boolean loaded0 = metaData.isLocallyAvailable(0);
-			boolean loaded1 = metaData.isLocallyAvailable(1);
-//			boolean loaded2 = metaData.isLocallyAvailable(2);
-			
-			if (loaded0)
-				metaData.setResolution(0);
-			else if (loaded1)
-				metaData.setResolution(1);
 			
 			int currentResolution = metaData.getResolution();
+			
 			String resolutionString = "Low Res";
+			
 			if (currentResolution == 0)
 				resolutionString = "High Res";
 			else if (currentResolution == 1)
 				resolutionString = "Mid Res";
 			
-			if (currentResolution != 0 || !loaded0)
-				loaded = false;
+			// Q: should we always allow the JOption box to pop up ?
+			boolean loaded = false;
 			
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getName() + " (" +  resolutionString + ")"
 //															+ (!loaded ? " (Not loaded)" : "")
@@ -1220,8 +1211,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(60, 400));
         zoomSlider.setSize(new Dimension(60, 400));
-//		zoomSlider.setMajorTickSpacing(30);
-//		zoomSlider.setMinorTickSpacing(6);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
@@ -1235,19 +1224,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			public void stateChanged(ChangeEvent arg0) {
 				// Change scale of map based on slider position.
 				int newSliderValue = zoomSlider.getValue();
-
-//				double newMag = mapLayerPanel.getMagnification();
-			
-				double newMag = (5.0/14 * newSliderValue + 1)/6;
-									
+		
+				double oldRho = getRho();
+				
+				double newMag = (5.0/14 * newSliderValue + 1)/6;							
 				double newRho = MapPanel.RHO_DEFAULT * newMag;
 				
-				setRho(newRho);
-				
-//				logger.info("newSliderValue: " + newSliderValue
-//						+ "  newMag: " + Math.round(newMag * 1000.0)/1000.0
-//						+ "  newRho: " + Math.round(newRho * 1000.0)/1000.0
-//						);
+				if (newRho > MapPanel.MAX_RHO) {
+					newRho = MapPanel.MAX_RHO;
+				}
+				else if (newRho < MapPanel.MIN_RHO) {
+					newRho = MapPanel.MIN_RHO;
+				}
+		 
+				if (newRho != oldRho) {				
+					setRho(newRho);
+//					logger.info("newSliderValue: " + newSliderValue
+//							+ "  newMag: " + Math.round(newMag * 1000.0)/1000.0
+//							+ "  newRho: " + Math.round(newRho * 1000.0)/1000.0
+//							);
+				}
 			}
 		});
 		
@@ -1265,19 +1261,36 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+//		double rho = getRho();
+//		double mag = rho / MapPanel.RHO_DEFAULT;
+//		double sliderValue = Math.round((mag * 6 - 1.0) * 14.0 / 5.0);
+
 		int numClicks = e.getWheelRotation();
+		
+//		System.out.println("rho: " + rho + "  sliderValue: " + zoomSlider.getValue() 
+//				+ "  numClicks: " + numClicks);
+		
 		if (numClicks > 0) {
 			// Move zoom slider down.
-			if (zoomSlider.getValue() > zoomSlider.getMinimum())
+//			if (zoomSlider.getValue() > zoomSlider.getMinimum())
 				zoomSlider.setValue(zoomSlider.getValue() - 1);
 		}
 		else if (numClicks < 0) {
 			// Move zoom slider up.
-			if (zoomSlider.getValue() < zoomSlider.getMaximum())
+//			if (zoomSlider.getValue() < zoomSlider.getMaximum())
 				zoomSlider.setValue(zoomSlider.getValue() + 1);
 		}
 	}
 
+	/**
+	 * gets the map rho.
+	 *
+	 * @param rho
+	 */
+	public double getRho() {
+		return rho;
+	}
+	
 	/**
 	 * Sets the map rho.
 	 *

@@ -66,8 +66,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private boolean recreateMap = false;
 	
 	public static double RHO_DEFAULT;
-	public double MAX_RHO;
-	public double MIN_RHO;
+	public static double MAX_RHO;
+	public static double MIN_RHO;
 	
 	private final double ZOOM_STEP = 16;
 	private double multiplier;
@@ -196,18 +196,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         // May use if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {} to combine with other keys 
 		
 		double delta = e.getWheelRotation();
-		
-//		if (delta > 0) {
-//			// Move zoom slider down.
-//			if (zoomSlider.getValue() > zoomSlider.getMinimum())
-//				zoomSlider.setValue(zoomSlider.getValue() - 1);
-//		}
-//		else if (delta < 0) {
-//			// Move zoom slider up.
-//			if (zoomSlider.getValue() < zoomSlider.getMaximum())
-//				zoomSlider.setValue(zoomSlider.getValue() + 1);
-//		}
-		
     	double rhoDelta = - multiplier * delta;
     	double newRho = oldRho + rhoDelta;
     	
