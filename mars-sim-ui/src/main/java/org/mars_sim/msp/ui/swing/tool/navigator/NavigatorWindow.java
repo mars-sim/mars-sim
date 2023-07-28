@@ -768,7 +768,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						// Set to the new map resolution
 						selectedMapResolution = reply;
 						setMapType(newMapType, selectedMapResolution);
-						
 					}
 				}
 			}
@@ -791,7 +790,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newMapType
 	 */
 	private int selectUnloadedMap(String newMapType) {
-		String def = " (default)";
+		String def = " (Selected)";
 		
 		MapData mapData = mapDataUtil.getMapData(newMapType);
 		
@@ -805,9 +804,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		options[resolution] = options[resolution] + def;
 		
 		return JOptionPane.showOptionDialog(null,
-								"Choose map resolution for '" + newMapType + "' map type ? (Will need internet to download maps)", 
+								"Choose map resolution for '" + newMapType + "' map type ? (If not available locally, will need internet to download maps)", 
 								"Surface Map Resolution",
-								JOptionPane.YES_NO_OPTION,
+								JOptionPane.YES_NO_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE,
 								null,
 								options,

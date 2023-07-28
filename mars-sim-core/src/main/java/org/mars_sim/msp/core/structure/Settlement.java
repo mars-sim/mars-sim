@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.ScheduledEventManager;
 import org.mars_sim.msp.core.goods.CreditManager;
-import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.location.LocationStateType;

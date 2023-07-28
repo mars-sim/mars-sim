@@ -69,20 +69,26 @@ implements SettlementMapLayer {
 	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
-	static final Color FEMALE_COLOR = new Color(159, 7, 118); //dark pinkish purple  //(255, 153, 225) light bright pink
+	// (159, 7, 118) pinkish red purle
+	// (255, 153, 225) light pink
+	static final Color FEMALE_COLOR = Color.MAGENTA.brighter();
+	static final Color FEMALE_OUTLINE_COLOR = new Color(255, 153, 225);
 	static final Color FEMALE_SELECTED_COLOR = Color.MAGENTA.darker();
-	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
 	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_COLOR.darker();
 	
-	static final Color MALE_COLOR = Color.cyan.brighter(); //new Color(0, 0, 128); //navy blue //(154, 204, 255) light blue
-	static final Color MALE_SELECTED_COLOR = Color.cyan.darker();
-	static final Color MALE_OUTLINE_COLOR = Color.cyan; // (210, 210, 210, 190).brighter();
-	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_COLOR;
+	// (154, 204, 255) pale light blue
+	// ((210, 210, 210) light grey
+	static final Color MALE_COLOR = new Color(154, 204, 255);
+	static final Color MALE_OUTLINE_COLOR = MALE_COLOR.darker();
+	static final Color MALE_SELECTED_COLOR = Color.cyan; 
+	static final Color MALE_SELECTED_OUTLINE_COLOR = Color.BLUE; 
 
-	static final Color ROBOT_COLOR = new Color(156, 126, 9); // Color.ORANGE;//.darker();
-	static final Color ROBOT_SELECTED_COLOR = Color.yellow.darker(); // brighter
-	static final Color ROBOT_OUTLINE_COLOR = Color.yellow; // Color(210, 210, 210);
-	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_COLOR.darker();
+	
+	// 186, 129, 145 manila pink
+	static final Color ROBOT_COLOR = new Color(156, 126, 9); 
+	static final Color ROBOT_OUTLINE_COLOR = Color.ORANGE; 
+	static final Color ROBOT_SELECTED_COLOR = new Color(186, 129, 145);
+	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_SELECTED_COLOR.darker();
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -454,7 +460,7 @@ implements SettlementMapLayer {
 			if (people.contains(selectedPerson)) {
 				float originalFontSize = 10f;
 				// Draw person name.
-				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getPosition(), Color.BLACK, soColor,
+				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getPosition(), sColor.darker(), soColor,
 						originalFontSize, xoffset, 0);
 
 				originalFontSize = 8f;
@@ -463,7 +469,7 @@ implements SettlementMapLayer {
 				String taskString = "- " + Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 				if (taskString != null && !taskString.equals("")) {
 					drawPersonRobotLabel(
-						g2d, taskString, selectedPerson.getPosition(), Color.DARK_GRAY, soColor,
+						g2d, taskString, selectedPerson.getPosition(), sColor.darker(), soColor,
 						originalFontSize, xoffset, yoffset);
 				}
 				
@@ -536,7 +542,7 @@ implements SettlementMapLayer {
 				float originalFontSize = 10f;
 				if (!robot.equals(selectedRobot)) {
 					drawPersonRobotLabel(g2d, robot.getName(), robot.getPosition(),
-							ROBOT_COLOR.darker(), ROBOT_OUTLINE_COLOR, 
+							ROBOT_COLOR, ROBOT_OUTLINE_COLOR, 
 							originalFontSize, xoffset, 0);
 				}
 			}
@@ -548,7 +554,7 @@ implements SettlementMapLayer {
 			// Draw robot name.
 			drawPersonRobotLabel(
 				g2d, selectedRobot.getName(), selectedRobot.getPosition(),
-				Color.BLACK, ROBOT_SELECTED_OUTLINE_COLOR,
+				ROBOT_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 				originalFontSize, xoffset, 0);
 
 			originalFontSize = 8f;
@@ -557,7 +563,7 @@ implements SettlementMapLayer {
 			if (taskString != null && !taskString.equals(""))
 				drawPersonRobotLabel(
 					g2d, taskString, selectedRobot.getPosition(),
-					Color.DARK_GRAY, ROBOT_SELECTED_OUTLINE_COLOR,
+					ROBOT_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 					originalFontSize, xoffset, yoffset);
 
 			// Draw mission.
