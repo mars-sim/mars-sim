@@ -36,9 +36,9 @@ import java.util.logging.Logger;
  	
 	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
 
-	private static MEGDRMapReader reader;
+	private MEGDRMapReader reader;
 	
-	private transient MapData mapData = null;
+	private MapData mapData = null;
 	
  	/**
  	 * Constructor.
@@ -104,22 +104,18 @@ import java.util.logging.Logger;
  	MapData getMapData(String mapType) {
 
 		MapMetaData metaData = metaDataMap.get(mapType);
+		
  		if (metaData == null) {
 			logger.warning("Map type " + mapType + " unknown.");
 			return null;
-		};
-		
- 		MapData result = null;
- 		
+		}
+
 		if (mapData == null 
 				|| !mapData.getMetaData().getName().equals(metaData.getName())) {
 
 			try {
 				// Obtain a new MapData instance
-				result = new IntegerMapData(metaData);
-				
-				// Save the result into the mapData cache
-				this.mapData = result;
+				mapData = new IntegerMapData(metaData);
 				
 				// Patch the metadata to be locally available
 				metaData.setLocallyAvailable(true);
@@ -128,10 +124,8 @@ import java.util.logging.Logger;
 				logger.log(Level.SEVERE, "Could not find the map file.", e);
 			}
 		}
-		else
-			return mapData;
 		
-		return result;
+		return mapData;
  	}
 
 	/**

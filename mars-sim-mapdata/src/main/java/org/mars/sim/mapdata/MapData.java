@@ -69,14 +69,6 @@ import java.io.IOException;
      * @return
      */
     public MapMetaData getMetaData();
-    
-    /**
-     * Gets the unmodified cylindrical map image.
-     * 
-     * @return
-     */
- 	public BufferedImage getCylindricalMapImage();
- 	
  	
 	/**
  	 * Loads the 2-D integer map data set pixel array.
@@ -85,7 +77,7 @@ import java.io.IOException;
  	 * @return
  	 * @throws IOException
  	 */
- 	public int[][] getPixels();
+ 	public short[][] getPixels();
  	
 	
  	/**

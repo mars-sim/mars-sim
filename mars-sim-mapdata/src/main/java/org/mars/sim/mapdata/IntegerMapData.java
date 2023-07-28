@@ -50,11 +50,11 @@ import com.jogamp.opencl.CLProgram;
  	private final double RHO_DEFAULT;
 
  	// Data members.
- 	private int[][] baseMapPixels = null;
+ 	private short[][] baseMapPixels = null;
  	// # of pixels in the width of the map image
-	private int pixelWidth;
+	private short pixelWidth;
  	// # of pixels in the height of the map image
-	private int pixelHeight;
+	private short pixelHeight;
 	// height pixels divided by pi (equals to pixelHeight / Math.PI)
 	private double rho;
 	
@@ -64,14 +64,12 @@ import com.jogamp.opencl.CLProgram;
 
 	// Name of the map
 	private MapMetaData meta;
-	
-	private BufferedImage cylindricalMapImage;
 
 	private CLProgram program;
 	
 	private CLKernel kernel;
  	
-	private transient Image mapImage = null;
+	private Image mapImage = null;
 	
  	/**
  	 * Constructor.
@@ -191,13 +189,13 @@ import com.jogamp.opencl.CLProgram;
  	 * @return
  	 * @throws IOException
  	 */
- 	private int[][] loadMapData(String imageName) throws IOException {
+ 	private short[][] loadMapData(String imageName) throws IOException {
 
  		File imageFile = FileLocator.locateFile(imageName);
  		
- 		cylindricalMapImage = null;
+ 		BufferedImage cylindricalMapImage = null;
  		
- 		int[][] mapPixels = null;
+ 		short[][] mapPixels = null;
  		
 		try {
 			cylindricalMapImage = ImageIO.read(imageFile);
@@ -209,12 +207,12 @@ import com.jogamp.opencl.CLProgram;
 			final byte[] pixels = ((DataBufferByte) cylindricalMapImage.getRaster().getDataBuffer()).getData();
 //	 		int[] srcPixels = ((DataBufferInt)cylindricalMapImage.getRaster().getDataBuffer()).getData();
 
-	 		pixelWidth = cylindricalMapImage.getWidth();
-	 		pixelHeight = cylindricalMapImage.getHeight();
+	 		pixelWidth = (short)cylindricalMapImage.getWidth();
+	 		pixelHeight = (short)cylindricalMapImage.getHeight();
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		
-	 		mapPixels = new int[pixelHeight][pixelWidth];
+	 		mapPixels = new short[pixelHeight][pixelWidth];
 	 		
 	 		if (hasAlphaChannel) {
 	 			final int pixelLength = 4;
@@ -244,7 +242,7 @@ import com.jogamp.opencl.CLProgram;
 //	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
 //	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
 	 						
-	 				mapPixels[row][col] = argb;
+	 				mapPixels[row][col] = (short)argb;
 	 				col++;
 	 				if (col == pixelWidth) {
 	 					col = 0;
@@ -263,7 +261,7 @@ import com.jogamp.opencl.CLProgram;
 	 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
 	 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
 	 				
-	 				mapPixels[row][col] = argb;
+	 				mapPixels[row][col] = (short)argb;
 	 				col++;
 	 				if (col == pixelWidth) {
 	 					col = 0;
@@ -556,11 +554,11 @@ import com.jogamp.opencl.CLProgram;
 // 		return new Color(getRGBColorInt(phi, theta));
 // 	}
 // 	
- 	public BufferedImage getCylindricalMapImage() {
- 		return cylindricalMapImage;
- 	}
+// 	public BufferedImage getCylindricalMapImage() {
+// 		return cylindricalMapImage;
+// 	}
  	
- 	public int[][] getPixels() {
+ 	public short[][] getPixels() {
  		return baseMapPixels;
  	}
 
@@ -570,7 +568,6 @@ import com.jogamp.opencl.CLProgram;
 	public void destroy() {
 	 	baseMapPixels = null;
 	 	meta = null;
-		cylindricalMapImage = null;
 		program = null;
 		kernel = null;
 	}

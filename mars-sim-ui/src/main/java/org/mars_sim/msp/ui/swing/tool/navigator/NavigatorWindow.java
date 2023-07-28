@@ -791,10 +791,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 */
 	private int selectUnloadedMap(String newMapType) {
 		String def = " (Selected)";
-		
-		MapData mapData = mapDataUtil.getMapData(newMapType);
-		
-		int resolution = mapData.getMetaData().getResolution();
+
+		int resolution = mapDataUtil.getMapData(newMapType).getMetaData().getResolution();
 				
 		Object[] options = {
 				"High Resolution",

@@ -80,7 +80,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private Image mapImage;
 
-	private transient Map marsMap;
+	private Map marsMap;
 	
 	private MainDesktopPane desktop;
 
@@ -94,7 +94,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private List<MapLayer> mapLayers;
 
-	private static final MapDataUtil mapUtil = MapDataUtil.instance();
+	private final MapDataUtil mapUtil = MapDataUtil.instance();
 	
 	/**
 	 * Constructor 1.
@@ -378,13 +378,16 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			
 			mapUtil.setMapData(mapStringType, selectedMapResolution);
 			
-			MapData data = mapUtil.getMapData(mapStringType);
+			MapData mapData = mapUtil.getMapData(mapStringType);
+			
 			this.mapStringType = mapStringType;
-			if (data == null) {
+			
+			if (mapData == null) {
 				logger.warning("Map type cannot be loaded " + mapStringType);
 				return false;
 			}
-			marsMap = new CannedMarsMap(this, mapUtil.getMapData(mapStringType));
+			
+			marsMap = new CannedMarsMap(this, mapData);
 			recreateMap = true;
 		}
 			

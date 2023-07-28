@@ -101,22 +101,12 @@ public class MapMetaData {
     	else if (selectedResolution == 1) {
     		return getMidResFile();
     	}
-//    	else if (selectedResolution == 2) {
-//    		return getLoResFile();
-//    	}
-    	
+
     	return getLoResFile();
     }
     
     public String getFile() {
-    	if (selectedResolution == 0) {
-    		return getHiResFile();
-    	}
-    	else if (selectedResolution == 1) {
-    		return getMidResFile();
-    	}
-  
-    	return getLoResFile();
+    	return getFile(selectedResolution);
     }
     
     String getHiResFile() {

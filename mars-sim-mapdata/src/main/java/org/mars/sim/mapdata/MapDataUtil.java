@@ -17,14 +17,14 @@ import java.util.Collection;
 	// Singleton instance.
 	private static MapDataUtil instance;
 	
-	private static MapDataFactory mapDataFactory;
+	private MapDataFactory mapDataFactory;
  	
     /**
      * Gets the singleton instance of MapData.
      * 
      * @return instance.
      */
-    public static MapDataUtil instance() {
+    public final static MapDataUtil instance() {
         if (instance == null) {
             instance = new MapDataUtil();
         }
@@ -43,7 +43,7 @@ import java.util.Collection;
       * 
       * @return
       */
-	public MapDataFactory getMapDataFactory() {
+	public final MapDataFactory getMapDataFactory() {
      	return mapDataFactory;
  	}
  	
