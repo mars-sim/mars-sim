@@ -1809,7 +1809,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</communication>
 			<computation computing-unit="5.0" power-demand="1.0" cooling-demand=".5">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="-2.9" yloc="2.33" />
+					<activity-spot xloc="2.9" yloc="2.33" />
+					<activity-spot xloc="-2.9" yloc="-2.33" />
+					<activity-spot xloc="2.9" yloc="-2.33" />
 				</activity>
 			</computation>
 			<life-support capacity="24" power-required="0.6" />
@@ -1839,10 +1842,94 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<robotic-station capacity="4">
 				<activity>
-					<activity-spot xloc="0.0" yloc="-2.8" />
-					<activity-spot xloc="0.0" yloc="-2.6" />
-					<activity-spot xloc="0.0" yloc="2.8" />
-					<activity-spot xloc="0.0" yloc="2.6" />
+					<activity-spot xloc="-2.0" yloc="1.8" />
+					<activity-spot xloc="-2.0" yloc="-1.8" />
+					<activity-spot xloc="2.0" yloc="1.8" />
+					<activity-spot xloc="2.0" yloc="-1.8" />
+				</activity>
+			</robotic-station>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	consumption-rate="31.959" capacity="20.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end of Command and Control -->
+
+	<building type="Server Farm" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000">
+		<description>
+			The Server Farm is a computer facility providing mainframe computing resources and networking
+			nodes for colony-width connectivity.
+		</description>
+		<power-required base-power="5.0" base-power-down-power="0.5" />
+
+		<functions>
+			<administration capacity="12" population-support="16">
+				<activity>
+					<activity-spot xloc="1.56" yloc="3.33" />
+					<activity-spot xloc="1.56" yloc="2.85" />
+					<activity-spot xloc="-1.62" yloc="3.33" />
+					<activity-spot xloc="-1.62" yloc="2.85" />
+					<activity-spot xloc="1.56" yloc="-2.91" />
+
+					<activity-spot xloc="1.56" yloc="-3.37" />
+					<activity-spot xloc="-1.62" yloc="-2.91" />
+					<activity-spot xloc="-1.62" yloc="-3.37" />
+					<activity-spot xloc="-1.88" yloc="1.21" />
+					<activity-spot xloc="-1.88" yloc=".4" />
+
+					<activity-spot xloc="-1.88" yloc="-.45" />
+					<activity-spot xloc="-1.88" yloc="-1.34" />
+				</activity>
+			</administration>
+			<communication>
+				<activity>
+					<activity-spot xloc="1.75" yloc="1.4" />
+					<activity-spot xloc="1.75" yloc="-1.6" />
+				</activity>
+			</communication>
+			<computation computing-unit="30.0" power-demand="0.5" cooling-demand=".25">
+				<activity>
+					<activity-spot xloc="-2.9" yloc="2.33" />
+					<activity-spot xloc="2.9" yloc="2.33" />
+					<activity-spot xloc="-2.9" yloc="-2.33" />
+					<activity-spot xloc="2.9" yloc="-2.33" />															
+				</activity>
+			</computation>
+			<life-support capacity="24" power-required="0.6" />
+			<management capacity="12">
+				<activity>
+					<activity-spot xloc="1.32" yloc="0.92" />
+					<activity-spot xloc="1.32" yloc="0.28" />
+					<activity-spot xloc="1.32" yloc="-0.4" />
+					<activity-spot xloc="1.32" yloc="-1.08" />
+
+					<activity-spot xloc="-1.42" yloc="0.86" />
+					<activity-spot xloc="-1.42" yloc="0.26" />
+					<activity-spot xloc="-1.42" yloc="-0.4" />
+					<activity-spot xloc="-1.42" yloc="-1.08" />
+
+					<activity-spot xloc="0.42" yloc="1.92" />
+					<activity-spot xloc="-0.53" yloc="1.92" />
+					<activity-spot xloc="0.42" yloc="-2.1" />
+					<activity-spot xloc="-0.46" yloc="-2.08" />
+				</activity>
+			</management>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				fuel-type="methane"	consumption-rate="7.9897" />
+			</power-generation>
+			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<robotic-station capacity="4">
+				<activity>
+					<activity-spot xloc="-2.0" yloc="1.8" />
+					<activity-spot xloc="-2.0" yloc="-1.8" />
+					<activity-spot xloc="2.0" yloc="1.8" />
+					<activity-spot xloc="2.0" yloc="-1.8" />
 				</activity>
 			</robotic-station>
 			<thermal-generation>

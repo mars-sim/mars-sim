@@ -837,6 +837,24 @@
 			<part name="air duct" number="7" />			
 		</building>
 
+		<!-- Server Farm building project for refitting or salvaging. -->
+		<building name="Server Farm" width="7.0" length="9.0" base-level="0" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="4" frame="Medium Modular Frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="aerogel tile" number="6" />			
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="air duct" number="7" />			
+		</building>
+		
 		<!-- Large greenhouse building project for refitting or salvaging. -->
 		<building name="Large Greenhouse" width="12.0" length="18.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="4" frame="Large Greenhouse Frame" >

@@ -2772,16 +2772,24 @@ public class Settlement extends Structure implements Temporal,
 
 		double reserve = getAmountResourceStored(OXYGEN_ID);
 	
-		if (reserve + supply * pop > (MIN_OXYGEN_RESERVE + demand) * pop) {
+		if (reserve + supply * pop > (MIN_OXYGEN_RESERVE * 2 + demand) * pop) {
+//			logger.info(this, "Case 1.");
+			return;
+		}
+		
+		else if (reserve + supply * pop > (MIN_OXYGEN_RESERVE + demand) * pop) {
+//			logger.info(this, "Case 2.");
 			result = (MIN_OXYGEN_RESERVE + demand - supply) * pop - reserve;
 		}
 
-		else if (reserve + supply * pop > MIN_OXYGEN_RESERVE * pop) {
-			result = (MIN_OXYGEN_RESERVE - supply) * pop - reserve;
+		else if (.5 * (reserve + supply * pop) > (MIN_OXYGEN_RESERVE + demand) * pop) {
+//			logger.info(this, "Case 3.");
+			result = (MIN_OXYGEN_RESERVE + demand - 0.5 * supply) * pop - .5 * reserve;
 		}
 
 		else {
-			result = (MIN_OXYGEN_RESERVE + demand - supply) * pop - reserve;
+//			logger.info(this, "Case 4.");
+			result = (MIN_OXYGEN_RESERVE + demand - 0.5 * supply) * pop - .5 * reserve;
 		}
 		
 		if (result < 0)
