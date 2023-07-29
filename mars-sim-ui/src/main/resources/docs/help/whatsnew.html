@@ -8,43 +8,55 @@
 <BODY>
 <div id="my_message"><H2> What's New </H2></div>
 
-<H3> Version pre-3.6.0 (4 Jul 2023) </H3>
+<H3> Version pre-3.6.0 (28 Jul 2023) </H3>
 
 <H4>A. CORE ENGINE IMPROVEMENTS :</H4>
 <OL>
-  <LI>Crop       : Add a new category herbs. </LI>
-  <LI>Earth Time : Model using the standard Java LocalDateTime class.</LI>
-  <LI>Elevation  : Adopt higher resolution height data.</LI>  
-  <LI>Fuel       : Enable the use of methanol as fuel for vehicles.</LI>
-  <LI>Mars Time  : Model using the standard Java LocalDateTime class.</LI>
-  <LI>Mission    : Retains reference to Vehicle after Mission completed.</LI>  
-  <LI>Power      : Model nuclear reactors with more parameters.</LI>
-    
-  <LI>Resupplies : Define resupply missions with a repeating schedule.</LI>
-  <LI>Resources  : Allow alternate resources for manufacturing.</LI>
-  <LI>Settlement : Keep track of settlement preference task/mission/science modifiers. </LI>
-  <LI>Vehicle    : Enable regen braking and encapsulate propulsion calculations in motor controller class.</LI>
+  <LI>Building    : Add 2 new buildings: Server Farm and Central Hub A. </LI>
+  <LI>Computing   : Add entropy to each computing node. </LI>
+  <LI>Country     : Allow each country's names to be loaded on demand. </LI>
+  <LI>Crop        : Add a new category herbs. </LI>
+  <LI>Earth Time  : Model using the standard Java LocalDateTime class.</LI>
+  <LI>Elevation   : Adopt higher resolution height data.</LI>  
+  <LI>EVA Time    : Add scheduling EVA time to start right after sunrise.</LI>
+  <LI>Fuel        : Enable the use of methanol as fuel for vehicles.</LI>
+  <LI>History     : Add History class to tally time-dependent events.</LI>
+  <LI>Mars Time   : Model using the standard Java LocalDateTime class.</LI>
+  <LI>Mission     : Retains reference to Vehicle after Mission completed.</LI>  
+  <LI>Power       : Model nuclear reactors with more parameters.</LI>
+  <LI>Reliability : Tweak malfunction probability and rework how various factors relate to one another.</LI>	
+  <LI>Resupply    : Define resupply missions with a repeating schedule.</LI>
+  <LI>Resources   : Allow alternate resources for manufacturing.</LI>
+  <LI>Settlement  : Keep track of settlement preference task/mission/science modifiers. </LI>
+  <LI>Sites       : Use AnalyzeMapData task to discover & estimate mineral concentration of potential sites.</LI>
+  <LI>Training    : Replace hard-coded training-history-to-role mapping with external xml configuration.</LI>
+  <LI>Vehicle     : Enable regen braking and encapsulate propulsion calculations in motor controller class.</LI>
 </OL>
   
 <H4>B. UI IMPROVEMENT :</H4>
 <OL>
+  <LI>Connection : Simplify building connection definition with hatch-facing attribute.</LI>
   <LI>Events     : Events in the Monitor Window are clickable to drill down into the details of the entity.</LI>
-  <LI>Mars Map   : Use a variety of resolutions of surface maps.</LI>
+  <LI>Mars Map   : Add zooming capability, add more map types, and allow maps to have various resolutions.</LI>
+  <LI>Mineral    : Optimize mineral layer loading speed in Mars globe Navigator.</LI>
   <LI>Resupply   : Showcase resupply missions by settlements under a tree.</LI>
-  <LI>    Role   : Restore previous role if change is not confirmed.</LI>
+  <LI>Role       : Restore previous role if change is not confirmed.</LI>
+  <LI>Scenario   : Scale up default scenario to including 12 settlements.</LI>
+  <LI>Search     : Add search term history and add equipment list in Search Tool.</LI>
   <LI>Settlement : Display settlement preference task/mission/science modifiers and allow players to edit scores. </LI>
+  <LI>Splash     : Add 3 more splash pictures.</LI>
+  <LI>Template   : Add Hub Base settlement template that features a Central Hub at the center of the base. </LI>
   <LI>Vehicle    : Retain vehicle reference to completed missions.</LI>
-
+  <LI>Weather    : Correct weather icon switching in Settlement Map.</LI>
 </OL>  
 
-<H4>C. RUNTIME ENVIRONMENT :</H4>
+<H4>C. FIXES :</H4>
 <OL>
-</OL>
+	<LI>EVA Suits  : Ensure EVA suits retain in vehicle during mission.</LI>
+	<LI>Meteorites : Rework what reasonable malfunctions an meteorite impact would trigger.</LI>	
+	<LI>Social     : Avoid concurrency issue by making relationship score updating in one direction.</LI>
+	<LI>Resources  : Correct displaying amount resources stored in Inventory Tab.</LI>
 
-<H4>D. FIXES :</H4>
-<OL>
-	<LI>Resources : Correct displaying amount resources stored in Inventory Tab.</LI>
-	<LI>EVA Suits : Ensure EVA suits retain in vehicle during mission.</LI>
 <OL>
 
 <br>
