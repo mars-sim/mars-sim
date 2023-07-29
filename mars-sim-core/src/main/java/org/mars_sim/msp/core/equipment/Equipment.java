@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -480,6 +482,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			if (destination.getUnitType() == UnitType.MARS) {
 				// do nothing. mars surface currently doesn't track equipment
 				canStore = true;
+			}
+			else if (destination.getUnitType() == UnitType.BUILDING) {
+				// Turn a building destination to a settlement to avoid 
+				// casting issue with making containerUnit a building instance
+				destination = (((Building)destination)).getSettlement();
 			}
 			else {
 				canStore = ((EquipmentOwner)destination).addEquipment(this);

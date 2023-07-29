@@ -1209,6 +1209,9 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
 				transferred = ((Building)destination).getSettlement().addRobotsWithin(this);
+				// Turn a building destination to a settlement to avoid 
+				// casting issue with making containerUnit a building instance
+				destination = (((Building)destination)).getSettlement();
 			}
 
 			if (!transferred) {

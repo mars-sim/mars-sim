@@ -2092,6 +2092,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
 				transferred = ((Building)destination).getSettlement().addPeopleWithin(this);
+				// turn a building destination to a settlement to avoid 
+				// many casting issue with the containerUnit being a building
+				destination = (((Building)destination)).getSettlement();
 			}
 
 			if (!transferred) {
