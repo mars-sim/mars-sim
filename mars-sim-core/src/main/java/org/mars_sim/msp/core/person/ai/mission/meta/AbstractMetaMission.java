@@ -27,12 +27,12 @@ import org.mars_sim.msp.core.time.MasterClock;
  */
 public class AbstractMetaMission implements MetaMission {
 
-	protected static final String GOODS = "Goods";
-	protected static final String LEADER = "Leader";
-	protected static final String SETTLEMENT_POPULATION = "Settlement Population";
-	protected static final String PERSON_EXTROVERT = "Person Extrovert";
-	protected static final String OVER_CROWDING = "Over Crowding";
-
+	protected static final String GOODS = "goods";
+	protected static final String LEADER = "leader";
+	protected static final String SETTLEMENT_POPULATION = "population";
+	protected static final String PERSON_EXTROVERT = "extrovert";
+	protected static final String OVER_CROWDING = "crowding";
+	protected static final String MINERALS = "minerals";
 
 	private static MasterClock masterClock;
 	private static MissionManager missionMgr;

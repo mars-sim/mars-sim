@@ -115,7 +115,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
 					// Modify if construction is the person's favorite activity.
 					if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-						missionProbability.addModifier("Favourite", 1.1D);
+						missionProbability.addModifier("favourite", 1.1D);
 					}
 				}
 	

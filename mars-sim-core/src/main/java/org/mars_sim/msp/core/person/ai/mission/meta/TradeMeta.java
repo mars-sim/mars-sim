@@ -120,12 +120,12 @@ public class TradeMeta extends AbstractMetaMission {
 		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
-		missionProbability.addModifier("Mission Ratio", settlement.getNumCitizens() / f1 / f2 / 2D);
+		missionProbability.addModifier("missionratio", settlement.getNumCitizens() / f1 / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 		if (crowding > 0) {
-			missionProbability.addModifier("Over Crowding", (crowding + 1));
+			missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
 		}
 
 		return missionProbability;

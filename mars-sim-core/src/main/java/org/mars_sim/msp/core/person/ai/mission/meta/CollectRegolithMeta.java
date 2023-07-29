@@ -64,7 +64,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 				if (missionProbability.getScore() == 0) {
 	    			return missionProbability;
 	    		}
-	    		missionProbability.addModifier("Regolith", (settlement.getRegolithProbabilityValue() / VALUE));
+	    		missionProbability.addModifier(MINERALS, (settlement.getRegolithProbabilityValue() / VALUE));
 
 				// Job modifier.
 	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));

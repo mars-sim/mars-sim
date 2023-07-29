@@ -55,7 +55,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                     return Rating.ZERO_RATING;  
                 
                 missionProbability = new Rating(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
-                missionProbability.addModifier("Stranded People", 
+                missionProbability.addModifier("stranded", 
                                     RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget));                  
             }
             else {

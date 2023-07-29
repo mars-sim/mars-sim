@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta extends AbstractMetaMission {
 
+
 	private static final double VALUE = 200D;
 
 	/** starting sol for this mission to commence. */
@@ -64,7 +65,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 				if (missionProbability.getScore() == 0) {
 					return missionProbability;
 				}
-	    		missionProbability.addModifier("Ice", (settlement.getIceProbabilityValue() / VALUE));
+	    		missionProbability.addModifier(MINERALS, (settlement.getIceProbabilityValue() / VALUE));
 
 				// Job modifier.
 	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));

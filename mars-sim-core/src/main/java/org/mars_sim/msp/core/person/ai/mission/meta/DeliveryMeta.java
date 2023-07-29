@@ -127,7 +127,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		
 		int f2 = 2 * numThisMission + 1;
 		
-		missionProbability.addModifier("Citizen Ratio", settlement.getNumCitizens() / f2 / 2D);
+		missionProbability.addModifier("citizen", settlement.getNumCitizens() / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

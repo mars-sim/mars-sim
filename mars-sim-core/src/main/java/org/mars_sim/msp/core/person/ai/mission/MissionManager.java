@@ -205,7 +205,7 @@ public class MissionManager implements Serializable {
 					double settlementRatio = startingSettlement.getPreferenceModifier(
 										new PreferenceKey(PreferenceKey.Type.MISSION,
 														metaMission.getType().name()));
-					baseProb.addModifier("Settlement Ratio", settlementRatio);
+					baseProb.addModifier("settlementratio", settlementRatio);
 
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
 							+ "' score: " + baseProb.getOutput());
@@ -242,7 +242,7 @@ public class MissionManager implements Serializable {
 			throw new IllegalStateException(person + " could not determine a new mission.");
 		}
 
-		RatingLog.logSelectedRating("Mission", person.getName(),
+		RatingLog.logSelectedRating("missionstart", person.getName(),
 						selectedMetaMission, missionProbCache);
 		// Construct the mission and needs a review
 		result = selectedMetaMission.constructInstance(person, true);

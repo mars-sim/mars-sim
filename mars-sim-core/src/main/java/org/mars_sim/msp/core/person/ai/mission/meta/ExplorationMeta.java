@@ -78,7 +78,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
-					missionProbability.addModifier("Mineral Values", Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE);
+					missionProbability.addModifier(MINERALS, Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE);
 				}
 
 				// Job modifier.

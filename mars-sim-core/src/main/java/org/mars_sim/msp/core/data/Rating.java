@@ -77,6 +77,7 @@ public class Rating implements Serializable {
         modifiers.put(name, value);
         score *= value;
     }
+    
     /**
      * Recalculate the score by multiplying the base with the known modifiers.
      * @param base New base score.

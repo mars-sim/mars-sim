@@ -79,7 +79,7 @@ public class MiningMeta extends AbstractMetaMission {
 
 				if (rover != null) {
 					// Find best mining site.
-					missionProbability.addModifier("Mining Maturity",
+					missionProbability.addModifier("miningmaturity",
 										Mining.getMatureMiningSitesTotalScore(rover, settlement));
 				}
 
