@@ -356,7 +356,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		addExperience(observingTime);
 
 		// Check for lab accident.
-		checkForAccident(observatory.getBuilding(), 0.005D, time);
+		checkForAccident(observatory.getBuilding(), time, 0.002);
 
 		return 0D;
 	}

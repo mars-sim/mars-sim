@@ -6,20 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Administration;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * This class is a task for investigating what system to optimize.
@@ -28,6 +24,9 @@ public class OptimizeSystem extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(OptimizeSystem.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
@@ -40,8 +39,12 @@ public class OptimizeSystem extends Task {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-	/** The administration building the person is using. */
-	private Administration office;
+	private double FACTOR = .01;
+
+	private double totalEntropyReduce;
+	
+	/** The computing node. */
+	private Computation node;
 
 	public RoleType roleType;
 
@@ -52,47 +55,24 @@ public class OptimizeSystem extends Task {
 	 */
 	public OptimizeSystem(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(20));
+		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(30));
 
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
-			if (officeBuilding != null) {
+			node = person.getSettlement().getBuildingManager().getMostEntropyComputingNodeByProbability();
+			if (node != null) {
+				Building building = node.getBuilding();
 				// Walk to the office building.
-				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
-				office = officeBuilding.getAdministration();
-				if (!office.isFull()) {
-					office.addStaff();
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
-				}
+				walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.COMPUTATION, false);
 			}
-			else {
-				Building building = getAvailableBuildingSpot(person, FunctionType.POWER_GENERATION);
-				// Walk to that building.
-				walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.POWER_GENERATION, true);
-	
-			}
+
 			// Initialize phase
 			addPhase(OPTIMIZING_SYSTEM);
 			setPhase(OPTIMIZING_SYSTEM);
-			
-		} else if (person.isInVehicle()) {
-
-			if (person.getVehicle() instanceof Rover) {
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-			
-				// Initialize phase
-				addPhase(OPTIMIZING_SYSTEM);
-				setPhase(OPTIMIZING_SYSTEM);
-			}
 		}
-
-		else {
+		else
 			endTask();
-		}
-
 	}
 
 	@Override
@@ -113,7 +93,22 @@ public class OptimizeSystem extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double optimizingPhase(double time) {
-		return 0;
+		if (isDone() || getTimeCompleted() + time > getDuration()) {
+			logger.info(person, "totalEntropyReduce: " + Math.round(totalEntropyReduce * 1000.0)/1000.0);
+        	// this task has ended
+			endTask();
+			return time;
+		}
+		
+		totalEntropyReduce += node.reduceEntropy(time * FACTOR);	
+
+		// Add experience
+		addExperience(time);
+
+		// Check for accident in kitchen.
+		checkForAccident(node.getBuilding(), time, 0.001);
+		
+		return time;
 	}
 
 	/**
@@ -124,27 +119,27 @@ public class OptimizeSystem extends Task {
 		// nothing.
 	}
 
-	/**
-	 * Gets an available building with a function type.
-	 * 
-	 * @param person
-	 * @return
-	 */
-	public static Building getAvailableBuildingSpot(Person person, FunctionType functionType) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with a function type.
-		if (person.isInSettlement()) {
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT, functionType); 
-			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
-			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
-
-			if (bldgs.size() > 0) {
-				Map<Building, Double> selectedBldgs = BuildingManager.getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-			}
-		}
-
-		return result;
-	}
+//	/**
+//	 * Gets an available building with a function type.
+//	 * 
+//	 * @param person
+//	 * @return
+//	 */
+//	public static Building getAvailableBuildingSpot(Person person, FunctionType functionType) {
+//		Building result = null;
+//
+//		// If person is in a settlement, try to find a building with a function type.
+//		if (person.isInSettlement()) {
+//			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT, functionType); 
+//			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
+//			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
+//
+//			if (bldgs.size() > 0) {
+//				Map<Building, Double> selectedBldgs = BuildingManager.getBestRelationshipBuildings(person, bldgs);
+//				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
+//			}
+//		}
+//
+//		return result;
+//	}
 }

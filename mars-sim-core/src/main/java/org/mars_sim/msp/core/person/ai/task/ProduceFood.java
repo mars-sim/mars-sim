@@ -558,7 +558,7 @@ public class ProduceFood extends Task {
 		addExperience(time);
 
 		// Check for accident in foodFactory.
-		checkForAccident(foodFactory.getBuilding(), 0.005D, time);
+		checkForAccident(foodFactory.getBuilding(), time, 0.003);
 		
 		return 0D;
 	}

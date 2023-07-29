@@ -323,7 +323,7 @@ public class TreatMedicalPatient extends Task {
         }
 
         // Check for accident in medical aid.
-        checkForAccident(entity, 0.005D, time);
+        checkForAccident(entity, time, 0.005);
 
         treatmentTime += time;
         if (treatmentTime >= duration) {

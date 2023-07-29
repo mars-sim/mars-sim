@@ -345,7 +345,7 @@ public class SelfTreatHealthProblem extends Task {
         }
 
         // Check for accident in medical aid.
-        checkForAccident(getMalfunctionable(), 0.005D, time);
+        checkForAccident(getMalfunctionable(), time, 0.005);
 
         treatmentTime += time;
         if (treatmentTime >= duration) {

@@ -152,7 +152,7 @@ public class SalvageGood extends Task {
 		addExperience(time);
 
 		// Check for accident in workshop.
-		checkForAccident(entity, 0.005D, time);
+		checkForAccident(entity, time, 0.005);
 
 		return 0D;
 	}

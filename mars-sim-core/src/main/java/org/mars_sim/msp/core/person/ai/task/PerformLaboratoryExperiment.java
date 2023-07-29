@@ -487,7 +487,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         addExperience(time);
 
         // Check for lab accident.
-        checkForAccident(malfunctions, 0.005D, time);
+        checkForAccident(malfunctions, time, 0.002);
 
         return remainingTime;
     }

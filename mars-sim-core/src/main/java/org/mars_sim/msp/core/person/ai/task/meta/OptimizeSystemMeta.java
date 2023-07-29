@@ -1,23 +1,23 @@
 /*
  * Mars Simulation Project
  * OptimizeSystem.java
- * @date 2022-08-01
+ * @date 2023-07-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.OptimizeSystem;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Meta task for the OptimizeSystem task.
@@ -25,18 +25,18 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class OptimizeSystemMeta extends FactoryMetaTask {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(OptimizeSystemMeta.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(OptimizeSystemMeta.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
 
-	private static final double FACTOR = 1D;
+	private static final int FACTOR = 200;
 	
     public OptimizeSystemMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.ACADEMIC);
-		setPreferredJob(JobType.MECHANICS);
+		setPreferredJob(JobType.SOFTWARE);
     }
     
 	@Override
@@ -51,7 +51,20 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 		if (person.isInSettlement()) {
             
 			try {
-				result += 10;
+				
+				// Compute total entropy
+				result = person.getSettlement().getBuildingManager().
+						getTotalEntropy() * FACTOR;
+								
+				if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
+	            	result *= 1.5D;
+	            
+	            if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
+	            	result *= 1.5D;
+	            
+	            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
+	            	result *= 1.25D;
+				
 		        
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "getProbability()", e);
@@ -60,14 +73,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			result *= getPersonModifier(person);
 		}
 
+//		logger.info(person, "OptimizeSystemMeta: " + Math.round(result * 10.0)/10.0);
 		return result;
 	}
-
-
-	public double getSettlementProbability(Settlement settlement) {
-		double result = 0D;
-		return result;
-	}
-	
-
 }

@@ -481,7 +481,7 @@ implements ResearchScientificStudy {
         addExperience(time);
 
         // Check for lab accident.
-        checkForAccident(malfunctions, 0.001D, time);
+        checkForAccident(malfunctions, time, 0.001);
 
         return remainingTime;
     }

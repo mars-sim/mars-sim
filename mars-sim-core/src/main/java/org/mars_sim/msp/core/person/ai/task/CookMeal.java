@@ -219,7 +219,7 @@ public class CookMeal extends Task {
 		addExperience(time);
 
 		// Check for accident in kitchen.
-		checkForAccident(kitchenBuilding, time, 0.005);
+		checkForAccident(kitchenBuilding, time, 0.003);
 
 		if (nameOfMeal != null) {
 			lastCookedMeal = nameOfMeal;

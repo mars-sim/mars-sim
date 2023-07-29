@@ -180,7 +180,7 @@ public class MaintainBuilding extends Task  {
 		addExperience(time);
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(entity, time, 0.005D);
+		checkForAccident(entity, time, 0.005);
 
 		return remainingTime;
 	}

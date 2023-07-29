@@ -2127,7 +2127,106 @@ public class BuildingManager implements Serializable {
 		}
 		return units;
 	}
+
+	/**
+	 * Gets the sum of all computing resources in a settlement.
+	 * 
+	 * @return
+	 */
+	public String displayComputingResources() {
+		double max = 0;
+		double units = 0;
+		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return "";
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			units += node.getComputingUnit();
+			max += node.getPeakComputingUnit();
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(Math.round(units *100.0)/100.0)
+		.append(" / ")
+		.append(Math.round(max *100.0)/100.0);
+		
+		return sb.toString();
+	}
 	
+	/**
+	 * Gets total entropy of all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getTotalEntropy() {
+		double entropy = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			entropy += node.getEntropy();
+		}
+		return entropy;
+	}
+	
+	
+	/**
+	 * Gets a computing node for having the worst entropy.
+	 * 
+	 * @return
+	 */
+	public Computation getMostEntropyComputingNode() {
+		double highestEntropy = Integer.MIN_VALUE;
+		Computation worstNode = null;
+		
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		
+		if (nodeBldgs.isEmpty())
+			return null;
+		
+		for (Building b: nodeBldgs) {
+			Computation cNode = b.getComputation();
+			double entropy = cNode.getEntropy();
+			if (highestEntropy < entropy) {
+				highestEntropy = entropy;
+				worstNode = cNode;
+			}
+		}
+				
+		return worstNode;
+	}
+	
+	/**
+	 * Gets a computing node for having the worst entropy by probability.
+	 * 
+	 * @return
+	 */
+	public Computation getMostEntropyComputingNodeByProbability() {
+		Map<Computation, Double> scores = new HashMap<>();
+		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return null;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			double entropy = node.getEntropy();
+			scores.put(node, entropy);
+		}
+		if (scores.isEmpty())
+			return null;
+				
+		Map.Entry<Computation, Double> maxEntry = null; 
+		for (Entry<Computation, Double> entry : scores.entrySet()) {
+			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+		        maxEntry = entry;
+		    }
+		}
+		
+		if (maxEntry != null)
+			return maxEntry.getKey();
+				
+		return null;
+	}
 	
 	/**
 	 * Gets a computing center for having the most free resources.
@@ -2290,24 +2389,31 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
-	public static Building getAvailableKitchen(Unit unit, FunctionType functionType) {
-		Building result = null;
-
-		if (unit.isInSettlement()) {
-			BuildingManager manager = unit.getSettlement().getBuildingManager();
+	/**
+	 * Gets an available kitchen for a worker.
+	 * 
+	 * @param worker
+	 * @param functionType
+	 * @return
+	 */
+	public static Building getAvailableKitchen(Worker worker, FunctionType functionType) {
+		Building result = null;		
+		
+		if (worker.isInSettlement()) {
+			BuildingManager manager = worker.getSettlement().getBuildingManager();
 			Set<Building> kitchenBuildings = manager.getBuildingSet(functionType)
 					.stream()
-					.filter(b -> b.getZone() == unit.getBuildingLocation().getZone()
+					.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 			
 			kitchenBuildings = PrepareDessert.getKitchensNeedingCooks(kitchenBuildings);
 			
-			if (UnitType.PERSON == unit.getUnitType()) {
+			if (UnitType.PERSON == worker.getUnitType()) {
 				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
 
 				if (kitchenBuildings.size() > 0) {
-					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)unit, kitchenBuildings);
+					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)worker, kitchenBuildings);
 					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 				}
 			} 
@@ -2324,6 +2430,7 @@ public class BuildingManager implements Serializable {
 
 		return result;
 	}
+
 	
 	/**
 	 * Gets an available building with the admin function.

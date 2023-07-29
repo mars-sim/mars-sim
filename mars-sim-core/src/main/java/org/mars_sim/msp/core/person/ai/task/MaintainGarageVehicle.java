@@ -209,7 +209,7 @@ public class MaintainGarageVehicle extends Task {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(vehicle, 0.001D, time);
+		checkForAccident(vehicle, time, 0.001);
 
 		return 0;
 	}

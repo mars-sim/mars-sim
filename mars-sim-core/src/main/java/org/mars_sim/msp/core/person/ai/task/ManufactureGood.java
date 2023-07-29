@@ -413,7 +413,7 @@ public class ManufactureGood extends Task {
 		addExperience(time);
 
 		// Check for accident in workshop.
-		checkForAccident(entity, 0.005D, time);
+		checkForAccident(entity, time, 0.004);
 
 		
 		return 0D;

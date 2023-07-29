@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.job.util;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.mars.sim.tools.Msg;
@@ -37,8 +38,19 @@ public enum JobType {
 	TRADER				(Msg.getString("JobType.Trader")), //$NON-NLS-1$
 	;
 
+	
 	/**
-	 * That have an academic background
+	 * Those having experiences with configuring software.
+	 */
+	public static final Set<JobType> SOFTWARE =
+				Set.of(JobType.ASTRONOMER,
+						JobType.COMPUTER_SCIENTIST,
+						JobType.ENGINEER,
+						JobType.MATHEMATICIAN,	
+						JobType.PHYSICIST);
+	
+	/**
+	 * Those having an academic background.
 	 */
 	public static final Set<JobType> ACADEMICS =
 				Set.of(JobType.AREOLOGIST,
@@ -55,39 +67,38 @@ public enum JobType {
 						JobType.PSYCHOLOGIST);
 
 	/**
-	 * That have are loaders
+	 * Those who are loaders.
 	 */
 	public static final Set<JobType> LOADERS =
 				Set.of(JobType.ENGINEER,
-								JobType.PILOT,
-								JobType.TECHNICIAN,
-								JobType.TRADER);
+						JobType.PILOT,
+						JobType.TECHNICIAN,
+						JobType.TRADER);
 	/**
-	 * That have an medical background
+	 * Those having an medical background.
 	 */
 	public static final Set<JobType> MEDICS =
 				Set.of(JobType.DOCTOR,
-								JobType.PSYCHOLOGIST);
+						JobType.PSYCHOLOGIST);
 	/**
-	 * That have an mechanics background
+	 * Those having an mechanics background.
 	 */
 	public static final Set<JobType> MECHANICS =
 				Set.of(JobType.ENGINEER,
-								JobType.PILOT,
-								JobType.TECHNICIAN);
+						JobType.PILOT,
+						JobType.TECHNICIAN);
 	/**
-	 * That are used Lab aware
+	 * Those in need of using a lab.
 	 */
 	public static final Set<JobType> SCIENTISTS =
 				Set.of(JobType.AREOLOGIST,
-								JobType.ASTRONOMER,
-								JobType.BIOLOGIST,
-								JobType.BOTANIST,
-								JobType.CHEMIST,
-								JobType.COMPUTER_SCIENTIST,
-								JobType.PHYSICIST
-								);
-
+						JobType.ASTRONOMER,
+						JobType.BIOLOGIST,
+						JobType.BOTANIST,
+						JobType.CHEMIST,
+						JobType.COMPUTER_SCIENTIST,
+						JobType.PHYSICIST
+						);
 
 	private String name;
 

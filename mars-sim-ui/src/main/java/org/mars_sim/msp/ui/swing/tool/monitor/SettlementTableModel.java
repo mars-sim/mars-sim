@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 @SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel<Settlement> {
 
-	private static final Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
+//	private static final Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -84,7 +83,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		columnTypes[MISSION] = Integer.class;
 		
 		columnNames[COMPUTING_UNIT] = "CU(s)";
-		columnTypes[COMPUTING_UNIT] = Double.class;
+		columnTypes[COMPUTING_UNIT] = String.class;
 
 		columnNames[POWER_GEN] = "kW Gen";
 		columnTypes[POWER_GEN] = Double.class;
@@ -225,7 +224,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				break;
 
 			case COMPUTING_UNIT: 
-				result = settle.getBuildingManager().getAllComputingResources();
+				result = settle.getBuildingManager().displayComputingResources();
 				break;
 				
 			case POWER_GEN: 

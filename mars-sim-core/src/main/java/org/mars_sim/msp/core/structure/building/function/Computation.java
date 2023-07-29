@@ -298,14 +298,19 @@ public class Computation extends Function {
 	 * 
 	 * @param value
 	 */
-	public void reduceEntropy(double value) {
-		entropy -= value;
-		
+	public double reduceEntropy(double value) {
+		double diff = entropy - value;
+	
 		// Note that entropy can become negative
 		// This means that the system has been tuned up
 		// to perform very well
-		if (entropy < - .5 * maxEntropy)
+		if (entropy - diff < - .5 * maxEntropy) {
+			double oldEntropy = entropy;
 			entropy = - .5 * maxEntropy;
+			return entropy - oldEntropy;
+		}
+			
+		return diff;
 	}
 	
 	/**

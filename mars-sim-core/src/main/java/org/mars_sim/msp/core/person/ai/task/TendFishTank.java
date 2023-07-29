@@ -195,7 +195,7 @@ public class TendFishTank extends Task {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(building, time, 0.005D);
+		checkForAccident(building, time, 0.003);
 
 		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
