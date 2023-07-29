@@ -61,13 +61,14 @@ extends Task {
     
     /**
      * Constructor.
+     * 
      * @param person the person performing the task.
      * @throws Exception if error constructing the class.
      */
     public CompileScientificStudyResults(Person person) {
         // Use task constructor. Skill determined by Study
         super(NAME, person, true, false,
-                STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
+                STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(20, 50));
         
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
@@ -123,12 +124,13 @@ extends Task {
 
     /**
      * Determines the scientific study that will be compiled.
+     * 
      * @return study or null if none available.
      */
     public ScientificStudy determineStudy() {
         ScientificStudy result = null;
 
-        List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+        List<ScientificStudy> possibleStudies = new ArrayList<>();
 
         // Add primary study if in paper phase.
         ScientificStudy primaryStudy = person.getStudy();
@@ -161,6 +163,7 @@ extends Task {
 
     /**
      * Gets the field of science that the researcher is involved with in a study.
+     * 
      * @return the field of science or null if researcher is not involved with study.
      */
     public ScienceType getScience() {
@@ -173,6 +176,7 @@ extends Task {
 
     /**
      * Gets the effective compilation time based on the person's science skill.
+     * 
      * @param time the real amount of time (millisol) for result data compilation.
      * @return the effective amount of time (millisol) for result data compilation.
      */
@@ -205,6 +209,7 @@ extends Task {
 
     /**
      * Performs the data results compilation phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.

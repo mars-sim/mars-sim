@@ -30,12 +30,19 @@ public class Computation extends Function {
 	private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
 	
 	// Configuration properties
+	private static final double ENTROPY_FACTOR = .001;
+	
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
 	private static final String COOLING_DEMAND = "cooling-demand";
-	
+
+	/** The amount of entropy in the system. */
+	private final double maxEntropy;
 	/** The peak amount of computing resources [in CUs]. */
-	private double peakCU;
+	private final double peakCU;
+	
+	/** The amount of entropy in the system. */
+	private double entropy;
 	/** The amount of computing resources currently available [in CUs]. */
 	private double computingUnit;
 	/** The power load in kW for each running CU [in kW/CU]. */
@@ -61,6 +68,8 @@ public class Computation extends Function {
 		super(FunctionType.COMPUTATION, spec, bldg);
 		
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
+		maxEntropy = peakCU;
+		
 		computingUnit = peakCU; 
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND);
 		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
@@ -193,6 +202,9 @@ public class Computation extends Function {
 				existing = todayDemand.get(sol);
 			}
 			todayDemand.put(sol, existing + needed);
+			
+			// Increase the entropy
+			this.increaseEntropy(needed * ENTROPY_FACTOR);
 		}
 
 		return true;
@@ -262,6 +274,9 @@ public class Computation extends Function {
 			
 			score += available;
 		}
+		
+		score = score * getEntropyPenalty();
+		
 		return score;
 	}
 	
@@ -279,6 +294,36 @@ public class Computation extends Function {
 	}
 
 	/**
+	 * Reduces the entropy.
+	 * 
+	 * @param value
+	 */
+	public void reduceEntropy(double value) {
+		entropy -= value;
+		
+		// Note that entropy can become negative
+		// This means that the system has been tuned up
+		// to perform very well
+		if (entropy < - .5 * maxEntropy)
+			entropy = - .5 * maxEntropy;
+	}
+	
+	/**
+	 * Increases the entropy.
+	 * 
+	 * @param value
+	 */
+	public void increaseEntropy(double value) {
+		entropy += value;
+		
+		if (entropy > maxEntropy) {
+			// This will trigger system crash and will need longer time to reconfigure
+			
+			entropy = maxEntropy;
+		}
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param deltaTime amount of time passing (in millisols)
@@ -289,6 +334,18 @@ public class Computation extends Function {
 		if (valid) {
 	
 			int msol = pulse.getMarsTime().getMillisolInt();
+			
+			boolean newMsol = pulse.isNewMSol();
+			
+			if (newMsol) {
+				entropy += pulse.getElapsed() * ENTROPY_FACTOR;
+				if (entropy > maxEntropy) {
+					// This will trigger system crash and need longer time to reconfigure
+					
+					entropy = maxEntropy;
+				}
+			}
+			
 			double newDemand = 0;
 			
 			// Delete past demand on previous sol
@@ -327,6 +384,25 @@ public class Computation extends Function {
 		return (peakCU - computingUnit)/peakCU * 100.0;
 	}
 	
+	
+	/**
+	 * Gets the penalty factor due to entropy.
+	 * 
+	 * @return
+	 */
+	public double getEntropyPenalty() {
+		return 1 - entropy / maxEntropy;
+	}
+	
+	/**
+	 * Gets the current entropy.
+	 * 
+	 * @return
+	 */
+	public double getEntropy() {
+		return entropy;
+	}
+	
 	/**
 	 * Gets the amount of power required, based on the current load.
 	 *
@@ -336,6 +412,8 @@ public class Computation extends Function {
 	public double getFullPowerRequired() {
 		double load = peakCU - computingUnit;
 		double nonLoad = computingUnit;
+		// Note: Should entropy also increase the power required to run the node ?
+		// When entropy is negative, it should reduce or save power
 		return (load + NON_LOAD_KW * nonLoad) * combinedkW;
 	}
 	

@@ -27,11 +27,14 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 
 	private static final String COMPUTING_ICON = "computing";
 
-	private JLabel textField0;
-	private JLabel textField1;
-	private JLabel textField2;
+	private JLabel powerDemandLabel;
+	private JLabel percentUsageLabel;
+	private JLabel cULabel;
+	private JLabel entropyLabel;
+	
 	/**
 	 * Constructor.
+	 * 
 	 * @param computation the computation building function.
 	 * @param desktop the main desktop.
 	 */
@@ -52,26 +55,31 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		AttributePanel springPanel = new AttributePanel(3);
+		AttributePanel springPanel = new AttributePanel(4);
 		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Demand
 		double powerDemand = building.getComputation().getFullPowerRequired();
-		textField0 = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerDemand"),
+		powerDemandLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.powerDemand"),
 				     StyleManager.DECIMAL_KW.format(powerDemand), Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
 
 		// Usage
 		double usage = building.getComputation().getUsagePercent();
-		textField1 = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
+		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
 					 			StyleManager.DECIMAL_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
 		// Peak
-		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
+		double peak = Math.round(building.getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
 		// Current
-		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
+		double computingUnit = Math.round(building.getComputation().getComputingUnit() * 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
-		textField2 = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
+		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
+	
+		// Entropy
+		double entropy = building.getComputation().getEntropy();
+		entropyLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.entropy"),
+	 			Math.round(entropy * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelComputation.entropy.tooltip"));
 	}
 	
 	@Override
@@ -79,18 +87,30 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 
 		String power = StyleManager.DECIMAL_KW.format(building.getComputation().getFullPowerRequired());
 
-		if (!textField0.getText().equalsIgnoreCase(power))
-			textField0.setText(power);
+		if (!powerDemandLabel.getText().equalsIgnoreCase(power))
+			powerDemandLabel.setText(power);
 		
-		double util =building.getComputation().getUsagePercent();
-		textField1.setText(StyleManager.DECIMAL_PERC.format(util));
+		double util = building.getComputation().getUsagePercent();
+		percentUsageLabel.setText(StyleManager.DECIMAL_PERC.format(util));
 		
 		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
 
 		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
-		if (!textField2.getText().equalsIgnoreCase(text))
-			textField2.setText(text);
+		if (!cULabel.getText().equalsIgnoreCase(text))
+			cULabel.setText(text);
 		
+		String entropy = Math.round(building.getComputation().getEntropy() * 1_000.0)/1_000.0 + "";
+		
+		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
+			entropyLabel.setText(entropy);
+	}
+	
+	@Override
+	public void destroy() {
+		powerDemandLabel = null;
+		percentUsageLabel = null;
+		cULabel = null;
+		entropyLabel = null;
 	}
 }

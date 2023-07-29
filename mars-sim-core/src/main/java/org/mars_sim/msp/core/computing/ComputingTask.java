@@ -1,12 +1,14 @@
 /*
  * Mars Simulation Project
  * ComputingTask.java
- * @date 2022-07-11
+ * @date 2023-07-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.computing;
 
-public class ComputingTask {
+import java.io.Serializable;
+
+public class ComputingTask implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
