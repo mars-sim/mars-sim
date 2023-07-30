@@ -147,8 +147,7 @@ public class Computation extends Function {
 	public double getCoolingDemand() {;
 		return coolingDemand;
 	}
-	
-	
+
 	/**
 	 * Schedules for a computing tasks.
 	 * 

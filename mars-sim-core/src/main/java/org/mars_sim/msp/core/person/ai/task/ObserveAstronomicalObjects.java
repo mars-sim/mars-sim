@@ -277,52 +277,20 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
-        int msol = getMarsTime().getMillisolInt();
-        
-        boolean successful = false; 
-        
-        if (computingNeeded > 0) {
-        	double workPerMillisol = 0; 
- 
-        	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
-        	}
-        	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
-        	}
-
-        	// Submit request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager()
-        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	if (center != null) {
-        		if (computingNeeded <= seed)
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-        		else
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	}
-	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
-        	
-        	if (successful) {
-        		if (computingNeeded <= seed)
-        			computingNeeded = computingNeeded - workPerMillisol;
-        		else
-        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
-        		if (computingNeeded < 0) {
-        			computingNeeded = 0; 
-        		}
-          	}
-	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
-	    	}
-        }
-        else if (computingNeeded <= 0) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
-    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
-        	endTask();
-        }
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
         
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);

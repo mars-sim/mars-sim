@@ -2229,6 +2229,60 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Accesses the computing nodes.
+	 * 
+	 * @param person
+	 * @param computingNeeded
+	 * @param time
+	 * @param seed
+	 * @param msol
+	 * @param duration
+	 * @param taskName
+	 * @return
+	 */
+	public double accessNode(Person person, double computingNeeded, double time, double seed,
+			int msol, double duration, String taskName) {
+		
+		boolean successful = false; 
+
+        	double workPerMillisol = 0; 
+ 
+        	if (computingNeeded <= seed) {
+        		workPerMillisol = time * computingNeeded;
+        	}
+        	else {
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        	}
+
+        	// Submit request for computing resources
+    	Computation center = person.getAssociatedSettlement().getBuildingManager()
+    			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + duration));
+    	if (center != null) {
+    		if (computingNeeded <= seed)
+    			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
+    		else
+    			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + duration));
+    	}
+    	else
+    		logger.info(person, 30_000L, "No computing centers available for " + taskName + ".");
+    	
+    	if (successful) {
+    		if (computingNeeded <= seed)
+    			computingNeeded = computingNeeded - workPerMillisol;
+    		else
+    			computingNeeded = computingNeeded - workPerMillisol * duration;
+    		if (computingNeeded < 0) {
+    			computingNeeded = 0; 
+    		}
+      	}
+    	else {
+    		logger.info(person, 30_000L, "No computing resources for " + taskName + ".");
+    	}
+
+		return computingNeeded;
+	}
+	
+	/**
 	 * Gets a computing center for having the most free resources.
 	 * 
 	 * @param need CU(s) per millisol
@@ -2250,6 +2304,8 @@ public class BuildingManager implements Serializable {
 		if (scores.isEmpty())
 			return null;
 				
+		// Note: may switch to a probability selection
+		
 		Map.Entry<Computation, Double> maxEntry = null; 
 		for (Entry<Computation, Double> entry : scores.entrySet()) {
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {

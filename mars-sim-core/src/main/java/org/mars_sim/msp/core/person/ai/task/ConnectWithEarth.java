@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -143,61 +142,24 @@ public class ConnectWithEarth extends Task {
 	private double connectingEarth(double time) {
 		double remainingTime = 0;
 		
-		if (isDone()) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
 			endTask();
 			return time;
 		}
 		
-		int msol = getMarsTime().getMillisolInt();       
-        boolean successful = false; 
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
 
-        if (computingNeeded > 0) {
-        	double workPerMillisol = 0; 
- 
-        	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
-        	}
-        	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
-        	}
-
-        	// Submit request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager()
-        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	if (center != null) {
-        		if (computingNeeded <= seed)
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-        		else
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	}
-	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for " + connection.getName() + ".");
-        	
-        	if (successful) {
-        		if (computingNeeded <= seed)
-        			computingNeeded = computingNeeded - workPerMillisol;
-        		else
-        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
-        		if (computingNeeded < 0) {
-        			computingNeeded = 0; 
-        		}
-          	}
-	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for " + connection.getName() + ".");
-	    	}
-        }
-        else if (computingNeeded <= 0) {
-        	// this task has ended
-        	endTask();
-        }
+        // Add experience
+        addExperience(time);
         
-		if (getTimeCompleted() + time > getDuration()) {
-        	// this task has ended
-			endTask();
-			return 0;
-		}
-		
 		return remainingTime;
 	}
 }

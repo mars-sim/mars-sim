@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -137,6 +136,19 @@ public class PlayHoloGame extends Task {
 	}
 
 	/**
+	 * Performs the setting up phase of the task.
+	 * 
+	 * @param time the amount of time (millisol) to perform the phase.
+	 * @return the amount of time (millisol) left after performing the phase.
+	 */
+	private double settingUpPhase(double time) {
+
+		setPhase(PLAYING_A_HOLO_GAME);
+
+		return 0;
+	}
+	
+	/**
 	 * Performs the playing phase of the task.
 	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
@@ -145,57 +157,27 @@ public class PlayHoloGame extends Task {
 	private double playingPhase(double time) {
 		double remainingTime = 0;
 		
-		if (isDone()) {
-			endTask();
-			return time;
-		}
-		
 		if (!person.getPhysicalCondition().isNominallyFit()) {
 			endTask();
 		}
 		
-		int msol = getMarsTime().getMillisolInt();       
-        boolean successful = false; 
-        
-        if (computingNeeded > 0) {
-        	double workPerMillisol = 0; 
- 
-        	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
-        	}
-        	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
-        	}
-
-        	// Submit request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager()
-        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	if (center != null) {
-        		if (computingNeeded <= seed)
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-        		else
-        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
-        	}
-	    	else
-	    		logger.warning(person, 30_000L, "No computing centers available for " + NAME + ".");
-        	
-        	if (successful) {
-        		if (computingNeeded <= seed)
-        			computingNeeded = computingNeeded - workPerMillisol;
-        		else
-        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
-        		if (computingNeeded < 0) {
-        			computingNeeded = 0; 
-        		}
-          	}
-	    	else {
-	    		logger.warning(person, 30_000L, "No computing resources for " + NAME + ".");
-	    	}
-        }
-        else if (computingNeeded <= 0) {
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
-        	endTask();
-        }
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
+
+        // Add experience
+        addExperience(time);
         
 		// Either +ve or -ve
 		double rand = RandomUtil.getRandomInt(1);
@@ -213,49 +195,6 @@ public class PlayHoloGame extends Task {
 	        endTask();
 		}
         
-		return remainingTime;
-	}
-
-	/**
-	 * Performs the setting up phase of the task.
-	 * 
-	 * @param time the amount of time (millisol) to perform the phase.
-	 * @return the amount of time (millisol) left after performing the phase.
-	 */
-	private double settingUpPhase(double time) {
-		double remainingTime = 0;
-		
-		boolean successful = false; 
-		int msol = getMarsTime().getMillisolInt();
-		
-		if (computingNeeded > 0) {
-	      	double workPerMillisol = time * seed;
-
-        	// Submit request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager()
-        			.getMostFreeComputingNode(workPerMillisol, msol + 1, msol + 2);
-        	if (center != null) {
-                successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
-        	}
-	    	else
-	    		logger.warning(person, 30_000L, "Can't set up for " + NAME + ".");
-        	
-        	if (successful) {
-        		computingNeeded = computingNeeded - workPerMillisol;
-        		if (computingNeeded < 0) {
-        			computingNeeded = 0; 
-        		}
-          	}
-	    	else {
-	    		logger.warning(person, 30_000L, "Can't set up for " + NAME + ".");
-	    	}
-		}
-		
-		if (getTimeCompleted() > getDuration() * .05) {
-			// If it has spent 5% of its time
-			setPhase(PLAYING_A_HOLO_GAME);
-		}
-		
 		return remainingTime;
 	}
 
