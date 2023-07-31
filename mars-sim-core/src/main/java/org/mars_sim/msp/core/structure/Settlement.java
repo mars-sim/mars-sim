@@ -37,6 +37,10 @@ import org.mars_sim.msp.core.environment.DustStorm;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
+import org.mars_sim.msp.core.equipment.AmountResourceBin;
+import org.mars_sim.msp.core.equipment.Bin;
+import org.mars_sim.msp.core.equipment.BinHolder;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentInventory;
@@ -96,7 +100,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements Temporal,
-	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder  {
+	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder, BinHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -117,7 +121,7 @@ public class Settlement extends Structure implements Temporal,
 																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
 	
-	private static final int START_TIME = 400;
+//	private static final int START_TIME = 400;
 	private static final int DURATION = 150;
 	
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
@@ -2145,6 +2149,21 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Adds a bin to be owned by the settlement.
+	 *
+	 * @param bin the bin
+	 * @return true if this settlement can carry it
+	 */
+	@Override
+	public boolean addBin(Bin bin) {
+		if (eqmInventory.addBin(bin)) {
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_BIN_EVENT, this);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Finds all of the containers (excluding EVA suit).
 	 *
 	 * @return collection of containers or empty collection if none.
@@ -3154,9 +3173,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param skillDistance
 	 */
 	public Coordinates getAComfortableNearbyMineralLocation(double limit, int skillDistance) {
-		
 		double range = Math.min(skillDistance, limit);
-
 		return getARandomNearbyMineralLocation(range);
 	}
 	
@@ -3343,7 +3360,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the stored mass
+	 * Gets the stored mass.
 	 */
 	@Override
 	public double getStoredMass() {
@@ -3361,14 +3378,29 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets a list of the equipment with particular equipment type.
+	 * Gets a set of the equipment with particular equipment type.
 	 *
 	 * @return the equipment list
 	 */
-	public Set<Equipment> getEquipmentTypeList(EquipmentType equipmentType) {
+	public Set<Equipment> getEquipmentTypeSet(EquipmentType equipmentType) {
 		return eqmInventory.getEquipmentSet().stream()
 				.filter(e -> e.getEquipmentType() == equipmentType)
 				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Gets a collection of bins with particular bin type.
+	 *
+	 * @return the bin list
+	 */
+	public Collection<Bin> getBinTypeSet(BinType binType) {
+		for (AmountResourceBin arb: eqmInventory.getAmountResourceBinSet()) {
+			if (binType == arb.getBinType()) {
+				return arb.getBinMap().values();
+			}
+		}
+		
+		return null;
 	}
 
 	/**
@@ -3377,7 +3409,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public int getNumEVASuit() {
-		return Math.toIntExact(getEquipmentTypeList(EquipmentType.EVA_SUIT)
+		return Math.toIntExact(getEquipmentTypeSet(EquipmentType.EVA_SUIT)
 				.stream()
 				.collect(Collectors.counting()));
 	}
@@ -3394,7 +3426,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param resource the item resource
 	 * @param quantity
@@ -3406,7 +3438,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Retrieves the item resource
+	 * Retrieves the item resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -3418,7 +3450,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the item resource stored
+	 * Gets the item resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -3429,7 +3461,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Stores the amount resource
+	 * Stores the amount resource.
 	 *
 	 * @param resource the amount resource
 	 * @param quantity
@@ -3441,7 +3473,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -3453,7 +3485,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -3464,7 +3496,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -3619,7 +3651,7 @@ public class Settlement extends Structure implements Temporal,
 	public int findNumContainersOfType(EquipmentType containerType) {
 		return eqmInventory.findNumContainersOfType(containerType);
 	}
-
+	
 	/**
 	 * Finds a container in storage.
 	 *
@@ -3633,6 +3665,67 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory.findContainer(containerType, empty, resource);
 	}
 
+	/**
+	 * Finds the number of bins of a particular type.
+	 *
+	 * @param containerType the bin type.
+	 * @return number of empty bins.
+	 */
+	@Override
+	public int findNumBinsOfType(BinType binType) {
+		return eqmInventory.findNumBinsOfType(binType);
+	}
+	
+	@Override
+	public Set<AmountResourceBin> getAmountResourceBinSet() {
+		return eqmInventory.getAmountResourceBinSet();
+	}
+
+	@Override
+	public double getAmountResourceStored(BinType type, int id, int resource) {
+		return eqmInventory.getAmountResourceStored(type, id, resource);
+	}
+
+	@Override
+	public double storeAmountResource(BinType type, int id, int resource, double quantity) {
+		return eqmInventory.storeAmountResource(type, id, resource, quantity);
+	}
+
+	@Override
+	public double retrieveAmountResource(BinType type, int id, int resource, double quantity) {
+		return eqmInventory.retrieveAmountResource(type, id, resource, quantity);
+	}
+
+	@Override
+	public double getAmountResourceCapacity(BinType type, int id, int resource) {
+		return eqmInventory.getAmountResourceCapacity(type, id, resource);
+	}
+
+	@Override
+	public double getAmountResourceRemainingCapacity(BinType type, int id, int resource) {
+		return eqmInventory.getAmountResourceRemainingCapacity(type, id, resource);
+	}
+
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(BinType type, int id, int resource) {
+		return eqmInventory.hasAmountResourceRemainingCapacity(type, id, resource);
+	}
+
+	@Override
+	public double getCargoCapacity(BinType type, int id) {
+		return eqmInventory. getCargoCapacity(type, id);
+	}
+
+	@Override
+	public int getAmountResource(BinType type, int id) {
+		return eqmInventory.getAmountResource(type, id);
+	}
+
+	@Override
+	public Unit getOwner() {
+		return eqmInventory.getOwner();
+	}
+	
 	/**
 	 * Gets the EquipmentInventory instance.
 	 * 

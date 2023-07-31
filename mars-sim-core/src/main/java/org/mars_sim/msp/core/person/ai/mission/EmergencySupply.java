@@ -783,7 +783,7 @@ public class EmergencySupply extends RoverMission {
 
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) resourcesMap.get(id);
-				EquipmentType containerType = ContainerUtil.getContainerClassToHoldResource(id);
+				EquipmentType containerType = ContainerUtil.getEquipmentTypeForContainer(id);
 				int containerID = EquipmentType.getResourceID(containerType);
 				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);

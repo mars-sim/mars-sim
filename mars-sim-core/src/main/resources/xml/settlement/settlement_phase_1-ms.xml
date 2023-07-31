@@ -95,6 +95,11 @@
     <equipment type="thermal bottle" number="8" />	
  	<equipment type="wheelbarrow" number="12" />
 
+    <!-- Bins -->
+	<bin type="pot" number="20" />
+	<bin type="crate" number="20" />
+	<bin type="basket" number="20" />
+
     <!-- Resources -->
     <!-- type: the type of resource (see resources.txt) -->
     <!-- amount: the amount of the resource (kg) -->

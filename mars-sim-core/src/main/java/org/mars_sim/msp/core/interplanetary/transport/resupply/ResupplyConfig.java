@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResupplyConfig.java
- * @date 2022-09-25
+ * @date 2023-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -42,6 +42,7 @@ public class ResupplyConfig implements Serializable {
     private static final String BUILDING = "building";
     private static final String VEHICLE = "vehicle";
     private static final String EQUIPMENT = "equipment";
+    private static final String BIN = "bin";
     private static final String PERSON = "person";
     private static final String RESOURCE = "resource";
     private static final String PART = "part";
@@ -54,7 +55,7 @@ public class ResupplyConfig implements Serializable {
     private Collection<SupplyManifest> resupplyTemplates;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param resupplyDoc DOM document for resupply configuration.
      * @param partPackageConfig the part package configuration.
@@ -97,7 +98,7 @@ public class ResupplyConfig implements Serializable {
 	            }
 	
 	            // Load vehicles
-                Map<String,Integer> vehicles = new HashMap<>();
+                Map<String, Integer> vehicles = new HashMap<>();
 	            List<Element> vehicleNodes = resupplyElement.getChildren(VEHICLE);
 	            for (Element vehicleElement : vehicleNodes) {
 	                String vehicleType = vehicleElement.getAttributeValue(TYPE);
@@ -109,7 +110,7 @@ public class ResupplyConfig implements Serializable {
 	            }
 	
 	            // Load equipment
-                Map<String,Integer> equipment = new HashMap<>();
+                Map<String, Integer> equipment = new HashMap<>();
 	            List<Element> equipmentNodes = resupplyElement
 	                    .getChildren(EQUIPMENT);
 	            for (Element equipmentElement : equipmentNodes) {
@@ -120,6 +121,20 @@ public class ResupplyConfig implements Serializable {
 	                    equipmentNumber += equipment.get(equipmentType);
 	                equipment.put(equipmentType, equipmentNumber);
 	            }
+	            
+	            // Load bins
+                Map<String, Integer> bin = new HashMap<>();
+	            List<Element> binNodes = resupplyElement
+	                    .getChildren(BIN);
+	            for (Element binElement : binNodes) {
+	                String binType = binElement.getAttributeValue(TYPE);
+	                int binNumber = Integer.parseInt(binElement
+	                        .getAttributeValue(NUMBER));
+	                if (bin.containsKey(binType))
+	                	binNumber += bin.get(binType);
+	                bin.put(binType, binNumber);
+	            }
+	            
 
 	            // Load resources
                 Map<AmountResource, Double> resources = new HashMap<>();
@@ -184,6 +199,7 @@ public class ResupplyConfig implements Serializable {
                                             Collections.unmodifiableList(buildings),
                                             Collections.unmodifiableMap(vehicles),
                                             Collections.unmodifiableMap(equipment),
+                                            Collections.unmodifiableMap(bin),
                                             Collections.unmodifiableMap(resources),
                                             Collections.unmodifiableMap(parts) );
 	            resupplyTemplates.add(template);
@@ -193,6 +209,7 @@ public class ResupplyConfig implements Serializable {
 
     /**
      * Gets the resupply template for a resupply mission name.
+     * 
      * @param resupplyName the resupply mission name.
      * @return the resupply template.
      */
@@ -211,7 +228,7 @@ public class ResupplyConfig implements Serializable {
     }
 
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
 
@@ -220,11 +237,12 @@ public class ResupplyConfig implements Serializable {
     }
 
     /**
-     * Definition of a Supply Manifest used in a resupply mission
+     * Definition of a Supply Manifest used in a resupply mission.
      */
     public static record SupplyManifest(String name, int people, List<BuildingTemplate> buildings,
                                             Map<String, Integer> vehicles,
                                             Map<String, Integer> equipment,
+                                            Map<String, Integer> bins,
                                             Map<AmountResource, Double> resources,
                                             Map<Part, Integer> parts)
                         implements Serializable {};

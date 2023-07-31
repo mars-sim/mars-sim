@@ -24,19 +24,25 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private static final int BIENNIAL = 2;
 
 	// Data members
-	/** The id of this crop spec. */
+	/** Is this a seed only? */
+	private boolean seedOnly;
+	/** The crop spec id. */
 	private int id;
+	/** The crop id. */
+	private int cropID;
+	/** The seed id. */
+	private int seedID = -1;
 	/** The length of the growing phase. */
 	private double growingTime;
-	/** The fresh basis edible biomass productivity [in gram per sq m per day] */
+	/** The fresh basis edible biomass productivity [in gram per sq m per day]. */
 	private double edibleBiomass;
-	/** The percentage of watet content */
+	/** The percentage of watet content. */
 	private double edibleWaterContent;
-	/** The inedible biomass [in gram per sq m per day] */
+	/** The inedible biomass [in gram per sq m per day]. */
 	private double inedibleBiomass;
 	/**
 	 * The daily photosynthetically active radiation (PAR) or Daily Light Integral
-	 * (DLI) [in moles per square meter per day, or mol/m^2/d]
+	 * (DLI) [in moles per square meter per day, or mol/m^2/d].
 	 */
 	private double dailyPAR; // Note: not umol / m^2 / s // PAR is the instantaneous light with a wavelength
 								// between 400 to 700 nm
@@ -45,16 +51,11 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private String name;
 	/** The life cycle type of this crop. */
 	private String lifeCycle;
-	/** THe phenological phases of this crop */
+	
+	/** The phenological phases of this crop. */
 	private List<Phase> phases = null;
-	/** The category of this crop */
+	/** The category of this crop. */
 	private CropCategory cropCategory;
-
-	private int cropID;
-
-	private int seedID = -1;
-
-	private boolean seedOnly;
 
 	/**
 	 * Constructor.
@@ -86,7 +87,6 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
 		this.phases = phases;
-
 		this.cropID = ResourceUtil.findIDbyAmountResourceName(name);
 		if (seedName != null) {
 			this.seedID = ResourceUtil.findIDbyAmountResourceName(seedName);

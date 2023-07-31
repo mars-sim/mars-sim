@@ -33,7 +33,7 @@ public final class EquipmentFactory {
 	private static Map<String, Double> weights = new HashMap<>();
 	
 	private static UnitManager unitManager;
-	private static SimulationConfig simulationConfig;
+//	private static SimulationConfig simulationConfig;
 	private static ManufactureConfig manufactureConfig;
 
 	/**
@@ -76,7 +76,7 @@ public final class EquipmentFactory {
 			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
 		default:
-			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
+			throw new IllegalStateException("Equipment type '" + type + "' could not be constructed.");
 		}
 
 		unitManager.addUnit(newEqm);
@@ -104,31 +104,32 @@ public final class EquipmentFactory {
 	/**
 	 * Gets the empty mass of the equipment.
 	 *
-	 * @param type the equipment type string.
+	 * @param type the equipment type.
 	 * @return empty mass (kg).
 	 * @throws Exception if equipment mass could not be determined.
 	 */
 	public static double getEquipmentMass(EquipmentType type) {
-		switch (type) {
-				
-		case BAG:
-			return calculateMass(bag);
-		case BARREL:
-			return calculateMass(barrel);
-		case EVA_SUIT:
-			return calculateMass(suit); //EVASuit.emptyMass;
-		case GAS_CANISTER:
-			return calculateMass(canister);
-		case LARGE_BAG:
-			return calculateMass(largeBag);
-		case SPECIMEN_BOX:
-			return calculateMass(box);
-		case THERMAL_BOTTLE:
-			return calculateMass(bottle);
-		case WHEELBARROW:
-			return calculateMass(wheel);	
-		default:
-			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
+		String productName = type.getName();
+		
+		switch (type) {				
+			case BAG:
+				return calculateMass(bag, productName);
+			case BARREL:
+				return calculateMass(barrel, productName);
+			case EVA_SUIT:
+				return calculateMass(suit, productName);
+			case GAS_CANISTER:
+				return calculateMass(canister, productName);
+			case LARGE_BAG:
+				return calculateMass(largeBag, productName);
+			case SPECIMEN_BOX:
+				return calculateMass(box, productName);
+			case THERMAL_BOTTLE:
+				return calculateMass(bottle, productName);
+			case WHEELBARROW:
+				return calculateMass(wheel, productName);	
+			default:
+				throw new IllegalStateException("Class for equipment type '" + type + "' could not be found.");
 		}
 	}
 
@@ -138,11 +139,16 @@ public final class EquipmentFactory {
 	 * @param processName
 	 * @return
 	 */
-    public static double calculateMass(String processName) {	
+    public static double calculateMass(String processName, String productName) {	
 		if (weights.isEmpty() || !weights.containsKey(processName)) {
 			double mass = 0;
+			double quantity = 1;
 	    	ManufactureProcessInfo manufactureProcessInfo = null;
 
+	    	if (manufactureConfig == null) {
+	    		manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+	    	}
+	    	
 	    	for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 	    		if (info.getName().equalsIgnoreCase(processName)) {
 	    			manufactureProcessInfo = info;
@@ -152,8 +158,10 @@ public final class EquipmentFactory {
 	
 			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
 			mass = manufactureProcessInfo.calculateTotalInputMass();
+			// Calculate output quantity
+			quantity = manufactureProcessInfo.calculateOutputQuantity(productName);			
 			// Save the key value pair onto the weights Map
-			weights.put(processName, mass);
+			weights.put(processName, mass/quantity);
 			
 			return mass;
 		}

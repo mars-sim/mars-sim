@@ -100,9 +100,9 @@ public class EquipmentGood extends Good {
 		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
-		for(Mission mission : missionManager.getMissionsForSettlement(settlement)) {
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+			if (mission instanceof VehicleMission vehicleMission) {
+				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
 					number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
 			}
@@ -183,7 +183,7 @@ public class EquipmentGood extends Good {
 	/**
 	 * Determines the demand for a type of equipment.
 	 *
-	 * @param settlement the locaiton of this demand
+	 * @param settlement the location of this demand
 	 * @return demand (# of equipment).
 	 */
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
@@ -204,8 +204,8 @@ public class EquipmentGood extends Good {
 		double totalPhaseOverfill = 0D;
 
 		// Scan resources that can be held in this Container
-		for(AmountResource resource : ResourceUtil.getAmountResources()) {
-			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == equipmentType) {
+		for (AmountResource resource : ResourceUtil.getAmountResources()) {
+			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
 				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandValueWithID(resource.getID());
@@ -261,9 +261,9 @@ public class EquipmentGood extends Good {
 
 		Collection<Container> equipmentList = settlement.findContainersOfType(equipmentType);
 
-		for(Mission mission : missionManager.getMissionsForSettlement(settlement)) {
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+			if (mission instanceof VehicleMission vehicleMission) {
+				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
 					equipmentList.addAll(vehicle.findContainersOfType(equipmentType));
 				}
@@ -308,4 +308,7 @@ public class EquipmentGood extends Good {
 		return Math.sqrt(1 + supplyStored);
 	}
 	
+	public void destroy() {
+		equipmentType = null;
+	}
 }

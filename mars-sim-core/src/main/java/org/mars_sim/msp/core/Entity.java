@@ -11,8 +11,10 @@ package org.mars_sim.msp.core;
  * that is proactively managed or a passive object such as a Mission.
  */
 public interface Entity {
+	
     /**
-     * Get the name of the entity
+     * Gets the name of the entity.
+     * 
      * @return
      */
     String getName();

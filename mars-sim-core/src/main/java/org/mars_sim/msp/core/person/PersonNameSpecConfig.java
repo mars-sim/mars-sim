@@ -13,7 +13,7 @@ import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 
 /**
- * Configurationclass to load person naming schemes. Usually based on country
+ * Configuration class to load person naming schemes. Usually based on country
  */
 public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec> {
 
@@ -25,7 +25,7 @@ public class PersonNameSpecConfig extends UserConfigurableConfig<PersonNameSpec>
     private static final String NAME = "name";
     private static final String VALUE = "value";
 
-    // These are teh countries predefined
+    // These are the countries predefined
     private String[] COUNTRIES = {"Austria",  "Belgium", "Brazil", "Canada", "China", "Czech Republic",
                         "Denmark", "Estonia", "Finland", "France", "Germany", "Greece",
                         "Hungary", "India", "Ireland", "Italy", "Japan", "Luxembourg",

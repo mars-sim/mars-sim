@@ -7,13 +7,18 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.building.function.farming.UnitEntity;
 
-public class Crate extends AmountResourceContainer {
+public class Crate extends AmountResourceBin {
 	
-	public Crate(Unit unit, double cap) {
-		super(unit, cap);
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-		setContainerType(ContainerType.CRATE);
+	public static double CAP = 100;
+	
+	public Crate(UnitEntity unitEntity, double cap) {
+		super(unitEntity, cap);
+
+		setBinType(BinType.CRATE);
 	}
 }

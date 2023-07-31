@@ -35,7 +35,9 @@ public enum UnitEventType {
 	ADD_ASSOCIATED_EQUIPMENT_EVENT		("add associated equipment"),
 	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
 
-
+	ADD_ASSOCIATED_BIN_EVENT			("add associated bin"),
+	REMOVE_ASSOCIATED_BIN_EVENT			("remove associated bin"),
+	
 	BACKLOG_EVENT						("backlog event"),
 
 

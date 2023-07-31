@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementConfig.java
- * @date 2021-11-03
+ * @date 2023-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -70,6 +70,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
+	private static final String BIN = "bin";	
 	private static final String VALUE = "value";
 	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
@@ -425,7 +426,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			String model = robotElement.getAttributeValue(MODEL);
 			template.addRobot(new RobotTemplate(name, rType, model));
 		}
-
+		
 		// Load equipment
 		List<Element> equipmentNodes = templateElement.getChildren(EQUIPMENT);
 		for (Element equipmentElement : equipmentNodes) {
@@ -434,6 +435,14 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			template.addEquipment(equipmentType, equipmentNumber);
 		}
 
+		// Load bins
+		List<Element> binNodes = templateElement.getChildren(BIN);
+		for (Element binElement : binNodes) {
+			String binType = binElement.getAttributeValue(TYPE);
+			int binNumber = Integer.parseInt(binElement.getAttributeValue(NUMBER));
+			template.addBins(binType, binNumber);
+		}
+		
 		// Load resources
 		List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
@@ -445,7 +454,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
 				template.addAmountResource(resource, resourceAmount);
 			}
-
 		}
 
 		// Load parts
@@ -500,10 +508,10 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	}
 
 	/**
-	 * It is not possible to creae new SettlementTemplates via the application.
+	 * It is not possible to create new SettlementTemplates via the application.
 	 */
 	@Override
 	protected Document createItemDoc(SettlementTemplate item) {
-		throw new UnsupportedOperationException("Saving Settlement templates is not supported");
+		throw new UnsupportedOperationException("Saving Settlement templates is not supported.");
 	}
 }

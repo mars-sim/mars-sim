@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -294,11 +295,37 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 					double quantity = item.getAmount();
 					mass += quantity * ir.getMassPerItem();
 				}
+				else {
+					BinType type = BinType.convertName2Enum(name);
+					if (type != null) {
+						double quantity = item.getAmount();
+						// TODO: Will need to find getMassPerBin
+						mass += quantity * 2;
+					}
+				}
 			}
 		}
 		
 		return mass;
 	}
+	
+	/**
+	 * Calculates the output quantity.
+	 * 
+	 * @return
+	 */
+	public double calculateOutputQuantity(String productName) {
+		for (ManufactureProcessItem item : outputList) {
+			String name = item.getName();
+			if (productName.equalsIgnoreCase(name)) {
+				return item.getAmount();
+			}
+		}
+		
+		return 1;
+	}
+	
+	
 	
 	@Override
 	public String toString() {

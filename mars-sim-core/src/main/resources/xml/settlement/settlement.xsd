@@ -54,6 +54,13 @@
         </xs:complexType>
     </xs:element>
     
+    <xs:element name="bin">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name="resource">
         <xs:complexType>
             <xs:attribute name="type" type="xs:string"/>
@@ -99,6 +106,7 @@
                 <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="bin"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="part-package" minOccurs="0" maxOccurs="unbounded"/>

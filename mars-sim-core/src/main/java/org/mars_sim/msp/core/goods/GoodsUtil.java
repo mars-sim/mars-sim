@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -84,14 +85,14 @@ public class GoodsUtil {
     /**
      * Gets a good object for a given equipment class.
      *
-     * @param equipmentClass the equipment class.
+     * @param type the equipment type.
      * @return good for the resource class or null if none.
      */
-    public static Good getEquipmentGood(EquipmentType equipmentClass) {
-        if (equipmentClass == null) {
+    public static Good getEquipmentGood(EquipmentType type) {
+        if (type == null) {
             logger.severe("equipmentClass is NOT supposed to be null.");
         }
-        int id = EquipmentType.getResourceID(equipmentClass);
+        int id = EquipmentType.getResourceID(type);
         if (id > 0) {
             return getGood(id);
         }
@@ -142,19 +143,22 @@ public class GoodsUtil {
         Map<Integer, Good> newMap = new HashMap<>();
 
         // Populate amount resources.
-        newMap = populateAmountResources(newMap);
+        populateAmountResources(newMap);
 
         // Populate item resources.
-        newMap = populateItemResources(newMap);
+        populateItemResources(newMap);
 
         // Populate equipment.
-        newMap = populateEquipment(newMap);
+        populateEquipment(newMap);
 
+        // Populate bins.
+        populateBins(newMap);
+        
         // Populate vehicles.
-        newMap = populateVehicles(newMap);
+        populateVehicles(newMap);
 
         // Populate robots.
-        newMap = populateRobots(newMap);
+        populateRobots(newMap);
         
         goodsMap = newMap;
     }
@@ -166,11 +170,10 @@ public class GoodsUtil {
      * @param newMap
      * @param newList
      */
-    private static Map<Integer, Good> populateAmountResources(Map<Integer, Good> newMap) {
+    private static void populateAmountResources(Map<Integer, Good> newMap) {
         for (AmountResource ar :  ResourceUtil.getAmountResources()) {
             newMap.put(ar.getID(), new AmountResourceGood(ar));
         }
-        return newMap;
     }
 
     /**
@@ -179,11 +182,10 @@ public class GoodsUtil {
      * @param newMap
      * @return
      */
-    private static Map<Integer, Good> populateItemResources(Map<Integer, Good> newMap) {
+    private static void populateItemResources(Map<Integer, Good> newMap) {
         for(Part p : ItemResourceUtil.getItemResources()) {
             newMap.put(p.getID(), new PartGood(p));
         }
-        return newMap;
     }
 
     /**
@@ -192,32 +194,42 @@ public class GoodsUtil {
      * @param newMap
      * @param newList
      */
-    private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
+    private static void populateEquipment(Map<Integer, Good> newMap) {
         for(EquipmentType type : EquipmentType.values()) {
             Good newGood = new EquipmentGood(type);
-            newMap.put(newGood.getID(), newGood);
-    
+            newMap.put(newGood.getID(), newGood);   
         }
-        return newMap;
     }
 
+    /**
+     * Populates the goods list with all bins.
+     * 
+     * @param newMap
+     * @param newList
+     */
+    private static void populateBins(Map<Integer, Good> newMap) {
+        for(BinType type : BinType.values()) {
+            Good newGood = new BinGood(type);
+            newMap.put(newGood.getID(), newGood);   
+        }
+    }
+
+    
     /**
      * Populates the goods list with all vehicles.
      * 
      * @param newMap
      * @param newList
      */
-    private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
+    private static void populateVehicles(Map<Integer, Good> newMap) {
         Set<VehicleType> done = new HashSet<>();  // Only add one per Vehicle Type
         for(VehicleSpec vs : vehicleConfig.getVehicleSpecs()) {
             if (!done.contains(vs.getType())) {
                 Good newGood = new VehicleGood(vs);
                 newMap.put(newGood.getID(), newGood);
-
                 done.add(vs.getType());
             }
         }
-        return newMap;
     }
     
     /**
@@ -226,12 +238,11 @@ public class GoodsUtil {
      * @param newMap
      * @return
      */
-    private static Map<Integer, Good> populateRobots(Map<Integer, Good> newMap) {
+    private static void populateRobots(Map<Integer, Good> newMap) {
     	 for (RobotType type : RobotType.values()) {
              Good newGood = new RobotGood(type);
              newMap.put(newGood.getID(), newGood);
          }
-         return newMap;
     }
 
     /**

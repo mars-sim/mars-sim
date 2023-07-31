@@ -292,7 +292,7 @@ class TradeGoodsPanel extends WizardPanel {
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				PhaseType phase = resource.getPhase();
-				EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(phase);
+				EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
 				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				double totalCapacity = containerNum * capacity;

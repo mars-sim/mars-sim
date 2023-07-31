@@ -21,32 +21,32 @@ public final class ContainerUtil {
 	};
 
 	/**
-	 * Gets the id of the type of container needed to hold a particular resource.
+	 * Gets the equipment id of the container needed to hold a particular resource.
 	 * 
 	 * @param resourceID the id of the resource to hold.
 	 * @return container id.
 	 */
-	public static int getContainerClassIDToHoldResource(int resourceID) {
-		return EquipmentType.getResourceID(getContainerClassToHoldResource(resourceID));
+	public static int getEquipmentIDForContainer(int resourceID) {
+		return EquipmentType.getResourceID(getEquipmentTypeForContainer(resourceID));
 	}
 
 	/**
-	 * Gets the class of the type of container needed to hold a particular resource.
+	 * Gets the equipment type of the container needed to hold a particular resource.
 	 * 
 	 * @param resourceID the id of the resource to hold.
 	 * @return container class or null if none found.
 	 */
-	public static EquipmentType getContainerClassToHoldResource(int resourceID) {
-		return getContainerTypeNeeded(ResourceUtil.findAmountResource(resourceID).getPhase());
+	public static EquipmentType getEquipmentTypeForContainer(int resourceID) {
+		return getEquipmentTypeNeeded(ResourceUtil.findAmountResource(resourceID).getPhase());
 	}
 
 	/**
-	 * Gets the container type needed for an amount resource phase.
+	 * Gets the equipment type needed for an amount resource phase.
 	 * 
 	 * @param phase the phase type of the amount resource.
 	 * @return container class.
 	 */
-	public static EquipmentType getContainerTypeNeeded(PhaseType phase) {
+	public static EquipmentType getEquipmentTypeNeeded(PhaseType phase) {
 		switch (phase) {
 			case GAS:
 				return EquipmentType.GAS_CANISTER;
@@ -87,10 +87,10 @@ public final class ContainerUtil {
 	}
 
 	/**
-	 * Can a container type hold a certain Phase?
+	 * Can a container type hold a certain Phase ?
 	 * 
 	 * @param container the container type.
-	 * @parma phase Type of material to be stored
+	 * @param phase Type of material to be stored
 	 * @return amount resource phase.
 	 */
 	public static boolean isPhaseSupported(EquipmentType container, PhaseType phase) {
@@ -116,7 +116,7 @@ public final class ContainerUtil {
 	
 
 	/**
-	 * Gets the least full container..
+	 * Gets the least full container.
 	 * 
 	 * @param owner	Source of containers to search
 	 * @param containerType Preferred Type of container to look for

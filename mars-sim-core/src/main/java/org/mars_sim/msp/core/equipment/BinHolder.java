@@ -1,10 +1,12 @@
 /*
  * Mars Simulation Project
- * ContainerHolder.java
- * @date 2023-07-12
+ * BinHolder.java
+ * @date 2023-07-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
+
+import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 
@@ -12,7 +14,7 @@ import org.mars_sim.msp.core.Unit;
  * Represents an entity that can hold resources.
  *
  */
-public interface ContainerHolder {
+public interface BinHolder {
 
 //	/**
 //	 * Adds an amount resource container to this container holder
@@ -24,6 +26,21 @@ public interface ContainerHolder {
 //	void addAmountResourceContainer(AmountResourceContainer container, ContainerType type, int resource);
 	
 	/**
+	 * Finds the number of bins of a particular type.
+	 *
+	 * @param containerType the bin type.
+	 * @return number of empty bins.
+	 */
+	public int findNumBinsOfType(BinType binType);
+	
+	/**
+	 * Gets the locally held amount resource bin set.
+	 * 
+	 * @return
+	 */
+	public Set<AmountResourceBin> getAmountResourceBinSet();
+	
+	/**
 	 * Gets the amount resource stored.
 	 *
 	 * @param type
@@ -31,7 +48,7 @@ public interface ContainerHolder {
 	 * @param resource
 	 * @return quantity
 	 */
-	double getAmountResourceStored(ContainerType type, int id, int resource);
+	double getAmountResourceStored(BinType type, int id, int resource);
 
 	
 	/**
@@ -43,7 +60,7 @@ public interface ContainerHolder {
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
-	double storeAmountResource(ContainerType type, int id, int resource, double quantity);
+	double storeAmountResource(BinType type, int id, int resource, double quantity);
 
 
 	/**
@@ -55,7 +72,7 @@ public interface ContainerHolder {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	double retrieveAmountResource(ContainerType type, int id, int resource, double quantity);
+	double retrieveAmountResource(BinType type, int id, int resource, double quantity);
 
 	/**
 	 * Gets the capacity of a particular amount resource.
@@ -65,7 +82,7 @@ public interface ContainerHolder {
 	 * @param resource
 	 * @return capacity
 	 */
-	double getAmountResourceCapacity(ContainerType type, int id, int resource);
+	double getAmountResourceCapacity(BinType type, int id, int resource);
 
 	/**
 	 * Obtains the remaining storage space of a particular amount resource.
@@ -75,7 +92,7 @@ public interface ContainerHolder {
 	 * @param resource
 	 * @return quantity
 	 */
-	double getAmountResourceRemainingCapacity(ContainerType type, int id, int resource);
+	double getAmountResourceRemainingCapacity(BinType type, int id, int resource);
 
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
@@ -85,7 +102,7 @@ public interface ContainerHolder {
 	 * @param resource
 	 * @return
 	 */
-	public boolean hasAmountResourceRemainingCapacity(ContainerType type, int id, int resource);
+	public boolean hasAmountResourceRemainingCapacity(BinType type, int id, int resource);
 	
 	/**
 	 * Gets the total capacity of resource that this container can hold.
@@ -94,14 +111,14 @@ public interface ContainerHolder {
 	 * @param id
 	 * @return total capacity (kg).
 	 */
-	double getCargoCapacity(ContainerType type, int id);
+	double getCargoCapacity(BinType type, int id);
 
 	/**
 	 * Gets the supported amount resource.
 	 *
 	 * @return resource id
 	 */
-	int getAmountResource(ContainerType type, int id);
+	int getAmountResource(BinType type, int id);
 
 	/**
 	 * Gets the owner unit instance.
@@ -109,5 +126,13 @@ public interface ContainerHolder {
 	 * @return
 	 */
 	public Unit getOwner();
+
+	/**
+	 * Adds a bin to be owned by the settlement.
+	 *
+	 * @param bin the bin
+	 * @return true if this settlement can carry it
+	 */
+	boolean addBin(Bin bin);
 	
 }

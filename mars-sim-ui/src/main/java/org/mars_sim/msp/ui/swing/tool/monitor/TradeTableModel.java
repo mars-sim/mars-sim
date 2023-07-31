@@ -12,6 +12,8 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.equipment.BinFactory;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
@@ -260,8 +262,14 @@ implements UnitListener {
     		
     		return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
     	}
-    	else {
+    	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
+    		// For Robots   
     		return settlement.getInitialNumOfRobots() * Robot.EMPTY_MASS;
+    	}    	
+    	else {
+    		// For Bins   		
+    		BinType type = BinType.convertID2Type(id);
+    		return settlement.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
     	}
     }
 

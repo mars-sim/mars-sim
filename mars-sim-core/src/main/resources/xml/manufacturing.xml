@@ -10,7 +10,7 @@
 	<!ATTLIST process power-required CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
 	<!ELEMENT inputs (resource*, part*)>
-	<!ELEMENT outputs (resource*, part*, equipment*, vehicle*)>
+	<!ELEMENT outputs (resource*, part*, equipment*, bin*, vehicle*)>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource name1 CDATA #IMPLIED>
@@ -23,6 +23,9 @@
 	<!ELEMENT equipment EMPTY>
 	<!ATTLIST equipment name CDATA #REQUIRED>
 	<!ATTLIST equipment number CDATA #REQUIRED>
+	<!ELEMENT bin EMPTY>
+	<!ATTLIST bin name CDATA #REQUIRED>
+	<!ATTLIST bin number CDATA #REQUIRED>
 	<!ELEMENT vehicle EMPTY>
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 	<!ATTLIST vehicle number CDATA #REQUIRED>
@@ -660,6 +663,36 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Make pot" tech="1" skill="1" work-time="10" process-time="10"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<bin name="pot" number="8" />
+		</outputs>
+	</process>
+	
+	<process name="Make basket" tech="1" skill="1" work-time="10" process-time="10"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<bin name="basket" number="12" />
+		</outputs>
+	</process>
+	
+	<process name="Make crate" tech="1" skill="1" work-time="10" process-time="10"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" name1="Polypropylene" amount="7.8" />
+		</inputs>
+		<outputs>
+			<bin name="crate" number="6" />
+		</outputs>
+	</process>
+	
 	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>

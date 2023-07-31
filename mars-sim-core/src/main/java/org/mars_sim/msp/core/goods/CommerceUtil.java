@@ -416,7 +416,7 @@ public final class CommerceUtil {
 
 		Container result = null;
 
-		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 
 		int containersStored = settlement.findNumEmptyContainersOfType(containerType, false);
 
@@ -491,7 +491,7 @@ public final class CommerceUtil {
 	 * @throws Exception if error determining container.
 	 */
 	private static double getContainerCapacity(AmountResource resource) {
-		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 		return ContainerUtil.getContainerCapacity(containerType);
 	}
 

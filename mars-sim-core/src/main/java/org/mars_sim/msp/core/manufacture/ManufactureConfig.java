@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureConfig.java
- * @date 2023-06-12
+ * @date 2023-07-30
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -45,6 +46,7 @@ public class ManufactureConfig {
 	private static final String PART = "part";
 	private static final String NUMBER = "number";
 	private static final String EQUIPMENT = "equipment";
+	private static final String BIN = "bin";
 	private static final String VEHICLE = "vehicle";
 	private static final String SALVAGE = "salvage";
 	private static final String ITEM_NAME = "item-name";
@@ -127,6 +129,7 @@ public class ManufactureConfig {
 			parseInputResources(inputList, inputs.getChildren(RESOURCE), alternateResourceMap);
 			parseParts(inputList, inputs.getChildren(PART));
 			parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
+			parseBins(inputList, inputs.getChildren(BIN));
 			parseVehicles(inputList, inputs.getChildren(VEHICLE));
 
 			Element outputs = processElement.getChild(OUTPUTS);
@@ -138,6 +141,7 @@ public class ManufactureConfig {
 			parseOutputResources(outputList, outputs.getChildren(RESOURCE));
 			parseParts(outputList, outputs.getChildren(PART));
 			parseEquipment(outputList, outputs.getChildren(EQUIPMENT));
+			parseBins(outputList, outputs.getChildren(BIN));
 			parseVehicles(outputList, outputs.getChildren(VEHICLE));
 
 			// Add process to newList.
@@ -343,6 +347,28 @@ public class ManufactureConfig {
 		}
 	}
 
+	/**
+	 * Parses the bin elements in a node list.
+	 * 
+	 * @param list           the list to store the bin in.
+	 * @param binNodes the node list.
+	 * @throws Exception if error parsing bin.
+	 */
+	private static void parseBins(List<ManufactureProcessItem> list, List<Element> binNodes) {
+		for (Element binElement : binNodes) {
+			ManufactureProcessItem binItem = new ManufactureProcessItem();
+			binItem.setType(ItemType.BIN);
+			String binName = binElement.getAttributeValue(NAME);
+
+			BinType type = BinType.valueOf(ConfigHelper.convertToEnumName(binName));
+			if (type != null) {
+				binItem.setName(binName);
+				binItem.setAmount(Integer.parseInt(binElement.getAttributeValue(NUMBER)));
+				list.add(binItem);
+			}
+		}
+	}
+	
 	/**
 	 * Parses the vehicle elements in a node list.
 	 * 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GoodType.java
- * @date 2022-06-25
+ * @date 2023-07-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.goods;
@@ -57,6 +57,9 @@ public enum GoodType {
     // For containers
     CONTAINER		("Container"),
     EVA				("EVA"),
+    
+    // For bins
+    BIN				("Bin"),
     
     // For vehicles
 	VEHICLE_HEAVY		("Vehicle Heavy"),

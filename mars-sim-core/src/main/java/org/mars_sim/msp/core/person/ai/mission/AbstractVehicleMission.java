@@ -1346,7 +1346,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				double amount = (double) optionalResources.get(id);
 
 				// Obtain a container for storing the amount resource
-				EquipmentType containerType = ContainerUtil.getContainerClassToHoldResource(id);
+				EquipmentType containerType = ContainerUtil.getEquipmentTypeForContainer(id);
 				int containerID = EquipmentType.getResourceID(containerType);
 				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);

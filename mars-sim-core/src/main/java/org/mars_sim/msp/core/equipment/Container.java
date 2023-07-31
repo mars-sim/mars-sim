@@ -29,7 +29,7 @@ public interface Container extends ResourceHolder {
 	public double getStoredMass();
 
 	/**
-	 * Clean the container if empty. This will reset the assigned Resource
+	 * Cleans the container if empty. This will reset the assigned Resource.
 	 */
     public void clean();
 	

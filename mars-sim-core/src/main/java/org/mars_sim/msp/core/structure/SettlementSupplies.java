@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementSupplies.java
- * @date 2023-04-02
+ * @date 2023-07-30
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 
 /**
- * Respresents a set of Supplies provided to a Settlement
+ * Represents a set of Supplies provided to a Settlement.
  */
 public interface SettlementSupplies {
 
@@ -38,6 +38,13 @@ public interface SettlementSupplies {
      */
     Map<String, Integer> getEquipment();
 
+    /**
+     * Gets a map of bin types and number.
+     * 
+     * @return map.
+     */
+    Map<String, Integer> getBins();
+    
     /**
      * Gets a map of resources and amounts.
      * 

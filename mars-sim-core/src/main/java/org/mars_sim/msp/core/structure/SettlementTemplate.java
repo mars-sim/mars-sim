@@ -39,6 +39,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	
 	private Map<String, Integer> vehicles;
 	private Map<String, Integer> equipment;
+	private Map<String, Integer> bins;
 	private Map<AmountResource, Double> resources;
 	private Map<Part, Integer> parts;
 
@@ -71,6 +72,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 
 		buildings = new ArrayList<>();
 		vehicles = new HashMap<>();
+		bins = new HashMap<>();
 		equipment = new HashMap<>();
 		resources = new HashMap<>();
 		parts = new HashMap<>();
@@ -88,13 +90,18 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 		return name;
 	}
 
+	/**
+	 * Gets the description of the template.
+	 * 
+	 * @return description.
+	 */
 	@Override
 	public String getDescription() {
 		return description;
 	}
 
 	/**
-	 * Is this template bundled with the simualtion build?
+	 * Is this template bundled with the simulation build?
 	 */
 	@Override
 	public boolean isBundled() {
@@ -111,12 +118,14 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	}
 
 	/**
-	 * Get the SHift defintition for this settlement
-	 * @return
+	 * Gets the Shift definition for this settlement.
+	 * 
+	 * @return ShiftPattern
 	 */
 	public ShiftPattern getShiftDefinition() {
 		return shiftDefn;
 	}
+	
 	/**
 	 * Gets the default robot capacity of the template.
 	 * 
@@ -126,13 +135,24 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 		return defaultNumOfRobots;
 	}
 
+	/**
+	 * Adds the robot template.
+	 * 
+	 * @param newRobot
+	 */
 	void addRobot(RobotTemplate newRobot) {
 		robots.add(newRobot);
 	}
 
+	/**
+	 * Gets a list of robot templates.
+	 * 
+	 * @return
+	 */
 	public List<RobotTemplate> getPredefinedRobots() {
 		return Collections.unmodifiableList(robots);
 	}
+	
 	/**
 	 * Gets the default population capacity of the template.
 	 * 
@@ -143,7 +163,8 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	}
 
 	/**
-	 * Get the Reporting Authority code that defines this template.
+	 * Gets the Reporting Authority code that defines this template.
+	 * 
 	 * @return
 	 */
 	public String getSponsor() {
@@ -206,6 +227,20 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 	}
 
 	/**
+	 * Adds a number of bins of a given type.
+	 * 
+	 * @param binType the bin type.
+	 * @param number        the number of bins to add.
+	 */
+	void addBins(String binType, int number) {
+		if (bins.containsKey(binType)) {
+			number += bins.get(binType);
+		}
+		bins.put(binType, number);
+	}
+	
+	
+	/**
 	 * Gets a map of equipment types and number.
 	 * 
 	 * @return map.
@@ -215,6 +250,16 @@ public class SettlementTemplate implements Serializable, UserConfigurable, Settl
 		return Collections.unmodifiableMap(equipment);
 	}
 
+	/**
+	 * Gets a map of bin types and number.
+	 * 
+	 * @return map.
+	 */
+	@Override
+	public Map<String, Integer> getBins() {
+		return Collections.unmodifiableMap(bins);
+	}
+	
 	/**
 	 * Adds an amount of a type of resource.
 	 * 

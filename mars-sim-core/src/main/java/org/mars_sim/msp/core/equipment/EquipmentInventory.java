@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentInventory.java
- * @date 2021-10-23
+ * @date 2023-07-30
  * @author Barry Evans
  */
 
@@ -18,7 +18,6 @@ import java.util.Set;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.equipment.AmountResourceContainer.MicroContainer;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -29,7 +28,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * in the underlying Equipment.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, ItemHolder, ContainerHolder, Serializable {
+		implements EquipmentOwner, ItemHolder, BinHolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,10 +39,11 @@ public class EquipmentInventory
 
 	private double cargoCapacity;
 
-	/** Locally held equipment set**/
+	/** Locally held equipment set. */
 	private Set<Equipment> equipmentSet;
 	
-	private Set<AmountResourceContainer> amountResourceContainerSet;
+	/** Locally held amount resource bin set. */
+	private Set<AmountResourceBin> amountResourceBinSet;
 
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
@@ -56,8 +56,8 @@ public class EquipmentInventory
 		// Create equipment set
 		equipmentSet = new UnitSet<>();
 
-		// Create the amount resource container set
-		amountResourceContainerSet = new HashSet<>();
+		// Create the amount resource bin set
+		amountResourceBinSet = new HashSet<>();
 		
 		//////////////////////////////////////////////
 		// Temporary Use only 
@@ -65,14 +65,22 @@ public class EquipmentInventory
 		Basket baskets = new Basket(owner, 10);
 		Crate crates = new Crate(owner, 30);
 		
-		amountResourceContainerSet.add(baskets);
-		amountResourceContainerSet.add(crates);
+		amountResourceBinSet.add(baskets);
+		amountResourceBinSet.add(crates);
 		//////////////////////////////////////////////
 		
 		// Create microInventory instance
 		microInventory = new MicroInventory(owner, cargoCapacity);
 	}
 
+	/**
+	 * Gets the locally held amount resource bin set.
+	 * 
+	 * @return
+	 */
+	public Set<AmountResourceBin> getAmountResourceBinSet() {
+		return amountResourceBinSet;
+	}
 	
 	/**
 	 * Gets the total mass of this inventory including the total mass of any held equipment.
@@ -152,7 +160,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Does this person possess an equipment of this equipment type ?
+	 * Does this unit possess an equipment of this equipment type ?
 	 *
 	 * @param typeID
 	 * @return
@@ -168,10 +176,10 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds an equipment to this person.
+	 * Adds an equipment to this unit.
 	 *
 	 * @param equipment
-	 * @return true if this person can carry it
+	 * @return true if this unit can carry it
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
@@ -193,6 +201,29 @@ public class EquipmentInventory
 		return equipmentSet.remove(equipment);
 	}
 
+
+	@Override
+	public boolean addBin(Bin bin) {
+		Set<AmountResourceBin> binSet = getAmountResourceBinSet();
+		
+		AmountResourceBin binMap = null;
+		boolean hasIt = false;
+		
+		for (AmountResourceBin arb : binSet) {
+			if (arb.getBinType() == bin.getBinType()) {
+				hasIt = true;
+				binMap = arb;
+			}
+		}
+		if (!hasIt) {
+			binMap = new AmountResourceBin(owner, Crate.CAP);
+		}	
+		
+		binMap.addBin(bin);
+
+		return hasIt;
+	}
+	
 // Future: Will add the following
 //	/**
 //	 * Remove an equipment
@@ -426,8 +457,8 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Finds the number of empty containers of a particular equipment.
-	 *
+	 * Finds the number of empty containers of a particular equipment type.
+	 * 
 	 * @param containerType the equipment type.
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
@@ -438,6 +469,21 @@ public class EquipmentInventory
 								.count();
 	}
 
+	/**
+	 * Finds the number of empty bins of a particular bin type.
+	 * 
+	 * @param containerType the equipment type.
+	 */
+	@Override
+	public int findNumBinsOfType(BinType binType) {
+		for (AmountResourceBin arb : amountResourceBinSet) {
+			if (arb.getBinType() == binType) {
+				return arb.getBinMap().size();
+			}
+		}
+		return 0;
+	}
+	
 	/**
 	 * Finds the number of containers of a particular type.
 	 *
@@ -684,9 +730,9 @@ public class EquipmentInventory
 	 * @param type
 	 * @return
 	 */
-	public boolean haveContainerType(ContainerType type) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public boolean haveContainerType(BinType type) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				return true;
 			}
 		}
@@ -699,9 +745,9 @@ public class EquipmentInventory
 	 * @param type
 	 * @return
 	 */
-	public boolean haveContainerTypeResource(ContainerType type) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public boolean haveContainerTypeResource(BinType type) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				return true;
 			}
 		}
@@ -709,12 +755,12 @@ public class EquipmentInventory
 	}
 	
 	@Override
-	public double getAmountResourceStored(ContainerType type, int id, int resource) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public double getAmountResourceStored(BinType type, int id, int resource) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
-					return c.getContainerMap().get(id).getAmount();
+				if (ar != null && c.getBinMap().containsKey(id)) {
+					return c.getBinMap().get(id).getAmount();
 				}
 			}
 		}
@@ -723,12 +769,12 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public double storeAmountResource(ContainerType type, int id, int resource, double quantity) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public double storeAmountResource(BinType type, int id, int resource, double quantity) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
-					MicroContainer mc = c.getContainerMap().get(id);
+				if (ar != null && c.getBinMap().containsKey(id)) {
+					Bin mc = c.getBinMap().get(id);
 					double existingAmount = mc.getAmount();
 					double capacity = c.getCapacity();
 					if (existingAmount + quantity > capacity) {
@@ -747,12 +793,12 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public double retrieveAmountResource(ContainerType type, int id, int resource, double quantity) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public double retrieveAmountResource(BinType type, int id, int resource, double quantity) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
-					MicroContainer mc = c.getContainerMap().get(id);
+				if (ar != null && c.getBinMap().containsKey(id)) {
+					Bin mc = c.getBinMap().get(id);
 					double existingAmount = mc.getAmount();
 					if (quantity > existingAmount) {
 						mc.setAmount(0);
@@ -770,11 +816,11 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public double getAmountResourceCapacity(ContainerType type, int id, int resource) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public double getAmountResourceCapacity(BinType type, int id, int resource) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
+				if (ar != null && c.getBinMap().containsKey(id)) {
 					return c.getCapacity();
 				}
 			}
@@ -784,12 +830,12 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public double getAmountResourceRemainingCapacity(ContainerType type, int id, int resource) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public double getAmountResourceRemainingCapacity(BinType type, int id, int resource) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
-					MicroContainer mc = c.getContainerMap().get(id);
+				if (ar != null && c.getBinMap().containsKey(id)) {
+					Bin mc = c.getBinMap().get(id);
 					double existingAmount = mc.getAmount();
 					double capacity = c.getCapacity();
 					if (existingAmount <= capacity) {
@@ -806,12 +852,12 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public boolean hasAmountResourceRemainingCapacity(ContainerType type, int id, int resource) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
+	public boolean hasAmountResourceRemainingCapacity(BinType type, int id, int resource) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
 				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar != null && c.getContainerMap().containsKey(id)) {
-					MicroContainer mc = c.getContainerMap().get(id);
+				if (ar != null && c.getBinMap().containsKey(id)) {
+					Bin mc = c.getBinMap().get(id);
 					double existingAmount = mc.getAmount();
 					double capacity = c.getCapacity();
 					if (existingAmount <= capacity) {
@@ -825,11 +871,11 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public double getCargoCapacity(ContainerType type, int id) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type) {
-				if (c.getContainerMap().containsKey(id)) {
-					MicroContainer mc = c.getContainerMap().get(id);
+	public double getCargoCapacity(BinType type, int id) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type) {
+				if (c.getBinMap().containsKey(id)) {
+//					Bin mc = c.getContainerMap().get(id);
 					return c.getCapacity();
 				}
 			}
@@ -839,10 +885,10 @@ public class EquipmentInventory
 	}
 
 	@Override
-	public int getAmountResource(ContainerType type, int id) {
-		for (AmountResourceContainer c: amountResourceContainerSet) {
-			if (c.getContainerType() == type && c.getContainerMap().containsKey(id)) {
-				return c.getContainerMap().get(id).getAmountResource().getID();
+	public int getAmountResource(BinType type, int id) {
+		for (AmountResourceBin c: amountResourceBinSet) {
+			if (c.getBinType() == type && c.getBinMap().containsKey(id)) {
+				return c.getBinMap().get(id).getAmountResource().getID();
 			}
 		}
 		
@@ -858,6 +904,5 @@ public class EquipmentInventory
 		equipmentSet.clear();
 		equipmentSet = null;
 		microInventory = null;
-	}
-	
+	}	
 }

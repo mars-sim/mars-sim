@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.BinFactory;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -54,6 +56,7 @@ public final class ManufactureUtil {
 	private static final int OUTPUT_VALUE = 10;
 	private static final int PART_VALUE = 20;
 	private static final int EQUIPMENT_VALUE = 40;
+	private static final int BIN_VALUE = 30;
 	private static final int VEHICLE_VALUE = 60;
 	
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -330,9 +333,13 @@ public final class ManufactureUtil {
 			result = manager.getGoodValuePoint(id) * item.getAmount();
 			if (isOutput)
 				result *= EQUIPMENT_VALUE;
+		} else if (item.getType() == ItemType.BIN) {
+			int id = BinType.convertName2ID(item.getName());
+			result = manager.getGoodValuePoint(id) * item.getAmount();
+			if (isOutput)
+				result *= BIN_VALUE;
 		} else if (item.getType() == ItemType.VEHICLE) {
-			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodValuePoint(good.getID()) * item.getAmount();
+			result = manager.getGoodValuePoint(GoodsUtil.getVehicleGood(item.getName()).getID()) * item.getAmount();
 			if (isOutput)
 				result *= VEHICLE_VALUE;
 		}
@@ -472,6 +479,14 @@ public final class ManufactureUtil {
 					return false;
 			}
 
+			else if (ItemType.BIN == item.getType()) {
+				int number = (int) item.getAmount();
+				double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
+				double capacity = settlement.getCargoCapacity();
+				if (mass > capacity)
+					return false;
+			}
+			
 			// else if (ItemType.VEHICLE == item.getType()) // Vehicles are stored outside a settlement.
 
 			else
@@ -532,6 +547,9 @@ public final class ManufactureUtil {
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
+		} else if (ItemType.BIN.equals(item.getType())) {
+			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
+			mass = item.getAmount() * binMass;
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
 			mass = item.getAmount() * vehicleConfig.getVehicleSpec(item.getName()).getEmptyMass();
 		}
@@ -567,10 +585,17 @@ public final class ManufactureUtil {
 				if (vehicle.isReserved() || !isEmpty)
 					i.remove();
 			}
-		} else if (info.getType().equalsIgnoreCase("equipment")) {
+		} 
+		
+		else if (info.getType().equalsIgnoreCase("equipment")) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits = settlement.getEquipmentTypeList(eType);
-		}
+			salvagableUnits = settlement.getEquipmentTypeSet(eType);
+		} 
+		
+//		else if (info.getType().equalsIgnoreCase("bin")) {
+//			BinType type = BinType.convertName2Enum(info.getItemName());
+//			salvagableUnits = settlement.getBinTypeSet(type);
+//		}
 
 		// Make sure container unit is settlement.
 		Iterator<? extends Unit> i = salvagableUnits.iterator();

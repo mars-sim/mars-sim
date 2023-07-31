@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementBuilder.java
- * @date 2023-04-17
+ * @date 2023-07-30
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.equipment.BinFactory;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
@@ -166,6 +167,8 @@ public final class SettlementBuilder {
 
 		createEquipment(supplies, settlement);
 
+		createBins(supplies, settlement);
+		
 		createResources(supplies, settlement);
 
 		createParts(supplies, settlement);
@@ -232,10 +235,17 @@ public final class SettlementBuilder {
 		return settlement;
 	}
 
+	/**
+	 * Creates the initial vehicles at a settlement.
+	 * 
+	 * @param template
+	 * @param settlement
+	 */
 	private void createVehicles(SettlementSupplies template, Settlement settlement) {
 		for(Entry<String, Integer> v : template.getVehicles().entrySet()) {
 			String vehicleType = v.getKey();
-			for (int x = 0; x < v.getValue(); x++) {
+			int number = v.getValue();
+			for (int x = 0; x < number; x++) {
 				VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
 			}
 		}
@@ -244,14 +254,29 @@ public final class SettlementBuilder {
 	/**
 	 * Creates the initial equipment at a settlement.
 	 *
-	 * @throws Exception if error constructing equipment.
+	 * @throws Exception if error making equipment.
 	 */
 	private void createEquipment(SettlementSupplies template, Settlement settlement) {
-		Map<String, Integer> equipmentMap = template.getEquipment();
-		for (String type : equipmentMap.keySet()) {
-			int number = equipmentMap.get(type);
+		for(Entry<String, Integer> e : template.getEquipment().entrySet()) {
+			String type = e.getKey();
+			int number = e.getValue();
 			for (int x = 0; x < number; x++) {
 				EquipmentFactory.createEquipment(type, settlement);
+			}
+		}
+	}
+
+	/**
+	 * Creates the initial bins at a settlement.
+	 *
+	 * @throws Exception if error making bins.
+	 */
+	private void createBins(SettlementSupplies template, Settlement settlement) {
+		for(Entry<String, Integer> e : template.getBins().entrySet()) {
+			String type = e.getKey();
+			int number = e.getValue();
+			for (int x = 0; x < number; x++) {
+				BinFactory.createBins(type, settlement);
 			}
 		}
 	}

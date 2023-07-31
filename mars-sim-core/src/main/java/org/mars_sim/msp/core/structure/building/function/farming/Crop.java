@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.
  */
-public class Crop implements Comparable<Crop>, Loggable, Serializable {
+public class Crop implements Comparable<Crop>, Loggable, Serializable, UnitEntity {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

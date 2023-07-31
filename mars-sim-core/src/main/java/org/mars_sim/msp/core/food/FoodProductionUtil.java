@@ -14,6 +14,8 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.BinFactory;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
@@ -299,7 +301,15 @@ public final class FoodProductionUtil {
 				if (mass > capacity)
 					return false;
 			}
-
+			
+			else if (ItemType.BIN == item.getType()) {
+				int number = (int) item.getAmount();
+				double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
+				double capacity = settlement.getCargoCapacity();
+				if (mass > capacity)
+					return false;
+			}
+			
 			else
 				logger.severe(settlement, "FoodProductionUtil.addProcess(): output: " +
 					item.getType() + " not a valid type.");
@@ -353,6 +363,8 @@ public final class FoodProductionUtil {
 			result = GoodsUtil.getGood(ItemResourceUtil.findItemResource(item.getName()).getID());
 		} else if (ItemType.EQUIPMENT == item.getType()) {
 			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
+		} else if (ItemType.EQUIPMENT == item.getType()) {
+			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
 		}
 
 		return result;
@@ -375,7 +387,11 @@ public final class FoodProductionUtil {
 		} else if (ItemType.EQUIPMENT == item.getType()) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
+		} else if (ItemType.BIN.equals(item.getType())) {
+			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
+			mass = item.getAmount() * binMass;
 		}
+		
 		return mass;
 	}
 

@@ -161,19 +161,19 @@ public class Farming extends Function {
 		maxGrowingArea = spec.getDoubleProperty(GROWING_AREA);
 		remainingGrowingArea = maxGrowingArea;
 
-		Map<CropSpec,Integer> alreadyPlanted = new HashMap<>();
+		Map<CropSpec, Integer> alreadyPlanted = new HashMap<>();
 		for (int x = 0; x < defaultCropNum; x++) {
-			CropSpec cropType = pickACrop(alreadyPlanted);
-			if (cropType == null) {
+			CropSpec cropSpec = pickACrop(alreadyPlanted);
+			if (cropSpec == null) {
 				break;// for avoiding NullPointerException during maven test
 			}
 			else {
-				Crop crop = plantACrop(cropType, true, 0);
+				Crop crop = plantACrop(cropSpec, true, 0);
 				cropList.add(crop);
-				cropHistory.put(crop.getIdentifier(), cropType.getName());
+				cropHistory.put(crop.getIdentifier(), cropSpec.getName());
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 
-				alreadyPlanted.merge(cropType, 1, Integer::sum);
+				alreadyPlanted.merge(cropSpec, 1, Integer::sum);
 			}
 		}
 	}
@@ -443,16 +443,16 @@ public class Farming extends Function {
 	/**
 	 * Plants a new crop.
 	 *
-	 * @param cropType
+	 * @param cropSpec
 	 * @param isStartup             - true if it's at the start of the sim
 	 * @param designatedGrowingArea
 	 * @return Crop
 	 */
-	private Crop plantACrop(CropSpec cropType, boolean isStartup, double designatedGrowingArea) {
+	private Crop plantACrop(CropSpec cropSpec, boolean isStartup, double designatedGrowingArea) {
 		// Implement new way of calculating amount of food in kg,
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
-		double edibleBiomass = cropType.getEdibleBiomass();
+		double edibleBiomass = cropSpec.getEdibleBiomass();
 		// growing-time is in millisol vs. growingDay is in sol
 		// double growingDay = cropType.getGrowingTime() / 1000D ;
 		double cropArea = 0;
@@ -479,7 +479,7 @@ public class Farming extends Function {
 
 		if (!isStartup) {
 			// Use tissue culture
-			percentAvailable = useTissueCulture(cropType, cropArea);
+			percentAvailable = useTissueCulture(cropSpec, cropArea);
 			// Add fertilizer to the soil for the new crop
 			provideFertilizer(cropArea);
 			// Replace some amount of old soil with new soil
@@ -487,7 +487,7 @@ public class Farming extends Function {
 
 		}
 
-		Crop crop = new Crop(identifer++, cropType, cropArea, dailyMaxHarvest,
+		Crop crop = new Crop(identifer++, cropSpec, cropArea, dailyMaxHarvest,
 				this, isStartup, percentAvailable);
 
 		return crop;

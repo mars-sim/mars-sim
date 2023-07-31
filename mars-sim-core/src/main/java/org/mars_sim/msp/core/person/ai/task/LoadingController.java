@@ -467,7 +467,7 @@ public class LoadingController implements Serializable {
 			if (amountNeeded > 0) {
 				// How many available ?
 				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
-				List<Equipment> list = new ArrayList<>(settlement.getEquipmentTypeList(eType));
+				List<Equipment> list = new ArrayList<>(settlement.getEquipmentTypeSet(eType));
 				for(Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						// Put this equipment into a vehicle

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Resupply.java
- * @date 2023-05-02
+ * @date 2023-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -88,6 +88,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private List<BuildingTemplate> newBuildings;
 	private Map<String, Integer> newVehicles;
 	private Map<String, Integer> newEquipment;
+	private Map<String, Integer> newBins;
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
@@ -112,6 +113,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		setBuildings(manifest.buildings());
 		setVehicles(manifest.vehicles());
 		setEquipment(manifest.equipment());
+		setBins(manifest.bins());
 		setNewImmigrantNum(manifest.people());
 		setResources(manifest.resources());
 		setParts(manifest.parts());
@@ -381,6 +383,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
 	 * mission.
+	 * 
 	 * @param timings 
 	 */
 	private void deliverOthers(Simulation sim, SimulationConfig sc) {
@@ -1132,6 +1135,25 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		this.newEquipment = newEquipment;
 	}
 
+	/**
+	 * Gets a map of the resupply bins.
+	 * 
+	 * @return map of equipment type and number.
+	 */
+	@Override
+	public Map<String, Integer> getBins() {
+		return newBins;
+	}
+	
+	/**
+	 * Sets the map of resupply bins.
+	 * 
+	 * @param newBin map of bin type and number.
+	 */
+	public void setBins(Map<String, Integer> newBins) {
+		this.newBins = newBins;
+	}
+	
 	/**
 	 * Gets the number of immigrants in the resupply mission.
 	 * 
