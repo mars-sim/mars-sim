@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.structure.goods;
 import java.util.List;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodType;
@@ -43,19 +44,17 @@ public class TestGoods extends TestCase {
 
     public void testGoodsListNotNull() {
         List<Good> goodsList = GoodsUtil.getGoodsList();
-
         assertNotNull(goodsList);
 	}
 
 	public void testGoodsListNotZero() {
         List<Good> goodsList = GoodsUtil.getGoodsList();
-
 		assertTrue(goodsList.size() > 0);
 	}
 
-	public void testGoodsListContainsWater() throws Exception {
+	public void testGoodsListContainsWater() {
 		Good waterGood = GoodsUtil.getGood(ResourceUtil.waterID);
-		assertNotNull("Found water good", waterGood);
+		assertNotNull("Found water Good", waterGood);
 	}
 
 	public void testGoodsListContainsHammer() {
@@ -66,9 +65,14 @@ public class TestGoods extends TestCase {
 
 	public void testGoodsListContainsBag() {
 		Good bagGood = GoodsUtil.getEquipmentGood(EquipmentType.BAG);
-		assertNotNull("Foud Bag Good", bagGood);
+		assertNotNull("Found Bag Good", bagGood);
 	}
 
+	public void testGoodsListContainsPot() {
+		Good potGood = GoodsUtil.getBinGood(BinType.POT);
+		assertNotNull("Found Pot Good", potGood);
+	}
+	
 	public void testGoodsListContainsExplorerRover() {
 		// "Explorer Rover" is a valid vehicle type
         String typeName = "Explorer Rover";
@@ -79,6 +83,6 @@ public class TestGoods extends TestCase {
 	public void testGoodsListDoesntContainFalseRover() {
 		// "False Rover" is not a valid vehicle type
 		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
-		assertNull("NonExistent Vehicle Good not found", falseRoverGood);
+		assertNull("Non-Existent Vehicle Good not found", falseRoverGood);
 	}
 }

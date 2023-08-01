@@ -8,21 +8,14 @@ package org.mars_sim.msp.core.goods;
 
 import java.util.Collection;
 
-import org.mars_sim.msp.core.equipment.BinType;
+import org.mars_sim.msp.core.equipment.Bin;
 import org.mars_sim.msp.core.equipment.BinFactory;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.equipment.BinType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This represents the attributes of how a bin can be traded.
@@ -31,11 +24,9 @@ public class BinGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final int PROJECTED_GAS_CANISTERS = 10;
-	private static final int PROJECTED_THERMAL_BOTTLE = 1;
-	private static final double PROJECTED_WHEELBARROW = 1;
-	
-	private static final double GAS_CANISTER_DEMAND = 1;
+	private static final int PROJECTED_CRATE = 10;
+	private static final int PROJECTED_BASKET = 10;
+	private static final double PROJECTED_POT = 10;
 	
 	private static final double INITIAL_DEMAND = 0;
 	private static final double INITIAL_SUPPLY = 0;
@@ -170,39 +161,43 @@ public class BinGood extends Good {
 	private double determineBinDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
 
-		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
+		double botanistFactor = (1 + JobUtil.numJobs(JobType.BOTANIST, settlement)) / 3.0;	
+		double cookFactor = (1 + JobUtil.numJobs(JobType.CHEF, settlement)) / 3.0;	
+		double traderFactor = (1 + JobUtil.numJobs(JobType.TRADER, settlement)) / 3.0;
+		
+		double numAvailable = settlement.findNumBinsOfType(binType);
+		
+		// Determine the number of bins that are needed.
+		double binCapacity = BinFactory.getBinCapacity(binType);
+		double totalPhaseOverfill = 0D;
 
-		// Determine the number of containers that are needed.
-//		double containerCapacity = ContainerUtil.getContainerCapacity(binType);
-//		double totalPhaseOverfill = 0D;
-//
-//		// Scan resources that can be held in this Container
-//		for (AmountResource resource : ResourceUtil.getAmountResources()) {
-//			if (ContainerUtil.getBinTypeForContainer(resource.getID()) == binType) {
-//				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
-//
-//				double resourceDemand = owner.getDemandValueWithID(resource.getID());
-//
-//				if (resourceDemand > settlementCapacity) {
-//					double resourceOverfill = resourceDemand - settlementCapacity;
-//					totalPhaseOverfill += resourceOverfill;
-//				}
-//			}
-//		}
-//
-//		baseDemand += totalPhaseOverfill * containerCapacity;
+		// Scan resources that can be held in this Container
+		for (AmountResource resource : ResourceUtil.getAmountResources()) {
+			if (BinFactory.getBinTypeForResource(resource.getID()) == binType) {
+				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+
+				double resourceDemand = owner.getDemandValueWithID(resource.getID());
+
+				if (resourceDemand > settlementCapacity) {
+					double resourceOverfill = resourceDemand - settlementCapacity;
+					totalPhaseOverfill += resourceOverfill;
+				}
+			}
+		}
+
+		baseDemand += totalPhaseOverfill * binCapacity - numAvailable;
 
 		double ratio = computeUsageFactor(settlement);
 
 		switch (binType) {
 			case BASKET:
-				return 1; //Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BASKET_DEMAND;
+				return Math.max(baseDemand * ratio, 1000) * cookFactor * PROJECTED_BASKET;
 
 			case CRATE:
-				return 1; //Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * CRATE_DEMAND;
+				return Math.max(baseDemand * ratio, 1000) * traderFactor * PROJECTED_CRATE;
 
 			case POT:
-				return 1; //Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * POT_DEMAND;
+				return Math.max(baseDemand * ratio, 1000) * botanistFactor * PROJECTED_POT;
 
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + binType + ".");
@@ -218,9 +213,9 @@ public class BinGood extends Good {
 	 * @return the usage factor
 	 */
 	private double computeUsageFactor(Settlement settlement) {
-		int numUsed = 0;
+		double totalAmount = 0;
 
-//		Collection<Container> binList = settlement.findContainersOfType(binType);
+		Collection<Bin> binList = settlement.findBinsOfType(binType);
 //
 //		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
 //			if (mission instanceof VehicleMission vehicleMission) {
@@ -231,30 +226,12 @@ public class BinGood extends Good {
 //			}
 //		}
 //
-		double total = 0; //binList.size();
-//		for(Container c: binList) {
-//			if (c.getStoredMass() > 0)
-//				numUsed++;
-//		}
-
-		return  (1 + numUsed) / (1 + total);
-	}
-
-	/**
-	 * Gets the EVA suit demand from its part.
-	 *
-	 * @param owner Owner of Goods
-	 * @return demand
-	 */
-	private static double getWholeEVASuitDemand(GoodsManager owner) {
-		double demand = 0;
-	
-		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
-			for (int id : ItemResourceUtil.evaSuitPartIDs) {
-				demand += owner.getDemandValueWithID(id);
-			}
+		double total = binList.size();
+		for(Bin b: binList) {
+			totalAmount += b.getAmount();
 		}
-		return demand;
+
+		return totalAmount / (1 + total);
 	}
 
 	/**

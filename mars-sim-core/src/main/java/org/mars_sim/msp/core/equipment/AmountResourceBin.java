@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.function.farming.UnitEntity;
+import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 
 
 public class AmountResourceBin extends BaseBin {
@@ -23,8 +23,8 @@ public class AmountResourceBin extends BaseBin {
 
 	private Map<Integer, Bin> binMap = new HashMap<>();
 	
-	public AmountResourceBin(UnitEntity unitEntity, double cap) {
-		super(unitEntity, cap);
+	public AmountResourceBin(BinEntity entity, double cap) {
+		super(entity, cap);
 	}
 	
 	public Map<Integer, Bin> getBinMap() {

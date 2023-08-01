@@ -216,7 +216,7 @@ public class EquipmentInventory
 			}
 		}
 		if (!hasIt) {
-			binMap = new AmountResourceBin(owner, Crate.CAP);
+			binMap = new AmountResourceBin(owner, BinFactory.getBinCapacity(bin.getBinType()));
 		}	
 		
 		binMap.addBin(bin);
@@ -484,6 +484,28 @@ public class EquipmentInventory
 		return 0;
 	}
 	
+	/**
+	 * Finds all of the bins of a particular type.
+	 *
+	 * @return collection of bins or empty collection if none.
+	 */
+	@Override
+	public Collection<Bin> findBinsOfType(BinType binType){
+		Collection<Bin> result = new HashSet<>();
+		for (AmountResourceBin arb : amountResourceBinSet) {
+			if (arb.getBinType() == binType) {
+				result = arb.getBinMap().values();
+			}
+		}
+
+//		for (Equipment e : equipmentSet) {
+//			if (e != null && e.getUnitType() == UnitType.CONTAINER && type == e.getEquipmentType()) {
+//				result.add((Container)e);
+//			}
+//		}
+		return result;
+	}
+
 	/**
 	 * Finds the number of containers of a particular type.
 	 *

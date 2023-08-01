@@ -62,7 +62,7 @@ public final class ContainerUtil {
 	/**
 	 * Gets the capacity of the container.
 	 * 
-	 * @param containerClass the container class.
+	 * @param type the equipment type.
 	 * @return capacity (kg).
 	 */
 	public static double getContainerCapacity(EquipmentType type) {
@@ -82,7 +82,7 @@ public final class ContainerUtil {
 		case WHEELBARROW:
 			return 100;					
 		default:
-			throw new IllegalArgumentException("Equipment type " + type + " is not a container");
+			throw new IllegalArgumentException("'" + type + "' is not a container.");
 		}
 	}
 

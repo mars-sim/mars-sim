@@ -331,11 +331,9 @@ public class Manufacture extends Function {
 		Settlement settlement = building.getSettlement();
 
 		// Set the salvage process info for the salvaged unit.
-		// Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 		((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement.getIdentifier());
 
 		// Recalculate settlement good value for salvaged unit.
-		// GoodsManager goodsManager = settlement.getGoodsManager();
 		Good salvagedGood = null;
 		if (salvagedUnit instanceof Equipment) {
 			salvagedGood = GoodsUtil.getEquipmentGood(((Equipment) salvagedUnit).getEquipmentType());

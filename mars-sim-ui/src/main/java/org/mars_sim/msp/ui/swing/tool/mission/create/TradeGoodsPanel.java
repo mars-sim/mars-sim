@@ -273,6 +273,7 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * Checks if trade list has enough containers to hold amount resources.
+	 * 
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
@@ -320,6 +321,7 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * Gets the number of containers of a type in the trade list.
+	 * 
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
@@ -333,6 +335,7 @@ class TradeGoodsPanel extends WizardPanel {
 
 	/**
 	 * Gets the wizard panel name.
+	 * 
 	 * @return panel name.
 	 */
 	String getPanelName() {

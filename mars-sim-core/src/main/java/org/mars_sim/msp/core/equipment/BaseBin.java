@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.building.function.farming.UnitEntity;
+import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 
 
 public class BaseBin implements Serializable {
@@ -20,13 +20,13 @@ public class BaseBin implements Serializable {
 
 	private double capacity;
 	
-	private UnitEntity unitEntity;
+	private BinEntity unitEntity;
 	
 	private Unit owner;
 	
 	private BinType binType;
 
-	public BaseBin(UnitEntity unitEntity, double cap) {
+	public BaseBin(BinEntity unitEntity, double cap) {
 		this.unitEntity = unitEntity;
 		this.capacity = cap;
 	}
@@ -47,7 +47,7 @@ public class BaseBin implements Serializable {
 		capacity = cap;
 	}
 	
-	public UnitEntity getUnitEntity() {
+	public BinEntity getUnitEntity() {
 		return unitEntity;
 	}
 	

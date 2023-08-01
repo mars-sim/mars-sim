@@ -276,7 +276,7 @@ public final class CommerceUtil {
 			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
 
 			double extraMass = 0D;
-			// Calcaulate the Value of this item to the seller
+			// Calculate the Value of this item to the seller
 			if (isAmountResource) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				Container container = getAvailableContainerForResource(resource,

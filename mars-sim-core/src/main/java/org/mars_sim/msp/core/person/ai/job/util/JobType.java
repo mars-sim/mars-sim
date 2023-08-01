@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.job.util;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.mars.sim.tools.Msg;

@@ -7,11 +7,16 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.tool.Conversion;
 
-public class Bin {
+public class Bin implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	
 	private int id;
 
 	private double amount;

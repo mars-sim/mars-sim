@@ -90,7 +90,7 @@ public class GoodsUtil {
      */
     public static Good getEquipmentGood(EquipmentType type) {
         if (type == null) {
-            logger.severe("equipmentClass is NOT supposed to be null.");
+            logger.severe("The equipment type is NOT supposed to be null.");
         }
         int id = EquipmentType.getResourceID(type);
         if (id > 0) {
@@ -100,6 +100,24 @@ public class GoodsUtil {
         return null;
     }
 
+    /**
+     * Gets a good object for a given bin class.
+     *
+     * @param type the bin type.
+     * @return good for the resource class or null if none.
+     */
+    public static Good getBinGood(BinType type) {
+        if (type == null) {
+            logger.severe("The bin type is NOT supposed to be null.");
+        }
+        int id = BinType.getResourceID(type);
+        if (id > 0) {
+            return getGood(id);
+        }
+
+        return null;
+    }
+    
     /**
      * Gets a good object for the given vehicle type.
      *
@@ -168,7 +186,6 @@ public class GoodsUtil {
      * Populates the goods list with all amount resources.
      * 
      * @param newMap
-     * @param newList
      */
     private static void populateAmountResources(Map<Integer, Good> newMap) {
         for (AmountResource ar :  ResourceUtil.getAmountResources()) {
@@ -180,7 +197,7 @@ public class GoodsUtil {
      * Populates the goods list with all item resources.
      * 
      * @param newMap
-     * @return
+
      */
     private static void populateItemResources(Map<Integer, Good> newMap) {
         for(Part p : ItemResourceUtil.getItemResources()) {
@@ -192,7 +209,6 @@ public class GoodsUtil {
      * Populates the goods list with all equipment.
      * 
      * @param newMap
-     * @param newList
      */
     private static void populateEquipment(Map<Integer, Good> newMap) {
         for(EquipmentType type : EquipmentType.values()) {
@@ -205,7 +221,6 @@ public class GoodsUtil {
      * Populates the goods list with all bins.
      * 
      * @param newMap
-     * @param newList
      */
     private static void populateBins(Map<Integer, Good> newMap) {
         for(BinType type : BinType.values()) {
@@ -219,7 +234,7 @@ public class GoodsUtil {
      * Populates the goods list with all vehicles.
      * 
      * @param newMap
-     * @param newList
+
      */
     private static void populateVehicles(Map<Integer, Good> newMap) {
         Set<VehicleType> done = new HashSet<>();  // Only add one per Vehicle Type
@@ -236,7 +251,6 @@ public class GoodsUtil {
      * Populates the goods list with all robots.
      * 
      * @param newMap
-     * @return
      */
     private static void populateRobots(Map<Integer, Good> newMap) {
     	 for (RobotType type : RobotType.values()) {

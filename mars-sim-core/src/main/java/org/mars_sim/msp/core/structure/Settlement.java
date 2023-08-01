@@ -2184,6 +2184,16 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Finds all of the bins of a particular type.
+	 *
+	 * @return collection of bins or empty collection if none.
+	 */
+	@Override
+	public Collection<Bin> findBinsOfType(BinType binType){
+		return eqmInventory.findBinsOfType(binType);
+	}
+	
+	/**
 	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
 	 *

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.farming.UnitEntity;
+import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements Serializable, Loggable, UnitIdentifer, UnitEntity, Comparable<Unit> {
+public abstract class Unit implements Serializable, Loggable, UnitIdentifer, BinEntity, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

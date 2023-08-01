@@ -7,17 +7,15 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.structure.building.function.farming.UnitEntity;
+import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 
 public class Basket extends AmountResourceBin {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	public static double CAP = 100;
 	
-	public Basket(UnitEntity unitEntity, double cap) {
-		super(unitEntity, cap);
+	public Basket(BinEntity entity, double cap) {
+		super(entity, cap);
 
 		setBinType(BinType.BASKET);
 	}

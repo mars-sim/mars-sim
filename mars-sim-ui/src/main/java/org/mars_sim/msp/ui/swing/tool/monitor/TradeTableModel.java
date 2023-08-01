@@ -19,10 +19,12 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+
 
 @SuppressWarnings("serial")
 public class TradeTableModel extends EntityTableModel<Good>
@@ -210,17 +212,24 @@ implements UnitListener {
     		return settlement.getItemResourceStored(id);
     	}
     	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+    		// For Vehicle
     		return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
     	}
     	else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
+    		// For EVA suits 
     		EquipmentType type = EquipmentType.convertID2Type(id);
     		if (type == EquipmentType.EVA_SUIT)
     			return settlement.getNumEVASuit();
-    		
+    		// For Equipment 
     		return settlement.findNumContainersOfType(type);
     	}
+    	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
+    		// For Robots 
+    		return settlement.getNumBots();
+    	}
     	else {
-    		return settlement.getInitialNumOfRobots();
+    		// For Bins 
+    		return settlement.findNumBinsOfType(BinType.convertID2Type(id));
     	}
     }
 
@@ -240,8 +249,9 @@ implements UnitListener {
     	}
     	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
     		// For Item Resource
-    		if (ItemResourceUtil.findItemResource(id) != null) {
-    			return settlement.getItemResourceStored(id) * ItemResourceUtil.findItemResource(id).getMassPerItem();
+    		Part p = ItemResourceUtil.findItemResource(id);
+    		if (p != null) {
+    			return settlement.getItemResourceStored(id) * p.getMassPerItem();
     		}
     			return 0;
     	}
@@ -264,7 +274,7 @@ implements UnitListener {
     	}
     	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
     		// For Robots   
-    		return settlement.getInitialNumOfRobots() * Robot.EMPTY_MASS;
+    		return settlement.getNumBots() * Robot.EMPTY_MASS;
     	}    	
     	else {
     		// For Bins   		

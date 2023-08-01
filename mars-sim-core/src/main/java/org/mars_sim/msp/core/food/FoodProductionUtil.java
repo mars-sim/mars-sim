@@ -363,8 +363,8 @@ public final class FoodProductionUtil {
 			result = GoodsUtil.getGood(ItemResourceUtil.findItemResource(item.getName()).getID());
 		} else if (ItemType.EQUIPMENT == item.getType()) {
 			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
-		} else if (ItemType.EQUIPMENT == item.getType()) {
-			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
+		} else if (ItemType.BIN == item.getType()) {
+			result = GoodsUtil.getBinGood(BinType.convertName2Enum(item.getName()));
 		}
 
 		return result;

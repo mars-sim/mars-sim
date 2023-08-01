@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
@@ -32,6 +33,13 @@ public interface BinHolder {
 	 * @return number of empty bins.
 	 */
 	public int findNumBinsOfType(BinType binType);
+	
+	/**
+	 * Finds all of the bins of a particular type.
+	 *
+	 * @return collection of bins or empty collection if none.
+	 */
+	public Collection<Bin> findBinsOfType(BinType binType);
 	
 	/**
 	 * Gets the locally held amount resource bin set.

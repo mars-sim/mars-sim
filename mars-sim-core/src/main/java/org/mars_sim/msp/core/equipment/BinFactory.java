@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -41,6 +44,28 @@ public final class BinFactory {
 
 	public static void getBinSet(Set<AmountResourceBin> allBins){
 		
+	}
+	
+	/**
+	 * Gets the bin type of the container needed to hold a particular resource.
+	 * 
+	 * @param resourceID the id of the resource to hold.
+	 * @return bin type or null if none found.
+	 */
+	public static BinType getBinTypeForResource(int resourceID) {
+		AmountResource ar = ResourceUtil.findAmountResource(resourceID);
+		// Crop, Rock
+		GoodType goodType = ar.getGoodType();
+		
+		boolean isCrop = goodType == GoodType.CROP;
+		boolean isRock = goodType == GoodType.ROCK;
+		boolean isStone = goodType == GoodType.GEMSTONE;
+		if (isRock || isCrop || isStone) {
+			return BinType.BASKET;
+		}
+		
+		
+		return null;
 	}
 	
 	/**
@@ -123,50 +148,60 @@ public final class BinFactory {
 		Bin newBin = null;
 		boolean hasIt = false;
 		
-		switch (type) {
-			case CRATE:		
-				for (AmountResourceBin arb : binSet) {
-					if (arb.getBinType() == type) {
-						hasIt = true;
-						binMap = arb;
-					}
-				}
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new AmountResourceBin(settlement, Crate.CAP);
-				}	
+		for (AmountResourceBin arb : binSet) {
+			if (arb.getBinType() == type) {
+				hasIt = true;
+				binMap = arb;
 				break;
-	
-			case BASKET:
-				for (AmountResourceBin arb : binSet) {
-					if (arb.getBinType() == type) {
-						hasIt = true;
-						binMap = arb;
-					}
-				}
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new AmountResourceBin(settlement, Basket.CAP);
-				}	
-				break;
-	
-			case POT:		
-				for (AmountResourceBin arb : binSet) {
-					if (arb.getBinType() == type) {
-						hasIt = true;
-						binMap = arb;
-					}
-				}
-				if (!hasIt) {
-					// Create a bin map
-					binMap = new AmountResourceBin(settlement, Pot.CAP);
-				}	
-				break;
-			default:
-				throw new IllegalStateException("Bin type '" + type + "' could not be constructed.");
+			}
 		}
 
+//		switch (type) {
+//			case CRATE:		
+//				for (AmountResourceBin arb : binSet) {
+//					if (arb.getBinType() == type) {
+//						hasIt = true;
+//						binMap = arb;
+//					}
+//				}
+//				if (!hasIt) {
+//					// Create a bin map
+//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
+//				}	
+//				break;
+//	
+//			case BASKET:
+//				for (AmountResourceBin arb : binSet) {
+//					if (arb.getBinType() == type) {
+//						hasIt = true;
+//						binMap = arb;
+//					}
+//				}
+//				if (!hasIt) {
+//					// Create a bin map
+//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
+//				}	
+//				break;
+//	
+//			case POT:		
+//				for (AmountResourceBin arb : binSet) {
+//					if (arb.getBinType() == type) {
+//						hasIt = true;
+//						binMap = arb;
+//					}
+//				}
+//				if (!hasIt) {
+//					// Create a bin map
+//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
+//				}	
+//				break;
+//			default:
+//				throw new IllegalStateException("Bin type '" + type + "' could not be constructed.");
+//		}
+
 		if (!hasIt) {
+			// Create a bin map
+			binMap = new AmountResourceBin(settlement, getBinCapacity(type));
 			// Set owner
 			binMap.setOwner(settlement);
 			// Set bin type
@@ -200,6 +235,25 @@ public final class BinFactory {
 		}
 
 		return null;
+	}
+	
+	/**
+	 * Gets the capacity of the bin.
+	 * 
+	 * @param BinType the bin type.
+	 * @return capacity (kg).
+	 */
+	public static double getBinCapacity(BinType type) {
+		switch(type) {
+		case BASKET:
+			return 100D;
+		case CRATE:
+			return 100D;
+		case POT:
+			return 100D;			
+		default:
+			throw new IllegalArgumentException("'" + type + "' is not a bin.");
+		}
 	}
 	
 //	/**
