@@ -78,7 +78,7 @@ abstract class UnitMapLayer implements MapLayer, SimulationConstants {
 			
 			UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (i != null && i.isMapDisplayed(unit)
-				&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < Map.HALF_MAP_ANGLE) {
+				&& mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < baseMap.getHalfAngle()) {
 					displayUnit(unit, mapCenter, baseMap, g);
 			}
 		}

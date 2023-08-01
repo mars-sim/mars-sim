@@ -164,7 +164,7 @@ public class SimulationBuilder {
 	}
 	
 	/**
-	 * Gets the list of core command line options that are supported by this builder
+	 * Gets the list of core command line options that are supported by this builder.
 	 * 
 	 * @return the list
 	 */

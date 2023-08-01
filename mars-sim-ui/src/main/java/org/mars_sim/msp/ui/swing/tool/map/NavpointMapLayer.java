@@ -127,7 +127,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	 */
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
 
-		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < Map.HALF_MAP_ANGLE) {
+		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
 			MapMetaData mapType = baseMap.getType();
 			
 			// Chose a navpoint icon based on the map type.
@@ -141,8 +141,8 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 
 			// Determine the draw location for the icon.
 			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, baseMap);
-			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
-					(location.getiY()+MAP_Y_OFFSET - navIcon.getIconHeight()));
+			IntPoint drawLocation = new IntPoint(location.getiX() + MAP_X_OFFSET, 
+					(location.getiY() + MAP_Y_OFFSET - navIcon.getIconHeight()));
 
 			// Draw the navpoint icon.
 			navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());

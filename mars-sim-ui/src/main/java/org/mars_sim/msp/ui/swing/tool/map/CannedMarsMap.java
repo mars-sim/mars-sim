@@ -25,6 +25,8 @@ public class CannedMarsMap extends JComponent implements Map {
 	// Data members
 	private boolean mapImageDone = false;
 	
+	public final double HALF_MAP_ANGLE = 0.48587;
+	
 	private transient Image mapImage = null;
 	
 	private transient MapData mapData;
@@ -117,6 +119,14 @@ public class CannedMarsMap extends JComponent implements Map {
 		mapData.setRho(rho);
 	}
 	
+	/**
+     * Gets the half angle of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getHalfAngle() {
+    	return mapData.getHalfAngle();
+    }
 	
 	/**
 	 * Gets the height of this map in pixels.

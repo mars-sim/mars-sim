@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.Bin;
+import org.mars_sim.msp.core.equipment.BinFactory;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.goods.Good;
@@ -513,6 +515,17 @@ public class Manufacture extends Function {
 						}
 					}
 
+					else if (ItemType.BIN.equals(item.getType())) {
+						// Produce bins.
+						String type = item.getName();
+						int number = (int) item.getAmount();
+						for (int x = 0; x < number; x++) {
+							BinFactory.createBins(type, settlement);
+							// Add to the daily output
+//							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
+						}
+					}
+					
 					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();
@@ -586,6 +599,16 @@ public class Manufacture extends Function {
 						}
 					}
 
+					else if (ItemType.BIN.equals(item.getType())) {
+						// Produce equipment.
+						String type = item.getName();
+						int number = (int) item.getAmount();
+						for (int x = 0; x < number; x++) {
+							BinFactory.createBins(type, settlement);
+//							unitManager.addUnit(equipment);
+						}
+					}
+					
 					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();

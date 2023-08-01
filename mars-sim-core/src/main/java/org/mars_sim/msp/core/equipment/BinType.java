@@ -15,8 +15,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 public enum BinType {
 	
 	// Containers
+	BASKET				("Basket"),
 	CRATE				("Crate"), 
-	BASKET				("Basket"), 
 	POT					("Pot"),
 	;
 	
@@ -79,7 +79,7 @@ public enum BinType {
 	    		}
 	    	}
 		}
-		throw new IllegalArgumentException("No container type called " + name);
+		throw new IllegalArgumentException("No bin type called " + name);
 	}
 	
 	/**

@@ -484,6 +484,11 @@
     <equipment type="thermal bottle" number="24" />	
  	<equipment type="wheelbarrow" number="24" />
 
+    <!-- Bins -->
+	<bin type="crate" number="40" />
+	<bin type="basket" number="40" />
+	<bin type="pot" number="40" />
+		
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4320" />
 	<resource type="water" amount="7200" />

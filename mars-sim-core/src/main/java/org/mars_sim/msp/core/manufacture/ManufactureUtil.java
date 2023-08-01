@@ -540,17 +540,17 @@ public final class ManufactureUtil {
 	public static double getMass(ManufactureProcessItem item) {
 		double mass = 0D;
 
-		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
+		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 			mass = item.getAmount();
-		} else if (ItemType.PART.equals(item.getType())) {
+		} else if (ItemType.PART == item.getType()) {
 			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
-		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+		} else if (ItemType.EQUIPMENT == item.getType()) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
-		} else if (ItemType.BIN.equals(item.getType())) {
+		} else if (ItemType.BIN == item.getType()) {
 			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * binMass;
-		} else if (ItemType.VEHICLE.equals(item.getType())) {
+		} else if (ItemType.VEHICLE == item.getType()) {
 			mass = item.getAmount() * vehicleConfig.getVehicleSpec(item.getName()).getEmptyMass();
 		}
 

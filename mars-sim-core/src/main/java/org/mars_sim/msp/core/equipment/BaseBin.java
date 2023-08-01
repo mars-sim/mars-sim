@@ -20,14 +20,14 @@ public class BaseBin implements Serializable {
 
 	private double capacity;
 	
-	private BinEntity unitEntity;
+	private BinEntity entity;
 	
 	private Unit owner;
 	
 	private BinType binType;
 
-	public BaseBin(BinEntity unitEntity, double cap) {
-		this.unitEntity = unitEntity;
+	public BaseBin(BinEntity entity, double cap) {
+		this.entity = entity;
 		this.capacity = cap;
 	}
 	
@@ -47,8 +47,8 @@ public class BaseBin implements Serializable {
 		capacity = cap;
 	}
 	
-	public BinEntity getUnitEntity() {
-		return unitEntity;
+	public BinEntity getBinEntity() {
+		return entity;
 	}
 	
 	public void setOwner(Unit owner) {

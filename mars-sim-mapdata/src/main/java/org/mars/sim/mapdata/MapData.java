@@ -41,6 +41,13 @@ import java.io.IOException;
 	 */
 	public void setRho(double rho);
 	
+	/**
+     * Gets the half angle of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getHalfAngle();
+    
     /**
      * Gets the magnification of the Mars surface map.
      * 

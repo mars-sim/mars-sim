@@ -30,8 +30,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars.sim.mapdata.IntegerMapData;
 import org.mars.sim.mapdata.location.Coordinates;
-import org.mars.sim.mapdata.map.Map;
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -69,7 +69,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 public class NavpointPanel
 extends JPanel
 implements MissionListener {
-	
+
 	private static final int WIDTH = MapPanel.MAP_BOX_WIDTH;
 	private static final int HEIGHT = MapPanel.MAP_BOX_HEIGHT;
 	private static final double TWO_PI = Math.PI * 2D;
@@ -178,7 +178,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi - Map.QUARTER_HALF_MAP_ANGLE;
+				phi = phi - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
 				if (phi < 0D) phi = 0D;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -193,7 +193,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta - Map.QUARTER_HALF_MAP_ANGLE;
+				theta = theta - IntegerMapData.QUARTER_HALF_MAP_ANGLE;
 				if (theta < 0D) theta += (TWO_PI);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -208,7 +208,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta + Map.QUARTER_HALF_MAP_ANGLE;
+				theta = theta + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
 				if (theta < (TWO_PI)) theta -= (TWO_PI);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -222,7 +222,7 @@ implements MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi + Map.QUARTER_HALF_MAP_ANGLE;
+				phi = phi + IntegerMapData.QUARTER_HALF_MAP_ANGLE;
 				if (phi > Math.PI) phi = Math.PI;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}

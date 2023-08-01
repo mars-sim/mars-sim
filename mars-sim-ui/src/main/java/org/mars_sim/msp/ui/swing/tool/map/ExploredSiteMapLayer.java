@@ -35,8 +35,6 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 
-	private static final double HALF_MAP_ANGLE = Map.HALF_MAP_ANGLE;
-
 	/**
 	 * Constructor.
 	 * 
@@ -111,7 +109,7 @@ public class ExploredSiteMapLayer implements MapLayer, SimulationConstants {
 	 */
 	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, Map baseMap, Graphics g) {
 
-		if (mapCenter.getAngle(site.getLocation()) < HALF_MAP_ANGLE) {
+		if (mapCenter.getAngle(site.getLocation()) < baseMap.getHalfAngle()) {
 
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;

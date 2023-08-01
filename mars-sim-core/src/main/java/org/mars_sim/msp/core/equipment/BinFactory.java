@@ -37,13 +37,9 @@ public final class BinFactory {
 	private static ManufactureConfig manufactureConfig;
 	
 	/**
-	 * Private constructor for utility class.
+	 * Private constructor.
 	 */
 	private BinFactory() {
-	}
-
-	public static void getBinSet(Set<AmountResourceBin> allBins){
-		
 	}
 	
 	/**
@@ -156,52 +152,33 @@ public final class BinFactory {
 			}
 		}
 
-//		switch (type) {
-//			case CRATE:		
-//				for (AmountResourceBin arb : binSet) {
-//					if (arb.getBinType() == type) {
-//						hasIt = true;
-//						binMap = arb;
-//					}
-//				}
-//				if (!hasIt) {
-//					// Create a bin map
-//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
-//				}	
-//				break;
-//	
-//			case BASKET:
-//				for (AmountResourceBin arb : binSet) {
-//					if (arb.getBinType() == type) {
-//						hasIt = true;
-//						binMap = arb;
-//					}
-//				}
-//				if (!hasIt) {
-//					// Create a bin map
-//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
-//				}	
-//				break;
-//	
-//			case POT:		
-//				for (AmountResourceBin arb : binSet) {
-//					if (arb.getBinType() == type) {
-//						hasIt = true;
-//						binMap = arb;
-//					}
-//				}
-//				if (!hasIt) {
-//					// Create a bin map
-//					binMap = new AmountResourceBin(settlement, getBinCapacity(type));
-//				}	
-//				break;
-//			default:
-//				throw new IllegalStateException("Bin type '" + type + "' could not be constructed.");
-//		}
+		switch (type) {
+			case CRATE:
+				if (!hasIt) {
+					// Create a bin map
+					binMap = new Crate(settlement, getBinCapacity(type));
+				}	
+				break;
+	
+			case BASKET:
+				if (!hasIt) {
+					// Create a bin map
+					binMap = new Basket(settlement, getBinCapacity(type));
+				}	
+				break;
+	
+			case POT:		
+				if (!hasIt) {
+					// Create a bin map
+					binMap = new Pot(settlement, getBinCapacity(type));
+				}	
+				break;
+				
+			default:
+				throw new IllegalStateException("Bin type '" + type + "' could not be constructed.");
+		}
 
 		if (!hasIt) {
-			// Create a bin map
-			binMap = new AmountResourceBin(settlement, getBinCapacity(type));
 			// Set owner
 			binMap.setOwner(settlement);
 			// Set bin type

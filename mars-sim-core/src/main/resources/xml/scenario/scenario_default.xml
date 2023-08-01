@@ -58,7 +58,10 @@
 		</settlement>
 
 		<settlement name="Heritage" template="Hub Base" crew="Alpha" persons="36" robots="18" sponsor="MS">
-			<location longitude="10.0 W" latitude="10.0 N" />
+			<!-- <location longitude="10.0 W" latitude="10.0 N" /> 
+				Mawrth Vallis is at around 24 N 338 E
+			-->
+			<location longitude="338.0 E" latitude="24.0 N" />
 		</settlement>
 
 	</initial-settlement-list>

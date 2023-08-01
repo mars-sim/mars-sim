@@ -72,7 +72,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Get map angle.
-		double angle = Map.HALF_MAP_ANGLE;
+		double angle = baseMap.getHalfAngle();
 
 		// Draw trail.
 		IntPoint oldSpot = null;

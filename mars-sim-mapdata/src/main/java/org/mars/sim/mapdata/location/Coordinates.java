@@ -855,7 +855,7 @@ public final class Coordinates implements Serializable {
 			double doubleLongitude = Double.parseDouble(numLongitude);
 
 			// Future: should self-correct instead of throwing error
-			if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
+			if ((doubleLongitude < 0) || (doubleLongitude > 360)) {
 				return LON_BEGIN_WITH; //$NON-NLS-1$
 			}
 		} catch (NumberFormatException e) {

@@ -387,7 +387,7 @@ public final class FoodProductionUtil {
 		} else if (ItemType.EQUIPMENT == item.getType()) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
-		} else if (ItemType.BIN.equals(item.getType())) {
+		} else if (ItemType.BIN == item.getType()) {
 			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * binMass;
 		}

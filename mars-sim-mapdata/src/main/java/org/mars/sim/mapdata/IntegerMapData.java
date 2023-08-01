@@ -41,6 +41,10 @@ import com.jogamp.opencl.CLProgram;
 
 	private static boolean HARDWARE_ACCELERATION = true;
 
+	public static final double HALF_MAP_ANGLE = 3.5 * 0.48587;
+	
+	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
+	
  	public final double MAX_RHO;
 
  	public final double MIN_RHO;
@@ -161,6 +165,14 @@ import com.jogamp.opencl.CLProgram;
 		}
 	}	
 
+	/**
+     * Gets the half angle of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getHalfAngle() {
+    	return HALF_MAP_ANGLE / getMagnification();
+    }
 	
 	/**
      * Gets the number of pixels width.
@@ -209,6 +221,7 @@ import com.jogamp.opencl.CLProgram;
 
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
+	 		logger.severe(imageFile + " : " + pixelWidth + " x " + pixelHeight);
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		

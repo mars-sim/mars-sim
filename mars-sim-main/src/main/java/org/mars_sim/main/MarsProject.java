@@ -294,8 +294,6 @@ public class MarsProject {
 			if (line.hasOption(SANDBOX)) {
 				isSandbox = true;
 			}
-			
-
 		}
 		catch (Exception e1) {
 			usage("Problem with arguments: " + e1.getMessage(), options);
@@ -316,7 +314,7 @@ public class MarsProject {
 
 		UserConfigurableConfig<Crew> crew = editor.getCrewConfig();
 		if (crew != null) {
-			// Set the actual CrewConfig as it has editted entries
+			// Set the actual CrewConfig as it has edited entries
 			builder.setCrewConfig(crew);
 		}
 

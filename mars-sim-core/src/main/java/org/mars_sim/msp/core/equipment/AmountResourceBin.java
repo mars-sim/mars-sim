@@ -40,12 +40,14 @@ public class AmountResourceBin extends BaseBin {
 	}
 	
 	public int addBin(Bin bin) {
-		binMap.put(++lastID, bin);
+		lastID++;
+		binMap.put(lastID, bin);
 		return lastID;
 	}
 	
 	public int addBin(BinType type, AmountResource ar, double amount) {
-		binMap.put(lastID, new Bin(type, ++lastID, ar, amount));
+		lastID++;
+		binMap.put(lastID, new Bin(type, lastID, ar, amount));
 		return lastID;
 	}
 }

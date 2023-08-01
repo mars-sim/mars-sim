@@ -27,11 +27,7 @@ public interface Map {
 //	public static final int MAP_VIS_HEIGHT = MAP_BOX_HEIGHT;
 	/** Half of the display box map height. */
 	public static final int HALF_MAP_BOX = (int) (0.5 * MAP_BOX_HEIGHT);
-	/** this is a mysterious variable. */
-	public static final double HALF_MAP_ANGLE = 0.48587;
 
-	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
-	
 	public static final double TWO_PI = Math.PI * 2D;
 	
 	/**
@@ -77,6 +73,13 @@ public interface Map {
      * @return
      */
     public double getMagnification();
+    
+	/**
+     * Gets the half angle of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getHalfAngle();
     
 	/**
 	 * Gets the name type of this map.
