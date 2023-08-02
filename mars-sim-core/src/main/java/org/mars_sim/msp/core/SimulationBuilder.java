@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.mars.sim.mapdata.common.FileLocator;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.configuration.Scenario;
@@ -41,6 +42,7 @@ public class SimulationBuilder {
 	private static final String TIMERATIO_ARG = "timeratio";
 	private static final String TEMPLATE_ARG = "template";
 	private static final String DATADIR_ARG = "datadir";  
+	private static final String BASEURL_ARG = "baseurl";  
 	private static final String SPONSOR_ARG = "sponsor";
 	private static final String LATITUDE_ARG = "lat";
 	private static final String LONGITUDE_ARG = "lon";
@@ -175,6 +177,8 @@ public class SimulationBuilder {
 								.desc("Define the time ratio of the simulation").build());
 		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg().optionalArg(false)
 				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
+		options.add(Option.builder(BASEURL_ARG).argName("URL to remote content").hasArg().optionalArg(false)
+				.desc("URL to the remote content repository (defaults to master in GitHub)").build());
 		
 		options.add(Option.builder(NEW_ARG)
 						.desc("Create a new simulation if one is not present").build());
@@ -225,6 +229,9 @@ public class SimulationBuilder {
 		}
 		if (line.hasOption(DATADIR_ARG)) {
 			SimulationFiles.setDataDir(line.getOptionValue(DATADIR_ARG));
+		}
+		if (line.hasOption(BASEURL_ARG)) {
+			FileLocator.setBaseURL(line.getOptionValue(BASEURL_ARG));
 		}
 		if (line.hasOption(CREW_ARG)) {
 			setUseCrews(Boolean.parseBoolean(line.getOptionValue(CREW_ARG)));

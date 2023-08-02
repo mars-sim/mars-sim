@@ -14,13 +14,17 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * A static helper class to locate files for the configuration of the system.
  */
 public final class FileLocator {
-    private static Logger logger = Logger.getLogger(FileLocator.class.getName());
 
+
+    private static Logger logger = Logger.getLogger(FileLocator.class.getName());
+    private static final String ZIP = ".zip";
     private static final String DOWNLOAD_DIR = "/downloads";
     private static File localBase = new File(System.getProperty("user.home")
                                                 +  "/.mars-sim" + DOWNLOAD_DIR);
@@ -37,6 +41,14 @@ public final class FileLocator {
      */
     public static void setBaseDir(String newBase) {
         localBase = new File(newBase, DOWNLOAD_DIR);
+    }
+
+    /**
+     * Specialise where the remote content can be found
+     * @param baseURL
+     */
+    public static void setBaseURL(String baseURL) {
+        contentURL = baseURL;
     }
 
     /**
@@ -86,11 +98,41 @@ public final class FileLocator {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
+            // Select the location of the file
             // Attempt to find the file in the resources
+            String source = "bundled file";
             InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
+            if (resourceStream == null) {
+                // Try zip in bundle
+                resourceStream = FileLocator.class.getResourceAsStream(name + ZIP);
+                if (resourceStream != null) {
+                    resourceStream = getFileFromZip(resourceStream, name);
+                    source = "bundled ZIP";
+                }
+                else {
+                    // Try file in remote
+                    resourceStream = openRemoteContent(name);
+                    if (resourceStream != null) {
+                        source = "remote file";
+                    }
+                    else {
+                        resourceStream = openRemoteContent(name + ZIP);
+                        if (resourceStream != null) {
+                            resourceStream = getFileFromZip(resourceStream, name);
+                            source = "remote ZIP";
+                        }
+                        else {
+                            logger.severe("Cannot locate file " + name);
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            // Have a source location
             if (resourceStream != null) {
+                logger.info("Extracting from " + name + " from " + source);
                 try {
-                    logger.info("Extracting from resources " + name + " -> " + localFile);
                     copyFile(resourceStream, localFile);
                 } catch (IOException ioe) {
                     logger.log(Level.SEVERE, "Problem extracting file", ioe);
@@ -104,19 +146,50 @@ public final class FileLocator {
                 }
             }
             else {
-                // Attempt to find the file to download
-                String fileURL = contentURL + name;
-                logger.info("Downloading " + fileURL + " -> " + localFile);
-                try (InputStream source = new URL(fileURL).openStream()) {
-                    copyFile(source, localFile);
-                }
-                catch (IOException ioe) {
-                    logger.log(Level.SEVERE, "Problem downloading file", ioe);
-                }
+                logger.warning("Cannot find file " + name);
             }
         }
 
         return localFile;
+    }
+
+    /**
+     * Attempt to find a file in the remote content repository
+     * @param name Name of the file to locate
+     * @return
+     */
+    private static InputStream openRemoteContent(String name) {
+        // Check remote content
+        String fileURL = contentURL + name;
+        try {
+            return  new URL(fileURL).openStream();
+        } catch (IOException e) {
+            // URL is no good
+            return null;
+        }    
+    }
+
+    /**
+     * Pick the required file from a zip file
+     * @param resourceStream Zip content
+     * @param name File to extract
+     * @return Stream to the file contents
+     */
+    private static InputStream getFileFromZip(InputStream resourceStream, String name) {
+        ZipInputStream zip = new ZipInputStream(resourceStream);
+        try {
+            ZipEntry ze = zip.getNextEntry();
+            String [] parts = name.split("/");
+            if (!ze.getName().equals(parts[parts.length-1])) {
+                logger.severe("Zip file does not contain file " + name);
+                return null;
+            }
+            return zip;
+        } catch (IOException e) {
+            // Problen with the ZIP
+            logger.severe("Zip file can not be read " + name);
+        }
+        return null;
     }
 
     /**
