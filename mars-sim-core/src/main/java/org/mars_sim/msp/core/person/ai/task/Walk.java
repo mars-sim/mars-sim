@@ -943,7 +943,10 @@ public class Walk extends Task {
 		if (person != null
 			// Exit the rover parked inside a garage onto the settlement
 			&& person.isInVehicleInGarage()
-				&& person.transfer(garageBuilding.getSettlement())) {
+				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
+				// can be problematic if no building is assigned.
+				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
+				&& person.transfer(garageBuilding)) {
 					logger.log(person, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
 							+ " inside " + garageBuilding + ".");

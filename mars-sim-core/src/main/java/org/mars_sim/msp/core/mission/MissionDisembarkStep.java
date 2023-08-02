@@ -91,7 +91,8 @@ public class MissionDisembarkStep extends MissionStep {
 	}
 
     /**
-     * Set a worker walking to a Garage
+     * Sets a worker walking to a Garage.
+     * 
      * @param w Worker to move
      * @param v Leaving this vehicle
      * @return
@@ -102,7 +103,7 @@ public class MissionDisembarkStep extends MissionStep {
 
         // Transfer has to be on Units
         if (w instanceof Person p) {
-            p.transfer(target);
+            p.transfer(target); 
         }
         else if (w instanceof Robot r) {
             r.transfer(target);

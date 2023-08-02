@@ -2088,6 +2088,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addPeopleWithin(this);
+				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
+				// can be problematic if no building is assigned.
+				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
@@ -2317,12 +2320,16 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		boolean result = false;
 		
 		if (p.isDeclaredDead()) {
+			// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
+			// can be problematic if no building is assigned.
+			// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			result = p.transfer(s);
 		}
 		else if (r != null || p.isOutside()) {
 			result = p.transfer(s);
 		}
 
+		// Add the person to a medical facility	
 		EVAOperation.send2Medical(p, s);
 		
 		return result;
