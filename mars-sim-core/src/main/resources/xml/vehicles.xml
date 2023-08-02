@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, power-source, battery-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
+	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle name CDATA #REQUIRED>
@@ -20,9 +20,10 @@
 	<!ATTLIST power-source fuel (NUCLEAR|METHANOL|METHANE|SOLAR) #REQUIRED>
 	<!ATTLIST power-source value CDATA #REQUIRED>
  
-
 	<!ELEMENT battery-module EMPTY>
 	<!ATTLIST battery-module number CDATA #REQUIRED>
+	<!ELEMENT energy-per-module EMPTY>
+	<!ATTLIST energy-per-module value CDATA #REQUIRED>
 	<!ELEMENT fuel-cell-stack EMPTY>
 	<!ATTLIST fuel-cell-stack number CDATA #REQUIRED>
 	<!ELEMENT drivetrain-efficiency EMPTY>
@@ -116,7 +117,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- The number of battery modules for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<battery-module number="2" />
-		
+	
+		<!-- The energy per battery module for the vehicle [kWh].(required) -->
+		<!-- Default: varied according to the type of vehicle -->
+		<energy-per-module value="10" />		
+			
 		<!-- The number of methanol fuel cell stacks for the vehicle [dimension-less].(required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<fuel-cell-stack number="4" />
@@ -243,6 +248,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting for long range.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="15.0"/>		
 		<battery-module number="3" />
+		<energy-per-module value="10" />		
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="30.0" />
@@ -299,6 +305,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can accommodate up to 8 people.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>			
 		<battery-module number="4" />
+		<energy-per-module value="10" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="25.0" />
@@ -349,6 +356,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can have fit two people only to maximize cargo space.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="5" />
+		<energy-per-module value="10" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="25.0" />
@@ -394,6 +402,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="10.0"/>
 		<battery-module number="1" />
+		<energy-per-module value="10" />
 		<fuel-cell-stack number="1" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="20.0" />
@@ -423,6 +432,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="20.0"/>
 		<battery-module number="1" />
+		<energy-per-module value="10" />
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="100.0" />

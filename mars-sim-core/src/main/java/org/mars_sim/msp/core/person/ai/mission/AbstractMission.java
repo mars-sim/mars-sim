@@ -297,11 +297,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Get the current martian time.
+	 * Gets the Martian time instance.
+	 * 
 	 * @return
 	 */
 	protected MarsTime getMarsTime() {
 		return clock.getMarsTime();
+	}
+	
+	protected MasterClock getMasterClock() {
+		return clock;
 	}
 	
 	/**
@@ -364,7 +369,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * A Memeber leaves the Mission
+	 * A Member leaves the Mission
 	 */
 	protected final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift

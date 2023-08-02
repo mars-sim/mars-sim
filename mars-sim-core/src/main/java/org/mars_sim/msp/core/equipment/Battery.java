@@ -13,10 +13,9 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * This class represents the modeling of an electrical battery
+ * This class represents the modeling of an electrical battery.
  */
 public class Battery implements Serializable {
 
@@ -27,13 +26,13 @@ public class Battery implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 	
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
-    private static final double MAX_AMP_DRAW = 120;
+//    private static final double MAX_AMP_DRAW = 120;
     
     /** The standard voltage of this battery pack in kW. */
     private static final double STANDARD_VOLTAGE = 600;
     
     /** The maximum energy capacity of a standard battery module in kWh. */
-    public static final double ENERGY_PER_MODULE = 15.0;
+//    public static final double ENERGY_PER_MODULE = 15.0;
     
     private static final String KWH = " kWH  ";
     private static final String KW = " kW  ";
@@ -46,6 +45,11 @@ public class Battery implements Serializable {
     /** Is the unit charging ? */  
     private boolean isCharging;
     
+    /** The number of battery module. */
+    public int numModule;
+    
+    /** The maximum energy capacity of a standard battery module in kWh. */
+    public double energyPerModule;
     /** unit's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
@@ -57,8 +61,13 @@ public class Battery implements Serializable {
     /** The standby power consumption in kW. */
     private double standbyPower = 0.01;
 	/** The maximum capacity of the battery in kWh. */	
-	private double maxCapacity = ENERGY_PER_MODULE;
+	private double maxCapacity;
+	/** The current ampere hour of the battery in Ah. */	
+	private double ampHour;
+	/** The max ampere hour of the battery in Ah. */	
+	private final double maxAmpHour;
 
+	
 	private Unit unit;
 	
     /**
@@ -67,17 +76,17 @@ public class Battery implements Serializable {
      * @param unit The unit requiring a battery.
      * 
      */
-    public Battery(Unit unit) {
+    public Battery(Unit unit, int numModule, double energyPerModule) {
     	this.unit = unit;
         performance = 1.0D;
         operable = true;
-
-        if (unit instanceof Vehicle) {
-        	Vehicle vehicle = (Vehicle) unit;
-        	int modules = vehicle.getBatteryModule();
-        	maxCapacity = ENERGY_PER_MODULE * modules;
-        }
-
+        this.numModule = numModule;
+        this.energyPerModule = energyPerModule;
+        maxCapacity = energyPerModule * numModule;
+        ampHour = maxCapacity * 1000 / STANDARD_VOLTAGE;
+        // Save max Ah at the start
+        maxAmpHour = ampHour;
+        
         currentEnergy = maxCapacity; //RandomUtil.getRandomDouble(maxCapacity/2, maxCapacity);	
  
         updateLowPowerMode();
@@ -87,6 +96,10 @@ public class Battery implements Serializable {
         isLowPower = getBatteryState() < lowPowerPercent;
     }
 
+    private void updateCurrentAmpHour() {
+    	ampHour = maxAmpHour * currentEnergy / maxCapacity; 
+    }
+    
     /**
      * This timePassing method reflects a passing of time.
      * 
@@ -104,17 +117,27 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Gets the maximum power [in kW] draw at this moment.
+     * Gets the maximum power [in kW] available when discharging or drawing power.
      * 
+     * @param time in hours
      * @return
      */
-    private double getMaxPowerDraw() {
-    	return MAX_AMP_DRAW * currentEnergy / maxCapacity * STANDARD_VOLTAGE * ENERGY_PER_MODULE / 10_000;
+    private double getMaxPowerDraw(double time) {
+    	return Math.min(currentEnergy / time, ampHour * STANDARD_VOLTAGE / time);
     }
     
+    /**
+     * Gets the maximum power [in kW] to be pumped in during charging.
+     * 
+     * @param time in hours
+     * @return
+     */
+    public double getMaxPowerCharging(double time) {
+    	return Math.min((maxCapacity - currentEnergy) / time, maxAmpHour * STANDARD_VOLTAGE / time);
+    }
     
     /**
-     * Requests to consume a given amount of energy within an interval of time.
+     * Gets a given amount of energy within an interval of time from the battery.
      * 
      * @param amount amount of energy to consume [in kWh]
      * @param time in hrs
@@ -124,7 +147,7 @@ public class Battery implements Serializable {
     	if (!isLowPower) {
     		double powerRequest = kWh / time;
     		
-    		double powerMax = getMaxPowerDraw();
+    		double powerMax = getMaxPowerDraw(time);
     				
     		double energyToDeliver = 0;
 	    	double energyCanSupply = maxCapacity - maxCapacity * lowPowerPercent / 100;
@@ -155,6 +178,8 @@ public class Battery implements Serializable {
 
             updateLowPowerMode();
                 
+            updateCurrentAmpHour();
+            
             return energyToDeliver;
     	}
     	
@@ -190,11 +215,11 @@ public class Battery implements Serializable {
 
             updateLowPowerMode();
             
+            updateCurrentAmpHour();
+            
         	return energyAccepted;
     	}
     }
-    
-    
     
     /**
      * Is the battery level at above this prescribed percentage ?
@@ -209,7 +234,7 @@ public class Battery implements Serializable {
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */
-	public double getcurrentEnergy() {
+	public double getCurrentEnergy() {
 		return currentEnergy;
 	}
 	
@@ -241,18 +266,18 @@ public class Battery implements Serializable {
         return performance;
     }
 
-    /**
-     * Sets the performance factor.
-     * 
-     * @param newPerformance new performance (between 0 and 1).
-     */
-    private void setPerformanceFactor(double newPerformance) {
-        if (newPerformance != performance) {
-            performance = newPerformance;
-			if (unit != null)
-				unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-        }
-    }
+//    /**
+//     * Sets the performance factor.
+//     * 
+//     * @param newPerformance new performance (between 0 and 1).
+//     */
+//    private void setPerformanceFactor(double newPerformance) {
+//        if (newPerformance != performance) {
+//            performance = newPerformance;
+//			if (unit != null)
+//				unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+//        }
+//    }
 
     /**
      * Gets the unit system stress level.
@@ -279,7 +304,7 @@ public class Battery implements Serializable {
      * @return
      */
     public double getBatteryState() {
-    	return (currentEnergy * 100D) / maxCapacity;
+    	return currentEnergy * 100 / maxCapacity;
     }
     
     /**

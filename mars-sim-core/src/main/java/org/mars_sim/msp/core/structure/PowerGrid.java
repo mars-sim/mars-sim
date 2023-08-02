@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -339,7 +340,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			neededPower -= newPower0;
 			
-			if (neededPower > 0D) {
+			if (neededPower < 0) {
 				sufficientPower = true;
 				return;
 			}
@@ -363,7 +364,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			neededPower -= newPower1;
 			
-			if (neededPower > 0D && retrieved >= 0) { 
+			if (neededPower < 0 && retrieved >= 0) { 
 				// if the grid batteries has more than enough
 				sufficientPower = true;
 				return;
@@ -378,7 +379,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			neededPower -= newPower2;
 			
-			if (neededPower > 0D) {
+			if (neededPower < 0) {
 				sufficientPower = true;
 				return;
 			}
@@ -398,7 +399,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			// If power needs are still not met, turn off the power to each
 			// uninhabitable building until required power reduction is met.
-			if (neededPower > 0D) {
+			if (neededPower > 0) {
 				double newPower4 = turnOffNoninhabitable(neededPower, buildings);
 				
 				// Update the total generated power
@@ -409,7 +410,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 			// If power needs are still not met, turn off the power to each inhabitable
 			// building until required power reduction is met.
-			if (neededPower > 0D) {
+			if (neededPower > 0) {
 				double newPower5 = turnOffInhabitable(neededPower, buildings);
 				
 				// Update the total generated power
@@ -418,7 +419,7 @@ public class PowerGrid implements Serializable, Temporal {
 				neededPower -= newPower5;
 			}
 
-			if (neededPower <= 0D) {
+			if (neededPower <= 0) {
 				sufficientPower = true;
 			}
 		}
@@ -751,49 +752,60 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Retrieves stored energy from many grid-connected batteries.
+	 * Retrieves stored energy from grid-connected batteries.
 	 * 
 	 * @param needed the energy needed (kWh)
-	 * @param time the time (h)
+	 * @param time the hours
 	 * @return energy to be retrieved (kWh)
 	 */
-	private double retrieveStoredEnergy(double energyNeeded, double time) {
+	public double retrieveStoredEnergy(double totalEnergyNeeded, double time) {
 		double retrieved = 0;
-		double needed = energyNeeded;
+		double remainingNeed = totalEnergyNeeded;
+		double totalAvailable = 0;
+		int numStorage = 0;
+		
 		List<Building> list = manager.getBuildings(FunctionType.POWER_STORAGE);
+		Collections.sort(list);
+		
 		for (Building b : list) {
 			PowerStorage storage = b.getPowerStorage();
-
-			if (needed <= 0) {
+			totalAvailable += computeAvailableEnergyForDischarge(storage, remainingNeed - totalAvailable, time);
+			numStorage ++;
+		}
+		
+		double neededPerStorage = totalAvailable / numStorage;
+			
+		for (Building b : list) {
+			PowerStorage storage = b.getPowerStorage();
+			
+			if (remainingNeed <= 0) {
 				return 0;
 			}
 
-			double available = dischargeBattery(storage, needed, time);
+			double available = computeAvailableEnergyForDischarge(storage, RandomUtil.getRandomDouble(neededPerStorage, neededPerStorage * 2), time);
 			double stored = storage.getkWattHourStored();
 
-			if (available > 0 && available <= needed) {
+			if (available > 0) {
 
 				// update the resultant energy stored in battery
 				stored = stored - available;
 
 				// update energy needed
-				needed = needed - available;
+				remainingNeed = remainingNeed - available;
 
 				// update the energy stored in this battery
 				storage.setEnergyStored(stored);
 
 				// update the total retrieved energy
 				retrieved = retrieved + available;
-
 			}
-
 		}
 
 		return retrieved;
 	}
 
 	/**
-	 * Delivers stored energy from a battery storage system to the grid.
+	 * Computes the available stored energy to be discharged (from a battery storage system to the grid).
 	 * Called by retrieveStoredEnergy
 	 * 
 	 * @param storage PowerStorage
@@ -801,7 +813,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param time    in millisols
 	 * @return energy to be delivered
 	 */
-	public double dischargeBattery(PowerStorage storage, double needed, double time) {
+	public double computeAvailableEnergyForDischarge(PowerStorage storage, double needed, double time) {
 		double smallest = 0;
 		double possible = 0;
 		double stored = storage.getkWattHourStored();
@@ -840,18 +852,17 @@ public class PowerGrid implements Serializable, Temporal {
 
 		smallest = Math.min(stored, Math.min(possible, needed));
 
-//				logger.info("Discharging of " 
+//		logger.info("Discharging of " 
 //						+ storage.getBuilding().getNickName() 
-//						+ "\t    needed : " + Math.round(needed*100D)/100D
-//						+ "    stored : " + Math.round(stored*100D)/100D
-//						+ "	   Ah : " + Math.round(Ah * 100D)/100D
-//						+ "    hr : " + Math.round(hr * 10000D)/10000D
-//						+ "    ampere : " + Math.round(ampere * 100D)/100D
-//						+ "    V_out : " + Math.round(V_out * 100D)/100D
-//						+ "    possible : " + Math.round(possible * 100D)/100D
-//						+ "    smallest : " + Math.round(smallest*100D)/100D);
-
-		// logger.info(energyToDeliver + " / " + totalStored);
+//						+ "  needed : " + Math.round(needed*1000D)/1000D
+//						+ "  stored : " + Math.round(stored*100D)/100D
+//						+ "	 Ah : " + Math.round(Ah * 100D)/100D
+//						+ "  hr : " + Math.round(hr * 10000D)/10000D
+//						+ "  ampere : " + Math.round(ampere * 100D)/100D
+//						+ "  V_out : " + Math.round(V_out * 100D)/100D
+//						+ "  possible : " + Math.round(possible * 1000D)/1000D
+//						+ "  smallest : " + Math.round(smallest*1000D)/1000D);
+//		 logger.info(energyToDeliver + " / " + totalStored);
 
 		return smallest;
 	}

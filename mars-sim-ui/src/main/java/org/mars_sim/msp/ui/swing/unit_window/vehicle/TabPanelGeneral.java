@@ -76,23 +76,28 @@ public class TabPanelGeneral extends TabPanel {
 		center.add(specsPanel, BorderLayout.CENTER);
 		
 		// Prepare spring layout info panel.
-		AttributePanel typePanel = new AttributePanel(2);
-		specsPanel.add(typePanel, BorderLayout.NORTH);
-		
-		typePanel.addTextField( "Type", v.getVehicleType().getName(), null);
-		typePanel.addTextField( "Specification", v.getSpecName(), null);
-		
-		AttributePanel labelGrid = new AttributePanel(15, 2);
+//		AttributePanel typePanel = new AttributePanel(1);
+//		specsPanel.add(typePanel, BorderLayout.NORTH);
+//		
+//		typePanel.addTextField( "Type", v.getVehicleType().getName(), null);
+
+		AttributePanel labelGrid = new AttributePanel(17, 2);
 		specsPanel.add(labelGrid, BorderLayout.CENTER);
-	
+		
+		labelGrid.addTextField( "Type", v.getVehicleType().getName(), null);
+		labelGrid.addTextField( "Specification", v.getSpecName(), null);
+		
 		labelGrid.addTextField( "Crew Size", v.getVehicleSpec().getCrewSize() + "", null);
 		labelGrid.addTextField( "Fuel Cell Stack", v.getFuellCellStack() + "", null);	
 		
 		labelGrid.addTextField( "Battery Module", v.getBatteryModule() + "", null);	
 		labelGrid.addTextField( "Fuel Type", fuelTypeStr, null);
-		
-		labelGrid.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
+	
+		labelGrid.addTextField( "Battery Capacity", v.getBatteryCapacity() + "", null);	
 		labelGrid.addTextField( "Fuel Capacity", StyleManager.DECIMAL_KG.format(v.getFuelCapacity()), null);
+		
+		labelGrid.addTextField( "Battery Percent", StyleManager.DECIMAL_PERC1.format(v.getBatteryPercent()), null);
+		labelGrid.addTextField( "Base Mass", StyleManager.DECIMAL_KG.format(v.getBaseMass()), "The base mass of this vehicle");
 		
 		labelGrid.addTextField( "Cargo Capacity", StyleManager.DECIMAL_KG.format(v.getCargoCapacity()), null);	
 		labelGrid.addTextField( "Base FC2FE", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()), null);

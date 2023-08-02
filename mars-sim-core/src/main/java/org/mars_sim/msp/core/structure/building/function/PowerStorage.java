@@ -171,6 +171,7 @@ public class PowerStorage extends Function {
 
 	/**
 	 * Sets the energy stored in the building.
+	 * 
 	 * @param kWh the stored energy (kW hour).
 	 */
 	public void setEnergyStored(double kWh) {

@@ -328,42 +328,24 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA Battery" type="EVA" mass="1.2" >
-		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this 
-		rechargeable battery module is rated for 150 W at 18V 
-		for providing 8 hrs of electrical power to the EVA suit. 
-		Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/1 = 1.2 kg
-		</description>
-		<maintenance-entity-list>
-			<entity name="eva suit" probability="2" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
 	<part name="EVA Radio" type="EVA" mass="0.25" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-
-	<part name="Vehicle Frame small" type="vehicle" mass="15.0" >
-		<description>Small steel frame</description>
-	</part>
-		
-	<part name="Vehicle Frame large" type="vehicle" mass="50.0">
-		<description>Heavy steel frame</description>
-	</part>
-
-	
-	<part name="Vehicle Chassis Panel" type="vehicle" mass="20.0" >
-		<description>Reinforced fiberglass panels.</description>
+	<part name="EVA Battery" type="EVA" mass="1.2" >
+		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this 
+		 rechargeable battery module is rated for 150 W at 18V 
+		 for providing 8 hrs of electrical power to the EVA suit. 
+		 Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/1 = 1.2 kg.
+		 66.67 Ah * 18 Volt = 1.2 kWh.
+		</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="2" />
-			<entity name="delivery drone" probability="5" max-number="1" />	
-			<entity name="light utility vehicle" probability="5" max-number="1" />						
+			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-
+	
 	<part name="Battery Module" type="vehicle" mass="15.0">
 		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
 		this 15kWh rechargeable battery provides 'auxiliary' 
@@ -378,6 +360,23 @@
 			<entity name="light utility vehicle" probability="2" max-number="1" />
 			<entity name="delivery drone" probability="2" max-number="1" />
 			<entity name="power storage" probability="2" max-number="1" />			
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Vehicle Frame small" type="vehicle" mass="15.0" >
+		<description>Small steel frame</description>
+	</part>
+		
+	<part name="Vehicle Frame large" type="vehicle" mass="50.0">
+		<description>Heavy steel frame</description>
+	</part>
+
+	<part name="Vehicle Chassis Panel" type="vehicle" mass="20.0" >
+		<description>Reinforced fiberglass panels.</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability="5" max-number="2" />
+			<entity name="delivery drone" probability="5" max-number="1" />	
+			<entity name="light utility vehicle" probability="5" max-number="1" />						
 		</maintenance-entity-list>
 	</part>
 

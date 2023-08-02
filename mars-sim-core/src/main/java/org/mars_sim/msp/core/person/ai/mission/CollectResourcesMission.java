@@ -366,7 +366,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	/**
 	 * Determines the locations of the sample collection sites.
 	 *
-	 * @parma startingLocation Where to start from
+	 * @param startingLocation Where to start from
 	 * @param range the rover's driving range.
 	 * @param numSites   the number of collection sites.
 	 * @return List of fund sites to visit
@@ -470,6 +470,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	/**
 	 * Gets the computed site score of this prospective resource collection mission.
 	 * 
+	 * @param reviewSettlement
 	 * @return
 	 */
 	@Override

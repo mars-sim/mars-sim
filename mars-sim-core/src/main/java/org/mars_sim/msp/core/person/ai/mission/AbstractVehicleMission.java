@@ -108,8 +108,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	// Static members
 	private static final Integer wheelID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
-															new String[] {
-																	ItemResourceUtil.FIBERGLASS});
+															new String[] {ItemResourceUtil.FIBERGLASS});
 	// Data members
 	/** The msol cache. */
 	private int msolCache;
@@ -145,6 +144,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
 	
+	private ClockPulse pulse;
+	
 	/** Equipment Caches */
 	private transient Map<Integer, Integer> equipmentNeededCache;
 
@@ -169,13 +170,34 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (vehicle != null) {
 			setVehicle(vehicle);
 		}
-		else {
-			reserveVehicle();
+		
+		if (reserveVehicle() && pulse != null) {
+			// Charge the vehicle
+			chargeVehicle();
 		}
 	}
 
 	/**
-	 * Sets up starting NavPoints
+	 * Check if battery charging is needed and charge the vehicle.
+	 */
+	private void chargeVehicle() {
+		// Gets the time elapse in this frame
+		double time = pulse.getElapsed();
+		// Convert time to hours
+		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
+		// Calculate max charing power that battery supports
+		double allowedPower = getVehicle().getController().getBattery().getMaxPowerCharging(hrs);
+		// Check if charging is needed
+		if (allowedPower > 0) {
+			// Retrieve energy from the settlement's power grid
+			double retrieved = startingSettlement.getPowerGrid().retrieveStoredEnergy(allowedPower * hrs, time);
+			// Charge the vehicle
+			getVehicle().getController().getBattery().provideEnergy(retrieved, hrs); 
+		}
+	}
+	
+	/**
+	 * Sets up starting NavPoints.
 	 */
 	private void init(Worker startingMember) {
 
@@ -219,9 +241,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Worker startingMember = getStartingPerson();
 		if (getVehicle() != null)
 			logger.info(startingMember, "Preparing " + getName() + " using " + getVehicle().getName() + ".");
-		
-		// Charges up the battery instantly
-		getVehicle().getController().topUpBatteryEnergy();
 	}
 
 	/**
@@ -1269,6 +1288,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
+		this.pulse = pulse;
 		// Add this mission as a vehicle listener (does nothing if already listening to
 		// vehicle).
 		// Note : this is needed so that mission will re-attach itself as a vehicle

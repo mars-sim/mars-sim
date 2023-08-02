@@ -21,7 +21,7 @@ public class UpTimer implements Serializable {
 	private static final long serialVersionUID = -4992839027918134952L;
 
 	/** Initialized logger. */
-//    private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
+//  private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
 
 //	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 
@@ -37,8 +37,8 @@ public class UpTimer implements Serializable {
 	private static final long SECS_PER_MIN = 60;
 	private static final long HOURS_PER_DAY = 24;
 	private static final long MINS_PER_HOUR = 60;
-	private static final long SECS_PER_HOUR = MINS_PER_HOUR*SECS_PER_MIN;
-	private static final long SECS_PER_DAY = HOURS_PER_DAY*SECS_PER_HOUR;
+	private static final long SECS_PER_HOUR = MINS_PER_HOUR * SECS_PER_MIN;
+	private static final long SECS_PER_DAY = HOURS_PER_DAY * SECS_PER_HOUR;
 
 	// Data members
 	/** The last up time. Sets to 1 in case it gets divided by 0 right away. */
@@ -54,6 +54,7 @@ public class UpTimer implements Serializable {
 
     /**
      * Updates the simulation uptime.
+     * 
      * TODO: May switch to using System.currentTimeMillis() to get the start time and end time and subtract the pause time.
      * 
      * @param elapsedMilli

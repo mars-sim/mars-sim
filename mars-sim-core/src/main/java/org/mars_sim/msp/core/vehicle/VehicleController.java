@@ -90,7 +90,9 @@
 	  */
 	 public VehicleController(Vehicle vehicle) {
 		 this.vehicle = vehicle;
-		 battery = new Battery(vehicle);
+		 int numModule = vehicle.getVehicleSpec().getBatteryModule();
+		 double energyPerModule = vehicle.getVehicleSpec().getEnergyPerModule();
+		 battery = new Battery(vehicle, numModule, energyPerModule);
 		 fuelTypeID = vehicle.getFuelTypeID();
 	 }
  
@@ -332,7 +334,7 @@
 						 + "energyByBattery: " + Math.round(energyByBattery * 100.0)/100.0 + WH
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH 						 
-						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
+						 + "Battery: " + Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
 						 );  
 			 }
 			  
@@ -349,7 +351,7 @@
 					 logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2B: Partial battery with sufficient fuel.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
-						 + "Battery: " + Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH 						
+						 + "Battery: " + Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH 						
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH  						 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
@@ -385,7 +387,7 @@
 					 logger.log(vehicle, Level.INFO, 20_000,  
 							 "Scenario 2C: Partial battery and insufficient fuel.  " 
 							 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
-							 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
+							 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
 							 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH
 							 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
 							 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
@@ -400,7 +402,7 @@
 				  logger.log(vehicle, Level.INFO, 20_000,  
 						 "Scenario 2D: Unknown.  " 
 						 + "energyByBattery: " +  Math.round(energyByBattery * 100.0)/100.0 + WH
-						 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 100.0)/100.0 + KWH
+						 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 100.0)/100.0 + KWH
 						 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 100.0)/100.0 + WH	
 						 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 100.0)/100.0 + WH							 
 						 + "fuelNeeded: " +  Math.round(fuelNeeded * 100.0)/100.0  + KG
@@ -448,7 +450,7 @@
 			 logger.log(vehicle, Level.INFO, 20_000,
 					vehicle.getSpecName()	
 					 + "  energyByBattery: " +  Math.round(energyByBattery * 1000.0)/1000.0 + WH
-					 + "Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH    
+					 + "Battery: " 			+ Math.round(battery.getCurrentEnergy() * 1_000.0)/1_000.0 + KWH    
 					 + "totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.0)/1000.0 + WH   	        				
 					 + "energyByFuel: " 		+ Math.round(energyByFuel * 1_000.0)/1_000.0 + WH
 					 + "overallEnergyUsed: " + Math.round(overallEnergyUsed * 1000.0)/1000.0 + WH   					 
@@ -557,7 +559,7 @@
 
 			 logger.log(vehicle, Level.INFO, 20_000,
 						vehicle.getSpecName()				 
-					 + "  Battery: " 			+ Math.round(battery.getcurrentEnergy() * 1_000.0)/1_000.0 + KWH  
+					 + "  Battery: " 			+ Math.round(battery.getCurrentEnergy() * 1_000.0)/1_000.0 + KWH  
 					 + "energyNeeded: " 		+ Math.round(energyNeeded * 100.0)/100.0 + WH
 					 + "regenEnergyBuffer: " + Math.round(regenEnergyBuffer * 1_000.0)/1_000.0 + WH
 					 + "totalForce: " 		+ Math.round(totalForce * 10_000.0)/10_000.0 + N       	        
@@ -605,7 +607,7 @@
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
 		 // The amount of "fuel" covered by the energy in the battery 
-		 double batteryFuel = vehicle.getController().getBattery().getcurrentEnergy() / vehicle.getFuelConv();
+		 double batteryFuel = vehicle.getController().getBattery().getCurrentEnergy() / vehicle.getFuelConv();
 		 
 		 double amountFuel = tripDistance * 
 				 	.5 * (1.0 / fuelEconomy + vehicle.getEstimatedFuelConsumption() / vehicle.getFuelConv())

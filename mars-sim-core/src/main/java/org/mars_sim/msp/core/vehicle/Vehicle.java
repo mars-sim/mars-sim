@@ -1081,6 +1081,25 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
+	 * Gets the total battery capacity of the vehicle.
+	 *
+	 * @return
+	 */
+	public double getBatteryCapacity() {
+		return spec.getBatteryCapacity();
+	}
+	
+	/**
+	 * Gets the percent of remaining battery energy of the vehicle.
+	 *
+	 * @return
+	 */
+	public double getBatteryPercent() {
+		return getController().getBattery().getBatteryState();
+	}
+	
+	
+	/**
 	 * Gets the number of fuel cell stacks of the vehicle.
 	 *
 	 * @return

@@ -56,6 +56,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
+    public static final DecimalFormat DECIMAL_PERC1 = new DecimalFormat("0.0 '%'");
     public static final DecimalFormat DECIMAL_PERC2 = new DecimalFormat("0.00 '%'");
     public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0.0 Sols");
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");

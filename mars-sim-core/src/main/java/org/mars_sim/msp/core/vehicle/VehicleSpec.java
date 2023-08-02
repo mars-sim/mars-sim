@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars_sim.msp.core.equipment.Battery;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -143,10 +142,11 @@ public class VehicleSpec implements Serializable {
 	private int sickbayBeds = 0;
 	private int labTechLevel = -1;
 	private int attachmentSlots;
-	//private int typeID;
 	
 	/** The # of battery modules of the vehicle.  */
 	private int numBatteryModule;
+    /** The maximum energy capacity of a standard battery module in kWh. */
+    public double energyPerModule;
 	/** The # of fuel cell stacks of the vehicle.  */
 	private int numFuelCellStack;
 
@@ -265,7 +265,7 @@ public class VehicleSpec implements Serializable {
 
 	public VehicleSpec(String name, VehicleType type, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double value,
-			int batteryModule, int fuelCellStack,
+			int batteryModule, double energyPerModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double basePower,
 			double emptyMass, int crewSize) {
@@ -296,8 +296,11 @@ public class VehicleSpec implements Serializable {
 		
 		this.value = value;
 		
-		// Set the # of battery modules of the vehicle.
+		// Set the number of battery modules of the vehicle.
 		this.numBatteryModule = batteryModule;	
+		// Set the energy kWh per battery module of the vehicle.		
+		this.energyPerModule = energyPerModule;
+		
 		// Set the # of fuel cell stacks of the vehicle.
 		this.numFuelCellStack = fuelCellStack;
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
@@ -361,7 +364,7 @@ public class VehicleSpec implements Serializable {
 	 */
 	private void defineVehiclePerformance() {
 
-    	batteryCapacity = Battery.ENERGY_PER_MODULE * numBatteryModule;
+    	batteryCapacity = energyPerModule * numBatteryModule;
     	
 		if (fuelTypeID > 0) {
 			// Gets the capacity [in kg] of vehicle's fuel tank
@@ -369,7 +372,7 @@ public class VehicleSpec implements Serializable {
 			// Gets the energy capacity [kWh] based on a full tank of methanol
 			methanolEnergyCapacity = fuelCapacity / METHANOL_KG_PER_KWH;
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
-			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency;
+			fuel2DriveEnergy =  METHANOL_WH_PER_KG * drivetrainEfficiency + batteryCapacity;
 		}
 		else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR")){
 			// Gets the capacity [in kg] of vehicle's fuel tank
@@ -607,14 +610,39 @@ public class VehicleSpec implements Serializable {
 	public final double getLength() {
 		return length;
 	}
-
 	
-	/** @return the batteryModule */
+	/**
+	 * Gets the number of modules of the battery.
+	 * 
+	 * @return
+	 */
 	public int getBatteryModule() {
 		return numBatteryModule;
 	}
 	
-	/** @return the fuelCellStack */
+	/**
+	 * Gets the energy per module of the battery.
+	 * 
+	 * @return
+	 */
+	public double getEnergyPerModule() {
+		return energyPerModule;
+	}
+	
+	/**
+	 * Gets the total battery capacity of the vehicle.
+	 *
+	 * @return
+	 */
+	public double getBatteryCapacity() {
+		return batteryCapacity;
+	}
+	
+	/**
+	 * Gets the number of fuel cell stacks.
+	 * 
+	 * @return
+	 */
 	public int getFuelCellStack() {
 		return numFuelCellStack;
 	}

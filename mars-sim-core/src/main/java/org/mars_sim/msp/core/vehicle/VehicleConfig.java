@@ -45,6 +45,7 @@ public class VehicleConfig {
 	private static final String DESCRIPTION = "description";
 	private static final String POWER_SOURCE = "power-source";	
 	private static final String BATTERY_MODULE = "battery-module";
+	private static final String ENERGY_PER_MODULE = "energy-per-module";
 	private static final String FUEL_CELL_STACK = "fuel-cell-stack";
 	private static final String DRIVETRAIN_EFFICIENCY = "drivetrain-efficiency";
 	private static final String BASE_SPEED = "base-speed";
@@ -133,8 +134,9 @@ public class VehicleConfig {
 			powerValue = Double.parseDouble(powerSourceElement.getAttributeValue(VALUE));
 			
 			int battery = Integer.parseInt(vehicleElement.getChild(BATTERY_MODULE).getAttributeValue(NUMBER));
+			double energyPerModule = Double.parseDouble(vehicleElement.getChild(ENERGY_PER_MODULE).getAttributeValue(VALUE));
 			int fuelCell = Integer.parseInt(vehicleElement.getChild(FUEL_CELL_STACK).getAttributeValue(NUMBER));
-        	
+			
 			double drivetrainEff = Double
 					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
@@ -145,7 +147,7 @@ public class VehicleConfig {
 
 			VehicleSpec v = new VehicleSpec(name, type, description, baseImage, 
 					powerSourceType, fuelTypeStr, powerValue,
-					battery, fuelCell, 
+					battery, energyPerModule, fuelCell, 
 					drivetrainEff, baseSpeed, basePower, emptyMass, 
 					crewSize);
 			
