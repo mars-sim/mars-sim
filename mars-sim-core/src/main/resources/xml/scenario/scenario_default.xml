@@ -58,10 +58,14 @@
 		</settlement>
 
 		<settlement name="Heritage" template="Hub Base" crew="Alpha" persons="36" robots="18" sponsor="MS">
-			<!-- <location longitude="10.0 W" latitude="10.0 N" /> 
-				Mawrth Vallis is at around 24 N 338 E
+			<!-- 
+			
+				Four landing proposed sites for ESA ExoMars: 
+				(1). Hypanis Vallis at 11.9N and 314.0E    
+			    (2). Mawrth Vallis at 22.4N 342.0E
+			    
 			-->
-			<location longitude="338.0 E" latitude="24.0 N" />
+			<location longitude="342.0 E" latitude="22.4 N" />
 		</settlement>
 
 	</initial-settlement-list>

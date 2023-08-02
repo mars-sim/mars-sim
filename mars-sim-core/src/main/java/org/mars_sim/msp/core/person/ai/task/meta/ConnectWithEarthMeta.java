@@ -72,15 +72,17 @@ public class ConnectWithEarthMeta extends FactoryMetaTask {
    
 	        if (result < 0) result = 0;
 	        
-            // Get an available office space.
-            Building building = BuildingManager.getAvailableCommBuilding(person);
-
-            if (building != null) {
-            	result += 5;
-            	// A comm facility has terminal equipment that provides communication access with Earth
-            	// It is necessary
-                result *= getBuildingModifier(building, person);
-            }
+	        if (person.isInSettlement()) {	
+	            // Get an available office space.
+	            Building building = BuildingManager.getAvailableCommBuilding(person);
+	
+	            if (building != null) {
+	            	result += 5;
+	            	// A comm facility has terminal equipment that provides communication access with Earth
+	            	// It is necessary
+	                result *= getBuildingModifier(building, person);
+	            }
+	        }
             
             else if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.

@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.equipment.Bin;
 import org.mars_sim.msp.core.equipment.BinFactory;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
