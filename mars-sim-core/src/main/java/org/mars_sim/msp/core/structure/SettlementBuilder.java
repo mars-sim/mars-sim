@@ -183,7 +183,8 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Generate a unique name for the Settlement
+	 * Generates a unique name for the Settlement.
+	 * 
 	 * @return
 	 */
 	private String generateName(ReportingAuthority sponsor) {
@@ -198,9 +199,16 @@ public final class SettlementBuilder {
 		return remainingNames.get(idx);
 	}
 
+	/**
+	 * Creates a settlement.
+	 * 
+	 * @param template
+	 * @param spec
+	 * @return
+	 */
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
 		String sponsor = spec.getSponsor();
-		// Fi the sponsor has not be defined; then use the template
+		// If the sponsor has not be defined; then use the template
 		if (sponsor == null) {
 			sponsor = template.getSponsor();
 		}
@@ -438,8 +446,12 @@ public final class SettlementBuilder {
 
 		// Check for any duplicate full Name
 		Collection<Person> people = unitManager.getPeople();
-		List<String> existingfullnames = people.stream()
-				.map(Person::getName).collect(Collectors.toList());
+		
+		Set<String> existingfullnames = people.stream()
+				.map(Person::getName).collect(Collectors.toSet());
+		
+//		List<String> existingfullnames = people.stream()
+//				.map(Person::getName).collect(Collectors.toList());
 
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
@@ -459,7 +471,23 @@ public final class SettlementBuilder {
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
 					logger.warning("Person already called " + name + ".");
-					name = crew.getName() + " Member" + settlement.getNumCitizens();
+//					name = crew.getName() + " Member" + settlement.getNumCitizens();
+					
+					// Choose the next gender based on the current ratio of M/F
+					GenderType gender;
+					int rand = RandomUtil.getRandomInt(1);
+					if (rand == 0) {
+						gender = GenderType.MALE;
+					}
+					else {
+						gender = GenderType.FEMALE;
+					}
+
+					// This is random and may change on each call
+					String country = sponsor.getDefaultCountry();
+					PersonNameSpec spec = namingSpecs.getItem(country);
+					name = spec.generateName(gender, existingfullnames);
+					
 				}
 				logger.config(name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 				existingfullnames.add(name);

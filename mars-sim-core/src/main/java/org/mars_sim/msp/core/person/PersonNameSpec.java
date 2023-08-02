@@ -58,13 +58,14 @@ public class PersonNameSpec implements UserConfigurable {
 	}
 
 	/**
-	 * Generate a unqiue name using this naming scheme
-	 * @param gender Gener of the name
-	 * @param existingNames Existign names to avoid
+	 * Generates a unique name using this naming scheme.
+	 * '
+	 * @param gender Gender of the name
+	 * @param existingNames Existing names to avoid
 	 * @return
 	 */
 	public String generateName(GenderType gender, Set<String> existingNames) {
-				// Setup name ranges
+		// Set up name ranges
 		List<String> firstList = null;
 		if (gender == GenderType.MALE) {
 			firstList = firstMale;
