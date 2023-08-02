@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -144,8 +145,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
 	
-	private ClockPulse pulse;
-	
 	/** Equipment Caches */
 	private transient Map<Integer, Integer> equipmentNeededCache;
 
@@ -171,28 +170,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			setVehicle(vehicle);
 		}
 		
-		if (reserveVehicle() && pulse != null) {
+		if (reserveVehicle()) {
 			// Charge the vehicle
-			chargeVehicle();
-		}
-	}
-
-	/**
-	 * Check if battery charging is needed and charge the vehicle.
-	 */
-	private void chargeVehicle() {
-		// Gets the time elapse in this frame
-		double time = pulse.getElapsed();
-		// Convert time to hours
-		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
-		// Calculate max charing power that battery supports
-		double allowedPower = getVehicle().getController().getBattery().getMaxPowerCharging(hrs);
-		// Check if charging is needed
-		if (allowedPower > 0) {
-			// Retrieve energy from the settlement's power grid
-			double retrieved = startingSettlement.getPowerGrid().retrieveStoredEnergy(allowedPower * hrs, time);
-			// Charge the vehicle
-			getVehicle().getController().getBattery().provideEnergy(retrieved, hrs); 
+			getVehicle().setCharging(true);
 		}
 	}
 	
@@ -1288,7 +1268,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		this.pulse = pulse;
 		// Add this mission as a vehicle listener (does nothing if already listening to
 		// vehicle).
 		// Note : this is needed so that mission will re-attach itself as a vehicle

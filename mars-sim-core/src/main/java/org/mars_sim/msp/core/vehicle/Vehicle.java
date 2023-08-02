@@ -22,6 +22,7 @@ import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -61,6 +62,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -104,6 +106,8 @@ public abstract class Vehicle extends Unit
 	private boolean emergencyBeacon;
 	/** True if vehicle is salvaged. */
 	private boolean isSalvaged;
+	/** True if vehicle is charging. */
+	private boolean isCharging;
 	
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
@@ -1314,6 +1318,10 @@ public abstract class Vehicle extends Unit
 			return false;
 		}
 
+		if (isCharging && getContainerUnit() instanceof Settlement settlement) {
+			chargeVehicle(pulse, settlement);
+		}
+		
 		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse);
@@ -2211,6 +2219,40 @@ public abstract class Vehicle extends Unit
 				getEstimatedFuelEconomy(), useMargin);
 	}
 	
+	/**
+	 * Check if battery charging is needed and charge the vehicle.
+	 * 
+	 * @param settlement
+	 */ 
+	public void chargeVehicle(ClockPulse pulse, Settlement settlement) {
+		// Gets the time elapse in this frame
+		double time = pulse.getElapsed();
+		// Convert time to hours
+		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
+		// Calculate max charing power that battery supports
+		double allowedPower = getController().getBattery().getMaxPowerCharging(hrs);
+		// Check if charging is needed
+		if (allowedPower > 0) {
+			// Retrieve energy from the settlement's power grid
+			double retrieved = settlement.getPowerGrid().retrieveStoredEnergy(allowedPower * hrs, time);
+			// Charge the vehicle
+			getController().getBattery().provideEnergy(retrieved, hrs); 
+			
+			logger.info(this, 20_000L, "Supplying " + Math.round(retrieved * 10.0)/10.0 + " kWh of energy during charging.");
+		}
+		else {
+			setCharging(false);
+		}
+	}
+	
+	public boolean isCharging() {
+		return isCharging;
+	}
+	
+	public void setCharging(boolean value) {
+		isCharging = value;
+	}
+	
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
 	}
@@ -2225,8 +2267,7 @@ public abstract class Vehicle extends Unit
 	public VehicleSpec getVehicleSpec() {
 		return spec;
 	}
-	
-	
+
 	/**
 	 * Compares if an object is the same as this unit
 	 *
