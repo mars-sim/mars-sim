@@ -90,7 +90,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		columnNames[POWER_LOAD] = "kW Load";
 		columnTypes[POWER_LOAD] = Double.class;
 		columnNames[ENERGY_STORED] = "kWh Stored";
-		columnTypes[ENERGY_STORED] = Double.class;
+		columnTypes[ENERGY_STORED] = String.class;
 		
 		
 		columnNames[MALFUNCTION] = "Malfunction";
@@ -242,10 +242,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				break;
 
 			case ENERGY_STORED: 
-				double energy = settle.getPowerGrid().getStoredEnergy();
-				if (energy < 0D || Double.isNaN(energy) || Double.isInfinite(energy))
-					energy = 0;
-				result = energy;
+				result = settle.getPowerGrid().getDisplayStoredEnergy();
 				break;
 				
 			case POPULATION: 
@@ -367,7 +364,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		else if (eventType == UnitEventType.CONSUMING_COMPUTING_EVENT) columnNum = COMPUTING_UNIT;
 		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER_GEN;
 		else if (eventType == UnitEventType.REQUIRED_POWER_EVENT) columnNum = POWER_LOAD;
-		else if (eventType == UnitEventType.STORED_POWER_EVENT) columnNum = ENERGY_STORED;		
+		else if (eventType == UnitEventType.STORED_ENERGY_EVENT) columnNum = ENERGY_STORED;		
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT)
 		{

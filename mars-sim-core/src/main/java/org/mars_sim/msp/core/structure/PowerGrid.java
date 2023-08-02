@@ -135,6 +135,23 @@ public class PowerGrid implements Serializable, Temporal {
 		return totalEnergyStored;
 	}
 
+	public String getDisplayStoredEnergy() {
+		double stored = totalEnergyStored;
+		if (stored < 0D || Double.isNaN(stored) || Double.isInfinite(stored))
+			return "";
+		
+		double percent = stored / energyStorageCapacity * 100;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(Math.round(stored *10.0)/10.0)
+		.append(" (")
+		.append(Math.round(percent *10.0)/10.0)
+		.append(" %)");
+		
+		return sb.toString();
+	}
+	
+	
 	/**
 	 * Sets the stored energy in the grid.
 	 * 
@@ -143,7 +160,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergy(double newEnergyStored) {
 		if (totalEnergyStored != newEnergyStored) {
 			totalEnergyStored = newEnergyStored;
-			settlement.fireUnitUpdate(UnitEventType.STORED_POWER_EVENT);
+			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_EVENT);
 		}
 	}
 
@@ -157,16 +174,16 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Sets the stored energy capacity in the grid.
+	 * Sets the total stored energy capacity in the grid.
 	 * 
-	 * @param newPowerStorageCapacity the new stored energy capacity (kWh).
+	 * @param newCap the new stored energy capacity (kWh).
 	 */
-	public void setStoredPowerCapacity(double newPowerStorageCapacity) {
-		if (energyStorageCapacity != newPowerStorageCapacity) {
-			energyStorageCapacity = newPowerStorageCapacity;
-			settlement.fireUnitUpdate(UnitEventType.STORED_POWER_CAPACITY_EVENT);
+	public void setStoredEnergyCapacity(double newCap) {
+		if (energyStorageCapacity != newCap) {
+			energyStorageCapacity = newCap;
+			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_CAPACITY_EVENT);
 		}
-	}
+	} 
 
 	/**
 	 * Gets the power required from the grid.
@@ -590,11 +607,10 @@ public class PowerGrid implements Serializable, Temporal {
 		// BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iStore = manager.getBuildings(FunctionType.POWER_STORAGE).iterator();
 		while (iStore.hasNext()) {
-			Building b = iStore.next();
-			store += b.getPowerStorage().getCurrentMaxCapacity();
+			store += iStore.next().getPowerStorage().getCurrentMaxCapacity();
 		}
 
-		setStoredPowerCapacity(store);
+		setStoredEnergyCapacity(store);
 
 		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.totalPowerStorageCapacity", //$NON-NLS-1$
 					Double.toString(energyStorageCapacity)));

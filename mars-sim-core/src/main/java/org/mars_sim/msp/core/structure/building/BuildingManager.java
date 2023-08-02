@@ -2129,7 +2129,8 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the sum of all computing resources in a settlement.
+	 * Gets the sum of all computing resources in a settlement and displays 
+	 * the total CUs and the percent.
 	 * 
 	 * @return
 	 */
@@ -2145,10 +2146,13 @@ public class BuildingManager implements Serializable {
 			max += node.getPeakComputingUnit();
 		}
 		
+		double percent = units / max * 100;
+		
 		StringBuilder sb = new StringBuilder();
-		sb.append(Math.round(units *100.0)/100.0)
-		.append(" / ")
-		.append(Math.round(max *100.0)/100.0);
+		sb.append(Math.round(units *10.0)/10.0)
+		.append(" (")
+		.append(Math.round(percent *10.0)/10.0)
+		.append(" %)");
 		
 		return sb.toString();
 	}

@@ -122,8 +122,8 @@ public enum UnitEventType {
 	// For power grid
 	POWER_MODE_EVENT				("power mode"),
 	GENERATED_POWER_EVENT			("generated power"),
-	STORED_POWER_EVENT				("stored power"),
-	STORED_POWER_CAPACITY_EVENT		("stored power capacity"),
+	STORED_ENERGY_EVENT				("stored power"),
+	STORED_ENERGY_CAPACITY_EVENT	("stored power capacity"),
 	REQUIRED_POWER_EVENT			("required power"),
 	POWER_VALUE_EVENT				("power value"),
 	BATTERY_EVENT					("battery event"),
