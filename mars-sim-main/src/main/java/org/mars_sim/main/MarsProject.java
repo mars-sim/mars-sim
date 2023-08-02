@@ -7,9 +7,12 @@
 package org.mars_sim.main;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -20,7 +23,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -251,9 +253,18 @@ public class MarsProject {
 				.desc("Load the a previously saved sim. No argument open file selection dialog. '"
 									+ DEFAULT_FILE + "' will use default").build());
 		
-		CommandLineParser commandline = new DefaultParser();
+		DefaultParser commandline = new DefaultParser();
 		try {
-			CommandLine line = commandline.parse(options, args);
+			Properties defaults = new Properties();
+			File defaultFile = new File(SimulationFiles.getDataDir(), "default.props");
+			if (defaultFile.exists()) {
+				try (InputStream defaultInput = new FileInputStream(defaultFile)) {
+					defaults.load(defaultInput);
+				} catch (IOException e) {
+					logger.warning("Problem reading default.props " + e.getMessage());
+				}
+			}
+			CommandLine line = commandline.parse(options, args, defaults);
 
 			builder.parseCommandLine(line);
 
