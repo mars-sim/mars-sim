@@ -106,12 +106,11 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Gets the default Country for Authority. If there are multiples
-	 * then one is chosen.
+	 * Selects a country at random from those that this Authority represents
 	 * 
 	 * @return
 	 */
-	public String getDefaultCountry() {
+	public String getRandomCountry() {
 		if (countries.size() == 1) {
 			return countries.get(0);
 		}

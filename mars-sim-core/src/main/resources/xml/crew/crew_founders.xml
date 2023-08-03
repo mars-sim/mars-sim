@@ -1,46 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
-<!DOCTYPE crew-configuration [
-	<!ELEMENT crew-configuration (crew-list)>
-	<!ATTLIST crew-configuration name CDATA #REQUIRED>
-	<!ATTLIST crew-configuration description CDATA #REQUIRED>
-	
-	<!ELEMENT crew-list (person*)>
-	<!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
-	<!ATTLIST person name CDATA #REQUIRED>
-	<!ATTLIST person gender (male|female) #REQUIRED>
-	<!ATTLIST person age CDATA #IMPLIED>	
-	<!ATTLIST person personality-type CDATA #IMPLIED>
-	<!ATTLIST person sponsor CDATA #IMPLIED>	
-	<!ATTLIST person country CDATA #IMPLIED>
-	<!ATTLIST person job CDATA #IMPLIED>
-	<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
-	<!ATTLIST person favorite-side-dish CDATA #IMPLIED>
-	<!ATTLIST person favorite-dessert CDATA #IMPLIED>
-	<!ATTLIST person favorite-activity CDATA #IMPLIED>
-	
-	<!ELEMENT personality-trait-list (personality-trait*)>
-	<!ELEMENT personality-trait EMPTY>
-	<!ATTLIST personality-trait name CDATA #REQUIRED>
-	<!ATTLIST personality-trait value CDATA #REQUIRED>
-	
-	<!ELEMENT natural-attribute-list (natural-attribute*)>
-	<!ELEMENT natural-attribute EMPTY>
-	<!ATTLIST natural-attribute name CDATA #REQUIRED>
-	<!ATTLIST natural-attribute value CDATA #REQUIRED>
-	
-	<!ELEMENT skill-list (skill*)>
-	<!ELEMENT skill EMPTY>
-	<!ATTLIST skill name CDATA #REQUIRED>
-	<!ATTLIST skill level CDATA #REQUIRED>
-	
-	<!ELEMENT relationship-list (relationship*)>
-	<!ELEMENT relationship EMPTY>
-	<!ATTLIST relationship person-name CDATA #REQUIRED>
-	<!ATTLIST relationship opinion CDATA #REQUIRED>
-]>
-
-
-<crew-configuration name="Founders" description="Project contributors">
+<crew-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="crew.xsd"
+		name="Founders" description="Project contributors">
 
 	<!-- List of preconfigured crew  -->
 	<crew-list>

@@ -398,7 +398,7 @@ public final class SettlementBuilder {
 			}
 
 			// This is random and may change on each call
-			String country = sponsor.getDefaultCountry();
+			String country = sponsor.getRandomCountry();
 			PersonNameSpec spec = namingSpecs.getItem(country);
 
 			// Make sure settlement name isn't already being used.
@@ -484,7 +484,7 @@ public final class SettlementBuilder {
 					}
 
 					// This is random and may change on each call
-					String country = sponsor.getDefaultCountry();
+					String country = sponsor.getRandomCountry();
 					PersonNameSpec spec = namingSpecs.getItem(country);
 					name = spec.generateName(gender, existingfullnames);
 					

@@ -78,15 +78,11 @@ public class SponsorTabPanel extends TabPanel {
 		iconPanel.add(agencyLabel);
 		
 		// Prepare info panel.
-		AttributePanel infoPanel = new AttributePanel(3);
+		AttributePanel infoPanel = new AttributePanel(2);
 		mainPanel.add(infoPanel, BorderLayout.CENTER);
 
 		// Prepare sponsor name label
-//		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsor"), ra.getDescription(), null);
-		// Prepare sponsor name label
 		infoPanel.addTextField(Msg.getString("SponsorTabPanel.sponsorShort"), ra.getName(), null);
-		// Prepare country name label
-		infoPanel.addTextField(Msg.getString("SponsorTabPanel.country"), ra.getDefaultCountry(), null);
 		// Prepare agenda name label
 		infoPanel.addTextField(Msg.getString("SponsorTabPanel.agenda"), ra.getMissionAgenda().getName(), null);
 		

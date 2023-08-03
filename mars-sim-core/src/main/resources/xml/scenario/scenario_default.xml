@@ -57,7 +57,7 @@
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>
 
-		<settlement name="Heritage" template="Hub Base" crew="Alpha" persons="36" robots="18" sponsor="MS">
+		<settlement name="Heritage" template="Hub Base" crew="Founders" persons="36" robots="18" sponsor="MS">
 			<!-- 
 			
 				Four landing proposed sites for ESA ExoMars: 
