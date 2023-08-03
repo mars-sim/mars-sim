@@ -32,9 +32,12 @@ public class MEGDRMapReader {
 	
 	private static final Logger logger = Logger.getLogger(MEGDRMapReader.class.getName());
 	
+	private double DIAMETER = 2 * Math.PI * 3376.2;
+	
 	static final int LEVEL = 1;
 	
-	private double DIAMETER = 2 * Math.PI * 3376.2;
+	private static final String PATH = "/maps/";
+
 
 //	NOTE: (Do not delete)
 //	
@@ -92,11 +95,9 @@ public class MEGDRMapReader {
 										"megt00n180gb.img"
 										};
 	
-	private static final String PATH = "/maps/";
+	private static String[] MAP_FILES = {PATH + meg004, PATH + meg016, PATH + meg032};
 	
-	static final String FILE = PATH + meg016;
-	
-	private String[] maps = {PATH + meg004, PATH + meg016, PATH + meg032};
+	static final String FILE = MAP_FILES[LEVEL];
 	
 	// Future: switch to using JavaFastPFOR to save memory.
 	private short[] elevation;
@@ -124,7 +125,7 @@ public class MEGDRMapReader {
 	 */
 	public short[] loadElevation(int level) {
 		// Select the map resolution
-		String file = maps[level];
+		String file = MAP_FILES[level];
 		
 	    try (InputStream inputStream = new FileInputStream(FileLocator.locateFile(file))) {
 

@@ -25,7 +25,7 @@ import java.io.IOException;
 	 * @param scale 		The map scale
 	 * @return Image		The map image
 	 */
-	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
+	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double scale);
 	
     /**
      * Gets the rho of the Mars surface map.

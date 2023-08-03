@@ -351,7 +351,8 @@ public class Settlement extends Structure implements Temporal,
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	private static SurfaceFeatures surfaceFeatures;
-
+	private static TerrainElevation terrainElevation;
+	
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
@@ -467,14 +468,14 @@ public class Settlement extends Structure implements Temporal,
 	public void initialize() {
 		if (surfaceFeatures == null) 
 			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
-		
-		TerrainElevation terrainElevation = surfaceFeatures.getTerrainElevation();
+		if (terrainElevation == null) 
+			terrainElevation = surfaceFeatures.getTerrainElevation();
 		
 //		// Get the elevation and terrain gradient factor
-		terrainProfile = terrainElevation.getTerrainProfile(location);
-		
-		logger.config(this, "elevation: " + Math.round(terrainProfile[0] * 100.0)/100.0
-				+ " km. gradient: " + Math.round(terrainProfile[1] * 100.0)/100.0);
+//		terrainProfile = terrainElevation.getTerrainProfile(location);
+//		
+//		logger.config(this, "elevation: " + Math.round(terrainProfile[0] * 100.0)/100.0
+//				+ " km. gradient: " + Math.round(terrainProfile[1] * 100.0)/100.0);
 		
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
@@ -578,6 +579,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public double getElevation() {
+//		terrainProfile = terrainElevation.getTerrainProfile(location);		
 		return terrainProfile[0];
 	}
 
@@ -3845,6 +3847,9 @@ public class Settlement extends Structure implements Temporal,
 	public void reinit() {
 		if (surfaceFeatures == null) 
 			surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+		
+		if (terrainElevation == null) 
+			terrainElevation = surfaceFeatures.getTerrainElevation();
 		
 		buildingManager.reinit();
 	}

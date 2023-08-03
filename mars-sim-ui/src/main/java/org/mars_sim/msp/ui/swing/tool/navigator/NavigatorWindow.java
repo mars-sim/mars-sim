@@ -124,7 +124,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String CHOOSE_SETTLEMENT = "List";
 	private static final String MAPTYPE_ACTION = "mapType";
 	private static final String RESOLUTION_ACTION = "resolution";
-	private static final String MAPTYPE_UNLOAD_ACTION = "notloaded";
+	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 	private static final String LAYER_ACTION = "layer";
 	private static final String GO_THERE_ACTION = "goThere";
 	private static final String MINERAL_ACTION = "mineralLayer";
@@ -158,8 +158,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String RESOLUTION = "2";
 
 	// Data member
-	/** map resolution: 0 (hi); 1(mid); 2(low). */
-	private static int selectedMapResolution = 2;
+	/** The map resolution: 2 (hi); 1 (mid); 0 (low). */
+	private static int res = 0;
 	/** The map rho. */
 	private double rho;
 	
@@ -478,14 +478,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			String resolutionString = userSettings.getProperty(RESOLUTION_ACTION, RESOLUTION);
 			
-			int resolution = selectedMapResolution;
+			int resolution = res;
 			
 			if (resolutionString != null) {
 				resolution = Integer.parseInt(resolutionString);
 			}
 			
 			// Set the map type
-			setMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP), resolution);
+			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP), resolution);
 
 			for (Object key : userSettings.keySet()) {
 				String prop = (String) key;
@@ -754,19 +754,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			if (command.startsWith(MAPTYPE_ACTION)) {
 				String newMapType = command.substring(MAPTYPE_ACTION.length());
 				if (((JCheckBoxMenuItem) source).isSelected()) {
-					setMapType(newMapType, selectedMapResolution);
+					changeMapType(newMapType, res);
 				}
 			}
-			else if (command.startsWith(MAPTYPE_UNLOAD_ACTION)) {
+			else if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {
 				if (((JCheckBoxMenuItem) source).isSelected()) {
-					String newMapType = command.substring(MAPTYPE_UNLOAD_ACTION.length());
+					String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
 					int reply = selectUnloadedMap(newMapType);
 					
-					// 0: hi res; 1: mid res; 2: low res
+					int oldRes = mapLayerPanel.getMap().getMapMetaData().getResolution(); 
+					
+					// 0: low res; 1: mid res; 2: hi res
 					if (reply < 3) {
-						// Set to the new map resolution
-						selectedMapResolution = reply;
-						setMapType(newMapType, selectedMapResolution);
+						if (reply != oldRes || reply != res) {
+							// Set to the new map resolution
+							res = reply;
+							changeMapType(newMapType, reply);
+						}
 					}
 				}
 			}
@@ -789,14 +793,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newMapType
 	 */
 	private int selectUnloadedMap(String newMapType) {
-		String def = " (Selected)";
+		String def = " (Current)";
 
-		int resolution = mapDataUtil.getMapData(newMapType).getMetaData().getResolution();
+		int resolution = mapLayerPanel.getMap().getMapMetaData().getResolution(); //  ; mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
 				
 		Object[] options = {
-				"High Resolution",
+				"Low Resolution",
                 "Mid Resolution",
-                "Low Resolution"};
+                "High Resolution"};
 		
 		options[resolution] = options[resolution] + def;
 		
@@ -814,12 +818,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * Changes the MapType.
 	 * 
 	 * @param newMapType New map Type
-	 * @param selectedResolution
+	 * @param res
 	 */
-	private void setMapType(String newMapType, int selectedResolution) {
-		if (mapLayerPanel.setMapType(newMapType, selectedResolution)) {
+	private void changeMapType(String newMapType, int res) {
+		// Load the new map type
+		if (mapLayerPanel.loadNewMapType(newMapType, res)) {
 			// Update dependent panels
-			MapMetaData metaType = mapLayerPanel.getMapType();
+			MapMetaData metaType = mapLayerPanel.getMapMetaData();
 			
 			if (metaType.isColourful()) {
 				// turn off day night layer
@@ -891,26 +896,28 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
 			
 			// In case mars-sim has just been loaded
-			metaData.checkMapLocalAvailability();
+//			metaData.checkMapLocalAvailability();
 			
-			int currentResolution = metaData.getResolution();
+			int currentRes = metaData.getResolution();
 			
-			String resolutionString = "Low Res";
+			String resolutionString = "";
 			
-			if (currentResolution == 0)
+			if (currentRes == 2)
 				resolutionString = "High Res";
-			else if (currentResolution == 1)
+			else if (currentRes == 1)
 				resolutionString = "Mid Res";
+			else if (currentRes == 0)
+				resolutionString = "Low Res";
 			
 			// Q: should we always allow the JOption box to pop up ?
 			boolean loaded = false;
 			
 			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getName() + " (" +  resolutionString + ")"
 //															+ (!loaded ? " (Not loaded)" : "")
-															, metaData.equals(mapLayerPanel.getMapType()));
+															, metaData.equals(mapLayerPanel.getMapMetaData()));
 			// Different action for unloaded maps
-			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_UNLOAD_ACTION)
-										+ metaData.getId());
+			mapItem.setActionCommand((loaded ? MAPTYPE_ACTION : MAPTYPE_RELOAD_ACTION)
+										+ metaData.getMapString());
 			
 			mapItem.addActionListener(this);
 			optionsMenu.add(mapItem);
@@ -1060,7 +1067,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			double theta = pos.getTheta();			
 			
 			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
-			double h1 = TerrainElevation.getRGBElevation(pos);
+//			double h1 = TerrainElevation.getRGBElevation(pos);
 
 			double mag = mapLayerPanel.getMagnification();
 			
@@ -1070,9 +1077,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 			elevSB.append(ELEVATION)
 				.append(Math.round(h0*1000.0)/1000.0)
-				.append(" (")
-				.append(Math.round(h1*1000.0)/1000.0)
-				.append(")")
+//				.append(" (")
+//				.append(Math.round(h1*1000.0)/1000.0)
+//				.append(")")
 				.append(KM);
 			
 			String coordStr = pos.getFormattedString();
@@ -1153,9 +1160,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		Properties results = new Properties();
 
 		// Record the map type
-		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapType().getId());
+		results.setProperty(MAPTYPE_ACTION, mapLayerPanel.getMapMetaData().getMapString());
 		// Record the resolution
-		results.setProperty(RESOLUTION_ACTION, "" + mapLayerPanel.getMapType().getResolution());
+		results.setProperty(RESOLUTION_ACTION, "" + mapLayerPanel.getMapMetaData().getResolution());
 		Coordinates center = mapLayerPanel.getCenterLocation();
 		// Record the longitude
 		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
@@ -1299,7 +1306,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	}
 	
 	public static int getMapResolution() {
-		return selectedMapResolution;
+		return res;
 	}
 	
 	/**
@@ -1383,22 +1390,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
             else {
     			setText(DASH + value);
-//            	setText(value.toString());
             }
 			
             return c;
-			
-//			if (value == null) {
-//				setText(prompt);
-//				// this.setForeground(Color.orange);
-//				// this.setBackground(new Color(184,134,11));
-//				return this;
-//			}
-//
-//			setText(CHOOSE_SETTLEMENT + value);
-//			
-//			// result.setOpaque(false);
-//			return c;
 		}
 	}
 
@@ -1424,9 +1418,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 				bottomPane.remove(settlementPane);
 				bottomPane.add(goPane);
-				
-//				createGoPane(false);
-				
+							
 				// Call to update the all components if a new theme is chosen
 				FlatLaf.updateUI();
 				
@@ -1441,9 +1433,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				
 				bottomPane.remove(goPane);
 				bottomPane.add(settlementPane);
-				
-//				createSettlementPane(true);
-				
+							
 				// Call to update the all components if a new theme is chosen
 				FlatLaf.updateUI();
 				

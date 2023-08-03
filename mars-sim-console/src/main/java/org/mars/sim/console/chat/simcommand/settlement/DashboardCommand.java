@@ -49,13 +49,13 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
 		Coordinates location = settlement.getCoordinates();
 		double elevationMOLA = Math.round(TerrainElevation.getMOLAElevation(location) * 1000.0)/1000.0;
-    	double elevationTopo = TerrainElevation.getRGBElevation(location);
+//    	double elevationTopo = TerrainElevation.getRGBElevation(location);
 		
 		response.appendLabeledString("Sponsor", settlement.getReportingAuthority().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
 		response.appendLabeledString("Location", location.getFormattedString());
 		response.appendLabeledString("MOLA Elevation", elevationMOLA + " km");
-		response.appendLabeledString("Topo Elevation", elevationTopo + " km");
+//		response.appendLabeledString("Topo Elevation", elevationTopo + " km");
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
 
 		String[] cats = new String[] { "Repair", "Maintenance", "EVA Suit Production" };

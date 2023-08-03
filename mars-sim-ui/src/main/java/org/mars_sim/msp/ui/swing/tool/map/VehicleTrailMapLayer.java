@@ -48,7 +48,7 @@ public class VehicleTrailMapLayer implements MapLayer, SimulationConstants {
 	public void displayLayer(Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		// Set trail color
-		Color c = (baseMap.getType().isColourful() ? Color.BLACK : new Color(0, 96, 0));
+		Color c = (baseMap.getMapMetaData().isColourful() ? Color.BLACK : new Color(0, 96, 0));
 		g.setColor(c);
 
 		// Draw trail

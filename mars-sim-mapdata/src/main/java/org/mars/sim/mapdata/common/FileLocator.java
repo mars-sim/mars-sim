@@ -44,7 +44,8 @@ public final class FileLocator {
     }
 
     /**
-     * Specialise where the remote content can be found
+     * Specialises where the remote content can be found.
+     * 
      * @param baseURL
      */
     public static void setBaseURL(String baseURL) {
@@ -154,7 +155,8 @@ public final class FileLocator {
     }
 
     /**
-     * Attempt to find a file in the remote content repository
+     * Attempts to find a file in the remote content repository.
+     * 
      * @param name Name of the file to locate
      * @return
      */
@@ -170,7 +172,8 @@ public final class FileLocator {
     }
 
     /**
-     * Pick the required file from a zip file
+     * Picks the required file from a zip file.
+     * 
      * @param resourceStream Zip content
      * @param name File to extract
      * @return Stream to the file contents

@@ -167,8 +167,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		tabPane.add("Main", mainPanel);
 
 		// Create the site detail panel.
-		SiteTabPanel sitetabPanel = new SiteTabPanel(desktop, this);
-		tabPane.add("Site", sitetabPanel);
+//		SiteTabPanel sitetabPanel = new SiteTabPanel(desktop, this);
+//		tabPane.add("Site", sitetabPanel);
 		
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(this);

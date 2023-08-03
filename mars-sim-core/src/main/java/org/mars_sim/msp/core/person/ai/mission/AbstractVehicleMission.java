@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;

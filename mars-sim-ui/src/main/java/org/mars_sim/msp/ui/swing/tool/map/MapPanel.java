@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import org.mars.sim.mapdata.MapData;
+import org.mars.sim.mapdata.IntegerMapData;
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
@@ -74,7 +74,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private double magnification;
 	
 	private String mapErrorMessage;
-	private String mapStringType;
+//	private String mapStringType;
 	
 	private Coordinates centerCoords;
 
@@ -147,8 +147,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		
 		executor = Executors.newSingleThreadExecutor();
 		
-		// Initializes map instance as surf map
-		setMapType(DEFAULT_MAPTYPE, NavigatorWindow.getMapResolution());
+		// Initializes map
+		loadNewMapType(DEFAULT_MAPTYPE, NavigatorWindow.getMapResolution());
 		
 		mapError = false;
 		wait = false;
@@ -176,12 +176,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //		setBackground(Color.BLACK);
 //		setOpaque(true);
 		
-		RHO_DEFAULT = getRho();
-		MAX_RHO = RHO_DEFAULT * 6;
-		MIN_RHO = RHO_DEFAULT / 6;
-		
+		RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+		MAX_RHO = IntegerMapData.MAX_RHO;
+		MIN_RHO = IntegerMapData.MIN_RHO;
 		multiplier = RHO_DEFAULT / ZOOM_STEP;
-		
 		magnification = RHO_DEFAULT/RHO_DEFAULT;
 		
 //		logger.info("scale: " + Math.round(RHO_DEFAULT * 10.0)/10.0 + "  multiplier: " + Math.round(multiplier * 10.0)/10.0);
@@ -230,6 +228,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 			marsMap.drawMap(centerCoords, newRho);
 			
+			// Redefine map param
+			RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+			MAX_RHO = IntegerMapData.MAX_RHO;
+			MIN_RHO = IntegerMapData.MIN_RHO;
+			multiplier = RHO_DEFAULT / ZOOM_STEP;
+			magnification = RHO_DEFAULT/RHO_DEFAULT;
+			
 			repaint();
 		}
     }
@@ -261,6 +266,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					// Do we really want to update the map while dragging ? 
 					// Yes. It's needed to provide smooth viewing of the surface map
 					marsMap.drawMap(centerCoords, getRho());
+					
+					// Redefine map param
+					RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+					MAX_RHO = IntegerMapData.MAX_RHO;
+					MIN_RHO = IntegerMapData.MIN_RHO;
+					multiplier = RHO_DEFAULT / ZOOM_STEP;
+					magnification = RHO_DEFAULT/RHO_DEFAULT;
 					
 					mouseDragging = true;
 					
@@ -355,43 +367,46 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @return map type.
 	 */
-	public MapMetaData getMapType() {
-		return marsMap.getType();
+	public MapMetaData getMapMetaData() {
+		return marsMap.getMapMetaData();
 	}
 
 	public Map getMap() {
 		return marsMap;
 	}
 
-	public MapData getMapData() {
-		return mapUtil.getMapData(mapStringType);
-	}
+//	public MapData loadMapData() {
+//		return mapUtil.loadMapData(mapStringType);
+//	}
 	
 	/**
-	 * Sets the map type.
+	 * Loads the new map type.
 	 * 
-	 * @return map type set successfully
+	 * @param mapStringType
+	 * @param res
+	 * @return true if map type set successfully
 	 */
-	public boolean setMapType(String mapStringType, int selectedMapResolution) {
-		
-		if ((marsMap == null) || !mapStringType.equals(marsMap.getType().getId())) {
+	public boolean loadNewMapType(String newMapString, int res) {
+
+		if ((marsMap == null) || res != marsMap.getMapMetaData().getResolution() 
+				|| !newMapString.equals(marsMap.getMapMetaData().getMapString())) {
 			
-			mapUtil.setMapData(mapStringType, selectedMapResolution);
+			mapUtil.setMapData(newMapString, res);
 			
-			MapData mapData = mapUtil.getMapData(mapStringType);
+//			MapData mapData = mapUtil.loadMapData(newMapString);
+//		
+//			if (mapData == null) {
+//				logger.warning("Map type '" + newMapString + "' cannot be loaded.");
+//				return false;
+//			}
+
+			marsMap = new CannedMarsMap(this, mapUtil.loadMapData(newMapString));
 			
-			this.mapStringType = mapStringType;
-			
-			if (mapData == null) {
-				logger.warning("Map type cannot be loaded " + mapStringType);
-				return false;
-			}
-			
-			marsMap = new CannedMarsMap(this, mapData);
 			recreateMap = true;
 		}
 			
 		showMap(centerCoords, getRho());
+		
 		return true;
 	}
 
@@ -461,6 +476,14 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 				}
 
 				marsMap.drawMap(centerCoords, scale);
+				
+				// Redefine map param
+				RHO_DEFAULT = IntegerMapData.RHO_DEFAULT;
+				MAX_RHO = IntegerMapData.MAX_RHO;
+				MIN_RHO = IntegerMapData.MIN_RHO;
+				multiplier = RHO_DEFAULT / ZOOM_STEP;
+				magnification = RHO_DEFAULT/RHO_DEFAULT;
+				
 				wait = false;
 				repaint();
 				

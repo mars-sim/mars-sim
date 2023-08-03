@@ -37,9 +37,7 @@ import java.util.logging.Logger;
 	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
 
 	private MEGDRMapReader reader;
-	
-	private MapData mapData = null;
-	
+
  	/**
  	 * Constructor.
  	 */
@@ -51,15 +49,15 @@ import java.util.logging.Logger;
 		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
 			mapProps.load(propsStream);
 
-			for(String id : mapProps.stringPropertyNames()) {
+			for(String mapString : mapProps.stringPropertyNames()) {
 				// Split the details into the parts
-				String[] value = mapProps.getProperty(id).split(", ");
+				String[] value = mapProps.getProperty(mapString).split(", ");
 				boolean isColour = Boolean.parseBoolean(value[1]);
 				String hiRes = value[2];
 				String midRes = value[3];
 				String loRes = value[4];
 
-				metaDataMap.put(id, new MapMetaData(id, value[0], isColour, hiRes, midRes, loRes));
+				metaDataMap.put(mapString, new MapMetaData(mapString, value[0], isColour, hiRes, midRes, loRes));
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot load " + MAP_PROPERTIES, e);
@@ -81,28 +79,32 @@ import java.util.logging.Logger;
  	 * Gets map data of the requested type.
  	 * 
  	 * @param mapType the map type
- 	 * @param selectedResolution
+ 	 * @param res
  	 * @return the map data
  	 */
- 	void setMapData(String mapType, int selectedResolution) {
+ 	void setMapData(String mapType, int res) {
 
 		MapMetaData metaData = metaDataMap.get(mapType);
  		if (metaData == null) {
 			logger.warning("Map type " + mapType + " unknown.");
-		};
-		
- 		// Change the map resolution
- 		metaData.setResolution(selectedResolution);
+			
+			new MapDataFactory();
+		}
+ 		else
+ 			// Change the map resolution
+ 			metaData.setResolution(res);
  	}
  	
  	/**
- 	 * Gets map data of the requested type.
+ 	 * Loads the map data of the requested map type.
  	 * 
  	 * @param mapType the map type
  	 * @return the map data
  	 */
- 	MapData getMapData(String mapType) {
-
+ 	MapData loadMapData(String mapType) {
+ 		
+ 		MapData mapData = null;
+ 		
 		MapMetaData metaData = metaDataMap.get(mapType);
 		
  		if (metaData == null) {
@@ -110,19 +112,20 @@ import java.util.logging.Logger;
 			return null;
 		}
 
-		if (mapData == null 
-				|| !mapData.getMetaData().getName().equals(metaData.getName())) {
-
-			try {
-				// Obtain a new MapData instance
-				mapData = new IntegerMapData(metaData);
-				
-				// Patch the metadata to be locally available
-				metaData.setLocallyAvailable(true);
-				
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Could not find the map file.", e);
-			}
+		try {
+			// Obtain a new MapData instance
+			mapData = new IntegerMapData(metaData);
+			
+			// Patch the metadata to be locally available
+			metaData.setLocallyAvailable(true);
+			
+			System.out.println("Map type '" + mapType + "' (res: " + metaData.getResolution() 
+					+ ") has been selected.  Map name: '" + metaData.getName() + "'"
+					+ ".  Filename: " + metaData.getFile()
+					+ ".  Locally AV: " + metaData.isLocallyAvailable() + ".");
+			
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Could not find the map file.", e);
 		}
 		
 		return mapData;
@@ -221,7 +224,6 @@ import java.util.logging.Logger;
 	public void destroy() {
 		metaDataMap.clear();
 		metaDataMap = null;
-		mapData = null;
 		reader = null;
 	}
 	

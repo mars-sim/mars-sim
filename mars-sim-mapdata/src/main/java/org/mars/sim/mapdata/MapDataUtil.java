@@ -54,8 +54,8 @@ import java.util.Collection;
  	 * @param selectedResolution
  	 * @return
  	 */
- 	public MapData getMapData(String mapType) {
- 		return mapDataFactory.getMapData(mapType);
+ 	public MapData loadMapData(String mapType) {
+ 		return mapDataFactory.loadMapData(mapType);
  	}
 
  	/**

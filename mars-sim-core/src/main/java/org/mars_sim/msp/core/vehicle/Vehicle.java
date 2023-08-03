@@ -22,7 +22,6 @@ import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;

@@ -24,9 +24,7 @@ public class CannedMarsMap extends JComponent implements Map {
 
 	// Data members
 	private boolean mapImageDone = false;
-	
-	public final double HALF_MAP_ANGLE = 0.48587;
-	
+
 	private transient Image mapImage = null;
 	
 	private transient MapData mapData;
@@ -46,7 +44,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	 * Gets meta details of the underlying map.
 	 */
 	@Override
-	public MapMetaData getType() {
+	public MapMetaData getMapMetaData() {
 		return mapData.getMetaData();
 	}
 
@@ -58,7 +56,7 @@ public class CannedMarsMap extends JComponent implements Map {
 	 * @return the map image.
 	 */
 	private Image createMapImage(Coordinates center, double scale) {
-		return mapData.getMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, scale);
+		return mapData.createMapImage(center.getPhi(), center.getTheta(), MapPanel.MAP_BOX_WIDTH, MapPanel.MAP_BOX_HEIGHT, scale);
 	}
 	
 	/**

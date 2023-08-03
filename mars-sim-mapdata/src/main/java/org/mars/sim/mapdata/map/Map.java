@@ -86,7 +86,7 @@ public interface Map {
 	 * 
 	 * @return
 	 */
-	public MapMetaData getType();
+	public MapMetaData getMapMetaData();
 
 	/**
 	 * Gets the height of this map in pixels.

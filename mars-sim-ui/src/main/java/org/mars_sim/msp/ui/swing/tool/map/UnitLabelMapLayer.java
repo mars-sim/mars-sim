@@ -50,8 +50,8 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 		IntPoint labelLocation = null;
 		
 		if (displayInfo != null) {
-			labelLocation = getLabelLocation(location, displayInfo.getMapIcon(unit, baseMap.getType()));
-			g2d.setColor(displayInfo.getMapLabelColor(baseMap.getType()));
+			labelLocation = getLabelLocation(location, displayInfo.getMapIcon(unit, baseMap.getMapMetaData()));
+			g2d.setColor(displayInfo.getMapLabelColor(baseMap.getMapMetaData()));
 			g2d.setFont(displayInfo.getMapLabelFont());
 
 			if (labelLocation != null && unit != null

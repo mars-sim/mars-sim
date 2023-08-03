@@ -128,7 +128,7 @@ public class NavpointMapLayer implements MapLayer, SimulationConstants {
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, Map baseMap, Graphics g) {
 
 		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < baseMap.getHalfAngle()) {
-			MapMetaData mapType = baseMap.getType();
+			MapMetaData mapType = baseMap.getMapMetaData();
 			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;

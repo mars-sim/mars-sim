@@ -44,12 +44,12 @@ public class UnitIconMapLayer extends UnitMapLayer {
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, baseMap);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getMapIcon(unit, baseMap.getType()));
+		IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getMapIcon(unit, baseMap.getMapMetaData()));
 		int locX = imageLocation.getiX();
 		int locY = imageLocation.getiY();
 
 		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
-			MapMetaData mapType = baseMap.getType();
+			MapMetaData mapType = baseMap.getMapMetaData();
 			Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
 			if (g != null)
 				displayIcon.paintIcon(displayComponent, g, locX, locY);

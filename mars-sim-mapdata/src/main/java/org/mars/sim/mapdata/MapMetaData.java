@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapMetaData.java
- * @date 2023-07-26
+ * @date 2023-08-02
  * @author Barry Evans
  */
 
@@ -14,12 +14,12 @@ import org.mars.sim.mapdata.common.FileLocator;
 
 public class MapMetaData {
 	
-//    private boolean locallyAvailable;
     private boolean colourful;
     
-	private int selectedResolution = 2;
+    /** The selected resolution of the map file. */
+	private int res = 0;
 	
-	private String id;
+	private String mapString;
     private String name;
     private String hiResFilename;
     private String midResFilename;
@@ -27,9 +27,9 @@ public class MapMetaData {
     
     private Map<String, Boolean> locallyAvailableMap = new HashMap<>();
     
-    public MapMetaData(String id, String name, boolean colourful,
+    public MapMetaData(String mapString, String name, boolean colourful,
                         String hiResFilename, String midResFilename, String loResFilename) {
-        this.id = id;
+        this.mapString = mapString;
         this.name = name;
         this.colourful = colourful;
         this.hiResFilename = hiResFilename;
@@ -60,32 +60,58 @@ public class MapMetaData {
 			setResolution(2);
     }
     
-    public String getId() {
-        return id;
+    public String getMapString() {
+        return mapString;
     }
 
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets if the file is locally available.
+     * 
+     * @param newValue
+     */
     void setLocallyAvailable(boolean newValue) {
     	String fileName = getFile();
         locallyAvailableMap.put(fileName, newValue);
     }
 
+    /**
+     * Sets the resolution of the map file.
+     * 
+     * @param selected
+     */
     public void setResolution(int selected) {
-    	selectedResolution = selected;
+    	res = selected;
     }
     
+    /**
+     * Gets the resolution of the map file.
+     * 
+     * @return
+     */
     public int getResolution() {
-    	return selectedResolution;
+    	return res;
     }
     
+    /**
+     * Is the map file locally available.
+     * 
+     * @param resolution
+     * @return
+     */
     public boolean isLocallyAvailable(int resolution) {
     	String fileName = getFile(resolution);
         return locallyAvailableMap.get(fileName);
     }
 
+    /**
+     * Is the map file locally available.
+     * 
+     * @return
+     */
     public boolean isLocallyAvailable() {
         return locallyAvailableMap.get(getFile());
     }
@@ -94,19 +120,30 @@ public class MapMetaData {
         return colourful;
     }
 
-    public String getFile(int selectedResolution) {
-    	if (selectedResolution == 0) {
-    		return getHiResFile();
+    /**
+     * Gets the filename.
+     * 
+     * @param res
+     * @return
+     */
+    public String getFile(int res) {
+    	if (res == 0) {
+    		return getLoResFile();
     	}
-    	else if (selectedResolution == 1) {
+    	else if (res == 1) {
     		return getMidResFile();
     	}
 
-    	return getLoResFile();
+    	return getHiResFile();
     }
     
+    /**
+     * Gets the filename.
+     * 
+     * @return
+     */
     public String getFile() {
-    	return getFile(selectedResolution);
+    	return getFile(res);
     }
     
     String getHiResFile() {
@@ -121,4 +158,8 @@ public class MapMetaData {
         return loResFilename;
     }
 
+	public void destroy() {
+		locallyAvailableMap.clear();
+		locallyAvailableMap = null;
+	}
 }

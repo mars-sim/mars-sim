@@ -17,7 +17,6 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -41,17 +40,17 @@ import com.jogamp.opencl.CLProgram;
 
 	private static boolean HARDWARE_ACCELERATION = true;
 
-	public static final double HALF_MAP_ANGLE = 3.5 * 0.48587;
+	public static final double HALF_MAP_ANGLE = 0.48587;
 	
 	public static final double QUARTER_HALF_MAP_ANGLE = HALF_MAP_ANGLE / 4;
 	
- 	public final double MAX_RHO;
+ 	public static double MAX_RHO;
 
- 	public final double MIN_RHO;
+ 	public static double MIN_RHO;
 
  	private static final double TWO_PI = Math.PI * 2;
 	// The default rho at the start of the sim
- 	private final double RHO_DEFAULT;
+ 	public static double RHO_DEFAULT;
 
  	// Data members.
  	private int[][] baseMapPixels = null;
@@ -73,7 +72,7 @@ import com.jogamp.opencl.CLProgram;
 	
 	private CLKernel kernel;
  	
-	private Image mapImage = null;
+//	private Image mapImage = null;
 	
  	/**
  	 * Constructor.
@@ -88,7 +87,11 @@ import com.jogamp.opencl.CLProgram;
 		// Load data files
 		String metaMap = newMeta.getFile();
 		
-		baseMapPixels = loadMapData(metaMap);
+		try {
+			loadMapData(metaMap);
+		} catch(Exception e) {
+			logger.log(Level.SEVERE, "Unable to load map. " + e.getMessage());
+		}
 		
 		rho =  pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
@@ -171,7 +174,11 @@ import com.jogamp.opencl.CLProgram;
      * @return
      */
     public double getHalfAngle() {
-    	return HALF_MAP_ANGLE / getMagnification();
+    	double ha = Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (1 + meta.getResolution()));
+    	ha = Math.min(Math.PI, ha);
+//    	System.out.println("HalfAngle: " + ha);
+    	return ha;
+//    	return Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (1 + meta.getResolution()));
     }
 	
 	/**
@@ -201,16 +208,12 @@ import com.jogamp.opencl.CLProgram;
  	 * @return
  	 * @throws IOException
  	 */
- 	private int[][] loadMapData(String imageName) throws IOException {
+ 	private void loadMapData(String imageName) throws IOException {
 
- 		File imageFile = FileLocator.locateFile(imageName);
- 		
  		BufferedImage cylindricalMapImage = null;
  		
- 		int[][] mapPixels = null;
- 		
 		try {
-			cylindricalMapImage = ImageIO.read(imageFile);
+			cylindricalMapImage = ImageIO.read(FileLocator.locateFile(imageName));
 			
 			// Use getRaster() is fastest
 		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
@@ -221,11 +224,11 @@ import com.jogamp.opencl.CLProgram;
 
 	 		pixelWidth = cylindricalMapImage.getWidth();
 	 		pixelHeight = cylindricalMapImage.getHeight();
-	 		logger.severe(imageFile + " : " + pixelWidth + " x " + pixelHeight);
+	 		logger.severe(imageName + " : " + pixelWidth + " x " + pixelHeight);
 	 		
 	 		final boolean hasAlphaChannel = cylindricalMapImage.getAlphaRaster() != null;
 		
-	 		mapPixels = new int[pixelHeight][pixelWidth];
+	 		baseMapPixels = new int[pixelHeight][pixelWidth];
 	 		
 	 		if (hasAlphaChannel) {
 	 			final int pixelLength = 4;
@@ -255,7 +258,7 @@ import com.jogamp.opencl.CLProgram;
 //	 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
 //	 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
 	 						
-	 				mapPixels[row][col] = argb;
+	 				baseMapPixels[row][col] = argb;
 	 				col++;
 	 				if (col == pixelWidth) {
 	 					col = 0;
@@ -274,7 +277,7 @@ import com.jogamp.opencl.CLProgram;
 	 				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
 	 				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
 	 				
-	 				mapPixels[row][col] = argb;
+	 				baseMapPixels[row][col] = argb;
 	 				col++;
 	 				if (col == pixelWidth) {
 	 					col = 0;
@@ -284,10 +287,10 @@ import com.jogamp.opencl.CLProgram;
 	 		}
 	 		
 		} catch (IOException e) {
-			logger.severe("Can't read image file: " + imageFile + ".");
+			logger.severe("Can't read image file '" + imageName + "'.");
 		}
 
- 		return mapPixels;
+// 		return mapPixels;
  	}
  	
  	/**
@@ -300,7 +303,7 @@ import com.jogamp.opencl.CLProgram;
 	 * @param newRho The map rho
  	 */
  	@Override
- 	public Image getMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
+ 	public Image createMapImage(double centerPhi, double centerTheta, int mapBoxWidth, int mapBoxHeight, double newRho) {
 	
 		 boolean invalid = Double.isNaN(centerPhi) || Double.isNaN(centerTheta);
 		 if (invalid) {
@@ -308,11 +311,11 @@ import com.jogamp.opencl.CLProgram;
 			 return null;
 		 }
 	 
- 		if (mapImage != null 
- 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && newRho == rho)) {
- 			// No need to recreate the mapImage when the mouse has not moved
- 			return mapImage;
- 		}
+// 		if (mapImage != null 
+// 				&& (centerPhiCache == centerPhi && centerThetaCache == centerTheta && newRho == rho)) {
+// 			// No need to recreate the mapImage when the mouse has not moved
+// 			return mapImage;
+// 		}
  		
 		// Set the new phi		
  		centerPhiCache = centerPhi;
@@ -325,7 +328,7 @@ import com.jogamp.opencl.CLProgram;
 				+ "  scale: " + newRho);
 		
  		// Create a new buffered image to draw the map on.
- 		BufferedImage result = new BufferedImage(mapBoxWidth, mapBoxHeight, 
+ 		BufferedImage bImage = new BufferedImage(mapBoxWidth, mapBoxHeight, 
  				BufferedImage.TYPE_INT_ARGB);//.TYPE_INT_ARGB);//TYPE_4BYTE_ABGR);TYPE_INT_ARGB_PRE);
 
  		// May experiment with BufferedImage.getSubimage(int x, int y, int w, int h);
@@ -347,33 +350,16 @@ import com.jogamp.opencl.CLProgram;
 			cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, mapArray);
 		}
 
-//		mapImage = displayComponent.createImage(new MemoryImageSource(mapBoxWidth,
-//				mapBoxHeight, mapArray, 0, mapBoxWidth));
-//
-//		MediaTracker mt = new MediaTracker(displayComponent);
-//		mt.addImage(mapImage, 0);
-//		try {
-//			mt.waitForID(0);
-//		} catch (InterruptedException e) {
-//			logger.log(Level.SEVERE, "MineralMapLayer interrupted: " + e);
-//			// Restore interrupted state
-//		    Thread.currentThread().interrupt();
-//		}
-//		
-//		return mapImage;
-		
-//		mapArray = result.getRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
-
  		// Create new map image.
- 		result.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
+ 		bImage.setRGB(0, 0, mapBoxWidth, mapBoxHeight, mapArray, 0, mapBoxWidth);
  		
  		// If alpha value is 255, it is fully opaque.
  		//  A value of 1 would mean it is (almost) fully transparent.
 // 		setAlpha((byte)127, result);
  		
- 		mapImage = result;
+// 		mapImage = result;
 		
- 		return result;
+ 		return bImage;
  	}
 
  	

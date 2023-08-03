@@ -116,7 +116,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public TerrainElevation getTerrainElevation() {
 		if (terrainElevation == null) {
-				terrainElevation = new TerrainElevation();
+			terrainElevation = new TerrainElevation();
 		}
 		return terrainElevation;
 	}

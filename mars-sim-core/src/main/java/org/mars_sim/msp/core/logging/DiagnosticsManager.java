@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DiagnosticsManager.java
- * @version 3.2.0 2021-08-02
+ * @date 2023-08-02
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.logging;

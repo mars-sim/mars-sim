@@ -75,8 +75,14 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
 		for (Landmark landmark : landmarks) {
-			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < baseMap.getHalfAngle())
+			double a = mapCenter.getAngle(landmark.getLandmarkCoord());
+			double ha = baseMap.getHalfAngle();
+
+			if (a < ha) {
+//			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < baseMap.getHalfAngle())
+//				System.out.println(a + "  " + ha);
 				displayLandmark(landmark, mapCenter, baseMap, g2d);
+			}
 		}
 	}
 
@@ -107,7 +113,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			// Set the label font.
 			g2d.setFont(AO_LABEL_FONT);
 			// Set the label color.
-			if (baseMap.getType().isColourful())
+			if (baseMap.getMapMetaData().isColourful())
 				g2d.setColor(AO_TOPO_COLOR);
 			else
 				g2d.setColor(AO_SURFACE_COLOR);
@@ -127,7 +133,7 @@ public class LandmarkMapLayer implements MapLayer, SimulationConstants {
 			// Set the label font.
 			g2d.setFont(MAP_LABEL_FONT);
 			// Set the label color.
-			if (baseMap.getType().isColourful())
+			if (baseMap.getMapMetaData().isColourful())
 				g2d.setColor(TOPO_COLOR);
 			else
 				g2d.setColor(SURFACE_COLOR);
