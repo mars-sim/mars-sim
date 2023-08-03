@@ -131,13 +131,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @return
 	 */
 	protected void loadItem(String file, boolean predefined) {
-		InputStream contents = getRawConfigContents(file, predefined);
-		if (contents == null) {
-			throw new IllegalStateException("Can not find " + file);
-		}
 
 		Document doc;
-		try {
+		try (InputStream contents = getRawConfigContents(file, predefined)) {
+			if (contents == null) {
+				throw new IllegalStateException("Can not find " + file);
+			}
+
 			SAXBuilder builder = null;
 			if (xsdName != null) {
 				// Should we load the XSD schema just once and have the Schema a field.
@@ -174,7 +174,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		if (found == null) {
 			// Then it's a load on demand entry
 			String file = getItemFilename(name);
-			logger.config("Loading a template on demand: '" + itemPrefix + " " + name + "'.");
+			logger.fine("Loading a template on demand: '" + itemPrefix + " " + name + "'.");
 			loadItem(file, true);
 
 			found = knownItems.get(name);

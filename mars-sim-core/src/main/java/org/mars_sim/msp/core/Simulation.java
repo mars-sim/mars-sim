@@ -993,7 +993,8 @@ public class Simulation implements ClockListener, Serializable {
 
 			if (sucessful && (type == SaveType.AUTOSAVE)) {
 				// Purge old auto backups
-				SimulationFiles.purgeAutoSave(simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
+				SimulationFiles.purgeOldFiles( SimulationFiles.getAutoSaveDir(),
+											   simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
 			}
 		}
 		catch (IOException ioe) {

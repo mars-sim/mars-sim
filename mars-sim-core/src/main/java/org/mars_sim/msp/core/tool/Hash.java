@@ -49,20 +49,29 @@ public enum Hash {
     public String getChecksumString(File file) throws IOException {
         //Get file input stream for reading the file content
     	try (FileInputStream fis = new FileInputStream(file)) {
-         
+            return getChecksumString(fis);
+        }
+    }
+
+    /**
+     * Generate a checksum string for a input stream of text.
+     * @param source
+     * @return
+     * @throws IOException
+     */
+    public String getChecksumString(InputStream source) throws IOException {
+        try {
     		//Create byte array to read data in chunks
     		byte[] byteArray = new byte[1024];
     		int bytesCount = 0; 
         
     		MessageDigest digest  = MessageDigest.getInstance(getName());
 	        //Read file data and update in message digest
-	        while ((bytesCount = fis.read(byteArray)) != -1) {
+	        while ((bytesCount = source.read(byteArray)) != -1) {
 	            digest.update(byteArray, 0, bytesCount);
 	        };
  
-	        //close the stream; We don't need it now.
-	        fis.close();
-	         
+
 	        //Get the hash's bytes
 	        byte[] bytes = digest.digest();
 	         
@@ -81,5 +90,4 @@ public enum Hash {
     	// Return empty hash
     	return "";
     }
-    
 }

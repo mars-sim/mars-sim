@@ -71,21 +71,44 @@ public class SimulationFiles {
 	}
 
 	/**
-	 * Purges any old same simulation files from auto save dir.
+	 * Purges any old files from a directory.
+	 * @param dir Directory to scan
+	 * @param retianedCount Number of files to retain.
+	 * @param extension Optional file extension to filter file list
 	 */
-    public static void purgeAutoSave(int retainedCount, String saveFileExtension) {
-		File[] files = (new File(getAutoSaveDir())).listFiles((d, name) -> name.endsWith(saveFileExtension));
+    public static void purgeOldFiles(String dir, int retainedCount, String extension) {
+		File[] files = (new File(dir)).listFiles((d, name) -> (extension == null)
+																|| name.endsWith(extension));
 		Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
 		for (int i = retainedCount; i < files.length; i++) {
+			File child = files[i];
+
 			try {
-				if (!files[i].delete())
-					System.err.println("Failed to delete old sim file " + files[i]);
+				if ((child.isDirectory() && !deleteDirectory(child)) 
+						|| !files[i].delete())
+					System.err.println("Failed to delete old file " + child);
 			}
 			catch(Exception e) {
 				// Pretty fatal
-				System.err.println("Failed to remove old sim file " + files[i]);
+				System.err.println("Failed to remove old file " + child);
 			}
 		}
     }
+
+	/*
+	* Deletes a non empty directory.
+	*/
+	private static boolean deleteDirectory(File dir) {
+		File[] children = dir.listFiles();
+		for (File child : children) {
+			if (child.isDirectory() && !deleteDirectory(child)) {
+				return false;
+			}
+			if (!child.delete()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
