@@ -31,8 +31,8 @@ public class Part extends ItemResource {
 	private int cumFailures = 0;
 	// The current MTBF [in sols]
 	private double mtbf = MAX_MTBF;
-	// The number of failure per sol
-	private double failureRate = 1.0/mtbf;
+	// The failure rate
+	private double failureRate = 1.0 / mtbf;
 	// The current percent reliability
 	private double percentReliability = MAX_RELIABILITY;
 
@@ -74,10 +74,10 @@ public class Part extends ItemResource {
 	public double computeReliability(double solsInUse) {
 
 		if (mtbf == 0) {
-			percentReliability = 0;
+			return percentReliability;
 		}
 		else {
-			percentReliability = Math.min(MAX_RELIABILITY, Math.exp(-solsInUse / mtbf) * 100);
+			percentReliability = .9 * percentReliability + .1 * (1 - Math.exp(-solsInUse / mtbf * 100));
 		}
 		
 		return percentReliability;
@@ -117,12 +117,13 @@ public class Part extends ItemResource {
 	}
 
 	/**
-	 * Computes the failure rate [per sol].
+	 * Computes the failure rate.
 	 * 
 	 * @return
 	 */
-	public double computeFailureRate() {
-		failureRate = 1.0 / mtbf;
+	public double computeFailureRate(double solsInUse) {
+		double oneOverMTBF = 1.0 / mtbf;
+		failureRate = oneOverMTBF * Math.exp(-oneOverMTBF * solsInUse);
 		return failureRate;
 	}
 

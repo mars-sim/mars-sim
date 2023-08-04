@@ -464,15 +464,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Recompute the reliability for this part
 			double newRel = part.computeReliability(solsInUse);
 			// Recompute the failure rate
-			double newFailure = part.computeFailureRate();
+			double newFailure = part.computeFailureRate(solsInUse);
 			// Update all part's repair probability
-			double newRepairProb = computeRepairPartProbability(malfunction, partName, newRel);
+			double newRepairProb = computeRepairPartProbability(malfunction, partName, oldRel, newRel);
 			// Recompute the malfunction failure 
 			double newMalProb = Math.max(oldMalProb * 1.1, oldMalProb * + 0.1 * newFailure);
 			// Update the probability of failure for this particular malfunction
 			malfunction.setProbability(newMalProb);
 			
-			logger.warning("           *** Part : " + partName + " ***");
+			logger.warning("                     Part Name : " + partName + "");
 			logger.warning(" (0). Cumulative # of Failures : " + cumFailure);
 			logger.warning(" (1).         Current # Failed : " + numFailed);			
 			logger.warning(" (2).              Sols in Use : " + Math.round(solsInUse * 100.0)/100.0);
@@ -489,7 +489,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @param malfunctionName the name of the malfunction.
 	 * @param partName        the name of the part.
-	 * @return the probability of the repair part.
+	 * @return the probability of failure of a particular repair part.
 	 */
 	public double getRepairPartProbability(Malfunction malfunction, String partName) {
 		double result = 0;
@@ -512,10 +512,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @param malfunctionName the name of the malfunction.
 	 * @param partName        the name of the part.
-	 * @param failureRate     the failure rate of the part.
-	 * @return reliability the percent reliability of the repair part.
+	 * @param oldRel     the old reliability of the part.
+	 * @param newRel     the new reliability of the part.
+	 * @return probability of failure of a particular repair part.
 	 */
-	public double computeRepairPartProbability(Malfunction malfunction, String partName, double reliability) {
+	public double computeRepairPartProbability(Malfunction malfunction, String partName, double oldRel, double newRel) {
 		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
 		if ((partList != null) && !partList.isEmpty()) {
 			Iterator<RepairPart> i = partList.iterator();
@@ -527,15 +528,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 				double prob = part.getRepairProbability();
 				totalProb += prob;	
 				if (part.getName().equalsIgnoreCase(partName)) {
+					// Record its old repair probability
 					oldRepairProb = prob;
+					// Record the number of this repair part
 					num = part.getNumber();
 				}
 			}
-			
-			double newRepairProb = oldRepairProb * (1 + (100 - reliability)/100) * totalProb / 100;
+
+			// Note that it should be proportional to oldRel divided by newRel
+			// Calculate the new repair probability for this repair part
+			double newRepairProb = Math.min(100, .9 * oldRepairProb + .1 * (oldRepairProb * oldRel / newRel * totalProb / 100));
 			double diff = (newRepairProb - oldRepairProb);
 			
-			// Adjust other parts' repair probability
+			// Calculate the amount of spread for all other non-malfunction repair parts
 			double spreadRepairProb = diff / num;
 			
 			Iterator<RepairPart> j = partList.iterator();
@@ -544,10 +549,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 				double prob = part.getRepairProbability();
 				totalProb += prob;	
 				if (part.getName().equalsIgnoreCase(partName)) {
+					// If this repair part has a malfunction
 					part.setRepairProbability(newRepairProb);
 				}
 				else {
+					// If this is a non-malfunction repair part (doesn't have a malfunction)
 					double oldProb = part.getRepairProbability();
+					// Still need to adjust the probability of part due to the malfunctioned repair part
 					double newProb = (oldProb + spreadRepairProb) * totalProb / 100;		
 					part.setRepairProbability(newProb);
 				}
@@ -565,7 +573,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //	 *
 //	 * @param malfunctionName the name of the malfunction.
 //	 * @param partName        the name of the part.
-//	 * @return the probability of the repair part.
+//	 * @return probability of failure of a particular repair part.
 //	 */
 //	public void setRepairPartProbability(Malfunction malfunction, String partName, double repairProbability) {
 //		List<RepairPart> partList = malfunction.getMalfunctionMeta().getParts();
