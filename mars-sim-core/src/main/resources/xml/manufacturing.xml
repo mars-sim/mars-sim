@@ -630,7 +630,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="0.4">
 		<inputs>
-			<resource name="polyester resin" amount=".5" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />		
 			<part name="aluminum sheet" number="1" />
@@ -734,7 +734,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".3">
 		<inputs>
-			<resource name="polyester resin" amount=".5" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
@@ -1168,7 +1168,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" name1="Polypropylene" amount="0.2" />
 			<resource name="cane fiber" name1="polyester fiber" amount="0.3" />
 			<resource name="aluminized mylar" amount="1.0" />
-			<resource name="polyester resin" amount="0.5" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount="0.5" />
+			<part name="plastic tubing" number="3" />
+						
 		</inputs>
 		<outputs>
 			<part name="pressure suit" number="2" />
@@ -1253,7 +1255,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make eva antenna" tech="2" skill="2" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
-			<resource name="polyester resin" amount=".5" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
@@ -1355,7 +1357,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture vehicle chassis panel" tech="2" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="polyester resin" amount="5.0" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount="5.0" />
 			<resource name="polystyrene" amount="5" />
 			<resource name="styrene" amount="5.0" />
 			<part name="fiberglass" number="5" />
@@ -1523,7 +1525,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="Polyethylene" name1="Polypropylene" amount="3.0" />
-			<resource name="polyester resin" amount="5.0" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount="5.0" />
 			<resource name="polystyrene" amount="10.0" />			
 			<resource name="styrene" amount="2.0" />
 			<part name="fiberglass" number="5" />
@@ -1542,7 +1544,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="Polyethylene" name1="Polypropylene" amount=".5" />
-			<resource name="polyester resin" amount="2.0" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount="2.0" />
 			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
 			<part name="fiberglass" number="5" />
@@ -2131,7 +2133,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate turbine blade" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
-			<resource name="polyester resin" amount=".5" />
+			<resource name="polyester resin" name1="polycarbonate resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -2594,7 +2596,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="ventilation fan" number="2" />
 			<part name="valve" number="5" />
 			<part name="gasket" number="2" />
-			<part name="plastic tubing" number="10" />
+			<part name="plastic tubing" number="3" />
 			<part name="flexible hose" number="3" />
 		</inputs>
 		<outputs>

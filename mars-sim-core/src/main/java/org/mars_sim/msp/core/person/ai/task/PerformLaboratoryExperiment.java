@@ -245,18 +245,44 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
      */
     private static Lab getSettlementLab(Person person, ScienceType science) {
         Lab result = null;
-
-        Set<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
-        labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
-        labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
-        labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
-        labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
-
-        if (labBuildings.size() > 0) {
-            Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                    person, labBuildings);
-            Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-            result = building.getResearch();
+        Set<Building> labBuildings1 = null;
+        Set<Building> labBuildings2 = null;
+        Set<Building> labBuildings3 = null;
+        Set<Building> labBuildings4 = null;
+        Set<Building> labBuildings5 = null;
+        
+        Set<Building> labBuildings0 = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
+        if (!labBuildings0.isEmpty()) {
+        	labBuildings1 = getSettlementLabsWithSpecialty(science, labBuildings0);
+        	if (!labBuildings1.isEmpty()) {
+            	labBuildings2 = BuildingManager.getNonMalfunctioningBuildings(labBuildings1);
+            	if (!labBuildings2.isEmpty()) {
+                	labBuildings3 = getSettlementLabsWithAvailableSpace(labBuildings2);
+                	if (!labBuildings3.isEmpty()) {
+                		labBuildings4 = BuildingManager.getLeastCrowdedBuildings(labBuildings3);
+                    }
+                    else {
+                    	labBuildings5 = labBuildings3;
+                    }
+                }
+                else {
+                	labBuildings5 = labBuildings2;
+                }
+            }
+            else {
+            	labBuildings5 = labBuildings1;
+            }
+        }
+        else {
+        	labBuildings5 = labBuildings0;
+        }
+        
+        if (!labBuildings5.isEmpty()) {
+	        Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+	                person, labBuildings4);
+	        Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
+	        if (building != null)
+	        	result = building.getResearch();
         }
 
         return result;
@@ -277,7 +303,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+            Research lab = building.getResearch();
             if (lab.getResearcherNum() < lab.getLaboratorySize()) result.add(building);
         }
 
@@ -300,8 +326,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
-            if (lab.hasSpecialty(science)) {
+            if (building.getResearch().hasSpecialty(science)) {
                 result.add(building);
             }
         }
@@ -494,7 +519,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
 
  
     /**
-     * Release lab
+     * Releases the lab.
      */
     @Override
     protected void clearDown() {
@@ -533,4 +558,10 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         this.researchAssistant = researchAssistant;
     }
 
+    public void destroy() {
+    	study = null;
+        lab = null;
+        malfunctions = null;
+        researchAssistant = null;
+    }
 }

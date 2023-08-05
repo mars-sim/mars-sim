@@ -221,6 +221,33 @@
 		an edible block.</resource>
 	<resource name="Yeast" type="organism" phase="solid" edible="true">
 		Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
+<resource name="Spirulina" type="organism" phase="solid" edible="true">
+		Spirulina is multi-cellular and filamentous cyano-bacteria commonly known as blue-green algae that 
+		grows both in fresh as well as salt water. Similar to plants it produces energy from sunlight 
+		through the photosynthesis process. It grows and thrives in warm water alkaline ponds and rivers. 
+		It is one of the best potential sources of protein. 
+				
+		https://www.techno-preneur.net/technology/project-profiles/food/Spirulina.htm
+		
+		For uniform growth and for uniform harvesting, 30 grams of dry Spirulina is added 
+		for every 10 liters of water. The water level in the pond should be maintained at 20 to 30 cm.
+
+		In general, the pond will be ready for harvest after 5 days after seeding process is done.		
+		Culture is filtered and collected in a container and poured onto the cloth. The culture medium 
+		flows back into the pond, leaving Spirulina on the cloth. 
+		
+		After filtering, the collected Spirulina is thoroughly washed in distilled water to remove any 
+		traces of salts, contaminants, or culture medium residue. Once the cleaning is done, the water 
+		content is further removed by squeezing or pressing and is ready for drying. Freshly harvested 
+		Spirulina will be at its best in its nutritional values. Fresh Spirulina cannot last more than 
+		2 days, hence it needs to be dried to preserve its nutritional values and to last for a longer
+		duration.
+		
+		Each pond constructed is of 10 x 20 feet size. With 20 such ponds, each will generate on an 
+		average about 2 kg wet culture per day. 1 kg wet culture will give 100 grams of dry powder only. 
+		On average, a 20 tank will generate 4-5 kg of dry Spirulina powder on a daily basis. 
+		The production in a month will be around 100 to 130 kg per month. 
+		</resource>
 
 <!-- Chemical resources derived from insect -->
 	<resource name="Beeswax" type="insect" phase="solid" edible="true"> 
