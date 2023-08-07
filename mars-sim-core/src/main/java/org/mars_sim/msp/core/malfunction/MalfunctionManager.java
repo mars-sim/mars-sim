@@ -535,6 +535,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 				}
 			}
 
+			// No parts found
+			if (num == 0) {
+				return oldRepairProb;
+			}
+
 			// Note that it should be proportional to oldRel divided by newRel
 			// Calculate the new repair probability for this repair part
 			double newRepairProb = Math.min(100, .9 * oldRepairProb + .1 * (oldRepairProb * oldRel / newRel * totalProb / 100));

@@ -2138,14 +2138,15 @@ public class BuildingManager implements Serializable {
 		double max = 0;
 		double units = 0;
 		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return "";
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			units += node.getComputingUnit();
 			max += node.getPeakComputingUnit();
 		}
 		
+		if (max == 0) {
+			return "";
+		}
 		double percent = units / max * 100;
 		
 		StringBuilder sb = new StringBuilder();

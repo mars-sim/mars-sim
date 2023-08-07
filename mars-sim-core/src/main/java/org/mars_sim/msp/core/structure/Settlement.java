@@ -471,14 +471,8 @@ public class Settlement extends Structure implements Temporal,
 		if (terrainElevation == null) 
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 		
-//		// Get the elevation and terrain gradient factor
-//		terrainProfile = terrainElevation.getTerrainProfile(location);
-//		
-//		logger.config(this, "elevation: " + Math.round(terrainProfile[0] * 100.0)/100.0
-//				+ " km. gradient: " + Math.round(terrainProfile[1] * 100.0)/100.0);
-		
-//		Note: to check elevation, do this -> double elevation = terrainProfile[0];
-//		Note: to check gradient, do this ->double gradient = terrainProfile[1];
+		// Get the elevation and terrain gradient factor
+		terrainProfile = terrainElevation.getTerrainProfile(location);
 
 		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
 		regolithCollectionRate = regolithCollectionRate + terrainElevation.obtainRegolithCollectionRate(location);
@@ -975,8 +969,11 @@ public class Settlement extends Structure implements Temporal,
 				num++;
 			}
 			
-			int skillDistance = Math.min(range, 2 * sol * skill / num);
-			
+			int skillDistance = range;
+			if (num > 0) {
+				skillDistance = Math.min(range, 2 * sol * skill / num);
+			}
+
 			int limit =  Math.min(100, sol) * range / 100;
 			
 			// Add another explored site 

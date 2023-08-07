@@ -58,10 +58,6 @@ public class AssignmentHistory implements Serializable  {
 	 * @return
 	 */
     public double getCummulativeJobRating() {
-		if (assignmentList.getChanges().isEmpty()) {
-			return 0D;
-		}
-
 		double score = 0;
 		int valid = 0;
 		// Count scores ignoring Pending
@@ -71,6 +67,10 @@ public class AssignmentHistory implements Serializable  {
 				score += a.getJobRating();
 				valid++;
 			}
+		}
+
+		if (valid == 0) {
+			return 0D;
 		}
 		return score / valid; 
     }

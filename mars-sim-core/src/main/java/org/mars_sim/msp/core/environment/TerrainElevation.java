@@ -9,9 +9,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.mars.sim.mapdata.MapDataUtil;
@@ -51,8 +49,6 @@ public class TerrainElevation implements Serializable {
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 
 	private static Set<CollectionSite> sites;
-
-	private transient Map<Coordinates, double[]> terrainCacheMap = new HashMap<>();
 	
 	/**
 	 * Constructor.
@@ -109,32 +105,7 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / STEP_KM);
 	}
 
-	/**
-	 * Computes the terrain profile of a site at a coordinate
-	 * direction and elevation.
-	 *
-	 * @param {@link Coordinates} currentLocation
-	 * @return an array of two doubles, namely elevation and steepness
-	 */
-	public double[] computeTerrainProfile(Coordinates currentLocation) {
-		
-		if (!terrainCacheMap.containsKey(currentLocation)) {
-			double steepness = 0;
-			double elevation = getAverageElevation(currentLocation);
-			for (int i=0 ; i <= 360 ; i++) {
-				double rad = i * DEG_TO_RAD;
-				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
-			}
-		
-			double[] terrain = {elevation, steepness};
-			
-			terrainCacheMap.put(currentLocation, terrain);
-			
-			return terrain;
-		}
-		
-		return terrainCacheMap.get(currentLocation);
-	}
+
 
 	/**
 	 * Gets the terrain profile of a location.
@@ -143,7 +114,16 @@ public class TerrainElevation implements Serializable {
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
 	public double[] getTerrainProfile(Coordinates currentLocation) {
-		return computeTerrainProfile(currentLocation);
+		double steepness = 0;
+		double elevation = getAverageElevation(currentLocation);
+		for (int i=0 ; i <= 360 ; i++) {
+			double rad = i * DEG_TO_RAD;
+			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+		}
+	
+		double[] terrain = {elevation, steepness};
+				
+		return terrain;
 	}
 
 
