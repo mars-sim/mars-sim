@@ -4,11 +4,14 @@
  * @date 2023-07-26
  * @author Scott Davis
  */
-
  package org.mars.sim.mapdata;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,24 +19,35 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars.sim.mapdata.megdr.MEGDRMapArray;
+import org.mars.sim.mapdata.megdr.MEGDRMapDirect;
+import org.mars.sim.mapdata.megdr.MEGDRMapMemory;
+import org.mars.sim.mapdata.megdr.MEGDRMapReader;
+import org.mars.sim.tools.util.RandomUtil;
+
 /**	
   * A factory for map data.
   */
  public class MapDataFactory {
 
+	/**
+	 * These are package friendly for Unit Test
+	 */
+	static final String ARRAY_READER = "array";
+	static final String DIRECT_READER = "direct";
+	static final String MEMORY_READER = "memory";
+
 	private static Logger logger = Logger.getLogger(MapDataFactory.class.getName());
 
 	private static final double PI = Math.PI;
- 	private static final double TWO_PI = Math.PI * 2D;
  	private static final double DEG_PER_RADIAN = 180/Math.PI;
  	
 	// The map properties MUST contain at least this map
 	private static final String SURF_MAP = "surface";
 	private static final String MAP_PROPERTIES = "/mapdata.properties";
 
- 	private static short height;
- 	private static short width;
- 	
+	private static final String ELEVATION_PROP = "elevation";
+
 	private Map<String, MapMetaData> metaDataMap = new HashMap<>();
 
 	private MEGDRMapReader reader;
@@ -42,22 +56,28 @@ import java.util.logging.Logger;
  	 * Constructor.
  	 */
  	MapDataFactory() {
- 		// Set up MEGDR reader
- 		setUpMEGDR();
  		
+		String megdrSpec = MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE;
+		
  		Properties mapProps = new Properties();
 		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
 			mapProps.load(propsStream);
 
 			for(String mapString : mapProps.stringPropertyNames()) {
-				// Split the details into the parts
-				String[] value = mapProps.getProperty(mapString).split(", ");
-				boolean isColour = Boolean.parseBoolean(value[1]);
-				String hiRes = value[2];
-				String midRes = value[3];
-				String loRes = value[4];
+				if (ELEVATION_PROP.equals(mapString)) {
+					megdrSpec = mapProps.getProperty(ELEVATION_PROP);
+				}
+				else {		
+					// Split the details into the parts
+					String[] value = mapProps.getProperty(mapString).split(", ");
+					boolean isColour = Boolean.parseBoolean(value[1]);
+					String hiRes = value[2];
+					String midRes = value[3];
+					String loRes = value[4];
 
-				metaDataMap.put(mapString, new MapMetaData(mapString, value[0], isColour, hiRes, midRes, loRes));
+					metaDataMap.put(mapString, new MapMetaData(mapString, value[0], isColour,
+										hiRes, midRes, loRes));
+				}
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot load " + MAP_PROPERTIES, e);
@@ -66,15 +86,33 @@ import java.util.logging.Logger;
 		if (!metaDataMap.containsKey(SURF_MAP)) {
 			throw new IllegalStateException("There is no map data for '" + SURF_MAP + "' defined.");
 		}
+
+		reader = createReader(megdrSpec);
  	}
 
- 	private void setUpMEGDR() {
-        reader = new MEGDRMapReader(MEGDRMapReader.LEVEL);
-        
-        height = reader.getHeight();
-        width = reader.getWidth();
- 	}
- 	
+	/**
+	 * Create a MEGDRReader bsed on a spec that contians the "reader type,filename"
+	 * @param spec
+	 * @return
+	 */
+	static MEGDRMapReader createReader(String spec) {
+		String [] parts = spec.split(",");
+		
+		String imageName = parts[1].trim();
+		try {
+			return switch(parts[0]) {
+				case ARRAY_READER -> new MEGDRMapArray(imageName);
+				case DIRECT_READER -> new MEGDRMapDirect(imageName);
+				case MEMORY_READER -> new MEGDRMapMemory(imageName);
+				default -> throw new IllegalArgumentException("Unknown MEGDR reader called " + parts[0]);
+			};
+		}
+		catch(IOException ioe) {
+			logger.severe("Problem creating MEGDRReader " + ioe.getMessage());
+			throw new IllegalArgumentException("Problem loading MEGDRReader:" + ioe.getMessage());
+		}
+	}
+
  	/**
  	 * Gets map data of the requested type.
  	 * 
@@ -140,51 +178,7 @@ import java.util.logging.Logger;
 		return metaDataMap.values();
 	}
 	
-	/**
-	 * Gets the getReaMEGDRMapReader.
-	 * 
-	 * @return
-	 */
-	public MEGDRMapReader getReader() {
-		return reader;
-	}
-	
-    /**
-     * Gets the elevation array.
-     * 
-     * @return
-     */
-    public short[] elevationArray() {
-    	return reader.getElevationArray();
-	}
-	
-   /**
-	 * Gets the elevation as a short integer at a given location.
-	 * 
-	 * @param phi   the phi location.
-	 * @param theta the theta location.
-	 * @return the elevation as an integer.
-	 */
-	public short getElevation(double phi, double theta) {
-		// Note that row 0 and column 0 are at top left 
-		int row = (int)Math.round(phi * height / PI);
-		
-		if (row == height) 
-			row--;
-		
-		int column = (int)Math.round(theta * width / TWO_PI);
 
-		if (column == width)
-			column--;
-
-		int index = row * width + column;
-		
-		if (index > height * width - 1)
-			index = height * width - 1;
-
-		return elevationArray()[index];
-	}
-    
 	/**
 	 * Transforms the pixel i and j into lat and lon coordinate.
 	 * 
@@ -224,7 +218,48 @@ import java.util.logging.Logger;
 	public void destroy() {
 		metaDataMap.clear();
 		metaDataMap = null;
+		if (reader instanceof Closeable cl) {
+			try {
+				cl.close();
+			} catch (IOException e) {
+			}
+		}
 		reader = null;
 	}
-	
+
+   /**
+	 * Gets the elevation as a short integer at a given location.
+	 * 
+	 * @param phi   the phi location.
+	 * @param theta the theta location.
+	 * @return the elevation as an integer.
+	 */
+    public short getElevation(double phi, double theta) {
+        return reader.getElevation(phi, theta);
+	}
+
+	public static void main(String[] args) throws IOException {
+		runPerfTest(DIRECT_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(ARRAY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+	}
+
+	private static void runPerfTest(String spec) {
+		DecimalFormat formatter = new DecimalFormat("###,###,###");
+
+		long startMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		MEGDRMapReader reader = createReader(spec);
+		int size = 10000;
+		double pi2 = Math.PI * 2;
+		Instant start = Instant.now();
+		for(int i = 0; i < size; i++) {
+			double phi = RandomUtil.getRandomDouble(Math.PI);
+			double theta = RandomUtil.getRandomDouble(pi2);
+			reader.getElevation(phi, theta);
+		}
+		Instant finish = Instant.now();
+		long finishMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		System.out.println("Reader " + spec + " Memory increase " + formatter.format(finishMemory - startMemory));
+		System.out.println(size + " lookups in " + Duration.between(start, finish).toMillis());
+	}
  }
