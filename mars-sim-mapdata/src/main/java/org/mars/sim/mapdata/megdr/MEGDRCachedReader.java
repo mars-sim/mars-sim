@@ -14,7 +14,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * This is a reader where the selectedelevtino values are cached for later reuse
+ * This is a reader where the selected elevation values are cached for later reuse.
  */
 public abstract class MEGDRCachedReader extends MEGDRMapReader {
 
@@ -33,7 +33,8 @@ public abstract class MEGDRCachedReader extends MEGDRMapReader {
 	}
 
 	/**
-	 * Get the elevation at a certian index into the map data. This will check te cached value first.
+	 * Gets the elevation at a certain index into the map data. This will check the cached value first.
+	 * 
 	 * @param index Index to the data.
 	 */
     protected short getElevation(int index) {
@@ -56,7 +57,8 @@ public abstract class MEGDRCachedReader extends MEGDRMapReader {
 	}
 
 	/**
-	 * Load a short value from the mapdata
+	 * Loads a short value from the mapdata.
+	 * 
 	 * @param index
 	 * @return
 	 */

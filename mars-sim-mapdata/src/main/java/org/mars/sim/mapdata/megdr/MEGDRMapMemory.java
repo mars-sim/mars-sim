@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import org.mars.sim.mapdata.common.FileLocator;
 
 /**
- * Get elevation data by using memory mapped access to the select MEGDR file.
+ * Gets elevation data by using memory mapped access to the select MEGDR file.
  */
 public class MEGDRMapMemory extends MEGDRCachedReader
 			implements Closeable {
@@ -48,7 +48,8 @@ public class MEGDRMapMemory extends MEGDRCachedReader
 
 
 	/**
-	 * Open the map file for memory mapped access
+	 * Opens the map file for memory mapped access.
+	 * 
 	 * @throws IOException
 	 */
 	private void prepareMemoryFile(File mapSource) throws IOException {
@@ -56,10 +57,10 @@ public class MEGDRMapMemory extends MEGDRCachedReader
 		mapData = new RandomAccessFile(mapSource, "r");
 		long fileSize = mapData.length();
 
-	      //Get file channel in read-only mode
+	    // Get file channel in read-only mode
       	FileChannel fileChannel = mapData.getChannel();
            
-        //Get direct byte buffer access using channel.map() operation
+        // Get direct byte buffer access using channel.map() operation
         memoryBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
 		  							0, fileChannel.size());
 		

@@ -57,7 +57,7 @@ import org.mars.sim.tools.util.RandomUtil;
  	 */
  	MapDataFactory() {
  		
-		String megdrSpec = MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE;
+		String megdrSpec = MEMORY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE;
 		
  		Properties mapProps = new Properties();
 		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
@@ -91,14 +91,18 @@ import org.mars.sim.tools.util.RandomUtil;
  	}
 
 	/**
-	 * Create a MEGDRReader bsed on a spec that contians the "reader type,filename"
+	 * Creates a MEGDRReader based on a spec that contains the "reader type, filename".
+	 * 
 	 * @param spec
 	 * @return
 	 */
 	static MEGDRMapReader createReader(String spec) {
-		String [] parts = spec.split(",");
+		String [] parts = spec.split(", ");
 		
 		String imageName = parts[1].trim();
+
+		logger.config("imageName: " + imageName);
+		
 		try {
 			return switch(parts[0]) {
 				case ARRAY_READER -> new MEGDRMapArray(imageName);

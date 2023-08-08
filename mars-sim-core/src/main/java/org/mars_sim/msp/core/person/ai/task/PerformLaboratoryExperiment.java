@@ -262,19 +262,19 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
                 		labBuildings4 = BuildingManager.getLeastCrowdedBuildings(labBuildings3);
                     }
                     else {
-                    	labBuildings5 = labBuildings3;
+                    	labBuildings5 = labBuildings2;
                     }
                 }
                 else {
-                	labBuildings5 = labBuildings2;
+                	labBuildings5 = labBuildings1;
                 }
             }
             else {
-            	labBuildings5 = labBuildings1;
+            	labBuildings5 = labBuildings0;
             }
         }
         else {
-        	labBuildings5 = labBuildings0;
+        	return null;
         }
         
         if (!labBuildings5.isEmpty()) {

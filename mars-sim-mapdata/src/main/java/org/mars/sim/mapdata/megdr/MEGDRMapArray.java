@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * MEGDRMapArray.java
+ * @date 2023-08-06
+ * @author Barry Evans
+ */
+
 package org.mars.sim.mapdata.megdr;
 
 import java.io.File;
@@ -22,7 +29,7 @@ public class MEGDRMapArray extends MEGDRMapReader {
 	}
 
 	/**
-	 * Get the elevation from the array
+	 * Gets the elevation from the array.
 	 */
     protected short getElevation(int index) {
 		return elevation[index];

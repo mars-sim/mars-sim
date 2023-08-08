@@ -762,8 +762,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					String newMapType = command.substring(MAPTYPE_RELOAD_ACTION.length());
 					int reply = selectUnloadedMap(newMapType);
 					
-					int oldRes = mapLayerPanel.getMap().getMapMetaData().getResolution(); 
-					
+//					int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
+					int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
+					if (oldRes < 0)
+						oldRes = 0;
+							
 					// 0: low res; 1: mid res; 2: hi res
 					if (reply < 3) {
 						if (reply != oldRes || reply != res) {
@@ -795,14 +798,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private int selectUnloadedMap(String newMapType) {
 		String def = " (Current)";
 
-		int resolution = mapLayerPanel.getMap().getMapMetaData().getResolution(); //  ; mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
-				
+//		int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
+		int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
+		if (oldRes < 0) {
+			oldRes = 0;
+			def = "";
+		}
+		
 		Object[] options = {
 				"Low Resolution",
                 "Mid Resolution",
                 "High Resolution"};
 		
-		options[resolution] = options[resolution] + def;
+		options[oldRes] = options[oldRes] + def;
 		
 		return JOptionPane.showOptionDialog(null,
 								"Choose map resolution for '" + newMapType + "' map type ? (Need to download the map if not available locally)", 

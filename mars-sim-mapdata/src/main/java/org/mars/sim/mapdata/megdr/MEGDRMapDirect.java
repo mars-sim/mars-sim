@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import org.mars.sim.mapdata.common.FileLocator;
 
 /**
- * Get elevation data by using direct access to the selected MEGDR file.
+ * Gets elevation data by using direct access to the selected MEGDR file.
  */
 public class MEGDRMapDirect extends MEGDRCachedReader 
 		implements Closeable {
@@ -30,7 +30,8 @@ public class MEGDRMapDirect extends MEGDRCachedReader
 	}
 
 	/**
-	 * Load a short value from the directly access file
+	 * Loads a short value from the directly access file.
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -53,7 +54,8 @@ public class MEGDRMapDirect extends MEGDRCachedReader
 	}
 
 	/**
-	 * Open the map file for access
+	 * Opens the map file for access.
+	 * 
 	 * @throws IOException
 	 */
 	private void prepareDirectFile(File mapSource) throws IOException {

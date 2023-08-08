@@ -189,7 +189,7 @@ public final class FileLocator {
             }
             return zip;
         } catch (IOException e) {
-            // Problen with the ZIP
+            // Problem with the ZIP
             logger.severe("Zip file can not be read " + name);
         }
         return null;

@@ -57,14 +57,14 @@ public abstract class MEGDRMapReader {
 	
  	private static final double TWO_PI = Math.PI * 2D;
 
-
-	public static final String DEFAULT_MEGDR_FILE = "/maps/megt90n000eb.img";
+	public static final String DEFAULT_MEGDR_FILE = "/elevation/megt90n000eb.img";
 	
 	private short mapHeight;
 	private short mapWidth;
 	
     /**
-	 * Set the size of the map that is loaded
+	 * Sets the size of the map that is loaded.
+	 * 
 	 * @param width New width
 	 * @param height New height
 	 */
@@ -101,7 +101,8 @@ public abstract class MEGDRMapReader {
 	}
 
 	/**
-	 * Get the elevation at an index in the source file.
+	 * Gets the elevation at an index in the source file.
+	 * 
 	 * @param index
 	 * @return
 	 */

@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -36,7 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 	
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
+	// May add back SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
 	
 	/**
      * Represents a Job needed for internal maintenance on a Building
@@ -91,7 +90,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
      * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
      * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -102,7 +101,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
 			factor = getPersonModifier(p);
 			if (mtj.eva) {
-				// EVA factor is the radition and the EVA modifiers applied extra
+				// EVA factor is the radiation and the EVA modifiers applied extra
 				factor *= getRadiationModifier(p.getSettlement());
 				factor *= getEVAModifier(p);
 			}
@@ -114,7 +113,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
      * For a robot can not do EVA tasks so will return a zero factor in this case.
      * 
 	 * @param t Task being scored
-	 * @parma r Robot requesting work.
+	 * @param r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
