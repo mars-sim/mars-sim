@@ -243,9 +243,9 @@ import org.mars.sim.tools.util.RandomUtil;
 	}
 
 	public static void main(String[] args) throws IOException {
-		runPerfTest(DIRECT_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(ARRAY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(DIRECT_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(ARRAY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(MEMORY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
 	}
 
 	private static void runPerfTest(String spec) {
