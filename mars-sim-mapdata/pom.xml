@@ -20,7 +20,8 @@
 		    <groupId>de.articdive</groupId>
 		    <artifactId>jnoise-pipeline</artifactId>
 		    <version>4.0.0</version>
-		</dependency>		
+		</dependency>
+		<!-- https://github.com/sesuncedu/xz -->		
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>

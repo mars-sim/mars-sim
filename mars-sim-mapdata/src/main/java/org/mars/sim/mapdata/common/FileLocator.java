@@ -8,23 +8,31 @@ package org.mars.sim.mapdata.common;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.tukaani.xz.BasicArrayCache;
+import org.tukaani.xz.XZInputStream;
 
 /**
  * A static helper class to locate files for the configuration of the system.
  */
 public final class FileLocator {
 
-
     private static Logger logger = Logger.getLogger(FileLocator.class.getName());
     private static final String ZIP = ".zip";
+    private static final String XZ = ".xz";
     private static final String DOWNLOAD_DIR = "/downloads";
     private static File localBase = new File(System.getProperty("user.home")
                                                 +  "/.mars-sim" + DOWNLOAD_DIR);
@@ -103,51 +111,72 @@ public final class FileLocator {
             // Attempt to find the file in the resources
             String source = "bundled file";
             InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
+            
             if (resourceStream == null) {
-                // Try zip in bundle
-                resourceStream = FileLocator.class.getResourceAsStream(name + ZIP);
-                if (resourceStream != null) {
-                    resourceStream = getFileFromZip(resourceStream, name);
-                    source = "bundled ZIP";
-                }
-                else {
-                    // Try file in remote
-                    resourceStream = openRemoteContent(name);
-                    if (resourceStream != null) {
-                        source = "remote file";
-                    }
-                    else {
-                        resourceStream = openRemoteContent(name + ZIP);
-                        if (resourceStream != null) {
-                            resourceStream = getFileFromZip(resourceStream, name);
-                            source = "remote ZIP";
-                        }
-                        else {
-                            logger.severe("Cannot locate file " + name);
-                            return null;
-                        }
-                    }
-                }
-            }
+            	// Try xz in bundle
+                resourceStream = FileLocator.class.getResourceAsStream(name + XZ);
+                
+                try (XZInputStream xzStream = new XZInputStream(resourceStream, BasicArrayCache.getInstance())) {
+                	source = "bundled XZ";
+                	
+	                logger.info("Extracting from " + name + " from " + source);
+                	Files.copy(xzStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);    	
+                	
+                	return localFile;
 
-            // Have a source location
-            if (resourceStream != null) {
-                logger.info("Extracting from " + name + " from " + source);
-                try {
-                    copyFile(resourceStream, localFile);
-                } catch (IOException ioe) {
-                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
+                } catch (FileNotFoundException e) {
+                	 logger.warning("Problem finding the file.");
+                } catch (IOException e) {
+                	 logger.warning("Problem with IO.");
                 }
-                finally {
-                    try {
-                        resourceStream.close();
-                    } catch (IOException e) {
-                        logger.warning("Problem closing stream");
-                    }
-                }
-            }
-            else {
-                logger.warning("Cannot find file " + name);
+            	
+                
+                if (resourceStream == null) {
+	                // Try zip in bundle
+	                resourceStream = FileLocator.class.getResourceAsStream(name + ZIP);
+	                if (resourceStream != null) {
+	                    resourceStream = getFileFromZip(resourceStream, name);
+	                    source = "bundled ZIP";
+	                }
+	                else {
+	                    // Try file in remote
+	                    resourceStream = openRemoteContent(name);
+	                    if (resourceStream != null) {
+	                        source = "remote file";
+	                    }
+	                    else {
+	                        resourceStream = openRemoteContent(name + ZIP);
+	                        if (resourceStream != null) {
+	                            resourceStream = getFileFromZip(resourceStream, name);
+	                            source = "remote ZIP";
+	                        }
+	                        else {
+	                            logger.severe("Cannot locate file " + name);
+	                            return null;
+	                        }
+	                    }
+	                }
+	            }
+	
+	            // Have a source location
+	            if (resourceStream != null) {
+	                logger.info("Extracting from " + name + " from " + source);
+	                try {
+	                    copyFile(resourceStream, localFile);
+	                } catch (IOException ioe) {
+	                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
+	                }
+	                finally {
+	                    try {
+	                        resourceStream.close();
+	                    } catch (IOException e) {
+	                        logger.warning("Problem closing stream");
+	                    }
+	                }
+	            }
+	            else {
+	                logger.warning("Cannot find file " + name);
+	            }
             }
         }
 
@@ -194,7 +223,7 @@ public final class FileLocator {
         }
         return null;
     }
-
+    
     /**
      * Downloads a file from the remote repository.
      * 
