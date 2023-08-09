@@ -110,25 +110,31 @@ public final class FileLocator {
             String source = "bundled file";
             InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
             
-            if (resourceStream == null) {
-            	// Try xz in bundle
-                resourceStream = FileLocator.class.getResourceAsStream(name + XZ);
+            if (name.contains("/elevation/")) {
                 
-                try (XZInputStream xzStream = new XZInputStream(resourceStream, BasicArrayCache.getInstance())) {
-                	source = "bundled XZ";
-                	
-	                logger.info("Extracting from " + name + " from " + source);
-                	Files.copy(xzStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);    	
-                	
-                	resourceStream.close();
-                	 
-                	return localFile;
+                if (resourceStream == null) {
+                	// Try xz in bundle
+                    resourceStream = FileLocator.class.getResourceAsStream(name + XZ);
+                    
+                    try (XZInputStream xzStream = new XZInputStream(resourceStream, BasicArrayCache.getInstance())) {
+                    	source = "bundled XZ";
+                    	
+    	                logger.info("Extracting from " + name + " from " + source);
+                    	Files.copy(xzStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);    	
+                    	
+                    	resourceStream.close();
+                    	 
+                    	return localFile;
 
-                } catch (FileNotFoundException e) {
-//                	 logger.warning("Problem finding the file.");
-                } catch (IOException e) {
-//                	 logger.warning("Problem with IO.");
+                    } catch (FileNotFoundException e) {
+//                    	 logger.warning("Problem finding the file.");
+                    } catch (IOException e) {
+//                    	 logger.warning("Problem with IO.");
+                    }
                 }
+            }
+            
+            else {
             
                 if (resourceStream == null) {
 	                // Try zip in bundle
@@ -156,26 +162,26 @@ public final class FileLocator {
 	                    }
 	                }
 	            }
-	
-	            // Have a source location
-	            if (resourceStream != null) {
-	                logger.info("Extracting from " + name + " from " + source);
-	                try {
-	                    copyFile(resourceStream, localFile);
-	                } catch (IOException ioe) {
-	                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
-	                }
-	                finally {
-	                    try {
-	                        resourceStream.close();
-	                    } catch (IOException e) {
-	                        logger.warning("Problem closing stream");
-	                    }
-	                }
-	            }
-	            else {
-	                logger.warning("Cannot find file " + name);
-	            }
+            }
+            
+            // Have a source location
+            if (resourceStream != null) {
+                logger.info("Extracting from " + name + " from " + source);
+                try {
+                    copyFile(resourceStream, localFile);
+                } catch (IOException ioe) {
+                    logger.log(Level.SEVERE, "Problem extracting file", ioe);
+                }
+                finally {
+                    try {
+                        resourceStream.close();
+                    } catch (IOException e) {
+                        logger.warning("Problem closing stream");
+                    }
+                }
+            }
+            else {
+                logger.warning("Cannot find file " + name);
             }
         }
 
