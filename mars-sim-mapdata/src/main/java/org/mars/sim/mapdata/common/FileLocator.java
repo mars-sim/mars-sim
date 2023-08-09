@@ -8,14 +8,12 @@ package org.mars.sim.mapdata.common;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,15 +120,16 @@ public final class FileLocator {
 	                logger.info("Extracting from " + name + " from " + source);
                 	Files.copy(xzStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);    	
                 	
+                	resourceStream.close();
+                	 
                 	return localFile;
 
                 } catch (FileNotFoundException e) {
-                	 logger.warning("Problem finding the file.");
+//                	 logger.warning("Problem finding the file.");
                 } catch (IOException e) {
-                	 logger.warning("Problem with IO.");
+//                	 logger.warning("Problem with IO.");
                 }
-            	
-                
+            
                 if (resourceStream == null) {
 	                // Try zip in bundle
 	                resourceStream = FileLocator.class.getResourceAsStream(name + ZIP);
