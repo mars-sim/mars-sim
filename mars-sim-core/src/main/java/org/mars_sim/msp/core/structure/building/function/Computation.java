@@ -295,21 +295,25 @@ public class Computation extends Function {
 	/**
 	 * Reduces the entropy.
 	 * 
-	 * @param value
+	 * @param the suggested value of entropy to be reduced
+	 * @return the final value of entropy being reduced
 	 */
 	public double reduceEntropy(double value) {
+		double oldEntropy = entropy;
 		double diff = entropy - value;
-	
-		// Note that entropy can become negative
-		// This means that the system has been tuned up
-		// to perform very well
-		if (entropy - diff < - .5 * maxEntropy) {
-			double oldEntropy = entropy;
-			entropy = - .5 * maxEntropy;
-			return entropy - oldEntropy;
+		
+		if (diff < -0.5 * maxEntropy) {
+			// Note that entropy can become negative
+			// This means that the system has been tuned up
+			// to perform very well
+			diff = -0.5 * maxEntropy;
+			entropy = diff + value;
+
 		}
-			
-		return diff;
+		else
+			entropy -= value;
+		
+		return oldEntropy - entropy;
 	}
 	
 	/**

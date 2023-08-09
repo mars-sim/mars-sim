@@ -9,8 +9,11 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 
 import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -30,7 +33,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
 
-	private static final int FACTOR = 200;
+	private static final int FACTOR = 50;
 	
     public OptimizeSystemMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -54,17 +57,35 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 				
 				// Compute total entropy
 				result = person.getSettlement().getBuildingManager().
-						getTotalEntropy() * FACTOR;
-								
-				if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
-	            	result *= 1.5D;
-	            
-	            if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
-	            	result *= 1.5D;
-	            
-	            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
-	            	result *= 1.25D;
+						getTotalEntropy();
+						
+				if (result < 0.01)
+					result = 0.01;
 				
+				result *= RandomUtil.getRandomDouble(FACTOR);
+				
+				double org = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ORGANIZATION);
+				double com = 0;
+				
+				if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
+					com = person.getSkillManager().getSkill(SkillType.COMPUTING).getCumuativeExperience();
+				}
+				
+				result += org + com;
+				
+				if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
+	            	result *= 4;
+				else if (JobType.ENGINEER == person.getMind().getJob())
+	            	result *= 3;
+				
+	            if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
+	            	result *= 3;
+	            else if (RoleType.ENGINEERING_SPECIALIST == person.getRole().getType())
+	            	result *= 2;
+	            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
+	            	result *= 2.5;
+	            else if (RoleType.CHIEF_OF_ENGINEERING == person.getRole().getType())
+	            	result *= 1.5;
 		        
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "getProbability()", e);

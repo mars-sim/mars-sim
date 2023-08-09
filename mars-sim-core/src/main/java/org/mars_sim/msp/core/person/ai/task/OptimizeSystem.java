@@ -10,10 +10,10 @@ import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
@@ -39,7 +39,7 @@ public class OptimizeSystem extends Task {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-	private double FACTOR = .01;
+	private double FACTOR = .001;
 
 	private double totalEntropyReduce;
 	
@@ -59,12 +59,11 @@ public class OptimizeSystem extends Task {
 
 		if (person.isInSettlement()) {
 
-			// If person is in a settlement, try to find an office building.
+			// If person is in a settlement, try to find a server node.
 			node = person.getSettlement().getBuildingManager().getMostEntropyComputingNodeByProbability();
 			if (node != null) {
-				Building building = node.getBuilding();
-				// Walk to the office building.
-				walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.COMPUTATION, false);
+				// Walk to the spot.
+				walkToTaskSpecificActivitySpotInBuilding(node.getBuilding(), FunctionType.COMPUTATION, false);
 			}
 
 			// Initialize phase
@@ -94,13 +93,22 @@ public class OptimizeSystem extends Task {
 	 */
 	private double optimizingPhase(double time) {
 		if (isDone() || getTimeCompleted() + time > getDuration()) {
-			logger.info(person, "totalEntropyReduce: " + Math.round(totalEntropyReduce * 1000.0)/1000.0);
         	// this task has ended
 			endTask();
 			return time;
 		}
 		
-		totalEntropyReduce += node.reduceEntropy(time * FACTOR);	
+		double com = 0;
+		
+		if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
+			com = person.getSkillManager().getSkill(SkillType.COMPUTING).getCumuativeExperience();
+		}
+		
+		double modTime = time * FACTOR * com;
+		
+		double points = RandomUtil.getRandomDouble(modTime);
+		
+		totalEntropyReduce += node.reduceEntropy(Math.min(modTime/50, points));	
 
 		// Add experience
 		addExperience(time);
@@ -116,30 +124,6 @@ public class OptimizeSystem extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		// nothing.
+		logger.info(person, 10_000L, "Reduced a total of " + Math.round(totalEntropyReduce * 100.0)/100.0 + " entropy.");
 	}
-
-//	/**
-//	 * Gets an available building with a function type.
-//	 * 
-//	 * @param person
-//	 * @return
-//	 */
-//	public static Building getAvailableBuildingSpot(Person person, FunctionType functionType) {
-//		Building result = null;
-//
-//		// If person is in a settlement, try to find a building with a function type.
-//		if (person.isInSettlement()) {
-//			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT, functionType); 
-//			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
-//			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
-//
-//			if (bldgs.size() > 0) {
-//				Map<Building, Double> selectedBldgs = BuildingManager.getBestRelationshipBuildings(person, bldgs);
-//				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-//			}
-//		}
-//
-//		return result;
-//	}
 }

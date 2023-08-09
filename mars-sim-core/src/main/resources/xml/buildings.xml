@@ -2464,6 +2464,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="-0.7" />					
 				</activity>
 			</astronomical-observation>
+			
+			<computation computing-unit="2.0" power-demand="0.5" cooling-demand="0.1">
+				<activity>
+					<activity-spot xloc="-1.6" yloc="0.0" />
+				</activity>
+			</computation>
 
 			<!-- The building has facilities for eating meals. -->
 			<dining capacity="2">

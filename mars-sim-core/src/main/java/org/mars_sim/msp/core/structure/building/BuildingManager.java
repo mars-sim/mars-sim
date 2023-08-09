@@ -543,6 +543,15 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets a list of settlement's buildings with computing function.
+	 *
+	 * @return list of buildings
+	 */
+	public List<Building> getComputingBuildings() {
+		return getBuildings(FunctionType.COMPUTATION);
+	}
+	
+	/**
 	 * Checks if the settlement contains a given building.
 	 *
 	 * @param building the building.
@@ -2112,11 +2121,62 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the sum of all computing resources in a settlement.
+	 * Gets total power demand from all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
-	public double getAllComputingResources() {
+	public double getTotalComputingPowerDemand() {
+		double power = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			power += node.getPowerDemand();
+		}
+		return power;
+	}
+	
+	/**
+	 * Gets usage percentage from all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getComputingUsagePercent() {
+		double usage = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			usage += node.getUsagePercent();
+		}
+		return usage;
+	}
+	
+	/**
+	 * Gets peak total CUs from all computing nodes in a settlement.
+	 * 
+	 * @return
+	 */
+	public double getPeakTotalComputing() {
+		double usage = 0;
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			usage += node.getPeakComputingUnit();
+		}
+		return usage;
+	}
+	
+	/**
+	 * Gets the sum of all computing resources in a settlement.
+	 * 
+	 * @return amount in CUs
+	 */
+	public double getTotalCUsComputing() {
 		double units = 0;
 		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
@@ -2209,7 +2269,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Computation getMostEntropyComputingNodeByProbability() {
 		Map<Computation, Double> scores = new HashMap<>();
-		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
 			return null;
 		for (Building b: nodeBldgs) {
@@ -2297,7 +2357,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Computation getMostFreeComputingNode(double need, int startTime, int endTime) {
 		Map<Computation, Double> scores = new HashMap<>();
-		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
 			return null;
 		for (Building b: nodeBldgs) {

@@ -50,7 +50,9 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
+	 * 
+	 * @param center the center JPanel in BuildingFunctionPanel
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -70,6 +72,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 
 		// Peak
 		double peak = Math.round(building.getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
+		
 		// Current
 		double computingUnit = Math.round(building.getComputation().getComputingUnit() * 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
