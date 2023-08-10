@@ -1449,7 +1449,7 @@ public class BuildingManager implements Serializable {
 	 * @return map of buildings and their probabilities.
 	 */
 	public static Map<Building, Double> getBestRelationshipBuildings(Person person, Set<Building> buildings) {
-		Map<Building, Double> result = new HashMap<>(buildings.size());
+		Map<Building, Double> result = new HashMap<>();
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildings) {
 			if (building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
@@ -2443,7 +2443,7 @@ public class BuildingManager implements Serializable {
 
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
-			if (bldgs.size() > 0) {
+			if (!bldgs.isEmpty()) {
 				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
 				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 			}
@@ -2472,7 +2472,7 @@ public class BuildingManager implements Serializable {
 
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
-			if (bldgs.size() > 0) {
+			if (!bldgs.isEmpty()) {
 				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
 				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 			}
@@ -2501,7 +2501,7 @@ public class BuildingManager implements Serializable {
 
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
-			if (bldgs.size() > 0) {
+			if (!bldgs.isEmpty()) {
 				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
 				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 			}
@@ -2543,7 +2543,7 @@ public class BuildingManager implements Serializable {
 				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
 					kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
 	
-				if (kitchenBuildings.size() > 0) {
+				if (!kitchenBuildings.isEmpty()) {
 					result = RandomUtil.getARandSet(kitchenBuildings);
 				}
 			}
@@ -2573,7 +2573,7 @@ public class BuildingManager implements Serializable {
 
 			bldgs = getLeastCrowdedBuildings(bldgs);
 
-			if (bldgs.size() > 0) {
+			if (!bldgs.isEmpty()) {
 				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
 				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 			}

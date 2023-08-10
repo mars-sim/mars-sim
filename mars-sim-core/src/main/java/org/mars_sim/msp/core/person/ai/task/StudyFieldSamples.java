@@ -240,14 +240,13 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy {
 	private static Lab getSettlementLab(Person person, ScienceType science) {
 		Lab result = null;
 
-		BuildingManager manager = person.getSettlement().getBuildingManager();
-		Set<Building> labBuildings = manager.getBuildingSet(FunctionType.RESEARCH);
+		Set<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
 		labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
 		labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
 		labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
 		labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
 
-		if (labBuildings.size() > 0) {
+		if (!labBuildings.isEmpty()) {
 			Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
 			result = RandomUtil.getWeightedRandomObject(labBuildingProbs).getResearch();
 		}

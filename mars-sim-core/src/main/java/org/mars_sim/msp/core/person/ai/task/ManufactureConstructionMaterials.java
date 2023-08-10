@@ -170,7 +170,7 @@ public class ManufactureConstructionMaterials extends Task {
 				return null;
 			}
 			
-			else if (manufacturingBuildingProbs.size() > 0) {
+			else if (!manufacturingBuildingProbs.isEmpty()) {
 				result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
 			}
 		}

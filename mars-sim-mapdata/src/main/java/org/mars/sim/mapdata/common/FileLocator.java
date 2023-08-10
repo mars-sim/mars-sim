@@ -100,16 +100,17 @@ public final class FileLocator {
         // Check file is already downloaded
         File localFile = new File(localBase, name);
         boolean locateFile = !localFile.exists();
-
+        boolean canDelete = false;
+        
         // Check file is not zero size
         if (!locateFile && (localFile.length() == 0)) {
             logger.warning("Local file " + localFile.getAbsolutePath() + " is empty. Removing.");
-            localFile.delete();
+            canDelete = localFile.delete();
             locateFile = true;
         }
 
         // Find the file
-        if (locateFile) {
+        if (locateFile && !canDelete) {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
@@ -117,7 +118,9 @@ public final class FileLocator {
             // Attempt to find the file in the bundled resources; then remotely
             StringBuilder source = new StringBuilder("bundled as ");
             InputStream resourceStream = locateResource(name, source,
-                                                n -> FileLocator.class.getResourceAsStream(n));
+            		// Use lambda with method reference to avoid codesmell
+            		FileLocator.class::getResourceAsStream); //n -> FileLocator.class.getResourceAsStream(n));
+            
             if (resourceStream == null) {
                 source = new StringBuilder("remote as ");
                 resourceStream = locateResource(name, source, n -> openRemoteContent(n));
@@ -125,7 +128,11 @@ public final class FileLocator {
             
             // Have a source location
             if (resourceStream != null) {
-                logger.info("Extracting from " + name + " from " + source.toString());
+            	
+            	StringBuilder text = new StringBuilder("Extracting ");
+            	text.append(name).append(" from ").append(source);
+                logger.info(text.toString());
+                
                 try {
                     copyFile(resourceStream, localFile);
                 } catch (IOException ioe) {

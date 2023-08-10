@@ -1192,23 +1192,20 @@ public class Settlement extends Structure implements Temporal,
 		Building result = null;
 
 		if (person.isInSettlement()) {
-			Set<Building> b = person.getSettlement().getBuildingManager()
+			Set<Building> set = person.getSettlement().getBuildingManager()
 					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-			b = BuildingManager.getNonMalfunctioningBuildings(b);
-			b = getQuartersWithEmptyBeds(b, unmarked);
+			set = BuildingManager.getNonMalfunctioningBuildings(set);
+			set = getQuartersWithEmptyBeds(set, unmarked);
 
-			if (b.size() > 0) {
-				b = BuildingManager.getLeastCrowdedBuildings(b);
+			if (!set.isEmpty()) {
+				set = BuildingManager.getLeastCrowdedBuildings(set);
 			}
 
-			if (b.size() > 1) {
+			if (!set.isEmpty()) {
 				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						b);
+						set);
 				result = RandomUtil.getWeightedRandomObject(probs);
 			}
-//			else if (b.size() == 1) {
-//				return b.get(0);
-//			}
 		}
 
 		return result;

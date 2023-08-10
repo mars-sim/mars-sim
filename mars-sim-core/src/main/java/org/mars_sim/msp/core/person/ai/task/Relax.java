@@ -158,7 +158,7 @@ extends Task {
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 
-			if (recreationBuildings.size() > 0) {
+			if (!recreationBuildings.isEmpty()) {
 				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 						person, recreationBuildings);
 				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);

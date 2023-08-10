@@ -326,7 +326,7 @@ public class MedicalAssistance extends Task {
 			Set<Building> bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
 
-			if (bestMedicalBuildings.size() > 0) {
+			if (!bestMedicalBuildings.isEmpty()) {
 				Map<Building, Double> medBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						bestMedicalBuildings);
 				result = RandomUtil.getWeightedRandomObject(medBuildingProbs);

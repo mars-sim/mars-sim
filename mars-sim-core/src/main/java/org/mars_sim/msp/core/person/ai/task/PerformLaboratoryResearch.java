@@ -218,7 +218,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
 		labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
 
-		if (labBuildings.size() > 0) {
+		if (!labBuildings.isEmpty()) {
 			Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
 			Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
 			result = (Research) building.getFunction(FunctionType.RESEARCH);

@@ -464,17 +464,26 @@ public class Sleep extends Task {
 //			if (b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 //				return b;
 
-			Set<Building> quartersBuildings = person.getSettlement().getBuildingManager()
+			Set<Building> allQuarters = person.getSettlement().getBuildingManager()
 					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
-			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
-			if (quartersBuildings.size() > 0) {
-				quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+			allQuarters = BuildingManager.getNonMalfunctioningBuildings(allQuarters);
+			Set<Building> beds = getQuartersWithEmptyBeds(allQuarters, unmarked);
+			Set<Building> leastCrowded = null;
+			if (!beds.isEmpty()) {
+				leastCrowded = BuildingManager.getLeastCrowdedBuildings(beds);
+			}
+			else if (!allQuarters.isEmpty()) {
+				leastCrowded = BuildingManager.getLeastCrowdedBuildings(allQuarters);
 			}
 			
-			if (quartersBuildings.size() >= 1) {
+			if (!leastCrowded.isEmpty()) {
 				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						quartersBuildings);
+						leastCrowded);
+				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+			}
+			else if (!allQuarters.isEmpty()) {
+				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
+						allQuarters);
 				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
 			}
 		}

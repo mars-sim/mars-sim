@@ -126,7 +126,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
 			observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
 
-			if (observatoryBuildings.size() > 0) {
+			if (!observatoryBuildings.isEmpty()) {
 				Map<Building, Double> observatoryBuildingProbs = BuildingManager.getBestRelationshipBuildings(observer,
 						observatoryBuildings);
 				Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);

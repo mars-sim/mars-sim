@@ -132,7 +132,7 @@ public class PeerReviewStudyPaper extends Task {
             administrationBuildings = BuildingManager.getLeastCrowdedBuildings(
             		BuildingManager.getNonMalfunctioningBuildings(administrationBuildings));
 
-            if (administrationBuildings.size() > 0) {
+            if (!administrationBuildings.isEmpty()) {
                 Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, administrationBuildings);
                 result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);

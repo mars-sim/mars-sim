@@ -131,7 +131,7 @@ public class RespondToStudyInvitation extends Task {
 			administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
 			administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
 
-			if (administrationBuildings.size() > 0) {
+			if (!administrationBuildings.isEmpty()) {
 				Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						administrationBuildings);
 				result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);

@@ -232,7 +232,7 @@ public class ProduceFood extends Task {
 			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);
 			foodProductionBuildings = BuildingManager.getLeastCrowdedBuildings(foodProductionBuildings);
 
-			if (foodProductionBuildings.size() > 0) {
+			if (!foodProductionBuildings.isEmpty()) {
 				Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 						person, foodProductionBuildings);
 				result = RandomUtil.getWeightedRandomObject(foodProductionBuildingProbs);
@@ -261,7 +261,7 @@ public class ProduceFood extends Task {
 			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
 				foodProductionBuildings = BuildingManager.getLeastCrowded4BotBuildings(foodProductionBuildings);
 
-			if (foodProductionBuildings.size() > 0) {
+			if (!foodProductionBuildings.isEmpty()) {
             	result = RandomUtil.getARandSet(foodProductionBuildings);
 			}
 		}

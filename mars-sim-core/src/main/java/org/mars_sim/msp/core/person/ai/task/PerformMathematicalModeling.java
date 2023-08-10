@@ -199,14 +199,13 @@ implements ResearchScientificStudy {
     private static Lab getSettlementLab(Person person) {
         Lab result = null;
 
-        //BuildingManager manager = person.getSettlement().getBuildingManager();
         Set<Building> labBuildings = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
         labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
 
-        if (labBuildings.size() > 0) {
+        if (!labBuildings.isEmpty()) {
             Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                     person, labBuildings);
             return RandomUtil.getWeightedRandomObject(labBuildingProbs).getResearch();

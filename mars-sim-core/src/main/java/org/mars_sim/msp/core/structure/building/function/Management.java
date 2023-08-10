@@ -96,12 +96,15 @@ public class Management extends Function {
 			Set<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(stations);
 
 			if (!comfortOffices.isEmpty()) {
-				stations = comfortOffices;
+				// skip filtering the crowded stations
+				Map<Building, Double> selected = BuildingManager.getBestRelationshipBuildings(person, comfortOffices);
+				result = RandomUtil.getWeightedRandomObject(selected);
 			}
-
-			// skip filtering the crowded stations
-			Map<Building, Double> selected = BuildingManager.getBestRelationshipBuildings(person, stations);
-			result = RandomUtil.getWeightedRandomObject(selected);
+			else if (!stations.isEmpty()) {
+				// skip filtering the crowded stations
+				Map<Building, Double> selected = BuildingManager.getBestRelationshipBuildings(person, stations);
+				result = RandomUtil.getWeightedRandomObject(selected);
+			}
 		}
 
 		return result;

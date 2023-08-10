@@ -180,7 +180,7 @@ public class SalvageGood extends Task {
 			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
 			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
 
-			if (manufacturingBuildings.size() > 0) {
+			if (!manufacturingBuildings.isEmpty()) {
 				Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 						person, manufacturingBuildings);
 				result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
