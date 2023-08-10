@@ -8,12 +8,13 @@ import junit.framework.TestCase;
 public class MapDataFactoryTest extends TestCase {
 
     public void testMEGDRReader() {
+        // Use different space combinations
         MEGDRMapReader memoryReader = MapDataFactory.createReader(MapDataFactory.MEMORY_READER
-                                    + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+                                    + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
         MEGDRMapReader directReader = MapDataFactory.createReader(MapDataFactory.DIRECT_READER
-                                    + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+                                    + " , " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
         MEGDRMapReader arrayReader = MapDataFactory.createReader(MapDataFactory.ARRAY_READER
-                                    + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+                                    + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE + " ");
         for(int i = 0; i < 1000; i++) {
             double phi = RandomUtil.getRandomDouble(Math.PI);
             double theta = RandomUtil.getRandomDouble(Math.PI * 2);

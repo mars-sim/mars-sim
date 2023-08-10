@@ -8,13 +8,11 @@ package org.mars.sim.mapdata.common;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -101,72 +99,33 @@ public final class FileLocator {
     public static File locateFile(String name) {
         // Check file is already downloaded
         File localFile = new File(localBase, name);
-        if (!localFile.exists()) {
+        boolean locateFile = !localFile.exists();
+
+        // Check file is not zero size
+        if (!locateFile && (localFile.length() == 0)) {
+            logger.warning("Local file " + localFile.getAbsolutePath() + " is empty. Removing.");
+            localFile.delete();
+            locateFile = true;
+        }
+
+        // Find the file
+        if (locateFile) {
             File folder = localFile.getParentFile();
             folder.mkdirs();
 
             // Select the location of the file
-            // Attempt to find the file in the resources
-            String source = "bundled file";
-            InputStream resourceStream = FileLocator.class.getResourceAsStream(name);
-            
-            if (name.contains("/elevation/")) {
-                
-                if (resourceStream == null) {
-                	// Try xz in bundle
-                    resourceStream = FileLocator.class.getResourceAsStream(name + XZ);
-                    
-                    try (XZInputStream xzStream = new XZInputStream(resourceStream, BasicArrayCache.getInstance())) {
-                    	source = "bundled XZ";
-                    	
-    	                logger.info("Extracting from " + name + " from " + source);
-                    	Files.copy(xzStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);    	
-                    	
-                    	resourceStream.close();
-                    	 
-                    	return localFile;
-
-                    } catch (FileNotFoundException e) {
-//                    	 logger.warning("Problem finding the file.");
-                    } catch (IOException e) {
-//                    	 logger.warning("Problem with IO.");
-                    }
-                }
-            }
-            
-            else {
-            
-                if (resourceStream == null) {
-	                // Try zip in bundle
-	                resourceStream = FileLocator.class.getResourceAsStream(name + ZIP);
-	                if (resourceStream != null) {
-	                    resourceStream = getFileFromZip(resourceStream, name);
-	                    source = "bundled ZIP";
-	                }
-	                else {
-	                    // Try file in remote
-	                    resourceStream = openRemoteContent(name);
-	                    if (resourceStream != null) {
-	                        source = "remote file";
-	                    }
-	                    else {
-	                        resourceStream = openRemoteContent(name + ZIP);
-	                        if (resourceStream != null) {
-	                            resourceStream = getFileFromZip(resourceStream, name);
-	                            source = "remote ZIP";
-	                        }
-	                        else {
-	                            logger.severe("Cannot locate file " + name);
-	                            return null;
-	                        }
-	                    }
-	                }
-	            }
+            // Attempt to find the file in the bundled resources; then remotely
+            StringBuilder source = new StringBuilder("bundled as ");
+            InputStream resourceStream = locateResource(name, source,
+                                                n -> FileLocator.class.getResourceAsStream(n));
+            if (resourceStream == null) {
+                source = new StringBuilder("remote as ");
+                resourceStream = locateResource(name, source, n -> openRemoteContent(n));
             }
             
             // Have a source location
             if (resourceStream != null) {
-                logger.info("Extracting from " + name + " from " + source);
+                logger.info("Extracting from " + name + " from " + source.toString());
                 try {
                     copyFile(resourceStream, localFile);
                 } catch (IOException ioe) {
@@ -186,6 +145,51 @@ public final class FileLocator {
         }
 
         return localFile;
+    }
+
+    /**
+     * Locate the resource using different file formats. Once found a stream is returned
+     * to the requested file contents. This caters for flat, ZIP & XZ files.
+     * @param name Name of resource to find
+     * @param source String builder holdign the source descriptiom
+     * @param resolver The Function to create an InputStream for a resource name
+     * @return
+     */
+    private static InputStream locateResource(String name, StringBuilder source,
+                                                Function<String, InputStream> resolver) {
+        InputStream result = resolver.apply(name);
+        if (result != null) {
+            source.append("file");
+            return result;
+        }
+
+        // Try ZIP Format
+        try {
+            InputStream zipresult = resolver.apply(name + ZIP);
+            if (zipresult != null) {
+                result = getFileFromZip(zipresult, name);
+                source.append("zip");
+                return result;
+            }
+        }
+        catch (IOException ioe) {
+            logger.log(Level.SEVERE, "Problem opening zip file", ioe);
+        }
+
+        // Try XZ format
+        try {
+            InputStream xzresult = resolver.apply(name + XZ);
+            if (xzresult != null) {
+                result = new XZInputStream(xzresult, BasicArrayCache.getInstance());
+                source.append("XZ file");
+                return result;
+            }
+        }
+        catch (IOException e) {
+            logger.log(Level.SEVERE, "Problem opening XZ file", e);
+  
+        }
+        return null;
     }
 
     /**
@@ -211,22 +215,17 @@ public final class FileLocator {
      * @param resourceStream Zip content
      * @param name File to extract
      * @return Stream to the file contents
+     * @throws IOException
      */
-    private static InputStream getFileFromZip(InputStream resourceStream, String name) {
+    private static InputStream getFileFromZip(InputStream resourceStream, String name) throws IOException {
         ZipInputStream zip = new ZipInputStream(resourceStream);
-        try {
-            ZipEntry ze = zip.getNextEntry();
-            String [] parts = name.split("/");
-            if (!ze.getName().equals(parts[parts.length-1])) {
-                logger.severe("Zip file does not contain file " + name);
-                return null;
-            }
-            return zip;
-        } catch (IOException e) {
-            // Problem with the ZIP
-            logger.severe("Zip file can not be read " + name);
+        ZipEntry ze = zip.getNextEntry();
+        String [] parts = name.split("/");
+        if (!ze.getName().equals(parts[parts.length-1])) {
+            logger.severe("Zip file does not contain file " + name);
+            return null;
         }
-        return null;
+        return zip;
     }
     
     /**

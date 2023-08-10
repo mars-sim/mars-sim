@@ -57,7 +57,7 @@ import org.mars.sim.tools.util.RandomUtil;
  	 */
  	MapDataFactory() {
  		
-		String megdrSpec = MEMORY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE;
+		String megdrSpec = MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE;
 		
  		Properties mapProps = new Properties();
 		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
@@ -69,11 +69,11 @@ import org.mars.sim.tools.util.RandomUtil;
 				}
 				else {		
 					// Split the details into the parts
-					String[] value = mapProps.getProperty(mapString).split(", ");
-					boolean isColour = Boolean.parseBoolean(value[1]);
-					String hiRes = value[2];
-					String midRes = value[3];
-					String loRes = value[4];
+					String[] value = mapProps.getProperty(mapString).split(",");
+					boolean isColour = Boolean.parseBoolean(value[1].trim());
+					String hiRes = value[2].trim();
+					String midRes = value[3].trim();
+					String loRes = value[4].trim();
 
 					metaDataMap.put(mapString, new MapMetaData(mapString, value[0], isColour,
 										hiRes, midRes, loRes));
@@ -97,18 +97,19 @@ import org.mars.sim.tools.util.RandomUtil;
 	 * @return
 	 */
 	static MEGDRMapReader createReader(String spec) {
-		String [] parts = spec.split(", ");
+		String [] parts = spec.split(",");
 		
+		String reader = parts[0].trim().toLowerCase();
 		String imageName = parts[1].trim();
 
 		logger.config("imageName: " + imageName);
 		
 		try {
-			return switch(parts[0]) {
+			return switch(reader) {
 				case ARRAY_READER -> new MEGDRMapArray(imageName);
 				case DIRECT_READER -> new MEGDRMapDirect(imageName);
 				case MEMORY_READER -> new MEGDRMapMemory(imageName);
-				default -> throw new IllegalArgumentException("Unknown MEGDR reader called " + parts[0]);
+				default -> throw new IllegalArgumentException("Unknown MEGDR reader called " + reader);
 			};
 		}
 		catch(IOException ioe) {
@@ -243,9 +244,9 @@ import org.mars.sim.tools.util.RandomUtil;
 	}
 
 	public static void main(String[] args) throws IOException {
-		runPerfTest(DIRECT_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(ARRAY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(MEMORY_READER + ", " + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(DIRECT_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(ARRAY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
 	}
 
 	private static void runPerfTest(String spec) {
