@@ -249,7 +249,6 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         Set<Building> labBuildings2 = null;
         Set<Building> labBuildings3 = null;
         Set<Building> labBuildings4 = null;
-        Set<Building> labBuildings5 = null;
         
         Set<Building> labBuildings0 = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RESEARCH);
         if (!labBuildings0.isEmpty()) {
@@ -262,22 +261,22 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
                 		labBuildings4 = BuildingManager.getLeastCrowdedBuildings(labBuildings3);
                     }
                     else {
-                    	labBuildings5 = labBuildings2;
+                    	labBuildings4 = labBuildings2;
                     }
                 }
                 else {
-                	labBuildings5 = labBuildings1;
+                	labBuildings4 = labBuildings1;
                 }
             }
             else {
-            	labBuildings5 = labBuildings0;
+            	labBuildings4 = labBuildings0;
             }
         }
         else {
         	return null;
         }
         
-        if (!labBuildings5.isEmpty()) {
+        if (!labBuildings4.isEmpty()) {
 	        Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
 	                person, labBuildings4);
 	        Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
