@@ -1251,14 +1251,22 @@ class AmountResourceGood extends Good {
 		return null;
 	}
 
+	/**
+	 * Computes the tissue demand.
+	 * 
+	 * @param owner
+	 * @return
+	 */
 	private double computeTissueDemandDueToCrop(GoodsManager owner) {
 
 		AmountResource ar = getAmountResource();
-		if (ar.getGoodType() != GoodType.TISSUE)
+		if (ar.getGoodType() == GoodType.TISSUE) {		
+			String cropName = ar.getName().replace(" tissue", "");
+			// Convert the tissue name to its crop's name
+			return owner.getDemandValue(GoodsUtil.getGood(cropName)) * TISSUE_CULTURE_VALUE;
+		}
+		else
 			return 0;
-			
-		String cropName = ar.getName().replace(" tissue", "");
-		return owner.getDemandValue(GoodsUtil.getGood(cropName)) * TISSUE_CULTURE_VALUE;
 	}
 	
 	
@@ -1271,22 +1279,23 @@ class AmountResourceGood extends Good {
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
 		int resource = getID();
 		
-		if (!ResourceUtil.isLifeSupport(resource)) {
+		AmountResource ar = getAmountResource();
+		if (ar.isLifeSupport()) {
+			double amountNeededSol = 0;
+			int numPeople = settlement.getNumCitizens();
+	
+			if (resource == ResourceUtil.oxygenID) {
+				amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
+			} else if (resource == ResourceUtil.waterID) {
+				amountNeededSol = personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
+			} else if (resource == ResourceUtil.foodID) {
+				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
+			}
+	
+			return numPeople * amountNeededSol * owner.getTradeFactor() * LIFE_SUPPORT_FACTOR;
+		}
+		else
 			return 0;
-		}
-		
-		double amountNeededSol = 0;
-		int numPeople = settlement.getNumCitizens();
-
-		if (resource == ResourceUtil.oxygenID) {
-			amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
-		} else if (resource == ResourceUtil.waterID) {
-			amountNeededSol = personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
-		} else if (resource == ResourceUtil.foodID) {
-			amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
-		}
-
-		return numPeople * amountNeededSol * owner.getTradeFactor() * LIFE_SUPPORT_FACTOR;
 	}
 
 	/**

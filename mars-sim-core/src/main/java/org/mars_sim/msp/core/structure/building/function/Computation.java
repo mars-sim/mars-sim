@@ -38,7 +38,7 @@ public class Computation extends Function {
 
 	/** The amount of entropy in the system. */
 	private final double maxEntropy;
-	/** The peak amount of computing resources [in CUs]. */
+	/** The highest possible available amount of computing resources [in CUs]. */
 	private final double peakCU;
 	
 	/** The amount of entropy in the system. */
@@ -51,8 +51,8 @@ public class Computation extends Function {
 	private double coolingDemand;
 	/** The combined power demand for each running CU [in kW/CU]. */
 	private double combinedkW;
-	/** The combined power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
-	private double NON_LOAD_KW = 0.1;
+	/** The power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
+	private double NON_LOAD_KW;
 	/** The schedule demand [in CUs] for the current mission sol. */
 	private Map<Integer, Double> todayDemand;
 
@@ -75,6 +75,9 @@ public class Computation extends Function {
 		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
 		
 		combinedkW = coolingDemand + powerDemand;
+		// Assume 10% of full load
+		NON_LOAD_KW = 0.1 * combinedkW;
+		
 		todayDemand = new HashMap<>();
 	}
 

@@ -150,9 +150,9 @@ public class UnloadVehicleEVA extends EVAOperation {
 				Equipment equipment = k.next();
 				boolean doUnload = true;
 				
-				if (vehicle instanceof Crewable && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				if (vehicle instanceof Crewable crew && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					int numSuit = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
-					int numCrew = ((Crewable)vehicle).getCrewNum();
+					int numCrew = crew.getCrewNum();
 					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
 					doUnload = (numSuit > numCrew);
 				}

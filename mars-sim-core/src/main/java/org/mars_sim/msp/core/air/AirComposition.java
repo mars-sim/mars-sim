@@ -361,18 +361,17 @@ public class AirComposition implements Serializable {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
 		if (gasId == ResourceUtil.co2ID)
 			return CO2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.argonID)
+		if (gasId == ResourceUtil.argonID)
 			return ARGON_MOLAR_MASS;
-		else if (gasId == ResourceUtil.nitrogenID)
+		if (gasId == ResourceUtil.nitrogenID)
 			return N2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.oxygenID)
+		if (gasId == ResourceUtil.oxygenID)
 			return O2_MOLAR_MASS;
-		else if (gasId == ResourceUtil.waterID)
-				return H2O_MOLAR_MASS;
-		else {
-			String g = ResourceUtil.findAmountResourceName(gasId);
-			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
-		}
+		if (gasId == ResourceUtil.waterID)
+			return H2O_MOLAR_MASS;
+		
+		String g = ResourceUtil.findAmountResourceName(gasId);
+		throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
 	}
 
 	/**
@@ -385,16 +384,17 @@ public class AirComposition implements Serializable {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
 		if (gasId == ResourceUtil.co2ID)
 			return CO2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.argonID)
+		if (gasId == ResourceUtil.argonID)
 			return ARGON_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.nitrogenID)
+		if (gasId == ResourceUtil.nitrogenID)
 			return N2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.oxygenID)
+		if (gasId == ResourceUtil.oxygenID)
 			return O2_PARTIAL_PRESSURE;
-		else if (gasId == ResourceUtil.waterID)
-			 return H2O_PARTIAL_PRESSURE;
-		else
-			throw new IllegalArgumentException("Unknown gas id=" + gasId);
+		if (gasId == ResourceUtil.waterID)
+			return H2O_PARTIAL_PRESSURE;
+
+		String g = ResourceUtil.findAmountResourceName(gasId);
+		throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
 	}
 
     /**
