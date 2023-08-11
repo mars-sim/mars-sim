@@ -60,12 +60,14 @@ public class OptimizeSystem extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find a server node.
-			node = person.getSettlement().getBuildingManager().getMostEntropyComputingNodeByProbability();
+			node = person.getSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability();
 			if (node != null) {
 				// Walk to the spot.
 				walkToTaskSpecificActivitySpotInBuilding(node.getBuilding(), FunctionType.COMPUTATION, false);
 			}
-
+			else
+				endTask();
+			
 			// Initialize phase
 			addPhase(OPTIMIZING_SYSTEM);
 			setPhase(OPTIMIZING_SYSTEM);

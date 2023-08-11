@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @date 2021-11-23
+ * @date 2023-08-11
  * @author Barry Evans
  */
 
@@ -22,28 +22,28 @@ public class MobileLaboratory implements Lab {
     private static final long serialVersionUID = 1L;
 
     // Data members
-    /** Number of researchers supportable at any given time. */
-    private int laboratorySize;
-    /** How advanced the laboratories are (units defined later). */
+    /** Number of researchers supported at any given time. */
+    private int researcherCapacity;
+    /** How advanced the laboratory is. */
     private int technologyLevel;
-    /** What fields of science the laboratories specialize in. */
-    private List<ScienceType> techSpecialties;
+    /** What fields of science the laboratory specialize in. */
+    private List<ScienceType> researchSpecialties;
     /** The number of people currently doing research in laboratory. */
     private int researcherNum;
 
     /**
      * Constructor for parameter values.
      *
-     * @param laboratorySize number of researchers the lab can support at any given time.
+     * @param researcherCapacity number of researchers the lab can support at any given time.
      * @param techlevel how advanced the laboratories are (units defined later)
      * @param techFocus the names of the technologies the labs are focused on
      */
     MobileLaboratory(int size, int techLevel, List<ScienceType> techSpecialties) {
 
         // Initialize data members.
-        this.laboratorySize = size;
+        this.researcherCapacity = size;
         this.technologyLevel = techLevel;
-        this.techSpecialties = techSpecialties;
+        this.researchSpecialties = techSpecialties;
     }
 
     /**
@@ -53,7 +53,7 @@ public class MobileLaboratory implements Lab {
      * @return the size of the laboratory (in researchers).
      */
     public int getLaboratorySize() {
-        return laboratorySize;
+        return researcherCapacity;
     }
 
     /**
@@ -73,7 +73,7 @@ public class MobileLaboratory implements Lab {
      * @return the lab's science specialties as an array.
      */
     public ScienceType[] getTechSpecialties() {
-        return techSpecialties.toArray(new ScienceType[] {});
+        return researchSpecialties.toArray(new ScienceType[] {});
     }
 
     /**
@@ -83,7 +83,7 @@ public class MobileLaboratory implements Lab {
      */
     public boolean hasSpecialty(ScienceType specialty) {
         boolean result = false;
-        Iterator<ScienceType> i = techSpecialties.iterator();
+        Iterator<ScienceType> i = researchSpecialties.iterator();
         while (i.hasNext()) {
             if (specialty == i.next()) result = true;
         }
@@ -107,8 +107,8 @@ public class MobileLaboratory implements Lab {
      */
     public boolean addResearcher() {
 
-        if (researcherNum > laboratorySize) {
-            researcherNum = laboratorySize;
+        if (researcherNum > researcherCapacity) {
+            researcherNum = researcherCapacity;
             return false;
             //throw new IllegalStateException("Lab already full of researchers.");
         }
@@ -134,7 +134,7 @@ public class MobileLaboratory implements Lab {
 
     @Override
     public void destroy() {
-        techSpecialties.clear();
-        techSpecialties = null;
+        researchSpecialties.clear();
+        researchSpecialties = null;
     }
 }

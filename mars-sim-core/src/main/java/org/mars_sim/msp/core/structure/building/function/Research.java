@@ -40,10 +40,14 @@ implements Lab {
 
 	private static final int NUM_INSPECTIONS = 3;
 	
-    private int techLevel;
-    private int researcherCapacity = 0;
+    /** Number of researchers supported at any given time. */
+    private int researcherCapacity;
+    /** How advanced the laboratory is. */
+    private int technologyLevel;
+    /** The number of people currently doing research in laboratory. */
     private int researcherNum = 0;
     
+    /** What fields of science the laboratory specialize in. */
     private List<ScienceType> researchSpecialties;
     
     /** 
@@ -80,14 +84,14 @@ implements Lab {
 
         setupTissueCultures();
         
-        techLevel = spec.getTechLevel();
+        technologyLevel = spec.getTechLevel();
         researcherCapacity = spec.getCapacity();
         researchSpecialties = buildingConfig.getResearchSpecialties(building.getBuildingType());
         researchQualityMap = new HashMap<>();
 		
         // Initialize the research quality map
         for (ScienceType scienceType : researchSpecialties) {
-        	researchQualityMap.put(scienceType, techLevel * 1.0);
+        	researchQualityMap.put(scienceType, technologyLevel * 1.0);
         }
     }
 
@@ -119,7 +123,7 @@ implements Lab {
                 }
                 else {
                     Research researchFunction = building.getResearch();
-                    int techLevel = researchFunction.techLevel;
+                    int techLevel = researchFunction.technologyLevel;
                     int labSize = researchFunction.researcherCapacity;
                     double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                     for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
@@ -150,7 +154,7 @@ implements Lab {
      * @return tech level
      */
     public int getTechnologyLevel() {
-        return techLevel;
+        return technologyLevel;
     }
 
     /**
@@ -210,7 +214,7 @@ implements Lab {
      * 
      * @throws Exception if person cannot be added.
      */
-    public Boolean checkAvailability() {
+    public boolean checkAvailability() {
         return researcherNum < researcherCapacity;
     }
 
@@ -362,7 +366,7 @@ implements Lab {
 
         double result = 0D;
         // Add maintenance for tech level.
-        result += techLevel * 10D;
+        result += technologyLevel * 10D;
         // Add maintenance for researcher capacity.
         result += researcherCapacity * 10D;
 

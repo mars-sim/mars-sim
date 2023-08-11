@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @date 2022-07-17
+ * @date 2023-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -57,6 +57,12 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
             "Task.phase.experimenting")); //$NON-NLS-1$
 
     // Data members.
+    /** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.025, 0.1);
+	/** The total computing resources needed for this task. */
+	private final double TOTAL_COMPUTING_NEEDED;
     /** The scientific study the person is experimenting for. */
     private ScientificStudy study;
     /** The laboratory the person is working in. */
@@ -75,6 +81,10 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         // Use task constructor. Skill determine by science
         super(NAME, person, true, false, STRESS_MODIFIER,
                 null, 15D, 10D + RandomUtil.getRandomDouble(400D));
+        
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
         // Determine study.
@@ -123,14 +133,16 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
      */
     public static List<ScienceType> getExperimentalSciences() {
         // TODO Create list of possible sciences for laboratory experimentation directly in {@link ScienceType}.
-        List<ScienceType> experimentalSciences = new ArrayList<ScienceType>();
+        List<ScienceType> experimentalSciences = new ArrayList<>();
+        experimentalSciences.add(ScienceType.AREOLOGY);
         experimentalSciences.add(ScienceType.BOTANY);
         experimentalSciences.add(ScienceType.BIOLOGY);
         experimentalSciences.add(ScienceType.CHEMISTRY);
+        experimentalSciences.add(ScienceType.COMPUTING);
         experimentalSciences.add(ScienceType.ENGINEERING);
-        experimentalSciences.add(ScienceType.PHYSICS);
         experimentalSciences.add(ScienceType.MEDICINE);
         experimentalSciences.add(ScienceType.METEOROLOGY);
+        experimentalSciences.add(ScienceType.PHYSICS);
         experimentalSciences.add(ScienceType.PSYCHOLOGY);
         return experimentalSciences;
     }
@@ -163,7 +175,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
     private ScientificStudy determineStudy(Person person) {
         ScientificStudy result = null;
 
-        List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+        List<ScientificStudy> possibleStudies = new ArrayList<>();
 
         // Create list of experimental sciences.
         List<ScienceType> experimentalSciences = getExperimentalSciences();
@@ -466,15 +478,25 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
             endTask();
             return time;
         }
-
+        
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+        	// this task has ended
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
+        
         // Check if person is in a moving rover.
         if (Vehicle.inMovingRover(person)) {
             endTask();
-            return time;
-        }
-
-        if (isDone()) {
-        	endTask();
             return time;
         }
 

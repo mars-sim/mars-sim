@@ -43,8 +43,8 @@ public class Computation extends Function {
 	
 	/** The amount of entropy in the system. */
 	private double entropy;
-	/** The amount of computing resources currently available [in CUs]. */
-	private double computingUnit;
+	/** The amount of computing resources capacity currently available [in CUs]. */
+	private double computingUnitCapacity;
 	/** The power load in kW for each running CU [in kW/CU]. */
 	private double powerDemand;
 	/** The power load in kW needed for cooling each running CU [in kW/CU]. */
@@ -70,7 +70,7 @@ public class Computation extends Function {
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
 		maxEntropy = peakCU;
 		
-		computingUnit = peakCU; 
+		computingUnitCapacity = peakCU; 
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND);
 		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
 		
@@ -102,7 +102,7 @@ public class Computation extends Function {
 			} else {
 				Computation com = building.getComputation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += com.getComputingUnit() * wearModifier;
+				supply += com.getComputingUnitCapacity() * wearModifier;
 			}
 		}
 
@@ -115,16 +115,16 @@ public class Computation extends Function {
 	}
 
 	/**
-	 * Gets the computing units [in CU].
+	 * Gets the computing unit capacity [in CU].
 	 * 
 	 * @return
 	 */
-	public double getComputingUnit() {
-		return computingUnit;
+	public double getComputingUnitCapacity() {
+		return computingUnitCapacity;
 	}
 
 	/**
-	 * Gets the peak computing units [in CU].
+	 * Gets the peak available computing units [in CU].
 	 * 
 	 * @return
 	 */
@@ -289,8 +289,8 @@ public class Computation extends Function {
 	 */
 	public void setComputingResource(double value) {
 		double cu = Math.round(value * 100_000.0) / 100_000.0;
-		if (computingUnit != cu) {
-			computingUnit = cu;
+		if (computingUnitCapacity != cu) {
+			computingUnitCapacity = cu;
 			building.getSettlement().fireUnitUpdate(UnitEventType.CONSUMING_COMPUTING_EVENT);
 		}
 	}
@@ -392,7 +392,7 @@ public class Computation extends Function {
 	 * @return
 	 */
 	public double getUsagePercent() {
-		return (peakCU - computingUnit)/peakCU * 100.0;
+		return (peakCU - computingUnitCapacity)/peakCU * 100.0;
 	}
 	
 	
@@ -421,8 +421,8 @@ public class Computation extends Function {
 	 */
 	@Override
 	public double getFullPowerRequired() {
-		double load = peakCU - computingUnit;
-		double nonLoad = computingUnit;
+		double load = peakCU - computingUnitCapacity;
+		double nonLoad = computingUnitCapacity;
 		// Note: Should entropy also increase the power required to run the node ?
 		// When entropy is negative, it should reduce or save power
 		return (load + NON_LOAD_KW * nonLoad) * combinedkW;

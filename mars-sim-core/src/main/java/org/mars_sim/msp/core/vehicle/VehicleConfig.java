@@ -59,6 +59,7 @@ public class VehicleConfig {
 	private static final String SICKBAY = "sickbay";
 	private static final String LAB = "lab";
 	private static final String TECH_LEVEL = "tech-level";
+	private static final String CAP_LEVEL = "capacity";
 	private static final String BEDS = "beds";
 	private static final String TECH_SPECIALTY = "tech-specialty";
 	private static final String PART_ATTACHMENT = "part-attachment";
@@ -203,13 +204,14 @@ public class VehicleConfig {
 				if (labElement != null) {
 					List<ScienceType> labTechSpecialties = new ArrayList<>();
 					int labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
+					int labCapacity = Integer.parseInt(labElement.getAttributeValue(CAP_LEVEL));
 					for (Element tech : labElement.getChildren(TECH_SPECIALTY)) {
 						String scienceName = tech.getAttributeValue(VALUE);
 						labTechSpecialties
 								.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(scienceName)));
 					}
 					
-					v.setLabSpec(labTechLevel, labTechSpecialties);
+					v.setLabSpec(labTechLevel, labCapacity, labTechSpecialties);
 				}
 			}
 

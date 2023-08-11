@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @date 2022-07-11
+ * @date 2023-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -61,7 +61,7 @@ implements ResearchScientificStudy {
     /** Computing Units needed per millisol. */		
 	private double computingNeeded;
 	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.05, 0.15);
+    private double seed = RandomUtil.getRandomDouble(.075, 0.2);
 	/** The total computing resources needed for this task. */
 	private final double TOTAL_COMPUTING_NEEDED;
 	
@@ -370,15 +370,6 @@ implements ResearchScientificStudy {
      */
     private double modelingPhase(double time) {
 		double remainingTime = 0;
-		
-		if (isDone()) {
-        	// this task has ended
-    		logger.fine(person, 30_000L, NAME + " - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
-			endTask();
-			return time;
-		}
 		
     	// If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {

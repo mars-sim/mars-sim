@@ -2155,7 +2155,7 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets peak total CUs from all computing nodes in a settlement.
+	 * Gets peak available total CUs from all computing nodes in a settlement.
 	 * 
 	 * @return
 	 */
@@ -2172,18 +2172,18 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the sum of all computing resources in a settlement.
+	 * Gets the sum of all computing capacity in a settlement.
 	 * 
 	 * @return amount in CUs
 	 */
-	public double getTotalCUsComputing() {
+	public double getTotalCapacityCUsComputing() {
 		double units = 0;
 		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
 			return 0;
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			units += node.getComputingUnit();
+			units += node.getComputingUnitCapacity();
 		}
 		return units;
 	}
@@ -2200,7 +2200,7 @@ public class BuildingManager implements Serializable {
 		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
-			units += node.getComputingUnit();
+			units += node.getComputingUnitCapacity();
 			max += node.getPeakComputingUnit();
 		}
 		
@@ -2241,7 +2241,7 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Computation getMostEntropyComputingNode() {
+	public Computation getWorstEntropyComputingNode() {
 		double highestEntropy = Integer.MIN_VALUE;
 		Computation worstNode = null;
 		
@@ -2267,7 +2267,7 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Computation getMostEntropyComputingNodeByProbability() {
+	public Computation getWorstEntropyComputingNodeByProbability() {
 		Map<Computation, Double> scores = new HashMap<>();
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		if (nodeBldgs.isEmpty())
@@ -2277,20 +2277,30 @@ public class BuildingManager implements Serializable {
 			double entropy = node.getEntropy();
 			scores.put(node, entropy);
 		}
+
 		if (scores.isEmpty())
 			return null;
 				
-		Map.Entry<Computation, Double> maxEntry = null; 
-		for (Entry<Computation, Double> entry : scores.entrySet()) {
-			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
-		        maxEntry = entry;
-		    }
-		}
-		
-		if (maxEntry != null)
-			return maxEntry.getKey();
-				
-		return null;
+//		Map.Entry<Computation, Double> maxEntry = null; 
+//		for (Entry<Computation, Double> entry : scores.entrySet()) {
+//			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+//		        maxEntry = entry;
+//		    }
+//		}
+//	
+//		if (maxEntry != null)
+//			return maxEntry.getKey();
+
+		// Note: Use probability selection	
+//		double minScore = 0; 
+//		for (double score : scores.values()) {
+//			if (minScore < score) {
+//				minScore = score;
+//		    }
+//		}
+
+		// Note: Use probability selection	
+		return RandomUtil.getWeightedRandomObject(scores);
 	}
 	
 	/**
@@ -2348,7 +2358,7 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
-	 * Gets a computing center for having the most free resources.
+	 * Gets a computing center for having the most free resources by probability.
 	 * 
 	 * @param need CU(s) per millisol
 	 * @param startTime
@@ -2366,22 +2376,22 @@ public class BuildingManager implements Serializable {
 			if (score > 0)
 				scores.put(node, score);
 		}
+
 		if (scores.isEmpty())
 			return null;
 				
-		// Note: may switch to a probability selection
-		
-		Map.Entry<Computation, Double> maxEntry = null; 
-		for (Entry<Computation, Double> entry : scores.entrySet()) {
-			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
-		        maxEntry = entry;
-		    }
-		}
-		
-		if (maxEntry != null)
-			return maxEntry.getKey();
-				
-		return null;
+//		Map.Entry<Computation, Double> maxEntry = null; 
+//		for (Entry<Computation, Double> entry : scores.entrySet()) {
+//			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+//		        maxEntry = entry;
+//		    }
+//		}
+//		
+//		if (maxEntry != null)
+//			return maxEntry.getKey();
+
+		// Note: Use probability selection	
+		return RandomUtil.getWeightedRandomObject(scores);
 	}
 	
 	/**

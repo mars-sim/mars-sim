@@ -50,7 +50,15 @@ public class PeerReviewStudyPaper extends Task {
 	/** Task phases. */
     private static final TaskPhase REVIEW = new TaskPhase(Msg.getString(
             "Task.phase.review")); //$NON-NLS-1$
-
+    
+	// Data members.
+    /** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.005, 0.025);
+	/** The total computing resources needed for this task. */
+	private final double TOTAL_COMPUTING_NEEDED;
+	
 	/** The scientific study to review. */
 	private ScientificStudy study;
 
@@ -64,6 +72,9 @@ public class PeerReviewStudyPaper extends Task {
         super(NAME, person, true, false, STRESS_MODIFIER, null, 25D,
                 50D + RandomUtil.getRandomDouble(20D));
         
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
         // Determine study to review.
@@ -215,15 +226,24 @@ public class PeerReviewStudyPaper extends Task {
 		}
 
         // Check if peer review phase in study is completed.
-        if (study.isCompleted() || isDone()) {
+		if (study.isCompleted() || isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
 			logger.log(worker, Level.INFO, 0, "Just spent "
 					+ (int)study.getPeerReviewTimeCompleted()
 					+ " msols to finish peer reviewing a paper "
 					+ " for " + study.getName() + ".");
-            endTask();
-        }
-        
-        // Peer review study. No operation required for this.
+			// this task has ended
+	  		logger.info(person, 0, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
 
         // Add experience
         addExperience(time);

@@ -19,6 +19,7 @@ public interface Lab extends Serializable {
 	/** 
 	 * Gets the laboratory size.
 	 * This is the number of researchers supportable at any given time. 
+	 * 
 	 * @return the size of the laboratory (in researchers). 
 	 */
 	public int getLaboratorySize(); 

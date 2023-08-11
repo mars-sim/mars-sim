@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @date 2022-06-11
+ * @date 2023-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -54,6 +54,13 @@ public class AssistScientificStudyResearcher extends Task {
 	private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
 	// Data members
+    /** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.015, 0.05);
+	/** The total computing resources needed for this task. */
+	private final double TOTAL_COMPUTING_NEEDED;
+	
 	private ResearchScientificStudy researchTask;
 	private Person researcher;
 
@@ -65,6 +72,10 @@ public class AssistScientificStudyResearcher extends Task {
 	public AssistScientificStudyResearcher(Person person) {
 		// Use Task constructor. Skill determined later based on study
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 50D);
+		
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
 		// Determine researcher
@@ -138,7 +149,7 @@ public class AssistScientificStudyResearcher extends Task {
 
 		// If assistant is in a settlement, best researchers are in least crowded
 		// buildings.
-		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
 
 		if (assistant.isInSettlement()) {
 			// Find the least crowded buildings that researchers are in.
@@ -175,8 +186,7 @@ public class AssistScientificStudyResearcher extends Task {
 			leastCrowded = researchers;
 
 		// Get the assistant's favorite researchers.
-//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		Collection<Person> favoriteResearchers = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> favoriteResearchers = new ConcurrentLinkedQueue<>();
 
 		// Find favorite opinion.
 		double favorite = Double.NEGATIVE_INFINITY;
@@ -209,7 +219,7 @@ public class AssistScientificStudyResearcher extends Task {
 	 * @return list of researchers.
 	 */
 	private static Collection<Person> getAvailableResearchers(Person assistant) {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 
 		Iterator<Person> i = getLocalPeople(assistant).iterator();
 		while (i.hasNext()) {
@@ -238,7 +248,7 @@ public class AssistScientificStudyResearcher extends Task {
 	 * @return collection of people
 	 */
 	private static Collection<Person> getLocalPeople(Person person) {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> people = new ConcurrentLinkedQueue<>();
 		Collection<Person> potentials = null;
 		if (person.isInSettlement()) {
 			potentials = person.getSettlement().getIndoorPeople();
@@ -296,6 +306,21 @@ public class AssistScientificStudyResearcher extends Task {
             return 0;
         }
 
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+        	// this task has ended
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
+        
 		// Check if researcher is in a different location situation than the assistant.
         // Remotely assisting a researcher is allowed
 //		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {

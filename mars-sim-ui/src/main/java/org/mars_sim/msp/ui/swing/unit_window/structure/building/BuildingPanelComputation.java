@@ -74,7 +74,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		double peak = Math.round(building.getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
 		
 		// Current
-		double computingUnit = Math.round(building.getComputation().getComputingUnit() * 1_000.0)/1_000.0;
+		double computingUnit = Math.round(building.getComputation().getComputingUnitCapacity() * 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
 				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
@@ -98,7 +98,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		
 		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
 
-		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
+		double computingUnit = Math.round(building.getComputation().getComputingUnitCapacity()* 1_000.0)/1_000.0;
 		String text = computingUnit + " / " + peak + " CUs";
 		if (!cULabel.getText().equalsIgnoreCase(text))
 			cULabel.setText(text);

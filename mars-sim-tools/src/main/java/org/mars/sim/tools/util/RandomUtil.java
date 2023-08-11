@@ -9,6 +9,7 @@ package org.mars.sim.tools.util;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -303,23 +304,42 @@ public final class RandomUtil {
 
 		// Get the total weight of all the objects in the map.
 		double totalWeight = 0D;
+		double negativeWeight = 0;
 		Iterator<Double> i = weightedMap.values().iterator();
 		while (i.hasNext()) {
 			double weight = i.next();
 			if (weight > 0D) {
 				totalWeight += weight;
 			}
+			else if (negativeWeight > weight) {
+				negativeWeight = weight;
+			}
 		}
 
+		// Adjust the weight to make all of them positive
+		if (negativeWeight < 0) {
+			for (T entry : weightedMap.keySet()) {
+				weightedMap.put(entry, weightedMap.get(entry) - negativeWeight);
+			}
+			
+			totalWeight = 0;
+			
+			// Recompute the total weight
+			Iterator<Double> k = weightedMap.values().iterator();
+			while (k.hasNext()) {
+				totalWeight += k.next();
+			}
+		}
+		
 		// Randomly select a weight value.
 		double randWeight = getRandomDouble(totalWeight);
-
+		
 		// Determine which object the weight applies to.
 		Iterator<T> j = weightedMap.keySet().iterator();
 		while (j.hasNext()) {
 			T key = j.next();
 			double weight = weightedMap.get(key);
-			if (weight > 0D) {
+			if (weight >= 0D) {
 				if (randWeight <= weight) {
 					result = key;
 					break;

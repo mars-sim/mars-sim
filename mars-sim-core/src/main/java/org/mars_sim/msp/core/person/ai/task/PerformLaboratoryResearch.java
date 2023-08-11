@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformLaboratoryResearch.java
- * @date 2022-07-17
+ * @date 2023-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -54,6 +54,12 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	private static final TaskPhase RESEARCHING = new TaskPhase(Msg.getString("Task.phase.researching")); //$NON-NLS-1$
 
 	// Data members.
+    /** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.03, 0.1);
+	/** The total computing resources needed for this task. */
+	private final double TOTAL_COMPUTING_NEEDED;
 	/** The scientific study the person is researching for. */
 	private ScientificStudy study;
 	/** The laboratory the person is working in. */
@@ -71,6 +77,10 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	public PerformLaboratoryResearch(Person person) {
 		// Use task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
+		
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		researchAssistant = null;
 	
@@ -401,16 +411,25 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
             return time;
 		}
 
+		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
+        	// this task has ended
+	  		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+		int msol = getMarsTime().getMillisolInt(); 
+              
+        computingNeeded = person.getAssociatedSettlement().getBuildingManager().
+            	accessNode(person, computingNeeded, time, seed, 
+            			msol, getDuration(), NAME);
 		
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
             return time;
-		}
-
-		if (isDone()) {
-			endTask();
-			return time;
 		}
 
 		// Add research work time to study.

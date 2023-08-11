@@ -52,6 +52,7 @@
 	<!ATTLIST sickbay beds CDATA #REQUIRED>
 	<!ELEMENT lab (tech-specialty+)>
 	<!ATTLIST lab tech-level CDATA #REQUIRED>
+	<!ATTLIST lab capacity CDATA #REQUIRED>
 	<!ELEMENT tech-specialty EMPTY>
 	<!ATTLIST tech-specialty value CDATA #REQUIRED>
 	<!ELEMENT airlock (interior, exterior)>
@@ -215,11 +216,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<sickbay tech-level="2" beds="1" />
 
 		<!-- Lab -->
-		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->
-		<lab tech-level="1">
+		<!-- tech level of lab (see tech_level.txt) - default: 1 -->
+		<!-- lab capacity - default: 2 -->
+		<lab tech-level="1" capacity="2" >
 			<!-- Science tech specialty -->
-			<tech-specialty value="Areology" />
-			<tech-specialty value="Biology" />
+			<tech-specialty value="AREOLOGY" />
+			<tech-specialty value="CHEMISTRY" />
 		</lab>
 
 		<!-- Airlock locations (optional) -->
@@ -278,10 +280,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<sickbay tech-level="2" beds="1" />
 
-		<lab tech-level="1">
+		<lab tech-level="1" capacity="2" >
 			<!-- Science tech specialty -->
-			<tech-specialty value="Areology" />
-			<tech-specialty value="Biology" />
+			<tech-specialty value="AREOLOGY" />
+			<tech-specialty value="CHEMISTRY" />
 		</lab>
 
 		<airlock xloc="-1.25" yloc="0.0">

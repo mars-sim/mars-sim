@@ -109,7 +109,7 @@ extends TabPanel {
 		double peak = Math.round(manager.getPeakTotalComputing() * 1_000.0)/1_000.0;
 		
 		// Total CUs Available
-		double cUs = Math.round(manager.getTotalCUsComputing() * 1_000.0)/1_000.0;
+		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 1_000.0)/1_000.0;
 		
 		String text = cUs + " / " + peak + " CUs";
 		cULabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.computingUnit"),
@@ -180,7 +180,7 @@ extends TabPanel {
 		// Peak Usage
 		double peak = Math.round(manager.getPeakTotalComputing() * 100.0)/100.0;
 		// Total CUs Available
-		double cUs = Math.round(manager.getTotalCUsComputing() * 100.0)/100.0;
+		double cUs = Math.round(manager.getTotalCapacityCUsComputing() * 100.0)/100.0;
 		
 		String text = cUs + " / " + peak;
 		
@@ -253,7 +253,7 @@ extends TabPanel {
 				// Peak
 				double peak = Math.round(buildings.get(row).getComputation().getPeakComputingUnit() * 1_000.0)/1_000.0;
 				// Current
-				double computingUnit = Math.round(buildings.get(row).getComputation().getComputingUnit() * 1_000.0)/1_000.0;
+				double computingUnit = Math.round(buildings.get(row).getComputation().getComputingUnitCapacity() * 1_000.0)/1_000.0;
 				return computingUnit + " / " + peak + " CUs";
 			}
 			else if (column == 4) {

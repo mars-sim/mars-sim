@@ -141,6 +141,7 @@ public class VehicleSpec implements Serializable {
 	private int sickbayTechLevel = -1;
 	private int sickbayBeds = 0;
 	private int labTechLevel = -1;
+	private int labCapacity = 0;
 	private int attachmentSlots;
 	
 	/** The # of battery modules of the vehicle.  */
@@ -728,11 +729,24 @@ public class VehicleSpec implements Serializable {
 		return sickbayBeds;
 	}
 
-	/** @return the labTechLevel */
+	/**
+	 * Gets the labTechLevel.
+	 * 
+	 * @return
+	 */
 	public final int getLabTechLevel() {
 		return labTechLevel;
 	}
 
+	/**
+	 * Gets the lab capacity.
+	 * 
+	 * @return
+	 */
+	public final int getLabCapacity() {
+		return labCapacity;
+	}
+	
 	/** @return the attachmentSlots */
 	public final int getAttachmentSlots() {
 		return attachmentSlots;
@@ -789,9 +803,10 @@ public class VehicleSpec implements Serializable {
 		this.sickbayTechLevel = sickbayTechLevel2;
 	}
 
-	void setLabSpec(int labTechLevel2, List<ScienceType> labTechSpecialties2) {
+	void setLabSpec(int labTechLevel, int labCapacity, List<ScienceType> labTechSpecialties2) {
 		this.hasLab = true;
-		this.labTechLevel = labTechLevel2;
+		this.labTechLevel = labTechLevel;
+		this.labCapacity = labCapacity;
 		this.labTechSpecialties = Collections.unmodifiableList(labTechSpecialties2);
 	}
 
