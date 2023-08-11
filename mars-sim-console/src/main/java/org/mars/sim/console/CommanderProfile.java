@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
@@ -45,8 +46,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String EXT = ".txt";
 
     private static final String BOOKMARK = "bookmark_";
-    
-    private static final int SPACES = 18;
 
     private int choiceIndex = -1;
 
@@ -295,7 +294,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
 
-    private void addAge(TextIO textIO, String prompt,  Consumer<Integer> valueSetter) {
+    private void addAge(TextIO textIO, String prompt,  IntConsumer valueSetter) {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
@@ -306,7 +305,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
 
-    private void addJobTask(TextIO textIO, String prompt, int max, Consumer<Integer> valueSetter) {
+    private void addJobTask(TextIO textIO, String prompt, int max, IntConsumer valueSetter) {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
@@ -317,7 +316,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
 
-    private void addSponsorTask(TextIO textIO, String prompt, int max, Consumer<Integer> valueSetter) {
+    private void addSponsorTask(TextIO textIO, String prompt, int max, IntConsumer valueSetter) {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
@@ -328,7 +327,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     		});
     }
 
-    private void addCountryTask(TextIO textIO, String prompt, int max, Consumer<Integer> valueSetter) {
+    private void addCountryTask(TextIO textIO, String prompt, int max, IntConsumer valueSetter) {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
@@ -365,43 +364,23 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
        	StringBuilder s = new StringBuilder();
 
         for (int i=0; i< list.size(); i++) {
-        	int column = 0;
-
-        	String c = "";
+            String c = list.get(i);
+            String item = String.format("(%2d). %16s", i, c);
+            s.append(item);
 
         	// Find out what column
-        	if ((i - 1) % 3 == 0)
-        		column = 1;
-        	else if ((i - 2) % 3 == 0)
-        		column = 2;
-
-        	// Look at how many whitespaces needed before printing each column
-			if (column == 0) {
-				c = list.get(i);
-			}
-
-			else if (column == 1 || column == 2) {
-	        	c = list.get(i);
-	        	int num = SPACES - list.get(i-1).length();
-
-	        	// Handle the extra space before the parenthesis
-	            for (int j=0; j < num; j++) {
-	            	s.append(" ");
-	            }
-    		}
-
-        	if (i+1 < 10)
-        		s.append(" ");
-        	s.append("(");
-        	s.append(i+1);
-        	s.append("). ");
-        	s.append(c);
-
-            // if this is the last column
-            if (column == 2 || i == list.size()-1) {
+            if (i % 3 == 2) {
                 newList.add(s.toString());
                 s = new StringBuilder();
             }
+            else {
+                s.append("  ");
+            }
+        }
+        
+        // Clear up
+        if ((list.size() % 3) > 0) {
+            newList.add(s.toString());
         }
 
         return newList;
@@ -427,22 +406,21 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	private static void storeProperties(Properties p) throws IOException {
         try (FileOutputStream fr = new FileOutputStream(SimulationFiles.getSaveDir() + "/" + FILENAME + EXT)) {
 	        p.store(fr, "Commander's Profile");
-	        logger.config("Commander's profile saved: " + p);
+	        logger.config("Commander's profile saved");
         }
     }
 
     public static boolean loadProfile() throws IOException {
-		File f = new File(SimulationFiles.getSaveDir(), "/" + FILENAME + EXT);
+		File f = new File(SimulationFiles.getSaveDir(), FILENAME + EXT);
 
 		if (f.exists() && f.canRead()) {
 
 	    	Properties p = new Properties();
 	        try (FileInputStream fi = new FileInputStream(f)) {
 		        p.load(fi);
-		        fi.close();
 
 		        commander = loadProperties(p, commander);
-		        logger.config("Commander's profile loaded: " + p);
+		        logger.config("Commander's profile loaded");
 		        return true;
 	        }
 		}

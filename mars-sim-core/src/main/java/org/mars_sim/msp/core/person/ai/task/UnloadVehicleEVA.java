@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars.sim.tools.Msg;
@@ -94,9 +96,6 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Initialize phase
 		addPhase(UNLOADING);
 
-		// NOTE: EVAOperation will set the phase. Do NOT do it here
-//		setPhase(UNLOADING); 
-		
 		logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
 
 	}
@@ -145,9 +144,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
-			Iterator<Equipment> k = vehicle.getEquipmentSet().iterator();
-			while (k.hasNext() && (amountUnloading > 0D)) {	
-				Equipment equipment = k.next();
+			Set<Equipment> surplus = new HashSet<>();
+			for(Equipment equipment : vehicle.getEquipmentSet()) {
 				boolean doUnload = true;
 				
 				if (vehicle instanceof Crewable crew && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
@@ -156,17 +154,24 @@ public class UnloadVehicleEVA extends EVAOperation {
 					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
 					doUnload = (numSuit > numCrew);
 				}
-				
-				// Unload the equipment
+
+				// Add the equipemnt to the surplus
 				if (doUnload) {
-					// Unload inventories of equipment (if possible)
-					UnloadVehicleGarage.unloadEquipmentInventory(equipment, settlement);
-					equipment.transfer(settlement);		
+					surplus.add(equipment);
 					amountUnloading -= equipment.getMass();
-					
-					logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
-						+ " from " + vehicle.getName() + ".");
+					if (amountUnloading < 0) {
+						break;
+					}
 				}
+			}
+
+			// Unload the surplus
+			for(Equipment extra : surplus) {
+				// Unload inventories of equipment (if possible)
+				UnloadVehicleGarage.unloadEquipmentInventory(extra, settlement);
+				extra.transfer(settlement);		
+				
+				logger.log(vehicle, Level.INFO, 10_000, "Surplus unloaded " + extra.getNickName());
 			}
 		}
 
