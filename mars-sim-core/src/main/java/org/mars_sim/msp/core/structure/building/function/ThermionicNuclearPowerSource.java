@@ -12,12 +12,11 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A thermionic nuclear power source that gives a steady supply of electrical power.
  */
-public class ThermionicNuclearPowerSource extends PowerSource {
+public class ThermionicNuclearPowerSource extends PowerSource
+		implements AdjustablePowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(ThermionicNuclearSource.class.getName());
 
 	private static final int MAX_LOAD_CAPACITY = 110;
 	
@@ -35,12 +34,6 @@ public class ThermionicNuclearPowerSource extends PowerSource {
 	
 	/** The design thermal power in kW_th. */
 	private final double designPowerThermal;
-	
-	/** The design thermal-to-electrical power conversion efficiency in percent. */
-	private final double designConversion;
-	
-	/** The design load capacity in percent. */
-	private final double designPercentLoadCapacity;
 
 	/** The current conversion efficiency in percent. */
 	private double currentConversion;
@@ -59,8 +52,6 @@ public class ThermionicNuclearPowerSource extends PowerSource {
 		
 		this.numModules = numModules;
 		this.designPowerThermal = thermalPower;
-		this.designConversion = conversion;
-		this.designPercentLoadCapacity = percentLoadCapacity;
 
 		designPowerElectrical = numModules * thermalPower * percentLoadCapacity * conversion / 10_000;
 
@@ -140,20 +131,5 @@ public class ThermionicNuclearPowerSource extends PowerSource {
 	@Override
 	public double getMaintenanceTime() {
 	    return maintenanceTime;
-	}
-
-	@Override
-	public void removeFromSettlement() {
-		// Auto-generated method stub
-	}
-	
-	@Override
-	public void setTime(double time) {
-		// Auto-generated method stub
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
 	}
 }

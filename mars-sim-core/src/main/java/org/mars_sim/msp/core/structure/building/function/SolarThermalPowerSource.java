@@ -21,9 +21,7 @@ public class SolarThermalPowerSource extends PowerSource {
 
 	private static final double MAINTENANCE_FACTOR = 2.5D;
 	
-	private static double efficiencySolarThermal = .70;
-	
-//	public static double ARRAY_AREA = 100D;		// in square feet
+	private static final double DEFAULT_SOLAR_THERMAL_EFFICIENCY = .70;
 		
 	/**
 	 * Constructor.
@@ -35,7 +33,7 @@ public class SolarThermalPowerSource extends PowerSource {
 	}
 
 	public static double getEfficiency() {
-		return efficiencySolarThermal;
+		return DEFAULT_SOLAR_THERMAL_EFFICIENCY;
 	}
 
 	@Override
@@ -57,20 +55,5 @@ public class SolarThermalPowerSource extends PowerSource {
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
-	}
-
-	@Override
-	public void removeFromSettlement() {
-		// May model how to salvage the parts from this power source
-	}
-
-	@Override
-	public void setTime(double time) {
-		// May use this method to control turning on and off this power source
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
 	}
 }

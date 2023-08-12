@@ -76,21 +76,4 @@ public class WindPowerSource extends PowerSource {
 	public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
-
-	@Override
-	public void removeFromSettlement() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
 }

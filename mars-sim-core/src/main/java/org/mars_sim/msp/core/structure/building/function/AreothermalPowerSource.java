@@ -29,7 +29,6 @@ extends PowerSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-//		Coordinates location = building.getSettlement().getCoordinates();
 		double areothermalHeat = surface.getAreothermalPotential(building.getSettlement().getCoordinates());
 
 		return getMaxPower() * (areothermalHeat / 100D);
@@ -37,7 +36,6 @@ extends PowerSource {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-//		Coordinates location = settlement.getCoordinates();
 		double areothermalHeat =surface.getAreothermalPotential(settlement.getCoordinates());
 
 		return getMaxPower() * (areothermalHeat / 100D);
@@ -46,20 +44,5 @@ extends PowerSource {
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower();
-	}
-
-	@Override
-	public void removeFromSettlement() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
 	}
 }

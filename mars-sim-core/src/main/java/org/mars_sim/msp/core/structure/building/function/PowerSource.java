@@ -22,8 +22,6 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-	//private static final Logger logger = Logger.getLogger(HeatSource.class.getName());
 
 	// Data members
 	private double maxPower;
@@ -41,7 +39,7 @@ implements Serializable {
 	 * @param type the type of power source.
 	 * @param maxPower the max power generated.
 	 */
-	public PowerSource(PowerSourceType type, double maxPower) {
+	protected PowerSource(PowerSourceType type, double maxPower) {
 		this.type = type;
 		this.maxPower = maxPower;
 	}
@@ -89,14 +87,18 @@ implements Serializable {
 	/**
 	 * Removes the power source. e.g. Returns the fuel cell stacks to the inventory.
 	 */
-	public abstract void removeFromSettlement();
+	public void removeFromSettlement() {
+		// Nothing to do by default
+	}
 	
 	/**
 	 * Sets the time interval.
 	 * 
 	 * @param time
 	 */
-	public abstract void setTime(double time);
+	public void setTime(double time) {
+		//Nothing to be by default
+	}
 	
 	/**
 	 * Reloads instances after loading from a saved sim.
@@ -118,6 +120,4 @@ implements Serializable {
 	public void destroy() {
 		type = null;
 	}
-
-
 }

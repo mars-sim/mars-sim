@@ -6,9 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.util.logging.Logger;
-
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -21,7 +20,7 @@ public class FuelPowerSource extends PowerSource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(FuelPowerSource.class.getName());
 
 	private static final double MAINTENANCE_FACTOR = 2D;
 	
@@ -33,9 +32,9 @@ public class FuelPowerSource extends PowerSource {
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	
 	/** The work time (millisol) required to toggle this power source on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
+	private static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
 
-	public static final double ELECTRICAL_EFFICIENCY = .7125;
+	private static final double ELECTRICAL_EFFICIENCY = .7125;
 
 	private boolean toggle = false;
 	
@@ -133,18 +132,20 @@ public class FuelPowerSource extends PowerSource {
 		return consumed;
 	}
 	
+	@Override
 	public void setTime(double time) {
 		this.time = time;
 	}
 	 
 	@Override
 	public double getCurrentPower(Building building) {
+		double power = 0D;
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());	 
-			return getMaxPower() * spentFuel * ELECTRICAL_EFFICIENCY;
+			power = getMaxPower() * spentFuel * ELECTRICAL_EFFICIENCY;
 		}
 		 
-		return 0;
+		return power;
 	}
 	 
 
@@ -189,8 +190,9 @@ public class FuelPowerSource extends PowerSource {
 		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
 			 toggleRunningWorkTime = 0D;
 			 toggle = !toggle;
-			 if (toggle) logger.fine(Msg.getString("FuelPowerSource.log.turnedOn",getType().getName())); //$NON-NLS-1$
-			 else logger.fine(Msg.getString("FuelPowerSource.log.turnedOff",getType().getName())); //$NON-NLS-1$
+
+			 String msgKey = (toggle ? "FuelPowerSource.log.turnedOn" : "FuelPowerSource.log.turnedOff");
+			 logger.fine(Msg.getString(msgKey,getType().getName())); //$NON-NLS-1$
 		 }
 	 }
 
@@ -208,15 +210,4 @@ public class FuelPowerSource extends PowerSource {
 	 public double getMaintenanceTime() {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	 }
-
-	
-	 // Return the fuel cell stacks to the inventory
-	 public void removeFromSettlement() {
-	 }
-
-	 @Override
-	 public void destroy() {
-		 super.destroy();
-	 }
-
 }

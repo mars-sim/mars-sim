@@ -12,12 +12,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A fission power source that gives a steady supply of electrical power.
  */
-public class FissionPowerSource extends PowerSource {
+public class FissionPowerSource extends PowerSource implements AdjustablePowerSource {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(FissionPowerSource.class.getName());
 
 	private static final int MAX_LOAD_CAPACITY = 110;
 	
@@ -35,12 +33,6 @@ public class FissionPowerSource extends PowerSource {
 	
 	/** The design thermal power in kW_th. */
 	private final double designPowerThermal;
-	
-	/** The design stirling conversion efficiency in percent. */
-	private final double designStirlingConversion;
-	
-	/** The design load capacity in percent. */
-	private final double designPercentLoadCapacity;
 
 	/** The current stirling conversion efficiency in percent. */
 	private double currentConversion;
@@ -59,8 +51,6 @@ public class FissionPowerSource extends PowerSource {
 		
 		this.numModules = numModules;
 		this.designPowerThermal = thermalPower;
-		this.designStirlingConversion = stirlingConversion;
-		this.designPercentLoadCapacity = percentLoadCapacity;
 
 		designPowerElectrical = numModules * thermalPower * percentLoadCapacity * stirlingConversion / 10_000;
 
@@ -104,6 +94,7 @@ public class FissionPowerSource extends PowerSource {
 	/**
 	 * Increases the power load capacity.
 	 */
+	@Override
 	public void increaseLoadCapacity() {
 		currentLoadCapacity = currentLoadCapacity + PERCENT_INCREMENT;
 		
@@ -117,6 +108,7 @@ public class FissionPowerSource extends PowerSource {
 	/**
 	 * Increases the power load capacity.
 	 */
+	@Override
 	public void decreaseLoadCapacity() {
 		currentLoadCapacity = currentLoadCapacity - PERCENT_INCREMENT;
 		
@@ -140,20 +132,5 @@ public class FissionPowerSource extends PowerSource {
 	@Override
 	public double getMaintenanceTime() {
 	    return maintenanceTime;
-	}
-
-	@Override
-	public void removeFromSettlement() {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
 	}
 }
