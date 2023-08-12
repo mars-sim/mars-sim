@@ -11,7 +11,6 @@
 package org.mars_sim.msp.core.astroarts;
 
 public class PlanetOrbit {
-	private int		planetNo;
 	private double	jd;
 	private int		nDivision;
 	private  Xyz	orbit[];
@@ -35,7 +34,6 @@ public class PlanetOrbit {
 	}
 	
 	public PlanetOrbit(int planetNo, ATime atime, int nDivision) {
-		this.planetNo = planetNo;
 		this.jd = atime.getJd();
 		this.nDivision = nDivision;
 		PlanetElm planetElm = new PlanetElm(planetNo, atime);

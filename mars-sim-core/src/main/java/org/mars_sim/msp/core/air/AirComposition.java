@@ -359,19 +359,22 @@ public class AirComposition implements Serializable {
 
 	private static final double getMolecularMass(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
+		double result;
 		if (gasId == ResourceUtil.co2ID)
-			return CO2_MOLAR_MASS;
-		if (gasId == ResourceUtil.argonID)
-			return ARGON_MOLAR_MASS;
-		if (gasId == ResourceUtil.nitrogenID)
-			return N2_MOLAR_MASS;
-		if (gasId == ResourceUtil.oxygenID)
-			return O2_MOLAR_MASS;
-		if (gasId == ResourceUtil.waterID)
-			return H2O_MOLAR_MASS;
-		
-		String g = ResourceUtil.findAmountResourceName(gasId);
-		throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+			result = CO2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.argonID)
+			result = ARGON_MOLAR_MASS;
+		else if (gasId == ResourceUtil.nitrogenID)
+			result = N2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.oxygenID)
+			result = O2_MOLAR_MASS;
+		else if (gasId == ResourceUtil.waterID)
+			result = H2O_MOLAR_MASS;
+		else {
+			String g = ResourceUtil.findAmountResourceName(gasId);
+			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+		}
+		return result;
 	}
 
 	/**
@@ -382,19 +385,22 @@ public class AirComposition implements Serializable {
 	 */
 	private static final double getIdealPressure(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
+		double result;
 		if (gasId == ResourceUtil.co2ID)
-			return CO2_PARTIAL_PRESSURE;
-		if (gasId == ResourceUtil.argonID)
-			return ARGON_PARTIAL_PRESSURE;
-		if (gasId == ResourceUtil.nitrogenID)
-			return N2_PARTIAL_PRESSURE;
-		if (gasId == ResourceUtil.oxygenID)
-			return O2_PARTIAL_PRESSURE;
-		if (gasId == ResourceUtil.waterID)
-			return H2O_PARTIAL_PRESSURE;
-
-		String g = ResourceUtil.findAmountResourceName(gasId);
-		throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+			result = CO2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.argonID)
+			result = ARGON_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.nitrogenID)
+			result = N2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.oxygenID)
+			result = O2_PARTIAL_PRESSURE;
+		else if (gasId == ResourceUtil.waterID)
+			result = H2O_PARTIAL_PRESSURE;
+		else {
+			String g = ResourceUtil.findAmountResourceName(gasId);
+			throw new IllegalArgumentException("Unknown gas '" + g + "' id=" + gasId);
+		}
+		return result;
 	}
 
     /**
