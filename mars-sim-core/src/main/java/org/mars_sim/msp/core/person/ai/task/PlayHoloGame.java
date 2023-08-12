@@ -163,7 +163,7 @@ public class PlayHoloGame extends Task {
 		
 		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
-	  		logger.info(person, 30_000L, NAME + " - " 
+	  		logger.fine(person, 30_000L, NAME + " - " 
     				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();

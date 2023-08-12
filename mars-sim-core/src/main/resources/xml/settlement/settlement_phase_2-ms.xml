@@ -70,7 +70,7 @@
         </connection-list>
     </building>
 
-    <building id="8" type="workshop" xloc="-12.0"
+    <building id="8" type="Workshop" xloc="-12.0"
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="7" xloc="0.0" yloc="4.5" />

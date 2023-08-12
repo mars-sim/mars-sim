@@ -22,8 +22,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 /**
- * The InhabitableBuildingPanel class is a building function panel representing 
- * the inhabitants of a settlement building.
+ * This class is a building function panel representing 
+ * the inhabitants of a building.
  */
 @SuppressWarnings("serial")
 public class BuildingPanelInhabitable extends BuildingFunctionPanel {
@@ -56,7 +56,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -72,7 +72,6 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 		labelPanel.addTextField(Msg.getString("BuildingPanelInhabitable.capacity"),
 					 Integer.toString(inhabitable.getOccupantCapacity()), null);
 
-
 		// Create inhabitant list panel
 		inhabitantListPanel = new UnitListPanel<>(getDesktop(), new Dimension(200, 250)) {
 			@Override
@@ -86,7 +85,7 @@ public class BuildingPanelInhabitable extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Update this panel.
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {

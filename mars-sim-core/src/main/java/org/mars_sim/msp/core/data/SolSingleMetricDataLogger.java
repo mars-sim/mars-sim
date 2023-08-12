@@ -72,4 +72,33 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 		}
 		return sum / numSols;
 	}
+	
+	/**
+	 * Returns both the cumulative total and the daily average.
+	 * 
+	 * @return
+	 */
+	public double[] getTotCumulativeDailyAverage() {
+		double sum = 0;
+		int numSols = 0;
+
+		for (Double dailyTotal : dailyData) {
+	
+			// First entry is always today
+			if (numSols == 0) {
+				sum += ((dailyTotal/currentMsol) * 1_000D);
+			}
+			else {
+				sum += dailyTotal;
+			}
+			numSols++;
+		}
+	
+		if (numSols == 0) {
+			// No data points
+			return new double[] {sum, sum};
+		}
+		else
+			return new double[] {sum, sum / numSols};
+	}
 }

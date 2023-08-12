@@ -329,8 +329,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="3" capacity="3">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="COMPUTING" />
 				<research-specialty name="ENGINEERING" />
 				<research-specialty name="MATHEMATICS" />
@@ -721,9 +719,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</recreation>
 			
-			<research tech-level="3" capacity="2">
-				<research-specialty name="BOTANY" />
+			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
+				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="-4.5" yloc="5.73" />
 					<activity-spot xloc="-5.1" yloc="5.73" />	
@@ -819,9 +818,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
-			<research tech-level="3" capacity="2">
-				<research-specialty name="BOTANY" />
+			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
+				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="-1.0" yloc="1.3" />
 					<activity-spot xloc="-2.0" yloc="1.3" />
@@ -891,9 +891,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Large Greenhouse" width="12.0" length="18.0" construction="SEMI_SOLID" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="24.0" base-mass="10000">
 		<description>
-			The Large Greenhouse is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
-			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a botany research lab with instruments. It has a spacious interior
-			for high volume crop cultivation and has a high resource storage capability.
+			The Large Greenhouse is made of stronger structural and cladding material such as coextruded
+			laminate of polyamide and polyolefin interwoven around an aluminum frame to give rise
+			 to a scaffolded retention bladder. It is furnished with a lab with instruments. 
+			 It has a spacious interior	for high volume crop cultivation and has a high resource 
+			 storage capability.
 		</description>
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
@@ -928,9 +930,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80" discharge-rate="1.25" />
 
-			<research tech-level="4" capacity="4">
-				<research-specialty name="BOTANY" />
+			<research tech-level="3" capacity="4">
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
+				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc=".9" yloc="7.8" />
 					<activity-spot xloc="4.25" yloc="-7.7" />
@@ -1966,11 +1969,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<research tech-level="3" capacity="16">
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="COMPUTING" />
+				<research-specialty name="ENGINEERING" />
 				<research-specialty name="MATHEMATICS" />
+				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
+				<research-specialty name="PSYCHOLOGY" />
 				<activity>
 					<activity-spot xloc="1.55" yloc="2.87" />
 					<activity-spot xloc="1.55" yloc="1.38" />
@@ -2586,8 +2591,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="4" capacity="8">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
-				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="COMPUTING" />
 				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="MEDICINE" />
@@ -2940,8 +2943,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
-				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="COMPUTING" />
 				<research-specialty name="ENGINEERING" />
 				<research-specialty name="MATHEMATICS" />
@@ -3274,8 +3275,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
 			<research tech-level="2" capacity="2">
-				<research-specialty name="BOTANY" />
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
+				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="-1" yloc="1.0" />
 					<activity-spot xloc="1" yloc="1.0" />

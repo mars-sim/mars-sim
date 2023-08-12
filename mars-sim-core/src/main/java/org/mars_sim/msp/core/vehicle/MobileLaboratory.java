@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * MobileLaboratory.java
  * @date 2023-08-11

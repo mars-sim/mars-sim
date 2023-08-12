@@ -26,6 +26,7 @@ import org.mars_sim.msp.ui.swing.utils.EntityListLauncher;
  * A class that presents a selectable visual list of Units. Double clicking
  * will open the associated UnitWindow dialog.
  * The implementors provide a getData method which returns the raw Units to display.
+ * 
  * @param <T> The unit Subclass to display.
  */
 @SuppressWarnings("serial")
@@ -39,7 +40,8 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	}
 	
 	/**
-	 * Create a list with a specific preferred size
+	 * Creates a list with a specific preferred size.
+	 * 
 	 * @param desktop
 	 * @param dim Preferred size
 	 */
@@ -67,7 +69,7 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	}
 	
 	/**
-	 * Converter method that converts a collection of Unit Identifiers into a
+	 * Converts a collection of Unit Identifiers into a
 	 * collection of T.
 	 * 
 	 * @param ids Unit ids
@@ -85,13 +87,15 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	}
 	
 	/**
-	 * Return the collection of Units to display.
+	 * Returns the collection of Units to display.
+	 * 
 	 * @return
 	 */
 	protected abstract Collection<T> getData();
 	
 	/**
-	 * How many Unit are displayed in the list.
+	 * How many units are displayed in the list.
+	 * 
 	 * @return
 	 */
 	public int getUnitCount() {
@@ -99,7 +103,8 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	}
 	
 	/**
-	 * Updated the list
+	 * Updates the list.
+	 * 
 	 * @return Was the list changed?
 	 */
 	public boolean update() {

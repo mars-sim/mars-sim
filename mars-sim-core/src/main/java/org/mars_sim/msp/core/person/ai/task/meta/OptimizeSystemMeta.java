@@ -33,7 +33,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.optimizeSystem"); //$NON-NLS-1$
 
-	private static final int FACTOR = 50;
+	private static final int FACTOR = 20;
 	
     public OptimizeSystemMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -62,16 +62,14 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 				if (result < 0.01)
 					result = 0.01;
 				
-				result *= RandomUtil.getRandomDouble(FACTOR);
-				
 				double org = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ORGANIZATION);
 				double com = 0;
 				
 				if (person.getSkillManager().getSkill(SkillType.COMPUTING) != null) {
 					com = person.getSkillManager().getSkill(SkillType.COMPUTING).getCumuativeExperience();
 				}
-				
-				result += org + com;
+
+				result = RandomUtil.getRandomDouble(result + org + com);
 				
 				if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
 	            	result *= 4;

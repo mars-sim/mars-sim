@@ -147,7 +147,7 @@ public class AnalyzeMapData extends Task {
 		
 		int rand = RandomUtil.getRandomInt(0, limit);
 		
-		logger.log(person, Level.FINER, 10_000, "Requested " 
+		logger.log(person, Level.FINE, 10_000, "Requested " 
 				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
 				+ " CUs for "
 				+ NAME + "."
@@ -246,7 +246,7 @@ public class AnalyzeMapData extends Task {
     	
 		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
-    		logger.info(person, 30_000L, NAME + " - " 
+    		logger.fine(person, 30_000L, NAME + " - " 
     				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
         	endTask();

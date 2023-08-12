@@ -80,7 +80,7 @@ public abstract class DataLogger<T> implements Serializable {
 			newSol(currentSol);
 		}
 	}
-
+	
 	/**
 	 * Returns a Map if data entries per missionSol. Map is keyed on sol.
 	 * 

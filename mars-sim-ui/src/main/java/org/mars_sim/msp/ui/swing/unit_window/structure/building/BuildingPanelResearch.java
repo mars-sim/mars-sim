@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelResearch.java
- * @date 2022-07-10
+ * @date 2023-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -22,16 +22,19 @@ import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 
 /**
- * The ResearchBuildingPanel class is a building function panel representing
- * the research info of a settlement building.
+ * This class is a building function panel representing
+ * the research aspects of a building.
  */
 @SuppressWarnings("serial")
 public class BuildingPanelResearch extends BuildingFunctionPanel {
 
 	private static final String SCIENCE_ICON = "science";
 
+	private static final String MILLISOLS = " millisols";
+
+	
 	// Data members
-	/** The research building. */
+	/** The research building function. */
 	private Research lab;
 
 	// Data cache
@@ -39,9 +42,14 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	private int researchersCache;
 
 	private JLabel researchersLabel;
+	
+	private JLabel dailyAverageLabel;
+	
+	private JLabel cumulativeTotalLabel;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param lab the research building this panel is for.
 	 * @param desktop The main desktop.
 	 */
@@ -60,13 +68,13 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(2);
+		AttributePanel labelPanel = new AttributePanel(4);
 		center.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
@@ -78,13 +86,20 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		labelPanel.addTextField(Msg.getString("BuildingPanelResearch.researcherCapacity"),
 					 					Integer.toString(lab.getLaboratorySize()), null);
 
+		double[] tally = lab.getTotCumulativeDailyAverage();
+		dailyAverageLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.dailyAverage"),
+				Double.toString(Math.round(tally[1] * 10.0)/10.0) + MILLISOLS, null);
+		
+		cumulativeTotalLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.cumulativeTotal"),
+				Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS, null);
+		
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
 		int size = specialties.length;
 
 		JTextArea specialtyTA = new JTextArea();
 		specialtyTA.setEditable(false);
-		specialtyTA.setColumns(15);
+		specialtyTA.setColumns(5);
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
@@ -101,7 +116,7 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Update this panel.
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {
@@ -110,5 +125,9 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 			researchersCache = lab.getResearcherNum();
 			researchersLabel.setText(Integer.toString(researchersCache));
 		}
+		
+		double[] tally = lab.getTotCumulativeDailyAverage();
+		dailyAverageLabel.setText(Double.toString(Math.round(tally[1] * 10.0)/10.0) + MILLISOLS);
+		cumulativeTotalLabel.setText(Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS);
 	}
 }
