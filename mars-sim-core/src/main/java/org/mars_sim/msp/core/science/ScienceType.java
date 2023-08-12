@@ -7,10 +7,13 @@
 
 package org.mars_sim.msp.core.science;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars.sim.tools.Msg;
@@ -76,6 +79,8 @@ public enum ScienceType {
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 
+	private static Set<ScienceType> experimentalSciences;
+	 
 	private String name;
 	private JobType job;
 	private SkillType skill;
@@ -136,7 +141,36 @@ public enum ScienceType {
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
 		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
 	}
+    
+    /**
+     * Initializes all the sciences related to laboratory experimentation.
+     * 
+     */
+    public static void initExperimentalSciences() {
+    	experimentalSciences = new HashSet<>();
+        experimentalSciences.add(ScienceType.AREOLOGY);
+        experimentalSciences.add(ScienceType.BOTANY);
+        experimentalSciences.add(ScienceType.BIOLOGY);
+        experimentalSciences.add(ScienceType.CHEMISTRY);
+        experimentalSciences.add(ScienceType.COMPUTING);
+        experimentalSciences.add(ScienceType.ENGINEERING);
+        experimentalSciences.add(ScienceType.MEDICINE);
+        experimentalSciences.add(ScienceType.METEOROLOGY);
+        experimentalSciences.add(ScienceType.PHYSICS);
+        experimentalSciences.add(ScienceType.PSYCHOLOGY);
+    }
 
+	/**
+     * Gets all the sciences related to laboratory experimentation.
+     * 
+     * @return set of sciences.
+     */
+    public static Set<ScienceType> getExperimentalSciences() {
+		if (experimentalSciences == null)
+			initExperimentalSciences();
+    	return experimentalSciences;
+    }
+    
 	/**
 	 * Gives back the {@link ScienceType} associated with the given job or
 	 * <code>null</code>.

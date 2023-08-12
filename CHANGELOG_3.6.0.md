@@ -5,12 +5,12 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.0 (build ____) - 28 Jul 2023
+## 3.6.0 build 849_ (13 Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Building    : Add 2 new buildings: Server Farm and Central Hub A. </LI>
-  <LI>Computing   : Add entropy to each computing node. </LI>
+  <LI>Computing   : Track entropy in each computing node. </LI>
   <LI>Country     : Allow each country's names to be loaded on demand. </LI>
   <LI>Crop        : Add a new category herbs. </LI>
   <LI>Earth Time  : Model using the standard Java LocalDateTime class.</LI>
@@ -25,9 +25,10 @@ Copyright (C) 2023 Scott Davis
   <LI>Resupply    : Define resupply missions with a repeating schedule.</LI>
   <LI>Resources   : Allow alternate resources for manufacturing.</LI>
   <LI>Settlement  : Keep track of settlement preference task/mission/science modifiers. </LI>
-  <LI>Sites       : Use AnalyzeMapData task to discover & estimate mineral concentration of potential sites.</LI>
+  <LI>Sites       : Discover & estimate mineral concentration of potential sites.</LI>
   <LI>Training    : Replace hard-coded training-history-to-role mapping with external xml configuration.</LI>
   <LI>Vehicle     : Enable regen braking and encapsulate propulsion calculations in motor controller class.</LI>
+
 </OL>
   
 ### B. UI IMPROVEMENT :

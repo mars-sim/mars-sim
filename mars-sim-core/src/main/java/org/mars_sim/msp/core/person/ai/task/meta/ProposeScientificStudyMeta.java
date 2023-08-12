@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ProposeScientificStudyMeta.java
- * @date 2021-11-22
+ * @date 2023-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
- * Meta task for the ProposeScientificStudy task.
+ * Meta task for proposing a scientific study.
  */
 public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
@@ -33,7 +33,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
 
     public ProposeScientificStudyMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC, TaskTrait.LEADERSHIP);
 		setPreferredJob(JobType.ACADEMICS);
@@ -71,7 +71,9 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 	        }
         }
 
-        if (ScienceType.getJobScience(job) == null)
+		ScienceType science = ScienceType.getJobScience(job);
+		
+        if (science == null)
         	return 0;
         
         // Probability affected by the person's stress and fatigue.
@@ -80,18 +82,35 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
         if (person.isInside()) {
 
+            Role role = person.getRole();
+            
 	        ScientificStudy study = person.getStudy();
 	        if (study != null) {
 	            // Check if study is in proposal phase.
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-	                // Once a person starts a Study they should focus on the Proposal
-	                result += 100D;
+	                // Once a person starts a study in the proposal phase,
+	            	// there's a greater chance to continue on the proposal.
+	                result += 200D;
+	            }
+	            else {
+		            // Check person has a science role
+		            if (role != null) {
+						switch(role.getType()) {
+		            		case CHIEF_OF_SCIENCE:
+		            		case SCIENCE_SPECIALIST:
+		            			result += 100D;
+								break;
+							default:
+								break;
+	            		}
+		            }
 	            }
 	        }
 
 	        else {
-	            // Probability of starting a new scientific study.
-	            Role role = person.getRole();
+	            // Probability of starting a new scientific study.	        	
+	        	result += 500D;
+	        	
 	            // Check person has a science role
 	            if (role != null) {
 					switch(role.getType()) {
@@ -116,7 +135,6 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 				}
 
 				// Check the favourite research of the Reporting Authority
-				ScienceType science = ScienceType.getJobScience(job);
 				result *= settlement.getPreferenceModifier(
 								new PreferenceKey(PreferenceKey.Type.SCIENCE, science.name()));
 	        }
@@ -127,7 +145,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 				result *= getBuildingModifier(b, person);
 	        }
 
-	        result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+	        result *= settlement.getGoodsManager().getResearchFactor();
 	        result *= getPersonModifier(person);
         }
 

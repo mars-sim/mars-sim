@@ -1,13 +1,13 @@
 /*
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @Date 2021-10-05
+ * @date 2023-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -36,8 +36,8 @@ public class PerformLaboratoryExperimentMeta extends FactoryMetaTask {
     /** default logger. */
     private static SimLogger logger = SimLogger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
 
-    // Create list of experimental sciences.
-    private static List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
+    // Load experimental sciences.
+    private static Set<ScienceType> experimentalSciences = ScienceType.getExperimentalSciences();
 
     public PerformLaboratoryExperimentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

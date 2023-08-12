@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @date 2023-08-11
+ * @date 2023-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * A task for performing a scientific experiment in a laboratory for a scientific study.
+ * A task for performing experiments in a laboratory for a scientific study.
  */
 public class PerformLaboratoryExperiment extends Task implements ResearchScientificStudy {
 
@@ -127,27 +127,6 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
     }
 
     /**
-     * Gets all the sciences related to laboratory experimentation.
-     * 
-     * @return list of sciences.
-     */
-    public static List<ScienceType> getExperimentalSciences() {
-        // TODO Create list of possible sciences for laboratory experimentation directly in {@link ScienceType}.
-        List<ScienceType> experimentalSciences = new ArrayList<>();
-        experimentalSciences.add(ScienceType.AREOLOGY);
-        experimentalSciences.add(ScienceType.BOTANY);
-        experimentalSciences.add(ScienceType.BIOLOGY);
-        experimentalSciences.add(ScienceType.CHEMISTRY);
-        experimentalSciences.add(ScienceType.COMPUTING);
-        experimentalSciences.add(ScienceType.ENGINEERING);
-        experimentalSciences.add(ScienceType.MEDICINE);
-        experimentalSciences.add(ScienceType.METEOROLOGY);
-        experimentalSciences.add(ScienceType.PHYSICS);
-        experimentalSciences.add(ScienceType.PSYCHOLOGY);
-        return experimentalSciences;
-    }
-
-    /**
      * Gets the crowding modifier for a researcher to use a given laboratory building.
      * 
      * @param researcher the researcher.
@@ -177,8 +156,8 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
 
         List<ScientificStudy> possibleStudies = new ArrayList<>();
 
-        // Create list of experimental sciences.
-        List<ScienceType> experimentalSciences = getExperimentalSciences();
+        // Load experimental sciences.
+        Set<ScienceType> experimentalSciences = ScienceType.getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
         ScientificStudy primaryStudy = person.getStudy();
@@ -218,7 +197,7 @@ public class PerformLaboratoryExperiment extends Task implements ResearchScienti
         }
 
         // Randomly select study.
-        if (possibleStudies.size() > 0) {
+        if (!possibleStudies.isEmpty()) {
             int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
             result = possibleStudies.get(selected);
         }
