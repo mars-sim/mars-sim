@@ -43,9 +43,10 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.LAB_EXPERIMENTATION, FavoriteType.RESEARCH);
 		setTrait(TaskTrait.ACADEMIC);
 
-		// Jobs are the lab technicans and some scientists
+		// Jobs are the lab technicians and some scientists
 		Set<JobType> jobs = new HashSet<>(JobType.SCIENTISTS);
 		jobs.add(JobType.MATHEMATICIAN);
+		jobs.add(JobType.COMPUTER_SCIENTIST);
 		jobs.add(JobType.METEOROLOGIST);
 		setPreferredJob(jobs);
 		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST);

@@ -222,21 +222,46 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		Lab result = null;
 
 		BuildingManager manager = person.getSettlement().getBuildingManager();
-		Set<Building> labBuildings = manager.getBuildingSet(FunctionType.RESEARCH);
-		labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
-		labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
-		labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
-		labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
-
-		if (!labBuildings.isEmpty()) {
-			Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
-			Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-			result = (Research) building.getFunction(FunctionType.RESEARCH);
+		Set<Building> labs0 = manager.getBuildingSet(FunctionType.RESEARCH);
+		if (labs0.isEmpty()) {
+			return result;
 		}
 
-		return result;
+		Set<Building> labs1 = getSettlementLabsWithSpecialty(science, labs0);
+		if (labs1.isEmpty()) {
+			return pickALab(person, labs0);
+		}
+		
+		Set<Building> labs2 = BuildingManager.getNonMalfunctioningBuildings(labs1);
+		if (labs2.isEmpty()) {
+			return pickALab(person, labs1);
+		}
+		
+		Set<Building> labs3 = getSettlementLabsWithAvailableSpace(labs2);
+		if (labs3.isEmpty()) {
+			return pickALab(person, labs2);
+		}
+		
+		Set<Building> labs4 = BuildingManager.getLeastCrowdedBuildings(labs3);
+		if (labs4.isEmpty()) {
+			return pickALab(person, labs3);
+		}
+		else
+			return pickALab(person, labs4);
 	}
 
+	/**
+	 * Pick a lab by weighted probability.
+	 * 
+	 * @param person
+	 * @param labs
+	 * @return
+	 */
+	private static Lab pickALab(Person person, Set<Building> labs) {
+		Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(person, labs);
+		return RandomUtil.getWeightedRandomObject(labBuildingProbs).getResearch();
+	}
+	
 	/**
 	 * Gets a list of research buildings with available research space from a list
 	 * of buildings with the research function.
