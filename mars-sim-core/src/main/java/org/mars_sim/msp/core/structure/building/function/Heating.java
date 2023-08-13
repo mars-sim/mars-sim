@@ -215,6 +215,9 @@ extends Function {
 			case WORKSHOP:
 				heatGainEqiupment = 0.4396;
 				break;
+			case LABORATORY:
+				heatGainEqiupment = 0.4396;
+				break;
 			case LIVING:
 				heatGainEqiupment = 0.7034;
 				break;

@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 public class BuildingConfig {
 
 	// Element and attribute names
+	private static final String CATEGORY = "category";
 	private static final String DESCRIPTION = "description";
 	private static final String BUILDING = "building";
 	private static final String NAME = "name";
@@ -181,7 +182,7 @@ public class BuildingConfig {
 			supportedFunctions.put(function, fspec);
 		}
 
-		String categoryString = buildingElement.getAttributeValue("category");
+		String categoryString = buildingElement.getAttributeValue(CATEGORY);
 		BuildingCategory category = null;
 		if (categoryString != null) {
 			category = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(categoryString));
@@ -293,17 +294,17 @@ public class BuildingConfig {
 					cats.add(BuildingCategory.HALLWAY);
 					break;
 
-				case ADMINISTRATION:
-				case COMMUNICATION:
-				case COMPUTATION:
-				case MANAGEMENT:
-					cats.add(BuildingCategory.COMMAND);
-					break;
-
 				case ASTRONOMICAL_OBSERVATION:
 				case FIELD_STUDY:
 				case RESEARCH:
+				case COMPUTATION:
 					cats.add(BuildingCategory.LABORATORY);
+					break;
+
+				case ADMINISTRATION:
+				case COMMUNICATION:
+				case MANAGEMENT:
+					cats.add(BuildingCategory.COMMAND);
 					break;
 
 				case COOKING:

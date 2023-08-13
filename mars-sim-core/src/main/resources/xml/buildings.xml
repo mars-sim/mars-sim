@@ -1862,7 +1862,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Command and Control -->
 
 	<building type="Server Farm" width="9.0" length="7.0" base-level="0"
-			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000">
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="4000"
+			category="LABORATORY">
 		<description>
 			The Server Farm is a computer facility providing mainframe resources and networking
 			nodes for colony-width computing needs.

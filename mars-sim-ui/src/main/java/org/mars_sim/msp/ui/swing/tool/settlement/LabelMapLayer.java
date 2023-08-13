@@ -45,29 +45,29 @@ public class LabelMapLayer
 implements SettlementMapLayer {
  
 	// Static members
-	private static final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
-	private static final Color BUILDING_LABEL_COLOR = Color.gray.darker(); // Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
+	private final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
+	private final Color BUILDING_LABEL_COLOR = Color.gray.darker(); // Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
 
-	private static final Color BLACK_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
-	private static final Color WHITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
+	private final Color BLACK_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
+	private final Color WHITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
 
-	private static final Color SHOP_LABEL_COLOR = new Color (195, 176, 145); // khaki ; 146, 112, 255); // pale purple
-	private static final Color LAB_LABEL_COLOR = new Color (207, 113, 175); // sky magenta; //40, 54, 95); // navy blue
-	private static final Color HAB_LABEL_COLOR = new Color (199, 63, 74); // Maroon; 184, 134, 11);//147, 197, 114); // pistachio ; 48,	213, 200);// turquoise ; 244, 164, 96); // sandy brown // 92, 23, 0); // BURGUNDY
-	private static final Color REACTOR_LABEL_COLOR = new Color (174, 198, 207); // pastel blue; //100, 60, 60); // pale red ; Color.red.darker(); // red
-	private static final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
-	private static final Color GREENHOUSE_LABEL_COLOR = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
-	private static final Color MEDICAL_LABEL_COLOR = new Color (0, 69, 92); // dull blue
-	private static final Color LIVING_LABEL_COLOR = new Color (255, 179, 71); // pastel orange
-	private static final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
-	private static final Color EVA_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
-	private static final Color ERV_LABEL_COLOR = new Color (83, 83, 83); // pale grey
+	private final Color SHOP_LABEL_COLOR = new Color (195, 176, 145); // khaki: 146, 112, 255; // pale purple
+	private final Color LAB_LABEL_COLOR = new Color (51, 102, 153); // dull dark blue: 51, 102, 153 //sky magenta; 40, 54, 95); // navy blue
+	private final Color HAB_LABEL_COLOR = new Color (255, 102, 102); // Very light red: 255, 102, 102 // Maroon: 184, 134, 11 //147, 197, 114 // pistachio: 48, 213, 200; turquoise: 244, 164, 96; sandy brown: 92, 23, 0; // BURGUNDY
+	private final Color REACTOR_LABEL_COLOR = new Color (174, 198, 207); // pastel blue: 100, 60, 60; // pale red: Color.red.darker(); // red
+	private final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
+	private final Color GREENHOUSE_LABEL_COLOR = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
+	private final Color MEDICAL_LABEL_COLOR = new Color (51, 204, 255); // very light blue: 51, 204, 255 // dull dark blue : 0, 69, 92
+	private final Color LIVING_LABEL_COLOR = new Color (236, 121, 154); // salmon: 236, 121, 154 // pastel orange: 255, 179, 71 //  harvest gold: 225, 179, 120:
+	private final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
+	private final Color EVA_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
+	private final Color ERV_LABEL_COLOR = new Color (83, 83, 83); // pale grey
 	
-	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
-	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
+	private final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
+	private final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
 
-	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
-	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
+	private final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
+	private final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	// (159, 7, 118) pinkish red purle
 	// (255, 153, 225) light pink
@@ -194,7 +194,7 @@ implements SettlementMapLayer {
 						break;
 					case LABORATORY:
 						frontColor = LAB_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
 						break;
 					case LIVING:
 						frontColor = LIVING_LABEL_COLOR;

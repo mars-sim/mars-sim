@@ -88,11 +88,11 @@
             <connection id="12" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="12" type="Server Farm" xloc="0.0"
-        yloc="38" facing="0.0">
+    <building id="12" type="Laboratory" xloc="0.0"
+        yloc="38" facing="90.0">
         <connection-list>
-            <connection id="11" xloc="3.5" yloc="0.0" />
-            <connection id="13" xloc="0.0" yloc="-4.5" />
+            <connection id="11" hatch-facing="south" />
+            <connection id="13" hatch-facing="east" />
         </connection-list>
     </building>
     <building id="13" type="Hallway" length="2.0" xloc="-5.5"
@@ -145,11 +145,11 @@
             <connection id="20" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
-    <building id="20" type="Laboratory" xloc="-44.0" yloc="38"
-        facing="270.0">
+    <building id="20" type="Server Farm" xloc="-44.0" yloc="38"
+        facing="0.0">
         <connection-list>
-            <connection id="19" xloc="0.0" yloc="4.5" />
-            <connection id="21" xloc="0.0" yloc="-4.5" />
+            <connection id="19" hatch-facing="west" />
+            <connection id="21" hatch-facing="east" />
         </connection-list>
     </building>
     <building id="21" type="Hallway" length="2.0" xloc="-49.5"
