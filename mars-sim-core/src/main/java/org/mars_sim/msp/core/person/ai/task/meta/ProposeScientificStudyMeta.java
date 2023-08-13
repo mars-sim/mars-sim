@@ -90,20 +90,26 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 	                // Once a person starts a study in the proposal phase,
 	            	// there's a greater chance to continue on the proposal.
-	                result += 200D;
-	            }
-	            else {
-		            // Check person has a science role
+	            	result += 100D;
+	            	
+	            	// Check person has a science role
 		            if (role != null) {
 						switch(role.getType()) {
 		            		case CHIEF_OF_SCIENCE:
-		            		case SCIENCE_SPECIALIST:
 		            			result += 100D;
+								break;
+		            		case SCIENCE_SPECIALIST:
+		            			result += 200D;
 								break;
 							default:
 								break;
 	            		}
 		            }
+	            }
+	            else {
+		            // If the person already have a study and it's not in the proposal phase,
+	            	// do not start a new proposal
+	            	return 0;
 	            }
 	        }
 
