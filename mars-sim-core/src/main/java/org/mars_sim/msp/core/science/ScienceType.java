@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.science;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 
 /**

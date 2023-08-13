@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 
 /**
  * The Pilot class represents a pilot job.
@@ -64,12 +62,9 @@ public class Pilot extends Job {
 		int population = settlement.getNumCitizens();
 
 		// Add contributions from all garage.
-		List<Building> garage = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
-		Iterator<Building> j = garage.iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-			VehicleGarage g = building.getVehicleParking();
-			result += (double) g.getVehicleCapacity() / 2.5;
+			result += (double) j.next().getVehicleParking().getVehicleCapacity() / 2.5;
 		}
 		
 		// Get number of associated vehicles at a settlement.

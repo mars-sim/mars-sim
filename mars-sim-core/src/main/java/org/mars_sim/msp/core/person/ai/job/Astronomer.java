@@ -58,7 +58,7 @@ public class Astronomer extends Job  {
 		result += getBuildingScienceDemand(settlement, ScienceType.ASTRONOMY, 16D);
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
-		Iterator<Building> j = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
+		Iterator<Building> j = manager.getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();

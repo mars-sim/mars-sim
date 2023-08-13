@@ -149,7 +149,7 @@ public abstract class Job {
 	protected double getBuildingScienceDemand(Settlement settlement, ScienceType type, double scale) {
 		double result = 0D;
 		
-		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESEARCH)) {
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(type)) {
 				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / scale);

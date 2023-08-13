@@ -10,6 +10,7 @@ package org.mars.sim.console.chat.simcommand.settlement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
@@ -117,7 +118,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 
 		// Prints greenhouse usage
-		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
 			usage += f.computeUsage(ResourceUtil.co2ID);
@@ -142,7 +143,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double sign = -1.0;
 		
 		// Prints greenhouse usage
-		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
 			usage += f.computeUsage(id);
@@ -247,7 +248,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 
 		// Prints greenhouse usage
-		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
 			usage += f.computeUsage(ResourceUtil.oxygenID);

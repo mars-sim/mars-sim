@@ -450,7 +450,7 @@ public class Walk extends Task {
 	}
 	
 	/**
-	 * Gets a list of airlock of this settlement
+	 * Gets a list of airlock of this settlement.
 	 *
 	 * @return
 	 */
@@ -461,7 +461,7 @@ public class Walk extends Task {
 	}
 
 	/**
-	 * Are any airlocks available for ingree or egress ?
+	 * Are any airlocks available for ingress or egress ?
 	 * Used by DigLocalMeta
 	 * 
 	 * @param person

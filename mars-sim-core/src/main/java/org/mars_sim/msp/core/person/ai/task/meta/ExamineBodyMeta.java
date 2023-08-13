@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 
 /**
  * Meta task for the ExamineBody task.
@@ -125,10 +124,9 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private boolean hasNeedyMedicalAidsAtSettlement(Settlement settlement) {
 
 		// Check all medical care buildings.
-		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			// Check if there are any sick beds at building.
-			MedicalCare medicalCare = b.getMedical();
-			if (medicalCare.hasEmptyBeds()) {
+			if (b.getMedical().hasEmptyBeds()) {
 				return true;
 			}
 		}

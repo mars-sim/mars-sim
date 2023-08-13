@@ -64,7 +64,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 		BuildingManager mgr = settlement.getBuildingManager();
-		Map<Building,List<ResourceProcess>> processes = new HashMap<>();
+		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
 		for(Building building : mgr.getBuildings(FunctionType.WASTE_PROCESSING)) {
 			WasteProcessing processing = building.getWasteProcessing();
 			processes.put(building, processing.getProcesses());

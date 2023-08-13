@@ -65,7 +65,7 @@ public class Administration extends Function {
 
 		// Supply based on wear condition of buildings.
 		double supply = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.ADMINISTRATION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.ADMINISTRATION).iterator();
 		while (i.hasNext()) {
 			Building adminBuilding = i.next();
 			Administration admin = adminBuilding.getAdministration();

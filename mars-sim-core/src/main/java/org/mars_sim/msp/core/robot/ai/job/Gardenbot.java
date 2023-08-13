@@ -66,8 +66,8 @@ public class Gardenbot extends RobotJob {
 		double growingArea = 0;
 
 		// Add (growing area in greenhouses) / 10
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.FARMING)) {
-			Farming farm = (Farming) building.getFunction(FunctionType.FARMING);
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
+			Farming farm = building.getFarming();
 			growingArea += farm.getGrowingArea();
 		}
 		return growingArea/M_PER_BOT;

@@ -491,14 +491,14 @@ public class BuildingManager implements Serializable {
 		return buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets a list of settlement's buildings with Robotic Station function.
-	 *
-	 * @return list of buildings
-	 */
-	public List<Building> getBuildingsWithRoboticStation() {
-		return getBuildings(FunctionType.ROBOTIC_STATION);
-	}
+//	/**
+//	 * Gets a list of settlement's buildings with Robotic Station function.
+//	 *
+//	 * @return list of buildings
+//	 */
+//	public List<Building> getBuildingsWithRoboticStation() {
+//		return getBuildings(FunctionType.ROBOTIC_STATION);
+//	}
 
 	/**
 	 * Gets a list of settlement's buildings with Life Support function.
@@ -2178,10 +2178,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public double getTotalCapacityCUsComputing() {
 		double units = 0;
-		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
-		if (nodeBldgs.isEmpty())
-			return 0;
-		for (Building b: nodeBldgs) {
+		for (Building b: getBuildingSet(FunctionType.COMPUTATION)) {
 			Computation node = b.getComputation();
 			units += node.getComputingUnitCapacity();
 		}
@@ -2197,7 +2194,7 @@ public class BuildingManager implements Serializable {
 	public String displayComputingResources() {
 		double max = 0;
 		double units = 0;
-		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
 		for (Building b: nodeBldgs) {
 			Computation node = b.getComputation();
 			units += node.getComputingUnitCapacity();

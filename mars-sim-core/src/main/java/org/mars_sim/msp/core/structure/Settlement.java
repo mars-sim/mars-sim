@@ -702,7 +702,7 @@ public class Settlement extends Structure implements Temporal,
 	public int getRobotCapacity() {
 		int result = 0;
 		int stations = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION);
+		Set<Building> bs = buildingManager.getBuildingSet(FunctionType.ROBOTIC_STATION);
 		for (Building b : bs) {
 			stations += b.getRoboticStation().getSlots();
 		}
@@ -831,7 +831,7 @@ public class Settlement extends Structure implements Temporal,
 		double totalArea = 0;
 		double totalTArea = 0;
 		double totalPressureArea = 0;
-		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+		Set<Building> buildings = buildingManager.getBuildingSet(FunctionType.LIFE_SUPPORT);
 		for (Building b : buildings) {
 			double area = b.getFloorArea();
 			totalArea += area;
@@ -857,7 +857,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public double getBuildingAirPressure(Building building) {
 		double p = 0;
-		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+		Set<Building> buildings = buildingManager.getBuildingSet(FunctionType.LIFE_SUPPORT);
 		for (Building b : buildings) {
 			if (b == building) {
 				p = b.getLifeSupport().getAir().getTotalPressure();
@@ -1647,7 +1647,7 @@ public class Settlement extends Structure implements Temporal,
 
 		double leastDistance = Double.MAX_VALUE;
 
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 			Airlock airlock = nextBuilding.getEVA().getAirlock();		
@@ -1702,7 +1702,7 @@ public class Settlement extends Structure implements Temporal,
 
 		double leastDistance = Double.MAX_VALUE;
 
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
@@ -1745,7 +1745,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return airlock or null if none available.
 	 */
 	public boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
-		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		Iterator<Building> i = buildingManager.getBuildingSet(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
@@ -1774,7 +1774,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of airlocks.
 	 */
 	public int getAirlockNum() {
-		return buildingManager.getBuildings(FunctionType.EVA).size();
+		return buildingManager.getBuildingSet(FunctionType.EVA).size();
 	}
 
 	/**
@@ -2634,7 +2634,7 @@ public class Settlement extends Structure implements Temporal,
 		if (cropArea < 0D) {
 			cropArea = 0D;
 			
-			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
+			for (Building b : buildingManager.getBuildingSet(FunctionType.FARMING)) {
 				cropArea += b.getFarming().getGrowingArea();
 			}
 		}
@@ -3320,8 +3320,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @param person
 	 */
 	public void removeAirlockRecord(Person person) {
-		List<Building> list = buildingManager.getBuildings(FunctionType.EVA);
-		for (Building b : list) {
+		for (Building b : buildingManager.getBuildingSet(FunctionType.EVA)) {
 			Airlock lock = b.getEVA().getAirlock();
 			lock.removeAirlockRecord(person);
 		}

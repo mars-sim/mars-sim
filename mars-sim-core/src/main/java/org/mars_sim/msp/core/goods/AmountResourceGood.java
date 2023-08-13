@@ -306,7 +306,7 @@ class AmountResourceGood extends Good {
 
 		// Get the amount of the resource that will be produced by ongoing food
 		// production processes.
-		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			// Go through each ongoing food production process.
 			for(FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
 				for(FoodProductionProcessItem item : process.getInfo().getOutputList()) {
@@ -1087,7 +1087,7 @@ class AmountResourceGood extends Good {
 		double demand = 0D;
 
 		// Determine demand for resource at each farming building at settlement.
-		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.FARMING)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
 			Farming farm = b.getFarming();
 			demand += getFarmingResourceDemand(farm) * owner.getCropFarmFactor() * FARMING_FACTOR;
 		}

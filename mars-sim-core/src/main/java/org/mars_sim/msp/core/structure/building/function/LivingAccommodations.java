@@ -103,7 +103,7 @@ public class LivingAccommodations extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATIONS).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {

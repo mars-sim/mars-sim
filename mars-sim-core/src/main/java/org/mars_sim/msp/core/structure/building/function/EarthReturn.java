@@ -56,7 +56,7 @@ public class EarthReturn extends Function {
 
 		// Supply based on wear condition of buildings.
 		double supply = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.EARTH_RETURN).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.EARTH_RETURN).iterator();
 		while (i.hasNext()) {
 			Building earthReturnBuilding = i.next();
 			EarthReturn earthReturn = earthReturnBuilding.getEarthReturn();

@@ -63,6 +63,6 @@ public class Deliverybot extends RobotJob {
 	@Override
 	public double getOptimalCount(Settlement settlement) {
 		// Check there is a garage space otherwise DeliveryRobot cannot load vehicles
-		return settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE).size();
+		return settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).size();
 	}
 }

@@ -86,7 +86,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Settlement filter) {
-		resetEntities(filter.getBuildingManager().getBuildings(FunctionType.FARMING));
+		resetEntities(filter.getBuildingManager().getBuildingSet(FunctionType.FARMING));
 
 		return true;
 	}

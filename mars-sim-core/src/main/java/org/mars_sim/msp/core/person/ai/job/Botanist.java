@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -71,8 +70,7 @@ extends Job {
 		result += getBuildingScienceDemand(settlement, ScienceType.BOTANY, 12D);
 		
 		// Add (growing area in greenhouses) / 25
-		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
-		Iterator<Building> j = greenhouseBuildings.iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();

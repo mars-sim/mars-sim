@@ -232,7 +232,7 @@ public class MeetTogether extends Task {
 			
 	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
 	    		Building building = settlement.getBuildingManager()
-						.getBuildings(FunctionType.DINING)
+						.getBuildingSet(FunctionType.DINING)
 						.stream()
 						.findAny().orElse(null);	 
 			

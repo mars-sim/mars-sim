@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -19,7 +18,6 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 
 /**
  * The Doctor class represents a job for an medical treatment expert.
@@ -70,12 +68,9 @@ public class Doctor extends Job {
 		result += getBuildingScienceDemand(settlement, ScienceType.MEDICINE, 5D);
 
 		// Add (tech level / 2) for all medical infirmaries.
-		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
-		Iterator<Building> j = medicalBuildings.iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE).iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 3D;
+			result += (double) j.next().getMedical().getTechLevel() / 3D;
 		}
 
 		result = (result + population / 10D) / 5.0;

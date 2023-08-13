@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.util.Job;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public class Politician extends Job {
@@ -84,11 +83,9 @@ public class Politician extends Job {
 			}
 		}
 
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.ADMINISTRATION).iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.ADMINISTRATION).iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-			Administration admin = building.getAdministration();
-			result += admin.getStaffCapacity()/24D;
+			result += j.next().getAdministration().getStaffCapacity()/24D;
 		}
 		
 		result = (result + population / 64D) / 2.0;

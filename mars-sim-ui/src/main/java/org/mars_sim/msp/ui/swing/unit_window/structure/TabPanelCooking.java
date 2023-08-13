@@ -246,7 +246,7 @@ public class TabPanelCooking extends TabPanel {
 		int cookCapacity = 0;
 		int availableMeals = 0;
 		int mealsToday = 0;
-		for(Building b : settlement.getBuildingManager().getBuildings(COOKING)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(COOKING)) {
 			// for each building's kitchen in the settlement
 			Cooking kitchen = b.getCooking();
 			availableMeals += kitchen.getNumberOfAvailableCookedMeals();
@@ -293,7 +293,7 @@ public class TabPanelCooking extends TabPanel {
 
 		int availableDesserts = 0;
 		int dessertsToday = 0;
-		for(Building b : settlement.getBuildingManager().getBuildings(PREPARING_DESSERT)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(PREPARING_DESSERT)) {
 			PreparingDessert kitchen = b.getPreparingDessert();
 			availableDesserts += kitchen.getAvailableServingsDesserts();
 			dessertsToday += kitchen.getTotalServingsOfDessertsToday();

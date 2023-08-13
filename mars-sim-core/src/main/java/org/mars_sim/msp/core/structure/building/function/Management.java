@@ -62,7 +62,7 @@ public class Management extends Function {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANAGEMENT).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.MANAGEMENT).iterator();
         while (i.hasNext()) {
             Building managementBuilding = i.next();
             Management management = managementBuilding.getManagement();

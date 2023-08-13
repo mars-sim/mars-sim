@@ -55,7 +55,7 @@ public class Exercise extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.EXERCISE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.EXERCISE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {

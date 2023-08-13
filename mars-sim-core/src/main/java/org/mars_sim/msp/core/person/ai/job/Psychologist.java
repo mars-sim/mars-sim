@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -19,7 +18,6 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
@@ -71,12 +69,9 @@ public class Psychologist extends Job {
 		result += getBuildingScienceDemand(settlement, ScienceType.PSYCHOLOGY, 6D);
 
 		// Add (tech level / 2) for all medical infirmaries.
-		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
-		Iterator<Building> j = medicalBuildings.iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE).iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 7D;
+			result += (double) j.next().getMedical().getTechLevel() / 7D;
 		}
 
 		result = (result + population / 12D) / 5.0;

@@ -150,7 +150,7 @@ public class PowerStorage extends Function {
 		double demand = grid.getRequiredPower() * hrInSol;
 
 		double supply = 0D;
-		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(FunctionType.POWER_STORAGE).iterator();
+		Iterator<Building> iStore = settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_STORAGE).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
 			PowerStorage store = building.getPowerStorage();

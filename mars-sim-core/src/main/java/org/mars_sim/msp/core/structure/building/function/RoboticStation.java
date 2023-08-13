@@ -75,7 +75,7 @@ public class RoboticStation extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.ROBOTIC_STATION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {

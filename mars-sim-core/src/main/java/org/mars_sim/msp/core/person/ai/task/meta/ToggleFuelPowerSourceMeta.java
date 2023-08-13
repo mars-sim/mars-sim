@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
@@ -104,8 +103,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> tasks = new ArrayList<>();
-        BuildingManager manager = settlement.getBuildingManager();
-        for(Building building : manager.getBuildings(FunctionType.POWER_GENERATION)) {
+        for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_GENERATION)) {
             // Select the best Fuel power source
             double bestDiff = 0D;
             FuelPowerSource bestSource = null;

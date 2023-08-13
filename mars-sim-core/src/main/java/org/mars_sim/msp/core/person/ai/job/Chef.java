@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
  * The Chef class represents a job for a chef.
@@ -61,12 +59,9 @@ public class Chef extends Job {
 		double result = .1;
 
 		// Add all kitchen work space in settlement.
-		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(FunctionType.COOKING);
-		Iterator<Building> i = kitchenBuildings.iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING).iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-			Cooking kitchen = building.getCooking();
-			result += (double) kitchen.getCookCapacity()/12D;
+			result += (double) i.next().getCooking().getCookCapacity()/12D;
 		}
 
 		// Add total population / 10.

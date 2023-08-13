@@ -416,7 +416,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 		double result = 0D;
 
-		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
+		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 			// Go through each ongoing active manufacturing process.
 			for(ManufactureProcess process : b.getManufacture().getProcesses()) {
 				for(ManufactureProcessItem item : process.getInfo().getOutputList()) {

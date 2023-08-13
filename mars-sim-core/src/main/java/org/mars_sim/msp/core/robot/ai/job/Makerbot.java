@@ -60,8 +60,8 @@ public class Makerbot extends RobotJob {
 	public double getOptimalCount(Settlement settlement) {
 
 		double processes = 0D;
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
-			Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
+			Manufacture workshop = building.getManufacture();
 			processes += workshop.getMaxProcesses();
 		}
 

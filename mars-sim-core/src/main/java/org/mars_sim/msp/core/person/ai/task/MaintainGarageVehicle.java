@@ -89,7 +89,7 @@ public class MaintainGarageVehicle extends Task {
 			}
 			
 			Iterator<Building> j = settlement.getBuildingManager()
-					.getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
+					.getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
 			while (j.hasNext() && (garage == null)) {
 				Building garageBuilding = j.next();
 				VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();

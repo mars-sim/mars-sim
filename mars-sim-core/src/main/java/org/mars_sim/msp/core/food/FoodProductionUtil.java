@@ -326,7 +326,7 @@ public final class FoodProductionUtil {
 	 * @throws BuildingException if error checking for food production buildings.
 	 */
 	public static boolean doesSettlementHaveFoodProduction(Settlement settlement) {
-		return (settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).size() > 0);
+		return (!settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).isEmpty());
 	}
 
 	/**
@@ -338,7 +338,7 @@ public final class FoodProductionUtil {
 	 */
 	public static int getHighestFoodProductionTechLevel(Settlement settlement) {
 		int highestTechLevel = 0;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
 			FoodProduction foodProductionFunction = i.next().getFoodProduction();
 			if (foodProductionFunction.getTechLevel() > highestTechLevel)

@@ -505,7 +505,7 @@ public final class ManufactureUtil {
 	 * @throws BuildingException if error checking for manufacturing buildings.
 	 */
 	public static boolean doesSettlementHaveManufacturing(Settlement settlement) {
-		return (settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).size() > 0);
+		return (!settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).isEmpty());
 	}
 
 	/**
@@ -518,7 +518,7 @@ public final class ManufactureUtil {
 	public static int getHighestManufacturingTechLevel(Settlement settlement) {
 		int highestTechLevel = 0;
 		BuildingManager manager = settlement.getBuildingManager();
-		Iterator<Building> i = manager.getBuildings(FunctionType.MANUFACTURE).iterator();
+		Iterator<Building> i = manager.getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture manufacturingFunction = building.getManufacture();

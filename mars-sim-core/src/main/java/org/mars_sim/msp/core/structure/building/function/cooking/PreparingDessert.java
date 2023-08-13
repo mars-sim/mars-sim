@@ -203,7 +203,7 @@ public class PreparingDessert extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.PREPARING_DESSERT).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.PREPARING_DESSERT).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
@@ -509,11 +509,9 @@ public class PreparingDessert extends Function {
 	private int getTotalAvailablePreparedDessertsAtSettlement(Settlement settlement) {
 		int result = 0;
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.PREPARING_DESSERT).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.PREPARING_DESSERT).iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-			PreparingDessert kitchen = building.getPreparingDessert();
-			result += kitchen.getAvailableServingsDesserts();
+			result += i.next().getPreparingDessert().getAvailableServingsDesserts();
 		}
 
 		return result;

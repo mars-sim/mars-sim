@@ -142,7 +142,8 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     }
 
     /**
-     * Get the local medical aids that are available for treatment.
+     * Gets the local medical aids that are available for treatment.
+     * 
      * @param person the person.
      * @return list of available medical aids.
      */
@@ -161,7 +162,8 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
     }
 
     /**
-     * Get the medical aids at a settlement that are available for treatment.
+     * Gets the medical aids at a settlement that are available for treatment.
+     * 
      * @param person the person.
      * @return list of available medical aids.
      */
@@ -170,7 +172,7 @@ public class RequestMedicalTreatmentMeta extends FactoryMetaTask {
         List<MedicalAid> result = new ArrayList<>();
 
         // Check all medical care buildings.
-        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildingSet(
                 FunctionType.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();

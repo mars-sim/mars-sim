@@ -70,7 +70,7 @@ public class EVA extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.EVA)) {
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.EVA)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			}

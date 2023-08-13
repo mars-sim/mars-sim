@@ -66,14 +66,14 @@ public class Chefbot extends RobotJob {
 
 		if (settlement.getAllAssociatedPeople().size() >= CHEF_BOT_THRESHOLD) {
 			// Add all kitchen work space in settlement.
-			for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.COOKING)) {
-				Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING); 
+			for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
+				Cooking kitchen = building.getCooking(); 
 				prepArea += kitchen.getCookCapacity();
 			}
 
 			// Add all kitchen work space in settlement.
-			for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.PREPARING_DESSERT)) {
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT); 
+			for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.PREPARING_DESSERT)) {
+				PreparingDessert kitchen = building.getPreparingDessert(); 
 				prepArea += kitchen.getCookCapacity();
 			}
 		}

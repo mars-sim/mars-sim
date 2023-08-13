@@ -46,7 +46,7 @@ public class Communication extends Function {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.COMMUNICATION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.COMMUNICATION).iterator();
         while (i.hasNext()) {
             supply += (i.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
         }

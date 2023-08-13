@@ -102,7 +102,7 @@ public class Storage extends Function {
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double existingStorage = 0D;
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.STORAGE).iterator();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE).iterator();
 			while (j.hasNext()) {
 				Building building = j.next();
 				Storage storageFunction = building.getStorage();

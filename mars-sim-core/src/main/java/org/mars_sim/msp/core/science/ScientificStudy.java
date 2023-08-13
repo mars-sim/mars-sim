@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -452,7 +453,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * Cleans out any dead invitees.
 	 */
 	private void cleanDeadInvitations() {
-		List<Person> dead = findDeadPeople(invitedResearchers.keySet());
+		Set<Person> dead = findDeadPeople(invitedResearchers.keySet());
 		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
 					"Remove dead invitee " + d.getName() + ".");
@@ -464,7 +465,7 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
 	 * Cleans out any dead collaborators.
 	 */
 	private void cleanDeadCollaborators() {
-		List<Person> dead = findDeadPeople(collaborators.keySet());
+		Set<Person> dead = findDeadPeople(collaborators.keySet());
 		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
 					"Remove dead collaborator " + d.getName() + ".");
@@ -478,8 +479,8 @@ public class ScientificStudy implements Entity, Serializable, Temporal, Comparab
      * @param ids
      * @return 
      */
-	private static List<Person> findDeadPeople(Set<Integer> ids) {
-		List<Person> dead = new ArrayList<>();
+	private static Set<Person> findDeadPeople(Set<Integer> ids) {
+		Set<Person> dead = new UnitSet<>();
 	
 		UnitManager um = getUnitManager();
 		for(Integer id : ids) {

@@ -42,7 +42,7 @@ public class BuildingConnection extends Function {
 
 		// Determine demand.
 		double demand = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			// Demand based on life support buildings that are not building connections.
@@ -67,7 +67,7 @@ public class BuildingConnection extends Function {
 
 		// Determine supply.
 		double supply = 0D;
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.BUILDING_CONNECTION)
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.BUILDING_CONNECTION)
 				.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -35,6 +36,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -67,7 +69,7 @@ public class TabPanelAirComposition extends TabPanel {
 
 	private String indoorPressureCache;
 	
-	private List<Building> buildingsCache;
+	private Set<Building> buildingsCache;
 
 	private JLabel o2Label;
 	private JLabel cO2Label;
@@ -119,7 +121,7 @@ public class TabPanelAirComposition extends TabPanel {
 		
 		manager = settlement.getBuildingManager();
 
-		buildingsCache = manager.getBuildingsWithLifeSupport();
+		buildingsCache = manager.getBuildingSet(FunctionType.LIFE_SUPPORT);
 		numBuildingsCache = buildingsCache.size();
 
 		JPanel topContentPanel = new JPanel();
@@ -296,7 +298,7 @@ public class TabPanelAirComposition extends TabPanel {
 	@Override
 	public void update() {
 
-		List<Building> buildings = manager.getBuildingsWithLifeSupport();
+		Set<Building> buildings = manager.getBuildingSet(FunctionType.LIFE_SUPPORT);
 		int numBuildings = buildings.size();
 
 		if (numBuildings != numBuildingsCache) {

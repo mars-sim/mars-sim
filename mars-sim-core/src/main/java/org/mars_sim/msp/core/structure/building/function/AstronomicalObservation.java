@@ -140,7 +140,7 @@ public class AstronomicalObservation extends Function {
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ASTRONOMICAL_OBSERVATION)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

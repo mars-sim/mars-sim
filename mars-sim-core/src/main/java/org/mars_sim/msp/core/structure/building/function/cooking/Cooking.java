@@ -236,7 +236,7 @@ public class Cooking extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.COOKING).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -464,13 +464,13 @@ public class Cooking extends Function {
 	 * @param settlement the settlement.
 	 * @return number of cooked meals.
 	 */
-	private int getTotalAvailableCookedMealsAtSettlement() {//Settlement settlement) {
+	private int getTotalAvailableCookedMealsAtSettlement() {
 
 		int result = 0;
 
-		Iterator<Building> i = building.getSettlement().getBuildingManager().getBuildings(FunctionType.COOKING).iterator();
+		Iterator<Building> i = building.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COOKING).iterator();
 		while (i.hasNext()) {
-			result += ((Cooking) i.next().getCooking()).getNumberOfAvailableCookedMeals();
+			result += i.next().getCooking().getNumberOfAvailableCookedMeals();
 		}
 
 		return result;

@@ -123,7 +123,7 @@ public class Manufacture extends Function {
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
 		BuildingManager buildingManager = settlement.getBuildingManager();
-		Iterator<Building> j = buildingManager.getBuildings(FunctionType.MANUFACTURE).iterator();
+		Iterator<Building> j = buildingManager.getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {

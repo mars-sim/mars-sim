@@ -41,7 +41,7 @@ public class Repairbot extends RobotJob  {
 		double result = 0;
 
 		// Add number of buildings in settlement that a robot can enter
-		result += settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() / BUILDING_PER_BOT;
+		result += settlement.getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT).size() / BUILDING_PER_BOT;
 
 		// Add number of vehicles parked at settlement.
 		result += settlement.getAllAssociatedVehicles().size() / VEHICLE_PER_BOT;

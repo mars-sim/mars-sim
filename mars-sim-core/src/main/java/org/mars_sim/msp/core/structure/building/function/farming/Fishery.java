@@ -173,7 +173,7 @@ public class Fishery extends Function {
 		// Supply is total number of fish at settlement.
 		double supply = 0D;
 		boolean removedBuilding = false;
-		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.FISHERY)) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

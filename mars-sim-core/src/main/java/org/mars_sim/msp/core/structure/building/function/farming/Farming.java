@@ -647,8 +647,7 @@ public class Farming extends Function {
 		// Supply is total farming area (m^2) of all farming buildings at settlement.
 		double supply = 0D;
 		boolean removedBuilding = false;
-		List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
-		for (Building building : buildings) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

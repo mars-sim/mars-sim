@@ -51,7 +51,7 @@ public class Recreation extends Function {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.RECREATION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.RECREATION).iterator();
         while (i.hasNext()) {
             Building recreationBuilding = i.next();
             Recreation recreation = recreationBuilding.getRecreation();

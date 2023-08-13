@@ -159,7 +159,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 */
 	public static int getGarageSpaces(Settlement settlement) {
 		int garageSpaces = 0;
-		for(Building j : settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE)) {
+		for(Building j : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
 			VehicleMaintenance garage = j.getVehicleParking();
 			
 			garageSpaces += (garage.getAvailableCapacity() + garage.getAvailableFlyerCapacity());

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
@@ -1314,7 +1315,7 @@ public class EatDrink extends Task {
 
 		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> cookingBuildings = manager.getBuildings(FunctionType.COOKING);
+			Set<Building> cookingBuildings = manager.getBuildingSet(FunctionType.COOKING);
 			for (Building building : cookingBuildings) {
 				Cooking kitchen = building.getCooking();
 				if (kitchen.hasCookedMeal()) {
@@ -1339,7 +1340,7 @@ public class EatDrink extends Task {
 
 		if (settlement != null) {
 			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> dessertBuildings = manager.getBuildings(FunctionType.PREPARING_DESSERT);
+			Set<Building> dessertBuildings = manager.getBuildingSet(FunctionType.PREPARING_DESSERT);
 			for (Building building : dessertBuildings) {
 				PreparingDessert kitchen = building.getPreparingDessert();
 				if (kitchen.hasFreshDessert()) {

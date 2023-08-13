@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -71,10 +70,8 @@ public class Engineer extends Job {
 		int population = settlement.getNumCitizens();
 		
 		// Add (tech level * process number / 2) for all manufacture buildings.
-		List<Building> manufactureBuildings = settlement.getBuildingManager()
-				.getBuildings(FunctionType.MANUFACTURE);
-
-		Iterator<Building> i = manufactureBuildings.iterator();
+		Iterator<Building> i = settlement.getBuildingManager()
+				.getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			Manufacture workshop = i.next().getManufacture();
 			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 10D;

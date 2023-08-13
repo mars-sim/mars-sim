@@ -54,7 +54,7 @@ public class Dining extends Function {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.DINING).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.DINING).iterator();
         while (i.hasNext()) {
             Building diningBuilding = i.next();
             Dining dining = diningBuilding.getDining();

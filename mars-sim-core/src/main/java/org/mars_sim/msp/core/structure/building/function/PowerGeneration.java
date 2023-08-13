@@ -111,7 +111,7 @@ public class PowerGeneration extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.POWER_GENERATION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_GENERATION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {

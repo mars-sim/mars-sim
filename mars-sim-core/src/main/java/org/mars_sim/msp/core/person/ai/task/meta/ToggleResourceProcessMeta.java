@@ -110,7 +110,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		if ((settlement != null) && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 
 			// Get the most suitable process per Building; not each process as too many will be created
-			for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
 				SettlementTask entry = selectMostPosNegResourceProcess(building);
 				if (entry != null) {

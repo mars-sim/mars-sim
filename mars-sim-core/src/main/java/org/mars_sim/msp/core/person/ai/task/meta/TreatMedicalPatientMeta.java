@@ -106,7 +106,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         boolean result = false;
 
         // Check all medical care buildings.
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+        Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(
                 FunctionType.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();

@@ -124,7 +124,7 @@ implements Lab {
             double researchSupply = 0D;
             boolean removedBuilding = false;
 
-            for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
+            for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESEARCH)) {
                 if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
                     removedBuilding = true;
                 }

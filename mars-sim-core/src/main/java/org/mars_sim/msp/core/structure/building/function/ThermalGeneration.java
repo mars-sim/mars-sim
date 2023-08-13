@@ -93,7 +93,7 @@ public class ThermalGeneration extends Function {
 		double supply = 0D;
 		boolean removedBuilding = false;
 
-		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.THERMAL_GENERATION)) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.THERMAL_GENERATION)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

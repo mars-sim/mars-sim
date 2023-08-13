@@ -100,7 +100,7 @@ public class FoodProduction extends Function {
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION)) {
+		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {

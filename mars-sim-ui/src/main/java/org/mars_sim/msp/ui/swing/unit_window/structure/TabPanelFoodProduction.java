@@ -344,7 +344,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	private List<FoodProductionProcess> getFoodProductionProcesses() {
 		List<FoodProductionProcess> result = new ArrayList<>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
 			FoodProduction foodFactory = i.next().getFoodProduction();
 			result.addAll(foodFactory.getProcesses());
@@ -378,7 +378,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getFoodProductionBuildings() {
-		return new Vector<>(settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION));
+		return new Vector<>(settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION));
 	}
 
 	/**

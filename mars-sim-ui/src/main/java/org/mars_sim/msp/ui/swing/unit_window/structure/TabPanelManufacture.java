@@ -419,7 +419,7 @@ public class TabPanelManufacture extends TabPanel {
 	private List<ManufactureProcess> getManufactureProcesses() {
 		List<ManufactureProcess> result = new ArrayList<>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			result.addAll(i.next().getManufacture().getProcesses());
 		}
@@ -435,7 +435,7 @@ public class TabPanelManufacture extends TabPanel {
 	private List<SalvageProcess> getSalvageProcesses() {
 		List<SalvageProcess> result = new ArrayList<>();
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			result.addAll(i.next().getManufacture().getSalvageProcesses());
 		}
@@ -487,7 +487,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getManufacturingBuildings() {
-		return new Vector<>(settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE));
+		return new Vector<>(settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE));
 	}
 
 	/**
