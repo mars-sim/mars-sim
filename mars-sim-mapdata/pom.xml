@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github.mars-sim</groupId>
-		<version>pre-3.6.0</version>
+		<version>3.6.0</version>
 	</parent>
 	<artifactId>mars-sim-mapdata</artifactId>
 	<name>mars-sim-mapdata</name>
@@ -16,11 +16,13 @@
 			<artifactId>mars-sim-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!--
 		<dependency>
 		    <groupId>de.articdive</groupId>
 		    <artifactId>jnoise-pipeline</artifactId>
 		    <version>4.0.0</version>
 		</dependency>
+		-->
 		<!-- https://github.com/sesuncedu/xz -->		
 		<dependency>
 			<groupId>org.tukaani</groupId>

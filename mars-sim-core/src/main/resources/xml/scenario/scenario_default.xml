@@ -8,11 +8,7 @@
 			<location longitude="29.75 W" latitude="10.63 N" />
 		</settlement>
 
-		<settlement name="Europa" template="Phase 2-EU" persons="8" robots="4" sponsor="ESA">
-			<location longitude="50.0 W" latitude="20.0 N" />
-		</settlement>
-
-		<settlement name="Arcadia" template="Phase 2-EU" persons="8" robots="6" sponsor="ESA">
+		<settlement name="Arcadia" template="Phase 2-EU" persons="16" robots="6" sponsor="ESA">
 			<location longitude="20.9156 E" latitude="0.7777 N" />	
 		</settlement>
 		
@@ -24,6 +20,10 @@
 			<location longitude="134.67 E" latitude="22.67 N" />
 		</settlement>
 
+		<settlement name="Hong Tian" template="Phase 3-CN" persons="12" robots="8" sponsor="CNSA">
+			<location longitude="50.0 W" latitude="20.0 N" />
+		</settlement>
+		
 		<settlement name="New Pompeii" template="Phase 2-IN" persons="8" robots="4" sponsor="ISRO">
 			<location longitude="82.9 W" latitude="22.0 N" />
 		</settlement>
