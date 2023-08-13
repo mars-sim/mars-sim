@@ -20,23 +20,23 @@
 			<location longitude="134.67 E" latitude="22.67 N" />
 		</settlement>
 
-		<settlement name="Hong Tian" template="Phase 3-CN" persons="12" robots="8" sponsor="CNSA">
+		<settlement name="Hong Tian" template="Phase 3-CN" persons="16" robots="8" sponsor="CNSA">
 			<location longitude="50.0 W" latitude="20.0 N" />
 		</settlement>
 		
-		<settlement name="New Pompeii" template="Phase 2-IN" persons="8" robots="4" sponsor="ISRO">
+		<settlement name="New Pompeii" template="Phase 2-IN" persons="16" robots="8" sponsor="ISRO">
 			<location longitude="82.9 W" latitude="22.0 N" />
 		</settlement>
 
-		<settlement name="Kyocera" template="Phase 2-JP" persons="8" robots="4" sponsor="JAXA">
+		<settlement name="Kyocera" template="Phase 2-JP" persons="16" robots="8" sponsor="JAXA">
 			<location longitude="164 E" latitude="6 N" />
 		</settlement>
 
-		<settlement name="New Seoul" template="Phase 2-KR" persons="8" robots="4" sponsor="KASA">
+		<settlement name="New Seoul" template="Phase 2-KR" persons="10" robots="5" sponsor="KASA">
 			<location longitude="100.0 W" latitude="40.0 N" />
 		</settlement>
 
-		<settlement name="Starcity" template="Phase 3-SX" persons="12" robots="8" sponsor="SPACEX">
+		<settlement name="Starcity" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
     	<!-- 52nd Lunar and Planetary Science Conference 2021 (LPI COntrib. No. 2548), 
         "SpaceX Starship Landing Sites on Mars" 2420.pdf -->   
        		<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->
@@ -49,7 +49,7 @@
 			<location longitude="192.03 E" latitude="39.89 N" />
 		</settlement>
 
-		<settlement name="Zvezda" template="Phase 3-RU" persons="12" robots="8" sponsor="RKA">
+		<settlement name="Zvezda" template="Phase 3-RU" persons="16" robots="8" sponsor="RKA">
 			<location longitude="76.37 E" latitude="25.94 N" />
 		</settlement>
 

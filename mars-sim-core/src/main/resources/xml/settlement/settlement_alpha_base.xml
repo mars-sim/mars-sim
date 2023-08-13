@@ -88,8 +88,8 @@
             <connection id="12" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="12" type="Command and Control" xloc="0.0"
-        yloc="38" facing="270.0">
+    <building id="12" type="Server Farm" xloc="0.0"
+        yloc="38" facing="0.0">
         <connection-list>
             <connection id="11" xloc="3.5" yloc="0.0" />
             <connection id="13" xloc="0.0" yloc="-4.5" />
