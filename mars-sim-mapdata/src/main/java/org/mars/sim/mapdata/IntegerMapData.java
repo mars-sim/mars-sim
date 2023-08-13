@@ -174,11 +174,8 @@ import com.jogamp.opencl.CLProgram;
      * @return
      */
     public double getHalfAngle() {
-    	double ha = Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (1 + meta.getResolution()));
-    	ha = Math.min(Math.PI, ha);
-//    	System.out.println("HalfAngle: " + ha);
-    	return ha;
-//    	return Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (1 + meta.getResolution()));
+    	double ha = Math.sqrt(HALF_MAP_ANGLE / getMagnification() / (0.25 + meta.getResolution()));
+    	return Math.min(Math.PI, ha);
     }
 	
 	/**
