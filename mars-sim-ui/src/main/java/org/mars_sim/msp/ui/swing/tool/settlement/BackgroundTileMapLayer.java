@@ -36,7 +36,7 @@ implements SettlementMapLayer {
 	private Map<Settlement, String> settlementBackgroundMap;
 	private Image backgroundTileImage;
 	private Settlement currentSettlement;
-	private double currentScale;
+	private double scaleCache;
 	private SettlementMapPanel mapPanel;
 
 	/**
@@ -55,15 +55,16 @@ implements SettlementMapLayer {
 		AffineTransform saveTransform = g2d.getTransform();
 
 		// Clear background tile image if settlement has changed.
-		if ((settlement != null) && !settlement.equals(currentSettlement)) {
+		if (settlement != null && !settlement.equals(currentSettlement)) {
 			backgroundTileImage = null;
 			currentSettlement = settlement;
+			scaleCache = -1;
 		}
 
 		// Clear background tile image is scale has changed.
-		if (scale != currentScale) {
+		if (scaleCache != scale) {
 			backgroundTileImage = null;
-			currentScale = scale;
+			scaleCache = scale;
 		}
 
 		// Rotate graphics context.
@@ -80,10 +81,10 @@ implements SettlementMapLayer {
 		    }
 		    
 		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-		    int imageWidth = (int) (backgroundTileIcon.getWidth(imageObserver) * imageScale);
-		    int imageHeight = (int) (backgroundTileIcon.getHeight(imageObserver) * imageScale);
+		    int imageWidth = (int) Math.round(backgroundTileIcon.getWidth(imageObserver) * imageScale);
+		    int imageHeight = (int) Math.round(backgroundTileIcon.getHeight(imageObserver) * imageScale);
 
-			// No Image observer so assuming image has alreayd laoded from file
+			// No Image observer so assuming image has already loaded from file
 			backgroundTileImage = resizeImage(
 		            backgroundTileIcon, 
 		            imageObserver,
@@ -93,10 +94,10 @@ implements SettlementMapLayer {
 
 		if (backgroundTileImage != null) {
 
-			int offsetX = (int) (xPos * scale);
+			int offsetX = (int) Math.round(xPos * scale);
 			int tileWidth = backgroundTileImage.getWidth(mapPanel);
-			int bufferX = (int) diagonal - mapWidth;
-			int tileCenterOffsetX = ((mapWidth / 2) % tileWidth) - (int) (1.5F * tileWidth);
+			int bufferX = (int) Math.round(diagonal - mapWidth);
+			int tileCenterOffsetX = (int) Math.round((mapWidth / 2) % tileWidth - 1.5F * tileWidth);
 
 			// Calculate starting X position for drawing tile.
 			int startX = tileCenterOffsetX;
@@ -118,10 +119,10 @@ implements SettlementMapLayer {
 
 			for (int x = startX; x < endX; x+= tileWidth) {
 
-				int offsetY = (int) (yPos * scale);
+				int offsetY = (int) Math.round(yPos * scale);
 				int tileHeight = backgroundTileImage.getHeight(mapPanel);
-				int bufferY = (int) diagonal - mapHeight;
-				int tileCenterOffsetY = ((mapHeight / 2) % tileHeight) - (int) (1.5F * tileHeight);
+				int bufferY = (int) Math.round(diagonal - mapHeight);
+				int tileCenterOffsetY = (int) Math.round((mapHeight / 2) % tileHeight - 1.5F * tileHeight);
 
 				// Calculate starting Y position for drawing tile.
 				int startY = tileCenterOffsetY;
@@ -143,7 +144,10 @@ implements SettlementMapLayer {
 
 				for (int y = startY; y < endY; y+= tileHeight) {
 					// Draw tile image.
-					g2d.drawImage(backgroundTileImage, x + offsetX, y + offsetY, mapPanel);
+					g2d.drawImage(backgroundTileImage, 
+							(x + offsetX), 
+							(y + offsetY),
+							mapPanel);
 				}
 			}
 		}

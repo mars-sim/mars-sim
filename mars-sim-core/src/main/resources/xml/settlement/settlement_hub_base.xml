@@ -136,7 +136,7 @@
         </connection-list>
     </building>
     
-    <building id="18" type="Server Farm" xloc="-170.5" yloc="100" facing="270.0">
+    <building id="18" type="Server Farm" xloc="-170.5" yloc="100" facing="0.0">
         <connection-list>
             <connection id="17" hatch-facing="west" />
         </connection-list>

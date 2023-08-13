@@ -113,6 +113,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	/** A list of functions of this building. */
 	protected List<Function> functions;
+	
+	/** A list of all activity spots of this building. */
+	protected List<LocalPosition> activitySpots;
 
 	// Data members
 	boolean isImpactImminent = false;
@@ -562,6 +565,27 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			return null;
 	}
 
+	/**
+	 * Gets all activity spots from all functions.
+	 *
+	 * @return 
+	 */
+	public List<LocalPosition> getAllActivitySpots() {
+		if (activitySpots == null) {
+			List<LocalPosition> allSpots = new ArrayList<>();
+			
+			for (Function f : functions) {
+				if (f.hasActivitySpots())
+					allSpots.addAll(f.getActivitySpotsList());
+			}
+	
+			activitySpots = allSpots;
+			return allSpots;
+		}
+		
+		return activitySpots;
+	}
+	
 	/**
 	 * Gets a function that has with openly available (empty) activity spot.
 	 *

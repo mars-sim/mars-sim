@@ -47,7 +47,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
 
-	// Proeprty name s for UI Config
+	// Property names for UI Config
 	private static final String BUILDING_LBL_PROP = "BUILDING_LABELS";
 	private static final String CONSTRUCTION_LBL_PROP = "CONSTRUCTION_LABELS";
 	private static final String PERSON_LBL_PROP = "PERSON_LABELS";
@@ -320,7 +320,7 @@ public class SettlementMapPanel extends JPanel {
 
 	/**
 	 * Displays the specific x y coordinates within a building
-	 * (based upon where the mouse is pointing at)
+	 * (based upon where the mouse is pointing at).
 	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
@@ -562,7 +562,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects a building
+	 * Selects a building.
 	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
@@ -633,7 +633,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects a construction site
+	 * Selects a construction site.
 	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
@@ -696,7 +696,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects a vehicle
+	 * Selects a vehicle.
 	 *
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
@@ -736,7 +736,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects a vehicle, as used by TransportWizard
+	 * Selects a vehicle, as used by TransportWizard.
 	 *
 	 * @param xLoc the position of the template building on the displayed map.
 	 * @param yLoc the position of the template building on the displayed map.
@@ -824,7 +824,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Get the selected person for the current settlement.
+	 * Gets the selected person for the current settlement.
 	 *
 	 * @return the selected person.
 	 */
@@ -853,7 +853,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Get the selected building for the current settlement.
+	 * Gets the selected building for the current settlement.
 	 *
 	 * @return the selected building.
 	 */
@@ -882,7 +882,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Displays the robot on the map
+	 * Displays the robot on the map.
 	 *
 	 * @param robot
 	 */
@@ -892,7 +892,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Get the selected Robot for the current settlement.
+	 * Gets the selected Robot for the current settlement.
 	 *
 	 * @return the selected Robot.
 	 */
@@ -905,7 +905,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Convert a pixel X,Y position to a X,Y (meter) position local to the
+	 * Converts a pixel X,Y position to a X,Y (meter) position local to the
 	 * settlement in view.
 	 *
 	 * @param xPixel the pixel X position.
@@ -1039,7 +1039,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Sets if DayNightLayershould be displayed.
+	 * Sets if DayNightLayer should be displayed.
 	 *
 	 * @param showDayNightLayer true if DayNightLayer should be displayed.
 	 */
@@ -1086,7 +1086,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Get the user display settings
+	 * Gets the user display settings.
 	 */
 	Properties getUIProps() {
 		Properties props = new Properties();

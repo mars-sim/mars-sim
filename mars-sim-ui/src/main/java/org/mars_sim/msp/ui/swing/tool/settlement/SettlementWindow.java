@@ -133,14 +133,14 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 		// Added SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
-		JLayer<JPanel> jlayer = new JLayer<JPanel>(mapPanel, layerUI);
+		JLayer<JPanel> jlayer = new JLayer<>(mapPanel, layerUI);
 		subPanel.add(jlayer, BorderLayout.CENTER);
 
 		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		setMinimumSize(new Dimension(HORIZONTAL / 2, VERTICAL / 2));
 		setClosable(true);
-		setResizable(false);
+		setResizable(true);
 		setMaximizable(true);
 
 		setVisible(true);
