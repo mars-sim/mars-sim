@@ -128,7 +128,6 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	
-	
 	/**
 	 * Retrieves the resource.
 	 *

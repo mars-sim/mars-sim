@@ -90,7 +90,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Returns the mass of Equipment. The base mass plus what every it is storing.
+	 * Returns the mass of Equipment. The base mass plus the mass of whatever it is carrying.
 	 */
 	@Override
 	public double getMass() {
@@ -472,8 +472,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		if (!canRetrieve) {
-				logger.warning(this + " could not be retrieved from "
-						+ cu + ".");
+				logger.warning(this + " could not be retrieved from '"
+						+ cu + "'.");
 				// NOTE: need to revert back the retrieval action
 		}
 		else {	
@@ -492,17 +492,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 
 			if (!canStore) {
-				logger.warning(this, "Could not be stored into "
+				logger.warning(this, "Could not be stored into '"
 						+ destination + "'.");
 				
 				// Need to go back the original container
 				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
 				if (canStoreBack) {
-					logger.warning(this, "Just stored back into "
+					logger.warning(this, "Just stored back into '"
 							+ cu + "'.");
 				}
 				else {
-					logger.warning(this, "Could not be stored back into "
+					logger.warning(this, "Could not be stored back into '"
 							+ cu + "'.");
 				}
 				

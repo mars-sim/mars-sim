@@ -392,12 +392,11 @@ public class Settlement extends Structure implements Temporal,
 
 		final double GEN_MAX = 1_000_000;
 		
-		// Create EquipmentInventory instance
+		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-
-		// Initialize schedule event manager
+		// Create schedule event manager
 		futureEvents = new ScheduledEventManager(masterClock);
-
+		// Create credit manager
 		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
@@ -2124,6 +2123,7 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
+			System.out.println("addEquipment: " + true);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -3519,7 +3519,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**

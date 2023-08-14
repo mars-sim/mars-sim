@@ -38,15 +38,13 @@ public class MockSettlement extends Settlement {
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,
-                new ArrayList<BuildingTemplate>());
+                new ArrayList<>());
 
         // Initialize construction manager.
         constructionManager = new ConstructionManager(this);
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-
-
 	}
 	
 	@Override

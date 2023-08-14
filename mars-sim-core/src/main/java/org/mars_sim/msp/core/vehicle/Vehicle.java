@@ -1882,7 +1882,7 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**

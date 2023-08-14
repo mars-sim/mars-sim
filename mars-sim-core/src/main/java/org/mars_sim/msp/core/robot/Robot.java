@@ -872,7 +872,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+		return eqmInventory.getAmountResourceRemainingCapacity(resource);
 	}
 
 	/**
@@ -883,7 +883,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**

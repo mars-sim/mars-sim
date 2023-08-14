@@ -93,7 +93,9 @@ public class EquipmentInventory
 		for (Equipment e: equipmentSet) {
 			result += e.getMass();
 		}
-		return result +  microInventory.getStoredMass();
+		System.out.println("total equipment mass: " + result);
+		System.out.println("microinv stored mass: " + microInventory.getStoredMass());
+		return result + microInventory.getStoredMass();
 	}
 
 	/**
@@ -184,9 +186,13 @@ public class EquipmentInventory
 	@Override
 	public boolean addEquipment(Equipment equipment) {
 		boolean contained = equipmentSet.contains(equipment);
-		if (!contained && (cargoCapacity >= getStoredMass() + equipment.getMass())) {
-			equipmentSet.add(equipment);
-			return true;
+		boolean enoughCap = cargoCapacity >= getStoredMass() + equipment.getMass();
+		System.out.println("contained: " + contained);
+		System.out.println("cargoCapacity: " + cargoCapacity);
+		System.out.println("getStoredMass(): " + getStoredMass());
+		System.out.println("equipment.getMass(): " + equipment.getMass());
+		if (!contained && enoughCap) {
+			return equipmentSet.add(equipment);
 		}
 		return contained;
 	}

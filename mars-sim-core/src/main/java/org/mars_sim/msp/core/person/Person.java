@@ -342,7 +342,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		preference = new Preference(this);
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
-		// Create ciracdian clock
+		// Create circadian clock
 		circadian = new CircadianClock(this);
 		// Create physical condition
 		condition = new PhysicalCondition(this);
@@ -367,7 +367,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
 		
-		eqmInventory.setResourceCapacity(ResourceUtil.foodID, .6);
+		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
 	}
 
 	/**
@@ -1788,7 +1788,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.getAmountResourceCapacity(resource);
+		return eqmInventory.getAmountResourceRemainingCapacity(resource);
 	}
 
 	/**
@@ -2204,7 +2204,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
-			for(Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
+			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
@@ -2216,9 +2216,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 						return;
 					}
 					
-					// Save this bottle first
-					if (aBottle == null)
+					// Tag this bottle first
+					if (aBottle == null) {
 						aBottle = e;
+					}
 				}
 			}
 			
