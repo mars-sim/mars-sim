@@ -331,7 +331,7 @@ public class MonitorWindow extends ToolWindow
 		settlementComboBox = new JComboBox<>(model);
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementComboBox.setPreferredSize(new Dimension(100, 25));
+		settlementComboBox.setPreferredSize(new Dimension(120, 25));
 	
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(event -> {
