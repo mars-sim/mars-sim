@@ -684,10 +684,10 @@ public class BuildingAirlock extends Airlock {
 		if (EVASpots == null) {
 			EVASpots = new ArrayList<>();
 			for (int i=0; i<MAX_SLOTS; i++) {
-    			LocalPosition p0 = building.getEVA().getActivitySpotsList().get(i);
-    			LocalPosition p1 = LocalAreaUtil.getLocalRelativePosition(p0, building);
-    			EVASpots.add(p1);
-    			activitySpotMap.put(p1, -1);
+    			LocalPosition buildingLoc = building.getEVA().getActivitySpotsList().get(i);
+    			LocalPosition settlementLoc = LocalAreaUtil.getLocalRelativePosition(buildingLoc, building);
+    			EVASpots.add(settlementLoc);
+    			activitySpotMap.put(settlementLoc, -1);
     		}
 		}
 	}

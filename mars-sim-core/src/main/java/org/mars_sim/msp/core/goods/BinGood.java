@@ -24,9 +24,9 @@ public class BinGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final int PROJECTED_CRATE = 10;
-	private static final int PROJECTED_BASKET = 10;
-	private static final double PROJECTED_POT = 10;
+	private static final double PROJECTED_CRATE = .1;
+	private static final double PROJECTED_BASKET = .1;
+	private static final double PROJECTED_POT = .1;
 	
 	private static final double INITIAL_DEMAND = 0;
 	private static final double INITIAL_SUPPLY = 0;
@@ -67,9 +67,9 @@ public class BinGood extends Good {
     @Override
     public double getNumberForSettlement(Settlement settlement) {
 		double number = 0D;
-//
-//		// Get number of the bin in settlement storage.
-//		number += settlement.findNumEmptyContainersOfType(binType, false);
+
+		// Get number of the bin in settlement storage.
+//		number += settlement.findENumEmptyBins(binType, false);
 //
 //		// Get number of bin out on mission vehicles.
 //		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
@@ -85,34 +85,21 @@ public class BinGood extends Good {
 //			if (person.isOutside())
 //				number += person.findNumEmptyContainersOfType(binType, false);
 //		}
-//
-//		// Get the number of bin that will be produced by ongoing manufacturing
-//		// processes.
+
+		// Get the number of bin that will be produced by ongoing manufacturing
+		// processes.
 //		number += getManufacturingProcessOutput(settlement);
-//
+
 		return number;
     }
 
     @Override
     double getPrice(Settlement settlement, double value) {
 		// For Bin   		
-    	double mass = 0;
-		double quantity = 0;
-    	double factor = 0;
-//        if (binType == BinType.EVA_SUIT) {
-//    		mass = BinFactory.getBinMass(binType);
-//    		quantity = settlement.getNumEVASuit();
-//    		
-//            // Need to increase the value for EVA
-//    		factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
-//    	}
-//    	else {
-//    		// For containers
-//    		mass = BinFactory.getBinMass(binType);
-//    		quantity = settlement.findNumContainersOfType(binType);
-//    		factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
-//    	}
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));   
+    	double mass = 0; // BinFactory.getBinMass(binType);
+		double quantity = 0; //settlement.findNumContainersOfType(binType);
+    	double factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
+        return getCostOutput() * factor;   
     }
 
 	@Override

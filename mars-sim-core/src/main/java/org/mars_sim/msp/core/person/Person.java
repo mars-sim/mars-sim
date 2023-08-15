@@ -1376,6 +1376,11 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		this.quartersInt = b.getIdentifier();
 	}
 
+	/**
+	 * Gets the settlement location of this bed.
+	 * 
+	 * @return
+	 */
 	public LocalPosition getBed() {
 		return bed;
 	}

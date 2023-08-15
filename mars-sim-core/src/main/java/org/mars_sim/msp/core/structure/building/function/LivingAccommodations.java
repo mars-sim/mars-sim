@@ -9,17 +9,21 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
@@ -109,9 +113,8 @@ public class LivingAccommodations extends Function {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				LivingAccommodations livingFunction = building.getLivingAccommodations();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += livingFunction.maxNumBeds * wearModifier;
+				supply += building.getLivingAccommodations().maxNumBeds * wearModifier;
 			}
 		}
 
@@ -227,52 +230,61 @@ public class LivingAccommodations extends Function {
 		person.setBed(bed);
 		person.setQuarters(building);
 
-		logger.log(building, person, Level.FINE, 0, "Designated a bed at "
+		logger.log(building, person, Level.INFO, 0, "Designated a bed at "
 					+ bed.getShortFormat() + ".");
 	}
 
-	/**
-	 * Gets an empty bed location
-	 *
-	 * @return
-	 */
-	public LocalPosition getEmptyBed() {
-		List<LocalPosition> beds = super.getActivitySpotsList();
-		for (LocalPosition bed : beds) {
-			if (!assignedBeds.containsValue(bed)) {
-				return bed.getAbsolutePosition(building.getPosition());
-			}
-		}
-		return null;
-	}
+//	/**
+//	 * Gets an empty bed location.
+//	 *
+//	 * @return
+//	 */
+//	public LocalPosition getEmptyBed() {
+//		List<LocalPosition> beds = super.getActivitySpotsList();
+//		for (LocalPosition bed : beds) {
+//			if (!assignedBeds.containsValue(bed)) {
+//				return bed.getAbsolutePosition(building.getPosition());
+//			}
+//		}
+//		return null;
+//	}
 
 
 	/**
-	 * Assigns/designate an available bed to a person
+	 * Assigns/designates an available bed to a person.
 	 *
 	 * @param person
 	 * @return
 	 */
 	public LocalPosition designateABed(Person person, boolean guest) {
 		LocalPosition bed = null;
-		List<LocalPosition> spots = super.getActivitySpotsList();
+
 		int numDesignated = getNumAssignedBeds();
-		if (numDesignated < maxNumBeds) {
-			// TODO: there should be at least one bed available-- Note: it may not be empty. a
-			// traveler may be sleeping on it.
-			for (LocalPosition spot : spots) {
-				// Convert the activity spot (the bed location) to the settlement reference coordinate
-				bed = spot.getAbsolutePosition(building.getPosition());
-				if (!assignedBeds.containsValue(bed)) {
-					if (!guest) {
-						assignABed(person, bed);
-					}
-					else { // is a guest
-						logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
-								+ bed + ").", null);
-					}
-					break;
+		if (numDesignated >= maxNumBeds) {
+			return null;
+		}
+		
+		// TODO: How do we allocate guest beds for a
+		// traveler to sleep on it.
+		
+		List<LocalPosition> spots = super.getActivitySpotsList();
+		for (LocalPosition spot : spots) {
+			
+			// Convert the activity spot (the bed location) to the settlement reference coordinate
+			bed = LocalAreaUtil.getLocalRelativePosition(spot, building);
+//			System.out.println("1. building: " + building.getPosition().getX() + ", " + building.getPosition().getY());
+//			System.out.println("2.      bed: " + bed.getX() + ", " + bed.getY());
+//			System.out.println("3.     spot: " + spot.getX() + ", " + spot.getY());
+			
+			if (!assignedBeds.containsValue(bed)) {
+				if (!guest) {
+					assignABed(person, bed);
 				}
+				else { // is a guest
+					logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
+							+ bed + ").", null);
+				}
+				break;
 			}
 		}
 
@@ -298,7 +310,7 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Adds to the daily water usage
+	 * Adds to the daily water usage.
 	 *
 	 * @param amount
 	 */
@@ -307,8 +319,8 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Gets the daily average water usage of the last 5 sols
-	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 * Gets the daily average water usage of the last 5 sols.
+	 * Note: most weight on yesterday's usage. Least weight on usage from 5 sols ago.
 	 *
 	 * @return
 	 */
@@ -317,7 +329,7 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Adds to the daily grey water generated
+	 * Adds to the daily grey water generated.
 	 *
 	 * @param amount
 	 */
@@ -326,8 +338,8 @@ public class LivingAccommodations extends Function {
 	}
 
 	/**
-	 * Gets the daily average grey water generated of the last 5 sols
-	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 * Gets the daily average grey water generated of the last 5 sols.
+	 * Note: most weight on yesterday's usage. Least weight on usage from 5 sols ago.
 	 *
 	 * @return
 	 */
@@ -391,7 +403,88 @@ public class LivingAccommodations extends Function {
 		}
 	}
 
+	/**
+	 * Gets living accommodations with empty beds from a list of buildings with the
+	 * living accommodations function.
+	 *
+	 * @param buildingList list of buildings with the living accommodations
+	 *                     function.
+	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
+	 *                     or not.
+	 * @return list of buildings with empty beds.
+	 */
+	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
+		Set<Building> result = new UnitSet<>();
 
+		for (Building building : buildingList) {
+			LivingAccommodations quarters = building.getLivingAccommodations();
+			boolean notFull = quarters.getNumEmptyActivitySpots() > 0;//quarters.getRegisteredSleepers() < quarters.getBedCap();
+			// Check if an unmarked bed is wanted
+			if (unmarked) {
+				if (quarters.hasAnUnmarkedBed() && notFull) {
+					result.add(building);
+				}
+			}
+			else if (notFull) {
+				result.add(building);
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the best available living accommodations building that the person can
+	 * use. Returns null if no living accommodations building is currently
+	 * available.
+	 *
+	 * @param person   the person
+	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
+	 *                 not.
+	 * @return a building with available bed(s)
+	 */
+	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
+
+		Building result = null;
+
+		if (person.isInSettlement()) {
+			Set<Building> set0 = person.getSettlement().getBuildingManager()
+					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+			
+			Set<Building> set1 = BuildingManager.getNonMalfunctioningBuildings(set0);
+			if (!set1.isEmpty()) {
+				return getBestQuarters(person, set0);
+			}
+			
+			Set<Building> set2 = getQuartersWithEmptyBeds(set1, unmarked);
+			if (!set2.isEmpty()) {
+				return getBestQuarters(person, set1);
+			}
+			
+			Set<Building> set3 = BuildingManager.getLeastCrowdedBuildings(set2);
+			if (!set3.isEmpty()) {
+				return getBestQuarters(person, set2);
+			}
+
+			return getBestQuarters(person, set3);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the best quarters.
+	 * 
+	 * @param person
+	 * @param set
+	 * @return
+	 */
+	private static Building getBestQuarters(Person person, Set<Building> set) {
+		Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+				set);
+		return RandomUtil.getWeightedRandomObject(probs);
+	}
+	
 	/**
 	 * Release any bed assigned to a Person
 	 * @param person

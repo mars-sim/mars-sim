@@ -918,7 +918,7 @@ public class Settlement extends Structure implements Temporal,
 			
 			for (Person p : citizens) {
 				// Register each settler a quarter/bed
-				Building b = getBestAvailableQuarters(p, true);
+				Building b = LivingAccommodations.getBestAvailableQuarters(p, true);
 				if (b != null)
 					b.getLivingAccommodations().registerSleeper(p, false);
 			}
@@ -1175,67 +1175,8 @@ public class Settlement extends Structure implements Temporal,
 			}
 		}
 	}
+	
 
-	/**
-	 * Gets the best available living accommodations building that the person can
-	 * use. Returns null if no living accommodations building is currently
-	 * available.
-	 *
-	 * @param person   the person
-	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
-	 *                 not.
-	 * @return a building with available bed(s)
-	 */
-	private static Building getBestAvailableQuarters(Person person, boolean unmarked) {
-
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			Set<Building> set = person.getSettlement().getBuildingManager()
-					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-			set = BuildingManager.getNonMalfunctioningBuildings(set);
-			set = getQuartersWithEmptyBeds(set, unmarked);
-
-			if (!set.isEmpty()) {
-				set = BuildingManager.getLeastCrowdedBuildings(set);
-			}
-
-			if (!set.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						set);
-				result = RandomUtil.getWeightedRandomObject(probs);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets living accommodations with empty beds from a list of buildings with the
-	 * living accommodations function.
-	 *
-	 * @param buildingList list of buildings with the living accommodations
-	 *                     function.
-	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
-	 *                     or not.
-	 * @return list of buildings with empty beds.
-	 */
-	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
-		Set<Building> result = new UnitSet<>();
-
-		for (Building building : buildingList) {
-			LivingAccommodations quarters = building.getLivingAccommodations();
-
-			// Check if an unmarked bed is wanted
-			if (unmarked) {
-				if (quarters.hasAnUnmarkedBed()) {// && notFull) {
-					result.add(building);
-				}
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Samples all the critical resources for stats
@@ -2123,7 +2064,7 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-			System.out.println("addEquipment: " + true);
+//			System.out.println("addEquipment: " + true);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}

@@ -73,18 +73,18 @@
 	<!ELEMENT flyerParking (flyer-location+)>
 	<!ELEMENT flyer-location EMPTY>
 	<!ATTLIST flyer-location xloc CDATA #REQUIRED>
-	<!ATTLIST flyer-location yloc CDATA #REQUIRED>
-	
+	<!ATTLIST flyer-location yloc CDATA #REQUIRED>	
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
 	<!ELEMENT living-accommodations (activity?)>
 	<!ATTLIST living-accommodations capacity CDATA #REQUIRED>
-	<!ATTLIST management capacity CDATA #REQUIRED>
+	<!ATTLIST living-accommodations guest CDATA #IMPLIED>
 	<!ELEMENT management (activity?)>
+	<!ATTLIST management capacity CDATA #REQUIRED>
+	<!ELEMENT manufacture (activity?)>
 	<!ATTLIST manufacture tech-level CDATA #REQUIRED>
 	<!ATTLIST manufacture concurrent-processes CDATA #REQUIRED>
-	<!ELEMENT manufacture (activity?)>
 	<!ELEMENT medical-care (activity?, bed?)>
 	<!ATTLIST medical-care tech-level CDATA #REQUIRED>
 	<!ATTLIST medical-care capacity CDATA #REQUIRED>
@@ -197,8 +197,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has communication capabilities. -->
 			<communication>
 				<activity>
-					<activity-spot xloc="3.43" yloc="-1.41" />
-					<activity-spot xloc="2.12" yloc="-1.41" />
+					<!-- The left and right seats of the west table -->
+					<activity-spot xloc="3.43" yloc="-1.36" />
+					<activity-spot xloc="2.12" yloc="-1.36" />
 				</activity>
 			</communication>
 
@@ -224,15 +225,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<activity>
 					<activity-spot xloc="1.02" yloc="-0.73" />
 					<activity-spot xloc="1.02" yloc="-2.02" />
-					<activity-spot xloc="1.7" yloc="-1.41" />
-					<activity-spot xloc="0.37" yloc="-1.41" />
+					<!-- The left and right seats of the East table -->
+					<activity-spot xloc="1.75" yloc="-1.36" />
+					<activity-spot xloc="0.4" yloc="-1.36" />
 				</activity>
 			</dining>
 
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.1" yloc="2.2" />
+					<activity-spot xloc="2.4" yloc="2.4" />
 					<activity-spot xloc="2.8" yloc="1.5" />
 				</activity>
 			</exercise>
@@ -254,10 +256,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of sleeping quarters provided. -->
 			<living-accommodations capacity="4">
 				<activity>
-					<activity-spot xloc="1.5" yloc="3.16" />
-					<activity-spot xloc="-0.39" yloc="3.46" />
-					<activity-spot xloc="-3.14" yloc="0.83" />
-					<activity-spot xloc="-3.04" yloc="-1.04" />
+					<activity-spot xloc="1.55" yloc="3.28" />
+					<activity-spot xloc="-0.4" yloc="3.6" />
+					<activity-spot xloc="-3.3" yloc="0.9" />
+					<activity-spot xloc="-3.17" yloc="-1.08" />
 				</activity>
 			</living-accommodations>
 
@@ -2488,7 +2490,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</dining>
 			<life-support capacity="8" power-required="0.4" />
 
-			<living-accommodations capacity="2">
+			<living-accommodations capacity="2" guest="2">
 				<activity>
 					<activity-spot xloc="2" yloc="-2" />
 					<activity-spot xloc="-2" yloc="-2" />

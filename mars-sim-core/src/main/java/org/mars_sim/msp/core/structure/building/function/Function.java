@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
@@ -200,12 +199,12 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets an available activity spot for the person.
+	 * Gets an available activity spot for the worker.
 	 *
-	 * @param person the person looking for the activity spot.
+	 * @param worker the worker looking for the activity spot.
 	 * @return activity spot as {@link Point2D} or null if none found.
 	 */
-	public LocalPosition getAvailableActivitySpot(Person person) {
+	public LocalPosition getAvailableActivitySpot() {
 
 		LocalPosition result = null;
 
@@ -214,27 +213,14 @@ public abstract class Function implements Serializable, Temporal {
 			List<LocalPosition> availableActivitySpots = new ArrayList<>();
 			Iterator<LocalPosition> i = activitySpots.iterator();
 			while (i.hasNext()) {
-				LocalPosition activitySpot = i.next();
-				// Convert activity spot from building local to settlement local.
-				LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
-
+				LocalPosition buildingLoc = i.next();
 				// Check if spot is unoccupied.
-				boolean available = true;
-				Settlement settlement = getBuilding().getSettlement();
-				Iterator<Person> j = settlement.getIndoorPeople().iterator();
-				while (j.hasNext() && available) {
-					Person tempPerson = j.next();
-					if (!tempPerson.equals(person)) {
-
-						// Check if person's location is very close to activity spot.
-						if (settlementActivitySpot.isClose(tempPerson.getPosition())) {
-							available = false;
-						}
-					}
-				}
+				boolean available = isActivitySpotEmpty(buildingLoc);
 
 				// If available, add activity spot to available list.
 				if (available) {
+					// Convert activity spot from building local to settlement local.
+					LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(buildingLoc, getBuilding());
 					availableActivitySpots.add(settlementActivitySpot);
 				}
 			}
@@ -244,61 +230,6 @@ public abstract class Function implements Serializable, Temporal {
 				// Choose a random available activity spot.
 				int index = RandomUtil.getRandomInt(availableActivitySpots.size() - 1);
 				result = availableActivitySpots.get(index);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an available activity spot for the robot.
-	 *
-	 * @param robot the bot looking for the activity spot.
-	 * @return activity spot as {@link Point2D} or null if none found.
-	 */
-	public LocalPosition getAvailableActivitySpot(Robot robot) {
-
-		LocalPosition result = null;
-
-		if (activitySpots != null) {
-
-			if (isAtActivitySpot(robot)) {
-				result = robot.getPosition();
-			} else {
-				List<LocalPosition> availableActivitySpots = new ArrayList<>();
-				Iterator<LocalPosition> i = activitySpots.iterator();
-				while (i.hasNext()) {
-					LocalPosition activitySpot = i.next();
-					// Convert activity spot from building local to settlement local.
-					LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, getBuilding());
-
-					// Check if spot is unoccupied.
-					boolean available = true;
-					Settlement settlement = getBuilding().getSettlement();
-					Iterator<Robot> j = settlement.getRobots().iterator();
-					while (j.hasNext() && available) {
-						Robot tempRobot = j.next();
-						if (!tempRobot.equals(robot)) {
-
-							// Check if robot's location is very close to activity spot.
-							if (settlementActivitySpot.isClose(tempRobot.getPosition())) {
-								available = false;
-							}
-						}
-					}
-
-					// If available, add activity spot to available list.
-					if (available) {
-						availableActivitySpots.add(settlementActivitySpot);
-					}
-				}
-
-				if (!availableActivitySpots.isEmpty()) {
-
-					// Choose a random available activity spot.
-					int index = RandomUtil.getRandomInt(availableActivitySpots.size() - 1);
-					result = availableActivitySpots.get(index);
-				}
 			}
 		}
 
@@ -317,30 +248,23 @@ public abstract class Function implements Serializable, Temporal {
 
 		boolean result = false;
 
-		Iterator<LocalPosition> i = activitySpots.iterator();
-		while (i.hasNext()) {
-			LocalPosition activitySpot = i.next();
+		// Convert activity spot from building local to settlement local.
+		Building b = getBuilding();
+		LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(s, b);
 
-			if (activitySpot.equals(s)) {
-				// Convert activity spot from building local to settlement local.
-				Building b = getBuilding();
-				LocalPosition settlementActivitySpot = LocalAreaUtil.getLocalRelativePosition(activitySpot, b);
+		for (Person person : b.getInhabitants()) {
+			// Check if person's location is identical or very very close (1e-5 meters) to
+			// activity spot.
+			if (person.isInSettlement() && !settlementActivitySpot.isClose(person.getPosition())) {
+				return true;
+			}
+		}
 
-				for (Person person : b.getInhabitants()) {
-					// Check if person's location is identical or very very close (1e-5 meters) to
-					// activity spot.
-					if (!settlementActivitySpot.isClose(person.getPosition())) {
-						return true;
-					}
-				}
-
-				for (Robot robot : b.getRobots()) {
-					// Check if robot location is identical or very very close (1e-5 meters) to
-					// activity spot.
-					if (!settlementActivitySpot.isClose(robot.getPosition())) {
-						return true;
-					}
-				}
+		for (Robot robot : b.getRobots()) {
+			// Check if robot location is identical or very very close (1e-5 meters) to
+			// activity spot.
+			if (!settlementActivitySpot.isClose(robot.getPosition())) {
+				return true;
 			}
 		}
 
@@ -373,7 +297,7 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * CheckS if this building function has any activity spots.
+	 * Checks if this building function has any activity spots.
 	 *
 	 * @return true if building function has activity spots.
 	 */

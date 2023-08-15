@@ -175,16 +175,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
-			if (task instanceof MaintainBuilding) {
-				if (((MaintainBuilding) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding maintain) {
+				if (maintain.getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}
 			}
 
 			// Add all people repairing this equipment.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
+			if (task instanceof Repair repair) {
+				if (repair.getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}

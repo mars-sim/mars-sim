@@ -18,8 +18,9 @@ import org.mars.sim.mapdata.location.LocalPosition;
 public class FunctionSpec {
   // Name  of the standard capacity property
   public static final String CAPACITY = "capacity";
+  public static final String GUEST_BED = "guest";
 
-  // Name  of the standard tech level property
+  // Name of the standard tech level property
   private static final String TECH_LEVEL = "tech-level";
 
 	private Map<String, Object> props;
@@ -54,6 +55,13 @@ public class FunctionSpec {
      */
     public int getCapacity() {
 		return getIntegerProperty(CAPACITY);
+    }
+    
+    /**
+     * Gets the value of the guest bed property.
+     */
+    public int getGuestBed() {
+		return getIntegerProperty(GUEST_BED);
     }
 
     /**

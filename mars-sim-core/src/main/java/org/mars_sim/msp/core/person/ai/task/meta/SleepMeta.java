@@ -31,6 +31,8 @@ public class SleepMeta extends FactoryMetaTask {
 		
 	private static final int CAP = 6_000;
     
+	private static int MAX_NUM_SLEEP = 4;
+	
     public SleepMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 	}
@@ -112,8 +114,6 @@ public class SleepMeta extends FactoryMetaTask {
          	result += result * pref/12D;                            	
         	
     	    if (result <= 0) {
-    	    	// Reduce the probability if it's not the right time to sleep
-//    	    	refreshSleepHabit(person); 
     	    	return 0;
     	    }
     	    	
@@ -132,24 +132,26 @@ public class SleepMeta extends FactoryMetaTask {
                 result *= 2D;
             }
 
-			int maxNumSleep = 4;
 			WorkStatus workStatus = person.getShiftSlot().getStatus();
             if (workStatus == WorkStatus.ON_CALL) {
             	// Note: For on-call personnel, there is no longer a definite sleep 
             	// pattern, recommend resting as much as possible to get ready 
             	// when duties call.
             	result = result * 100;
-				maxNumSleep = 8;
+				MAX_NUM_SLEEP = 8;
 			}
             else if (workStatus == WorkStatus.ON_DUTY) {
          	   // Reduce the probability of sleep
                result = result / 100D;
             }
 
+            if (result < 5)
+    	    	return 5;
+            
         	int sol = getMarsTime().getMissionSol();
         	
         	// Skip the first sol since the sleep time pattern has not been established
-            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
+            if (sol <= 1 && person.getCircadianClock().getNumSleep() <= MAX_NUM_SLEEP) {
             	result = modifiedBySleepHabit(person, result);
             }
             
@@ -163,6 +165,13 @@ public class SleepMeta extends FactoryMetaTask {
         return result;
     }
 	
+    /**
+     * Modifies the probability based on a person's sleep habit.
+     * 
+     * @param person
+     * @param result
+     * @return
+     */
 	private double modifiedBySleepHabit(Person person, double result) {
         	// Checks the current time against the sleep habit heat map
 	    	int bestSleepTime[] = person.getPreferredSleepHours();

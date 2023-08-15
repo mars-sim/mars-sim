@@ -609,6 +609,24 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
+	 * Gets an activity spot that is available (empty).
+	 *
+	 * @return FunctionType
+	 */
+	public LocalPosition getRandomEmptyActivitySpot() {
+		
+		Collections.shuffle(functions);
+
+		for (Function f : functions) {
+			LocalPosition loc = f.getAvailableActivitySpot();
+			if (loc != null)
+				return loc;
+		}
+
+		return null;
+	}
+	
+	/**
 	 * Determines the building functions.
 	 *
 	 * @return list of building .
@@ -1081,16 +1099,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this building.
-			if (task instanceof MaintainBuilding) {
-				if (((MaintainBuilding) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding maintainBuilding) {
+				if (maintainBuilding.getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}
 			}
 
 			// Add all people repairing this facility.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
+			if (task instanceof Repair repair) {
+				if (repair.getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}

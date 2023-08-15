@@ -65,8 +65,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Gets a local relative position from a position relative to this bounded
-	 * object.
+	 * Converts a position or an activity spot from a bounded object (e.g. within building) local to settlement local.
 	 *
 	 * @param position          the position relative to this bounded object.
 	 * @param boundedObject the local bounded object.
@@ -76,19 +75,35 @@ public class LocalAreaUtil {
 	public static LocalPosition getLocalRelativePosition(LocalPosition position, LocalBoundedObject boundedObject) {
 		double xLoc = position.getX();
 		double yLoc = position.getY();
+
+		double[] translate = translateLocation(xLoc, yLoc, boundedObject);
+		double translateX = translate[0];
+		double translateY = translate[1];
+
+		return new LocalPosition(translateX, translateY);
+	}
+
+	/**
+	 * Translates a bounded object (e.g. within building) location to a settlement location.
+	 * 
+	 * @param xLoc
+	 * @param yLoc
+	 * @param boundedObject
+	 * @return
+	 */
+	private static double[] translateLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 		double radianRotation = Math.toRadians(boundedObject.getFacing());
 		double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
 		double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
 
 		double translateX = rotateX + boundedObject.getPosition().getX();
 		double translateY = rotateY + boundedObject.getPosition().getY();
-
-		return new LocalPosition(translateX, translateY);
+		
+		return new double[] {translateX, translateY};
 	}
-
+	
 	/**
-	 * Gets a local relative location from a location relative to this bounded
-	 * object.
+	 * Converts an activity spot from a bounded object (e.g. within building/vehicle) local to settlement-wide location.
 	 *
 	 * @param xLoc          the X location relative to this bounded object.
 	 * @param yLoc          the Y location relative to this bounded object.
@@ -97,22 +112,19 @@ public class LocalAreaUtil {
 	 *         center point.
 	 */
 	public static Point2D.Double getLocalRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
-		Point2D.Double result = new Point2D.Double();
 
-		double radianRotation = Math.toRadians(boundedObject.getFacing());
-		double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
-		double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
+		double[] translate = translateLocation(xLoc, yLoc, boundedObject);
+		double translateX = translate[0];
+		double translateY = translate[1];
 
-		double translateX = rotateX + boundedObject.getXLocation();
-		double translateY = rotateY + boundedObject.getYLocation();
+		Point2D.Double p = new Point2D.Double();
+		p.setLocation(translateX, translateY);
 
-		result.setLocation(translateX, translateY);
-
-		return result;
+		return p;
 	}
 
 	/**
-	 * Gets a object relative location for a given location and an object.
+	 * Converts a settlement-wide location back to an activity spot within a bounded object (e.g. within building/vehicle).
 	 *
 	 * @param position          the position relative to the local area.
 	 * @param boundedObject the local bounded object.

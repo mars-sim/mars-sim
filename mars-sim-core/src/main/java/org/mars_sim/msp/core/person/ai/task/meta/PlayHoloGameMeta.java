@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -103,7 +104,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
 		            	// Check if a person has a designated bed
 		                Building quarters = person.getQuarters();    
 		                if (quarters == null) {
-		                	quarters = Sleep.getBestAvailableQuarters(person, true);
+		                	quarters = LivingAccommodations.getBestAvailableQuarters(person, true);
 		
 			            	if (quarters == null) {
 			            		result *= RandomUtil.getRandomDouble(0.8);

@@ -1,19 +1,17 @@
 /*
  * Mars Simulation Project
  * Sleep.java
- * @date 2022-07-19
+ * @date 2023-08-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.data.UnitSet;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
@@ -126,15 +124,16 @@ public class Sleep extends Task {
 	}
 	
 	/**
-	 * Refers the person to sleep in a bed inside the EVA airlock
+	 * Refers the person to sleep in a medical bed inside the EVA airlock.
 	 *
 	 * @return
 	 */
-	public boolean sleepInEVABed() {
+	public boolean sleepInEVAMedicalBed() {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
 //			return walkToEVABed(currentBuilding, person, true);
 			// Future: need to rework this method to find the two emergency beds in EVA Airlock
+			walkToActivitySpotInBuilding(currentBuilding, FunctionType.MEDICAL_CARE, true);
 		}
 		return false;
 	}
@@ -218,8 +217,9 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * Set an alarm for a duration in the future.
-	 * @param untilAlarm Time until the larm will go off. 
+	 * Sets an alarm for a duration in the future.
+	 * 
+	 * @param untilAlarm Time until the alarm will go off. 
 	 */
 	public void setAlarm(int untilAlarm) {
 		if (getTimeLeft() > untilAlarm) {
@@ -231,15 +231,188 @@ public class Sleep extends Task {
 	}
 
 	/**
-	 * Walk to a destination
+	 * Looks for a bed for a guest.
+	 */
+	private void lookForGuestBed() {
+		
+		//////////////////// Case 0 /////////////////////////
+		// Case 0 : if a person is in the astronomy observatory
+		Building q0 = person.getBuildingLocation();
+		if (q0 != null && q0.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+//			|| BuildingManager.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION, person, building)) {
+			// Rest in one of the 2 beds there
+			walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
+			
+			arrived = true;
+			
+			return;
+		}
+		
+		//////////////////// Case 1 - 3 /////////////////////////
+
+		q0 = LivingAccommodations.getBestAvailableQuarters(person, true);
+
+		if (q0 != null) {
+			// Case 1 : (the BEST case for a guest) unmarked, empty (UE) bed(s)
+
+//					accommodations = q0.getLivingAccommodations();
+			// NOTE: need to figure out first how to deregister a trader/tourist once he departs
+//					accommodations.registerSleeper(person, true);
+
+			walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
+//					walkToAnUnoccupiedBed(q0, true);
+			// addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
+		}
+
+		else { // no unmarked bed
+
+			q0 = LivingAccommodations.getBestAvailableQuarters(person, false);
+
+			if (q0 != null) {
+				// Case 2 : marked, empty (ME) bed(s)
+
+				walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
+			}
+			else {
+				// Case 3 :  NO empty bed(s)
+
+				walkToRandomLocation(true);
+				
+				// NOTE: should allow him/her to sleep in gym or a medical bed 
+				// or anywhere based on his/her usual preferences
+			}
+		}
+		
+		arrived = true;
+	}
+	
+	/**
+	 * Looks for assigned bed.
+	 */
+	private void lookForAssignedBed(Building building) {
+		
+		// Case 4: marked and empty (ME)
+
+		if (!walkToBed(building, person, true)) {
+			// If his/her marked bed is not empty
+			
+			building = LivingAccommodations.getBestAvailableQuarters(person, true);
+
+			if (building != null)
+				// Case 5: unmarked empty (UE)
+
+				walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, true);
+
+			else { // no unmarked bed
+
+				building = LivingAccommodations.getBestAvailableQuarters(person, false);
+
+				if (building != null) {
+					// Case 6: this marked bed is currently empty (ME)
+
+					walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, true);
+				}
+
+				else {
+					// Case 7: No beds available, go to any activity spots
+
+					walkToRandomLocation(true);
+
+					// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
+					// preferences
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Looks to be assigned a bed.
+	 */
+	private void lookTobeAssignedABed() {
+		Building q7 = LivingAccommodations.getBestAvailableQuarters(person, true);
+
+		if (q7 == null) {
+			walkToRandomLocation(true);
+			arrived = true;
+			return;
+		}
+
+		LivingAccommodations la = q7.getLivingAccommodations();
+		if (la == null) {
+			logger.severe(person, "LivingAccommodations is null.");
+			return;
+		}
+
+		// Register this sleeper
+		LocalPosition bed = la.registerSleeper(person, false);
+		if (bed == null)
+			logger.severe(person, "bed is null.");
+
+		if (q7 != null && bed != null) {
+//		if (q1 != null && q1.getLivingAccommodations().registerSleeper(person, false) != null) {
+			// Case 8: unmarked, empty (UE) bed
+
+			walkToBed(q7, person, true);
+		}
+
+		else { // no unmarked bed
+
+			q7 = LivingAccommodations.getBestAvailableQuarters(person, false);
+
+			if (q7 != null)
+				// Case 9: marked, empty (ME)
+
+				walkToActivitySpotInBuilding(q7, FunctionType.LIVING_ACCOMMODATIONS, true);
+//						walkToAnUnoccupiedBed(q1, true);
+			else
+				// Case 10: No beds available, go to any activity spots
+
+				walkToRandomLocation(true);
+
+			// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
+			// preferences
+		}
+	}
+	
+	/**
+	 * Looks for a bed.
+	 */
+	private void lookForBed() {
+		
+		//////////////////// Case 4 - 10 /////////////////////////
+
+		// He/she is an inhabitant in this settlement
+//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is also in " + person.getSettlement());
+
+		// Check if a person has a designated quarters and a marked bed
+		Building q4 = person.getQuarters();
+
+		if (q4 != null) {
+			// The BEST case for an inhabitant
+			// This person has his quarters and have a designated bed
+			lookForAssignedBed(q4);
+		}
+
+		else {
+			// this inhabitant has never registered a bed and have no designated quarter
+			lookTobeAssignedABed();
+		}
+	}
+	
+	/**
+	 * Walks to a destination.
 	 */
 	private void walkToDestination() {
 		
 		if (!arrived) {
 			// If person is in rover, walk to passenger activity spot.
-			if (person.getVehicle() instanceof Rover) {
-//				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-	//			logger.info(person + " will sleep at " + person.getVehicle());
+			if (person.getVehicle() instanceof Rover rover) {
+				
+				walkToPassengerActivitySpotInRover(rover, true);
+				
+				arrived = true;
+				
+				return;
 			}
 
 			// If person is in a settlement, try to find a living accommodations building.
@@ -253,173 +426,14 @@ public class Sleep extends Task {
 				Settlement s1 = person.getSettlement();
 				Settlement s0 = person.getAssociatedSettlement();
 
-				if (s1 != null && !s1.equals(s0)) {
-					// This person is a trader, a tourist, or a guest to this settlement
-
-	//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is in " + person.getSettlement());
-
-					//////////////////// Case 0 /////////////////////////
-					// Case 0 : if a person is in the astronomy observatory, no need of looking for a bed
-					Building building = person.getBuildingLocation();
-					if (building != null && building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-						|| BuildingManager.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION, person, building)) {
-						return;
-					}
-					
-					//////////////////// Case 1 - 3 /////////////////////////
-
-					Building q0 = getBestAvailableQuarters(person, true);
-
-					if (q0 != null) {
-						// Case 1 : (the BEST case for a guest) unmarked, empty (UE) bed(s)
-
-	//					accommodations = q0.getLivingAccommodations();
-						// NOTE: need to figure out first how to deregister a trader/tourist once he departs
-	//					accommodations.registerSleeper(person, true);
-
-						walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-	//					walkToAnUnoccupiedBed(q0, true);
-						// addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
-					}
-
-					else { // no unmarked bed
-
-						q0 = getBestAvailableQuarters(person, false);
-
-						if (q0 != null) {
-							// Case 2 : marked, empty (ME) bed(s)
-
-	//						accommodations = q0.getLivingAccommodations();
-							// NOTE: need to figure out first how to deregister a trader/tourist once he departs
-	//						accommodations.registerSleeper(person, true);
-
-							walkToActivitySpotInBuilding(q0, FunctionType.LIVING_ACCOMMODATIONS, true);
-	//						walkToAnUnoccupiedBed(q0, true);
-						}
-						else {
-							// Case 3 :  NO empty bed(s)
-
-							walkToRandomLocation(true);
-							// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
-							// preferences
-						}
-					}
+				if (!s1.equals(s0)) {
+					// If this person is a trader, a tourist, or a guest to this settlement
+					lookForGuestBed();
 				}
 
 				else {
-					//////////////////// Case 4 - ? /////////////////////////
-
-					// He/she is an inhabitant in this settlement
-	//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is also in " + person.getSettlement());
-
-					// Check if a person has a designated quarters and a marked bed
-					Building q1 = person.getQuarters();
-
-					if (q1 != null) {
-						// This person has his quarters and have a designated bed
-						// logger.fine(person + " does have a designated bed at " + pq.getNickName());
-
-						// check if this bed is currently empty or occupied (either ED or OD)
-						LocalPosition bed = person.getBed();
-						double x = bed.getX();
-						double y = bed.getY();
-
-						// Concert the coordinate back
-						LocalPosition spot = new LocalPosition(x - q1.getPosition().getX(), y - q1.getPosition().getY());
-
-						boolean empty = q1.getLivingAccommodations().isActivitySpotEmpty(spot);
-
-						if (empty) {
-							// the BEST case for an inhabitant
-							// Case 4: marked and empty (ME)
-
-							// addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(),
-							// bed.getY()));
-
-							walkToBed(q1, person, true);
-						}
-
-						else { // unfortunately his/her marked bed is not empty
-
-							q1 = getBestAvailableQuarters(person, true);
-
-							if (q1 != null)
-								// Case 5: unmarked empty (UE)
-
-								walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMMODATIONS, true);
-	//							walkToAnUnoccupiedBed(q1, true);
-
-							else { // no unmarked bed
-
-								q1 = getBestAvailableQuarters(person, false);
-
-								if (q1 != null) {
-									// Case 6: this marked bed is currently empty (ME)
-
-									walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMMODATIONS, true);
-	//								walkToAnUnoccupiedBed(q1, true);
-								}
-
-								else {
-									// Case 7: No beds available, go to any activity spots
-
-									walkToRandomLocation(true);
-
-									// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
-									// preferences
-								}
-							}
-						}
-					}
-
-					else {
-						// this inhabitant has never registered a bed and have no designated quarter
-						// logger.fine(person + " has never been designated a bed so far");
-
-						q1 = getBestAvailableQuarters(person, true);
-
-						if (q1 == null) {
-							walkToRandomLocation(true);
-							arrived = true;
-							return;
-						}
-
-						LivingAccommodations la = q1.getLivingAccommodations();
-						if (la == null) {
-							logger.severe(person, "la is null.");
-							return;
-						}
-
-						LocalPosition bed = la.registerSleeper(person, false);
-						if (bed == null)
-							logger.severe(person, "bed is null.");
-
-						if (q1 != null && bed != null) {
-//						if (q1 != null && q1.getLivingAccommodations().registerSleeper(person, false) != null) {
-							// Case 8: unmarked, empty (UE) bed
-
-							walkToBed(q1, person, true);
-
-						}
-
-						else { // no unmarked bed
-
-							q1 = getBestAvailableQuarters(person, false);
-
-							if (q1 != null)
-								// Case 9: marked, empty (ME)
-
-								walkToActivitySpotInBuilding(q1, FunctionType.LIVING_ACCOMMODATIONS, true);
-	//							walkToAnUnoccupiedBed(q1, true);
-							else
-								// Case 10: No beds available, go to any activity spots
-
-								walkToRandomLocation(true);
-
-							// NOTE: should allow him/her to sleep in gym or anywhere based on his/her usual
-							// preferences
-						}
-					}
+					
+					lookForBed();
 				}
 			}
 
@@ -442,83 +456,7 @@ public class Sleep extends Task {
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) getMarsTime().getMillisol(), true);
 			circadian.setAwake(true);
-
 		} 
-	}
-
-	/**
-	 * Gets the best available living accommodations building that the person can
-	 * use. Returns null if no living accommodations building is currently
-	 * available.
-	 *
-	 * @param person   the person
-	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
-	 *                 not.
-	 * @return a building with available bed(s)
-	 */
-	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
-		Building b = null; //person.getBuildingLocation();
-
-		if (person.isInSettlement()) {
-//			// If this person is located in the observatory
-//			if (b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-//				return b;
-
-			Set<Building> allQuarters = person.getSettlement().getBuildingManager()
-					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
-			allQuarters = BuildingManager.getNonMalfunctioningBuildings(allQuarters);
-			Set<Building> beds = getQuartersWithEmptyBeds(allQuarters, unmarked);
-			Set<Building> leastCrowded = null;
-			if (!beds.isEmpty()) {
-				leastCrowded = BuildingManager.getLeastCrowdedBuildings(beds);
-			}
-			else if (!allQuarters.isEmpty()) {
-				leastCrowded = BuildingManager.getLeastCrowdedBuildings(allQuarters);
-			}
-			
-			if (!leastCrowded.isEmpty()) {
-				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						leastCrowded);
-				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
-			}
-			else if (!allQuarters.isEmpty()) {
-				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						allQuarters);
-				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
-			}
-		}
-
-		return b;
-	}
-
-	/**
-	 * Gets living accommodations with empty beds from a list of buildings with the
-	 * living accommodations function.
-	 *
-	 * @param buildingList list of buildings with the living accommodations
-	 *                     function.
-	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
-	 *                     or not.
-	 * @return list of buildings with empty beds.
-	 */
-	private static Set<Building> getQuartersWithEmptyBeds(Set<Building> buildingList, boolean unmarked) {
-		Set<Building> result = new UnitSet<>();
-
-		for (Building building : buildingList) {
-			LivingAccommodations quarters = building.getLivingAccommodations();
-			boolean notFull = quarters.getNumEmptyActivitySpots() > 0;//quarters.getRegisteredSleepers() < quarters.getBedCap();
-			// Check if an unmarked bed is wanted
-			if (unmarked) {
-				if (quarters.hasAnUnmarkedBed() && notFull) {
-					result.add(building);
-				}
-			}
-			else if (notFull) {
-				result.add(building);
-			}
-		}
-
-		return result;
 	}
 
 	/**

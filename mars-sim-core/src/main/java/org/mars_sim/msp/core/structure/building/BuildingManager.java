@@ -635,9 +635,23 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings
 	 */
 	public Set<Building> getBuildingsWithoutFunctionType(FunctionType bf) {
-		return buildings.stream().filter(b -> !b.hasFunction(bf)).collect(Collectors.toSet());
+		return buildings.stream().filter(b -> 
+			!b.hasFunction(bf)).collect(Collectors.toSet());
 	}
 
+	/**
+	 * Gets a list of buildings in a settlement that does not have a given function.
+	 *
+	 * @param building function {@link FunctionType} the function of the building.
+	 * @return list of buildings
+	 */
+	public Set<Building> getBuildingsWithoutFctNotAstro(FunctionType bf) {
+		return buildings.stream().filter(b -> 
+			!b.hasFunction(bf)
+			&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
+			).collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Gets a list of buildings in a settlement that has a given science type.
 	 * 
@@ -1372,6 +1386,8 @@ public class BuildingManager implements Serializable {
 		return null;
 	}
 
+
+	
 	/**
 	 * Gets a list of the least crowded buildings from a given list of buildings
 	 * with life support.
@@ -1632,28 +1648,17 @@ public class BuildingManager implements Serializable {
 				// Add the person to a life support spot
 				lifeSupport.addPerson(person);
 				// Find an empty spot in life support
-				LocalPosition loc = lifeSupport.getAvailableActivitySpot(person);
-			
+				LocalPosition loc = lifeSupport.getAvailableActivitySpot();
+				
 				if (loc == null) {
-					// Find a function that have an empty spot
-					Function fct = building.getEmptyActivitySpotFunction();
+					loc = building.getRandomEmptyActivitySpot();	
 					
-					if (fct != null) {
-						loc = fct.getAvailableActivitySpot(person);
-					}
-					
-					if (loc != null) {
-						// Put the person there
-						person.setPosition(loc);
-						result = true;
-					}
 					if (loc == null) {
 						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 					}
-					// Put the person there
-					person.setPosition(loc);
 				}
-				else {
+				
+				if (loc != null) {
 					// Put the person there
 					person.setPosition(loc);
 					result = true;
@@ -1682,15 +1687,11 @@ public class BuildingManager implements Serializable {
 			if (!roboticStation.containsRobotOccupant(robot)) {
 				// Add the robot to the station
 				roboticStation.addRobot(robot);
-				// Find an empty spot
-				LocalPosition loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
+				// Find an empty robotic station spot
+				LocalPosition loc = roboticStation.getAvailableActivitySpot();
 							
 				if (loc == null) {
-					Function fct = building.getEmptyActivitySpotFunction();
-					
-					if (fct != null) {
-						loc = fct.getAvailableActivitySpot(robot);
-					}
+					loc = building.getRandomEmptyActivitySpot();	
 	
 					if (loc == null) {
 						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);

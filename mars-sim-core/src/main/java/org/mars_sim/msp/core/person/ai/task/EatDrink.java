@@ -155,9 +155,9 @@ public class EatDrink extends Task {
 		waterAmount = rh.getAmountResourceStored(WATER_ID);
 		
 		Unit container = person.getContainerUnit();
-		if (container instanceof ResourceHolder) {
+		if (container instanceof ResourceHolder c) {
 			// Take preserved food from inventory if it is available.
-			rh = (ResourceHolder) container;
+			rh = c;
 			if (foodAmount == 0)
 				foodAmount = rh.getAmountResourceStored(FOOD_ID);
 			if (waterAmount == 0)
@@ -408,7 +408,7 @@ public class EatDrink extends Task {
 	 */
 	private LocalPosition findDiningSpot(Building building) {
 
-		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot(person);
+		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot();
 		
 		if (loc != null) {
 			return loc;
@@ -421,10 +421,10 @@ public class EatDrink extends Task {
 
 		if (person != null) {
 			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot(person);
+			loc = f.getAvailableActivitySpot();
 		} else {
 			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot(robot);
+			loc = f.getAvailableActivitySpot();
 		}
 
 		return loc;
@@ -863,8 +863,8 @@ public class EatDrink extends Task {
 	 * @return
 	 */
 	private double getAmountResourceStored(Unit provider, int resourceID) {
-		if (provider instanceof ResourceHolder) {
-			return ((ResourceHolder) provider).getAmountResourceStored(resourceID);
+		if (provider instanceof ResourceHolder rh) {
+			return rh.getAmountResourceStored(resourceID);
 		}
 
 		return 0;
