@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
@@ -228,14 +227,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.worker = worker;
 
 		if (worker instanceof Person person) {
-			this.id = this.person.getIdentifier();
-			this.eventTarget = this.person;
+			this.person = person;
+			this.id = person.getIdentifier();
+			this.eventTarget = person;
 		}
 
 		else {
 			this.robot = (Robot) worker;
-			this.id = this.robot.getIdentifier();
-			this.eventTarget = this.robot;
+			this.id = robot.getIdentifier();
+			this.eventTarget = robot;
 		}
 
 		// Call setDescription to record this task

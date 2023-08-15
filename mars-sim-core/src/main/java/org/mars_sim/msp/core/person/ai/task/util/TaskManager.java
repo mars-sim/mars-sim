@@ -580,8 +580,7 @@ public abstract class TaskManager implements Serializable {
 	
 	    Task task = currentTask;
 	    while ((task != null) && !result) {
-	        if (task instanceof Walk) {
-	            Walk walkTask = (Walk) task;
+	        if (task instanceof Walk walkTask) {
 	            if (walkTask.isWalkingThroughVehicle(vehicle)) {
 	                result = true;
 	            }
@@ -604,8 +603,7 @@ public abstract class TaskManager implements Serializable {
 	
 		Task task = currentTask;
 		while ((task != null) && !result) {
-			if (task instanceof Walk) {
-				Walk walkTask = (Walk) task;
+			if (task instanceof Walk walkTask) {
 				if (walkTask.isWalkingThroughBuilding(building)) {
 					result = true;
 				}
