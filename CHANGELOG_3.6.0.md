@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.0 build 8503 (14 Aug 2023)
+## 3.6.0 build 8505 (15 Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -35,7 +35,7 @@ Copyright (C) 2023 Scott Davis
 <OL>
   <LI>Connection : Simplify building connection definition with hatch-facing attribute.</LI>
   <LI>Events     : Events in the Monitor Window are clickable to drill down into the details of the entity.</LI>
-  <LI>Mars Map   : Add zooming capability, add more map types, and allow maps to have various resolutions.</LI>
+  <LI>Mars Map   : Add zooming capability, add more map types, and allow maps to load various levels of resolutions.</LI>
   <LI>Mineral    : Optimize mineral layer loading speed in Mars globe Navigator.</LI>
   <LI>Resupply   : Showcase resupply missions by settlements under a tree.</LI>
   <LI>Role       : Restore previous role if change is not confirmed.</LI>

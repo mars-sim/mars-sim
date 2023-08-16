@@ -88,7 +88,7 @@ import org.mars.sim.tools.util.RandomUtil;
 					for (int i = 0; i < size; i++) {
 						// Remove the element at index 0 and 1
 						if (i > 1)
-							mapList.add(array[i].replace(" ", ""));
+							mapList.add(array[i].replaceAll(" ", ""));
 					}
 
 //					System.out.println(array[0] + " - size: " + array.length + "  " + mapList + " - size: " + mapList.size());
@@ -180,9 +180,9 @@ import org.mars.sim.tools.util.RandomUtil;
 			metaData.setLocallyAvailable(true);
 			
 			System.out.println("Map type '" + mapType + "' (res: " + metaData.getResolution() 
-					+ ") has been selected.  Map name: '" + metaData.getMapType() + "'"
-					+ ".  Filename: " + metaData.getFile()
-					+ ".  Locally AV: " + metaData.isLocallyAvailable() + ".");
+					+ ") has been selected.  Map name: '" + metaData.getMapType()
+					+ "'.  Filename: '" + metaData.getFile()
+					+ "'.  Locally AV: " + metaData.isLocallyAvailable() + ".");
 			
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not find the map file.", e);
