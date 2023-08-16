@@ -5,11 +5,11 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.0 build 8506 (15 Aug 2023)
+## 3.6.0 build 8517 (16 Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI>Building    : Add 2 new buildings: Server Farm and Central Hub A. </LI>
+  <LI>Building    : Add 2 new buildings, namely, Server Farm and Central Hub A. </LI>
   <LI>Computing   : Track entropy in each computing node. </LI>
   <LI>Country     : Allow each country's names to be loaded on demand. </LI>
   <LI>Crop        : Add a new category herbs. </LI>

@@ -76,6 +76,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
 
     /**
      * Gets the label color for surface navigator map.
+     * 
      * @param type Type of map
      * @return color
      */
