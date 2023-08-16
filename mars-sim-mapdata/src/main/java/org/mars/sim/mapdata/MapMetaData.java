@@ -8,6 +8,7 @@
 package org.mars.sim.mapdata;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mars.sim.mapdata.common.FileLocator;
@@ -18,24 +19,24 @@ public class MapMetaData {
     
     /** The selected resolution of the map file. */
 	private int res = 0;
+	private int numLevel = 1;
 	
 	private String mapString;
-    private String name;
-    private String hiResFilename;
-    private String midResFilename;
-    private String loResFilename;
+    private String mapType;
+    
+    private List<String> maps;
     
     private Map<String, Boolean> locallyAvailableMap = new HashMap<>();
     
-    public MapMetaData(String mapString, String name, boolean colourful,
-                        String hiResFilename, String midResFilename, String loResFilename) {
+    public MapMetaData(String mapString, String mapType, boolean colourful, List<String> array) {
+
         this.mapString = mapString;
-        this.name = name;
+        this.mapType = mapType;
         this.colourful = colourful;
-        this.hiResFilename = hiResFilename;
-        this.midResFilename = midResFilename;
-        this.loResFilename = loResFilename;
-        
+        this.maps = array;
+  
+        numLevel = array.size();
+      
         checkMapLocalAvailability();
     }
 
@@ -43,29 +44,25 @@ public class MapMetaData {
      * Checks if the maps are available locally.
      */
     public void checkMapLocalAvailability() {
-		boolean loaded0 = FileLocator.isLocallyAvailable(hiResFilename);
-		boolean loaded1 = FileLocator.isLocallyAvailable(midResFilename);
-		boolean loaded2 = FileLocator.isLocallyAvailable(loResFilename);
+
+		boolean[] loaded = new boolean[numLevel];
 		
-        locallyAvailableMap.put(hiResFilename, loaded0);
-        locallyAvailableMap.put(midResFilename, loaded1);
-        locallyAvailableMap.put(loResFilename, loaded2);
-        
-		// Sync up with the resolution data member
-		if (loaded0)
-			setResolution(0);
-		else if (loaded1)
-			setResolution(1);
-		else if (loaded2)
-			setResolution(2);
+		for (int i = 0; i < numLevel; i++) {
+			String map = maps.get(i);
+			loaded[i] = FileLocator.isLocallyAvailable(map);
+			locallyAvailableMap.put(map, loaded[i]);
+		}
+		
+		// Initially set resolution to level 0, the lowest possible one
+		setResolution(0);
     }
     
     public String getMapString() {
         return mapString;
     }
 
-    public String getName() {
-        return name;
+    public String getMapType() {
+        return mapType;
     }
 
     /**
@@ -74,8 +71,7 @@ public class MapMetaData {
      * @param newValue
      */
     void setLocallyAvailable(boolean newValue) {
-    	String fileName = getFile();
-        locallyAvailableMap.put(fileName, newValue);
+        locallyAvailableMap.put(getFile(), newValue);
     }
 
     /**
@@ -97,14 +93,22 @@ public class MapMetaData {
     }
     
     /**
+     * Gets the number of level of resolution.
+     * 
+     * @return
+     */
+    public int getNumLevel() {
+    	return numLevel;
+    }
+    
+    /**
      * Is the map file locally available.
      * 
      * @param resolution
      * @return
      */
     public boolean isLocallyAvailable(int resolution) {
-    	String fileName = getFile(resolution);
-        return locallyAvailableMap.get(fileName);
+        return locallyAvailableMap.get(getFile(resolution));
     }
 
     /**
@@ -127,14 +131,8 @@ public class MapMetaData {
      * @return
      */
     public String getFile(int res) {
-    	if (res == 0) {
-    		return getLoResFile();
-    	}
-    	else if (res == 1) {
-    		return getMidResFile();
-    	}
-
-    	return getHiResFile();
+//    	System.out.println("MapMetaData:: res is " + res + "  name: " + maps.get(res));
+    	return maps.get(res);
     }
     
     /**
@@ -145,19 +143,32 @@ public class MapMetaData {
     public String getFile() {
     	return getFile(res);
     }
-    
-    String getHiResFile() {
-        return hiResFilename;
-    }
 
-    String getMidResFile() {
-        return midResFilename;
-    }
-    
-    public String getLoResFile() {
-        return loResFilename;
-    }
+	/**
+	 * Compares if an object is the same as this unit
+	 *
+	 * @param obj
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		return this.mapString == ((MapMetaData)obj).getMapString();
+	}
 
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = mapType.hashCode() * mapString.hashCode();
+		return hashCode;
+	}
+	
 	public void destroy() {
 		locallyAvailableMap.clear();
 		locallyAvailableMap = null;

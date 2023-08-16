@@ -57,7 +57,7 @@ public abstract class MEGDRMapReader {
 	
  	private static final double TWO_PI = Math.PI * 2D;
 
-	public static final String DEFAULT_MEGDR_FILE = "/elevation/megt90n000eb.img";
+	public static final String DEFAULT_MEGDR_FILE = "megt90n000eb.img";
 	
 	private short mapHeight;
 	private short mapWidth;

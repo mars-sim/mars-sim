@@ -12,8 +12,11 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -36,14 +39,21 @@ import org.mars.sim.tools.util.RandomUtil;
 	static final String ARRAY_READER = "array";
 	static final String DIRECT_READER = "direct";
 	static final String MEMORY_READER = "memory";
-
+	
+	static final String MAPS_FOLDER = "/maps/";
+	
+	static final String ELEVATION_FOLDER = "/elevation/";
+	
+	private static final String SEPARATOR = ",";
+	
 	private static Logger logger = Logger.getLogger(MapDataFactory.class.getName());
 
 	private static final double PI = Math.PI;
  	private static final double DEG_PER_RADIAN = 180/Math.PI;
  	
 	// The map properties MUST contain at least this map
-	private static final String SURF_MAP = "surface";
+	public static final String DEFAULT_MAP_TYPE = "vikingMDIM";
+	
 	private static final String MAP_PROPERTIES = "/mapdata.properties";
 
 	private static final String ELEVATION_PROP = "elevation";
@@ -57,7 +67,7 @@ import org.mars.sim.tools.util.RandomUtil;
  	 */
  	MapDataFactory() {
  		
-		String megdrSpec = MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE;
+		String megdrSpec = MEMORY_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE;
 		
  		Properties mapProps = new Properties();
 		try (InputStream propsStream = MapDataFactory.class.getResourceAsStream(MAP_PROPERTIES)) {
@@ -69,22 +79,29 @@ import org.mars.sim.tools.util.RandomUtil;
 				}
 				else {		
 					// Split the details into the parts
-					String[] value = mapProps.getProperty(mapString).split(",");
-					boolean isColour = Boolean.parseBoolean(value[1].trim());
-					String hiRes = value[2].trim();
-					String midRes = value[3].trim();
-					String loRes = value[4].trim();
+					String[] array = mapProps.getProperty(mapString).split(SEPARATOR);
+					String mapType = array[0];
+					boolean isColour = Boolean.parseBoolean(array[1]);
+								
+					int size = array.length;
+					List<String> mapList = new ArrayList<>();
+					for (int i = 0; i < size; i++) {
+						// Remove the element at index 0 and 1
+						if (i > 1)
+							mapList.add(array[i].replace(" ", ""));
+					}
 
-					metaDataMap.put(mapString, new MapMetaData(mapString, value[0], isColour,
-										hiRes, midRes, loRes));
+//					System.out.println(array[0] + " - size: " + array.length + "  " + mapList + " - size: " + mapList.size());
+					
+					metaDataMap.put(mapString, new MapMetaData(mapString, mapType, isColour, mapList));
 				}
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot load " + MAP_PROPERTIES, e);
 		}
 
-		if (!metaDataMap.containsKey(SURF_MAP)) {
-			throw new IllegalStateException("There is no map data for '" + SURF_MAP + "' defined.");
+		if (!metaDataMap.containsKey(DEFAULT_MAP_TYPE)) {
+			throw new IllegalStateException("There is no map data for '" + DEFAULT_MAP_TYPE + "' defined.");
 		}
 
 		reader = createReader(megdrSpec);
@@ -97,10 +114,10 @@ import org.mars.sim.tools.util.RandomUtil;
 	 * @return
 	 */
 	static MEGDRMapReader createReader(String spec) {
-		String [] parts = spec.split(",");
+		String [] parts = spec.split(SEPARATOR);
 		
 		String reader = parts[0].trim().toLowerCase();
-		String imageName = parts[1].trim();
+		String imageName = ELEVATION_FOLDER + parts[1].trim();
 
 		logger.config("imageName: " + imageName);
 		
@@ -163,7 +180,7 @@ import org.mars.sim.tools.util.RandomUtil;
 			metaData.setLocallyAvailable(true);
 			
 			System.out.println("Map type '" + mapType + "' (res: " + metaData.getResolution() 
-					+ ") has been selected.  Map name: '" + metaData.getName() + "'"
+					+ ") has been selected.  Map name: '" + metaData.getMapType() + "'"
 					+ ".  Filename: " + metaData.getFile()
 					+ ".  Locally AV: " + metaData.isLocallyAvailable() + ".");
 			
@@ -244,9 +261,9 @@ import org.mars.sim.tools.util.RandomUtil;
 	}
 
 	public static void main(String[] args) throws IOException {
-		runPerfTest(DIRECT_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(ARRAY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
-		runPerfTest(MEMORY_READER + "," + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(DIRECT_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(ARRAY_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
+		runPerfTest(MEMORY_READER + SEPARATOR + MEGDRMapReader.DEFAULT_MEGDR_FILE);
 	}
 
 	private static void runPerfTest(String spec) {

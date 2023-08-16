@@ -210,7 +210,7 @@ import com.jogamp.opencl.CLProgram;
  		BufferedImage cylindricalMapImage = null;
  		
 		try {
-			cylindricalMapImage = ImageIO.read(FileLocator.locateFile(imageName));
+			cylindricalMapImage = ImageIO.read(FileLocator.locateFile(MapDataFactory.MAPS_FOLDER + imageName));
 			
 			// Use getRaster() is fastest
 		    // See https://stackoverflow.com/questions/10954389/which-amongst-pixelgrabber-vs-getrgb-is-faster/12062932#12062932
@@ -524,11 +524,11 @@ import com.jogamp.opencl.CLProgram;
  			theta += TWO_PI;
 
  		int row = (int) Math.round(phi * ((double) baseMapPixels.length / Math.PI));
- 		if (row >= baseMapPixels.length - 1)
+ 		if (row > baseMapPixels.length - 1)
  			row = baseMapPixels.length - 1;
 
  		int column = (int) Math.round(theta * ((double) baseMapPixels[0].length / TWO_PI));
- 		if (column >= baseMapPixels[0].length - 1)
+ 		if (column > baseMapPixels[0].length - 1)
  			column = baseMapPixels[0].length - 1;
  		
 // 		int pixel = baseMapPixels[row][column];

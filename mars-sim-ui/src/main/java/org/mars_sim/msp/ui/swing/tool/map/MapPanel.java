@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import org.mars.sim.mapdata.IntegerMapData;
+import org.mars.sim.mapdata.MapDataFactory;
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
@@ -45,8 +46,6 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements MouseWheelListener {
-
-	public static final String DEFAULT_MAPTYPE = "surface";
 
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	
@@ -148,7 +147,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		// Initializes map
-		loadNewMapType(DEFAULT_MAPTYPE, NavigatorWindow.getMapResolution());
+		loadNewMapType(MapDataFactory.DEFAULT_MAP_TYPE, NavigatorWindow.getMapResolution());
 		
 		mapError = false;
 		wait = false;

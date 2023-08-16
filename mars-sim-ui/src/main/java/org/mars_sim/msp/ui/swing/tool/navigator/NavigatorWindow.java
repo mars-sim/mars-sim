@@ -60,6 +60,7 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mars.sim.mapdata.MapDataFactory;
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.MapMetaData;
 import org.mars.sim.mapdata.location.Coordinates;
@@ -120,6 +121,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	
 	private static final Logger logger = Logger.getLogger(NavigatorWindow.class.getName());
 
+	private static final String LEVEL = "Level ";
+//	private static final String CURRENT = " (Current)";
 	private static final String DASH = "- ";
 	private static final String CHOOSE_SETTLEMENT = "List";
 	private static final String MAPTYPE_ACTION = "mapType";
@@ -154,14 +157,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 
-	private static final String SURFACE_MAP = "surface";
 	private static final String RESOLUTION = "2";
 
 	// Data member
-	/** The map resolution: 2 (hi); 1 (mid); 0 (low). */
+	/** The map resolution. Level 0 is the lowest. Level n is highest. */
 	private static int res = 0;
 	/** The map rho. */
 	private double rho;
+	
+	private String mapTypeCache;
 	
 	/** The latitude combox.  */
 	private JComboBoxMW<?> latCB;
@@ -485,8 +489,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			}
 			
 			// Set the map type
-			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, SURFACE_MAP), resolution);
+			changeMapType(userSettings.getProperty(MAPTYPE_ACTION, MapDataFactory.DEFAULT_MAP_TYPE), resolution);
 
+			mapTypeCache = MapDataFactory.DEFAULT_MAP_TYPE;
+			
 			for (Object key : userSettings.keySet()) {
 				String prop = (String) key;
 				String propValue = userSettings.getProperty(prop);
@@ -755,6 +761,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 				String newMapType = command.substring(MAPTYPE_ACTION.length());
 				if (((JCheckBoxMenuItem) source).isSelected()) {
 					changeMapType(newMapType, res);
+					mapTypeCache = newMapType;
 				}
 			}
 			else if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {
@@ -766,13 +773,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 					int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
 					if (oldRes < 0)
 						oldRes = 0;
-							
-					// 0: low res; 1: mid res; 2: hi res
-					if (reply < 3) {
-						if (reply != oldRes || reply != res) {
+					
+					// Note: Level 0 is the lowest res
+					
+					if (reply < mapLayerPanel.getMapMetaData().getNumLevel()) {
+						
+//						System.out.println("Nav:: reply: " + reply + "  oldRes: " + oldRes + "   res: " + res);
+						
+						if (reply != oldRes || reply != res || newMapType.equalsIgnoreCase(mapTypeCache)) {
 							// Set to the new map resolution
 							res = reply;
 							changeMapType(newMapType, reply);
+							mapTypeCache = newMapType;
 						}
 					}
 				}
@@ -796,30 +808,33 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param newMapType
 	 */
 	private int selectUnloadedMap(String newMapType) {
-		String def = " (Current)";
 
 //		int oldRes =  mapDataUtil.loadMapData(newMapType).getMetaData().getResolution();
 		int oldRes = mapLayerPanel.getMapMetaData().getResolution(); 
 		if (oldRes < 0) {
 			oldRes = 0;
-			def = "";
 		}
 		
-		Object[] options = {
-				"Low Resolution",
-                "Mid Resolution",
-                "High Resolution"};
+		List<String> list = new ArrayList<>();
 		
-		options[oldRes] = options[oldRes] + def;
+		int numLevel = mapLayerPanel.getMapMetaData().getNumLevel();
 		
+		for (int i=0; i<numLevel; i++) {
+			list.add(LEVEL + i);
+		}
+		
+		String[] options = list.toArray(String[]::new);
+		
+//		System.out.println("oldRes: " + oldRes + " options: " + list.toString());
+
 		return JOptionPane.showOptionDialog(null,
-								"Choose map resolution for '" + newMapType + "' map type ? (Need to download the map if not available locally)", 
-								"Surface Map Resolution",
+								"Choose res level for '" + newMapType + "' map type ? (Need to download the map if not available locally)", 
+								"Surface Map Level",
 								JOptionPane.YES_NO_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE,
 								null,
 								options,
-								options[2]);
+								options[0]);
 	}
 
 	/**
@@ -901,6 +916,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		
 		// Create map type menu item.
 		ButtonGroup group = new ButtonGroup();
+		
 		for (MapMetaData metaData: mapDataUtil.getMapTypes()) {
 			
 			// In case mars-sim has just been loaded
@@ -908,19 +924,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			
 			int currentRes = metaData.getResolution();
 			
-			String resolutionString = "";
-			
-			if (currentRes == 2)
-				resolutionString = "High Res";
-			else if (currentRes == 1)
-				resolutionString = "Mid Res";
-			else if (currentRes == 0)
-				resolutionString = "Low Res";
+			String resolutionString = LEVEL + currentRes;
 			
 			// Q: should we always allow the JOption box to pop up ?
 			boolean loaded = false;
 			
-			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getName() + " (" +  resolutionString + ")"
+			JCheckBoxMenuItem mapItem = new JCheckBoxMenuItem(metaData.getMapType() + " (" +  resolutionString + ")"
 //															+ (!loaded ? " (Not loaded)" : "")
 															, metaData.equals(mapLayerPanel.getMapMetaData()));
 			// Different action for unloaded maps
@@ -931,12 +940,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			optionsMenu.add(mapItem);
 			group.add(mapItem);
 		}
+		
 		optionsMenu.addSeparator();
 
 		for (Entry<String, MapOrder> e : mapLayers.entrySet()) {
 			optionsMenu.add(createSelectableMapOptions(LAYER_ACTION, e.getKey(),
 							mapLayerPanel.hasMapLayer(e.getValue().layer)));
-
 		}
 
 		optionsMenu.pack();
@@ -974,8 +983,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			String mineralName = i.next();
 			Color mineralColor = mineralColors.get(mineralName);
 			boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
-//			logger.config(mineralName + " in check menu's start state: " + isMineralDisplayed);
 			JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
+			
 			Icon icon = createColorLegendIcon(mineralColor, mineralItem);
 			mineralItem.setIcon(icon);
 			mineralItem.addActionListener(this);
@@ -1188,6 +1197,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		for (String mineralName : mineralLayer.getMineralColors().keySet()) {
 			results.setProperty(MINERAL_ACTION + mineralName, Boolean.toString(mineralLayer.isMineralDisplayed(mineralName)));
 		}
+		
 		return results;
 	}
 	
@@ -1251,10 +1261,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		 
 				if (newRho != oldRho) {				
 					setRho(newRho);
-//					logger.info("newSliderValue: " + newSliderValue
-//							+ "  newMag: " + Math.round(newMag * 1000.0)/1000.0
-//							+ "  newRho: " + Math.round(newRho * 1000.0)/1000.0
-//							);
 				}
 			}
 		});
@@ -1273,24 +1279,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-//		double rho = getRho();
-//		double mag = rho / MapPanel.RHO_DEFAULT;
-//		double sliderValue = Math.round((mag * 6 - 1.0) * 14.0 / 5.0);
-
-		int numClicks = e.getWheelRotation();
-		
-//		System.out.println("rho: " + rho + "  sliderValue: " + zoomSlider.getValue() 
-//				+ "  numClicks: " + numClicks);
-		
+		int numClicks = e.getWheelRotation();	
 		if (numClicks > 0) {
-			// Move zoom slider down.
-//			if (zoomSlider.getValue() > zoomSlider.getMinimum())
-				zoomSlider.setValue(zoomSlider.getValue() - 1);
+			zoomSlider.setValue(zoomSlider.getValue() - 1);
 		}
 		else if (numClicks < 0) {
 			// Move zoom slider up.
-//			if (zoomSlider.getValue() < zoomSlider.getMaximum())
-				zoomSlider.setValue(zoomSlider.getValue() + 1);
+			zoomSlider.setValue(zoomSlider.getValue() + 1);
 		}
 	}
 
