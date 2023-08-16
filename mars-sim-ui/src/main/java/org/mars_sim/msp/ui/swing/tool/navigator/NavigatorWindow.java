@@ -780,7 +780,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 						
 //						System.out.println("Nav:: reply: " + reply + "  oldRes: " + oldRes + "   res: " + res);
 						
-						if (reply != oldRes || reply != res || newMapType.equalsIgnoreCase(mapTypeCache)) {
+						if (reply != oldRes || reply != res || !newMapType.equalsIgnoreCase(mapTypeCache)) {
 							// Set to the new map resolution
 							res = reply;
 							changeMapType(newMapType, reply);

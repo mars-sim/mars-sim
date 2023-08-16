@@ -319,7 +319,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * Returns a tool window for a given tool name
 	 *
 	 * @param toolName      the name of the tool window
-	 * @param createWinddow Create a window if it doesn;t exist
+	 * @param createWinddow Create a window if it doesn't exist
 	 * @return the tool window
 	 */
 	private ToolWindow getToolWindow(String toolName, boolean createWindow) {
