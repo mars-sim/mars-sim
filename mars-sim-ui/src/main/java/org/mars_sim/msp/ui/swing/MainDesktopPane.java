@@ -278,7 +278,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Returns the MainWindow instance
+	 * Returns the MainWindow instance.
 	 *
 	 * @return MainWindow instance
 	 */
@@ -286,8 +286,8 @@ public class MainDesktopPane extends JDesktopPane
 		return mainWindow;
 	}
 
-	/*
-	 * Creates tool windows
+	/**
+	 * Creates tool windows.
 	 */
 	private void prepareToolWindows() {
 		getToolWindow(CommanderWindow.NAME, true);
@@ -302,8 +302,8 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(ResupplyWindow.NAME, true);
 	}
 
-	/*
-	 * * Creates announcement windows & transportWizard
+	/**
+	 * Creates announcement windows & transportWizard
 	 */
 	private void prepareAnnouncementWindow() {
 		// Prepare announcementWindow.
@@ -316,7 +316,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Returns a tool window for a given tool name
+	 * Returns a tool window for a given tool name.
 	 *
 	 * @param toolName      the name of the tool window
 	 * @param createWinddow Create a window if it doesn't exist
@@ -360,7 +360,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				w.setClosed(true);
 			} catch (PropertyVetoException e) {
-				logger.warning("Problem creting closed tool window " + e.getMessage());
+				logger.warning("Problem loading tool window " + e.getMessage());
 			}
 			toolWindows.add(w);
 			return w;
@@ -388,7 +388,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Return true if tool window is open.
+	 * Returns true if tool window is open.
 	 *
 	 * @param toolName the name of the tool window
 	 * @return true true if tool window is open

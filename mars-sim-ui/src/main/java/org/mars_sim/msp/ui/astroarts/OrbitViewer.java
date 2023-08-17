@@ -221,7 +221,7 @@ implements ActionListener {
 	public int rowOfMatrix;
 
 	/**
-	 * Initialization of applet
+	 * Initialization.
 	 */
 	public OrbitViewer(MainDesktopPane desktop) { 
 		// Call ModalInternalFrame constructor
@@ -669,6 +669,7 @@ implements ActionListener {
 		}
 		return result;
 	}
+	
 	/**
 	 * Convert time in format "YYYYMMDD.H" to ATime
 	 */
@@ -818,7 +819,7 @@ implements ActionListener {
 	}
 
 	/**
-	 * Destroy the applet
+	 * Destroy.
 	 */
 	public void destroy() {
 		removeAll();
@@ -826,7 +827,7 @@ implements ActionListener {
 
 	private void play(int direction){
 		if (playerThread != null
-		&&  playDirection != direction) {
+			&&  playDirection != direction) {
 			orbitPlayer.stop();
 			playerThread = null;
 		}
@@ -838,7 +839,8 @@ implements ActionListener {
 			playerThread.start();
 		}
 	}
-	 /**
+	
+	/**
      * Action event occurs.
      *
      * @param event the action event

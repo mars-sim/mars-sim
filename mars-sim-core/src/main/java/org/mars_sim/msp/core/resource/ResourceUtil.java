@@ -343,7 +343,7 @@ public class ResourceUtil implements Serializable {
 	}
 	
 	/**
-	 * Starts ItemResourceUtil
+	 * Starts ItemResourceUtil.
 	 */
 	public void createItemResourceUtil() {
 		new ItemResourceUtil();

@@ -28,7 +28,7 @@ public class AirComposition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Details of a specific Gas
+     * Properties of a specific gas.
      */
     static final public class GasDetails implements Serializable {
     	private double percent;
@@ -149,7 +149,10 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Calculate the impact of time passing
+	 * Calculates the impact of time passing.
+	 * 
+	 * @param building
+	 * @param pulse
 	 */
 	public void timePassing(Building building, ClockPulse pulse) {
 		double time = pulse.getElapsed();
@@ -178,7 +181,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Update gasses for occupants.
+	 * Updates the gasses for occupants.
 	 * 
 	 * @param t Current temperature
 	 * @param numPeople Number of people in using air
@@ -232,9 +235,9 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Monitor the gases exchanges to a Resource Holder.
+	 * Monitors the gases exchanges to a Resource Holder.
 	 * 
-	 * @param rh Source or destination of excess gasses.
+	 * @param rh Source or destination of excess gas.
 	 * @param t Current temperature
 	 */
 	private void monitorGases(ResourceHolder rh, double t) {
@@ -293,7 +296,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
- 	 * Release or recapture numbers of moles of a certain gas to a given building.
+ 	 * Releases or recaptures numbers of moles of a certain gas to a given building.
  	 *
  	 * @param volume   volume change in the building
  	 * @param isReleasing positive if releasing, negative if recapturing
@@ -344,6 +347,11 @@ public class AirComposition implements Serializable {
     }
 
 	
+    /**
+     * Initializes constants.
+     * 
+     * @param personConfig
+     */
 	public static void initializeInstances(PersonConfig personConfig) {
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
 
@@ -357,6 +365,12 @@ public class AirComposition implements Serializable {
 		moistureExpelled = .8 / 1000D; // ~800 ml through breathing, sweat and skin per sol, divide by 1000 to convert								// to [kg/millisol]
 	}
 
+	/**
+	 * Gets the molecular mass of a given gas.
+	 * 
+	 * @param gasId
+	 * @return
+	 */
 	private static final double getMolecularMass(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
 		double result;
@@ -378,7 +392,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Get the ideal pressure for a particular gas.
+	 * Gets the ideal pressure for a particular gas.
 	 * 
 	 * @param gasId
 	 * @return
@@ -404,7 +418,7 @@ public class AirComposition implements Serializable {
 	}
 
     /**
-     * Calculate the O2 pressure for a quantity in a fixed volume.
+     * Calculates the O2 pressure for a quantity in a fixed volume.
      * 
      * @param gasVol Amount of O2 present
      * @param totalVol Total volume of the container 

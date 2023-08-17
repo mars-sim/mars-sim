@@ -24,7 +24,7 @@ public class OpenSimplex2S {
     private static final long PRIME_Z = 0x5BCC226E9FA0BACBL;
     private static final long PRIME_W = 0x56CC5227E58F554BL;
     private static final long HASH_MULTIPLIER = 0x53A3F72DEEC546F5L;
-    private static final long SEED_FLIP_3D = -0x52D547B2E96ED629L;
+//    private static final long SEED_FLIP_3D = -0x52D547B2E96ED629L;
 
     private static final double ROOT2OVER2 = 0.7071067811865476;
     private static final double SKEW_2D = 0.366025403784439;
@@ -85,7 +85,7 @@ public class OpenSimplex2S {
     }
 
     /**
-     * 2D  OpenSimplex2S/SuperSimplex noise base.
+     * 2D OpenSimplex2S/SuperSimplex noise base.
      */
     private static float noise2_UnskewedBase(long seed, double xs, double ys) {
 
@@ -585,7 +585,6 @@ public class OpenSimplex2S {
     /*
      * Lookup Tables & Gradients
      */
-
     private static float[] GRADIENTS_2D;
     private static float[] GRADIENTS_3D;
     private static float[] GRADIENTS_4D;
