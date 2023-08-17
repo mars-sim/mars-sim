@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * BuildingConstructionMissionMeta.java
- * @version 3.2.0 2021-06-20
+ * ConstructionMissionMeta.java
+ * @date 2023-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -21,21 +21,23 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 
 
 /**
- * A meta mission for the BuildingConstructionMission mission.
+ * A meta mission for Construction Mission.
  */
-public class BuildingConstructionMissionMeta extends AbstractMetaMission {
+public class ConstructionMissionMeta extends AbstractMetaMission {
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
-    BuildingConstructionMissionMeta() {
-    	super(MissionType.CONSTRUCTION, Set.of(JobType.ARCHITECT));
+    ConstructionMissionMeta() {
+    	super(MissionType.CONSTRUCTION, 
+				Set.of(JobType.ARCHITECT, JobType.ENGINEER)); // ScienceType.ENGINEERING
     }
     
     @Override
@@ -60,25 +62,24 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
             RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.ARCHITECT
-					|| RoleType.MISSION_SPECIALIST == roleType
-					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+//					|| RoleType.MISSION_SPECIALIST == roleType
+//					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_ENGINEERING == roleType
 					|| RoleType.ENGINEERING_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
-					) {
-							
-				
+					) {							
+
 	            // Check if settlement has construction override flag set.
 	            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
 	            	return 0;
 	            }
-	            
+
 	            // Check if available light utility vehicles.
 	            if (!ConstructionMission.isLUVAvailable(settlement)) {
 	            	return 0;
 	            }
-	            
+
 	            int availablePeopleNum = 0;
 	
 	            Collection<Person> list = settlement.getIndoorPeople();
@@ -113,8 +114,9 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 	
 	                    // Modify if construction is the person's favorite activity.
-	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	                        missionProbability *= 1.1D;
+	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING
+	                    	|| person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK) {
+	                        missionProbability *= 1.25;
 	                    }
 	                    
 	                    if (newSiteProfit > existingSiteProfit) {
@@ -157,10 +159,10 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 
         // Consider the size of the settlement population
         int numPeople = settlement.getNumCitizens();
-        int limit = (int)(2D * numSites - numPeople/24D);
+        double limit = 2D * numSites - numPeople/24D;
 
         result = result/Math.pow(10, 2D + limit);
-
+        
         return result;
     }
 }

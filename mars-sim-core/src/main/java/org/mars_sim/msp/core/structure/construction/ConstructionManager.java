@@ -39,6 +39,9 @@ implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionManager.class.getName());
 
 	// Data members.
+	/** Counter of unit identifiers. */
+	private int uniqueId = 0;
+	
 	private Settlement settlement;
 	/** The settlement's construction sites. */
 	private List<ConstructionSite> sites;
@@ -61,6 +64,11 @@ implements Serializable {
 		constructedBuildingLog = new History<>();
 	}
 
+	public int getUniqueID() {
+		uniqueId++;
+		return uniqueId;
+	}
+	
 	/**
 	 * Gets all construction sites at the settlement.
 	 * 
@@ -179,14 +187,14 @@ implements Serializable {
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
-		ConstructionSite result = new ConstructionSite(settlement);
-		sites.add(result);
-    	unitManager.addUnit(result);
-    	
-		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
-		logger.info(result, "Just created and registered to ConstructionManager.");
+		ConstructionSite site = new ConstructionSite(settlement);
+		sites.add(site);
+    	unitManager.addUnit(site);
+
+		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
+		logger.info(site.getSettlement(), site, "Just created and registered in ConstructionManager.");
 		
-		return result;
+		return site;
 	}
 
 	public Settlement getSettlement() {

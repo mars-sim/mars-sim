@@ -2533,14 +2533,14 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the objective
+	 * Gets the objective.
 	 */
 	public ObjectiveType getObjective() {
 		return objectiveType;
 	}
 
 	/**
-	 * Gets the building type related to the objective
+	 * Gets the building type related to the settlement objective.
 	 *
 	 * @return
 	 */
@@ -2548,28 +2548,30 @@ public class Settlement extends Structure implements Temporal,
 
 		// TODO: check if a particular building has existed, if yes, build the next
 		// relevant building
+		
 		if (objectiveType == ObjectiveType.CROP_FARM)
-			return "inflatable greenhouse";// "inground greenhouse";//"Inflatable Greenhouse";
-		// alternatives : "Large Greenhouse"
+			return "Inflatable Greenhouse";
+		// alternatives : "Fishery", "Large Greenhouse", "Inground Greenhouse"
 		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
-			return "manufacturing shed";// "Workshop";
+			return "Workshop"; 
 		// alternatives : "Manufacturing Shed", MD1, MD4
 		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS)
-			return "mining lab"; // Laboratory";
+			return "Laboratory"; 
 		// alternatives : "Mining Lab", "Astronomy Observatory"
 		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "loading dock garage";
-		// alternatives :"Garage";
+			return "Garage";
+		// alternatives :"Loading Dock Garage";
 		else if (objectiveType == ObjectiveType.TRADE_CENTER)
-			return "storage shed";
+			return "Garage"; 
+		// alternatives : "Storage Shed", Future: "Markets" 
 		else if (objectiveType == ObjectiveType.TOURISM)
-			return "loading dock garage";
+			return "Residential Quarters";
 		else
 			return null;
 	}
 
 	/**
-	 * Get the total area of Crops in this Settlement
+	 * Gets the total area of Crops in this Settlement.
 	 */
 	public double getTotalCropArea() {
 		if (cropArea < 0D) {
@@ -2584,7 +2586,7 @@ public class Settlement extends Structure implements Temporal,
 	} 
 	
 	/**
-	 * Computes the probability of the presence of regolith
+	 * Computes the probability of the presence of regolith.
 	 *
 	 * @return probability of finding regolith
 	 */
@@ -2651,7 +2653,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Computes the probability of the presence of ice
+	 * Computes the probability of the presence of ice.
 	 *
 	 * @return probability of finding ice
 	 */

@@ -58,6 +58,9 @@ implements  LocalBoundedObject {
     private boolean isSitePicked;
     private boolean isMousePickedUp;
     
+	// Unique Unit identifier
+	private int identifier;
+	
 	/** construction skill for this site. */
     private int constructionSkill;
 
@@ -84,11 +87,24 @@ implements  LocalBoundedObject {
      * Constructor.
      */
     public ConstructionSite(Settlement settlement) {
-    	super("A Construction Site", settlement.getCoordinates());
+    	super("Site", settlement.getCoordinates());
     	
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
 
+    	identifier = constructionManager.getUniqueID();
+    	if (identifier < 10) {
+    		setName(getName() + "00" + identifier);
+    	}
+    	else if (identifier < 100) {
+    		setName(getName() + "0" + identifier);
+    	}
+    	else {
+    		setName(getName() + identifier);
+    	}
+    	
+    	setDescription(toString());
+    	
     	width = 0D;
         length = 0D;
         position = LocalPosition.DEFAULT_POSITION;
@@ -108,6 +124,7 @@ implements  LocalBoundedObject {
 
     /**
      * Sets the width of the construction site.
+     * 
      * @param width the width (meters).
      */
     public void setWidth(double width) {
@@ -121,6 +138,7 @@ implements  LocalBoundedObject {
 
     /**
      * Sets the length of the construction site.
+     * 
      * @param length the length (meters).
      */
     public void setLength(double length) {
@@ -143,6 +161,7 @@ implements  LocalBoundedObject {
 
     /**
      * Sets the facing of the construction site.
+     * 
      * @param facing
      */
     public void setFacing(double facing) {
@@ -471,10 +490,12 @@ implements  LocalBoundedObject {
      * Relocates the construction site by changing its coordinates.
      */
 	public void relocateSite() {
-		Coordinates coord = getCoordinates();
+		Coordinates existingCoord = getCoordinates();
+		// Compute a new position for a site
 		ConstructionMission.positionNewSite(this);
+		
 		logger.info(this, "Manually relocated by player from " 
-				+ coord.getFormattedString() + " to "
+				+ existingCoord.getFormattedString() + " to "
 				+ getCoordinates().getFormattedString());
 	}
 
@@ -574,11 +595,16 @@ implements  LocalBoundedObject {
 
 	@Override
     public String toString() {
-		StringBuilder result = new StringBuilder("Site");
+		return getName();
+	}
+	
+    public String getDescription() {
+		StringBuilder result = new StringBuilder();
 
 		ConstructionStage stage = getCurrentConstructionStage();
 		if (stage != null) {
-			result.append(": ").append(stage.getInfo().getName());
+			result.append(stage.getInfo().getName());
+			
 			if (undergoingConstruction) result.append(" - Under Construction");
 			else if (undergoingSalvage) result.append(" - Under Salvage");
 			else if (hasUnfinishedStage()) {

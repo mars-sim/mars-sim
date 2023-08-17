@@ -49,7 +49,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 	protected Integer containerID = UNKNOWN_UNIT_ID;
 
 	// Unique Unit identifier
-	private int identifer;
+	private int identifier;
 	/** The mass of the unit without inventory. */
 	private double baseMass;
 	/** The last pulse applied. */
@@ -118,7 +118,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 	}
 
 	public final int getIdentifier() {
-		return identifer;
+		return identifier;
 	}
 
 	/**
@@ -133,7 +133,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 		this.name = name;
 		this.description = name;
 		this.baseMass = 0;
-		this.identifer = id;
+		this.identifier = id;
 		this.containerID = containerId;
 		
 		// For now, set currentStateType to MARS_SURFACE
@@ -160,7 +160,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 			tag = new LocationTag(this);
 	
 			// Calculate the new Identifier for this type
-			identifer = unitManager.generateNewId(getUnitType());
+			identifier = unitManager.generateNewId(getUnitType());
 		}
 
 		// Define the default LocationStateType of an unit at the start of the sim

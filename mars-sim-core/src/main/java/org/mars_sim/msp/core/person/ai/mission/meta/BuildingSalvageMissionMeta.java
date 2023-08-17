@@ -32,7 +32,8 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
 
     BuildingSalvageMissionMeta() {
-    	super(MissionType.SALVAGE, Set.of(JobType.ARCHITECT));
+    	super(MissionType.SALVAGE, 
+    			Set.of(JobType.ARCHITECT, JobType.ENGINEER)); // ScienceType.ENGINEERING
     }
     
     @Override
@@ -64,8 +65,8 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 	        RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.ARCHITECT
-					|| RoleType.MISSION_SPECIALIST == roleType
-					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+//					|| RoleType.MISSION_SPECIALIST == roleType
+//					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_ENGINEERING == roleType
 					|| RoleType.ENGINEERING_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType

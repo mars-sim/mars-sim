@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
@@ -82,10 +81,11 @@ public class ConstructionMission extends AbstractMission
 	private static final MissionStatus NEW_CONSTRUCTION_STAGE_NOT_DETERMINED = new MissionStatus("Mission.status.noConstructionStage");
 
 	// Number of mission members.
-	public static final int MIN_PEOPLE = 3;
+	public static final int MIN_PEOPLE = 2;
+	
 	private static final int MAX_PEOPLE = 10;
 
-	public final static int FIRST_AVAILABLE_SOL = 1000;
+	public final static int FIRST_AVAILABLE_SOL = 3;
 
 	private static final double ASSIGN_PERCENT = 10D;
 	
@@ -101,9 +101,9 @@ public class ConstructionMission extends AbstractMission
 
 	// Default width and length for variable size buildings if not otherwise
 	// determined.
-	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 7D;
 
-	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
 	/** Minimum length of a building connector (meters). */
 	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
@@ -116,6 +116,8 @@ public class ConstructionMission extends AbstractMission
 	private List<GroundVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	
 	/**
 	 * Constructor 1 for Case 1: Determined by the need of the settlement.
 	 *
@@ -124,7 +126,6 @@ public class ConstructionMission extends AbstractMission
 	public ConstructionMission(Worker startingMember) {
 		// Use Mission constructor.
 		super(missionType, startingMember);
-
 
 		if (!isDone()) {
 			// Sets the settlement.
@@ -138,17 +139,16 @@ public class ConstructionMission extends AbstractMission
 
 			// Determine construction site and stage.
 			// TODO Refactor.
-			int constructionSkill = 0;
+			int constructionSkill = 1;
 			if (startingMember.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) startingMember;
 				// logger.info("The starting member is " + person);
 				// person.setMission(this);
-				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+				constructionSkill += person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 				person.getMind().setMission(this);
 			}
-			
-			initStep1(constructionSkill);
-			
+
+			determineSiteByProfit(constructionSkill);
 		}
 
 		if (!isDone()) {
@@ -156,6 +156,7 @@ public class ConstructionMission extends AbstractMission
 			if (site == null) {
 				endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 			}
+
 			else {
 				// Reserve construction vehicles.
 				reserveConstructionVehicles();
@@ -172,9 +173,14 @@ public class ConstructionMission extends AbstractMission
 		//setName(stage.getInfo().getName());
 	}
 
-	public void initStep1(int skill) {
+	/**
+	 * Determines the construction site based upon profit.
+	 * 
+	 * @param skill
+	 */
+	public void determineSiteByProfit(int skill) {
 		// Note: a settler starts this mission
-		logger.info(settlement, "Starting initStep1()");
+		logger.info(settlement, "Determining sites by profits.");
 		ConstructionManager manager = settlement.getConstructionManager();
 		ConstructionValues values = manager.getConstructionValues();
 		values.clearCache();
@@ -182,8 +188,12 @@ public class ConstructionMission extends AbstractMission
 		double newSiteProfit = values.getNewConstructionSiteProfit(skill);
 		ConstructionStageInfo info = null;
 
+		logger.info(settlement, "existingSitesProfit: " + existingSitesProfit + "   newSiteProfit: " + newSiteProfit);
+		
 		if (existingSitesProfit > newSiteProfit) {
-
+			// If there are existing construction sites
+			logger.info(settlement, "Developing an existing construction site.");
+			
 			// Determine which existing construction site to work on.
 			double topSiteProfit = 0D;
 			Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
@@ -192,22 +202,31 @@ public class ConstructionMission extends AbstractMission
 				double siteProfit = values.getConstructionSiteProfit(_site, skill);
 				if (siteProfit > topSiteProfit) {
 					this.site = _site;
+					info = _site.getStageInfo();
 					topSiteProfit = siteProfit;
 				}
 			}
+			
+			determineNewStage(site, info, skill, values);
 		}
 
-		else if (newSiteProfit > 0D) {
-
+		else if (newSiteProfit >= 0D) {
+			// If there aren't any existing construction sites
+			logger.info(settlement, "Creating a new construction site.");
+			
 			// Case 1a: if using GUI			
 			// Case 1b: if not using GUI
 
 			// Create new site.
 			site = manager.createNewConstructionSite();
 
-			// Determine construction site location and facing.
-			info = determineNewStageInfo(site, skill);
+			if (site == null)
+				logger.info(settlement, "site is null.");
+			
+			// Determine construction site new stage info via profits probability.
+			info = determineNewStageInfoByProfits(site, skill);
 
+			// Determine construction site location and facing.
 			if (info != null) {
 				// Set construction site size.
 				if (info.getWidth() > 0D)
@@ -222,51 +241,67 @@ public class ConstructionMission extends AbstractMission
 					// Set initial length value that may be modified later.
 					site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 
+				determineNewStage(site, info, skill, values);
+
 				positionNewSite(site);
 
 				logger.info(settlement, "New construction site '" + site + "' added.");
-			} 
+			}
 			
 			else {
 				logger.warning(settlement, "New construction stage could not be determined.");
 				endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 				return;
 			}
-
-			initStep2(site, info, skill, values);
+		}
+		else {
+			logger.info(settlement, "Case 3");
 		}
 	}
 
-	public void initStep2(ConstructionSite m_site, ConstructionStageInfo stageInfo, int constructionSkill,
+	/**
+	 * Determines a new stage to work on.
+	 * 
+	 * @param cSite
+	 * @param stageInfo
+	 * @param constructionSkill
+	 * @param values
+	 */
+	public void determineNewStage(ConstructionSite cSite, ConstructionStageInfo stageInfo, int constructionSkill,
 			ConstructionValues values) {
-		this.site = m_site;
-		logger.info(settlement, "Starting initStep2()");
+		this.site = cSite;
+		logger.info(settlement, "Determining a new stage to work on for " + cSite + ".");
 
-		if (site != null) {
+		if (cSite != null) {
 
 			// Determine new stage to work on.
-			if (site.hasUnfinishedStage()) {
+			if (cSite.hasUnfinishedStage()) {
 				stage = site.getCurrentConstructionStage();
 				logger.info(settlement, "Continuing work on existing site at " + settlement.getName());
-			} else {
-
+			}
+			
+			else {
+				logger.info(settlement, "No unfinished stage for " + cSite + ".");
+				
 				if (stageInfo == null) {
-					stageInfo = determineNewStageInfo(site, constructionSkill);
+					stageInfo = determineNewStageInfoByProfits(site, constructionSkill);
 				}
 
 				if (stageInfo != null) {
-					stage = new ConstructionStage(stageInfo, site);
-					site.addNewStage(stage);
+					stage = new ConstructionStage(stageInfo, cSite);
+					cSite.addNewStage(stage);
 					values.clearCache();
-					logger.info(settlement, "Starting new construction stage: " + stage);
-				} else {
+					logger.info(settlement, "Starting a new construction stage '" + stage + "' for " + cSite + ".");
+				} 
+				
+				else {
 					endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 				}
 			}
 
 			// Mark site as undergoing construction.
 			if (stage != null) {
-				site.setUndergoingConstruction(true);
+				cSite.setUndergoingConstruction(true);
 			}
 		}
 		else {
@@ -378,22 +413,22 @@ public class ConstructionMission extends AbstractMission
 	}
 
 	/**
-	 * Sets up the construction stage
+	 * Sets up the construction stage.
 	 *
 	 * @param modSite
 	 * @param info
 	 */
 	public void setupConstructionStage(ConstructionSite modSite, ConstructionStageInfo info) {
 		this.site = modSite;
-		logger.info(settlement, 5_000, "Stage Info: " + info.toString());
+		logger.info(settlement, modSite, 5_000, "Stage Info: " + info.toString());
 
 		if (site.hasUnfinishedStage()) {
 			stage = site.getCurrentConstructionStage();
-			logger.info(settlement, 5_000, "Still in the stage '" + stage + "'.");
+			logger.info(settlement, modSite, 5_000, "Still in the stage '" + stage + "'.");
 		}
 		else {
 			stage = new ConstructionStage(info, site);
-			logger.info(settlement, 5_000, "Starting a new construction stage for '" + stage + "'.");
+			logger.info(settlement, modSite, 5_000, "Starting a new construction stage for '" + stage + "'.");
 			site.addNewStage(stage);
 		}
 
@@ -512,7 +547,7 @@ public class ConstructionMission extends AbstractMission
 	 * @return construction stage info.
 	 * @throws Exception if error determining construction stage info.
 	 */
-	public ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) {
+	public ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
 		ConstructionStageInfo result = null;
 
 		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -623,7 +658,7 @@ public class ConstructionMission extends AbstractMission
 			&& member.getUnitType() == UnitType.PERSON) {
 			boolean accepted = assignTask(p, new DigLocalRegolith(p));
 			if (accepted)
-				logger.info(p, 20_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
+				logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
 		}		
 	}
 	
@@ -633,15 +668,15 @@ public class ConstructionMission extends AbstractMission
 	 * @param member the mission member performing the phase.
 	 */
 	private void prepareSitePhase(Worker member) {
-		logger.info(settlement, member, 20_000, "Preparing a construction site '" + site.getDescription() + ".");
+		logger.info(settlement, member, 60_000, "Preparing '" + site + "'.");
 
 		if (!isMaterialReady(member)) {
-			logger.info(settlement, member, 20_000, "Materials not ready at " + site.getDescription() + ".");
+			logger.info(settlement, member, 60_000, "Materials not ready at " + site + ".");
 			return;
 		}
 	
 		if (!loadAvailableConstructionParts()) {
-			logger.info(settlement, member, 20_000, "Parts not ready at " + site.getDescription() + ".");
+			logger.info(settlement, member, 60_000, "Parts not ready at " + site + ".");
 			return;
 		}
 		
@@ -959,15 +994,21 @@ public class ConstructionMission extends AbstractMission
 		return stage;
 	}
 
-	public static boolean determineSite(String buildingType, double dist, ConstructionSite site) {
+	public static boolean positionSameBuildingType(String buildingType, double dist, ConstructionSite site) {
 		boolean goodPosition = false;
 		// Try to put building next to the same building type.
-		List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
+		List<Building> sameBuildings = site.getSettlement().getBuildingManager()
+				.getBuildingsOfSameType(buildingType);
+		
 		Collections.shuffle(sameBuildings);
-		for (Building b : sameBuildings) {
-			logger.fine("Positioning next to " + b.getNickName());
-			goodPosition = positionNextToBuilding(site, b, dist, false);
+		Iterator<Building> j = sameBuildings.iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			goodPosition = positionNextToBuilding(site, building, Math.round(dist), false);
 			if (goodPosition) {
+//				logger.info("Positioning '" + site + "' next to " + b.getNickName());
+				logger.info(site.getSettlement(), "Case 1. The building type '" 
+						+ buildingType + "' has life support.");
 				break;
 			}
 		}
@@ -986,9 +1027,15 @@ public class ConstructionMission extends AbstractMission
 		Settlement s = site.getSettlement();
 		// Use settlement's objective to determine the desired building type
 		String buildingType = s.getObjectiveBuildingType();
-
+		
+		logger.info(s, "Applying building type '" + buildingType + "' as reference for '" + site + "'.");
+		
 		if (buildingType != null) {
-			BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+			
+			if (buildingConfig == null) {
+				buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+			}
+			
 			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 			site.setWidth(spec.getWidth());
 			site.setLength(spec.getLength());
@@ -1002,12 +1049,9 @@ public class ConstructionMission extends AbstractMission
 			
 			else if (hasLifeSupport) {
 
-				// Put greenhouses together
-				if (spec.getCategory() == BuildingCategory.FARMING) {
-					goodPosition = determineSite(buildingType, DEFAULT_FARMING_DISTANCE, site);
-				} 
-				
-				else {
+				goodPosition = positionSameBuildingType(buildingType, DEFAULT_FARMING_DISTANCE, site);
+		
+				if (!goodPosition) {
 					// Try to put building next to another habitable building.
 					List<Building> habitableBuildings = site.getSettlement().getBuildingManager()
 							.getBuildings(FunctionType.LIFE_SUPPORT);
@@ -1019,6 +1063,7 @@ public class ConstructionMission extends AbstractMission
 							goodPosition = positionNextToBuilding(site, b, DEFAULT_HABITABLE_BUILDING_DISTANCE,
 									false);
 							if (goodPosition) {
+								logger.info(s, "Case 2. Habitable.");
 								break;
 							}
 						}
@@ -1027,24 +1072,28 @@ public class ConstructionMission extends AbstractMission
 			}
 			else {
 				// Try to put building next to the same building type.
-				goodPosition = determineSite(buildingType, DEFAULT_INHABITABLE_BUILDING_DISTANCE, site);
+				logger.info(s, "Case 3. Inhabitable.");
+				goodPosition = positionSameBuildingType(buildingType, DEFAULT_INHABITABLE_BUILDING_DISTANCE, site);
 			}
 		}
 
 		else {
+			// Case 4: building type is null
+			
 			// Determine preferred building type from foundation stage info.
 			// buildingType = determinePreferredConstructedBuildingType(foundationStageInfo,
 			// constructionSkill);
 
-			// Try to put building next to another inhabitable building.
-			List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
-			Collections.shuffle(inhabitableBuildings);
-			for (Building b : inhabitableBuildings) {
+			// Try to put building next to another habitable building.
+			List<Building> habitableBuildings = s.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
+			Collections.shuffle(habitableBuildings);
+			for (Building b : habitableBuildings) {
 				// Match the floor area (e.g look more organize to put all 7m x 9m next to one
 				// another)
 				if (b.getFloorArea() == site.getWidth() * site.getLength()) {
 					goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
 					if (goodPosition) {
+						logger.info(s, "Case 4. Habitable. Building type not given.");
 						break;
 					}
 				}
@@ -1062,20 +1111,22 @@ public class ConstructionMission extends AbstractMission
 					for (Building b : buildingManager.getBuildingSet()) {
 						goodPosition = positionNextToBuilding(site, b, (double) x, false);
 						if (goodPosition) {
+							logger.info(s, "Case 5. Any one of the buildings.");
 							break;
 						}
 					}
 				}
-			} else {
-				// If no buildings at settlement, position new construction site at 0, 0 with
+			} 
+			
+			else {
+				logger.info(s, "Case 6. No buildings found.");
+				// If no buildings at settlement, position new construction site at (0, 0) with
 				// random facing.
 				int angle = RandomUtil.getRandomInt(4) * 90;
 				site.setFacing(angle);
 				site.setPosition(LocalPosition.DEFAULT_POSITION);
 			}
 		}
-		
-
 	}
 
 	/**
@@ -1095,7 +1146,10 @@ public class ConstructionMission extends AbstractMission
 		List<Building> inhabitableBuildings = manager.getBuildings(FunctionType.LIFE_SUPPORT);
 		Collections.shuffle(inhabitableBuildings);
 
-		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		if (buildingConfig == null) {
+			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		}
+
 		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 
 		int baseLevel = spec.getBaseLevel();
@@ -1253,14 +1307,19 @@ public class ConstructionMission extends AbstractMission
 		boolean result = false;
 
 		// Determine valid placement lines for connector building.
-		List<Line2D> validLines = new ArrayList<Line2D>();
+		List<Line2D> validLines = new ArrayList<>();
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+		if (buildingConfig == null) {
+			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		}
+		
+		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 		double width = spec.getWidth();
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
+		
 		for (int x = 0; x < firstBuildingPositions.size(); x++) {
 			for (int y = 0; y < secondBuildingPositions.size(); y++) {
 
@@ -1282,43 +1341,52 @@ public class ConstructionMission extends AbstractMission
 			}
 		}
 
-		if (validLines.size() > 0) {
-
-			// Find shortest valid line.
-			double shortestLineLength = Double.MAX_VALUE;
-			Line2D shortestLine = null;
-			Iterator<Line2D> i = validLines.iterator();
-			while (i.hasNext()) {
-				Line2D line = i.next();
-				double length = Point2D.distance(line.getX1(), line.getY1(), line.getX2(), line.getY2());
-				if (length < shortestLineLength) {
-					shortestLine = line;
-					shortestLineLength = length;
-				}
-			}
-
-			if (shortestLine == null)
-				shortestLine = validLines.get(0);
-
-			// Create building template with position, facing, width and length for the
-			// connector building.
-			double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());
-			Point2D p1 = adjustConnectorEndPoint(shortestLine.getP1(), shortestLineFacingDegrees, firstBuilding, width);
-			Point2D p2 = adjustConnectorEndPoint(shortestLine.getP2(), shortestLineFacingDegrees, secondBuilding,
-					width);
-			double centerX = (p1.getX() + p2.getX()) / 2D;
-			double centerY = (p1.getY() + p2.getY()) / 2D;
-			double newLength = p1.distance(p2);
-			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
-
-			site.setPosition(new LocalPosition(centerX, centerY));
-			site.setFacing(facingDegrees);
-			site.setLength(newLength);
-			result = true;
+		if (!validLines.isEmpty()) {
+			result = isLineValid(validLines, site, firstBuilding, secondBuilding, width);
 		}
 
 		return result;
 	}
+	
+	private static boolean isLineValid(List<Line2D> validLines, ConstructionSite site,
+			Building firstBuilding, Building secondBuilding, double width) {
+		
+		// Find shortest valid line.
+		double shortestLineLength = Double.MAX_VALUE;
+		Line2D shortestLine = null;
+		Iterator<Line2D> i = validLines.iterator();
+		while (i.hasNext()) {
+			Line2D line = i.next();
+			double length = Point2D.distance(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+			if (length < shortestLineLength) {
+				shortestLine = line;
+				shortestLineLength = length;
+			}
+		}
+
+		if (shortestLine == null)
+			shortestLine = validLines.get(0);
+	
+		// Create building template with position, facing, width and length for the
+		// connector building.
+		double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());
+		Point2D p1 = adjustConnectorEndPoint(shortestLine.getP1(), shortestLineFacingDegrees, firstBuilding, width);
+		Point2D p2 = adjustConnectorEndPoint(shortestLine.getP2(), shortestLineFacingDegrees, secondBuilding,
+				width);
+		double centerX = (p1.getX() + p2.getX()) / 2D;
+		double centerY = (p1.getY() + p2.getY()) / 2D;
+		double newLength = p1.distance(p2);
+		double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
+
+		// Provide the site the position, facing and length
+		site.setPosition(new LocalPosition(centerX, centerY));
+		site.setFacing(facingDegrees);
+		site.setLength(newLength);
+		
+		// TODO: is there any situation it returns false
+		return true;
+	}
+
 
 	/**
 	 * Adjust the connector end point based on relative angle of the connection.
@@ -1356,7 +1424,7 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private static List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
 
-		List<Point2D> result = new ArrayList<Point2D>(4);
+		List<Point2D> result = new ArrayList<>(4);
 
 		final int front = 0;
 		final int back = 1;
@@ -1413,7 +1481,7 @@ public class ConstructionMission extends AbstractMission
 		final int right = 2;
 		final int left = 3;
 
-		List<Integer> directions = new ArrayList<Integer>(4);
+		List<Integer> directions = new ArrayList<>(4);
 		directions.add(front);
 		directions.add(back);
 		directions.add(right);
@@ -1459,12 +1527,11 @@ public class ConstructionMission extends AbstractMission
 			}
 
 			// Cause each the site to face a random direction each time this method is run
-			int rand = RandomUtil.getRandomInt(4);
-			rectRotation += 90 * rand;
-			
-			if (rectRotation > 360D) {
-				rectRotation -= 360D;
-			}
+//			int rand = RandomUtil.getRandomInt(4);
+//			rectRotation += 90 * rand;
+//			if (rectRotation > 360D) {
+//				rectRotation -= 360D;
+//			}
 
 			double distance = structureDistance + separationDistance;
 			double radianDirection = Math.PI * direction / 180D;

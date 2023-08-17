@@ -48,6 +48,7 @@ implements Serializable {
 
     /**
      * Gets the overall profit for construction at the settlement.
+     * 
      * @return profit (VP)
      */
     public double getSettlementConstructionProfit() {
@@ -56,6 +57,7 @@ implements Serializable {
 
     /**
      * Gets the overall profit for construction at the settlement.
+     * 
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
      */
@@ -92,6 +94,7 @@ implements Serializable {
     /**
      * Gets the overall profit of all existing construction sites at a settlement
      * that can be worked on with a given construction skill.
+     * 
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
      */
@@ -113,6 +116,7 @@ implements Serializable {
 
     /**
      * Gets the profit of an existing construction site at a settlement.
+     * 
      * @param site the construction site.
      * @return profit (VP)
      */
@@ -122,6 +126,7 @@ implements Serializable {
 
     /**
      * Gets the profit of an existing construction site at a settlement.
+     * 
      * @param site the construction site.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
@@ -174,6 +179,7 @@ implements Serializable {
 
     /**
      * Gets the profit of creating a new construction site at a settlement.
+     * 
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
      */
@@ -198,6 +204,7 @@ implements Serializable {
     /**
      * Gets a map of construction stage infos and their profits for a particular 
      * construction site.
+     * 
      * @param site the construction site.
      * @param constructionSkill the architect's construction skill.
      * @return map of construction stage infos and their profits (VP).
@@ -228,6 +235,7 @@ implements Serializable {
 
     /**
      * Gets a map of construction stage infos and their profits for a given stage type.
+     * 
      * @param stageType the construction stage type.
      * @param constructionSkill the architect's construction skill.
      * @return map of construction stage infos and their profits (VP).
@@ -251,6 +259,7 @@ implements Serializable {
 
     /**
      * Gets a map of all construction stage infos and their values.
+     * 
      * @param constructionSkill the construction skill of the person.
      * @return map of construction stage infos and their values (VP).
      */
@@ -289,6 +298,7 @@ implements Serializable {
 
     /**
      * Gets the value of a construction stage.
+     * 
      * @param stageInfo the construction stage info.
      * @param constructionSkill the person's construction skill.
      * @return value (VP).
@@ -338,6 +348,7 @@ implements Serializable {
 
     /**
      * Gets the cost of a construction stage.
+     * 
      * @param stageInfo the construction stage info.
      * @return cost (VP)
      */
@@ -371,6 +382,7 @@ implements Serializable {
 
     /**
      * Gets the profit for a construction stage.
+     * 
      * @param stageInfo the construction stage info.
      * @param constructionSkill the person's construction skill.
      * @return profit (VP)
@@ -381,6 +393,7 @@ implements Serializable {
 
     /**
      * Gets the value of constructing a building.
+     * 
      * @param buildingName the building's name.
      * @return value (VP)
      */
@@ -413,24 +426,25 @@ implements Serializable {
     }
 	
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
         settlement = null;
+        
         if(settlementConstructionValueCache != null){
-
             settlementConstructionValueCache.clear();
             settlementConstructionValueCache = null;
             settlementConstructionValueCacheTime = null;
         }
+        
         if(stageInfoValueCache != null){
 
             stageInfoValueCache.clear();
             stageInfoValueCache = null;
             stageInfoValueCacheTime = null;
         }
+        
         if(allStageInfoValueCache != null){
-
             allStageInfoValueCache.clear();
             allStageInfoValueCache = null;
             allStageInfoValueCacheTime = null;

@@ -113,8 +113,6 @@ public class MasterClock implements Serializable {
 
 	/** The Martian Clock. */
 	private MarsTime marsTime;
-	/** The Martian Clock. */
-	//private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsTime initialMarsTime;
 	/** The Earth Clock. */

@@ -71,6 +71,7 @@ class ConstructionProjectPanel extends WizardPanel {
     
     /**
      * Constructor.
+     * 
      * @param wizard the create mission wizard.
      */
     public ConstructionProjectPanel(final CreateMissionWizard wizard) {

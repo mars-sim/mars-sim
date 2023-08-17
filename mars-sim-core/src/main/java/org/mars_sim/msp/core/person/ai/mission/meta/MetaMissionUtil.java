@@ -39,7 +39,7 @@ public class MetaMissionUtil {
 		// Populate metaMissions list with all meta missions.
 		newMissions.add(new AreologyFieldStudyMeta());
 		newMissions.add(new BiologyFieldStudyMeta());
-		newMissions.add(new BuildingConstructionMissionMeta());
+		newMissions.add(new ConstructionMissionMeta());
 		newMissions.add(new BuildingSalvageMissionMeta());
 		newMissions.add(new CollectIceMeta());
 		newMissions.add(new CollectRegolithMeta());

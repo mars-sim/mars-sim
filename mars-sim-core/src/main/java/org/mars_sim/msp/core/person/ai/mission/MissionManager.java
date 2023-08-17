@@ -200,8 +200,8 @@ public class MissionManager implements Serializable {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
 				double baseProb = metaMission.getProbability(person);
 				if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
-						logger.severe(person, "Bad mission probability on " + metaMission.getName() 
-						+ " probability: "	+ Math.round(baseProb * 100.0)/100.0);
+						logger.severe(person, "Bad mission probability on '" + metaMission.getName() 
+						+ "'  probability: " + Math.round(baseProb * 100.0)/100.0);
 				}
 				else if (baseProb > 0D) {
 					// Get any overriding ratio
@@ -212,9 +212,9 @@ public class MissionManager implements Serializable {
 					probability *= settlementRatio;
 
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
-							+ "' probability: " + Math.round(probability * 100.0)/100.0
-									+ " base prob: " + Math.round(baseProb * 100.0)/100.0
-									+ " sponsor: " + settlementRatio);
+							+ "'  probability: " + Math.round(probability * 100.0)/100.0
+									+ "  base prob: " + Math.round(baseProb * 100.0)/100.0
+									+ "  sponsor: " + settlementRatio);
 					if (probability > 0) {
 						missionProbCache.put(metaMission, probability);
 						totalProbCache += probability;

@@ -597,7 +597,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If current phase is over, decide what to do next.
 		if (phaseEnded && !determineNewPhase()) {
-			logger.warning(member, 20_000L, "New phase for " + getName()
+			logger.warning(member, 60_000L, "New phase for " + getName()
 					+ " cannot be determined for " + phase.getName() + ".");
 		}
 
@@ -605,8 +605,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (!done) {
 			// Check for issue #786
 			if (member.isInSettlement() && (phase.getStage() == Stage.ACTIVE) && (member instanceof Person)) {
-				logger.info(member, 20_000L, "In a Settlement during ACTIVE mission phase " 
-						+ phase.getName() + ".");
+				logger.info(member, 60_000L, "Responsible for '" + phase.getName() + "' Mission Phase.");
 			}
 
 			performPhase(member);

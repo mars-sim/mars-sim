@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Set;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -81,16 +82,19 @@ public class AbstractMetaMission implements MetaMission {
 	 */
 	@Override
 	public double getLeaderSuitability(Person person) {
-		double result = 0.25D;
-		
 		JobType jt = person.getMind().getJob();
+		
+		double lead = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
+		double result = lead/100;
 		
 		// If the person has a job and it is a preferred job
 		// OR there are no preferred Jobs then give it a boost
 		if ((jt != null) &&
-				((preferredLeaderJob  == null) || preferredLeaderJob.contains(jt))) {
-			result = 1D;
+				((preferredLeaderJob == null) || preferredLeaderJob.contains(jt))) {
+			result *= 1.25;
 		}
+		else
+			result *= 0.5;
 		
 		return result;
 	}
