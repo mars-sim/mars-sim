@@ -227,6 +227,9 @@
 				    <artifactId>maven-surefire-plugin</artifactId>
 				    <version>3.1.2</version>
 				    <configuration>
+						<includes>
+							<include>%regex[.*]</include>
+						</includes>
 				    </configuration>
 				</plugin>
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-failsafe-plugin -->
@@ -234,6 +237,16 @@
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-failsafe-plugin</artifactId>
 				    <version>3.1.2</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						<configuration>
+						</configuration>
+						</execution>
+    				</executions>				    
 				    <configuration>
 				    </configuration>
 				</plugin>
@@ -358,7 +371,7 @@
 	    </repository>
 		<repository>
 			<id>mars-sim</id>
-			<name>Mars-sim Project Maven Repository</name>
+			<name>mars-sim Project Old Maven Repository</name>
 			<url>https://mars-sim.sourceforge.io/maven-repo/</url>
 		</repository>
 	</repositories>
