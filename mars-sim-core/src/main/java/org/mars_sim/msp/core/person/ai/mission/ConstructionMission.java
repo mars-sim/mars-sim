@@ -85,7 +85,7 @@ public class ConstructionMission extends AbstractMission
 	
 	private static final int MAX_PEOPLE = 10;
 
-	public final static int FIRST_AVAILABLE_SOL = 3;
+	public final static int FIRST_AVAILABLE_SOL = 1;
 
 	private static final double ASSIGN_PERCENT = 10D;
 	
@@ -207,6 +207,8 @@ public class ConstructionMission extends AbstractMission
 				}
 			}
 			
+			site.setStageInfo(info);
+			
 			determineNewStage(site, info, skill, values);
 		}
 
@@ -226,6 +228,8 @@ public class ConstructionMission extends AbstractMission
 			// Determine construction site new stage info via profits probability.
 			info = determineNewStageInfoByProfits(site, skill);
 
+			site.setStageInfo(info);
+			
 			// Determine construction site location and facing.
 			if (info != null) {
 				// Set construction site size.
@@ -411,7 +415,7 @@ public class ConstructionMission extends AbstractMission
 			}
 		}
 	}
-
+	
 	/**
 	 * Sets up the construction stage.
 	 *

@@ -27,7 +27,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	public final static int MIN_STARTING_SOL = 2;
 
 	CollectRegolithMeta() {
-		super(MissionType.COLLECT_REGOLITH, Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
+		super(MissionType.COLLECT_REGOLITH, Set.of(JobType.ARCHITECT, JobType.CHEMIST));
 	}
 
 	@Override

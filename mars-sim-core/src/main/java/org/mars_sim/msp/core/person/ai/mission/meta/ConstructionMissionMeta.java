@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -80,6 +79,11 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	            	return 0;
 	            }
 
+	            missionProbability = getSettlementPopModifier(settlement, 8) / 2;
+				if (missionProbability == 0) {
+					return 0;
+				}
+				
 	            int availablePeopleNum = 0;
 	
 	            Collection<Person> list = settlement.getIndoorPeople();
@@ -108,7 +112,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	                // Add construction profit for existing or new construction sites.
 	                double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
 	                if (constructionProfit > 0D) {
-	                    missionProbability = 100D;
+	                    missionProbability += 50D;
 	
 	                    double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
 	                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
@@ -161,7 +165,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         int numPeople = settlement.getNumCitizens();
         double limit = 2D * numSites - numPeople/24D;
 
-        result = result/Math.pow(10, 2D + limit);
+        result = result/Math.pow(10, 2 + limit);
         
         return result;
     }

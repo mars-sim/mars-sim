@@ -112,8 +112,9 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Get the score modifier for a Settlement based on it's population for this type of mission
-	 * @param target The settlemetn to check
+	 * Gets the score modifier for a Settlement based on it's population for this type of mission.
+	 * 
+	 * @param target The settlement to check
 	 * @param capacity The number of person needed for capacity calcs
 	 */
 	protected double getSettlementPopModifier(Settlement target, int capacity) {

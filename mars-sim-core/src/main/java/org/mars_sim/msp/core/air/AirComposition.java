@@ -208,7 +208,11 @@ public class AirComposition implements Serializable {
 
 			// Divide by molecular mass to convert mass to # of moles
 			// note the kg/mole are as indicated as each gas have different amu
-			double nm = m / getMolecularMass(gasId);
+			double mm = getMolecularMass(gasId);
+			double nm = 0;
+			if (mm > 0)
+				nm = m / mm;
+			
 			double p = nm * AirComposition.R_GAS_CONSTANT * t / fixedVolume;
 
 			if (p < 0)

@@ -187,6 +187,7 @@ implements Serializable {
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
+		
 		ConstructionSite site = new ConstructionSite(settlement);
 		sites.add(site);
     	unitManager.addUnit(site);

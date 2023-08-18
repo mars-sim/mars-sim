@@ -27,7 +27,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	public final static int MIN_STARTING_SOL = 3;
 	
 	CollectIceMeta() {
-		super(MissionType.COLLECT_ICE, Set.of(JobType.AREOLOGIST, JobType.CHEMIST, JobType.BOTANIST, JobType.CHEF));
+		super(MissionType.COLLECT_ICE, Set.of(JobType.CHEMIST, JobType.BOTANIST, JobType.CHEF));
 	}
 
 	@Override

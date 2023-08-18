@@ -58,7 +58,7 @@ implements  LocalBoundedObject {
     private boolean isSitePicked;
     private boolean isMousePickedUp;
     
-	// Unique Unit identifier
+	// Unique identifier
 	private int identifier;
 	
 	/** construction skill for this site. */
@@ -93,17 +93,10 @@ implements  LocalBoundedObject {
     	this.settlement = settlement;
 
     	identifier = constructionManager.getUniqueID();
-    	if (identifier < 10) {
-    		setName(getName() + "00" + identifier);
-    	}
-    	else if (identifier < 100) {
-    		setName(getName() + "0" + identifier);
-    	}
-    	else {
-    		setName(getName() + identifier);
-    	}
     	
-    	setDescription(toString());
+    	createSiteName();
+    	
+    	setDescription(getDescription());
     	
     	width = 0D;
         length = 0D;
@@ -117,6 +110,18 @@ implements  LocalBoundedObject {
         listeners = Collections.synchronizedList(new ArrayList<>());
     }
 
+	public void createSiteName() {
+	    if (identifier < 10) {
+			setName(getName() + "00" + identifier);
+		}
+		else if (identifier < 100) {
+			setName(getName() + "0" + identifier);
+		}
+		else {
+			setName(getName() + identifier);
+		}
+	}
+	
     @Override
     public double getWidth() {
         return width;
@@ -605,12 +610,12 @@ implements  LocalBoundedObject {
 		if (stage != null) {
 			result.append(stage.getInfo().getName());
 			
-			if (undergoingConstruction) result.append(" - Under Construction");
-			else if (undergoingSalvage) result.append(" - Under Salvage");
-			else if (hasUnfinishedStage()) {
-				if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
-				else result.append(" - Construction Unfinished");
-			}
+//			if (undergoingConstruction) result.append(" - Under Construction");
+//			else if (undergoingSalvage) result.append(" - Under Salvage");
+//			else if (hasUnfinishedStage()) {
+//				if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
+//				else result.append(" - Construction Unfinished");
+//			}
 		}
 
 		return result.toString();

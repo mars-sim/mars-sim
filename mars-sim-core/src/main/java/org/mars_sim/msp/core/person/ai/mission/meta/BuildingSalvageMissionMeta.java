@@ -45,7 +45,6 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     public double getProbability(Person person) {
 
         double missionProbability = 0D;
-  
       
         if (getMarsTime().getMissionSol() < SalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
