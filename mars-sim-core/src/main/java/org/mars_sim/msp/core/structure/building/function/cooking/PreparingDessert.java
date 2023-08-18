@@ -64,15 +64,15 @@ public class PreparingDessert extends Function {
 	 */
 	public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
-	public static double UP = 0.01D;
-	public static double DOWN = 0.007D;
+	public static double UP = 0.01;
+	public static double DOWN = 0.007;
 
 	// SERVING_FRACTION also used in GoodsManager
 	public static final int NUM_OF_DESSERT_PER_SOL = 4;
 	// DESSERT_SERVING_FRACTION is used in every mission expedition
-	public static final double DESSERT_SERVING_FRACTION = .5D;
+	public static final double DESSERT_SERVING_FRACTION = .5;
 	// amount of water in kg per dessert during preparation and clean-up
-	public static final double WATER_USAGE_PER_DESSERT = .5D;
+	public static final double WATER_USAGE_PER_DESSERT = .5;
 
 	private static double dessertMassPerServing;
 
@@ -83,6 +83,7 @@ public class PreparingDessert extends Function {
 			"cranberry juice",
 			"strawberry", 
 			"granola bar", 
+			"protein bar",
 			"blueberry muffin"};
 
 	private static int NUM_DESSERTS = availableDesserts.length;
@@ -98,10 +99,10 @@ public class PreparingDessert extends Function {
 			ResourceUtil.findIDbyAmountResourceName(availableDesserts[3]),
 			ResourceUtil.findIDbyAmountResourceName(availableDesserts[4]),
 			ResourceUtil.findIDbyAmountResourceName(availableDesserts[5]),
-			ResourceUtil.findIDbyAmountResourceName(availableDesserts[6])
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[6]),
+			ResourceUtil.findIDbyAmountResourceName(availableDesserts[7])
 	};
-	
-	
+
 	public static AmountResource[] availableDessertsAR = { 
 			ResourceUtil.findAmountResource(availableDesserts[0]),
 			ResourceUtil.findAmountResource(availableDesserts[1]),
@@ -109,15 +110,16 @@ public class PreparingDessert extends Function {
 			ResourceUtil.findAmountResource(availableDesserts[3]),
 			ResourceUtil.findAmountResource(availableDesserts[4]),
 			ResourceUtil.findAmountResource(availableDesserts[5]),
-			ResourceUtil.findAmountResource(availableDesserts[6])
+			ResourceUtil.findAmountResource(availableDesserts[6]),
+			ResourceUtil.findAmountResource(availableDesserts[7])
 	};
 
 	// Arbitrary percent of dry mass of the corresponding dessert/beverage.
-	public static double[] dryMass = { 0.10, 0.05, 0.02, 0.02, 0.20, 0.4, 0.3, };
+	public static double[] dryMass = {0.10, 0.05, 0.02, 0.02, 0.20, 0.4, 0.4, 0.3};
 	
 	private boolean makeNoMoreDessert = false;
 
-	private int cookCapacity; // used in timePassing
+	private int cookCapacity;
 
 	private int dessertCounterPerSol = 0;
 
@@ -171,7 +173,7 @@ public class PreparingDessert extends Function {
 	}
 
 	/**
-	 * Convert the name of a desert to Amount Resource
+	 * Converts the name of a desert to Amount Resource.
 	 * 
 	 * @param dessert
 	 * @return
@@ -518,7 +520,7 @@ public class PreparingDessert extends Function {
 	}
 
 	/**
-	 * Gets the dry mass of a dessert
+	 * Gets the dry mass of a dessert.
 	 */
 	public static double getDryMass(String selectedDessert) {
 		double result = 0;

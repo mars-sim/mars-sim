@@ -97,6 +97,8 @@ public class ResourceUtil implements Serializable {
 	public static final String PEANUT_OIL = "peanut oil";
 	public static final String RICE_BRAN_OIL = "rice bran oil";
 	public static final String FISH_OIL = "fish oil";
+	public static final String OLIVE_OIL = "olive oil";
+	
 	public static final String TOILET_TISSUE = "toilet tissue";
 	public static final String SOYMILK = "soymilk";
 	public static final String LEAVES = "leaves";
@@ -202,6 +204,7 @@ public class ResourceUtil implements Serializable {
 	public static int peanutOilID;
 	public static int riceBranOilID;
 	public static int fishOilID;
+	public static int oliveOilID;
 
 	public static int epsomSaltID;
 	public static int tableSaltID;
@@ -452,7 +455,8 @@ public class ResourceUtil implements Serializable {
 		peanutOilID = findIDbyAmountResourceName(PEANUT_OIL);
 		riceBranOilID = findIDbyAmountResourceName(RICE_BRAN_OIL);
 		fishOilID = findIDbyAmountResourceName(FISH_OIL);
-
+		oliveOilID = findIDbyAmountResourceName(OLIVE_OIL);
+		
 		tableSaltID = findIDbyAmountResourceName(TABLE_SALT);
 		rockSaltID = findIDbyAmountResourceName(ROCK_SALT);
 		epsomSaltID = findIDbyAmountResourceName(EPSOM_SALT); 

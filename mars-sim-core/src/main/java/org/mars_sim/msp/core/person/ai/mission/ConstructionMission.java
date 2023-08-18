@@ -87,7 +87,7 @@ public class ConstructionMission extends AbstractMission
 
 	public final static int FIRST_AVAILABLE_SOL = 1;
 
-	private static final double ASSIGN_PERCENT = 10D;
+	private static final double ASSIGN_PERCENT_PROBABILITY = 10D;
 	
 	private static final double SMALL_AMOUNT = 0.001D;
 	/** Time (millisols) required to prepare construction site for stage. */
@@ -658,7 +658,7 @@ public class ConstructionMission extends AbstractMission
 	private void retrieveMaterials(Worker member) {
 		// If material not available, prompt settlers to dig local regolith
 		Person p = (Person) member;
-		if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
+		if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT_PROBABILITY)
 			&& member.getUnitType() == UnitType.PERSON) {
 			boolean accepted = assignTask(p, new DigLocalRegolith(p));
 			if (accepted)
@@ -791,7 +791,7 @@ public class ConstructionMission extends AbstractMission
 		if (!getPhaseEnded()) {
 			// Assign construction task to member.
 			Person p = (Person) member;
-			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT)
+			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT_PROBABILITY)
 				&& member.getUnitType() == UnitType.PERSON
 				&& ConstructBuilding.canConstruct(p, site)) {
 					assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));

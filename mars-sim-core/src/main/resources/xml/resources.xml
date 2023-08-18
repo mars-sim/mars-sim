@@ -170,9 +170,10 @@
 	<resource name="Cranberry juice" type="derived" phase="solid" edible="true">Juice made from Cranberries</resource>
 	<resource name="Cranberry sauce" type="derived" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
 	<resource name="French fries" type="derived" phase="solid" edible="true">French fries made from potatoes.</resource>
-<!-- Since garlic oil is not a neutral flavour (just like fish oil), it should not be used in place of generic oil -->
-	<resource name="Garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
-	<resource name="Granola bar" type="derived" phase="solid" edible="true">A popular breakfast and snack consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
+
+	<resource name="Granola bar" type="derived" phase="solid" edible="true">A popular snake bar made from puffed quinoa/rice/wheat, honey/sugarcane juice, dried fruits and peanuts</resource>
+	<resource name="Protein bar" type="derived" phase="solid" edible="true">A popular snack bar made from puffed quinoa/rice/wheat, honey/sugarcane juice, dried fruits and peanuts</resource>
+
 	<resource name="Honey" type="derived" phase="liquid" edible="true">Honey extracted from bee hives</resource>
 	<resource name="Ketchup" type="derived" phase="liquid" edible="true">Jam made from tomatoes.</resource>
 	<resource name="Mustard" type="derived" phase="liquid" edible="true">Mustard made from mustard seed</resource>
@@ -203,7 +204,20 @@
 		Oil is extracted from peanuts.</resource>
 	<resource name="Soybean oil" type="oil" phase="liquid" edible="true">
 		Oil derived from soybean.</resource>
+	<resource name="Olive oil" type="oil" phase="liquid" edible="true">
+		Oil pressed from olive.</resource>
+<!-- Since garlic oil is not a neutral flavour (just like fish oil), it should not be used in place of generic oil -->
+	<resource name="Garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
 	
+<!-- Food resources derived from fish -->
+	<resource name="Fish meat" type="animal" phase="solid" edible="true">
+		meat from fish</resource>
+<!-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
+	<resource name="Fish oil" type="animal" phase="liquid" edible="true">
+		Oil derived from fish.</resource>
+	<resource name="Fish patty" type="animal" phase="solid" edible="true">
+		patty made of fish meat</resource>
+			
 <!-- Imported food resources-->	
 	<resource name="Olive" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Apple" type="crop" phase="solid" edible="true"></resource>
@@ -262,15 +276,6 @@
 		in the biomedical literature as an oral hygiene product, emollient,
 		antioxidant or an antimicrobial agent, as a treatment for allergies,
 		in cancer treatment and cancer prevention.	</resource>
-
-<!-- Food resources derived from fish -->
-	<resource name="Fish meat" type="animal" phase="solid" edible="true">
-		meat from fish</resource>
-<!-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
-	<resource name="Fish oil" type="animal" phase="liquid" edible="true">
-		Oil derived from fish.</resource>
-	<resource name="Fish patty" type="animal" phase="solid" edible="true">
-		patty made of fish meat</resource>
 
 <!-- Chemical food resources -->
 	<resource name="Baking powder" type="chemical" phase="solid" edible="true">

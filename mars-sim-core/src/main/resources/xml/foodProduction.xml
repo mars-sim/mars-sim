@@ -73,159 +73,38 @@
 	</process>
 
 
-	<process name="Package Quinoa into Granola Bar"
+	<process name="Make Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="100"
+			process-time="50"
 			power-required="0.1">
-		<description>Package puffed Quinoa, honey, nuts and dried fruits into Granola Bar.</description>
+		<description>Make granola bar using puffed quinoa/rice/wheat, honey/sugarcane, nuts and dried fruits.</description>
 		<inputs>
-			<resource name="Quinoa" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Honey" amount="0.5" />
+			<resource name="Quinoa" name1="Rice" name2="Wheat" amount="4.0" />
+			<resource name="Strawberry" name1="Blueberry" amount="0.5" />
+			<resource name="Honey" name1="Sugarcane Juice" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="Granola Bar" amount="4.0" />
+			<resource name="Granola Bar" amount="6.0" />
 		</outputs>
 	</process>
 
-	<process name="Package Rice into Granola Bar"
+	<process name="Make Okara Protein Bar"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="100"
 			power-required="0.1">
-		<description>Package puffed rice, honey, nuts and dried fruits into Granola Bar.</description>
+		<description>Make protein bars using puffed quinoa/rice/wheat, honey/sugarcane juice, nuts and dried fruits.</description>
 		<inputs>
-			<resource name="Rice" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Honey" amount="0.5" />
+			<resource name="Quinoa" name1="Rice" name2="Wheat" amount="2.0" />
+			<resource name="Okara" amount="2.0" />
+			<resource name="Strawberry" name1="Blueberry" amount="0.5" />
+			<resource name="Honey" name1="Sugarcane Juice" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="Granola Bar" amount="4.0" />
-		</outputs>
-	</process>
-
-		<process name="Package Wheat into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed wheat, honey, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Wheat" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Honey" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="4.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Quinoa into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed Quinoa, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Quinoa" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Rice into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed rice, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Rice" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Wheat into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Wheat" amount="4.0" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Okara and Wheat into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Wheat" amount="2.0" />
-			<resource name="Okara" amount="9.11" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Okara and Rice into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Rice" amount="2.0" />
-			<resource name="Okara" amount="9.11" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="Package Okara and Quinoa into Granola Bar"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.1">
-		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
-		<inputs>
-			<resource name="Quinoa" amount="2.0" />
-			<resource name="Okara" amount="9.11" />
-			<resource name="Strawberry" amount="0.5" />
-			<resource name="Sugarcane Juice" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="Granola Bar" amount="5.0" />
+			<resource name="Protein Bar" amount="6.0" />
 		</outputs>
 	</process>
 	
@@ -237,22 +116,7 @@
 		<description>Cut potatoes and make French Fries.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
-			<resource name="Peanut Oil" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="French Fries" amount="10.0" />
-		</outputs>
-	</process>
-	
-	<process name="Make French Fries from Potatoes"
-			tech="1" skill="1"
-			work-time="50"
-			process-time="50"
-			power-required="0.7">
-		<description>Cut potatoes and make French Fries.</description>
-		<inputs>
-			<resource name="Potato" amount="10.0" />
-			<resource name="Soybean Oil" amount="1.0" />
+			<resource name="Peanut Oil" name1="Soybean Oil" amount="1.0" />
 		</inputs>
 		<outputs>
 			<resource name="French Fries" amount="10.0" />
@@ -930,7 +794,7 @@
 
 	<!-- https://en.wikipedia.org/wiki/Garlic_oil#Preparation says 1 gram pure oil requres 500 grams garlic, and that it is 900 times as strong as fresh garlic and 200 times as strong as dry garlic -->
 	<process name="Press Garlic Oil from Garlic"
-		tech="1" skill="0" work-time="50" process-time="100"
+		tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".5">
 		<description> Continuous pressing by means of expellers is a widely applied
 						process for the extraction of oil from Garlic</description>
@@ -945,6 +809,22 @@
 		</outputs>
 	</process>
 
+	<process name="Press Olive Oil from Olive"
+		tech="1" skill="0" work-time="50" process-time="50"
+			power-required=".5">
+		<description>Ripe olives can yield up to 30% of oil. It's about 
+			3 kg of olives per liter (around 0.9kg) of oil.
+		</description>
+		<inputs>
+			<resource name="Olive" amount="3.0" />
+			<resource name="Water" amount="0.9" />
+		</inputs>
+		<outputs>
+			<resource name="Olive Oil" amount="0.9" />
+			<resource name="Food Waste" amount="3.0" />
+		</outputs>
+	</process>
+	
 	<process name="Make Veggie Patty from Veg, Tofu and Spice"
 		tech="2" skill="2" work-time="50" process-time="50"
 			power-required="1.0">

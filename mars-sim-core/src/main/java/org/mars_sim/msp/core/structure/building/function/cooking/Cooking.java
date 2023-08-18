@@ -942,11 +942,14 @@ public class Cooking extends Function {
 			oilMenu.add(ResourceUtil.riceBranOilID);
 			oilMenu.add(ResourceUtil.sesameOilID);
 			oilMenu.add(ResourceUtil.soybeanOilID);
+			oilMenu.add(ResourceUtil.oliveOilID);
 		}
 		return oilMenu;
 	}
 
-	/** The last cooked meal. */
+	/** 
+	 * Gets the last cooked meal. 
+	 */
 	public String getlastCookedMeal() {
 		return lastCookedMeal;
 	}

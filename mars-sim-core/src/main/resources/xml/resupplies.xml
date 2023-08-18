@@ -163,7 +163,8 @@
 	
 		<!-- Crop related -->
 	    <resource name="fertilizer" amount="50.0" />
-	
+	    <resource name="Olive" amount="50.0" />
+	    	
 	    <!-- Crop tissues -->
 	    <resource name="blueberry tissue" amount="1.0" />
 	    <resource name="cabbage tissue" amount="1.0" />
@@ -253,6 +254,7 @@
 	    <resource name="Peanut Oil" amount="50.0" />
 	    <resource name="Garlic Oil" amount="50.0" />
 	    <resource name="Sesame Oil" amount="50.0" />
+		<resource name="Olive Oil" amount="50.0" />    
 	    
 	    <resource name="Cane Fiber" amount="100.0" />
 	    <resource name="Rice Vinegar" amount="50.0" />
@@ -262,6 +264,8 @@
 	    
 	    <resource name="Wheat Flour" amount="50.0" />
 	    <resource name="Granola Bar" amount="10.0" />
+	    <resource name="Protein Bar" amount="10.0" />	    
+	    
 
 	</resupply>
 
