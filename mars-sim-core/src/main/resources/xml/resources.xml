@@ -508,7 +508,7 @@
 	</resource>
 
 <!-- Utility items derived from crop harvest -->
-	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from soy fiber and cane fiber.</resource>
 	<resource name="Polyester fiber" type="chemical" phase="solid" demand="0.015">
 		Polyester fiber are strong, heat resistant material for clothing and fabric.
 	</resource>

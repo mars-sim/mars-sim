@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodProductionProcessInfo.java
- * @date 2022-07-26
+ * @date 2023-08-17
  * @author Manny Kung
  */
 
@@ -20,15 +20,43 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private String name;
-	private String description;
 	private int techLevelRequired;
 	private int skillLevelRequired;
+	private int effortLevel = 2;
+	
 	private double workTimeRequired;
 	private double processTimeRequired;
     private double powerRequired;
-	private List<FoodProductionProcessItem> inputList;
-	private List<FoodProductionProcessItem> outputList;
+    
+	private String name;
+	private String description;
+	
+	private List<FoodProductionProcessItem> inputList = new ArrayList<>();
+	private List<FoodProductionProcessItem> outputList = new ArrayList<>();
+	
+	/*
+	 * Constructor 1.
+	 */
+	public FoodProductionProcessInfo() {
+	}
+	
+	/*
+	 * Copy constructor.
+	 */
+	public FoodProductionProcessInfo(FoodProductionProcessInfo another) {
+	    this.name = another.name;
+	    this.description = another.description;
+	    this.techLevelRequired = another.techLevelRequired;
+	    this.skillLevelRequired = another.skillLevelRequired;
+	    this.effortLevel = another.effortLevel;
+	    this.workTimeRequired = another.workTimeRequired;
+	    this.processTimeRequired = another.processTimeRequired;
+	    this.powerRequired = another.powerRequired;
+		
+	    // Warning: below is shallow copy only, NOT deep copy 
+	    this.inputList = List.copyOf(another.inputList);
+	    this.outputList = List.copyOf(another.outputList);
+	}
 	
 	/**
 	 * Gets the process name.
@@ -62,7 +90,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 	
 	/**
-	 * Gets the manufacturing tech level required for the process.
+	 * Gets the tech level required for the process.
 	 * 
 	 * @return tech level.
 	 */
@@ -71,7 +99,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 	
 	/**
-	 * Sets the manufacturing tech level required for the process.
+	 * Sets the tech level required for the process.
 	 * 
 	 * @param techLevelRequired the required tech level.
 	 */
@@ -80,7 +108,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 	
 	/**
-	 * Gets the material science skill level required to work on the process.
+	 * Gets the skill level required to work on the process.
 	 * 
 	 * @return skill level.
 	 */
@@ -89,7 +117,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 	
 	/**
-	 * Sets the material science skill level required to work on the process.
+	 * Sets the skill level required to work on the process.
 	 * 
 	 * @param skillLevelRequired skill level.
 	 */

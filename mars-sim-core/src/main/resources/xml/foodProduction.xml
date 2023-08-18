@@ -13,6 +13,10 @@
 	<!ELEMENT outputs (part*, resource*, equipment*)>
 	<!ELEMENT resource EMPTY>
 	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource name1 CDATA #IMPLIED>
+	<!ATTLIST resource name2 CDATA #IMPLIED>
+	<!ATTLIST resource name3 CDATA #IMPLIED>	
+	<!ATTLIST resource name4 CDATA #IMPLIED>	
 	<!ATTLIST resource amount CDATA #REQUIRED>
 	<!ELEMENT part EMPTY>
 	<!ATTLIST part name CDATA #REQUIRED>
@@ -30,18 +34,19 @@
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="Package Cabbage as Preserved Food"
+	<process name="Package Preserved Food"
 			tech="1" skill="0"
-			work-time="50"
-			process-time="50"
-			power-required="0.1">
+			work-time="10"
+			process-time="10"
+			power-required="0.05">
 		<description>Cut and freeze dry cabbage into package food.</description>
 
 		<!-- List of inputs for the process ( parts and resources). -->
 		<inputs>
 			<!-- amount - The amount of the resource in kilograms. -->
 			<part name="refrigerator" number="1" />
-			<resource name="Cabbage" amount="5.0" />
+			<resource name="Cabbage" name1="Carrot" name2="Leaves" name3="Swiss Chard" name4="Potatoes" 
+			amount="3.0" />
 		</inputs>
 
 		<!-- List of outputs from the process (parts, resources, equipment). -->
@@ -51,64 +56,18 @@
 		</outputs>
 	</process>
 
-	<process name="Package leaves as Preserved Food"
-			tech="0" skill="0"
-			work-time="5"
-			process-time="5"
-			power-required="0.1">
-		<description>Cut and freeze dry leaves into package food.</description>
-		<inputs>
-			<part name="refrigerator" number="1" />
-			<resource name="leaves" amount="10.0" />
-		</inputs>
-		<outputs>
-			<part name="refrigerator" number="1" />
-			<resource name="food" amount="6.0" />
-		</outputs>
-	</process>
-	
-	<process name="Package Carrot as Preserved Food"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="50"
-			power-required="0.1">
-		<description>Cut and freeze dry carrots into package food.</description>
-		<inputs>
-			<part name="refrigerator" number="1" />
-			<resource name="Carrot" amount="5.0" />
-		</inputs>
-		<outputs>
-			<part name="refrigerator" number="1" />
-			<resource name="food" amount="3.0" />
-		</outputs>
-	</process>
+	<process name="Package Roast Peanuts into Dry Food"
+		tech="0" skill="0" work-time="10" process-time="10"
+			power-required="0.05">
 
-	<process name="Package Swiss Chard as Preserved Food"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="50"
-			power-required="0.1">
-		<description>Cut and freeze dry swiss chard into package food.</description>
-		<inputs>
-			<part name="refrigerator" number="1" />
-			<resource name="Swiss Chard" amount="5.0" />
-		</inputs>
-		<outputs>
-			<part name="refrigerator" number="1" />
-			<resource name="food" amount="3.0" />
-		</outputs>
-	</process>
+		<description>Pack peanuts into dry food</description>
 
-	<process name="Package Potatoes as Preserved Food"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="50"
-			power-required="0.1">
-		<description>Cut and dry potatoes into package food.</description>
 		<inputs>
-			<resource name="Potato" amount="10.0" />
+			<part name="oven" number="1" />
+			<resource name="Roasted Peanut" amount="5.0" />
 		</inputs>
 		<outputs>
+			<part name="oven" number="1" />
 			<resource name="food" amount="5.0" />
 		</outputs>
 	</process>
@@ -461,23 +420,6 @@
 			<resource name="Peanut Butter" amount="3.5" />
 		</outputs>
 	</process>
-
-	<process name="Package Roast Peanuts into Dry Food"
-		tech="0" skill="0" work-time="50" process-time="50"
-			power-required="1.0">
-
-		<description>Pack peanuts into dry food</description>
-
-		<inputs>
-			<part name="oven" number="1" />
-			<resource name="Roasted Peanut" amount="5.0" />
-		</inputs>
-		<outputs>
-			<part name="oven" number="1" />
-			<resource name="food" amount="5.0" />
-		</outputs>
-	</process>
-
 
 	<process name="Bake White Bread from Soy Flour"
 		tech="1" skill="1" work-time="50" process-time="200"
@@ -1283,7 +1225,7 @@
 		A mature stalk is typically composed of 11–16% fiber, 12–16% soluble sugars, 2–3% nonsugars, and 63–73% water -->
 	<!-- https://en.wikipedia.org/wiki/Bagasse
 		For each 10 tonnes of sugarcane crushed, a sugar factory produces nearly 3 tonnes of wet bagasse.   -->
-	<process name="Derive Sugar, Cane fiber, Bagasse, Sugarcane Juice from Sugarcane"
+	<process name="Derive Sugar, Cane Fiber, Bagasse, Sugarcane Juice from Sugarcane"
 		tech="1" skill="2" work-time="50" process-time="100"
 			power-required="1.0">
 		<description>Derive Sugar from Sugarcane. The juice is obtained by
@@ -1295,22 +1237,21 @@
 		</inputs>
 		<outputs>
 			<resource name="Sugar" amount="1.6" />
-			<resource name="cane fiber" amount="1.6" />
+			<resource name="Cane Fiber" amount="1.6" />
 			<!-- resource name="bagasse" amount="1.0" -->
 			<resource name="Sugarcane Juice" amount="7.3" />
 		</outputs>
 	</process>
 
-	<process name="Produce Fiber Cloth from Cane and Soy Fiber"
-	tech="2" skill="3" work-time="100" process-time="200"
-			power-required="3.0">
+	<process name="Produce Fiber Cloth from Cane or Soy Fiber"
+	tech="2" skill="3" work-time="50" process-time="200"
+			power-required="0.5">
 		<description>Fiber cloth Weaving </description>
 		<inputs>
-			<resource name="cane fiber" amount="2" />
-			<resource name="Soy Fiber" amount="2" />
+			<resource name="Cane Fiber" name1="Soy Fiber" amount="2" />
 		</inputs>
 		<outputs>
-			<resource name="Fiber Cloth" amount="3" />
+			<resource name="Fiber Cloth" amount="2" />
 		</outputs>
 	</process>
 
@@ -1457,10 +1398,11 @@
 			<resource name="Magnesium" amount=".028" />
 			<resource name="Phosphorus" amount=".07" />
 			<resource name="Zinc" amount=".01" />
-			<resource name="cane fiber" amount=".1" />
+			<resource name="Blueberry" amount=".02" />
+			<resource name="Cane Fiber" amount=".1" />
 		</inputs>
 		<outputs>
-			<resource name="Immune Booster" amount=".05" />
+			<resource name="Immune Booster" amount=".2" />
 		</outputs>
 
 	</process>

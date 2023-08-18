@@ -968,9 +968,11 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceConstructionSiteDemand(Settlement settlement) {
 		double demand = 0D;
-		double amount = 0D;
+//		double amount = 0D;
 		int resource = getID();
 
+		// Note: Need to filter the construction resources first here
+		
 		// Add demand for resource required as remaining construction material on
 		// construction sites.
 		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
@@ -978,13 +980,13 @@ class AmountResourceGood extends Good {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getRemainingResources().containsKey(resource)) {
 					double requiredAmount = stage.getRemainingResources().get(resource);
-					amount += requiredAmount;
+//					amount += requiredAmount;
 					demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
 				
-				logger.info(settlement, site, 20_000L, ResourceUtil.findAmountResourceName(resource) + " needs " 
-						+ Math.round(amount * 10.0)/10.0
-						+ " for constructions.  Raising demand to " + Math.round(demand * 10.0)/10.0);
+//				logger.info(settlement, site, 20_000L, ResourceUtil.findAmountResourceName(resource) + " needed " 
+//						+ Math.round(amount * 10.0)/10.0
+//						+ " for constructions.  Raising demand to " + Math.round(demand * 10.0)/10.0);
 			}
 		}
 

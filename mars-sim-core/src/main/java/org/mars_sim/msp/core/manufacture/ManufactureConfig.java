@@ -31,6 +31,8 @@ public class ManufactureConfig {
 	private static final Logger logger = Logger.getLogger(ManufactureConfig.class.getName());
 
 	// Element names
+	private static final int MAX_NUM_INPUT_RESOURCES = 4;
+	
 	private static final String PROCESS = "process";
 	private static final String NAME = "name";	
 	private static final String TECH = "tech";
@@ -53,11 +55,11 @@ public class ManufactureConfig {
 	private static final String TYPE = "type";
 	private static final String PART_SALVAGE = "part-salvage";
 
-	private static List<ManufactureProcessInfo> manufactureProcessList;
-	private static List<SalvageProcessInfo> salvageList;
+	private List<ManufactureProcessInfo> processList;
+	private List<SalvageProcessInfo> salvageList;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param manufactureDoc DOM document containing manufacture process
 	 *                       configuration.
@@ -74,7 +76,7 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	public List<ManufactureProcessInfo> getManufactureProcessList() {
-		return manufactureProcessList;
+		return processList;
 	}
 	
 	/**
@@ -84,7 +86,7 @@ public class ManufactureConfig {
 	 * @throws Exception if error getting info.
 	 */
 	private synchronized void loadManufactureProcessList(Document manufactureDoc) {
-		if (manufactureProcessList != null) {
+		if (processList != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -216,7 +218,7 @@ public class ManufactureConfig {
 		}
 		
 		// Assign the newList now built
-		manufactureProcessList = Collections.unmodifiableList(newList);
+		processList = Collections.unmodifiableList(newList);
 	}
 
 	/**
@@ -236,7 +238,7 @@ public class ManufactureConfig {
 			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
 			String originalResourceName = "";
 			
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < MAX_NUM_INPUT_RESOURCES; i++) {
 				String num = "";
 				if (i == 0)
 					num = "";

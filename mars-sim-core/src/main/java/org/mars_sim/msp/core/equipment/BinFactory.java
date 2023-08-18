@@ -122,8 +122,8 @@ public final class BinFactory {
 				weights.put(processName, mass/quantity);
 	    	}
 			
-			logger.info(productName + " - input mass: " + mass + "  output quantity: " 
-					+ quantity + "   mass per item: " + Math.round(mass/quantity * 10.0)/10.0);
+//			logger.info(productName + " - input mass: " + mass + "  output quantity: " 
+//					+ quantity + "   mass per item: " + Math.round(mass/quantity * 10.0)/10.0);
 			
 			return mass;
 		}

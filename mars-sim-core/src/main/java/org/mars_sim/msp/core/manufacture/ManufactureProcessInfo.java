@@ -25,9 +25,6 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private String name;
-	private String description;
-	
 	private int techLevelRequired;
 	private int skillLevelRequired;
 	private int effortLevel = 2;
@@ -36,6 +33,9 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	private double processTimeRequired;
 	private double powerRequired;
 	
+	private String name;
+	private String description;
+
 	private List<ManufactureProcessItem> inputList = new ArrayList<>();
 	private List<ManufactureProcessItem> outputList = new ArrayList<>();
 	
@@ -95,7 +95,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 
 	/**
-	 * Gets the manufacturing tech level required for the process.
+	 * Gets the tech level required for the process.
 	 * 
 	 * @return tech level.
 	 */
@@ -104,7 +104,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 
 	/**
-	 * Sets the manufacturing tech level required for the process.
+	 * Sets the tech level required for the process.
 	 * 
 	 * @param techLevelRequired the required tech level.
 	 */
@@ -113,7 +113,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 
 	/**
-	 * Gets the material science skill level required to work on the process.
+	 * Gets the skill level required to work on the process.
 	 * 
 	 * @return skill level.
 	 */
@@ -126,7 +126,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 	
 	/**
-	 * Sets the material science skill level required to work on the process.
+	 * Sets the skill level required to work on the process.
 	 * 
 	 * @param skillLevelRequired skill level.
 	 */

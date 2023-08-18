@@ -59,7 +59,6 @@ public class ConstructionConfig implements Serializable {
     private transient List<ConstructionStageInfo> foundationStageInfoList;
     private transient List<ConstructionStageInfo> frameStageInfoList;
     private transient List<ConstructionStageInfo> buildingStageInfoList;
-
     private transient List<ConstructionStageInfo> allConstructionStageInfoList;
 	
     private transient List<Integer> constructionParts;

@@ -23,17 +23,21 @@ public class ConstructionStageInfo implements Serializable {
     public static final String BUILDING = "building";
 
     // Data members
-    private String name;
-    private String type;
-    private double width;
-    private double length;
-    private int baseLevel;
     private boolean unsetDimensions;
     private boolean constructable;
     private boolean salvagable;
-    private double workTime;
+    
+    private int baseLevel;
     private int architectConstructionSkill;
+
+    private double width;
+    private double length;
+    private double workTime;
+    
+    private String name;
+    private String type;
     private String prerequisiteStage;
+    
     private Map<Integer, Integer> parts;
     private Map<Integer, Double> resources;
     private List<ConstructionVehicleType> vehicles;
