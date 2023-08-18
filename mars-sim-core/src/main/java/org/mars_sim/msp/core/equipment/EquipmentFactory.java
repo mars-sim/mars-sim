@@ -156,13 +156,15 @@ public final class EquipmentFactory {
 		        }
 	    	}
 	
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			mass = manufactureProcessInfo.calculateTotalInputMass();
-			// Calculate output quantity
-			quantity = manufactureProcessInfo.calculateOutputQuantity(productName);			
-			// Save the key value pair onto the weights Map
-			weights.put(processName, mass/quantity);
-			
+	    	if (manufactureProcessInfo != null) {
+				// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
+				mass = manufactureProcessInfo.calculateTotalInputMass();
+				// Calculate output quantity
+				quantity = manufactureProcessInfo.calculateOutputQuantity(productName);					
+				// Save the key value pair onto the weights Map
+				weights.put(processName, mass/quantity);
+	    	}
+
 			return mass;
 		}
 

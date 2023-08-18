@@ -502,8 +502,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 			// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
 
-			gbh = g0 * cosZ / (1 + tau / 2.0 / cosZ);
-
+			if (cosZ != 0)
+				gbh = g0 * cosZ / (1 + tau / 2.0 / cosZ);
 
 			// Assuming the reflection from the surface is negligible
 	
@@ -520,7 +520,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// Earth.
 			
 			gdh = gbh * (-0.822 * cosZ + 1);
-
 			
 			// Finally,
 			gh = gbh + gdh;

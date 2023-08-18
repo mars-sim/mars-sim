@@ -100,6 +100,12 @@ public class ExploredLocation implements Serializable {
 		return false;
 	}
 	
+	/**
+	 * Compute the remaining mass after excavation.
+	 * 
+	 * @param amount
+	 * @return
+	 */
 	public double excavateMass(double amount) {
 		if (remainingMass < amount) {
 			remainingMass = 0;
@@ -109,6 +115,11 @@ public class ExploredLocation implements Serializable {
 		return 0;
 	}
 	
+	/**
+	 * Gets the remaining mass.
+	 * 
+	 * @return
+	 */
 	public double getRemainingMass() {
 		return remainingMass;
 	}
@@ -271,7 +282,9 @@ public class ExploredLocation implements Serializable {
 				sum += certainty;
 			}
 			
-			double average = sum / numMinerals;
+			double average = 0; 
+			if (numMinerals > 0)
+				average = sum / numMinerals;
 			if (average > 50) {
 				return true;
 			}

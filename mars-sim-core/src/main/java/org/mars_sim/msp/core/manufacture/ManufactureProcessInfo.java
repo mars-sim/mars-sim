@@ -309,7 +309,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 	
 	/**
-	 * Calculates the output quantity.
+	 * Calculates the quantity of a output product.
 	 * 
 	 * @return
 	 */

@@ -109,13 +109,18 @@ public final class BinFactory {
 	    			break;
 		        }
 	    	}
-	
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			mass = manufactureProcessInfo.calculateTotalInputMass();
-			// Calculate output quantity
-			quantity = manufactureProcessInfo.calculateOutputQuantity(productName);			
-			// Save the key value pair onto the weights Map
-			weights.put(processName, mass/quantity);
+			
+	    	if (manufactureProcessInfo != null) {
+				// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
+				mass = manufactureProcessInfo.calculateTotalInputMass();
+				// Calculate output quantity
+				quantity = manufactureProcessInfo.calculateOutputQuantity(productName);		
+				
+				// mass/quantity is mass per unit e.g. need 7.8 kg of polyethylene in order to make 12 baskets 
+				
+				// Save the key value pair onto the weights Map
+				weights.put(processName, mass/quantity);
+	    	}
 			
 			logger.info(productName + " - input mass: " + mass + "  output quantity: " 
 					+ quantity + "   mass per item: " + Math.round(mass/quantity * 10.0)/10.0);

@@ -638,37 +638,46 @@ class AmountResourceGood extends Good {
 	 * @return demand (kg)
 	 */
 	private double getResourceProcessDemand(GoodsManager owner, Settlement settlement, ResourceProcess process) {
-		double demand = 0D;
+//		double demand = 0D;
 		int resource = getID();
 
 		Set<Integer> inputResources = process.getInputResources();
 		Set<Integer> outputResources = process.getOutputResources();
 
+//		For instance,		
+//		<process name="Selective Partial Oxidation of Methane to Methanol" power-required="0.05" >
+//		<input resource="methane" rate="3.2"  />
+//		<input resource="oxygen" rate="3.2"  />
+//		
+//		<output resource="methanol" rate="5.888"  />
+//		<output resource="methane" rate="0.512"  />
+		
 		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
 			double outputValue = 0D;
-			for(Integer output : outputResources) {
+			for (Integer output : outputResources) {
 				double outputRate = process.getMaxOutputRate(output);
 				if (!process.isWasteOutputResource(resource)) {
 					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) * outputRate);
 				}
 			}
 
-			double resourceInputRate = process.getMaxInputRate(resource);
+			double inputRate = process.getMaxInputRate(resource);
 
 			// Determine value of required process power.
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
-			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
+//			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
+//			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputValue - powerValue) * RESOURCE_PROCESSING_INPUT_FACTOR;
+			return outputValue / inputRate; // * RESOURCE_PROCESSING_INPUT_FACTOR;
 
-			if (totalInputsValue > 0D) {
-				double demandMillisol = resourceInputRate;
-				double demandSol = demandMillisol * 1000D;
-				demand = demandSol;
-			}
+			
+//			if (net > 0D) {
+//				double demandMillisol = resourceInputRate;
+//				double demandSol = demandMillisol * 1000D;
+//				demand = demandSol;
+//			}
 		}
 
-		return demand;
+		return 0;
 	}
 
 	/**

@@ -144,7 +144,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			int concentrationNumber = calculateIteration(mineralType, true, length);
 					
 			// Get the new remainingConc by multiplying it with concentrationNumber; 
-			double remainingConc = conc * concentrationNumber;
+			double remainingConc = 1.0 * conc * concentrationNumber;
 			
 //				logger.info("regionArray size: " + length
 //						+ "  concentrationNumber: " + concentrationNumber
@@ -241,7 +241,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			int concentrationNumber = calculateIteration(mineralType, false, 0);
 			
 			// Get the new remainingConc by multiplying it with concentrationNumber; 
-			double remainingConc = conc * concentrationNumber;
+			double remainingConc = 1.0 * conc * concentrationNumber;
 			
 			for (int x = 0; x < concentrationNumber; x++) {
 				

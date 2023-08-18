@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
@@ -326,22 +327,24 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param unit
      */
 	private JMenuItem confirmSite(ConstructionSite site) {
-		JMenuItem confirmItem = new JMenuItem(Msg.getString("PopUpUnitMenu.confirmSite"));
+		boolean isConfirm = site.isSitePicked();
+		
+		JMenuItem confirmItem = new JMenuItem(Msg.getString("PopUpUnitMenu.confirmSite") 
+				+ " (" + Conversion.capitalize(isConfirm + "") + ")");
 
-		confirmItem.setForeground(new Color(139,69,19));
+		confirmItem.setForeground(new Color(139, 69, 19));
 		confirmItem.addActionListener(e -> {
-
-			boolean isConfirm = site.isSitePicked();
+	
 			if (!isConfirm) {
-				site.setSitePicked(!isConfirm);
-//				String s = site.isSitePicked() + "";
-//				s = s.toLowerCase();
-//				s = Conversion.capitalize(s);
-				logger.info(site, "Just confirmed the site location. Ready to go to the next phase.");
+				// If it's not being confirmed
+				site.setSitePicked(true);
+				confirmItem.setText(Msg.getString("PopUpUnitMenu.confirmSite") 
+						+ " (" + Conversion.capitalize(isConfirm + "") + ")");
+				logger.info(site, "Just confirmed the site for construction. Ready to go to the next phase.");
 				repaint();
 			}
 			else {
-				logger.info(site, "The site has already been confirmed at this point.");
+				logger.info(site, "The site has already been confirmed for construction.");
 			}
 			
         });
