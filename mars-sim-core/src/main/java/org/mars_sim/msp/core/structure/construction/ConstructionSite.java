@@ -55,7 +55,12 @@ implements  LocalBoundedObject {
     private boolean undergoingConstruction;
     private boolean undergoingSalvage;
     private boolean manual;
-    private boolean isSitePicked;
+    
+    /**
+     * Has the site location been confirmed ?
+     */
+    private boolean isSiteLocConfirmed;
+    
     private boolean isMousePickedUp;
     
 	// Unique identifier
@@ -567,12 +572,12 @@ implements  LocalBoundedObject {
 	}
 
 	// for triggering the alertDialog()
-	public boolean isSitePicked() {
-		return isSitePicked;
+	public boolean isSiteLocConfirmed() {
+		return isSiteLocConfirmed;
 	}
 
-	public void setSitePicked(boolean value) {
-		this.isSitePicked = value;
+	public void setSiteLocConfirmed(boolean value) {
+		this.isSiteLocConfirmed = value;
 	}
 
 	public boolean isMousePicked() {

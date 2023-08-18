@@ -327,7 +327,7 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param unit
      */
 	private JMenuItem confirmSite(ConstructionSite site) {
-		boolean isConfirm = site.isSitePicked();
+		boolean isConfirm = site.isSiteLocConfirmed();
 		
 		JMenuItem confirmItem = new JMenuItem(Msg.getString("PopUpUnitMenu.confirmSite") 
 				+ " (" + Conversion.capitalize(isConfirm + "") + ")");
@@ -337,7 +337,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	
 			if (!isConfirm) {
 				// If it's not being confirmed
-				site.setSitePicked(true);
+				site.setSiteLocConfirmed(true);
 				confirmItem.setText(Msg.getString("PopUpUnitMenu.confirmSite") 
 						+ " (" + Conversion.capitalize(isConfirm + "") + ")");
 				logger.info(site, "Just confirmed the site for construction. Ready to go to the next phase.");

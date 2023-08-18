@@ -91,7 +91,7 @@ public class ConstructionMission extends AbstractMission
 	
 	private static final double SMALL_AMOUNT = 0.001D;
 	/** Time (millisols) required to prepare construction site for stage. */
-	private static final double SITE_PREPARE_TIME = 100D;
+	private static final double SITE_PREPARE_TIME = 500D;
 	// Default distance between buildings for construction.
 	private static final double DEFAULT_HABITABLE_BUILDING_DISTANCE = 5D;
 
@@ -630,7 +630,7 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private void selectSitePhase(Worker member) {
 		// Need player to acknowledge the site location before proceeding
-		if (site.isSitePicked()) {
+		if (site.isSiteLocConfirmed()) {
 			setPhaseEnded(true);
 			logger.info(settlement, site, "Ending the 'Select Site' phase.");
 		}
@@ -685,7 +685,11 @@ public class ConstructionMission extends AbstractMission
 		}
 		
 		// Check if site preparation time has expired
+		// TODO: generate a task to truly model what settlers need to do to prep a site
 		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
+			// Automatically confirm the site location after a certain period of time
+			site.setSiteLocConfirmed(true);
+			
 			setPhaseEnded(true);
 		}
 	}
