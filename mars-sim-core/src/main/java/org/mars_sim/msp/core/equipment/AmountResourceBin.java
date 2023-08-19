@@ -10,8 +10,8 @@ package org.mars_sim.msp.core.equipment;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 
 
 public class AmountResourceBin extends BaseBin {
@@ -23,7 +23,7 @@ public class AmountResourceBin extends BaseBin {
 
 	private Map<Integer, Bin> binMap = new HashMap<>();
 	
-	public AmountResourceBin(BinEntity entity, double cap) {
+	public AmountResourceBin(Entity entity, double cap) {
 		super(entity, cap);
 	}
 	

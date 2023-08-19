@@ -8,7 +8,6 @@ package org.mars_sim.msp.core;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.farming.BinEntity;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -31,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements Serializable, Loggable, UnitIdentifer, BinEntity, Comparable<Unit> {
+public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -167,38 +165,23 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 		// Instantiate Inventory as needed. Still needs to be pushed to subclass
 		// constructors
 		switch (getUnitType()) {
-		case ROBOT:
-
-		case CONTAINER:
-
-		case PERSON:
-			
-		case BUILDING:
-
-		case EVA_SUIT:
+		case BUILDING, CONTAINER, EVA_SUIT, PERSON, ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			break;
 			
 		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
-		case SETTLEMENT:
-
-		case CONSTRUCTION:
+		case CONSTRUCTION, MARS, SETTLEMENT:
 			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-			break;
-			
-		case MARS:
-			currentStateType = LocationStateType.MARS_SURFACE;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+			containerID = MARS_SURFACE_UNIT_ID;
 			break;
 
 		case MOON:
 			currentStateType = LocationStateType.MOON;
-			containerID = (Integer) MOON_UNIT_ID;
+			containerID = MOON_UNIT_ID;
 			break;
 			
 		default:
@@ -276,7 +259,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 	 * @return the unit's nickname
 	 */
 	public String getNickName() {
-		return name;
+		return name;  // This method should be dropped and getName used everywhere
 	}
 
 	/**
@@ -506,7 +489,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 			listeners = new HashSet<>();
 
 		synchronized(listeners) {	
-			//logger.info(this, "Add listeners #" + listeners.size() + " " + newListener.toString());
 			listeners.add(newListener);
 		}
 	}
@@ -522,7 +504,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 
 		if (listeners != null) {
 			synchronized(listeners) {
-				//logger.info(this, "Remove listeners #" + listeners.size() + " " + oldListener.toString());
 				listeners.remove(oldListener);
 			}
 		}
@@ -645,9 +626,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Bin
 	public boolean isInVehicle() {
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-
-//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-//			return getContainerUnit().isInVehicle();
 
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInVehicle();

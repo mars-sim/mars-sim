@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.Serializable;
+
 /**
  * Represents an Entity that is simulated by the system. These could be an active element
  * that is proactively managed or a passive object such as a Mission.
  */
-public interface Entity {
+public interface Entity extends Serializable {
 	
     /**
      * Gets the name of the entity.
