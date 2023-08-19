@@ -235,12 +235,15 @@
 		an edible block.</resource>
 	<resource name="Yeast" type="organism" phase="solid" edible="true">
 		Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
-<resource name="Spirulina" type="organism" phase="solid" edible="true">
+	<resource name="Spirulina" type="organism" phase="solid" edible="true">
 		Spirulina is multi-cellular and filamentous cyano-bacteria commonly known as blue-green algae that 
 		grows both in fresh as well as salt water. Similar to plants it produces energy from sunlight 
 		through the photosynthesis process. It grows and thrives in warm water alkaline ponds and rivers. 
 		It is one of the best potential sources of protein. 
 				
+		See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9143897/
+		"Wide Range Applications of Spirulina: From Earth to Space Missions"
+			 				
 		https://www.techno-preneur.net/technology/project-profiles/food/Spirulina.htm
 		
 		For uniform growth and for uniform harvesting, 30 grams of dry Spirulina is added 
@@ -506,6 +509,9 @@
 	 SiO2, most commonly found in nature as quartz and in various living
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
+	 <resource name="Silicone Elastomer" type="compound" phase="solid"> Highly stretchable, soft silicone elastomers 
+		 are of great interest for the fabrication of stretchable, soft devices. </resource>
+	 	
 	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 			 
 	<resource name="Sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
@@ -535,6 +541,54 @@
 	 thermal radiation of the sun and the bitter cold of space. See 'Efficiency of aluminized mylar 
 	 insulation at cryogenic temperatures' by James B. Heaney </resource>
 		 
+	<resource name="Nylon" type="utility" phase="solid"> Nylon C12H22N2O2, came from DuPont’s work in 
+		their high pressure ammonia laboratory. The innermost layer of the EVA suit is made up of a 
+		Nylon tricot material.</resource>
+	 	
+	<resource name="Kevlar" type="utility" phase="solid"> Kevlar is a trademark for one of DuPont’s 
+		aramid products as both Kevlar and Nomex are examples of chemicals called synthetic aromatic
+		polyamides or aramids for short. The fundamental structure of an aramid is C14H14N2O4.
+		Aramid fibers are short for aromatic polyamide. They are manufactured fibers where the 
+		composition is a type of synthetic polyamide, in which more than 85% of the linkages must 
+		link to two aromatic rings. Kevlar is prone to soaking up water in composite applications 
+		and it’s not ideal in compression, so fiberglass and carbon fiber are used in composites 
+		rather than Kevlar in those situations.</resource>
+		
+	<resource name="Paraffin Composites" type="utility" phase="solid"> Paraffin is a phase change 
+		materials (PCMs) and is a mixture of straight-chain n-alkanes with the general formula 
+		CH3-(CH2)n-CH3. Paraffin is a name that is commonly used to denote a group of saturated 
+		alkane hydrocarbons with the general formula CnH2n+2, where “n” is greater than 20. 
+		They are in both solid and liquid forms.
+		
+		Paraffins typically have high latent heat capacity. If the length of the 
+		chain increases, the melting ranges of waxes also increase. 
+
+		As a PCM that isothermally absorbs heat energy, it changes from solid to liquid. Paraffin 
+		is housed in a special metal matrix xposed to the space environment to radiate heat energy 
+		efficiently into space.
+		
+		See https://www.1-act.com/thermal-solutions/passive/pcm/
+		See https://paraffinwaxco.com/phase-change-materials/
+		See DOI: http://dx.doi.org/10.5772/intechopen.90487
+	</resource>	
+			 		 
+	<resource name="Thermoplastic Elastomer" type="utility" phase="solid">
+		Thermoplastic elastomers (TPE), sometimes referred to as thermoplastic rubbers, are a 
+		class of copolymers or a physical mix of polymers (usually a plastic and a rubber) 
+		that consist of materials with both thermoplastic and elastomeric properties.
+		
+		The benefit of using thermoplastic elastomers is the ability to stretch to moderate 
+		elongations and return to its near original shape creating a longer life and better 
+		physical range than other materials.
+		
+		TPE film is added to the liquid cooling garment to allow for water vapor or 
+		perspiration to travel out, away from the skin. The film is a monoflim membrance with 
+		superior permeability, water-vapor transmittion, and tear strength properties. It would
+		not allow water to penetrate in the opposite direction back to the skin. It is a one-way
+		water-vapor transport wicking material that maintain a comfortable microclimate between 
+		the fabric's surfaces closet to the skin.
+	</resource>	
+			 		 
 <!-- Mineral concentrations.
 
     Using instruments on the Mars Reconnaissance Orbiter they found the minerals

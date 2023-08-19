@@ -85,7 +85,7 @@ public class ConstructionMission extends AbstractMission
 	
 	private static final int MAX_PEOPLE = 10;
 
-	public final static int FIRST_AVAILABLE_SOL = 1;
+	public final static int FIRST_AVAILABLE_SOL = 2;
 
 	private static final double ASSIGN_PERCENT_PROBABILITY = 10D;
 	

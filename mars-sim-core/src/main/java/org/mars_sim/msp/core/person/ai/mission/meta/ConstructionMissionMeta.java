@@ -163,7 +163,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
         // Consider the size of the settlement population
         int numPeople = settlement.getNumCitizens();
-        double limit = 4 * numSites - numPeople/24.0;
+        double limit = Math.min(0, 4 * numSites - numPeople/24.0);
 
         result = result/Math.pow(10, 2 + limit);
         

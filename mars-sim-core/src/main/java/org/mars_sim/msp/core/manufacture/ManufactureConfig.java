@@ -31,7 +31,7 @@ public class ManufactureConfig {
 	private static final Logger logger = Logger.getLogger(ManufactureConfig.class.getName());
 
 	// Element names
-	private static final int MAX_NUM_INPUT_RESOURCES = 4;
+	private static final int MAX_NUM_INPUT_RESOURCES = 5;
 	
 	private static final String PROCESS = "process";
 	private static final String NAME = "name";	

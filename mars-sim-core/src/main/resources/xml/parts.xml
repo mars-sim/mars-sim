@@ -76,7 +76,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Plastic Tubing" type="utility" mass=".1">
+	<part name="Plastic Tubing" type="utility" mass=".05">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="2" />
 			<entity name="farming" probability="5" max-number="5" />
@@ -262,7 +262,15 @@
 		<description>a standard set of clothing for indoor use.</description>
 	</part>
 
-	<part name="EVA Helmet" type="EVA" mass="1.0" >
+	<part name="Liquid Cooling Garment" type="utility" mass="1.5" >
+		<description>The innermost layer of the EVA suit. Provides thermal control
+			by circulating air and water cooled by a sublimator over crew member's
+			body. Can handle peak loads of up to 500 kcal/hr for 15 minutes, 
+			400 kcal/hr for up to an hour, or 250 kcal/hr for up to 7 hours.			
+		</description>
+	</part>
+	
+	<part name="EVA Helmet" type="EVA" mass="2.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
