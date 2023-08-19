@@ -288,9 +288,8 @@ public class PopUpUnitMenu extends JPopupMenu {
         		site.relocateSite();
         		
         		if (vehicles != null && !vehicles.isEmpty()) {
-	        		Coordinates coord = site.getCoordinates();
 	        		for (Vehicle v: vehicles) {
-	        			v.setCoordinates(coord);
+	        			v.setCoordinates(site.getCoordinates());
 	        		}
         		}
 	    		repaint();

@@ -705,6 +705,10 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
+		// Q: How to tell the different between a person doing EVA right outside a settlement 
+		//    and a person doing EVA right outside a vehicle that are on a mission far away from the settlement ?
+		// Ans: Use coordinates to see if it matches 
+		
 		return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType || isBuried;
 	}
 

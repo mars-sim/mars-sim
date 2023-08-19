@@ -208,16 +208,15 @@ public class CollectionUtils {
 		List<Person> result = new ArrayList<>();
 
 		if (settlement != null) {
-			Iterator<Person> i = unitManager.getPeople().iterator();
+			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 				// Only select living people.
 				if (!person.getPhysicalCondition().isDead()) {
 
 					// Select a person that is at the settlement location.
-					Coordinates settlementLoc = settlement.getCoordinates();
 					Coordinates personLoc = person.getCoordinates();
-					if (personLoc.equals(settlementLoc)) {
+					if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
 						result.add(person);
 					}
 				}
