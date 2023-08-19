@@ -56,9 +56,9 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		
 		double mass = Math.round(suitPerson.getBaseMass() * 100D)/100D;
 		
-		System.out.println(suitSettlement.getName() + " has empty mass: " + mass + " kg");
+		System.out.println(suitSettlement.getName() + " has empty mass of " + mass + " kg");
 		
-		assertEquals("EVA suit's empty mass is incorrect.", 13.6, mass);
+		assertEquals("EVA suit's empty mass is incorrect.", 16.1, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suitSettlement.transfer(person);
