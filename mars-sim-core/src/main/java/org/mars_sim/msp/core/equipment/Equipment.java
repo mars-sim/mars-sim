@@ -431,11 +431,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (LocationStateType.ON_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInSettlement();
 
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType) {
-			// if the vehicle is parked in a garage
-			if (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType()) {
-				return true;
-			}
+		// if the vehicle is parked in a garage
+		if ((LocationStateType.INSIDE_VEHICLE == currentStateType) 
+				&& (LocationStateType.INSIDE_SETTLEMENT == ((Vehicle)getContainerUnit()).getLocationStateType())) {
+			return true;
 		}
 
 		if (getContainerUnit().getUnitType() == UnitType.PERSON) {
@@ -460,35 +459,33 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public boolean transfer(Unit destination) {
 		boolean canRetrieve = false;
 		boolean canStore = false;
-//		boolean transferred = false;
 		Unit cu = getContainerUnit();
 
-		if (cu.getUnitType() == UnitType.MARS) {
-			// do nothing. mars surface currently doesn't track equipment
-			canRetrieve = true;
+		if (cu instanceof EquipmentOwner deo) {
+			canRetrieve = deo.removeEquipment(this);
 		}
 		else {
-			canRetrieve = ((EquipmentOwner)cu).removeEquipment(this);
+			// do nothing. mars surface currently doesn't track equipment
+			canRetrieve = true;
 		}
 
 		if (!canRetrieve) {
 				logger.warning(this + " could not be retrieved from '"
 						+ cu + "'.");
-				// NOTE: need to revert back the retrieval action
 		}
 		else {	
-
-			if (destination.getUnitType() == UnitType.MARS) {
-				// do nothing. mars surface currently doesn't track equipment
-				canStore = true;
-			}
-			else if (destination.getUnitType() == UnitType.BUILDING) {
+			if (destination.getUnitType() == UnitType.BUILDING) {
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				destination = (((Building)destination)).getSettlement();
+				destination = ((Building)destination).getSettlement();
+			}
+
+			if (destination instanceof EquipmentOwner eo) {
+				canStore = eo.addEquipment(this);
 			}
 			else {
-				canStore = ((EquipmentOwner)destination).addEquipment(this);
+				// do nothing. mars surface currently doesn't track equipment
+				canStore = true;
 			}
 
 			if (!canStore) {
@@ -541,8 +538,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = getEquipmentType().hashCode() ;
-		hashCode *= getIdentifier();
+		int hashCode = getIdentifier();
 		return hashCode % 64;
 	}
 

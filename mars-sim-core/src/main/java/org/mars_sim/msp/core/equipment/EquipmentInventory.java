@@ -18,6 +18,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -32,8 +33,7 @@ public class EquipmentInventory
 
 	private static final long serialVersionUID = 1L;
 
-	// default logger.
-//	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
 
 	private Unit owner;
 
@@ -93,8 +93,6 @@ public class EquipmentInventory
 		for (Equipment e: equipmentSet) {
 			result += e.getMass();
 		}
-//		System.out.println("total equipment mass: " + result);
-//		System.out.println("microinv stored mass: " + microInventory.getStoredMass());
 		return result + microInventory.getStoredMass();
 	}
 
@@ -186,13 +184,15 @@ public class EquipmentInventory
 	@Override
 	public boolean addEquipment(Equipment equipment) {
 		boolean contained = equipmentSet.contains(equipment);
-		boolean enoughCap = cargoCapacity >= getStoredMass() + equipment.getMass();
-//		System.out.println("contained: " + contained);
-//		System.out.println("cargoCapacity: " + cargoCapacity);
-//		System.out.println("getStoredMass(): " + getStoredMass());
-//		System.out.println("equipment.getMass(): " + equipment.getMass());
-		if (!contained && enoughCap) {
-			return equipmentSet.add(equipment);
+		if (!contained) {
+			double newCapacity = cargoCapacity - (getStoredMass() + equipment.getMass());
+			if (newCapacity >= 0D) {
+				contained = equipmentSet.add(equipment);
+			}
+			else {
+				logger.warning(owner, "No capacity to hold " + equipment.getName()
+								+ ", new cap=" + newCapacity);
+			}
 		}
 		return contained;
 	}
@@ -260,23 +260,6 @@ public class EquipmentInventory
 		return hasIt;
 	}
 	
-// Future: Will add the following
-//	/**
-//	 * Remove an equipment
-//	 *
-//	 * @param name
-//	 */
-//	@Override
-//	public boolean removeEquipment(String name) {
-//		for (Equipment e: equipmentSet) {
-//			if (e.getName().equalsIgnoreCase(name)) {
-//				equipmentSet.remove(e);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-	
 	/**
 	 * Stores the item resource.
 	 *
@@ -315,19 +298,6 @@ public class EquipmentInventory
 		if (stored > 0) {
 			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
 		}
-
-		// if (shortfall > 0D) {
-		// 	for (Equipment e: equipmentSet) {
-		// 		if (e instanceof Container) {
-		// 			// Only take resources out of Containers;
-		// 			// other active Equipment, e.g. EVASuit need the resources to function
-		// 			shortfall = e.retrieveAmountResource(resource, shortfall);
-		// 			if (shortfall == 0D) {
-		// 				return 0D;
-		// 			}
-		// 		}
-		// 	}
-		// }
 
 		// Return any missing quantity
 		return shortfall;
@@ -372,16 +342,6 @@ public class EquipmentInventory
 	@Override
 	public double getAmountResourceCapacity(int resource) {
 		return microInventory.getCapacity(resource);
-
-		// double result = 0;
-
-		// for (Equipment e: equipmentSet) {
-		// 	if (e instanceof ResourceHolder) {
-		// 		result += e.getAmountResourceCapacity(resource);
-		// 	}
-		// }
-
-		// return result + microInventory.getCapacity(resource);
 	}
 
 	/**
@@ -395,14 +355,6 @@ public class EquipmentInventory
 
 		double cap = microInventory.getCapacity(resource);
 		double stored = microInventory.getAmountResourceStored(resource);
-
-		// for (Equipment e: equipmentSet) {
-
-		// 	if (e instanceof ResourceHolder) {
-		// 		cap += e.getAmountResourceCapacity(resource);
-		// 		stored += e.getAmountResourceStored(resource);
-		// 	}
-		// }
 
 		// Note: it should not include the general capacity,
 		// aka cargo capacity, getRemainingCargoCapacity(), 
@@ -423,21 +375,7 @@ public class EquipmentInventory
 		double cap = microInventory.getCapacity(resource);
 		double stored = microInventory.getAmountResourceStored(resource);
 		
-		if (cap > stored)
-			return true;
-		
-		// for (Equipment e: equipmentSet) {
-
-		// 	if (e instanceof ResourceHolder) {
-		// 		cap = e.getAmountResourceCapacity(resource);
-		// 		stored = e.getAmountResourceStored(resource);
-		// 	}
-			
-		// 	if (cap > stored)
-		// 		return true;
-		// }
-		
-		return false;
+		return (cap > stored);
 	}
 	
 	/**
@@ -485,9 +423,7 @@ public class EquipmentInventory
 		// Do not consume resources from container Equipment. THis is an expensive
 		// and can generate concurrency issues
 		for (Equipment e: equipmentSet) {
-//			if (e instanceof ResourceHolder) {
-		 		result += e.getAmountResourceStored(resource);
-//		 	}
+		 	result += e.getAmountResourceStored(resource);
 		 }
 		return result + getAmountResourceStored(resource);
 	}
@@ -534,11 +470,6 @@ public class EquipmentInventory
 			}
 		}
 
-//		for (Equipment e : equipmentSet) {
-//			if (e != null && e.getUnitType() == UnitType.CONTAINER && type == e.getEquipmentType()) {
-//				result.add((Container)e);
-//			}
-//		}
 		return result;
 	}
 
@@ -610,14 +541,6 @@ public class EquipmentInventory
 	@Override
 	public Set<Integer> getItemResourceIDs() {
 		return microInventory.getItemsStored();
-		// Set<Integer> set = new HashSet<>(microInventory.getItemsStored());
-		// for (Equipment e: equipmentSet) {
-		// 	if (e instanceof ItemHolder) {
-		// 		set.addAll(((ItemHolder) e).getItemResourceIDs());
-		// 	}
-		// }
-
-		// return set;
 	}
 
 	/**
@@ -770,18 +693,6 @@ public class EquipmentInventory
 		return microInventory.getItemResourceRemainingQuantity(resource);
 	}
 	
-	
-//	/**
-//	 * Adds an amount resource container to this container holder
-//	 * 
-//	 * @param container
-//	 * @param type
-//	 * @param resource
-//	 */
-//	void addAmountResourceContainer(ContainerType type, int resource) {
-//	}
-
-	
 	/**
 	 * Checks if it has the container type.
 	 * 
@@ -933,7 +844,6 @@ public class EquipmentInventory
 		for (AmountResourceBin c: amountResourceBinSet) {
 			if (c.getBinType() == type) {
 				if (c.getBinMap().containsKey(id)) {
-//					Bin mc = c.getContainerMap().get(id);
 					return c.getCapacity();
 				}
 			}
