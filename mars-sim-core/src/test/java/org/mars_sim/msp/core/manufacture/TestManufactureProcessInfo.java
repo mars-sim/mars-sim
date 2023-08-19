@@ -35,8 +35,14 @@ public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
     public void testEVASuitParts() {
     	
     	List<String> inputList = mInfo.getInputNames();
-//		System.out.println(inputList);
-		assertEquals(15, inputList.size());
+		System.out.println("No of EVA suit's parts : " + inputList.size());
+		
+		// [eva helmet, helmet visor, pressure suit, coveralls, Liquid Cooling Garment, 
+		// eva gloves, eva boots, eva pads, eva backpack, eva antenna, 
+		// eva radio, eva battery, suit heating unit, electrical wire, wire connector, 
+		// biosensor]
+
+		assertEquals(16, inputList.size());
     }
     
     public void testEVASuitProcess() {
