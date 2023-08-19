@@ -73,7 +73,7 @@ public class ReviewJobReassignment extends Task {
 					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
 
 				// If person is in a settlement, try to find an office building.
-				Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
+				Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
 				// Note: office building is optional
 				if (officeBuilding != null) {

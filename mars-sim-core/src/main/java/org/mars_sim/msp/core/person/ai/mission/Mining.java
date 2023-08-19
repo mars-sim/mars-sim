@@ -213,7 +213,8 @@ public class Mining extends EVAMission
 			Vehicle vehicle = i.next();
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				boolean usable = !vehicle.isReserved();
-                usable = vehicle.isVehicleReady();
+				
+                usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
 
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
 					usable = false;

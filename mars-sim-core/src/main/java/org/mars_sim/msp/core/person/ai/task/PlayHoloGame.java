@@ -73,7 +73,7 @@ public class PlayHoloGame extends Task {
 			
 			if (rand == 0) {
 				// if rec building is not available, go to a gym
-				Building gym = BuildingManager.getAvailableGymBuilding(person);
+				Building gym = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
 				if (gym != null) {
 					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 					walkSite = true;
@@ -81,7 +81,7 @@ public class PlayHoloGame extends Task {
 			}
 			
 			else if (rand == 1 || rand == 2) {
-				Building rec = BuildingManager.getAvailableRecBuilding(person);
+				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 				if (rec != null) {
 					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					walkSite = true;

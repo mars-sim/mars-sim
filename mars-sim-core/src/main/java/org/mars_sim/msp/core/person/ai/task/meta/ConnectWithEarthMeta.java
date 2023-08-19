@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -74,7 +75,7 @@ public class ConnectWithEarthMeta extends FactoryMetaTask {
 	        
 	        if (person.isInSettlement()) {	
 	            // Get an available office space.
-	            Building building = BuildingManager.getAvailableCommBuilding(person);
+	            Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.COMMUNICATION);
 	
 	            if (building != null) {
 	            	result += 5;

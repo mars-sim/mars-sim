@@ -40,7 +40,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISTIC);
-		setPreferredJob(JobType.ARCHITECT);
+		setPreferredJob(JobType.ARCHITECT, JobType.ENGINEER, JobType.TECHNICIAN);
 	}
 
     @Override

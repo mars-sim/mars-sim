@@ -51,7 +51,7 @@ public class Workout extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find a gym.
-			Building gymBuilding = BuildingManager.getAvailableGymBuilding(person);
+			Building gymBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
 			if (gymBuilding != null) {
 				// Walk to gym building.
 				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, FunctionType.EXERCISE, true);

@@ -54,7 +54,7 @@ public class WriteReport extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
+			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 			if (officeBuilding != null) {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);

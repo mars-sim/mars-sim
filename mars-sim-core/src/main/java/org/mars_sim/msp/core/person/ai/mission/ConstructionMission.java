@@ -87,11 +87,13 @@ public class ConstructionMission extends AbstractMission
 
 	public final static int FIRST_AVAILABLE_SOL = 2;
 
-	private static final double ASSIGN_PERCENT_PROBABILITY = 10D;
+	private static final int DIG_REGOLITH_PERCENT_PROBABILITY = 10;
+	
+	private static final int CONSTRUCT_PERCENT_PROBABILITY = 30;
 	
 	private static final double SMALL_AMOUNT = 0.001D;
 	/** Time (millisols) required to prepare construction site for stage. */
-	private static final double SITE_PREPARE_TIME = 500D;
+	private static final double SITE_PREPARE_TIME = 250D;
 	// Default distance between buildings for construction.
 	private static final double DEFAULT_HABITABLE_BUILDING_DISTANCE = 5D;
 
@@ -113,6 +115,8 @@ public class ConstructionMission extends AbstractMission
 	private ConstructionSite site;
 	private ConstructionStage stage;
 
+	private ConstructionManager manager;
+	
 	private List<GroundVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
 
@@ -155,6 +159,7 @@ public class ConstructionMission extends AbstractMission
 			// Set initial mission phase.
 			if (site == null) {
 				endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+				return;
 			}
 
 			else {
@@ -169,8 +174,11 @@ public class ConstructionMission extends AbstractMission
 		
 		// Need to set the description of this mission correctly
 		// e.g. Pouring the foundation, Building the frame, or Constructing the building
-		
-		//setName(stage.getInfo().getName());
+
+		// Create mission designation
+		createFullDesignation();
+		// Call missionManager to add this mission
+	    missionManager.addMission(this);
 	}
 
 	/**
@@ -181,7 +189,10 @@ public class ConstructionMission extends AbstractMission
 	public void determineSiteByProfit(int skill) {
 		// Note: a settler starts this mission
 		logger.info(settlement, "Determining sites by profits.");
-		ConstructionManager manager = settlement.getConstructionManager();
+
+		if (manager == null)
+			manager = settlement.getConstructionManager();
+				
 		ConstructionValues values = manager.getConstructionValues();
 		values.clearCache();
 		double existingSitesProfit = values.getAllConstructionSitesProfit(skill);
@@ -285,7 +296,7 @@ public class ConstructionMission extends AbstractMission
 			}
 			
 			else {
-				logger.info(settlement, "No unfinished stage for " + cSite + ".");
+				logger.info(settlement, "Found no unfinished stages at " + cSite + ".");
 				
 				if (stageInfo == null) {
 					stageInfo = determineNewStageInfoByProfits(site, constructionSkill);
@@ -314,7 +325,7 @@ public class ConstructionMission extends AbstractMission
 	}
 
 	/**
-	 * Constructor 2 for Case 2 and Case 3: player manually creates this mission.
+	 * Constructor 2: Player manually creates this mission.
 	 *
 	 * @param members
 	 * @param settlement
@@ -341,8 +352,6 @@ public class ConstructionMission extends AbstractMission
 		addMembers(members, false);
 		
 		setMissionCapacity(MAX_PEOPLE);
-
-		ConstructionManager manager = settlement.getConstructionManager();
 
 		if (site != null) {
 			// site already selected
@@ -377,6 +386,9 @@ public class ConstructionMission extends AbstractMission
 			// Case 3a: if using GUI to pick a site
 			// Case 3b: if GUI is NOT in use
 
+			if (manager == null)
+				manager = settlement.getConstructionManager();
+
 			site = manager.createNewConstructionSite();
 
 			if (site != null) {
@@ -401,6 +413,7 @@ public class ConstructionMission extends AbstractMission
 
 			else {
 				endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+				return;
 			}
 
 			setupConstructionStage(site, stageInfo);
@@ -442,33 +455,8 @@ public class ConstructionMission extends AbstractMission
 		}
 	}
 
-//	public void setMembers() {
-//		// Add mission members.
-//		Iterator<Worker> i = members.iterator();
-//		while (i.hasNext()) {
-//			Worker member = i.next();
-//			if (member.getUnitType() == UnitType.PERSON) {
-//				Person person = (Person) member;
-//				person.getMind().setMission(this);
-//				person.getShiftSlot().setOnCall(true);
-//			}
-//		}
-//	}
-
-//	public void retrieveVehicles() {
-//		// Retrieve construction vehicles.
-//		Iterator<GroundVehicle> j = constructionVehicles.iterator();
-//		while (j.hasNext()) {
-//			GroundVehicle vehicle = j.next();
-//			vehicle.setReservedForMission(true);
-//			if (!settlement.removeParkedVehicle(vehicle)) {
-//				endMissionProblem(vehicle, "Can not remove parked vehicle");
-//			}
-//		}
-//	}
-
 	/**
-	 * Reserve construction vehicles for the mission.
+	 * Reserves construction vehicles for the mission.
 	 */
 	public void reserveConstructionVehicles() {
 		if (stage != null) {
@@ -553,8 +541,9 @@ public class ConstructionMission extends AbstractMission
 	 */
 	public ConstructionStageInfo determineNewStageInfoByProfits(ConstructionSite site, int skill) {
 		ConstructionStageInfo result = null;
-
-		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+		if (manager == null)
+			manager = settlement.getConstructionManager();
+		ConstructionValues values = manager.getConstructionValues();
 		Map<ConstructionStageInfo, Double> stageProfits = values.getNewConstructionStageProfits(site, skill);
 		if (!stageProfits.isEmpty()) {
 			result = RandomUtil.getWeightedRandomObject(stageProfits);
@@ -579,7 +568,7 @@ public class ConstructionMission extends AbstractMission
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				boolean usable = !vehicle.isReserved();
 
-                usable = vehicle.isVehicleReady();
+                usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
 
 				if (((Crewable) vehicle).getCrewNum() > 0)
 					usable = false;
@@ -658,7 +647,7 @@ public class ConstructionMission extends AbstractMission
 	private void retrieveMaterials(Worker member) {
 		// If material not available, prompt settlers to dig local regolith
 		Person p = (Person) member;
-		if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT_PROBABILITY)
+		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)
 			&& member.getUnitType() == UnitType.PERSON) {
 			boolean accepted = assignTask(p, new DigLocalRegolith(p));
 			if (accepted)
@@ -792,16 +781,22 @@ public class ConstructionMission extends AbstractMission
 			setPhaseEnded(true);
 		}
 
+		boolean canAssign = false;
 		if (!getPhaseEnded()) {
 			// Assign construction task to member.
 			Person p = (Person) member;
-			if (RandomUtil.lessThanRandPercent(ASSIGN_PERCENT_PROBABILITY)
+			if (RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& member.getUnitType() == UnitType.PERSON
 				&& ConstructBuilding.canConstruct(p, site)) {
-					assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
+				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
 			}
 		}
-
+		
+		if (canAssign)
+			logger.info(member.getAssociatedSettlement(), member, 30_000L, "Assigned to construct " + site + ".");
+		else
+			logger.info(member.getAssociatedSettlement(), member, 30_000L, "Not ready to be assigned to construct " + site + ".");
+		
 		checkConstructionStageComplete();
 	}
 
@@ -811,12 +806,14 @@ public class ConstructionMission extends AbstractMission
 	public void checkConstructionStageComplete() {
 		if (stage.isComplete()) {
 			setPhaseEnded(true);
-			settlement.getConstructionManager().getConstructionValues().clearCache();
+			if (manager == null)
+				manager = settlement.getConstructionManager();
+			manager.getConstructionValues().clearCache();
 
 			if (site.isAllConstructionComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
 				Building building = site.createBuilding(((Unit)settlement).getIdentifier());
-				settlement.getConstructionManager().removeConstructionSite(site);
+				manager.removeConstructionSite(site);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 				logger.info(settlement, "New building '" + site.getBuildingName() + "' constructed.");
 			}

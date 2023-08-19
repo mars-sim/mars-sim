@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * The Meta task for the PlanMission task.
@@ -58,8 +59,8 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 	}
 
     /**
-     * Create a SettlmentTask to plan a mission. The score is based on how many missions can be
-     * supported at the settlement
+     * Creates a SettlmentTask to plan a mission. The score is based on how many missions can be
+     * supported at the settlement.
      */
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
@@ -75,7 +76,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     }
 
     /**
-     * Create the person modifier base don their role in the settlement
+     * Creates the person modifier based on their role in the settlement.
      */
     @Override
     public double getPersonSettlementModifier(SettlementTask t, Person p) {
@@ -91,20 +92,20 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         if (fatigue > 1000 || stress > 75 || hunger > 750)
             return 0;
             
-        double result = (10/(fatigue + 1) + 10/(stress + 1) + 10/(hunger + 1));
+        double result = 1.5 * ( 1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
 
         if (result > 0) {	 
             double roleFactor = switch (p.getRole().getType()) {
-                case MISSION_SPECIALIST -> 3.125;
-                case CHIEF_OF_MISSION_PLANNING  -> 2.25;
-                case SUB_COMMANDER -> 1.375;
-                case COMMANDER -> 1.25;
-                default -> 1;
+                case CHIEF_OF_MISSION_PLANNING  -> 2.0;
+                case MISSION_SPECIALIST -> 1.75;
+                case COMMANDER -> 1.5;
+                case SUB_COMMANDER -> 1.25;
+                default -> 0.75;
             };
             result *= roleFactor;
 
             // Get an available office space.
-            Building building = BuildingManager.getAvailableAdminBuilding(p);
+            Building building = BuildingManager.getAvailableFunctionTypeBuilding(p, FunctionType.ADMINISTRATION);
             result *= getBuildingModifier(building, p);
 
             result *= getPersonModifier(p);

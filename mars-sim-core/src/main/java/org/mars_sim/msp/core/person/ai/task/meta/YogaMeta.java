@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * Meta task for the Yoga task.
@@ -79,7 +80,7 @@ public class YogaMeta extends FactoryMetaTask {
             	return 0;
             
             // Get an available gym.
-            Building building =  BuildingManager.getAvailableGymBuilding(person);
+            Building building =  BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
             result *= getBuildingModifier(building, person);
         }
         

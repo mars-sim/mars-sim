@@ -97,8 +97,10 @@ public final class LocationFormat {
 	 */
 	private static void outputCoordinates(Loggable location, StringBuilder outputMessage) {
 		Coordinates coords = location.getCoordinates();
-		outputMessage.append(coords.getFormattedLatitudeString());
-		outputMessage.append(' ');
-		outputMessage.append(coords.getFormattedLongitudeString());
+		if (coords != null) {
+			outputMessage.append(coords.getFormattedLatitudeString());
+			outputMessage.append(' ');
+			outputMessage.append(coords.getFormattedLongitudeString());
+		}
 	}
 }

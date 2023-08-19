@@ -12,7 +12,10 @@ import java.io.Serializable;
  * Represent a type of preference defined by a Mission agenda.
  */
 public class PreferenceKey implements Serializable {
-    /**
+
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Type of Preference
      */
     public enum Type {

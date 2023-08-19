@@ -70,13 +70,13 @@ extends Task {
 		// If person is in a settlement, try to find a place to relax.	
 		if (person.isInSettlement()) {
 			try {
-				Building rec = BuildingManager.getAvailableRecBuilding(person);
+				Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 				if (rec != null) {
 					// Walk to recreation building.
 				    walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				} else {
                 	// if rec building is not available, go to a gym
-                	Building gym = BuildingManager.getAvailableGymBuilding(person);
+                	Building gym = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                } else {

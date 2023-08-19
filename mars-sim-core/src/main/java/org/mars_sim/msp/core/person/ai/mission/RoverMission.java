@@ -615,11 +615,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
     						// Since the rover is in the garage and the person is in the rover,
     						// need to check if the person can walk out of the rover without having to go through EVA
     						
-    						logger.info(rover, "Status report on " + p.getName() 
-	    							+ ".  Settlement: " + settlementName
-	    							+ ".  Building: " + buildingName
-	    							+ ".  Rover: " + roverName
-	    							);
+//    						logger.info(rover, 30_000L, "Status report on " + p.getName() 
+//	    							+ ".  Settlement: " + settlementName
+//	    							+ ".  Building: " + buildingName
+//	    							+ ".  Rover: " + roverName
+//	    							);
+    						
 //    						rover.removePerson(p);
     					}
     					else {

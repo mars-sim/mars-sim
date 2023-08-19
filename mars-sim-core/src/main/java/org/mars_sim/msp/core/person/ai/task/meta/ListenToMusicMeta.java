@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -71,7 +72,7 @@ public class ListenToMusicMeta extends FactoryMetaTask {
 
 	        if (person.isInSettlement()) {
 				// Check if a person has a designated bed
-				Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
+				Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 				result *= getBuildingModifier(recBuilding, person);
 
 	            // Modify probability if during person's work shift.

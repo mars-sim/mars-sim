@@ -728,41 +728,6 @@ public class BuildingManager implements Serializable {
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());
 	}
-
-	
-	/**
-	 * Gets an available building of a particular function type that the person can use. 
-	 * Returns null if no building is currently available.
-	 *
-	 * @param person the person
-	 * @param functionType FunctionType 
-	 * @return available  building
-	 * @throws BuildingException if error finding dining building.
-	 */
-	public static Building getAvailableBuilding(Person person, FunctionType functionType) {
-		Building b = null;
-
-		// If this person is located in the settlement
-		Settlement settlement = person.getSettlement();	
-		if (settlement != null) {
-			Set<Building> set0 = BuildingManager.getBuildingsinSameZone(person, functionType);
-			Set<Building> set1 = BuildingManager.getWalkableBuildings(person, set0);
-			set1 = BuildingManager.getLeastCrowdedBuildings(set1);
-
-			if (!set1.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						set1);
-				b = RandomUtil.getWeightedRandomObject(probs);
-			}
-			else if (!set0.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						set0);
-				b = RandomUtil.getWeightedRandomObject(probs);
-			}
-		}
-
-		return b;
-	}
 	
 	/**
 	 * Gets an available dining building that the person can use. Returns null if no
@@ -782,6 +747,12 @@ public class BuildingManager implements Serializable {
 			
 			Set<Building> list0 = settlement.getBuildingManager().getDiningBuildings(person);
 			Set<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
+			if (list1.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list0);
+				return RandomUtil.getWeightedRandomObject(probs);
+			}
+			
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
 				list1 = BuildingManager.getChattyBuildings(list1);
@@ -793,13 +764,8 @@ public class BuildingManager implements Serializable {
 						list1);
 				b = RandomUtil.getWeightedRandomObject(probs);
 			}
-			else if (!list0.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list0);
-				b = RandomUtil.getWeightedRandomObject(probs);
-			}
 		}
-
+		
 		return b;
 	}
 
@@ -2278,24 +2244,6 @@ public class BuildingManager implements Serializable {
 
 		if (scores.isEmpty())
 			return null;
-				
-//		Map.Entry<Computation, Double> maxEntry = null; 
-//		for (Entry<Computation, Double> entry : scores.entrySet()) {
-//			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
-//		        maxEntry = entry;
-//		    }
-//		}
-//	
-//		if (maxEntry != null)
-//			return maxEntry.getKey();
-
-		// Note: Use probability selection	
-//		double minScore = 0; 
-//		for (double score : scores.values()) {
-//			if (minScore < score) {
-//				minScore = score;
-//		    }
-//		}
 
 		// Note: Use probability selection	
 		return RandomUtil.getWeightedRandomObject(scores);
@@ -2377,16 +2325,6 @@ public class BuildingManager implements Serializable {
 
 		if (scores.isEmpty())
 			return null;
-				
-//		Map.Entry<Computation, Double> maxEntry = null; 
-//		for (Entry<Computation, Double> entry : scores.entrySet()) {
-//			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
-//		        maxEntry = entry;
-//		    }
-//		}
-//		
-//		if (maxEntry != null)
-//			return maxEntry.getKey();
 
 		// Note: Use probability selection	
 		return RandomUtil.getWeightedRandomObject(scores);
@@ -2432,87 +2370,30 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an available building with the workout function.
+	 * Gets an available building with a particular function.
 	 *
-	 * @param person the person looking for the recreational facility.
+	 * @param person the person looking for a facility.
 	 * @return an available space or null if none found.
 	 */
-	public static Building getAvailableGymBuilding(Person person) {
+	public static Building getAvailableFunctionTypeBuilding(Person person, FunctionType functionType) {
 		Building result = null;
 
-		// If person is in a settlement, try to find a building with an office.
+		// If person is in a settlement, try to find a building of functionType
 		if (person.isInSettlement()) {
 
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.EXERCISE)
+			Set<Building> bldgs0 = person.getSettlement().getBuildingManager().getBuildingSet(functionType)
 							.stream()
 							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
 									&& !b.getMalfunctionManager().hasMalfunction())
 							.collect(Collectors.toSet());
 
-			bldgs = getLeastCrowdedBuildings(bldgs);
+			Set<Building> bldgs1 = getLeastCrowdedBuildings(bldgs0);
 
-			if (!bldgs.isEmpty()) {
-				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
+			if (bldgs1.isEmpty()) {
+				return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs0));
 			}
-		}
-
-		return result;
-	}
-	
-	/**
-	 * Gets an available building with the recreational function.
-	 *
-	 * @param person the person looking for the recreational facility.
-	 * @return an available space or null if none found.
-	 */
-	public static Building getAvailableRecBuilding(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with an office.
-		if (person.isInSettlement()) {
-
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.RECREATION)
-							.stream()
-							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-									&& !b.getMalfunctionManager().hasMalfunction())
-							.collect(Collectors.toSet());
-
-			bldgs = getLeastCrowdedBuildings(bldgs);
-
-			if (!bldgs.isEmpty()) {
-				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an available building with the comm function.
-	 *
-	 * @param person the person looking for the comm facility.
-	 * @return an available space or null if none found.
-	 */
-	public static Building getAvailableCommBuilding(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with an office.
-		if (person.isInSettlement()) {
-
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.COMMUNICATION)
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-
-			bldgs = getLeastCrowdedBuildings(bldgs);
-
-			if (!bldgs.isEmpty()) {
-				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-			}
+			
+			return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs0));
 		}
 
 		return result;
@@ -2541,7 +2422,7 @@ public class BuildingManager implements Serializable {
 			if (UnitType.PERSON == worker.getUnitType()) {
 				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
 
-				if (kitchenBuildings.size() > 0) {
+				if (!kitchenBuildings.isEmpty()) {
 					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)worker, kitchenBuildings);
 					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 				}
@@ -2559,37 +2440,6 @@ public class BuildingManager implements Serializable {
 
 		return result;
 	}
-
-	
-	/**
-	 * Gets an available building with the admin function.
-	 *
-	 * @param person the person looking for the admin facility.
-	 * @return an available space or null if none found.
-	 */
-	public static Building getAvailableAdminBuilding(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with an office.
-		if (person.isInSettlement()) {
-
-			Set<Building> bldgs = person.getSettlement().getBuildingManager().getBuildingSet(FunctionType.ADMINISTRATION)
-					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
-
-			bldgs = getLeastCrowdedBuildings(bldgs);
-
-			if (!bldgs.isEmpty()) {
-				Map<Building, Double> selectedBldgs = getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-			}
-		}
-
-		return result;
-	}
-
 	
 	/**
 	 * Gets the building that owns (is attached to) the EVA Airlock.

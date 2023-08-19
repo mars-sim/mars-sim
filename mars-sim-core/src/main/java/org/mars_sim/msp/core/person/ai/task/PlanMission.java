@@ -71,7 +71,7 @@ public class PlanMission extends Task {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = BuildingManager.getAvailableAdminBuilding(person);
+			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
 			// Note: office building is optional
 			if (officeBuilding != null) {

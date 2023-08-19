@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -84,7 +85,7 @@ public class WorkoutMeta extends FactoryMetaTask {
             	return 0;
             
             // Get an available gym.
-            Building building = BuildingManager.getAvailableGymBuilding(person);
+            Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.EXERCISE);
             result *= getBuildingModifier(building, person);
   
             if (person.isInVehicle()) {	

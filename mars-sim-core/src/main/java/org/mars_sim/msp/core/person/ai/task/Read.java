@@ -85,7 +85,7 @@ public class Read extends Task {
 				}
 
 				else if (rand == 1) {
-					Building rec = BuildingManager.getAvailableBuilding(person, FunctionType.RECREATION);
+					Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
 					if (rec != null) {
 						walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					}

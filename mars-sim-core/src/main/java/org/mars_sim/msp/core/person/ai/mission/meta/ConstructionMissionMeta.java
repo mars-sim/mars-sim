@@ -124,7 +124,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	                    }
 	                    
 	                    if (newSiteProfit > existingSiteProfit) {
-	                        missionProbability = getProbability(settlement);
+	                        missionProbability *= getProbability(settlement);
 	                    }
 	                }
 	            }
@@ -163,7 +163,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
         // Consider the size of the settlement population
         int numPeople = settlement.getNumCitizens();
-        double limit = Math.max(0, 4 * numSites - numPeople/24.0);
+        double limit = Math.max(-1, 6 * numSites - numPeople);
 
         result = result/Math.pow(10, 2 + limit);
         

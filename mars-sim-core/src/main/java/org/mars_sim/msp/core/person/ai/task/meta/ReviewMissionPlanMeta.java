@@ -108,7 +108,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	 */
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
-		List<SettlementTask>  tasks = new ArrayList<>();
+		List<SettlementTask> tasks = new ArrayList<>();
 
         for(Mission m : missionManager.getPendingMissions(settlement)) {
         	MissionPlanning mp = m.getPlan();

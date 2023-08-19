@@ -67,7 +67,7 @@ public class ConnectWithEarth extends Task {
 //			person.getPreference().setTaskDue(this, true);
 			
 			// Find a comm facility.
-			Building bldg = BuildingManager.getAvailableCommBuilding(person);
+			Building bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.COMMUNICATION);
 			if (bldg != null) {
 				// Walk to the facility.
 				walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
@@ -77,7 +77,7 @@ public class ConnectWithEarth extends Task {
 			
 			if (!proceed) {
 				// Find an admin facility.
-				bldg = BuildingManager.getAvailableAdminBuilding(person);
+				bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 				if (bldg != null) {
 					// Walk to the facility.
 					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.ADMINISTRATION, false);
