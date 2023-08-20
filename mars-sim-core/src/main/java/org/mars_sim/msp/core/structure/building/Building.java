@@ -1297,10 +1297,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return construction;
 	}
 
-	public Coordinates getLocation() {
-		return settlement.getCoordinates();
-	}
-
 	/**
 	 * Gets the building's settlement template ID number.
 	 *
@@ -1511,7 +1507,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				return false;
 			}
 			// 1. Set Coordinates
-			setCoordinates(null);
+			setCoordinates(newContainer.getCoordinates());
 			// 2. Set LocationStateType
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 			// 3. Set containerID

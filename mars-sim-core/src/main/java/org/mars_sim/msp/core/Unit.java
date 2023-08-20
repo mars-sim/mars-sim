@@ -354,15 +354,16 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
-		if (LocationStateType.MARS_SURFACE == currentStateType) {	
+		if (getUnitType() == UnitType.SETTLEMENT) {	
 			return location;
 		}
-		else if (getUnitType() == UnitType.SETTLEMENT) {	
+
+		Unit container = getContainerUnit();
+		if (container.getUnitType() == UnitType.MARS) {	
 			return location;
 		}
-		else {
-			return getTopContainerUnit().getCoordinates();
-		}
+		
+		return container.getCoordinates();
 	}
 
 	/**
@@ -371,8 +372,8 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	 * @param newLocation the new location of the unit
 	 */
 	public void setCoordinates(Coordinates newLocation) {
-		location = newLocation;
-		if (location != null) {
+		if ((location == null) || !location.equals(newLocation)) {
+			location = newLocation;
 			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 		}
 	}

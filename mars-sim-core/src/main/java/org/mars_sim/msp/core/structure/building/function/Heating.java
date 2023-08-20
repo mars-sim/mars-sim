@@ -191,7 +191,7 @@ extends Function {
 		// Call Function constructor.
 		super(FUNCTION, spec, building);
 
-		location = building.getLocation();
+		location = building.getSettlement().getCoordinates();
 		double length = building.getLength();
 		width = building.getWidth() ;
 		floorArea = length * width ;

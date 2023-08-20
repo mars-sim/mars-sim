@@ -1968,8 +1968,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 				setCoordinates(getContainerUnit().getCoordinates());
 			}
 			else {
-				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(null);
+				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set new LocationStateType
 			updatePersonState(newContainer);
@@ -2143,21 +2142,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	@Override
 	public Unit getHolder() {
 		return this;
-	}
-
-	/**
-	 * Sets unit's location coordinates.
-	 *
-	 * @param newLocation the new location of the unit
-	 */
-	public void setCoordinates(Coordinates newLocation) {
-		super.setCoordinates(newLocation);
-
-//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-//			for (Equipment e: getEquipmentSet()) {
-//				e.setCoordinates(newLocation);
-//			}
-//		}
 	}
 
 	/**

@@ -158,8 +158,8 @@ public final class Coordinates implements Serializable {
 	 * @return the arc angle (radians).
 	 */
 	public double getAngle(Coordinates otherCoords) {
-//		Note: May return getAngleSLC(otherCoords);
-//		Note: May return getAngleVincenty(otherCoords);
+//		Note: May return getAngleSLC(otherCoords)
+//		Note: May return getAngleVincenty(otherCoords)
 		return getAngleHaversine(otherCoords);
 	}
 
@@ -516,27 +516,6 @@ public final class Coordinates implements Serializable {
 				+ halfMap) - lowEdge;
 		return new IntPoint(buffX, buffY);
 	}
-
- 	/**
- 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
- 	 * and y display coordinates for spherical location.
- 	 *
- 	 * @param newPhi   the new phi coordinate
- 	 * @param newTheta the new theta coordinate
- 	 * @return pixel offset value for map
- 	 */
- 	private IntPoint findRectPosition(double oldPhi, double oldTheta, double newPhi, double newTheta, int lowEdge, double rho, int halfMap) {
-
- 		final double col = newTheta + (PI_HALF - oldTheta);
- 		final double x = rho * Math.sin(newPhi);
- 		
- 		int buff_x = ((int) Math.round(x * Math.cos(col)) + halfMap) - lowEdge;
- 		int buff_y = ((int) Math.round(((x * (0D - Math.cos(oldPhi))) * Math.sin(col))
- 				+ (rho * Math.cos(newPhi) * (0D - Math.sin(oldPhi)))) 
- 				+ halfMap) - lowEdge;
- 		
- 		return new IntPoint(buff_x, buff_y);
- 	}
  	
 	/**
 	 * Converts linear rectangular XY position change to spherical coordinates.
@@ -873,8 +852,7 @@ public final class Coordinates implements Serializable {
 	 */
 	public boolean equals(Object otherCoords) {
 		if (this == otherCoords) return true;
-		if (otherCoords instanceof Coordinates) {
-			Coordinates other = (Coordinates) otherCoords;
+		if (otherCoords instanceof Coordinates other) {
             return (phi == other.phi) && (theta == other.theta);
 		}
 

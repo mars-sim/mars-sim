@@ -357,7 +357,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(null);
+				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set LocationStateType
 			updateEquipmentState(newContainer);

@@ -897,6 +897,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 *
 	 * @param newLocation the new location of the unit
 	 */
+	@Override
 	public void setCoordinates(Coordinates newLocation) {
 		super.setCoordinates(newLocation);
 

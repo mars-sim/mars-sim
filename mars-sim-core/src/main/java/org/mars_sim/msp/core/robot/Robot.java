@@ -1036,7 +1036,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 			else {
 				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(null);
+				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set LocationStateType
 			updateRobotState(newContainer);
@@ -1261,21 +1261,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return this;
 	}
 
-	/**
-	 * Sets unit's location coordinates
-	 *
-	 * @param newLocation the new location of the unit
-	 */
-	public void setCoordinates(Coordinates newLocation) {
-		super.setCoordinates(newLocation);
-
-//		if (getEquipmentSet() != null && !getEquipmentSet().isEmpty()) {
-//			for (Equipment e: getEquipmentSet()) {
-//				e.setCoordinates(newLocation);
-//			}
-//		}
-	}
-	
 	/** 
 	 * Returns the current amount of energy in kWh. 
 	 */

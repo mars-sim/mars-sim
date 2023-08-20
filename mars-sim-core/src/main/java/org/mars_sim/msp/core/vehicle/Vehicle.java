@@ -246,9 +246,6 @@ public abstract class Vehicle extends Unit
 		
 		// Make this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
-
-		// Set the initial coordinates to be that of the settlement
-		setCoordinates(settlement.getCoordinates());
 		
 		baseWearLifetime = spec.getWearLifetime();
 
@@ -2048,8 +2045,7 @@ public abstract class Vehicle extends Unit
 				setCoordinates(getContainerUnit().getCoordinates());
 			}
 			else {
-				// Null its coordinates since it's now slaved after its parent
-				setCoordinates(null);
+				setCoordinates(newContainer.getCoordinates());
 			}
 			// 2. Set new LocationStateType
 			updateVehicleState(newContainer);
