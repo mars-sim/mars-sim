@@ -291,14 +291,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		if (!currentIrradiance.isEmpty()) {
-			Double value = currentIrradiance.get(location);
-			if (value != null)
-				return value.doubleValue();
-			return 0;
-		}
-
-		return calculateSolarIrradiance(location);
+		return currentIrradiance.computeIfAbsent(location, this::calculateSolarIrradiance);
 	}
 
 	/**
@@ -571,16 +564,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		Double lastGh = currentIrradiance.get(location);
 		if (lastGh != null)
 			gh = (gh + lastGh.doubleValue()) / 2;
-			
-		// Save the value in the cache
-		currentIrradiance.put(location, gh);
-		
-//		if (gh > 0) {
-//			logger.info("z: " + Math.round(z *1000.0)/1000.0
-//					+ "   cosZ: " + Math.round(cosZ *1000.0)/1000.0  
-//					+ "   gh: " + Math.round(gh *1000.0)/1000.0);
-//		}
-		
 		return gh;
 	}
 
@@ -846,11 +829,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				}
 			}
 			
+			// Remove entries that are not Settlements
 			Iterator<Coordinates> it = currentIrradiance.keySet().iterator();
 			while (it.hasNext()) {
 				Coordinates coord = it.next();
 				if (sSet.contains(coord)) {
-					calculateSolarIrradiance(coord);
+					currentIrradiance.put(coord, calculateSolarIrradiance(coord));
 				}
 				else {
 					// Clear only those values that are non-settlement

@@ -71,8 +71,6 @@ public class Weather implements Serializable, Temporal {
 	// longitude.
 	// From the chart, it has an average of 25 C temperature variation on the
 	// maximum and minimum temperature curves
-	// = 14.57 - 1.95;
-	// = 25 - 8;
 	private static final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
 	
 	// A day has 1000 mSols. Take 500 samples
@@ -140,9 +138,6 @@ public class Weather implements Serializable, Temporal {
 	 * @return air density in g/m3.
 	 */
 	public double computeAirDensity(Coordinates location) {
-		
-//		addLocation(location);
-		
 		// The air density is derived from the equation of state : d = p / .1921 / (t +
 		// 273.1)
 		double result = 1000D * getAirPressure(location)
@@ -164,7 +159,7 @@ public class Weather implements Serializable, Temporal {
 	 * 
 	 * @return wind speed in m/s.
 	 */
-	public double computeWindSpeed(Coordinates location) {
+	private double computeWindSpeed(Coordinates location) {
 		double newSpeed = 0;
 		
 		if (windSpeedCacheMap == null)
@@ -262,9 +257,6 @@ public class Weather implements Serializable, Temporal {
 					if (newSpeed > 100) {
 						newSpeed = 100;
 					}
-					
-//					logger.info("newSpeed: " + newSpeed + "  terrain[0]: " + terrain[0] + "  terrain[1]: " + terrain[1] 
-//							+ "  optical: " + optical + "  boundary: " + boundary );
 				}
 				
 				else {
@@ -290,8 +282,6 @@ public class Weather implements Serializable, Temporal {
 		// Note : 1 mile per hour (mph) = 0.44704 meter per sec (m/s)
 		
 		windSpeedCacheMap.put(location, newSpeed);
-		
-//		logger.info("newSpeed: " + newSpeed);
 		
 		return newSpeed;
 	}
@@ -369,8 +359,6 @@ public class Weather implements Serializable, Temporal {
 	 * @return air pressure in kPa.
 	 */
 	public double getCachedAirPressure(Coordinates location) {
-		
-//		addLocation(location);
 
 		// Lazy instantiation of airPressureCacheMap.
 		if (airPressureCacheMap == null) {
@@ -382,7 +370,7 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap.put(location, newP);
 			return newP;
 		} else {
-			return getCachedReading(airPressureCacheMap, location);// , AIR_PRESSURE);
+			return airPressureCacheMap.computeIfAbsent(location, l -> calculateAirPressure(l, 0));
 		}
 	}
 
@@ -404,10 +392,7 @@ public class Weather implements Serializable, Temporal {
 
 		// p = pressure0 * e(-((density0 * gravitation) / pressure0) * h)
 		// Q: What are these enclosed values ==> P = 0.009 * e(-(0.0155 * 3.0 / 0.009) *
-		// elevation)
-		// double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
-		// SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE)*
-		// elevation * 1000);
+		// elevation
 
 		// Use curve-fitting equations at
 		// http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars
@@ -432,8 +417,6 @@ public class Weather implements Serializable, Temporal {
 	 */
 	public double getTemperature(Coordinates location) {
 
-//		addLocation(location);
-
 		// Lazy instantiation of temperatureCacheMap.
 		if (temperatureCacheMap == null) {
 			temperatureCacheMap = new HashMap<>();
@@ -446,7 +429,7 @@ public class Weather implements Serializable, Temporal {
 			temperatureCacheMap.put(location, newT);
 			t = newT;
 		} else {
-			t = getCachedReading(temperatureCacheMap, location);
+			t = temperatureCacheMap.computeIfAbsent(location, l -> calculateTemperature(l));
 		}
 		
 		double previousTemperature = 0;
@@ -506,11 +489,6 @@ public class Weather implements Serializable, Temporal {
 
 			t = EXTREME_COLD + RandomUtil.getRandomDouble(10)
 					- AirComposition.C_TO_K;
-
-			// double millisol = marsClock.getMillisol();
-			// TODO: how to relate at what millisols are the mean daytime and mean night
-			// time at the pole ?
-
 		}
 
 		else if (surfaceFeatures.inPolarRegion(location)) {
@@ -549,23 +527,11 @@ public class Weather implements Serializable, Temporal {
 			// 4. Seasonal variation (dependent upon latitude)
 			// 5. Randomness
 			// 6. Wind speed
-
-//			// (1). Time of day, longitude (see SurfaceFeature's calculateSolarIrradiance())
-//			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
-			
-//	        double time  = marsClock.getMillisol();
-//	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
-//	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			
 			double lightFactor = surfaceFeatures.getSunlightRatio(location) * LIGHT_EFFECT;
 
 			// Equation below is modeled after Viking's data.
 			double equatorialTemperature = 27.5D * lightFactor - 58.5D;
-
-			// ...getSurfaceSunlight * (80D / 127D (max sun))
-			// if sun full we will get -40D the avg, if night or twilight we will get
-			// a smooth temperature change and in the night -120D
-//		    temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 80D;
 
 			// (2). Terrain Elevation
 			// use http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars
@@ -576,13 +542,13 @@ public class Weather implements Serializable, Temporal {
 			// T = -23.4 - 0.00222 * h
 
 			double elevation = TerrainElevation.getAverageElevation(location); // in km from getElevation(location)
-			double terrain_dt;
+			double terrainDT;
 
 			// Assume a typical temperature of -31 deg celsius
 			if (elevation < 7)
-				terrain_dt = -0.000998 * elevation * 1000;
+				terrainDT = -0.000998 * elevation * 1000;
 			else // delta = -31 + 23.4 = 7.6
-				terrain_dt = 7.6 - 0.00222 * elevation * 1000;
+				terrainDT = 7.6 - 0.00222 * elevation * 1000;
 
 			// (3). Latitude
 			double latDegree = location.getPhi2Lat();
@@ -603,7 +569,7 @@ public class Weather implements Serializable, Temporal {
 				windDt = 10.0 / (1 + Math.exp(-.15 * windSpeedCacheMap.get(location)));
 
 			// Subtotal		
-			t = equatorialTemperature + VIKING_DT - latDt - terrain_dt + seasonalDt;
+			t = equatorialTemperature + VIKING_DT - latDt - terrainDT + seasonalDt;
 
 			if (t > 0)
 				t = t + windDt;
@@ -661,47 +627,13 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Provides the surface temperature or air pressure at a given location from the
-	 * temperatureCacheMap. If calling the given location for the first time from
-	 * the cache map, call update temperature/air pressure instead.
-	 * 
-	 * @return temperature or pressure
-	 */
-	private double getCachedReading(Map<Coordinates, Double> map, Coordinates location) {
-		double result;
-
-		if (map.containsKey(location)) {
-			result = map.get(location);
-		} else {
-			double cache = 0;
-			// if (value == TEMPERATURE )
-			if (map.equals(temperatureCacheMap))
-				cache = calculateTemperature(location);
-			// else if (value == AIR_PRESSURE )
-			else if (map.equals(airPressureCacheMap))
-				cache = calculateAirPressure(location, 0);
-
-			map.put(location, cache);
-
-			result = cache;
-		}
-		
-		return result;
-	}
-
-	
-	/**
 	 * Creates a weather record based on yestersol sun data.
 	 */
 	public void addWeatherDataPoint() {
 		coordinateList.forEach(location ->  {			
-			MSolDataLogger<DailyWeather> dailyRecordMap = null;				
-			if (weatherDataMap.containsKey(location)) {
-				dailyRecordMap = weatherDataMap.get(location);
-			}
-			else {
-				dailyRecordMap = new MSolDataLogger<>(MAX_RECORDED_DAYS);
-			}	
+			MSolDataLogger<DailyWeather> dailyRecordMap = 
+					weatherDataMap.computeIfAbsent(location,
+								k -> new MSolDataLogger<>(MAX_RECORDED_DAYS));		
 			
 			DailyWeather dailyWeather = new DailyWeather( 
 					getTemperature(location), 
@@ -711,9 +643,7 @@ public class Weather implements Serializable, Temporal {
 					surfaceFeatures.getSolarIrradiance(location),
 					surfaceFeatures.getOpticalDepth(location));
 			
-			dailyRecordMap.addDataPoint(dailyWeather);
-			
-			weatherDataMap.put(location, dailyRecordMap);
+			dailyRecordMap.addDataPoint(dailyWeather);			
 		});
 	}
 	
@@ -769,7 +699,7 @@ public class Weather implements Serializable, Temporal {
 			// probability is 5% at max
 			double size = dustStorms.size();
 			// Artificially limit the # of dust storm to 10
-			if (aLon > 240 && aLon < 271 && size <= 10 && checkStorm < 200) {
+		if (aLon > 240 && aLon < 271 && size <= 10  && checkStorm < 200) {
 				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
 				// closed to Mars.
 
@@ -783,9 +713,7 @@ public class Weather implements Serializable, Temporal {
 				createDustDevils(probability, aLs);
 			}
 
-			checkOnDustStorms();
-			
-			// computeDailyVariationAirPressure();
+			checkOnDustStorms();			
 		}
 		return true;
 	}
@@ -968,6 +896,11 @@ public class Weather implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Get daily variation
+	 * @param location Not used
+	 * @return
+	 */
 	public double getDailyVariationAirPressure(Coordinates location) {
 		return dailyVariationAirPressure;
 	}
