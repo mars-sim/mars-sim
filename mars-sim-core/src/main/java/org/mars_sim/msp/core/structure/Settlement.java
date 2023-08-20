@@ -365,7 +365,7 @@ public class Settlement extends Structure implements Temporal,
 	private Settlement() {
 		super(null, null);
 
-		// set location
+		// Set location
 		location = getCoordinates();
 	}
 
@@ -440,6 +440,9 @@ public class Settlement extends Structure implements Temporal,
 		peopleWithin = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
+		
+		// Call weather to add this location
+		weather.addLocation(location);
 	}
 
 

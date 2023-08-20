@@ -125,12 +125,11 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if a location with certain coordinates already exists and add any new
-	 * location.
+	 * Adds a location to the coordinate list.
 	 * 
 	 * @param location
 	 */
-	public void checkLocation(Coordinates location) {
+	public void addLocation(Coordinates location) {
 		if (!coordinateList.contains(location))
 			coordinateList.add(location);
 	}
@@ -141,7 +140,9 @@ public class Weather implements Serializable, Temporal {
 	 * @return air density in g/m3.
 	 */
 	public double computeAirDensity(Coordinates location) {
-		checkLocation(location);
+		
+//		addLocation(location);
+		
 		// The air density is derived from the equation of state : d = p / .1921 / (t +
 		// 273.1)
 		double result = 1000D * getAirPressure(location)
@@ -368,7 +369,8 @@ public class Weather implements Serializable, Temporal {
 	 * @return air pressure in kPa.
 	 */
 	public double getCachedAirPressure(Coordinates location) {
-		checkLocation(location);
+		
+//		addLocation(location);
 
 		// Lazy instantiation of airPressureCacheMap.
 		if (airPressureCacheMap == null) {
@@ -430,7 +432,7 @@ public class Weather implements Serializable, Temporal {
 	 */
 	public double getTemperature(Coordinates location) {
 
-		checkLocation(location);
+//		addLocation(location);
 
 		// Lazy instantiation of temperatureCacheMap.
 		if (temperatureCacheMap == null) {
@@ -736,7 +738,7 @@ public class Weather implements Serializable, Temporal {
 			// Calculate the new sun data for each location based on yestersol
 			coordinateList.forEach(this::calculateSunRecord);
 					
-			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01);
+			dailyVariationAirPressure += RandomUtil.getRandomDouble(-.01, .01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
 			else if (dailyVariationAirPressure < -.05)
@@ -880,7 +882,7 @@ public class Weather implements Serializable, Temporal {
 		
 		if (zenith > 1000)
 			zenith = zenith - 1000;
-		if (sunset < 0)
+		if (zenith < 0)
 			zenith = zenith + 1000;
 		
 		SunData sunData = new SunData(sunrise, sunset, daylight, zenith, maxSun);

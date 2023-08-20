@@ -24,11 +24,11 @@ public class SunData implements Serializable {
 
 	public SunData(int sunrise, int sunset, int daylight, int zenith, int maxSun) {
 		super();
-		this.zenith = zenith;
-		this.maxSun = maxSun;
-		this.daylight = daylight;
 		this.sunrise = sunrise;
 		this.sunset = sunset;
+		this.daylight = daylight;
+		this.zenith = zenith;
+		this.maxSun = maxSun;
 	}
 
 	public int getSunrise() {
@@ -43,12 +43,11 @@ public class SunData implements Serializable {
 		return daylight;
 	}
 
-	public int getMaxSun() {
-		return maxSun;
-	}
-
 	public int getZenith() {
 		return zenith;
 	}
 
+	public int getMaxSun() {
+		return maxSun;
+	}
 }
