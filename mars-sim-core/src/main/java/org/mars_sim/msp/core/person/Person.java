@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.CollectionUtils;
@@ -308,24 +307,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Initializes field data and class for maven test.
-	 */
-	public void initializeForMaven() {
-		// Construct the EquipmentInventory instance.
-		eqmInventory = new EquipmentInventory(this, carryingCapacity);
-		// Create favorites
-		favorite = new Favorite(this);
-		// Create preferences
-		preference = new Preference(this);
-		
-		setupChromosomeMap();
-
-		eqmInventory.addCargoCapacity(carryingCapacity);
-		
-		eqmInventory.setResourceCapacity(ResourceUtil.foodID, CARRYING_CAPACITY_FOOD);
-	}
-	
-	/**
 	 * Initializes field data and class.
 	 */
 	public void initialize() {
@@ -442,7 +423,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			load = (int)(baseCap/2.5 - age / 4.0);
 
 		// Set inventory total mass capacity based on the person's weight and strength.
-		carryingCapacity = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
+		// Must be able to carry an EVA suit
+		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 1.5D),
+						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
 		
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
@@ -539,8 +522,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
 
-		double dadHeight = tall + RandomUtil.getGaussianDouble() * tall / 7D;// RandomUtil.getRandomInt(22);
-		double momHeight = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;// RandomUtil.getRandomInt(15);
+		double dadHeight = tall + RandomUtil.getGaussianDouble() * tall / 7D;
+		double momHeight = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;
 
 		Gene dadHeightG = new Gene(this, id, HEIGHT_GENE, true, dominant, null, dadHeight);
 		paternalChromosome.put(id, dadHeightG);
@@ -1549,12 +1532,11 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		if (trainings == null) {
 			trainings = new ArrayList<>();
 			List<TrainingType> lists = new ArrayList<>(Arrays.asList(TrainingType.values()));
-			int size = lists.size();
 			int num = RandomUtil.getRandomRegressionInteger(4);
 			// Guarantee at least one training
 			if (num == 0) num = 1;
 			for (int i= 0 ; i < num; i++) {
-				size = lists.size();
+				int size = lists.size();
 				int rand = RandomUtil.getRandomInt(size-1);
 				TrainingType t = lists.get(rand);
 				trainings.add(t);
@@ -2069,7 +2051,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			transferred = ((MarsSurface)cu).removePerson(this);
 		}
 		else if (ut == UnitType.BUILDING) {
-//			BuildingManager.removePersonFromBuilding(this, (Building)cu);
 			transferred = true;
 		}
 		else if (ut == UnitType.SETTLEMENT) {
@@ -2408,9 +2389,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		attributes = null;
 		mind.destroy();
 		mind = null;
-		// condition.destroy();
-		condition = null;
-		gender = null;
 
 		skillManager.destroy();
 		skillManager = null;

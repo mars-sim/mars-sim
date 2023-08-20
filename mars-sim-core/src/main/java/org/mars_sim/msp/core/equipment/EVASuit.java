@@ -118,6 +118,8 @@ public class EVASuit extends Equipment
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double MASS_O2_MINIMUM_LIMIT;
 
+	private static double usualMass = -1;
+
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -147,7 +149,6 @@ public class EVASuit extends Equipment
 		MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 		
 		logger.config(DASHES);
-//		logger.config(" Suit's Unloaded Weight : " + Math.round(getBaseMass() * 1_000.0)/1_000.0 + " kg");
 		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
 		logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
 					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
@@ -194,9 +195,6 @@ public class EVASuit extends Equipment
 		
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
-		// Compute maintenance needed parts prior to starting
-//		malfunctionManager.determineNewMaintenanceParts();
-
 		// Create MicroInventory instance
 		microInventory = new MicroInventory(this, CAPACITY);
 
@@ -206,9 +204,20 @@ public class EVASuit extends Equipment
 		microInventory.setCapacity(CO2_ID, CO2_CAPACITY);
 		
 		// Sets the base mass of the bag.
-		setBaseMass(EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT));
+		setBaseMass(getEmptyMass());
 
 		locnHistory = new History<>(10);
+	}
+
+	/**
+	 * Get the usual mass of an empty EVASuit
+	 * @return
+	 */
+	public static double getEmptyMass() {
+		if (usualMass < 0) {
+			usualMass = EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT);
+		}
+		return usualMass;
 	}
 	
 	/**
