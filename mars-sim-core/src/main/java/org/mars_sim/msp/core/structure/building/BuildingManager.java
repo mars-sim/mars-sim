@@ -768,19 +768,6 @@ public class BuildingManager implements Serializable {
 		
 		return b;
 	}
-
-	/**
-	 * Gets an available dining building in the settlement. Returns null if no
-	 * dining building is currently available.
-	 *
-	 * @param settlement the settlement
-	 * @return available dining building
-	 * @throws BuildingException if error finding dining building.
-	 */
-	public static Building getAvailableDiningBuilding(Settlement settlement, Person person) {
-		return RandomUtil.getARandSet(settlement.getBuildingManager().getDiningBuildings(person));
-	}
-	
 	
 	/**
 	 * Gets a list of non-malfunctioned buildings with a particular function type.

@@ -57,6 +57,9 @@ class AmountResourceGood extends Good {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
 
+	private static final String NACO3 = "Sodium Carbonate";
+	private static final String IRON_POWDER = "Iron Powder";
+	
 	// TODO, move these to the AmountResource class via XML config
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
@@ -140,7 +143,7 @@ class AmountResourceGood extends Good {
 	
 	// Demand factor based on good type
 	private static final double CHEMICAL_DEMAND_FACTOR = 3;
-	private static final double COMPOUND_DEMAND_FACTOR = 3;
+	private static final double COMPOUND_DEMAND_FACTOR = 2;
 	private static final double ELEMENT_DEMAND_FACTOR = 3;
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 3;
@@ -157,12 +160,14 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_DEMAND_FACTOR = .5;
 	private static final double TISSUE_DEMAND_FACTOR = 1.1;
 	
-	
 	private static final double METHANOL_DEMAND_FACTOR = 1;
 	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
+	
+	private static final double NACO3_DEMAND_FACTOR = .01;
+	private static final double IRON_POWDER_FACTOR = .01;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = .05;
 	
@@ -432,9 +437,9 @@ class AmountResourceGood extends Good {
 			// Intentionally loses a tiny percentage (e.g. 0.004) of its value
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					  .990 * previousDemand 
-					+ .004 * projected 
-					+ .002 * trade); 
+					  .9990 * previousDemand 
+					+ .0004 * projected 
+					+ .0002 * trade); 
 		}
 
 		// Save the goods demand
@@ -510,6 +515,11 @@ class AmountResourceGood extends Good {
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
+			
+			String name = ar.getName();
+			
+			if (name.equalsIgnoreCase(NACO3)) 
+				demand *= NACO3_DEMAND_FACTOR;
 			break;
 	
 		case CROP:
@@ -528,6 +538,12 @@ class AmountResourceGood extends Good {
 			demand = ELEMENT_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
+			
+			name = ar.getName();
+			
+			if (name.equalsIgnoreCase(IRON_POWDER)) 
+				demand *= IRON_POWDER_FACTOR;
+			
 			break;
 
 		case GEMSTONE:

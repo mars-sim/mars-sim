@@ -112,7 +112,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	                // Add construction profit for existing or new construction sites.
 	                double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
 	                if (constructionProfit > 0D) {
-	                    missionProbability += 50D;
+	                    missionProbability += 10D;
 	
 	                    double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
 	                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
@@ -159,10 +159,12 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
         double result = 0D;
         
+        // Consider the num of construction sites
         int numSites = settlement.getConstructionManager().getConstructionSites().size();
 
         // Consider the size of the settlement population
         int numPeople = settlement.getNumCitizens();
+        
         double limit = Math.max(-1, 6 * numSites - numPeople);
 
         result = result/Math.pow(10, 2 + limit);

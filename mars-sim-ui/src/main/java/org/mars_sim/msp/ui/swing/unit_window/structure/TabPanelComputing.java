@@ -137,10 +137,10 @@ extends TabPanel {
 		
 		table.setRowSelectionAllowed(true);
 		TableColumnModel columns = table.getColumnModel();
-		columns.getColumn(0).setPreferredWidth(150);
+		columns.getColumn(0).setPreferredWidth(120);
 		columns.getColumn(1).setPreferredWidth(30);
 		columns.getColumn(2).setPreferredWidth(30);
-		columns.getColumn(3).setPreferredWidth(50);
+		columns.getColumn(3).setPreferredWidth(60);
 		columns.getColumn(4).setPreferredWidth(30);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();

@@ -60,7 +60,7 @@ public class PartGood extends Good {
 
 	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
-	private static final double FIBERGLASS_DEMAND = .01;
+	private static final double FIBERGLASS_DEMAND = .0002;
 	private static final double VEHICLE_PART_DEMAND = 4;
 	private static final double EVA_PART_DEMAND = 1;
     private static final double KITCHEN_DEMAND = 1.5;
@@ -417,7 +417,7 @@ public class PartGood extends Good {
 			}
 			else if (name.contains("electrical wire")
 					|| name.contains("wire connector"))
-				return .25;
+				return .005;
 			else if (name.contains("steel wire"))
 				return 10;
 			else if (name.contains("wire"))

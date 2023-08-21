@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.CollectionUtils;

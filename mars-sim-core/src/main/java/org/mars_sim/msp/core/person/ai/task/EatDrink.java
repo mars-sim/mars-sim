@@ -220,7 +220,8 @@ public class EatDrink extends Task {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 			// Check if there is a local dining building.
-        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person.getSettlement(), person);
+        	Building diningBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.DINING);
+//        			getAvailableDiningBuilding(person.getSettlement(), person);
         	
         	if (diningBuilding != null) {
         		// Initiates a walking task to go back to the settlement

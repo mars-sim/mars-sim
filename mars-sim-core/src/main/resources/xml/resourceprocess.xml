@@ -371,7 +371,7 @@
 		<output resource="nitrogen" rate="0.1"  />
 		<output resource="ammonia" rate="0.1"  />
 		<output resource="argon" rate="0.1"  />
-		<output resource="regolith" rate="99.5"  />		
+		<output resource="regolith" rate="99.5"  />	
 	</process>
 
 
@@ -574,6 +574,7 @@
 		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
 	<process name="Extract minerals from akaganeite deposits" power-required="0.1" >
 			<input resource="akaganeite" rate="50.0"  />
+			
 			<output resource="iron oxide" rate="29.0"  />
 			<output resource="manganese" rate="0.2"  />						
 			<output resource="iron hydroxide" rate="10.0"  />
@@ -584,6 +585,7 @@
 			
 	<process name="Extract minerals from bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0"  />
+		
 		<output resource="calcium sulfate" rate="45.0"  />
 		<output resource="brine water" rate="3.0"  />
 	</process>
@@ -595,10 +597,12 @@
 			https://en.wikipedia.org/wiki/Sodium_oxide
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
-		<input resource="sand" rate="40.0"  />					
-		<input resource="sodium carbonate" rate="5.0"  />
+		<input resource="sand" rate="44.5"  />					
+		<input resource="sodium carbonate" rate="2.5"  />
 
+		<output resource="carbon dioxide" rate="2.0" waste="true" />
 		<output resource="aluminum oxide" rate="2.0"  />
+		<output resource="sodium oxide" rate="2.5"  />
 		<output resource="aluminum" rate="8.0"  />
 		<output resource="iron powder" rate="1.0"  />					
 		<output resource="sulfur" rate="4.0"  />					
@@ -698,8 +702,9 @@
 	</process>
 
 	<process name="Make cement" power-required=".1" >
-		<input resource="regolith" rate="35.0"  />
+		<input resource="regolith" rate="30.0"  />
 		<input resource="gypsum" rate="5.0"  />
+		<input resource="calcium carbonate" rate="5.0"  />
 		<input resource="aluminum oxide" rate="2.5"  />
 		<input resource="iron oxide" rate="2.5"  />
 		<input resource="silica" rate="5.0"  />
@@ -714,7 +719,7 @@
 		<input resource="sand" rate="60.0"  />
 		<input resource="cement" rate="34.0"  />
 		<input resource="polyethylene" rate="1.0"  />
-		<input resource="brine water" rate="5.0"  />		
+		<input resource="water" rate="5.0"  />		
 
 		<output resource="concrete" rate="100.0"  />
 	</process>
