@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -55,9 +56,9 @@ public interface MetaMission {
 	 * being performed by the person.
 	 * 
 	 * @param person the person to perform the mission.
-	 * @return weighted probability value (0 -> positive value).
+	 * @return Rating of this mission starting
 	 */
-	public double getProbability(Person person);
+	public Rating getProbability(Person person);
 
 	public double getProbability(Robot robot);
 }

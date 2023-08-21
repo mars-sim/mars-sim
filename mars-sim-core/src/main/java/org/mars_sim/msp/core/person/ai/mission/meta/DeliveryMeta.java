@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -43,15 +44,15 @@ public class DeliveryMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public double getProbability(Person person) {
+	public Rating getProbability(Person person) {
 
-		double missionProbability = 0D;
+		Rating missionProbability = Rating.ZERO_RATING;
 
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
 		if (settlement.isFirstSol())
-			return 0;
+			return missionProbability;
 		
 		RoleType roleType = person.getRole().getType();
 		if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
@@ -67,25 +68,18 @@ public class DeliveryMeta extends AbstractMetaMission {
 				// It happens only when this sim is a loaded saved sim.
 				missionProbability = getSettlementProbability(settlement); 
 			
-		} else {
-			missionProbability = 0;
-		}
+		} 
 		
-		if (missionProbability <= 0)
-			return 0;
+		if (missionProbability.getScore() <= 0)
+			return missionProbability;
 	
 		// if introvert, score  0 to  50 --> -2 to 0
 		// if extrovert, score 50 to 100 -->  0 to 2
 		// Reduce probability if introvert
 		int extrovert = person.getExtrovertmodifier();
-		missionProbability += extrovert;
+		missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 		
-		if (missionProbability < 0)
-			missionProbability = 0;
-	
-        if (missionProbability > 0)
-        	logger.info(person, "DeliveryMeta's probability: " +
-				 Math.round(missionProbability*100D)/100D);
+		missionProbability.applyRange(0, LIMIT);
 
 		return missionProbability;
 	}
@@ -97,14 +91,14 @@ public class DeliveryMeta extends AbstractMetaMission {
 	 * @param settlement
 	 * @return
 	 */
-	private double getSettlementProbability(Settlement settlement) {
+	private Rating getSettlementProbability(Settlement settlement) {
 
-		double missionProbability = 0;
+		Rating missionProbability = Rating.ZERO_RATING;
 
 		// Check for the best delivery settlement within range.
 		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(settlement, false);
 		if (drone == null) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}
 		
 		logger.info(drone, 10_000L, "Available for delivery mission.");
@@ -112,34 +106,33 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 		Deal deal = gManager.getBestDeal(MissionType.DELIVERY, drone);
 		if (deal == null) {
-			return 0;
-		}	
-		double deliveryProfit = deal.getProfit() * VALUE;
-
-		// Delivery value modifier.
-		missionProbability = deliveryProfit / DIVISOR * gManager.getTradeFactor();
-		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY) {
-			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
+			return Rating.ZERO_RATING;
 		}
-
+		
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.DELIVERY, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}			
 		
 		else if (numThisMission > 1)
-			return 0;	
+			return Rating.ZERO_RATING;	
+
+		double deliveryProfit = deal.getProfit() * VALUE;
+
+		// Delivery value modifier.
+		missionProbability = new Rating(deliveryProfit / DIVISOR * gManager.getTradeFactor());
+		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
 		
 		int f2 = 2 * numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f2 / 2D;
+		missionProbability.addModifier("Citizen Ratio", settlement.getNumCitizens() / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 		if (crowding > 0) {
-			missionProbability *= (crowding + 1);
+			missionProbability.addModifier(OVER_CROWDING, crowding + 1);
 		}
 
 		return missionProbability;

@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingLog;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -149,7 +151,6 @@ public class MissionManager implements Serializable {
 						}
 					}
 				}
-//				logger.config("Added '" + newMission.getName() + "' mission.");
 			}
 		}
 	}
@@ -188,7 +189,7 @@ public class MissionManager implements Serializable {
 		Mission result = null;
 
 		// Probably must be calculated as a local otherwise method is not threadsafe using a shared cache
-		Map<MetaMission, Double> missionProbCache = new HashMap<>();
+		Map<MetaMission, Rating> missionProbCache = new HashMap<>();
 
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;
@@ -198,26 +199,19 @@ public class MissionManager implements Serializable {
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
-				double baseProb = metaMission.getProbability(person);
-				if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
-						logger.severe(person, "Bad mission probability on '" + metaMission.getName() 
-						+ "'  probability: " + Math.round(baseProb * 100.0)/100.0);
-				}
-				else if (baseProb > 0D) {
+				Rating baseProb = metaMission.getProbability(person);
+				if (baseProb.getScore() > 0D) {
 					// Get any overriding ratio
-					double probability = baseProb;
 					double settlementRatio = startingSettlement.getPreferenceModifier(
 										new PreferenceKey(PreferenceKey.Type.MISSION,
 														metaMission.getType().name()));
-					probability *= settlementRatio;
+					baseProb.addModifier("Settlement Ratio", settlementRatio);
 
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
-							+ "'  probability: " + Math.round(probability * 100.0)/100.0
-									+ "  base prob: " + Math.round(baseProb * 100.0)/100.0
-									+ "  sponsor: " + settlementRatio);
-					if (probability > 0) {
-						missionProbCache.put(metaMission, probability);
-						totalProbCache += probability;
+							+ "' score: " + baseProb.getOutput());
+					if (baseProb.getScore() > 0) {
+						missionProbCache.put(metaMission, baseProb);
+						totalProbCache += baseProb.getScore();
 					}
 				}
 			}
@@ -234,8 +228,8 @@ public class MissionManager implements Serializable {
 
 		// Determine which mission is selected.
 		MetaMission selectedMetaMission = null;
-		for (Entry<MetaMission, Double> possible : missionProbCache.entrySet()) {
-			double probWeight = possible.getValue();
+		for (Entry<MetaMission, Rating> possible : missionProbCache.entrySet()) {
+			double probWeight = possible.getValue().getScore();
 			if (r <= probWeight) {
 				selectedMetaMission = possible.getKey();
 				break;
@@ -248,6 +242,8 @@ public class MissionManager implements Serializable {
 			throw new IllegalStateException(person + " could not determine a new mission.");
 		}
 
+		RatingLog.logSelectedRating("Mission", person.getName(),
+						selectedMetaMission, missionProbCache);
 		// Construct the mission and needs a review
 		result = selectedMetaMission.constructInstance(person, true);
 

@@ -50,6 +50,10 @@ public class History<T> implements Serializable {
     private List<HistoryItem<T>> history = new ArrayList<>();
     private int maxItems;
     
+    static MarsTime getMarsTime() {
+        return master.getMarsTime();
+    }
+
     /**
      * Creates a History but define the maximum items to hold.
      * 
@@ -74,7 +78,7 @@ public class History<T> implements Serializable {
      * @param value New value to add
      */
     public boolean add(T value) {
-        MarsTime now = master.getMarsTime();
+        MarsTime now = getMarsTime();
         if (!history.isEmpty()) {
             HistoryItem<T> previous = history.get(history.size()-1);
             if (now.equals(previous.getWhen())) {
