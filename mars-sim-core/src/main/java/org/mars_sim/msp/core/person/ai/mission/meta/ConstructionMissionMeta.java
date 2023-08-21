@@ -42,97 +42,94 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
     @Override
     public Rating getProbability(Person person) {
-
-        Rating missionProbability = Rating.ZERO_RATING;
          
         // No construction until after the x sols of the simulation.
-        if (getMarsTime().getMissionSol() < ConstructionMission.FIRST_AVAILABLE_SOL) {
-        	return missionProbability;
+        if ((getMarsTime().getMissionSol() < ConstructionMission.FIRST_AVAILABLE_SOL)
+			|| !person.isInSettlement()) {
+        	return Rating.ZERO_RATING;
         }
-        
-        // Check if person is in a settlement.
-        if (person.isInSettlement()) {
-            Settlement settlement = person.getSettlement();
-       
-            RoleType roleType = person.getRole().getType();
-			
-			if (person.getMind().getJob() == JobType.ARCHITECT
+	
+		Settlement settlement = person.getSettlement();
+	
+		RoleType roleType = person.getRole().getType();
+		
+		Rating missionProbability = Rating.ZERO_RATING;
+		if (person.getMind().getJob() == JobType.ARCHITECT
 //					|| RoleType.MISSION_SPECIALIST == roleType
 //					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-					|| RoleType.CHIEF_OF_ENGINEERING == roleType
-					|| RoleType.ENGINEERING_SPECIALIST == roleType
-					|| RoleType.COMMANDER == roleType
-					|| RoleType.SUB_COMMANDER == roleType
-					) {							
+				|| RoleType.CHIEF_OF_ENGINEERING == roleType
+				|| RoleType.ENGINEERING_SPECIALIST == roleType
+				|| RoleType.COMMANDER == roleType
+				|| RoleType.SUB_COMMANDER == roleType
+				) {							
 
-	            // Check if settlement has construction override flag set.
-	            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
-	            	return Rating.ZERO_RATING;
-	            }
-
-	            // Check if available light utility vehicles.
-	            if (!ConstructionMission.isLUVAvailable(settlement)) {
-	            	return Rating.ZERO_RATING;
-	            }
-				missionProbability.addModifier(SETTLEMENT_POPULATION,
-									getSettlementPopModifier(settlement, 8)/2);
-				
-	            int availablePeopleNum = 0;
-	
-	            Collection<Person> list = settlement.getIndoorPeople();
-	            for (Person member : list) {
-	                boolean noMission = !member.getMind().hasActiveMission();
-	                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-	                if (noMission && isFit)
-	                	availablePeopleNum++;
-	            }
-	
-	            // Check if enough available people at settlement for mission.
-	            if (availablePeopleNum < ConstructionMission.MIN_PEOPLE) {
-	            	return Rating.ZERO_RATING;
-	            }
-	            
-	            // Check if min number of EVA suits at settlement.
-	        	if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
-	                    ConstructionMission.MIN_PEOPLE) {
-	        		return Rating.ZERO_RATING;
-	            }
-	        	
-				int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-				ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
-
-				// Add construction profit for existing or new construction sites.
-				double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-				if (constructionProfit > 0D) {
-					missionProbability = new Rating(100D);
-
-					double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
-					double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
-
-					if (newSiteProfit > existingSiteProfit) {
-						missionProbability.addModifier("Site", getProbability(settlement));
-					}
-
-					// Modify if construction is the person's favorite activity.
-					if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-						missionProbability.addModifier("favourite", 1.1D);
-					}
-				}
-	
-	            // Job modifier.
-	            missionProbability.addModifier(LEADER, constructionProfit); getLeaderSuitability(person);
+			// Check if settlement has construction override flag set.
+			if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
+				return Rating.ZERO_RATING;
 			}
-        
+
+			// Check if available light utility vehicles.
+			if (!ConstructionMission.isLUVAvailable(settlement)) {
+				return Rating.ZERO_RATING;
+			}
 			
+			int availablePeopleNum = 0;
+
+			Collection<Person> list = settlement.getIndoorPeople();
+			for (Person member : list) {
+				boolean noMission = !member.getMind().hasActiveMission();
+				boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+				if (noMission && isFit)
+					availablePeopleNum++;
+			}
+
+			// Check if enough available people at settlement for mission.
+			if (availablePeopleNum < ConstructionMission.MIN_PEOPLE) {
+				return Rating.ZERO_RATING;
+			}
+			
+			// Check if min number of EVA suits at settlement.
+			if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
+					ConstructionMission.MIN_PEOPLE) {
+				return Rating.ZERO_RATING;
+			}
+			
+			int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+			ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+
+			// Add construction profit for existing or new construction sites.
+			double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+			if (constructionProfit <= 0D) {
+				return Rating.ZERO_RATING;
+			}
+			
+			missionProbability = new Rating(100D);
+			missionProbability.addModifier(SETTLEMENT_POPULATION,
+								getSettlementPopModifier(settlement, 8)/2);
+
+			double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
+			double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
+
+			if (newSiteProfit > existingSiteProfit) {
+				missionProbability.addModifier("Site", getProbability(settlement));
+			}
+
+			// Modify if construction is the person's favorite activity.
+			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
+				missionProbability.addModifier("favourite", 1.1D);
+			}
+
+			// Job modifier.
+			missionProbability.addModifier(LEADER, constructionProfit); getLeaderSuitability(person);
+					
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
 			int extrovert = person.getExtrovertmodifier();
 			missionProbability.addModifier(PERSON_EXTROVERT, -2 + (extrovert/25));
 			missionProbability.applyRange(0, LIMIT);
-            
-        }
-
+		}
+	
         return missionProbability;
     }
 

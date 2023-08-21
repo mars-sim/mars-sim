@@ -6,24 +6,28 @@ import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.logging.SimLogger;
 
 /**
  * Static class to log the use of Ratings for later analysis.
  * It uses JSONLines format which is a structured compressed style of output commonly used for large log files.
  * @see https://jsonlines.org/
  * It can be parsed using the JQ tools @see https://jqlang.github.io/jq/
+ * Use filter as '.' and enable Slurp which will convert into seperate Json records.
  */
 public class RatingLog {
     private static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
-	private static final Logger logger = Logger.getLogger(RatingLog.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(RatingLog.class.getName());
 
     private static PrintWriter diagnosticFile;
     private static Set<String> modules = new HashSet<>();
 
+    private RatingLog() {
+        // Prevent instance creation
+    }
     /**
 	 * Enable the detailed diagnostics
 	 * @throws FileNotFoundException 
@@ -51,7 +55,15 @@ public class RatingLog {
 		}
 	}
 
-    public static void logSelectedRating(String module, String requestor,
+    /**
+     * Log th selection of a Rating from a set of potential options. Each Rateable option
+     * is scored with a Rating.
+     * @param module Module used as a filter
+     * @param selector Description of the entity doing the selection
+     * @param selected Rateable that was selected by the requestor
+     * @param options The options selected from
+     */
+    public static void logSelectedRating(String module, String selector,
                         Rateable selected, Map<? extends Rateable,Rating> options) {
         if (modules.contains(module)) {
             StringBuilder output = new StringBuilder();
@@ -59,8 +71,8 @@ public class RatingLog {
                         .append(History.getMarsTime().getDateTimeStamp())
                         .append("\",\"type\":\"")
                         .append(module)
-                        .append("\",\"requestor\":\"")			
-                        .append(requestor)
+                        .append("\",\"selector\":\"")			
+                        .append(selector)
                         .append("\",\"selected\":\"")
                         .append(selected.getName())
                         .append("\",\"options\":[");
