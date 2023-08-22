@@ -692,10 +692,10 @@ public class ConstructionMission extends AbstractMission
 	private boolean loadAvailableConstructionMaterials() {
 		boolean enough = true;
 		// Load amount resources.
-		Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
+		Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
 		while (i.hasNext()) {
 			Integer resource = i.next();
-			double amountNeeded = stage.getRemainingResources().get(resource);
+			double amountNeeded = stage.getMissingResources().get(resource);
 			double amountAvailable = settlement.getAmountResourceStored(resource);
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
@@ -729,10 +729,10 @@ public class ConstructionMission extends AbstractMission
 	private boolean loadAvailableConstructionParts() {
 		boolean enough = true;
 		// Load parts.
-		Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+		Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
 		while (j.hasNext()) {
 			Integer part = j.next();
-			int numberNeeded = stage.getRemainingParts().get(part);
+			int numberNeeded = stage.getMissingParts().get(part);
 			int numberAvailable = settlement.getItemResourceStored(part);
 			// Load as many remaining parts as possible into the construction site stage.
 			int numberLoading = Math.min(numberAvailable, numberNeeded);

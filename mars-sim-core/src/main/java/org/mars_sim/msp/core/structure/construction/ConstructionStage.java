@@ -69,7 +69,7 @@ public class ConstructionStage implements Serializable {
         missingParts = new HashMap<>(info.getParts());
         missingResources = new HashMap<>(info.getResources());
         
-        // Update the remaining completable work time.
+        // Update the missing completable work time.
         updateCompletableWorkTime();
     }
 
@@ -189,20 +189,20 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Gets the remaining parts needed for construction.
+     * Gets the missing parts needed for construction.
      * 
      * @return map of parts and their numbers.
      */
-    public Map<Integer, Integer> getRemainingParts() {
+    public Map<Integer, Integer> getMissingParts() {
         return new HashMap<>(missingParts);
     }
 
     /**
-     * Gets the remaining resources needed for construction.
+     * Gets the missing resources needed for construction.
      * 
      * @return map of resources and their amounts (kg).
      */
-    public Map<Integer, Double> getRemainingResources() {
+    public Map<Integer, Double> getMissingResources() {
         return new HashMap<>(missingResources);
     }
     
@@ -215,17 +215,17 @@ public class ConstructionStage implements Serializable {
     public void addParts(Integer part, int number) {
 
         if (missingParts.containsKey(part)) {
-            int remainingRequiredNum = missingParts.get(part);
-            if (number <= remainingRequiredNum) {
-                remainingRequiredNum -= number;
-                if (remainingRequiredNum > 0) {
-                    missingParts.put(part, remainingRequiredNum);
+            int missingRequiredNum = missingParts.get(part);
+            if (number <= missingRequiredNum) {
+                missingRequiredNum -= number;
+                if (missingRequiredNum > 0) {
+                    missingParts.put(part, missingRequiredNum);
                 }
                 else {
                     missingParts.remove(part);
                 }
 
-                // Update the remaining completable work time.
+                // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
                 // Fire construction event
@@ -233,7 +233,7 @@ public class ConstructionStage implements Serializable {
             }
             else {
                 throw new IllegalStateException("Trying to add " + number + " " + part + 
-                        " to " + info.getName() + " when only " + remainingRequiredNum + 
+                        " to " + info.getName() + " when only " + missingRequiredNum + 
                         " are needed.");
             }
         }
@@ -252,17 +252,12 @@ public class ConstructionStage implements Serializable {
     public void addResource(Integer resource, double amount) {
 
         if (missingResources.containsKey(resource)) {
-            double remainingRequiredAmount = missingResources.get(resource);
-            if (amount <= remainingRequiredAmount) {
-                remainingRequiredAmount -= amount;
-//                if (remainingRequiredAmount > 0D) {
-                    missingResources.put(resource, remainingRequiredAmount);
-//                }
-//                else {
-//                    missingResources.remove(resource);
-//                }
+            double missingRequiredAmount = missingResources.get(resource);
+            if (amount <= missingRequiredAmount) {
+                missingRequiredAmount -= amount;
+                missingResources.put(resource, missingRequiredAmount);
 
-                // Update the remaining completable work time.
+                // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
                 // Fire construction event
@@ -270,7 +265,7 @@ public class ConstructionStage implements Serializable {
             }
             else {
                 throw new IllegalStateException("Trying to add " + amount + " " + resource + 
-                        " to " + info.getName() + " when only " + remainingRequiredAmount + 
+                        " to " + info.getName() + " when only " + missingRequiredAmount + 
                         " are needed.");
             }
         }

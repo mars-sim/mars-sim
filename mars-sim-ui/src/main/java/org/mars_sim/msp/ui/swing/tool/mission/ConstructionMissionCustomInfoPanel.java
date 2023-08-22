@@ -61,10 +61,10 @@ implements ConstructionListener {
     private JLabel stageLabel;
     private JLabel settlementLabel;
     private JLabel siteLabel;
+    private JPanel processPanel;
     
     private BoundedRangeModel progressBarModel;
-//    private JButton settlementButton;
-    
+  
     private MaterialsTableModel materialsTableModel;
 
     /**
@@ -98,12 +98,15 @@ implements ConstructionListener {
         stageLabel = infoPanel.addTextField(stageLabelString, "", null);
         
         // Process panel    
-        JPanel processPanel = new JPanel(new GridLayout(2, 1));
+        processPanel = new JPanel(new GridLayout(2, 1));
         contentsPanel.add(processPanel,  BorderLayout.CENTER);
           
         JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         processPanel.add(progressBarPanel);
 
+        // Add tooltip.
+        processPanel.setToolTipText(getToolTipString());
+        
         JLabel progressLabel = new JLabel("Site Completion", JLabel.CENTER);
         processPanel.add(progressLabel);
         
@@ -111,9 +114,9 @@ implements ConstructionListener {
         progressBarModel = progressBar.getModel();
         progressBar.setStringPainted(true);
         progressBarPanel.add(progressBar);
-        
+         
         // Create remaining construction materials label panel.
-        JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));//FlowLayout(FlowLayout.CENTER));
+        JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));
         contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.SOUTH);
         
         // Create remaining construction materials label.
@@ -128,14 +131,11 @@ implements ConstructionListener {
 
         // Create a scroll pane for the remaining construction materials table.
         JScrollPane scrollPane = new JScrollPane();
-        remainingMaterialsLabelPane.add(scrollPane);//, BorderLayout.SOUTH);
+        remainingMaterialsLabelPane.add(scrollPane);
         scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(-1, 160));
         scrollPane.setViewportView(materialsTable);
-		
-        // Add tooltip.
-        materialsTable.setToolTipText(getToolTipString());
     }
 
     @Override
@@ -162,9 +162,6 @@ implements ConstructionListener {
 
                 // Update remaining construction materials table.
                 materialsTableModel.updateTable();
-
-                // Update the tool tip string.
-//                setToolTipText(getToolTipString());
             }
         }
     }
@@ -184,13 +181,11 @@ implements ConstructionListener {
      */
     public void constructionUpdate(ConstructionEvent event) {
         if (ConstructionStage.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
+            // Update the progress bar
             updateProgressBar();
 
-            // Update the tool tip string.
-//            setToolTipText(getToolTipString());
         }
         else if (ConstructionStage.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())) {
-
             // Update remaining construction materials table.
             materialsTableModel.updateTable();
         }
@@ -229,6 +224,9 @@ implements ConstructionListener {
             }
         }
         progressBarModel.setValue(workProgress);
+        
+        // Update the tool tip string.
+        processPanel.setToolTipText(getToolTipString());
     }
 
     /**
@@ -263,24 +261,24 @@ implements ConstructionListener {
             result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 
             // Add remaining construction resources.
-            if (!stage.getRemainingResources().isEmpty()) {
-                result.append(Msg.BR).append("Remaining Construction Resources:").append(Msg.BR);
-                Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
+            if (!stage.getMissingResources().isEmpty()) {
+                result.append(Msg.BR).append("Missing Construction Resources:").append(Msg.BR);
+                Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
                 while (i.hasNext()) {
                 	Integer resource = i.next();
-                    double amount = stage.getRemainingResources().get(resource);
+                    double amount = stage.getMissingResources().get(resource);
                     result.append(Msg.NBSP).append(Msg.NBSP)
                     .append(ResourceUtil.findAmountResource(resource).getName()).append(": ").append(amount).append(" kg").append(Msg.BR);
                 }
             }
 
-            // Add remaining construction parts.
-            if (!stage.getRemainingParts().isEmpty()) {
-                result.append(Msg.BR).append("Remaining Construction Parts:").append(Msg.BR);
-                Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+            // Add Missing construction parts.
+            if (!stage.getMissingParts().isEmpty()) {
+                result.append(Msg.BR).append("Missing Construction Parts:").append(Msg.BR);
+                Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
                 while (j.hasNext()) {
                 	Integer part = j.next();
-                    int number = stage.getRemainingParts().get(part);
+                    int number = stage.getMissingParts().get(part);
                     result.append(Msg.NBSP).append(Msg.NBSP)
                     .append(ItemResourceUtil.findItemResourceName(part)).append(": ").append(number).append(Msg.BR);
                 }
@@ -309,7 +307,7 @@ implements ConstructionListener {
     }
 
     /**
-     * Model for the remaining construction materials table.
+     * Model for the construction materials table.
      */
     private class MaterialsTableModel extends AbstractTableModel {
 
@@ -429,18 +427,18 @@ implements ConstructionListener {
                 missingMap = new HashMap<>();
                 
                 // Add remaining resources.
-                Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
+                Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
                 while (i.hasNext()) {
                 	Integer resource = i.next();
-                    double amount = stage.getRemainingResources().get(resource);
+                    double amount = stage.getMissingResources().get(resource);
                     missingMap.put(GoodsUtil.getGood(resource), (int) amount);
                 }
 
                 // Add remaining parts.
-                Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+                Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
                 while (j.hasNext()) {
                 	Integer part = j.next();
-                    int num = stage.getRemainingParts().get(part);
+                    int num = stage.getMissingParts().get(part);
                     missingMap.put(GoodsUtil.getGood(part), num);
                 }
             }

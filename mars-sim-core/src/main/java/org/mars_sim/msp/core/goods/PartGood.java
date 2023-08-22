@@ -511,8 +511,8 @@ public class PartGood extends Good {
 			ConstructionSite site = i.next();
 			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getRemainingParts().containsKey(id)) {
-					int requiredNum = stage.getRemainingParts().get(id);
+				if (stage.getMissingParts().containsKey(id)) {
+					int requiredNum = stage.getMissingParts().get(id);
 					demand += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 				}
 			}
