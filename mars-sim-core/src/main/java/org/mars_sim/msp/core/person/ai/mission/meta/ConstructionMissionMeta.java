@@ -120,7 +120,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			}
 
 			// Job modifier.
-			missionProbability.addModifier(LEADER, constructionProfit); getLeaderSuitability(person);
+			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
 					
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2

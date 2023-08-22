@@ -53,7 +53,7 @@ public class SimulationBuilder {
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 	
-	private int userTimeRatio = 12;
+	private int userTimeRatio = 0; // zero means not defined
 	private String template;
 	private String authorityName = null;
 	private boolean newAllowed = false;
@@ -113,7 +113,6 @@ public class SimulationBuilder {
 
 	public void setSponsor(String optionValue) {
 		authorityName = optionValue;
-				//simulationConfig.getReportingAuthorityFactory().getItem(optionValue);
 	}
 
 	public void setDiagnostics(String modules) {
