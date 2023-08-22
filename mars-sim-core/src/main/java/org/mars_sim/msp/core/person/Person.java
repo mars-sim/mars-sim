@@ -424,7 +424,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		// Set inventory total mass capacity based on the person's weight and strength.
 		// Must be able to carry an EVA suit
-		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 1.5D),
+		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 2),
 						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
 		
