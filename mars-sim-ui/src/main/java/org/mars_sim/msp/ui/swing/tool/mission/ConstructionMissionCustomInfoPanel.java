@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ implements ConstructionListener {
     private BoundedRangeModel progressBarModel;
 //    private JButton settlementButton;
     
-    private RemainingMaterialsTableModel remainingMaterialsTableModel;
+    private MaterialsTableModel materialsTableModel;
 
     /**
      * Constructor.
@@ -96,35 +97,9 @@ implements ConstructionListener {
         String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //$NON-NLS-1$
         stageLabel = infoPanel.addTextField(stageLabelString, "", null);
         
-        // Create remaining construction materials label panel.
-        JPanel remainingMaterialsLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.CENTER);
-        
-        // Create remaining construction materials label.
-        String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.remainingMaterialsLabel"); //$NON-NLS-1$
-        Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
-        remainingMaterialsLabelPane.setBorder(blackline);
-        
-        // Create a scroll pane for the remaining construction materials table.
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//        scrollPane.setPreferredSize(new Dimension(-1, 100));
-        scrollPane.add(remainingMaterialsLabelPane);
-        
-        // Create the remaining construction materials table and model.
-        remainingMaterialsTableModel = new RemainingMaterialsTableModel();
-        JTable remainingMaterialsTable = new JTable(remainingMaterialsTableModel);
-        scrollPane.setViewportView(remainingMaterialsTable);
-   
-        add(scrollPane,  BorderLayout.CENTER);
-        
-        // Add tooltip.
-        setToolTipText(getToolTipString());
-        
         // Process panel    
         JPanel processPanel = new JPanel(new GridLayout(2, 1));
-        add(processPanel,  BorderLayout.SOUTH);
+        contentsPanel.add(processPanel,  BorderLayout.CENTER);
           
         JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         processPanel.add(progressBarPanel);
@@ -137,6 +112,30 @@ implements ConstructionListener {
         progressBar.setStringPainted(true);
         progressBarPanel.add(progressBar);
         
+        // Create remaining construction materials label panel.
+        JPanel remainingMaterialsLabelPane = new JPanel(new BorderLayout(1, 1));//FlowLayout(FlowLayout.CENTER));
+        contentsPanel.add(remainingMaterialsLabelPane,  BorderLayout.SOUTH);
+        
+        // Create remaining construction materials label.
+        String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.constructionMaterials"); //$NON-NLS-1$
+        Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
+        remainingMaterialsLabelPane.setBorder(blackline);
+        
+        // Create the construction materials table and model.
+        materialsTableModel = new MaterialsTableModel();
+        JTable materialsTable = new JTable(materialsTableModel);
+        materialsTable.setRowSelectionAllowed(true);
+
+        // Create a scroll pane for the remaining construction materials table.
+        JScrollPane scrollPane = new JScrollPane();
+        remainingMaterialsLabelPane.add(scrollPane);//, BorderLayout.SOUTH);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(5);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(-1, 160));
+        scrollPane.setViewportView(materialsTable);
+		
+        // Add tooltip.
+        materialsTable.setToolTipText(getToolTipString());
     }
 
     @Override
@@ -162,10 +161,10 @@ implements ConstructionListener {
                 updateProgressBar();
 
                 // Update remaining construction materials table.
-                remainingMaterialsTableModel.updateTable();
+                materialsTableModel.updateTable();
 
                 // Update the tool tip string.
-                setToolTipText(getToolTipString());
+//                setToolTipText(getToolTipString());
             }
         }
     }
@@ -175,11 +174,12 @@ implements ConstructionListener {
         stageLabel.setText(getStageString());
 
         // Update remaining construction materials table.
-        remainingMaterialsTableModel.updateTable();
+        materialsTableModel.updateTable();
     }
 
     /**
-     * Catch construction update event.
+     * Catches construction update event.
+     * 
      * @param event the mission event.
      */
     public void constructionUpdate(ConstructionEvent event) {
@@ -187,12 +187,12 @@ implements ConstructionListener {
             updateProgressBar();
 
             // Update the tool tip string.
-            setToolTipText(getToolTipString());
+//            setToolTipText(getToolTipString());
         }
         else if (ConstructionStage.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())) {
 
             // Update remaining construction materials table.
-            remainingMaterialsTableModel.updateTable();
+            materialsTableModel.updateTable();
         }
     }
 
@@ -263,7 +263,7 @@ implements ConstructionListener {
             result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 
             // Add remaining construction resources.
-            if (stage.getRemainingResources().size() > 0) {
+            if (!stage.getRemainingResources().isEmpty()) {
                 result.append(Msg.BR).append("Remaining Construction Resources:").append(Msg.BR);
                 Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
                 while (i.hasNext()) {
@@ -275,7 +275,7 @@ implements ConstructionListener {
             }
 
             // Add remaining construction parts.
-            if (stage.getRemainingParts().size() > 0) {
+            if (!stage.getRemainingParts().isEmpty()) {
                 result.append(Msg.BR).append("Remaining Construction Parts:").append(Msg.BR);
                 Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
                 while (j.hasNext()) {
@@ -287,7 +287,7 @@ implements ConstructionListener {
             }
 
             // Add construction vehicles.
-            if (info.getVehicles().size() > 0) {
+            if (!info.getVehicles().isEmpty()) {
                 result.append(Msg.BR).append("Construction Vehicles").append(Msg.BR);
                 Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                 while (k.hasNext()) {
@@ -311,7 +311,7 @@ implements ConstructionListener {
     /**
      * Model for the remaining construction materials table.
      */
-    private class RemainingMaterialsTableModel extends AbstractTableModel {
+    private class MaterialsTableModel extends AbstractTableModel {
 
         /** default serial id. */
         private static final long serialVersionUID = 1L;
@@ -324,7 +324,7 @@ implements ConstructionListener {
         /**
          * Constructor.
          */
-        private RemainingMaterialsTableModel() {
+        private MaterialsTableModel() {
             // Use AbstractTableModel constructor.
             super();
 

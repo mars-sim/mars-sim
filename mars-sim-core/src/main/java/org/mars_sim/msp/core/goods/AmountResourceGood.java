@@ -996,7 +996,6 @@ class AmountResourceGood extends Good {
 				ConstructionStage stage = site.getCurrentConstructionStage();
 				if (stage.getRemainingResources().containsKey(resource)) {
 					double requiredAmount = stage.getRemainingResources().get(resource);
-//					amount += requiredAmount;
 					demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
 				

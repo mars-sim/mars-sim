@@ -89,7 +89,7 @@ public class ConstructionMission extends AbstractMission
 
 	private static final int DIG_REGOLITH_PERCENT_PROBABILITY = 10;
 	
-	private static final int CONSTRUCT_PERCENT_PROBABILITY = 30;
+	private static final int CONSTRUCT_PERCENT_PROBABILITY = 50;
 	
 	private static final double SMALL_AMOUNT = 0.001D;
 	/** Time (millisols) required to prepare construction site for stage. */
