@@ -66,6 +66,8 @@ implements ConstructionListener {
     private BoundedRangeModel progressBarModel;
   
     private MaterialsTableModel materialsTableModel;
+    
+    private JScrollPane scrollPane;
 
     /**
      * Constructor.
@@ -130,12 +132,12 @@ implements ConstructionListener {
         materialsTable.setRowSelectionAllowed(true);
 
         // Create a scroll pane for the remaining construction materials table.
-        JScrollPane scrollPane = new JScrollPane();
+        scrollPane = new JScrollPane();
         remainingMaterialsLabelPane.add(scrollPane);
         scrollPane.getVerticalScrollBar().setUnitIncrement(5);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setPreferredSize(new Dimension(-1, 160));
         scrollPane.setViewportView(materialsTable);
+        scrollPane.setPreferredSize(new Dimension(-1, 40));      
     }
 
     @Override
@@ -145,8 +147,8 @@ implements ConstructionListener {
             site.removeConstructionListener(this);
         }
 
-        if (mission instanceof ConstructionMission) {
-            this.mission = (ConstructionMission) mission;
+        if (mission instanceof ConstructionMission m) {
+            this.mission = m;
             site = this.mission.getConstructionSite();
             
             if (site != null) {
@@ -154,7 +156,7 @@ implements ConstructionListener {
        
                 siteLabel.setText(site.getName());
                 
-                settlementLabel.setText(mission.getAssociatedSettlement().getName());
+                settlementLabel.setText(m.getAssociatedSettlement().getName());
                 
                 stageLabel.setText(getStageString());
                 
@@ -404,7 +406,7 @@ implements ConstructionListener {
             if (stage != null) {
 
                 originalMap = new HashMap<>();
-
+                
                 // Add original resources.
                 Iterator<Integer> i0 = stage.getOriginalResources().keySet().iterator();
                 while (i0.hasNext()) {
@@ -413,6 +415,10 @@ implements ConstructionListener {
                     originalMap.put(GoodsUtil.getGood(resource), (int) amount);
                 }
 
+                int size = originalMap.size();
+                if (size > 0)
+                	scrollPane.setPreferredSize(new Dimension(-1, size * 40));
+                
                 // Add original parts.
                 Iterator<Integer> j0 = stage.getOriginalParts().keySet().iterator();
                 while (j0.hasNext()) {

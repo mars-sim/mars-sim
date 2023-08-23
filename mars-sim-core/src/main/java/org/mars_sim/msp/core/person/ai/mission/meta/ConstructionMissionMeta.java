@@ -155,6 +155,12 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
+    /**
+     * Computes probability.
+     * 
+     * @param settlement
+     * @return
+     */
     private double getProbability(Settlement settlement) {
 
         double result = 0D;
@@ -165,9 +171,14 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         // Consider the size of the settlement population
         int numPeople = settlement.getNumCitizens();
         
-        double limit = Math.max(-1, 6 * numSites - numPeople);
+        int numBots = settlement.getNumBots();
+        
+        double psuedoNum = numPeople + 0.5 * numBots;
+        
+        if (psuedoNum - 6 * numSites < 0)
+        	return 0;
 
-        result = result/Math.pow(10, 2 + limit);
+        result = result/Math.pow(10, 2 + psuedoNum);
         
         return result;
     }

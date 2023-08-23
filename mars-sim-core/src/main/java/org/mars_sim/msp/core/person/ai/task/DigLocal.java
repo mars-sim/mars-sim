@@ -341,31 +341,7 @@ public abstract class DigLocal extends EVAOperation {
     	if (container == null)
     		return 0D;
     	
-    	boolean remapped = false;
-    	// Remapping regoliths by allowing the possibility of misclassifying regolith types
-		if (resourceID == ResourceUtil.regolithID) {
-			int rand = RandomUtil.getRandomInt(10);
-			
-			// Reassign as the other 3 types of regoliths
-			if (rand == 8) {						
-				resourceID = ResourceUtil.regolithBID;
-				remapped = true;
-			}
-			else if (rand == 9) {						
-				resourceID = ResourceUtil.regolithCID;
-				remapped = true;
-			}
-			else if (rand == 10) {					
-				resourceID = ResourceUtil.regolithDID;
-				remapped = true;
-			}
-		}
-    	
     	double amount = container.getAmountResourceStored(resourceID);	
-	
-    	// Map it back to regolithID
-    	if (remapped)
-    		resourceID = ResourceUtil.regolithID;
     	
         if (amount > 0) {
         	 	
@@ -405,12 +381,36 @@ public abstract class DigLocal extends EVAOperation {
 	 * Unloads resources from the Container.
 	 */
     private void unloadContainer(Container container, double amount, double effort) {
+       	boolean remapped = false;
+    	// Remapping regoliths by allowing the possibility of misclassifying regolith types
+		if (resourceID == ResourceUtil.regolithID) {
+			int rand = RandomUtil.getRandomInt(10);
+			
+			// Reassign as the other 3 types of regoliths
+			if (rand == 8) {						
+				resourceID = ResourceUtil.regolithBID;
+				remapped = true;
+			}
+			else if (rand == 9) {						
+				resourceID = ResourceUtil.regolithCID;
+				remapped = true;
+			}
+			else if (rand == 10) {					
+				resourceID = ResourceUtil.regolithDID;
+				remapped = true;
+			}
+		}
+		
 		// Retrieve this amount from the container
 		container.retrieveAmountResource(resourceID, amount);
 		// Add to the daily output
 		settlement.addOutput(resourceID, amount, effort);
 		// Store the amount in the settlement
 		settlement.storeAmountResource(resourceID, amount);
+		
+    	// Map it back to regolithID
+    	if (remapped)
+    		resourceID = ResourceUtil.regolithID;
 	}
 
 	/**
