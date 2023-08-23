@@ -746,10 +746,10 @@ public abstract class EVAOperation extends Task {
 	 * Gets the closest available airlock to a given location that has a walkable
 	 * path from the person's current location.
 	 *
-	 * @param person the person.
+	 * @param worker the worker.
 	 * @param        double xLocation the destination's X location.
 	 * @param        double yLocation the destination's Y location.
-	 * @param ingress is the person ingressing ?
+	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
@@ -776,8 +776,8 @@ public abstract class EVAOperation extends Task {
 	 * Gets an available airlock to a given location that has a walkable path from
 	 * the person's current location.
 	 *
-	 * @param person the person.
-	 * ?
+	 * @param worker the worker.
+	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getWalkableAvailableAirlock(Worker worker, boolean ingress) {
@@ -788,8 +788,8 @@ public abstract class EVAOperation extends Task {
 	 * Gets an available airlock for egress to a given location that has a walkable path from
 	 * the person's current location.
 	 *
-	 * @param person the person.
-	 * ?
+	 * @param worker the worker.
+	 * 
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getWalkableAvailableEgressAirlock(Worker worker) {
@@ -840,7 +840,9 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Set the minimum sunlight for any EVA operations.
+	 * Sets the minimum sunlight for any EVA operations.
+	 * 
+	 * @param minimum
 	 */
 	public static void setMinSunlight(double minimum) {
 		logger.config("Minimum sunlight for EVA = " + minimum);

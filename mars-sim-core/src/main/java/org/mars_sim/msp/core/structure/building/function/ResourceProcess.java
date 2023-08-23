@@ -252,7 +252,8 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				for(Integer resource : engine.getInputResources()) {
+				for(Integer resource : engine.getInputResources()) {				
+					
 					double maxRate = engine.getMaxInputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;

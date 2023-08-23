@@ -328,14 +328,44 @@ public abstract class DigLocal extends EVAOperation {
         return 0;
     }
 
+    /**
+     * Drops off resources from container.
+     * 
+     * @param time
+     * @return
+     */
 	private double dropOffResource(double time) {
     	double remainingTime = time;
     	
     	Container container = person.findContainer(containerType, false, resourceID);
     	if (container == null)
     		return 0D;
-	   	
+    	
+    	boolean remapped = false;
+    	// Remapping regoliths by allowing the possibility of misclassifying regolith types
+		if (resourceID == ResourceUtil.regolithID) {
+			int rand = RandomUtil.getRandomInt(10);
+			
+			// Reassign as the other 3 types of regoliths
+			if (rand == 8) {						
+				resourceID = ResourceUtil.regolithBID;
+				remapped = true;
+			}
+			else if (rand == 9) {						
+				resourceID = ResourceUtil.regolithCID;
+				remapped = true;
+			}
+			else if (rand == 10) {					
+				resourceID = ResourceUtil.regolithDID;
+				remapped = true;
+			}
+		}
+    	
     	double amount = container.getAmountResourceStored(resourceID);	
+	
+    	// Map it back to regolithID
+    	if (remapped)
+    		resourceID = ResourceUtil.regolithID;
     	
         if (amount > 0) {
         	 	
@@ -372,7 +402,7 @@ public abstract class DigLocal extends EVAOperation {
     }
     
 	/**
-	 * Unload resources from the Container
+	 * Unloads resources from the Container.
 	 */
     private void unloadContainer(Container container, double amount, double effort) {
 		// Retrieve this amount from the container
@@ -452,8 +482,7 @@ public abstract class DigLocal extends EVAOperation {
      * @return digging X and Y location outside settlement.
      */
     private LocalPosition determineDiggingLocation() {
-		if (airlock.getEntity() instanceof LocalBoundedObject) {
-			LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
+		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
 			return  LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
 																 person.getCoordinates(), 100D);
 		}

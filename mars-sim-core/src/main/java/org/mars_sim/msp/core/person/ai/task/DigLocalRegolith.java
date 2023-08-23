@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2023-07-04
+ * @date 2023-08-22
  * @author Scott Davis
  */
 
@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
- * The DigLocalRegolith class is a task for digging and collecting
+ * This class is a task for digging and collecting
  * regolith right outside in the vicinity of a settlement.
  */
 public class DigLocalRegolith
