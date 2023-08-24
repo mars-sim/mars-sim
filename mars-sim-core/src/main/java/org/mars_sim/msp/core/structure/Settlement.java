@@ -23,7 +23,6 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -3195,7 +3194,7 @@ public class Settlement extends Structure implements Temporal,
 		Coordinates chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 		double chosenDist = weightedMap.get(chosen);
 		
-		logger.info(CollectionUtils.findSettlement(getCoordinates()), 30_000L, 
+		logger.info(unitManager.findSettlement(getCoordinates()), 30_000L, 
 				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
 		
 		if (chosen != null)

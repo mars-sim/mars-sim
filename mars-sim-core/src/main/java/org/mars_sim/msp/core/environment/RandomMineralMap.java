@@ -30,7 +30,9 @@ import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.MineralMapConfig.MineralType;
 import org.mars_sim.msp.core.logging.SimLogger;
 
@@ -82,7 +84,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	
 	private static Set<Coordinates> allLocations;
 	
-	private static MineralMapConfig mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
+	private MineralMapConfig mineralMapConfig;
+	
+	private UnitManager unitManager;
 	
 	/**
 	 * Constructor.
@@ -543,7 +547,10 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 		int size = locales.size();
 		
-		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
+		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
 				"Found " + size 
 				+ " potential mineral sites to explore within " + Math.round(range * 10.0)/10.0 + " km.");
 	
@@ -593,7 +600,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		chosen = RandomUtil.getWeightedRandomObject(weightedMap);
 		double chosenDist = weightedMap.get(chosen);
 		
-		logger.info(CollectionUtils.findSettlement(startingLocation), 30_000L, 
+		logger.info(unitManager.findSettlement(startingLocation), 30_000L, 
 				"Investigating mineral site at " + chosen + " (" + Math.round(chosenDist * 10.0)/10.0 + " km).");
 
 		return chosen;

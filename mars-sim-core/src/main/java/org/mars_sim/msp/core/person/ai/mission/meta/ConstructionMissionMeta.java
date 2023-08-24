@@ -36,7 +36,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
       
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
-				Set.of(JobType.ARCHITECT, JobType.ENGINEER)); // ScienceType.ENGINEERING
+				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
     }
     
     @Override
@@ -107,7 +107,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	        	
 	            try {
 	                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-	                ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+	                ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
 	
 	                // Add construction profit for existing or new construction sites.
 	                double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);

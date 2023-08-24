@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EVASuitUtil;
@@ -1294,14 +1293,14 @@ public class ExitAirlock extends Task {
 
 			try {
 				if (person.isInVehicle()) {
-					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getVehicle().getCoordinates());
+					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
 					if (nearbySettlement != null) {				
 						// Attempt a rescue operation
 						result = person.rescueOperation((Rover) person.getVehicle(), person, nearbySettlement);
 					}
 				}
 				else if (person.isOutside()) {
-					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getCoordinates());
+					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
 					if (nearbySettlement != null)
 						// Attempt a rescue operation
 						result = person.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());

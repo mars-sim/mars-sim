@@ -106,45 +106,6 @@ public class CollectionUtils {
 
 		return null;
 	}
-
-
-	/**
-	 * Finds a nearby settlement based on its coordinates.
-	 *
-	 * @param c {@link Coordinates}
-	 * @return
-	 */
-	public static Settlement findSettlement(Coordinates c) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
-				return s;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Is this a settlement's coordinates.
-	 *
-	 * @param c {@link Coordinates}
-	 * @return
-	 */
-	public static boolean isSettlement(Coordinates c) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
-				return true;
-		}
-
-		return false;
-	}
 	
 	/**
 	 * Finds a nearby vehicle based on its coordinates.

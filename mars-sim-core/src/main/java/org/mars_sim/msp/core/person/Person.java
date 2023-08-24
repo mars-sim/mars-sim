@@ -739,7 +739,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return the person's settlement
 	 */
 	public Settlement getNearbySettlement() {
-		return CollectionUtils.findSettlement(getCoordinates());
+		return unitManager.findSettlement(getCoordinates());
 	}
 	
 	/**

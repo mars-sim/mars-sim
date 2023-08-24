@@ -16,7 +16,6 @@ import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -285,7 +284,7 @@ public abstract class EVAOperation extends Task {
 
 			if (interiorObject == null) {
 				// Get closest airlock building at settlement.
-				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
+				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					if (interiorObject instanceof Building)

@@ -16,8 +16,8 @@ import java.util.Map;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
@@ -101,7 +101,9 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
-
+	
+	private UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
 		sunDataMap = new HashMap<>();
@@ -182,7 +184,7 @@ public class Weather implements Serializable, Temporal {
 			
 			// Check for the passing of each day only
 			if (isNewSol) {
-				Settlement focus = CollectionUtils.findSettlement(location);
+				Settlement focus = unitManager.findSettlement(location);
 				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
 				if (ds != null) {
 					double stormSpeed = 0;

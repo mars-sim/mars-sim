@@ -13,7 +13,6 @@ import java.util.logging.Level;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -88,7 +87,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Determine location for unloading.
 		setOutsideLocation(vehicle);
 		
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		settlement = unitManager.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
 		}

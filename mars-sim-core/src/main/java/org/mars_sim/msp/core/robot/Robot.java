@@ -247,7 +247,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return the robot's settlement
 	 */
 	public Settlement getNearbySettlement() {
-		return CollectionUtils.findSettlement(getCoordinates());
+		return unitManager.findSettlement(getCoordinates());
 	}
 
 	/**

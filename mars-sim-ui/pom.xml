@@ -97,10 +97,11 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    </dependency>
      	-->
      
-		<!-- https://www.jcraft.com/jorbis/
+		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
+		<!-- https://www.jcraft.com/jorbis/  -->
+		<!-- May consider the following two other sound API :			 
 			 https://github.com/Trilarion/java-vorbis-support
-			 https://github.com/Gagravarr/VorbisJava
-			 https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
+			 https://github.com/Gagravarr/VorbisJava -->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
