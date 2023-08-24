@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -58,6 +59,9 @@ extends EVAOperation {
 			checkLocation();
         	return;
 		}
+		
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
 		
       	settlement = unitManager.findSettlement(person.getCoordinates());
         if (settlement == null) {
