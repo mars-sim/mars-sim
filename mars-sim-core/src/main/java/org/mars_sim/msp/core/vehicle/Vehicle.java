@@ -1735,12 +1735,22 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Gets the container set.
+	 *
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getContainerSet() {
+		return eqmInventory.getContainerSet();
+	}
+	
+	/**
 	 * Finds all of the containers (excluding EVA suit).
 	 *
 	 * @return collection of containers or empty collection if none.
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
+	public Set<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
 	}
 

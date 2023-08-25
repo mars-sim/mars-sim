@@ -495,6 +495,7 @@
 			<settlement-name name="Marshal" />
 			<settlement-name name="Base Sani" />
 			<settlement-name name="Basti" />
+			<rover-name name="Chandrayaan" /> <!-- 'Moon Vehicle' in Hindi and Sanskrit -->
 			<rover-name name="Tata" /> <!-- Indian for "bye" or "out of station" -->
 			<rover-name name="Maruti" /> <!-- Indian for "one born from Marut (or air)" -->
 			<rover-name name="Ashok" /> <!-- Sanskrit origion, meaning "yes" or "like" -->

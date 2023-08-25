@@ -132,7 +132,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 */
 	@Override
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
-		List<SettlementTask>  tasks = new ArrayList<>();
+		List<SettlementTask> tasks = new ArrayList<>();
 	
 		for (Building building: settlement.getBuildingManager().getBuildingSet()) {
 			double score = scoreMaintenance(building);

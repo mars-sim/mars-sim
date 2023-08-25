@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
@@ -758,65 +757,15 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Does this person possess an equipment of this equipment type
+	 * Gets the container set.
 	 *
-	 * @param typeID
-	 * @return true if this person possess this equipment type
+	 * @return
 	 */
 	@Override
-	public boolean containsEquipment(EquipmentType type) {
-		return eqmInventory.containsEquipment(type);
+	public Set<Equipment> getContainerSet() {
+		return eqmInventory.getContainerSet();
 	}
-
-	/**
-	 * Adds an equipment to this robot.
-	 *
-	 * @param equipment
-	 * @return true if this robot can carry it
-	 */
-	@Override
-	public boolean addEquipment(Equipment e) {
-		if (eqmInventory.addEquipment(e)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes an equipment.
-	 *
-	 * @param equipment
-	 */
-	@Override
-	public boolean removeEquipment(Equipment equipment) {
-		return eqmInventory.removeEquipment(equipment);
-	}
-
-	/**
-	 * Stores the item resource.
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return eqmInventory.storeItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the item resource
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return eqmInventory.retrieveItemResource(resource, quantity);
-	}
-
+	
 	/**
 	 * Gets the item resource stored
 	 *
@@ -988,10 +937,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Finds all of the containers (excluding EVA suit).
 	 *
-	 * @return collection of containers or empty collection if none.
+	 * @return a set of containers or empty collection if none.
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
+	public Set<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
 	}
 
@@ -1005,6 +954,66 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return eqmInventory.findContainersOfType(type);
 	}
 
+	/**
+	 * Does this person possess an equipment of this equipment type
+	 *
+	 * @param typeID
+	 * @return true if this person possess this equipment type
+	 */
+	@Override
+	public boolean containsEquipment(EquipmentType type) {
+		return eqmInventory.containsEquipment(type);
+	}
+
+	/**
+	 * Adds an equipment to this robot.
+	 *
+	 * @param equipment
+	 * @return true if this robot can carry it
+	 */
+	@Override
+	public boolean addEquipment(Equipment e) {
+		if (eqmInventory.addEquipment(e)) {
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes an equipment.
+	 *
+	 * @param equipment
+	 */
+	@Override
+	public boolean removeEquipment(Equipment equipment) {
+		return eqmInventory.removeEquipment(equipment);
+	}
+
+	/**
+	 * Stores the item resource.
+	 *
+	 * @param resource the item resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	@Override
+	public int storeItemResource(int resource, int quantity) {
+		return eqmInventory.storeItemResource(resource, quantity);
+	}
+
+	/**
+	 * Retrieves the item resource
+	 *
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	@Override
+	public int retrieveItemResource(int resource, int quantity) {
+		return eqmInventory.retrieveItemResource(resource, quantity);
+	}
+	
 	/**
 	 * Does it have this item resource ?
 	 *

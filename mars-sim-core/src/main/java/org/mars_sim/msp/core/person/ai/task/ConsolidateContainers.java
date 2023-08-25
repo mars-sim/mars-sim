@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -155,8 +156,10 @@ extends Task {
         double remainingAmountLoading = totalAmountLoading;
         
         // Go through each container in top inventory.   
-        for (Container source: parent.findAllContainers()) {
-        	int resourceID = source.getResource();
+        for (Equipment source: parent.getContainerSet()) {
+            Container c = (Container)source; 	
+        	
+        	int resourceID = c.getResource();
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
                 double sourceAmount = source.getAmountResourceStored(resourceID);
@@ -164,7 +167,7 @@ extends Task {
 	                // Move resource in container to top inventory if possible.
 	                double topRemainingCapacity = parent.getAmountResourceRemainingCapacity(resourceID);
 	                if (useTopInventory && (topRemainingCapacity >= 0D)) {
-                        double loadAmount = transferResource(source, sourceAmount, resourceID,
+                        double loadAmount = transferResource(c, sourceAmount, resourceID,
                                                              topRemainingCapacity,
                                                              parent, topRemainingCapacity);
 	                   
@@ -178,15 +181,15 @@ extends Task {
 	                // Check if container is empty.
 	                if (sourceAmount > 0D) {
 	                    // Go through each other container in top inventory and try to consolidate resource.
-	                    Iterator<Container> k = parent.findAllContainers().iterator();
+	                    Iterator<Equipment> k = parent.getContainerSet().iterator();
 	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (sourceAmount > 0D)) {
-	                    	Container otherUnit = k.next();
+	                    	Container otherUnit = (Container)k.next();
 	                        if (otherUnit != source) { // && otherUnit instanceof Container) {
 	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
 	                                if (otherRemainingCapacity >= 0D) {
-                                        double loadAmount = transferResource(source, sourceAmount, resourceID,
+                                        double loadAmount = transferResource(c, sourceAmount, resourceID,
                                                                              remainingAmountLoading,
                                                                              otherUnit, otherRemainingCapacity);
 

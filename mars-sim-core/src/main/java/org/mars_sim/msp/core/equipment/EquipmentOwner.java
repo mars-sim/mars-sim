@@ -23,7 +23,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * 
 	 * @return collection of containers or empty collection if none.
 	 */
-	public Collection<Container> findAllContainers();
+	public Set<Container> findAllContainers();
 
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
@@ -38,6 +38,13 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return
 	 */
 	Set<Equipment> getEquipmentSet();
+	
+	/**
+	 * Gets the container set.
+	 * 
+	 * @return
+	 */
+	Set<Equipment> getContainerSet();
 	
 	/**
 	 * Does this person possess an equipment of this type ?

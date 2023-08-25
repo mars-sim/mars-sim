@@ -125,7 +125,7 @@
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1"
             first-arrival-time="1"
             frequency-sols="80" /> 
-        <resupply-mission nae="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1"
             first-arrival-time="668"/>
     </resupply>
 </template>

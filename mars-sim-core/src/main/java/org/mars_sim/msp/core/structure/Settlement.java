@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2105,10 +2106,10 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Finds all of the containers (excluding EVA suit).
 	 *
-	 * @return collection of containers or empty collection if none.
+	 * @return a set of containers or empty collection if none.
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
+	public Set<Container> findAllContainers() {
 		return eqmInventory.findAllContainers();
 	}
 
@@ -3327,6 +3328,16 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory.getEquipmentSet();
 	}
 
+	/**
+	 * Gets the container set.
+	 *
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getContainerSet() {
+		return eqmInventory.getContainerSet();
+	}
+			
 	/**
 	 * Gets a set of the equipment with particular equipment type.
 	 *
