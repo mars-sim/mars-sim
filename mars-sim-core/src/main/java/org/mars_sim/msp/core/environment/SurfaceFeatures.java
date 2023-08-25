@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
@@ -86,6 +87,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private Weather weather;
 	private OrbitInfo orbitInfo;
 	
+	private final ReentrantLock opticalDepthLock = new ReentrantLock();
+	
+	private final ReentrantLock sunlightLock = new ReentrantLock();
+	
 	private static TerrainElevation terrainElevation;
 
 	/**
@@ -130,12 +135,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (value != null)
 			return value.doubleValue();
 
+		opticalDepthLock.lock();
+		
 		double result = computeOpticalDepth(location);
 
 		// Make cache thread safe as this may be done on demand
-		synchronized(opticalDepthMap) {
+//		synchronized(opticalDepthMap)
 			opticalDepthMap.put(location, result);
-		}
+		
+		opticalDepthLock.unlock();
 
 		return result;
 	}
@@ -262,18 +270,18 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		double result;
 		Double cachedValue = currentIrradiance.get(location);
-		if (cachedValue != null) {
-			result = cachedValue.doubleValue();
-		}
-		else {
-			result = calculateSolarIrradiance(location);
-			// Make cache thread safe as this may be done on demand
-			synchronized(currentIrradiance) {
-				currentIrradiance.put(location, result);
-			}
-		}
+		if (cachedValue != null)
+			return cachedValue.doubleValue();
+
+		sunlightLock.lock();
+			
+		double result = calculateSolarIrradiance(location);
+		// Make cache thread safe as this may be done on demand
+//		synchronized(currentIrradiance)
+			currentIrradiance.put(location, result);
+			
+		sunlightLock.unlock();
 
 		return result;
 	}

@@ -29,7 +29,6 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
