@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -440,8 +439,8 @@ public class Cooking extends Function {
 			double population = getPopulation();
 			double maxServings = population * building.getSettlement().getMealsReplenishmentRate();
 
-			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement();
-			if (numSettlementCookedMeals >= maxServings) {
+			int totalServings = getTotalAvailableCookedMealsAtSettlement();
+			if (totalServings >= maxServings) {
 				cookNoMore = true;
 			}
 
@@ -485,15 +484,8 @@ public class Cooking extends Function {
 	 * @return a hot meal or null if none available.
 	 */
 	public HotMeal getACookableMeal() {
-
-		List<HotMeal> available = MealConfig.getDishList().stream().filter(meal ->
-										areAllIngredientsAvailable(meal) == true).collect(Collectors.toList());
-		HotMeal result = null;
-		if (!available.isEmpty()) {
-			int idx = RandomUtil.getRandomInt(available.size() - 1);
-			result  = available.get(idx);
-		}
-		return result;
+		return MealConfig.getDishList().stream().filter(meal ->
+			areAllIngredientsAvailable(meal) == true).findAny().orElse(null);
 	}
 
 	/**
@@ -534,7 +526,6 @@ public class Cooking extends Function {
 	 * @return true or false
 	 */
 	public boolean areAllIngredientsAvailable(HotMeal aMeal) {
-
 		return aMeal.getIngredientList().stream().filter(i -> i.getID() < 3) // only ingredient 0, 1, 2 are must-have's
 				.allMatch(i -> retrieveAnIngredientFromMap(i.getDryMass(), i.getAmountResourceID(), false));
 	}
@@ -600,7 +591,6 @@ public class Cooking extends Function {
 		culinarySkillPerf = .25 * theCook.getPerformanceRating()
 					* theCook.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
-
 		// consume oil
 		boolean has_oil = true;
 
@@ -641,9 +631,6 @@ public class Cooking extends Function {
 		cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
-
-//		LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-//				"[" + building.getSettlement() + "] " + producerName + " cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
 	}

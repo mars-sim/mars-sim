@@ -745,14 +745,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
-	 * Get the equipment list
+	 * Gets the equipment list.
 	 *
 	 * @return the equipment list
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		if (eqmInventory == null)
-			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 
@@ -764,6 +762,16 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public Set<Equipment> getContainerSet() {
 		return eqmInventory.getContainerSet();
+	}
+	
+	/**
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getSuitSet() {
+		return eqmInventory.getSuitSet();
 	}
 	
 	/**
@@ -913,6 +921,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Finds the number of containers of a particular type
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -924,6 +934,8 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/**
 	 * Finds a container in storage.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -932,16 +944,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
 		return eqmInventory.findContainer(containerType, empty, resource);
-	}
-
-	/**
-	 * Finds all of the containers (excluding EVA suit).
-	 *
-	 * @return a set of containers or empty collection if none.
-	 */
-	@Override
-	public Set<Container> findAllContainers() {
-		return eqmInventory.findAllContainers();
 	}
 
 	/**

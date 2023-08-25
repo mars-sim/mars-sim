@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2102,16 +2101,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 		return false;
 	}
-	
-	/**
-	 * Finds all of the containers (excluding EVA suit).
-	 *
-	 * @return a set of containers or empty collection if none.
-	 */
-	@Override
-	public Set<Container> findAllContainers() {
-		return eqmInventory.findAllContainers();
-	}
 
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
@@ -2160,16 +2149,6 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
 		return ownedVehicles;
-	}
-
-	/**
-	 * Gets all equipment associated with this settlement, even if they are out on
-	 * missions.
-	 *
-	 * @return collection of associated equipment.
-	 */
-	public Collection<Equipment> getAllAssociatedEquipment() {
-		return getEquipmentSet();
 	}
 
 	/**
@@ -3337,14 +3316,24 @@ public class Settlement extends Structure implements Temporal,
 	public Set<Equipment> getContainerSet() {
 		return eqmInventory.getContainerSet();
 	}
-			
+
 	/**
-	 * Gets a set of the equipment with particular equipment type.
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getSuitSet() {
+		return eqmInventory.getSuitSet();
+	}
+	
+	/**
+	 * Gets a set of the container with particular container type.
 	 *
 	 * @return the equipment list
 	 */
-	public Set<Equipment> getEquipmentTypeSet(EquipmentType equipmentType) {
-		return eqmInventory.getEquipmentSet().stream()
+	public Set<Equipment> getContainerSet(EquipmentType equipmentType) {
+		return eqmInventory.getContainerSet().stream()
 				.filter(e -> e.getEquipmentType() == equipmentType)
 				.collect(Collectors.toSet());
 	}
@@ -3370,9 +3359,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public int getNumEVASuit() {
-		return Math.toIntExact(getEquipmentTypeSet(EquipmentType.EVA_SUIT)
-				.stream()
-				.collect(Collectors.counting()));
+		return getSuitSet().size();
+//		return Math.toIntExact(getEquipmentTypeSet(EquipmentType.EVA_SUIT)
+//				.stream()
+//				.collect(Collectors.counting()));
 	}
 	
 	/**
@@ -3605,6 +3595,8 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Finds the number of containers of a particular type.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -3616,6 +3608,8 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Finds a container in storage.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter

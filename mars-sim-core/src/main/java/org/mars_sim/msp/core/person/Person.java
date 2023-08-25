@@ -1568,11 +1568,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return
 	 */
 	public EVASuit getInventorySuit() {
-		for (Equipment e: getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT)
-				return (EVASuit)e;
-		}
-		return null;
+		return (EVASuit) getSuitSet().stream().findAny().orElse(null);
 	}
 
 	public int getExtrovertmodifier() {
@@ -1635,8 +1631,6 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		if (eqmInventory == null)
-			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 
@@ -1650,18 +1644,18 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		return eqmInventory.getContainerSet();
 	}
 	
-	public EquipmentInventory getEquipmentInventory() {
-		return eqmInventory;
-	}
-	
 	/**
-	 * Finds all of the containers (excluding EVA suit).
-	 *
-	 * @return a set of containers or empty collection if none.
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
 	 */
 	@Override
-	public Set<Container> findAllContainers() {
-		return eqmInventory.findAllContainers();
+	public Set<Equipment> getSuitSet() {
+		return eqmInventory.getSuitSet();
+	}
+	
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
 	}
 
 	/**
@@ -1883,6 +1877,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Finds the number of containers of a particular type.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -1894,6 +1890,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Finds a container in storage.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter

@@ -133,13 +133,13 @@ public final class MalfunctionFactory implements Serializable {
 
 		Collection<? extends Unit> inventoryUnits = null;
 
-		if (source instanceof EquipmentOwner) {
-			inventoryUnits = ((EquipmentOwner)source).getEquipmentSet();
+		if (source instanceof EquipmentOwner eo) {
+			inventoryUnits = eo.getEquipmentSet();
 
 			if (inventoryUnits != null && !inventoryUnits.isEmpty()) {
 				for (Unit unit : inventoryUnits) {
-					if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
-						entities.add((Malfunctionable) unit);
+					if (unit instanceof Malfunctionable u && !entities.contains(u)) {
+						entities.add(u);
 					}
 				}
 			}
@@ -171,10 +171,10 @@ public final class MalfunctionFactory implements Serializable {
 
 		entities.add(entity);
 
-		if (entity instanceof EquipmentOwner) {
-			for (Equipment e : ((EquipmentOwner)entity).getEquipmentSet()) {
-				if (e instanceof Malfunctionable) {
-					entities.add((Malfunctionable) e);
+		if (entity instanceof EquipmentOwner eo) {
+			for (Equipment e : eo.getEquipmentSet()) {
+				if (e instanceof Malfunctionable m) {
+					entities.add(m);
 				}
 			}
 		}
@@ -182,14 +182,14 @@ public final class MalfunctionFactory implements Serializable {
 		if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
 			Collection<Robot> inventoryUnits1 = ((Crewable)entity).getRobotCrew();
 			for (Unit unit : inventoryUnits1) {
-				if (unit instanceof Malfunctionable) {
-					entities.add((Malfunctionable) unit);
+				if (unit instanceof Malfunctionable u) {
+					entities.add(u);
 				}
 			}
 		}
 
-		else if (entity instanceof Settlement) {
-			entities.addAll(getBuildingMalfunctionables((Settlement)entity));
+		else if (entity instanceof Settlement s) {
+			entities.addAll(getBuildingMalfunctionables(s));
 		}
 
 		return entities;
@@ -224,12 +224,10 @@ public final class MalfunctionFactory implements Serializable {
 		// }
 
 		// Get entities carried by people on EVA.
-		for (Equipment e: settlement.getEquipmentSet()) {
-			if (e.getUnitType() == UnitType.EVA_SUIT) {
-				EVASuit suit = (EVASuit)e;
-				if (suit.getMalfunctionManager().hasMalfunction())
-					entities.add(suit);
-			}
+		for (Equipment e: settlement.getSuitSet()) {
+			EVASuit suit = (EVASuit)e;
+			if (suit.getMalfunctionManager().hasMalfunction())
+				entities.add(suit);
 		}
 		
 		return entities;

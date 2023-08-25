@@ -485,9 +485,9 @@ public class PreparingDessert extends Function {
 			double population = building.getSettlement().getIndoorPeopleCount();
 			double maxServings = population * building.getSettlement().getDessertsReplenishmentRate();
 
-			int numServings = getTotalAvailablePreparedDessertsAtSettlement(building.getSettlement());
+			int totalServings = getTotalAvailablePreparedDessertsAtSettlement(building.getSettlement());
 
-			if (numServings >= maxServings) {
+			if (totalServings >= maxServings) {
 				makeNoMoreDessert = true;
 			} 
 			

@@ -17,13 +17,6 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return
 	 */
 	public double getStoredMass();
-	
-	/**
-	 * Finds all of the containers (excluding EVA suit).
-	 * 
-	 * @return collection of containers or empty collection if none.
-	 */
-	public Set<Container> findAllContainers();
 
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
@@ -45,6 +38,13 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @return
 	 */
 	Set<Equipment> getContainerSet();
+	
+	/**
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
+	 */
+	Set<Equipment> getSuitSet();
 	
 	/**
 	 * Does this person possess an equipment of this type ?

@@ -416,7 +416,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public void meetBaselineNumEVASuits(Settlement settlement, Vehicle v) {
 		// See if the there's enough EVA suits
-		int availableSuitNum = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+		int availableSuitNum = settlement.getNumEVASuit();
 	
 		if (availableSuitNum > 1 && !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
 	
@@ -425,7 +425,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (UnitType.PERSON == w.getUnitType()) {
 	
 					// Check if an EVA suit is available
-					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0
+					if (availableSuitNum > 0
 							|| !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
 						// Obtain a suit from the settlement and transfer it to vehicle
 						EVASuitUtil.fetchEVASuitFromSettlement((Person) w, v, settlement);
@@ -571,13 +571,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
             	// Outside so preload all EVASuits before the Unloading starts
             	int suitsNeeded = crew.size();
             	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
-            	Iterator<Equipment> eIt = rover.getEquipmentSet().iterator();
+            	Iterator<Equipment> eIt = rover.getSuitSet().iterator();
             	while ((suitsNeeded > 0) && eIt.hasNext()) {
             		Equipment e = eIt.next();
-            		if (e instanceof EVASuit) {
-            			if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
-            				suitsNeeded--;
-            			}
+            		if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
+            			suitsNeeded--;
             		}
             	}
             }
@@ -614,15 +612,16 @@ public abstract class RoverMission extends AbstractVehicleMission {
     						// This person is already in the settlement. 
     						// Since the rover is in the garage and the person is in the rover,
     						// need to check if the person can walk out of the rover without having to go through EVA
+    						    						
+    						rover.removePerson(p);
     						
-//    						logger.info(rover, 30_000L, "Status report on " + p.getName() 
-//	    							+ ".  Settlement: " + settlementName
-//	    							+ ".  Building: " + buildingName
-//	    							+ ".  Rover: " + roverName
-//	    							);
-    						
-//    						rover.removePerson(p);
+    						logger.info(rover, 30_000L, p.getName() 
+	    							+ " exited '" + roverName + "' onto "
+	    							+ settlementName
+	    							+ "'s " + buildingName + "."	    							
+	    							);
     					}
+    					
     					else {
     						// Welcome this person home
     						

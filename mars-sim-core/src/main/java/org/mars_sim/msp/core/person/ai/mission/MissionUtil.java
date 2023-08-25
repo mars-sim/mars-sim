@@ -42,7 +42,7 @@ public class MissionUtil {
 		if (settlement == null)
 			throw new IllegalArgumentException("Settlement is null");
 
-		int result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+		int result = settlement.getNumEVASuit();
 
 		// Leave one suit for settlement use.
 		if (result > 0) {

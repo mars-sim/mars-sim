@@ -1113,7 +1113,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						amountStored += person.getAmountResourceStored(id);
 					}
 					// Check vehicle's equipment
-					for (Equipment equipment: rover.getEquipmentSet()) {
+					for (Equipment equipment: rover.getContainerSet()) {
 						amountStored += equipment.getAmountResourceStored(id);
 					}
 				}

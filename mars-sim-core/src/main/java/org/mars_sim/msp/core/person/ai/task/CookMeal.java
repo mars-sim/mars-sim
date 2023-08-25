@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -199,7 +200,7 @@ public class CookMeal extends Task {
 			return time;
 		}
 
-		if (worker instanceof Robot) {
+		if (worker.getUnitType() == UnitType.ROBOT) {
 			// A robot moves slower than a person and incurs penalty on workTime
 			workTime = time / 3;
 		}

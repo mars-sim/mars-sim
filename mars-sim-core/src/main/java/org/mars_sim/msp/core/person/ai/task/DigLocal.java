@@ -241,14 +241,14 @@ public abstract class DigLocal extends EVAOperation {
 		}
 			
      	if (person.isInSettlement()) {
-			abortEVA("Person in settlement");
+			abortEVA("Person in settlement.");
      		return time;
      	}
 
      	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
-        	abortEVA("Has no " + containerType.getName() + " for " + resourceName);
+        	abortEVA("Found no " + containerType.getName() + " for " + resourceName + ".");
         	return time;
         }
      
@@ -430,11 +430,11 @@ public abstract class DigLocal extends EVAOperation {
             	boolean successful = container.transfer(person);
             	if (!successful) {
             		container = null;
-                	abortEVA("Strangely unable to transfer an empty container for " + resourceName);
+                	abortEVA("Strangely unable to transfer an empty container for " + resourceName + ".");
                 }
 	        }
 	        else {
-	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName);
+	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName + ".");
 	        }
         }
         return container;
