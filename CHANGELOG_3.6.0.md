@@ -5,7 +5,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.0 build 8556 (24 Aug 2023)
+## 3.6.0 build 8557 (24 Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
