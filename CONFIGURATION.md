@@ -1,5 +1,5 @@
 # Configuration
-`Revised : 26 Mar 2023`
+`Revised : 24 Aug 2023`
 
 Most of the Mars Simulation Project's configuration files are 
 primarily written in XML format. This guide will get you 
@@ -9,7 +9,9 @@ Most attributes and properties are designed to
 tolerate a range of values. However, they are not all 
 created equal to have the same degree of user customization. 
 
-Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) with us with any ideas you have in mind.
+Do file a [ticket](https://github.com/mars-sim/mars-sim/issues) or 
+open a [discussion topic](https://github.com/mars-sim/mars-sim/discussions) 
+with us with any ideas you have in mind.
 
 
 ## Utility Tool
@@ -44,9 +46,46 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | --- | --- |
 | buildings.xml | Define new buildings with functions |                  
 | construction.xml | Define type of foundations, frames and buildings |
+
+| country_austria.xml | Define settler's names for the country of Austria |
+| country_belgium.xml | Define settler's names for the country of Belgium |
+| country_canada.xml  | Define settler's names for the country of Canada |
+| country_china.xml           | Define settler's names for the country of China |
+| country_czech_republic.xml | Define settler's names for the country of Czech Republic |
+| country_denmark.xml | Define settler's names for the country of Denmark |
+| country_estonia.xml | Define settler's names for the country of Estonia |
+| country_finland.xml | Define settler's names for the country of Finland |
+| country_france.xml | Define settler's names for the country of France |
+| country_germany.xml | Define settler's names for the country of Germany |
+| country_greece.xml | Define settler's names for the country of Greece |
+| country_hungary.xml | Define settler's names for the country of Hungary |
+| country_india.xml | Define settler's names for the country of India |
+| country_ireland.xml | Define settler's names for the country of Ireland |
+| country_italy.xml  | Define settler's names for the country of Italy |
+| country_japan.xml           | Define settler's names for the country of Japan |
+| country_luxembourg.xml | Define settler's names for the country of Luxembourg |
+| country_norway.xml | Define settler's names for the country of Norway |
+| country_poland.xml | Define settler's names for the country of Poland |
+| country_portugal.xml | Define settler's names for the country of Portugal |
+| country_romania.xml | Define settler's names for the country of Romania |
+| country_russia.xml | Define settler's names for the country of Russia |
+| country_south_korea.xml | Define settler's names for the country of South Korea |
+| country_spain.xml | Define settler's names for the country of Spain |
+| country_sweden.xml | Define settler's names for the country of Sweden |
+| country_switzerland.xml | Define settler's names for the country of Switzerland |
+| country_the_netherlands.xml | Define settler's names for the Netherlands |
+| country_uk.xml | Define settler's names for the country of UK |
+| country_usa.xml | Define settler's names for the country of USA |
+| country.xsd | Define the xsd scheme for country-related xmls |
+
 | crew_alpha.xml | Store the alpha crew roster |
 | crew_founders.xml | Store the founders roster |
-| crew.xsd | Define xsd schemes |
+| crew.xsd | Define the xsd scheme for crew-related xmls |
+
+| scenario_default.xml | Define the default settlement scenario |
+| scenario_single_settlement.xml | Define the single settlement scenario |
+| scenario.xsd | Define the xsd scheme for scenario-related xmls |
+
 | crops.xml | Define food crops grown in greenhouses |
 | foodProduction.xml | Define food technology related processes |
 | governance.xml | Define various default mission agenda, as well as sponsors' settlement and rover names |
@@ -64,6 +103,7 @@ If they don't match, mars-sim will attempt to backup the existing XML files on u
 | resources.xml | Define resources |
 | resupplies.xml | Define initial settlement resupply packages from Earth |
 | robots.xml | Define robot types |
+| scenarios.xml | Define two simulation scenarios |
 | settlements.xml | Store settlement templates and define properties related to settlements |   
 | simulation.xml | Define simulation properties |
 | vehicles.xml | Define properties related to vehicles and rovers |
