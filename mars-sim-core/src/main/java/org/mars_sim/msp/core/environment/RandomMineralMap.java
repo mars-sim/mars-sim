@@ -167,7 +167,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			
 		} // end of iterating MineralType
 
-//		logger.info("Mineral Locations: " + allMineralsByLocation);
 		logger.info("# of Global Mineral Locations: " + allMineralsByLocation.size());
 	}
 

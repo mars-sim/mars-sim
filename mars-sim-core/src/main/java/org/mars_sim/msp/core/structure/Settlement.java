@@ -294,7 +294,7 @@ public class Settlement extends Structure implements Temporal,
 	private EquipmentInventory eqmInventory;
 	/** The settlement's CreditManager instance manages trade credit between settlements. */
 	private CreditManager creditManager;
-	/** Mamanges the shifts */
+	/** Mananges the shifts */
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
 	private ScheduledEventManager futureEvents;

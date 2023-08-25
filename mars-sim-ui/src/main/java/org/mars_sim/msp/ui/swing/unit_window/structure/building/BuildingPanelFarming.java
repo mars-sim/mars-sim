@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @date 2022-08-22
+ * @date 2023-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -234,15 +234,18 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				return "# of Sols since planted: " + sols;
             }
         }; // end of WebTable
+        
 		cropTable.setAutoCreateRowSorter(true);
+		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
-		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(5);
-		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(40);
-		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(40);
-		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(20);
+		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(10);
+		cropColumns.getColumn(CropTableModel.NAME).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.PHASE).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.GROWTH).setPreferredWidth(25);
 		cropColumns.getColumn(CropTableModel.GROWTH).setCellRenderer(new PercentageCellRenderer(true));
+		cropColumns.getColumn(CropTableModel.AREA).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.CAT).setPreferredWidth(30);
-		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(30);
+		cropColumns.getColumn(CropTableModel.WORK).setPreferredWidth(20);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(new NumberCellRenderer());
 
 		// Note: Use of setAutoCreateRowSorter causes array error 
@@ -479,8 +482,9 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		private static final int NAME = 1;
 		private static final int PHASE = 2;
 		private static final int GROWTH = 3;
-		private static final int CAT = 4;
-		private static final int WORK = 5;
+		private static final int AREA = 4;
+		private static final int CAT = 5;
+		private static final int WORK = 6;
 
 		private Farming farm;
 		private List<Crop> crops;
@@ -512,7 +516,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 		// Change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
-			return WORK+1;
+			return WORK + 1;
 		}
 
 		@Override
@@ -520,7 +524,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			return switch(columnIndex) {
 				case HEALTH -> Icon.class;
 				case NAME, PHASE, CAT -> String.class;
-				case GROWTH, WORK -> Double.class;
+				case AREA, GROWTH, WORK -> Double.class;
 				default -> null;
 			};
 		}
@@ -532,8 +536,9 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				case NAME -> "Name";
 				case PHASE -> "Phase";
 				case GROWTH -> "Growth";
+				case AREA -> "Area";
 				case CAT -> "Category";
-				case WORK -> "Work";
+				case WORK -> "Work Due";
 				default -> null;
 			};
 		}
@@ -558,7 +563,9 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				case PHASE:
 					return currentPhase.getName();
 				case GROWTH: 
-					return crop.getPercentGrowth();
+					return Math.round(crop.getPercentGrowth() * 100.0)/100.0;
+				case AREA: 
+					return Math.round(crop.getGrowingArea() * 100.0)/100.0;
 				case CAT:
 					return category;
 				case WORK:
@@ -592,7 +599,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
