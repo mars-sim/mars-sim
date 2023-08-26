@@ -101,7 +101,8 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
-	private UnitManager unitManager;
+	
+	private static UnitManager unitManager;
 	
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
