@@ -72,26 +72,24 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
-	// non static instances
-	private MineralMap mineralMap;
-	private AreothermalMap areothermalMap;
-
-	/** The set of locations that have been declared as Region of Interst (ROI). */
-	private Set<ExploredLocation> regioOfInterestLocations;
 	/** The most recent value of optical depth by Coordinate. */
 	private transient Map<Coordinates, Double> opticalDepthMap = new HashMap<>();
 	/** The most recent value of solar irradiance by Coordinate. */
 	private transient Map<Coordinates, Double> currentIrradiance = new HashMap<>();
-
+	
+	// non-static instances
+	private MineralMap mineralMap;
+	private AreothermalMap areothermalMap;
 	private MasterClock clock;
 	private Weather weather;
 	private OrbitInfo orbitInfo;
+	private TerrainElevation terrainElevation;
 	
 	private final ReentrantLock opticalDepthLock = new ReentrantLock();
-	
 	private final ReentrantLock sunlightLock = new ReentrantLock();
-	
-	private static TerrainElevation terrainElevation;
+
+	/** The set of locations that have been declared as Region of Interst (ROI). */
+	private Set<ExploredLocation> regioOfInterestLocations;
 
 	/**
 	 * Constructor.

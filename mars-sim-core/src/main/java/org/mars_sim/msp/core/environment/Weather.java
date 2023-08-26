@@ -101,8 +101,7 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
-	
-	private UnitManager unitManager = Simulation.instance().getUnitManager();
+	private UnitManager unitManager;
 	
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
@@ -184,6 +183,11 @@ public class Weather implements Serializable, Temporal {
 			
 			// Check for the passing of each day only
 			if (isNewSol) {
+				
+				if (unitManager == null) {
+					unitManager = Simulation.instance().getUnitManager();
+				}
+				
 				Settlement focus = unitManager.findSettlement(location);
 				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
 				if (ds != null) {
