@@ -40,10 +40,10 @@ public interface MineralMap extends Serializable {
 	 * 
 	 * @param mineralsDisplaySet 	a set of mineral strings.
 	 * @param location 				the coordinate location.
-	 * @param rho
+	 * @param mag					the magnification
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double rho);
+	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double mag);
 
 	/**
 	 * Creates mineral concentrations at a given location.

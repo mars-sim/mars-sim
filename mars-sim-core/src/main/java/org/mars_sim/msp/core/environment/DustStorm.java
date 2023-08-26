@@ -59,8 +59,8 @@ public class DustStorm implements Serializable {
 	
 	private int hemisphere;
 
-	/***
-	 * The surface wind speed of the dust storm
+	/**
+	 * The surface wind speed of the dust storm.
 	 */
 	private double speed = 0;
 
@@ -106,7 +106,6 @@ public class DustStorm implements Serializable {
 	public double getSpeed() {
 		return speed;
 	}
-
 
 	// Almost all of the planet-encircling storms have been observed to start in one
 	// of two regions (a-d, e) on Mars:

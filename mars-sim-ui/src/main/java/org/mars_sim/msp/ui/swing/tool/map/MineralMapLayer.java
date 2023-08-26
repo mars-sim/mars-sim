@@ -86,22 +86,22 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			return;
 		}
 
-		boolean isMouseDragging = ((MapPanel)displayComponent).isMouseDragging();
+		boolean isChanging = ((MapPanel)displayComponent).isChanging();
 		
-		if (isMouseDragging) {
+		double rho = baseMap.getRho();
+		
+		if (isChanging) {
 			return;	
 		}
 
 		Graphics2D g2d = (Graphics2D) g;
 		
 		String mapType = baseMap.getMapMetaData().getMapString();
-
-		double rho = baseMap.getRho();
 		
 		int numMinerals = mineralsDisplaySet.size();
 
 		if (mapCenterCache == null || !mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache) 
-				|| updateLayer || rho != rhoCache || numMineralsCache != numMinerals) {
+				|| updateLayer || rhoCache != rho || numMineralsCache != numMinerals) {
 			
 			Point2D point = null;
 			int deltaX = 0;
@@ -109,7 +109,7 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 			
 			// if rho has changed, it's not meaningful to calculate deltaX and deltaY 
 			// since the scale is no longer the same
-			if (mapCenterCache != null || rho == rhoCache) {
+			if (mapCenterCache != null) {
 				point = Coordinates.computeDeltaPixels(mapCenterCache, mapCenter, Map.MAP_BOX_HEIGHT / 2.0);
 				deltaX = (int)point.getX();
 				deltaY = (int)point.getY();
@@ -139,7 +139,8 @@ public class MineralMapLayer implements MapLayer, SimulationConstants {
 					
 //					if (redo) {
 						mineralConcentrations = mineralMap
-								.getSomeMineralConcentrations(mineralsDisplaySet, mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
+								.getSomeMineralConcentrations(mineralsDisplaySet, 
+										mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho), mag);
 						hasMinerals = true;
 //					}
 					

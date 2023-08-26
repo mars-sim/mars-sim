@@ -345,7 +345,7 @@ public class SimulationConfig implements Serializable {
 		else if (!versionFileExist)
 			logger.config("The version.txt does not exist.");
 		else if (sameBuild)
-			logger.config("The version.txt has the same BUILD " + buildText
+			logger.config("The version.txt has the same build " + buildText
 					+ " as the core engine's.");
 		else {
 			logger.config("The version.txt is invalid.");
