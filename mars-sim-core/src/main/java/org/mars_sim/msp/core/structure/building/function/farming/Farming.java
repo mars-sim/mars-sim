@@ -173,15 +173,16 @@ public class Farming extends Function {
 		for (int x = 0; x < defaultCropNum; x++) {
 			CropSpec cropSpec = pickACrop(alreadyPlanted);
 			if (cropSpec == null) {
-				break;// for avoiding NullPointerException during maven test
+				break; // for avoiding NullPointerException during maven test
 			}
 			else {
 				Crop crop = plantACrop(cropSpec, true, designatedCropArea);
-				cropList.add(crop);
-				cropHistory.put(crop.getIdentifier(), cropSpec.getName());
-				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-				alreadyPlanted.merge(cropSpec, 1, Integer::sum);
+				if (crop != null) {
+					cropList.add(crop);
+					cropHistory.put(crop.getIdentifier(), cropSpec.getName());
+					building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+					alreadyPlanted.merge(cropSpec, 1, Integer::sum);
+				}
 			}
 		}
 	}
@@ -910,14 +911,23 @@ public class Farming extends Function {
 		return ct;
 	}
 	
+	/**
+	 * Plants a new crop seedling.
+	 * 
+	 * @param ct
+	 * @param time
+	 * @param worker
+	 */
 	public void plantSeedling(CropSpec ct, double time, Worker worker) {
 		Crop crop = plantACrop(ct, false, designatedCropArea);
-		cropList.add(crop);
-		cropHistory.put(crop.getIdentifier(), crop.getCropName());
-		building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-		logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-		numCrops2Plant--;
+		if (crop != null) {
+			cropList.add(crop);
+			cropHistory.put(crop.getIdentifier(), crop.getCropName());
+			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+	
+			logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+			numCrops2Plant--;
+		}
 	}
 
 	/**
