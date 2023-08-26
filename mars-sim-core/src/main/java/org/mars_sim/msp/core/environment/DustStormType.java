@@ -20,9 +20,9 @@ public enum DustStormType {
 	// Local storms then include all dust activity at smaller scales, extending down to
 	// the dust devils observed	by Viking and Pathfinder
 
-
-	DUST_DEVIL							(Msg.getString("DustStormType.dustDevil")), //$NON-NLS-1$
+	// Order in terms of size
 	LOCAL								(Msg.getString("DustStormType.localStorm")), //$NON-NLS-1$
+	DUST_DEVIL							(Msg.getString("DustStormType.dustDevil")), //$NON-NLS-1$
 	REGIONAL							(Msg.getString("DustStormType.regionalStorm")), //$NON-NLS-1$
 	PLANET_ENCIRCLING					(Msg.getString("DustStormType.planetEncirclingStorm")), //$NON-NLS-1$
 	;

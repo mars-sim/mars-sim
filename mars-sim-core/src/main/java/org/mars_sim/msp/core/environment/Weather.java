@@ -76,8 +76,6 @@ public class Weather implements Serializable, Temporal {
 	// A day has 1000 mSols. Take 500 samples
 	private static final int MSOL_PER_SAMPLE = 1000/250;
 
-	private boolean isNewSol = true;
-
 	private int newStormID = 1;
 
 	private int checkStorm = 0;
@@ -101,8 +99,6 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
-	
-	private UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
@@ -182,46 +178,51 @@ public class Weather implements Serializable, Temporal {
 			// Load the previous wind speed
 			double currentSpeed = windSpeedCacheMap.get(location);
 			
-			// Check for the passing of each day only
-			if (isNewSol) {
-				Settlement focus = unitManager.findSettlement(location);
-				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
-				if (ds != null) {
-					double stormSpeed = 0;
-					
-					double dustSpeed = ds.getSpeed();
-					switch (ds.getType()) {
-						case DUST_DEVIL:
-							// arbitrary speed determination
-							stormSpeed = .8 * currentSpeed + .2 * dustSpeed;
-							break;
-	
-						case LOCAL:
-							// arbitrary speed determination
-							stormSpeed = .985 * currentSpeed + .015 * dustSpeed;
-							break;
-						
-						case REGIONAL:
-							// arbitrary speed determination
-							stormSpeed = .99 * currentSpeed + .01 * dustSpeed;
-							break;
-	
-						case PLANET_ENCIRCLING:
-							// arbitrary speed determination
-							stormSpeed = .995 * currentSpeed + .005 * dustSpeed;
-							break;
-							
-						default :
-							stormSpeed = .99 * currentSpeed;
-					}
-					
-					// Assume the max surface wind speed of up to 800 m/s
-					if (stormSpeed > 800) {
-						stormSpeed = 800;
-					}
-					
-					newSpeed = stormSpeed;
+			// Check if the location is covered by a Dust Storm
+			DustStorm ds = null;
+			for(DustStorm s : dustStorms) {
+				// Maybe it should include the width of the DustStorm also
+				if (s.getCoordinates().equals(location)) {
+					ds = s;
+					break;
 				}
+			}
+
+			// Storm governs the wind speed
+			if (ds != null) {
+				double stormSpeed = 0;
+				double dustSpeed = ds.getSpeed();
+				switch (ds.getType()) {
+					case DUST_DEVIL:
+						// arbitrary speed determination
+						stormSpeed = .8 * currentSpeed + .2 * dustSpeed;
+						break;
+
+					case LOCAL:
+						// arbitrary speed determination
+						stormSpeed = .985 * currentSpeed + .015 * dustSpeed;
+						break;
+					
+					case REGIONAL:
+						// arbitrary speed determination
+						stormSpeed = .99 * currentSpeed + .01 * dustSpeed;
+						break;
+
+					case PLANET_ENCIRCLING:
+						// arbitrary speed determination
+						stormSpeed = .995 * currentSpeed + .005 * dustSpeed;
+						break;
+						
+					default :
+						stormSpeed = .99 * currentSpeed;
+				}
+				
+				// Assume the max surface wind speed of up to 800 m/s
+				if (stormSpeed > 800) {
+					stormSpeed = 800;
+				}
+				
+				newSpeed = stormSpeed;
 			}
 			
 			else { // not a new sol, no need to check for dust storm
@@ -656,7 +657,7 @@ public class Weather implements Serializable, Temporal {
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		isNewSol = pulse.isNewSol();
+		boolean isNewSol = pulse.isNewSol();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		int msol = pulse.getMarsTime().getMillisolInt();
@@ -680,8 +681,7 @@ public class Weather implements Serializable, Temporal {
 			// with a peak period at 255 deg Ls.
 
 			// Note : The Mars dust storm season begins just after perihelion at around Ls =
-			// 260°.
-			
+			// 260°.			
 			double aLs = (int) (Math.round(orbitInfo.getSunAreoLongitude()));
 			int aLon = (int) (aLs);
 					
@@ -829,10 +829,7 @@ public class Weather implements Serializable, Temporal {
 	 * @return
 	 */
 	public SunData getSunRecord(Coordinates c) {
-		if (sunDataMap.containsKey(c))
-			return sunDataMap.get(c);
-		
-		return null;
+		return sunDataMap.get(c);
 	}
 	
 
@@ -857,19 +854,28 @@ public class Weather implements Serializable, Temporal {
 					// a dust devil
 					// on each sol since it is usually created in Martian spring or summer day,
 					checkStorm++;
-
-					// Assuming all storms start out as a dust devil
-					DustStorm ds = new DustStorm(DustStormType.DUST_DEVIL, newStormID,
-							 this, s.getIdentifier());
-					dustStorms.add(ds);
-					s.setDustStorm(ds);
-					newStormID++;
-
-					logger.info(s, "On L_s = " + Math.round(ls * 100.0) / 100.0
-									+ ", " + ds.getName()); 
+					createStorm(s, DustStormType.DUST_DEVIL); 
 				}
 			}
 		}
+	}
+
+	/**
+	 * Create a dust storm at a certain Settlement
+	 * @param s Settlment where the storm is focussed
+	 * @param stormType Type of storm to create
+	 * @return
+	 */
+	public DustStorm createStorm(Settlement s, DustStormType stormType) {
+		// Assuming all storms start out as a dust devil
+		DustStorm ds = new DustStorm(stormType, newStormID, this, s);
+		dustStorms.add(ds);
+		s.setDustStorm(ds);
+		newStormID++;
+
+		logger.info(s, "New dust storm " + ds.getName() + " of type " + stormType.getName());
+		
+		return ds;
 	}
 
 
