@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 /**
  * A randomly generated mineral map of Mars.
  */
-public class RandomMineralMap implements Serializable, MineralMap {
+public class RandomMineralMap implements MineralMap {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -84,7 +84,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	
 	private static Set<Coordinates> allLocations;
 	
-	private MineralMapConfig mineralMapConfig;
+	private transient MineralMapConfig mineralMapConfig;
 	
 	private UnitManager unitManager;
 	
@@ -265,7 +265,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * @param length
 	 * @return
 	 */
-	public int calculateIteration(MineralType mineralType, boolean isGlobal, int length) {
+	private int calculateIteration(MineralType mineralType, boolean isGlobal, int length) {
 		int num = 0;
 		if ((isGlobal)) {
 			num = (int)(Math.round(RandomUtil.getRandomDouble(.75, 1.25) 

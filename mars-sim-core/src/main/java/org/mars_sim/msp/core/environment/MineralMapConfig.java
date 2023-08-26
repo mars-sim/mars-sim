@@ -15,10 +15,7 @@ import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-public class MineralMapConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class MineralMapConfig {
 
 	// Element names
 	private static final String MINERAL = "mineral";
@@ -27,7 +24,7 @@ public class MineralMapConfig implements Serializable {
 	private static final String LOCALE_LIST = "locale-list";
 	private static final String LOCALE = "locale";
 
-	private transient List<MineralType> mineralTypes;
+	private List<MineralType> mineralTypes;
 
 	/**
 	 * Constructor.
