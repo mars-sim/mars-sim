@@ -34,15 +34,6 @@ public class DustStorm implements Serializable {
 
 	// https://www.windows2universe.org/mars/atmosphere/global_dust_storms.html
 
-//	private static final int NORTHERN = 0;
-//	private static final int SOUTHERN = 1;
-//	private static final int SYRIA_PLANUM = 0; //(12.1 S, 256.1 E)
-//	private static final int SINAI_PLANUM = 1; //Sinai Planum (13.7 S, 272.2 E),
-//	private static final int SOLIS_PLANUM = 3; // Solis Planum (26.4 S, 270 E),
-//	private static final int THAUMASIA_FOSSAE = 4; //Planum/Thaumasia Fossae (21.7 S, 294.8 E)
-//	private static final int HELLESPONTUE = 5; // Hellespontus ( 49.7 S, 35 E)
-//	private static final int NOACHIS_TERRA = 6; // Noachis Terra
-
 	private static final double R = 187D; // [in J/kg/K]
 
 	private static final double HEIGHT = 5D; // [in km]
@@ -77,7 +68,6 @@ public class DustStorm implements Serializable {
 
 	private Coordinates location;
 
-	// private int tall;
 	// In case of dust devil, for simplicity, height = size
 	// Martian dust devil roughly 12 miles (20 kilometers) high was captured winding
 	// its way along the Amazonis Planitia region of Northern Mars on March 14, 2012
@@ -88,27 +78,25 @@ public class DustStorm implements Serializable {
 
 	
 	public DustStorm(DustStormType type, int id, Weather weather,
-			int settlementId) {
+					 Settlement s) {
 		this.id = id;
-		this.settlementId = settlementId;
+		this.settlementId = s.getIdentifier();
+		this.location = s.getCoordinates();
 		setType(type);
-		
 		
 		// Logic only assigns a meaningful size & speed for DUST_DEVIL
 		if (type == DustStormType.DUST_DEVIL) {
-			Settlement s = getSettlement();
 			double meanPressure = (DEFAULT_MEAN_PRESSURE
 					+ weather.calculateAirPressure(s.getCoordinates(), HEIGHT)) / 2D;
 			double t = s.getOutsideTemperature() + AirComposition.C_TO_K;
 			speed = Math.sqrt(R * t * DEFAULT_DELTA_PRESSURE / meanPressure);
-			size = RandomUtil.getRandomInt(3);
+			size = 1 + RandomUtil.getRandomInt(3);
 		}
 		else {
 			// Should never get here as DustStorms always start as Dust Devils but need to set default
 			speed = RandomUtil.getRandomInt(10);
-			size = RandomUtil.getRandomInt(3); 
+			size = 1 + RandomUtil.getRandomInt(3); 
 		}
-
 	}
 
 	public String getName() {
@@ -166,9 +154,6 @@ public class DustStorm implements Serializable {
 			int s = size;
 
 			newSize = s + up - down;
-
-			if (newSize < 0)
-				newSize = 0;
 
 			// arbitrary speed determination
 			newSpeed = 8 + .4 * newSize;
@@ -228,24 +213,25 @@ public class DustStorm implements Serializable {
 
 		// Check classification for new size
 		DustStormType newType = type;
-		if (newSize == 0) {
+		if (newSize <= 0) {
 			// Storm is done.
 			Settlement s = getSettlement();
 			if (s.getDustStorm() == this) {
 				s.setDustStorm(null);
 			}
+			newSize = 0;
 		}
 		else if (newSize < DUST_DEVIL_MAX) {
 			newType = DustStormType.DUST_DEVIL;
 		}
-		else if ((DUST_DEVIL_MAX <= newSize) && (newSize < LOCAL_MAX)) {
+		else if (newSize < LOCAL_MAX) {
 			newType = DustStormType.LOCAL;
 		}
-		else if ((LOCAL_MAX <= newSize) && (newSize < REGIONAL_MAX)) {
+		else if (newSize < REGIONAL_MAX) {
 			newType = DustStormType.REGIONAL;
 		}
-		else if (REGIONAL_MAX < newSize) {
-			newType = DustStormType.REGIONAL;
+		else {
+			newType = DustStormType.PLANET_ENCIRCLING;
 		}
 		
 		if (newType != type) {
@@ -277,10 +263,6 @@ public class DustStorm implements Serializable {
 		}		
 		name = newName;
 		type = newType;
-	}
-
-	public void setCoordinates(Coordinates location) {
-		this.location = location;
 	}
 
 	public Settlement getSettlement() {
