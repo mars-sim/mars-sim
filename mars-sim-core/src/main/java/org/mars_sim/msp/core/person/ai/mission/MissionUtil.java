@@ -10,7 +10,6 @@ import java.util.Iterator;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.structure.Settlement;

@@ -27,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Weather.java
- * @date 2022-07-25
+ * @date 2023-08-25
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
@@ -94,6 +95,9 @@ public class Weather implements Serializable, Temporal {
 	private List<DustStorm> dustStorms;
 	
 	private Map<Coordinates, SunData> sunDataMap;
+	
+	private final ReentrantLock tempLock = new ReentrantLock();
+	private final ReentrantLock pressureLock = new ReentrantLock();
 	
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
@@ -361,19 +365,32 @@ public class Weather implements Serializable, Temporal {
 	 * @return air pressure in kPa.
 	 */
 	public double getCachedAirPressure(Coordinates location) {
-
+		double newP = 0;
+		
 		// Lazy instantiation of airPressureCacheMap.
 		if (airPressureCacheMap == null) {
 			airPressureCacheMap = new HashMap<>();
 		}
 
+		pressureLock.lock();
+		
 		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
-			double newP = calculateAirPressure(location, 0);
+			newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
-			return newP;
 		} else {
-			return airPressureCacheMap.computeIfAbsent(location, l -> calculateAirPressure(l, 0));
+			newP = airPressureCacheMap.computeIfAbsent(location, l -> calculateAirPressure(l, 0));
 		}
+		
+		double prevP = 0;
+		if (airPressureCacheMap.containsKey(location)) {
+			prevP = airPressureCacheMap.get(location);
+			newP = Math.round((newP + prevP) / 2.0 * 100.0) / 100.0;
+			airPressureCacheMap.put(location, newP);
+		}
+		
+		pressureLock.unlock();
+		
+		return newP;
 	}
 
 	/**
@@ -418,30 +435,32 @@ public class Weather implements Serializable, Temporal {
 	 * @return temperature in deg Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
-
+		double newT = 0;
+		
 		// Lazy instantiation of temperatureCacheMap.
 		if (temperatureCacheMap == null) {
 			temperatureCacheMap = new HashMap<>();
 		}
-
-		double t = 0;
+	
+		tempLock.lock();
 		
 		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
-			double newT = calculateTemperature(location);
-			temperatureCacheMap.put(location, newT);
-			t = newT;
-		} else {
-			t = temperatureCacheMap.computeIfAbsent(location, l -> calculateTemperature(l));
+			newT = calculateTemperature(location);
+		} 
+		else {
+			newT = temperatureCacheMap.computeIfAbsent(location, l -> calculateTemperature(l));
 		}
 		
-		double previousTemperature = 0;
+		double prevT = 0;
 		if (temperatureCacheMap.containsKey(location)) {
-			previousTemperature = temperatureCacheMap.get(location);
+			prevT = temperatureCacheMap.get(location);
+			newT = Math.round((newT + prevT) / 2.0 * 100.0) / 100.0;
+			temperatureCacheMap.put(location, newT);
 		}
-
-		t = Math.round((t + previousTemperature) / 2.0 * 100.0) / 100.0;
 		
-		return t;
+		tempLock.unlock();
+
+		return newT;
 	}
 
 	/**
