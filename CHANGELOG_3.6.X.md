@@ -24,11 +24,17 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.2 build ___ (__ ___ 2023)
+## 3.6.2 build 8571 (27 Aug 2023)
 
-### A. FIXES :
+### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI></LI>
+  <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
+  <LI>static: convert static primitive data members to non-static </LI>
+<OL>
+
+### B. FIXES :
+<OL>
+  <LI>Food Production: correct potato typo</LI>
 <OL>
 
 ------------------------------------------|---------------------
@@ -38,7 +44,7 @@ Copyright (C) 2023 Scott Davis
 ### A. FIXES :
 <OL>
   <LI>Mineral Map: Avoid NPE after a reload by serializing a list of mineral types 
-    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a></LI>
+    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a>.</LI>
 <OL>
 
 ------------------------------------------|---------------------
