@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelSchedule.java
- * @date 2023-07-03
+ * @date 2023-08-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,9 +25,11 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Shift;
 import org.mars_sim.msp.core.structure.ShiftSlot;
 import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 import org.mars_sim.msp.ui.swing.utils.JHistoryPanel;
 
 /**
@@ -37,10 +40,16 @@ public class TabPanelSchedule extends TabPanel {
 
 	private static final String SCH_ICON = "schedule";
 
-	private String shiftDescCache; 
+	private String descCache; 
+	private String shiftCache;
+	private String timeCache;
+	private String statusCache;
 	
 	private JTextField shiftTF;
+
 	private JLabel shiftLabel;
+	private JLabel timeLabel;
+	private JLabel statusLabel;
 	
 	private ShiftSlot shiftSlot;
 	private TaskManager taskManager;
@@ -74,27 +83,47 @@ public class TabPanelSchedule extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 
+		// Prepare label panel
+		JPanel northPanel = new JPanel(new BorderLayout());
+		content.add(northPanel, BorderLayout.NORTH);
+				
+		AttributePanel attrPanel = new AttributePanel(3);
+		northPanel.add(attrPanel, BorderLayout.NORTH);
+		
 		// Create the shift panel.
-		JPanel shiftPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
+		JPanel shiftPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		northPanel.add(shiftPane, BorderLayout.CENTER);
+		
 		if (shiftSlot != null) {
 
-			shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
-			shiftLabel.setToolTipText(Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
-			shiftPane.add(shiftLabel);
+			shiftCache = getWorkShift(shiftSlot);
+			
+			shiftLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.label"), //$NON-NLS-1$
+					shiftCache);
+			
+			timeCache = getWorkPeriod(shiftSlot);
+			
+			timeLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.period.label"), //$NON-NLS-1$
+					timeCache);
 
-			shiftDescCache = getShiftDescription(shiftSlot);	
+			statusCache = Conversion.capitalize(shiftSlot.getStatus().toString());
+			
+			statusLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.status.label"), //$NON-NLS-1$
+					statusCache);
+			
+			descCache = getShiftDescription(shiftSlot);	
 			
 			shiftTF = new JTextField();
-			shiftTF.setText(shiftDescCache);
+			shiftTF.setFont(new Font("Arial", Font.ITALIC | Font.PLAIN, 12));
+			shiftTF.setText("Note : " + descCache);
 			
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(28);
+			shiftTF.setColumns(20);
 			shiftTF.setHorizontalAlignment(JTextField.CENTER);
 			
 			shiftPane.add(shiftTF);
 		}
-		content.add(shiftPane, BorderLayout.NORTH);
 
 		activityPanel = new ActivityPanel(taskManager.getAllActivities());
 		activityPanel.setPreferredSize(new Dimension(225, 100));
@@ -116,23 +145,68 @@ public class TabPanelSchedule extends TabPanel {
 		Shift s = shift.getShift();
 		int start = s.getStart();
 		int end = s.getEnd();
+	
+		switch(status) {
+			case ON_CALL:
+				return "None";
+			case ON_DUTY:
+				return "On Duty ends @ " + end + " millisols";
+			case OFF_DUTY:
+				return "Off Duty starts @ " + start + " millisols";
+			case ON_LEAVE:
+				return "On Leave";
+		}
+		
+		return "";
+	}
+
+	/**
+	 * Gets the work shift.
+	 * 
+	 * @param shift
+	 * @return
+	 */
+	public static String getWorkShift(ShiftSlot shift) {
+		WorkStatus status = shift.getStatus();
+		
+		Shift s = shift.getShift();
 		String shiftName = s.getName();
 		
 		switch(status) {
 			case ON_CALL:
 				return "On Call";
-			case ON_DUTY:
-				return shiftName + " : On Duty ends @ " + end + " mols (" + start + " - " + end + ")";
-			case OFF_DUTY:
-				return shiftName + " : Off Duty starts @ " + start + " mols (" + start + " - " + end + ")";
-			case ON_LEAVE:
-				return shiftName + " : On Leave";
+			case ON_DUTY, OFF_DUTY, ON_LEAVE:
+				return shiftName;
 		}
 
-		
 		return "";
 	}
+	
+	/**
+	 * Gets the work period.
+	 * 
+	 * @param shift
+	 * @return
+	 */
+	public static String getWorkPeriod(ShiftSlot shift) {
+		WorkStatus status = shift.getStatus();
+		
+		Shift s = shift.getShift();
+		int start = s.getStart();
+		int end = s.getEnd();
 
+		switch(status) {
+			case ON_CALL:
+				return "Anytime";
+			case ON_DUTY, OFF_DUTY:
+				return start + " - " + end + " millisols";
+			case ON_LEAVE:
+				return "On Leave";
+		}
+
+		return "";
+	}
+	
 	/**
 	 * Updates the info on this panel.
 	 */
@@ -141,11 +215,35 @@ public class TabPanelSchedule extends TabPanel {
 
 		if (shiftSlot != null) {
 			
+			String shift = getWorkShift(shiftSlot);
+			
+			if (!shiftCache.equalsIgnoreCase(shift)) {
+				shiftCache = shift;
+				shiftLabel.setText(shift);
+			}
+			
+			String time = getWorkPeriod(shiftSlot);
+			
+			if (!timeCache.equalsIgnoreCase(time)) {
+				timeCache = time;
+				timeLabel.setText(time);
+			}
+			
+			String status = Conversion.capitalize(shiftSlot.getStatus().toString());
+					
+			if (!statusCache.equalsIgnoreCase(status)) {
+				statusCache = status;
+				statusLabel.setText(status);
+			}
+					
 			String shiftDesc = getShiftDescription(shiftSlot);
 			
-			if (shiftDescCache.equalsIgnoreCase(shiftDesc))
-				shiftTF.setText(shiftDesc);
+			if (!descCache.equalsIgnoreCase(shiftDesc)) {
+				descCache = shiftDesc;
+				shiftTF.setText("Note : " + shiftDesc);
+			}
 		}
+		
 		activityPanel.refresh();
 	}
 

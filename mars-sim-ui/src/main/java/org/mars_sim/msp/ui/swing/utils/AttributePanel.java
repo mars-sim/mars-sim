@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AttributePanel.java
- * @date 2023-05-09
+ * @date 2023-08-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.utils;
@@ -48,6 +48,17 @@ public class AttributePanel extends JPanel {
 		wrapper.add(contentLabel);
 		addLabelledItem(titleLabel, contentLabel);
 		return contentLabel;
+	}
+	
+	/**
+	 * Adds a field and label to a Panel. The layout should be Spring layout.
+	 * 
+	 * @param titleLabel The fixed label
+	 * @param content Initial content of the text field
+	 * @return The JLabel that can be updated.
+	 */
+	public JLabel addRow(String titleLabel, String content) {
+		return addTextField(titleLabel, content, null);
 	}
 	
 	/**
