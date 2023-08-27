@@ -13,7 +13,6 @@ import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -590,7 +589,7 @@ public abstract class OperateVehicle extends Task {
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-        return CollectionUtils.isSettlement(destination);
+        return unitManager.isSettlement(destination);
     }
 	
 	/**

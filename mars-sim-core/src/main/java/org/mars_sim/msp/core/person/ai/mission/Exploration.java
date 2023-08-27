@@ -401,7 +401,7 @@ public class Exploration extends EVAMission
 			unorderedSites.add(currentLocation);
 		}
 		else if (el == null) {
-			logger.info(CollectionUtils.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to analyze map more.");
+			logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to analyze map more.");
 		}
 		else
 			throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");

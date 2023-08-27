@@ -1,7 +1,7 @@
 [![Release version](https://img.shields.io/github/v/release/mars-sim/mars-sim?sort=semver&color=blue&label=release&style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
 [![Repo Size](https://img.shields.io/github/repo-size/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/releases/latest)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.5.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
-[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.4.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.1?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
+[![Commits Since](https://img.shields.io/github/commits-since/mars-sim/mars-sim/v3.6.0?sort=semver)](https://github.com/mars-sim/mars-sim/commits)
 [![Last Commit](https://img.shields.io/github/last-commit/mars-sim/mars-sim?style=flat-square)](https://github.com/mars-sim/mars-sim/commits)
 [![GitHub Downloads](https://img.shields.io/github/downloads/mars-sim/mars-sim/total?label=gitHub%20downloads&style=flat-square&color=blue)](https://github.com/mars-sim/mars-sim/releases)
 
@@ -386,7 +386,7 @@ presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME
 the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH`
 variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim.
 
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.6)
+> Note 3 : The BEST approach is to enable only one Java build (such as Java 17.0.8)
 inside `PATH` variable and remove all other folders referencing other java versions/builds.
 
 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can
@@ -465,8 +465,8 @@ e.g. Include the followings :
 
 **Specifications (please complete)**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04]
- - Java version : [e.g. Oracle JDK 17.0.6, AdoptOpenJDK 17.0.6, openjfx 17]
- - Major version and build : [e.g. 3.5.0 build 8103]
+ - Java version : [e.g. Oracle JDK 17.0.8, AdoptOpenJDK 17.0.8, openjfx 17]
+ - Major version and build : [e.g. 3.6.0 build 8558]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 
@@ -508,7 +508,7 @@ For a more detail description of this project, see our [project website](https:/
 * Check out the most recent release or pre-release build in GitHub [Release](https://github.com/mars-sim/mars-sim/releases) page.
 
 * Or see the previous and current official release versions at
-[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.5.0/).
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.6.0/).
 
 Note: if you prefer, click SF's button below to automatically sense the correct OS platform to download.
 
@@ -517,6 +517,3 @@ Note: if you prefer, click SF's button below to automatically sense the correct 
 
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAwMTcyNzM3OCwtODY5ODg0NTgwXX0=
--->

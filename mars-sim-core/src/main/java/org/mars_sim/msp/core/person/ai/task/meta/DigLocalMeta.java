@@ -74,7 +74,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
 			return 0;
 
         // Check at least one EVA suit at settlement.
-        int numSuits = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+        int numSuits = settlement.getNumEVASuit();
         if (numSuits == 0) {
             return 0;
         }

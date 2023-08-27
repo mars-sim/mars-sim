@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.environment;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import org.mars.sim.mapdata.location.Coordinates;
 /**
  * Interface for mineral maps of Mars.
  */
-public interface MineralMap {
+public interface MineralMap extends Serializable {
 
 	/**
 	 * Gets the mineral concentration at a given location.
@@ -39,10 +40,10 @@ public interface MineralMap {
 	 * 
 	 * @param mineralsDisplaySet 	a set of mineral strings.
 	 * @param location 				the coordinate location.
-	 * @param rho
+	 * @param mag					the magnification
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double rho);
+	public Map<String, Double> getSomeMineralConcentrations(Set<String> mineralsDisplaySet, Coordinates location, double mag);
 
 	/**
 	 * Creates mineral concentrations at a given location.

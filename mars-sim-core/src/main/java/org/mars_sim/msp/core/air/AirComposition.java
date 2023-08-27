@@ -254,7 +254,9 @@ public class AirComposition implements Serializable {
 
 			double pp = getIdealPressure(gasId);
 			double p = gas.partialPressure;
-			double tolerance = p / pp;
+			double tolerance = 0;
+			if (pp != 0)		
+				tolerance =	p / pp;
 
 			// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
 			// composition

@@ -277,8 +277,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		buildZoomSlider();
 		
 		JPanel zoomPane = new JPanel(new BorderLayout());
-//		zoomPane.setBackground(new Color(0, 0, 0, 128));
-//		zoomPane.setOpaque(false);
+		zoomPane.setBackground(new Color(0, 0, 0, 128));
+		zoomPane.setOpaque(false);
 		zoomPane.add(zoomSlider);
 
 		mapPane.add(zoomPane);

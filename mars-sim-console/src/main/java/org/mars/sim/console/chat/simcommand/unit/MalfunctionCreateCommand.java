@@ -72,7 +72,8 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 	}
 
 	/**
-	 * Find the most appropriate MalfunctionManager according to the connected Unit.
+	 * Finds the most appropriate MalfunctionManager according to the connected Unit.
+	 * 
 	 * @param source
 	 * @return
 	 */
@@ -90,7 +91,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 
 			if (!smartEqm.isEmpty() && 
 				"Y".equalsIgnoreCase(context.getInput("Use a contained Equipment: Y/N"))) {
-					// Pick Equippment
+					// Pick Equipment
 				owner = pickSelection(context, "equipment in " + source.getName(), smartEqm);
 			}
 		}

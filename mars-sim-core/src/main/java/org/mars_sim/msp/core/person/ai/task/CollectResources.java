@@ -264,8 +264,7 @@ public class CollectResources extends EVAOperation {
 
 		boolean result = false;
 
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
@@ -305,7 +304,7 @@ public class CollectResources extends EVAOperation {
 	}
 	
 	/**
-	 * Release workers inventory
+	 * Releases workers inventory.
 	 */
 	@Override
 	protected void clearDown() {

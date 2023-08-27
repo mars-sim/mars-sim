@@ -9,14 +9,17 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.mars.sim.mapdata.MapDataUtil;
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -46,15 +49,21 @@ public class TerrainElevation implements Serializable {
 
 	private static final String TOPO_MAP_TYPE = "topo";
 	
+	private Set<CollectionSite> sites;
+	
+	private Map<Coordinates, double[]> terrainProfileMap;
+	
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 
-	private static Set<CollectionSite> sites;
+	private static UnitManager unitManager;
+
 	
 	/**
 	 * Constructor.
 	 */
 	public TerrainElevation() {
 		sites = new HashSet<>();
+		terrainProfileMap = new HashMap<>();
 	}
 
 	/**
@@ -83,9 +92,8 @@ public class TerrainElevation implements Serializable {
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getAverageElevation(sampleLocation) - elevation;
-		double steepness = Math.atan(elevationChange / STEP_KM);
-//		logger.config("elevation: " + elevation + "  1.  steepness: " + Math.round(steepness * 100.0)/100.0);
-		return steepness;
+		// Compute steepness
+		return Math.atan(elevationChange / STEP_KM);
 	}
 
 	/**
@@ -114,16 +122,23 @@ public class TerrainElevation implements Serializable {
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
 	public double[] getTerrainProfile(Coordinates currentLocation) {
-		double steepness = 0;
-		double elevation = getAverageElevation(currentLocation);
-		for (int i=0 ; i <= 360 ; i++) {
-			double rad = i * DEG_TO_RAD;
-			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
-		}
+		if (!terrainProfileMap.containsKey(currentLocation)) {
+
+			double steepness = 0;
+			double elevation = getAverageElevation(currentLocation);
+			for (int i=0 ; i <= 360 ; i++) {
+				double rad = i * DEG_TO_RAD;
+				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+			}
 	
-		double[] terrain = {elevation, steepness};
-				
-		return terrain;
+			double[] terrain = {elevation, steepness};
+					
+			terrainProfileMap.put(currentLocation, terrain);
+			
+			return terrain;
+		}
+		
+		return terrainProfileMap.get(currentLocation);
 	}
 
 
@@ -231,8 +246,10 @@ public class TerrainElevation implements Serializable {
 	 */
 	public double obtainIceCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
+		
 		if (site.getIceCollectionRate() == -1)
 			computeIceCollectionRate(site, loc);
+		
 		return site.getIceCollectionRate();
 	}
 
@@ -244,8 +261,10 @@ public class TerrainElevation implements Serializable {
 	 */
 	public double obtainRegolithCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
+		
 		if (site.getRegolithCollectionRate() == -1)
 			computeRegolithCollectionRate(site, loc);
+		
 		return site.getRegolithCollectionRate();
 	}
 
@@ -296,10 +315,7 @@ public class TerrainElevation implements Serializable {
      *  @return elevation in km.
      */
     public static double getAverageElevation(Coordinates location) {
-//    	double elevationTopo = getRGBElevation(location);
-    	double elevationMOLA = getMOLAElevation(location);
-//		logger.info(20_000L, "elevationTopo: " + elevationTopo + " km.  " + "elevationMOLA: " + (int)elevationMOLA + " km.");
-    	return elevationMOLA;
+    	return getMOLAElevation(location);
     }
     
 	
@@ -331,8 +347,13 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getMOLAElevation(Coordinates location) {	
+		
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+			
 		// Check if this location is a settlement
-		Settlement s = CollectionUtils.findSettlement(location);
+		Settlement s = unitManager.findSettlement(location);
+				
 		double MOLAHeight = 0;
 		if (s != null) {
 			MOLAHeight = s.getElevation();
@@ -360,11 +381,11 @@ public class TerrainElevation implements Serializable {
 		return sites;
 	}
 
-	public static void addCollectionSite(CollectionSite site) {
+	public void addCollectionSite(CollectionSite site) {
 		sites.add(site);
 	}
 
-	public static synchronized CollectionSite getCollectionSite(Coordinates newLocation) {
+	public synchronized CollectionSite getCollectionSite(Coordinates newLocation) {
 		// Create a shallow copy of sites to avoid ConcurrentModificationException
 		for (CollectionSite s:  sites) {
 			if (s.getLocation().equals(newLocation)) {

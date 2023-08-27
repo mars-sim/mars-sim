@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -70,7 +70,10 @@ public class LoadVehicleEVA extends EVAOperation {
         	return;
 		}
 		
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
+		settlement = unitManager.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
 			return;

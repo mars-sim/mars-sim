@@ -119,47 +119,46 @@ public class EVASuitUtil {
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
 		
-		for (Equipment e : owner.getEquipmentSet()) {
-			if (e instanceof EVASuit suit) {
-				boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
-				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-				if (!malfunction) {
-					suits.add(suit);
-				}
-				else {
-					logger.log(p, Level.WARNING, 50_000,
-						"Spotted malfunction with " + suit.getName() + " when being examined.");
-					continue;
-				}
-				
-				if (lastOwner) {
-					// Pick this EVA suit since it has been used by the same person
-					previousSuit = suit;
-				}
-				
-				boolean hasEnoughResources = false;
-				
-				try {
-					hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
+		for (Equipment e : owner.getSuitSet()) {
+			EVASuit suit = (EVASuit)e;
+			boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
+			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+			if (!malfunction) {
+				suits.add(suit);
+			}
+			else {
+				logger.log(p, Level.WARNING, 50_000,
+					"Spotted malfunction with " + suit.getName() + " when being examined.");
+				continue;
+			}
+			
+			if (lastOwner) {
+				// Pick this EVA suit since it has been used by the same person
+				previousSuit = suit;
+			}
+			
+			boolean hasEnoughResources = false;
+			
+			try {
+				hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
 
-				} catch (Exception ex) {
-					logger.log(p, Level.SEVERE, 50_000,
-							"Could not find enough resources for " + suit.getName() + ".", ex);
+			} catch (Exception ex) {
+				logger.log(p, Level.SEVERE, 50_000,
+						"Could not find enough resources for " + suit.getName() + ".", ex);
+			}
+			
+			if (hasEnoughResources) {
+				if (p != null && lastOwner) {
+					// Prefers to pick the same suit that a person has been tagged in the past
+					return suit;
 				}
-				
-				if (hasEnoughResources) {
-					if (p != null && lastOwner) {
-						// Prefers to pick the same suit that a person has been tagged in the past
-						return suit;
-					}
-					else
-						// tag it as good suit for possible use below
-						goodSuits.add(suit);
-				}
-				else {
-					// tag it as no resource suit for possible use below
-					noResourceSuits.add(suit);
-				}
+				else
+					// tag it as good suit for possible use below
+					goodSuits.add(suit);
+			}
+			else {
+				// tag it as no resource suit for possible use below
+				noResourceSuits.add(suit);
 			}
 		}
 
@@ -243,7 +242,7 @@ public class EVASuitUtil {
 	public static boolean hasBaselineNumEVASuit(Vehicle vehicle, Mission mission) {
 		boolean result = false;
 
-		int numV = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
+		int numV = vehicle.findNumEVASuits();
 
 		int baseline = (int)(mission.getMembers().size() * 1.25);
 
@@ -298,10 +297,8 @@ public class EVASuitUtil {
 	 */
 	public static void fetchEVASuitFromAny(Person person, Vehicle vehicle, Settlement settlement) {
 		EVASuit suit0 = findEVASuitFromVehicle(person, vehicle);
-		if (suit0 == null) {
-			if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-				fetchEVASuitFromSettlement(person, vehicle, settlement);
-			}
+		if (suit0 == null && settlement.getNumEVASuit() > 0) {
+			fetchEVASuitFromSettlement(person, vehicle, settlement);
 		}
 	}
 
@@ -317,7 +314,7 @@ public class EVASuitUtil {
 			Vehicle v = p.getVehicle();
 
 			// If the person does not have an EVA suit
-			int availableSuitNum = disembarkSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+			int availableSuitNum = disembarkSettlement.getNumEVASuit();
 
 			if (availableSuitNum > 1 && !hasBaselineNumEVASuit(v, mission)) {
 		

@@ -32,7 +32,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
       
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
-				Set.of(JobType.ARCHITECT, JobType.ENGINEER)); // ScienceType.ENGINEERING
+				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
     }
     
     @Override
@@ -133,6 +133,12 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
+    /**
+     * Computes probability.
+     * 
+     * @param settlement
+     * @return
+     */
     private double getProbability(Settlement settlement) {
 
         double result = 1D;
@@ -145,6 +151,8 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         
         double limit = Math.max(-1, 6 * numSites - numPeople);
 
-        return result/Math.pow(10, 2 + limit);        
+        result = result/Math.pow(10, 2 + limit);
+        
+        return result;
     }
 }

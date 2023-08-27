@@ -16,7 +16,6 @@ import org.mars.sim.mapdata.location.LocalBoundedObject;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -285,7 +284,7 @@ public abstract class EVAOperation extends Task {
 
 			if (interiorObject == null) {
 				// Get closest airlock building at settlement.
-				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
+				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					if (interiorObject instanceof Building)
@@ -746,10 +745,10 @@ public abstract class EVAOperation extends Task {
 	 * Gets the closest available airlock to a given location that has a walkable
 	 * path from the person's current location.
 	 *
-	 * @param person the person.
+	 * @param worker the worker.
 	 * @param        double xLocation the destination's X location.
 	 * @param        double yLocation the destination's Y location.
-	 * @param ingress is the person ingressing ?
+	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
@@ -776,8 +775,8 @@ public abstract class EVAOperation extends Task {
 	 * Gets an available airlock to a given location that has a walkable path from
 	 * the person's current location.
 	 *
-	 * @param person the person.
-	 * ?
+	 * @param worker the worker.
+	 * @param ingress is the person ingressing.
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getWalkableAvailableAirlock(Worker worker, boolean ingress) {
@@ -788,8 +787,8 @@ public abstract class EVAOperation extends Task {
 	 * Gets an available airlock for egress to a given location that has a walkable path from
 	 * the person's current location.
 	 *
-	 * @param person the person.
-	 * ?
+	 * @param worker the worker.
+	 * 
 	 * @return airlock or null if none available
 	 */
 	public static Airlock getWalkableAvailableEgressAirlock(Worker worker) {
@@ -840,7 +839,9 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Set the minimum sunlight for any EVA operations.
+	 * Sets the minimum sunlight for any EVA operations.
+	 * 
+	 * @param minimum
 	 */
 	public static void setMinSunlight(double minimum) {
 		logger.config("Minimum sunlight for EVA = " + minimum);

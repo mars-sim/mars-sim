@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2023-06-06
+ * @date 2023-08-25
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.commander;
@@ -38,8 +38,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.GameManager;
@@ -59,6 +64,8 @@ import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -99,10 +106,14 @@ public class CommanderWindow extends ToolWindow {
 	private static final String SEE_RIGHT = ".    -->";
 
 	private JTabbedPane tabPane;
-	
-	private JComboBoxMW<Person> personComboBox;
+	/** Person Combo box */	
+	private JComboBoxMW<Person> personBox;
 	/** Settlement Combo box */
-	private JComboBox<Settlement> settlementListBox;
+	private JComboBox<Settlement> settlementBox;
+	/** Settlement Combo box */
+	private JComboBox<Building> buildingBox;
+	/** Number JSpinner */
+	private JSpinner areaSpinner;
 	
 	private ListModel listModel;
 	private JList<TaskJob> list;
@@ -135,7 +146,7 @@ public class CommanderWindow extends ToolWindow {
 	private UnitManager unitManager;
 
 	private JPanel tradingPartnersPanel;
-	private Map<String,Settlement> tradingPartners;
+	private Map<String, Settlement> tradingPartners;
 
 	/**
 	 * Constructor.
@@ -163,7 +174,7 @@ public class CommanderWindow extends ToolWindow {
 		mainPane.add(topPane, BorderLayout.NORTH);
 		
 		buildSettlementComboBox();
-		topPane.add(settlementListBox);
+		topPane.add(settlementBox);
 
 
 		JPanel bottomPane = new JPanel(new GridLayout(1, 4));
@@ -205,13 +216,13 @@ public class CommanderWindow extends ToolWindow {
 
 		SettlementComboBoxModel settlementCBModel = new SettlementComboBoxModel();
 
-		settlementListBox = new JComboBox<>(settlementCBModel);
-		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+		settlementBox = new JComboBox<>(settlementCBModel);
+		settlementBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
-		settlementListBox.setRenderer(listRenderer);
+		settlementBox.setRenderer(listRenderer);
 		
-		settlementListBox.addItemListener(event -> {
+		settlementBox.addItemListener(event -> {
 				Settlement s = (Settlement) event.getItem();
 				if (s != null) {
 					// Update the selected settlement instance
@@ -219,7 +230,23 @@ public class CommanderWindow extends ToolWindow {
 				}
 		});
 		
-		settlementListBox.setSelectedIndex(0);
+		settlementBox.setSelectedIndex(0);
+	}
+	
+	/**
+     * Constructs the building combo box.
+     */
+	private void constructBuildingBox(Settlement settlement, List<Building> bldgs) {
+
+		BuildingComboBoxModel model = new BuildingComboBoxModel(settlement, bldgs);
+
+		buildingBox = new JComboBox<>(model);
+		buildingBox.setToolTipText("Select a Building");
+		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+		buildingBox.setRenderer(listRenderer);
+	
+		buildingBox.setSelectedIndex(0);
 	}
 	
 	/**
@@ -233,12 +260,12 @@ public class CommanderWindow extends ToolWindow {
 			
 		DefaultComboBoxModel<Person> comboBoxModel = new DefaultComboBoxModel<>();
 		
-		if (personComboBox == null) {
-			personComboBox = new JComboBoxMW<>(comboBoxModel);
+		if (personBox == null) {
+			personBox = new JComboBoxMW<>(comboBoxModel);
 		}
 		else {
-			personComboBox.removeAll();
-			personComboBox.replaceModel(comboBoxModel);
+			personBox.removeAll();
+			personBox.replaceModel(comboBoxModel);
 		}
 		
 		Iterator<Person> i = people.iterator();
@@ -247,9 +274,10 @@ public class CommanderWindow extends ToolWindow {
 	    	comboBoxModel.addElement(n);
 		}
 		
-		personComboBox.setMaximumRowCount(8);
-		personComboBox.setSelectedItem(cc);
+		personBox.setMaximumRowCount(8);
+		personBox.setSelectedItem(cc);
 	}
+	
 	
 	/**
 	 * Changes the map display to the selected settlement.
@@ -264,12 +292,13 @@ public class CommanderWindow extends ToolWindow {
 			// Set the selected settlement
 			settlement = s;
 			// Set the box opaque
-			settlementListBox.setOpaque(false);
+			settlementBox.setOpaque(false);
 
 			setupTradingSettlements();
 		}
 	}
 
+	
 	private void createLeadershipPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(LEADERSHIP_TAB, panel);
@@ -278,14 +307,77 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
 
+	/**
+	 * Creates the panel for Agriculture.
+	 */
 	private void createAgriculturePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(AGRICULTURE_TAB, panel);
 
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		topPanel.setBorder(BorderFactory.createTitledBorder(" Crop Growing Area "));
 		panel.add(topPanel, BorderLayout.NORTH);
+
+		JPanel buildingPanel = new JPanel(new BorderLayout(20, 20));
+		buildingPanel.setToolTipText("Choose a farm from the building combobox in this settlement");
+		topPanel.add(buildingPanel, BorderLayout.WEST);
+		
+		JLabel buildingLabel = new JLabel(" Select a Farm : ");		
+		buildingPanel.add(buildingLabel, BorderLayout.NORTH);
+
+		List<Building> bldgList = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
+		
+		constructBuildingBox(settlement, bldgList);
+		buildingPanel.add(buildingBox, BorderLayout.CENTER);
+
+		// Create spinner panel
+		JPanel spinnerPanel = new JPanel(new BorderLayout(20, 20));
+		topPanel.add(spinnerPanel, BorderLayout.CENTER);
+		
+		JLabel areaLabel = new JLabel(" Area Per Crop (in SM) : ");		
+		spinnerPanel.add(areaLabel, BorderLayout.NORTH);
+
+		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 50, 1);
+		
+		// Go to that selected settlement
+		Building bldg = (Building)buildingBox.getSelectedItem();
+		Farming farm = null;
+		int currentArea = 0;
+		if (bldg != null) {
+			farm = bldg.getFarming();
+			currentArea = farm.getDesignatedCropArea();
+		}
+		spinnerModel.setValue(currentArea);
+		
+		logger.info(settlement, bldg, "Current Growing Area per Crop (in SM): " + currentArea + ".");
+		
+		areaSpinner = new JSpinner(spinnerModel);
+		spinnerPanel.add(areaSpinner, BorderLayout.CENTER);
+		spinnerPanel.setToolTipText("Change the growing area for each crop in a selected farm");
+		
+		areaSpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+//				SpinnerModel model = (SpinnerModel) (((JSpinner)e.getSource()).getModel());
+				int newArea = (int)spinnerModel.getValue();
+				logger.info(settlement, "Setting Growing Area per Crop (in SM) to " + newArea + ".");
+				
+				if (!bldgList.isEmpty()) {
+					for (Building b: bldgList) {
+						b.getFarming().setDesignatedCropArea(newArea);
+						logger.info(settlement, b, newArea + " SM.");
+					}
+				}
+			}
+		});
 	}
 
+	  
+	public int getGrowingArea() {
+		return (int)areaSpinner.getModel().getValue();
+	}
+
+	
+	
 	private void createComputingPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(COMPUTING_TAB, panel);
@@ -293,6 +385,7 @@ public class CommanderWindow extends ToolWindow {
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
+	
 	
 	private void createEngineeringPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
@@ -302,9 +395,7 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
 
-
-
-
+	
 	/**
 	 * Creates the logistic panel for operation of tasks.
 	 */
@@ -383,14 +474,14 @@ public class CommanderWindow extends ToolWindow {
 		setUpPersonComboBox(settlement);
 
 		JPanel comboBoxPanel = new JPanel(new BorderLayout());
-		comboBoxPanel.add(personComboBox);
+		comboBoxPanel.add(personBox);
 
 		JPanel crewPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		crewPanel.add(comboBoxPanel);
 
 		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
 		crewPanel.setToolTipText("Choose the crew member to give a task order");
-		personComboBox.setToolTipText("Choose the crew member to give a task order");
+		personBox.setToolTipText("Choose the crew member to give a task order");
 
 	    panel.add(crewPanel, BorderLayout.WEST);
 	}
@@ -429,7 +520,7 @@ public class CommanderWindow extends ToolWindow {
 	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(80, 25));
 		addButton.addActionListener(e -> {
-				Person selected = (Person) personComboBox.getSelectedItem();
+				Person selected = (Person) personBox.getSelectedItem();
 				FactoryMetaTask task = (FactoryMetaTask) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task, 1D, -1), true);
 
@@ -761,7 +852,7 @@ public class CommanderWindow extends ToolWindow {
 	public void deleteATask() {
 		TaskJob n = list.getSelectedValue();
 		if (n != null) {
-			((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(n);
+			((Person) personBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(n);
 			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
 		}
 		else
@@ -810,7 +901,7 @@ public class CommanderWindow extends ToolWindow {
 	    private List<TaskJob> list = new ArrayList<>();
 
 	    private ListModel() {
-	    	Person selected = (Person) personComboBox.getSelectedItem();
+	    	Person selected = (Person) personBox.getSelectedItem();
 
 	    	if (selected != null) {
 	        	List<TaskJob> tasks = selected.getMind().getTaskManager().getPendingTasks();
@@ -842,7 +933,7 @@ public class CommanderWindow extends ToolWindow {
          */
         public void update() {
 
-        	List<TaskJob> newTasks = ((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
+        	List<TaskJob> newTasks = ((Person) personBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
 
         	if (newTasks != null) {
 	    		// if the list contains duplicate items, it somehow pass this test
@@ -945,19 +1036,19 @@ public class CommanderWindow extends ToolWindow {
 				// Set the selected settlement
 				changeSettlement(s);
 				// Updated ComboBox
-				settlementListBox.setSelectedItem(s);
+				settlementBox.setSelectedItem(s);
 			}
 
 			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
 				// Update the number of citizens
-				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+				Settlement s = (Settlement) settlementBox.getSelectedItem();
 				// Set the selected settlement
 				changeSettlement(s);
 				
 				setUpPersonComboBox(s);
 		
 				// Set the box opaque
-				settlementListBox.setOpaque(false);
+				settlementBox.setOpaque(false);
 			}
 		}
 
@@ -974,6 +1065,68 @@ public class CommanderWindow extends ToolWindow {
 		}
 	}
 	
+	/**
+	 * Inner class combo box model for buildings.
+	 */
+	public class BuildingComboBoxModel extends DefaultComboBoxModel<Building>
+		implements UnitListener {
+
+		private Settlement settlement;
+		private List<Building> bldgs;
+		
+		/**
+		 * Constructor.
+		 */
+		public BuildingComboBoxModel(Settlement settlement, List<Building> bldgs) {
+			// User DefaultComboBoxModel constructor.
+			super();
+			this.settlement = settlement;
+			this.bldgs = bldgs;
+
+			// Add addUnitListener
+			Iterator<Building> i = bldgs.iterator();
+			while (i.hasNext()) {
+				Building b = i.next();
+				b.addUnitListener(this);
+				addElement(b);
+			}
+		}
+
+		/**
+		 * Prepares class for deletion.
+		 */
+		public void destroy() {
+			Iterator<Building> i = bldgs.iterator();
+			while (i.hasNext()) {
+				i.next().removeUnitListener(this);
+			}
+		}
+
+		@Override
+		public void unitUpdate(UnitEvent event) {
+			// Note: Easily 100+ UnitEvent calls every second
+			UnitEventType eventType = event.getType();
+			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+				Object target = event.getTarget();
+				Building b = (Building) target; // overwrite the dummy building object made by the constructor
+				
+				if (b.getBuildingManager().getSettlement().equals(this.settlement)) {
+					b.addUnitListener(this);
+					addElement(b);
+				}
+			}
+			else if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
+				Object target = event.getTarget();
+				Building b = (Building) target; // overwrite the dummy building object made by the constructor
+
+				if (b.getBuildingManager().getSettlement().equals(this.settlement)) {
+					b.removeUnitListener(this);
+					removeElement(b);
+				}
+			}
+		}
+	}
+	
 
 	/**
 	 * Prepares tool window for deletion.
@@ -981,7 +1134,7 @@ public class CommanderWindow extends ToolWindow {
 	@Override
 	public void destroy() {
 		tabPane = null;
-		personComboBox = null;
+		personBox = null;
 		listModel = null;
 		listScrollPanel = null;
 		list = null;

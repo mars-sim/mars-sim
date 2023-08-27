@@ -241,14 +241,14 @@ public abstract class DigLocal extends EVAOperation {
 		}
 			
      	if (person.isInSettlement()) {
-			abortEVA("Person in settlement");
+			abortEVA("Person in settlement.");
      		return time;
      	}
 
      	// Get a container
         Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
-        	abortEVA("Has no " + containerType.getName() + " for " + resourceName);
+        	abortEVA("Found no " + containerType.getName() + " for " + resourceName + ".");
         	return time;
         }
      
@@ -328,13 +328,19 @@ public abstract class DigLocal extends EVAOperation {
         return 0;
     }
 
+    /**
+     * Drops off resources from container.
+     * 
+     * @param time
+     * @return
+     */
 	private double dropOffResource(double time) {
     	double remainingTime = time;
     	
     	Container container = person.findContainer(containerType, false, resourceID);
     	if (container == null)
     		return 0D;
-	   	
+    	
     	double amount = container.getAmountResourceStored(resourceID);	
     	
         if (amount > 0) {
@@ -372,15 +378,39 @@ public abstract class DigLocal extends EVAOperation {
     }
     
 	/**
-	 * Unload resources from the Container
+	 * Unloads resources from the Container.
 	 */
     private void unloadContainer(Container container, double amount, double effort) {
+       	boolean remapped = false;
+    	// Remapping regoliths by allowing the possibility of misclassifying regolith types
+		if (resourceID == ResourceUtil.regolithID) {
+			int rand = RandomUtil.getRandomInt(10);
+			
+			// Reassign as the other 3 types of regoliths
+			if (rand == 8) {						
+				resourceID = ResourceUtil.regolithBID;
+				remapped = true;
+			}
+			else if (rand == 9) {						
+				resourceID = ResourceUtil.regolithCID;
+				remapped = true;
+			}
+			else if (rand == 10) {					
+				resourceID = ResourceUtil.regolithDID;
+				remapped = true;
+			}
+		}
+		
 		// Retrieve this amount from the container
 		container.retrieveAmountResource(resourceID, amount);
 		// Add to the daily output
 		settlement.addOutput(resourceID, amount, effort);
 		// Store the amount in the settlement
 		settlement.storeAmountResource(resourceID, amount);
+		
+    	// Map it back to regolithID
+    	if (remapped)
+    		resourceID = ResourceUtil.regolithID;
 	}
 
 	/**
@@ -400,11 +430,11 @@ public abstract class DigLocal extends EVAOperation {
             	boolean successful = container.transfer(person);
             	if (!successful) {
             		container = null;
-                	abortEVA("Strangely unable to transfer an empty container for " + resourceName);
+                	abortEVA("Strangely unable to transfer an empty container for " + resourceName + ".");
                 }
 	        }
 	        else {
-	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName);
+	        	abortEVA("Unable to find an empty container in the inventory for " + resourceName + ".");
 	        }
         }
         return container;
@@ -452,8 +482,7 @@ public abstract class DigLocal extends EVAOperation {
      * @return digging X and Y location outside settlement.
      */
     private LocalPosition determineDiggingLocation() {
-		if (airlock.getEntity() instanceof LocalBoundedObject) {
-			LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
+		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
 			return  LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
 																 person.getCoordinates(), 100D);
 		}

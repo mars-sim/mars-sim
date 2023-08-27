@@ -171,8 +171,7 @@ public class AnalyzeMapData extends Task {
 	        setPhase(ANALYZING);
         }
     }
-	
-	
+
     /**
      * Performs the method mapped to the task's current phase.
      * 
@@ -206,16 +205,16 @@ public class AnalyzeMapData extends Task {
 			endTask();
 		}
     	
-    	double workPerMillisol = consumeComputingResource(time);
+    	consumeComputingResource(time);
 
-    	totalWork += time * (1 + workPerMillisol);
+    	totalWork += time;
         
         if (totalWork > getDuration() * .95) {
-        	logger.log(person, Level.FINEST, 0L, 
-        			"effort: " + Math.round(effort * 100.0)/100.0 
-        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
-        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
-        			);
+//        	logger.log(person, Level.FINEST, 0L, 
+//        			"effort: " + Math.round(effort * 100.0)/100.0 
+//        			+ "  time: " + Math.round(time * 1000.0)/1000.0
+//        			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
+//        			);
    	
         	// Get a lowest range rover
      		Rover rover = person.getAssociatedSettlement().getVehicleWithMinimalRange();
@@ -241,8 +240,12 @@ public class AnalyzeMapData extends Task {
         return 0;
     }
     
-    private double consumeComputingResource(double time) {
-    	double remainingTime = 0;
+    /**
+     * Consumes computing resources.
+     * 
+     * @param time
+     */
+    private void consumeComputingResource(double time) {
     	
 		if (isDone() || getTimeCompleted() + time > getDuration() || computingNeeded <= 0) {
         	// this task has ended
@@ -250,16 +253,13 @@ public class AnalyzeMapData extends Task {
     				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
     				+ " CUs Used.");
         	endTask();
-            return time;
         }
-
+		
         int msol = getMarsTime().getMillisolInt();
        
         computingNeeded = person.getAssociatedSettlement().getBuildingManager().
             	accessNode(person, computingNeeded, time, seed, 
             			msol, getDuration(), NAME);
-    	
-    	return remainingTime;
     }
     
 	/**
@@ -271,14 +271,14 @@ public class AnalyzeMapData extends Task {
      */
     private double analyzingPhase(double time) {
  
-    	double workPerMillisol = consumeComputingResource(time);
+    	consumeComputingResource(time);
         
-        effort += time * (1 + workPerMillisol);
+        effort += time;
           
         if (effort > getDuration() / 3) {
         	logger.log(person, Level.FINER, 10_000, 
         			"effort: " + Math.round(effort * 100.0)/100.0 
-        			+ "  workPerMillisol: " + Math.round(workPerMillisol * 1000.0)/1000.0
+        			+ "  time: " + Math.round(time * 1000.0)/1000.0
         			+ "  getDuration(): " + Math.round(getDuration() * 100.0)/100.0
         			);
         	totalWork += effort;
@@ -288,7 +288,7 @@ public class AnalyzeMapData extends Task {
         	effort = 0;
         }
         	
-		if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
+		if (isDone() || getTimeLeft() <= 0 || totalWork / time > getDuration() ) {
         	// this task has ended
 			endTask();
 		}

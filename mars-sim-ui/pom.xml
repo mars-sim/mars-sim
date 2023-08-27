@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="https://maven.apache.org/POM/4.0.0"
-xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="https://maven.apache.org/POM/4.0.0
-https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.6.0</version>
+		<version>3.6.X</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
@@ -81,7 +80,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.16</version>
+			<version>1.17</version>
 		</dependency>
 
 		<!-- https://github.com/haraldk/TwelveMonkeys 
@@ -97,10 +96,11 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    </dependency>
      	-->
      
-		<!-- https://www.jcraft.com/jorbis/
+		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
+		<!-- https://www.jcraft.com/jorbis/  -->
+		<!-- May consider the following two other sound API :			 
 			 https://github.com/Trilarion/java-vorbis-support
-			 https://github.com/Gagravarr/VorbisJava
-			 https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
+			 https://github.com/Gagravarr/VorbisJava -->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>

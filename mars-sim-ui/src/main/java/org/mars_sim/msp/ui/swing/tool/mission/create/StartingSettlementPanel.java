@@ -236,7 +236,7 @@ class StartingSettlementPanel extends WizardPanel {
 						result = (int) settlement.getAmountResourceStored(ResourceUtil.methanolID);
 					}
 					else if (column == 8)
-						result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+						result = settlement.getNumEVASuit();
 
 					MissionType type = getWizard().getMissionData().getMissionType();
 					if (MissionType.EXPLORATION == type) {
@@ -373,7 +373,7 @@ class StartingSettlementPanel extends WizardPanel {
 					if (settlement.getAmountResourceStored(ResourceUtil.methanolID) < 100D) result = true;
 				}
 				else if (column == 8) {
-					if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) == 0) result = true;
+					if (settlement.getNumEVASuit() == 0) result = true;
 				}
 
 				MissionType type = getWizard().getMissionData().getMissionType();

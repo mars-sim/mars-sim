@@ -45,7 +45,7 @@
 		<inputs>
 			<!-- amount - The amount of the resource in kilograms. -->
 			<part name="refrigerator" number="1" />
-			<resource name="Cabbage" name1="Carrot" name2="Leaves" name3="Swiss Chard" name4="Potatoes" 
+			<resource name="Cabbage" name1="Carrot" name2="Leaves" name3="Swiss Chard" name4="Potato" 
 			amount="3.0" />
 		</inputs>
 

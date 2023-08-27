@@ -45,7 +45,8 @@ public class ConstructionSitesPanel extends JPanel {
     private JScrollPane sitesScrollPane;
     
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param manager the settlement construction manager.
      */
     public ConstructionSitesPanel(ConstructionManager manager) {
@@ -79,7 +80,7 @@ public class ConstructionSitesPanel extends JPanel {
     }
     
     /**
-     * Update the information on this panel.
+     * Updates the information on this panel.
      */
     public void update() {
         // Update sites is necessary.
@@ -121,6 +122,7 @@ public class ConstructionSitesPanel extends JPanel {
     
     /**
      * Gets a construction site panel for a particular construction site.
+     * 
      * @param site the construction site.
      * @return construction site panel or null if none found.
      */
@@ -153,6 +155,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         /**
          * Constructor.
+         * 
          * @param site the construction site.
          */
         private ConstructionPanel(ConstructionSite site) {
@@ -192,6 +195,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         /**
          * Gets the construction site for this panel.
+         * 
          * @return construction site.
          */
         private ConstructionSite getConstructionSite() {
@@ -228,6 +232,7 @@ public class ConstructionSitesPanel extends JPanel {
         
         /**
          * Gets the status label string.
+         * 
          * @return status string.
          */
         private String getStatusString() {
@@ -274,24 +279,24 @@ public class ConstructionSitesPanel extends JPanel {
                 result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
                 
                 // Add remaining construction resources.
-                if ((stage.getRemainingResources().size() > 0) && !stage.isSalvaging()) {
-                    result.append("<br>Remaining Construction Resources:<br>");
-                    Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
+                if ((stage.getMissingResources().size() > 0) && !stage.isSalvaging()) {
+                    result.append("<br>Missing Resources:<br>");
+                    Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
                     while (i.hasNext()) {
                     	Integer resource = i.next();
-                        double amount = stage.getRemainingResources().get(resource);
+                        double amount = stage.getMissingResources().get(resource);
                         result.append("&nbsp;&nbsp;").append(ResourceUtil.findAmountResource(resource)
                         		.getName()).append(": ").append(amount).append(" kg<br>");
                     }
                 }
                 
                 // Add remaining construction parts.
-                if (stage.getRemainingParts().size() > 0) {
-                    result.append("<br>Remaining Construction Parts:<br>");
-                    Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+                if (stage.getMissingParts().size() > 0) {
+                    result.append("<br>Missing Parts:<br>");
+                    Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
                     while (j.hasNext()) {
                     	Integer part = j.next();
-                        int number = stage.getRemainingParts().get(part);
+                        int number = stage.getMissingParts().get(part);
                         result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(part)
                         		.getName()).append(": ").append(number).append("<br>");
                     }
@@ -334,7 +339,7 @@ public class ConstructionSitesPanel extends JPanel {
     }   
     
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		manager = null;

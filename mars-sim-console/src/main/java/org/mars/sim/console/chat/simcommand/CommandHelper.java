@@ -75,6 +75,7 @@ public class CommandHelper {
 	public static final String PERC1_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
+	public static final String MS_FORMAT = "%.2f m/s";
     public static final String MONEY_FORMAT = "$%,.2f";
 	private static final String DUE_FORMAT = "%d:%03d";
 

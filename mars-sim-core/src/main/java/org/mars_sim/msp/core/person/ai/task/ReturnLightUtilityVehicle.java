@@ -193,7 +193,7 @@ public class ReturnLightUtilityVehicle extends Task {
 	private void unloadLUVInventory(EquipmentOwner eo) {
 
 		// Unload all units.
-		Iterator<Equipment> j = luv.getEquipmentSet().iterator();
+		Iterator<Equipment> j = luv.getContainerSet().iterator();
 		while (j.hasNext()) {
 			Equipment unit = j.next();
 			if (!unit.transfer(returnContainer)) {

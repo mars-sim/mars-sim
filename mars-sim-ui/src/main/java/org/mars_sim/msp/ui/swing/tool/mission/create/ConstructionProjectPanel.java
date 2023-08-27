@@ -268,7 +268,7 @@ class ConstructionProjectPanel extends WizardPanel {
                     errorMessageTextPane.setText("Not enough vehicles and/or attachment " +
                             "parts at settlement for construction project.");
                 }
-                else if (site != null && !hasEnoughRemainingConstructionMaterials(site)) {
+                else if (site != null && !hasEnoughConstructionMaterials(site)) {
                     // Allow construction mission even when insufficient
                     // materials available to finish stage.
                     getWizard().setButtons(true);
@@ -558,12 +558,12 @@ class ConstructionProjectPanel extends WizardPanel {
     }
     
     /**
-     * Checks if there are enough remaining construction materials for a construction site.
+     * Checks if there are enough construction materials for a construction site.
      * 
      * @param site the construction site.
      * @return true if enough remaining materials available.
      */
-    private boolean hasEnoughRemainingConstructionMaterials(ConstructionSite site) {
+    private boolean hasEnoughConstructionMaterials(ConstructionSite site) {
         
         boolean result = true;
         
@@ -573,21 +573,21 @@ class ConstructionProjectPanel extends WizardPanel {
         if (stage != null) {
         
             // Check amount resources.
-            Iterator<Integer> i = stage.getRemainingResources().keySet()
+            Iterator<Integer> i = stage.getMissingResources().keySet()
                     .iterator();
             while (i.hasNext()) {
             	Integer resource = i.next();
-                double amount = stage.getRemainingResources().get(resource);
+                double amount = stage.getMissingResources().get(resource);
                 if (settlement.getAmountResourceStored(resource) < amount) {
                     result = false;
                 }
             }
 
             // Check parts.
-            Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+            Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
             while (j.hasNext()) {
             	Integer part = j.next();
-                int number = stage.getRemainingParts().get(part);
+                int number = stage.getMissingParts().get(part);
                 if (settlement.getItemResourceStored(part) < number) {
                     result = false;
                 }
@@ -737,7 +737,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         ConstructionStage stage = site.getCurrentConstructionStage();
                         
                         // Add resources.
-                        Iterator<Integer> i = stage.getRemainingResources().keySet()
+                        Iterator<Integer> i = stage.getMissingResources().keySet()
                                 .iterator();
                         while (i.hasNext()) {
                         	Integer resource = i.next();
@@ -750,7 +750,7 @@ class ConstructionProjectPanel extends WizardPanel {
                         }
                         
                         // Add parts.
-                        Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+                        Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
                         while (j.hasNext()) {
                         	Integer part = j.next();
                             int numRequired = info.getParts().get(part);

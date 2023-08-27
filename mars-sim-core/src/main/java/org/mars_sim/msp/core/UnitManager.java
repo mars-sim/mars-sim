@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OuterSpace;
@@ -99,7 +100,9 @@ public class UnitManager implements Serializable, Temporal {
 	private Map<Integer, Equipment> lookupEquipment;
 	/** A map of building with its unit identifier. */
 	private Map<Integer, Building> lookupBuilding;
-
+	/** A map of settlements with its coordinates. */
+	private Map<Coordinates, Integer> settlementCoordinateMap;
+	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 
@@ -212,7 +215,65 @@ public class UnitManager implements Serializable, Temporal {
 	public Settlement getSettlementByID(Integer id) {
 		return lookupSettlement.get(id);
 	}
+	
+	/**
+	 * Finds a nearby settlement based on its coordinates.
+	 *
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public Settlement findSettlement(Coordinates c) {
+		if (settlementCoordinateMap == null) {
+			settlementCoordinateMap = new HashMap<>();
 
+			Collection<Settlement> ss = getSettlements();
+			
+			Settlement settlement = null;
+			for (Settlement s : ss) {
+				settlementCoordinateMap.put(s.getCoordinates(), s.getIdentifier());
+				if (s.getCoordinates().equals(c))
+					settlement = s;
+			}
+			
+			return settlement;
+		}
+		
+		Integer i = settlementCoordinateMap.get(c);
+		if (i != null)
+			return lookupSettlement.get(i);
+		
+		return null;
+	}
+	
+	/**
+	 * Is this a settlement's coordinates ?
+	 *
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public boolean isSettlement(Coordinates c) {
+		if (settlementCoordinateMap == null) {
+			settlementCoordinateMap = new HashMap<>();
+
+			Collection<Settlement> ss = getSettlements();
+			
+			for (Settlement s : ss) {
+				settlementCoordinateMap.put(s.getCoordinates(), s.getIdentifier());
+			}
+		}
+		
+		Integer i = settlementCoordinateMap.get(c);
+		if (i != null)
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Gets commander settlement.
+	 * 
+	 * @return
+	 */
 	public Settlement getCommanderSettlement() {
 		return getPersonByID(commanderID).getAssociatedSettlement();
 	}
@@ -235,7 +296,7 @@ public class UnitManager implements Serializable, Temporal {
 		Settlement s = cc.getSettlement();
 		// If the commander is in the vicinity of a settlement
 		if (s == null)
-			s = CollectionUtils.findSettlement(cc.getCoordinates());
+			s = findSettlement(cc.getCoordinates());
 		if (s != null && as != s)
 			settlements.add(s);
 

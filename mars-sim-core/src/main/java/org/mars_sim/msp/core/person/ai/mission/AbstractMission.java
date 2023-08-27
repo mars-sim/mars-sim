@@ -98,7 +98,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
-	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
+//	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 	
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
@@ -766,7 +766,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		status.append("Ended the ")
 			.append(getName())
 			.append(" with the status flag(s): ")
-			.append(listOfStatuses);
+			.append(listOfStatuses).append(".");
 		logger.info(startingMember, status.toString());
 
 		// Disband the members

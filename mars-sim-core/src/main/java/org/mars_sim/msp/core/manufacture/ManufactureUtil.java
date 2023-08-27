@@ -589,7 +589,7 @@ public final class ManufactureUtil {
 		
 		else if (info.getType().equalsIgnoreCase("equipment")) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
-			salvagableUnits = settlement.getEquipmentTypeSet(eType);
+			salvagableUnits = settlement.getContainerSet(eType);
 		} 
 		
 //		else if (info.getType().equalsIgnoreCase("bin")) {

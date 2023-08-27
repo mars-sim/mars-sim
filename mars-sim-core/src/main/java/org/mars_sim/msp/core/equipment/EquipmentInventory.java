@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -40,7 +39,13 @@ public class EquipmentInventory
 	private double cargoCapacity;
 
 	/** Locally held equipment set. */
-	private Set<Equipment> equipmentSet;
+//	private Set<Equipment> equipmentSet;
+	
+	/** Locally held EVA suit set. */
+	private Set<Equipment> suitSet;
+	
+	/** Locally held container set. */
+	private Set<Equipment> containerSet;
 	
 	/** Locally held amount resource bin set. */
 	private Set<AmountResourceBin> amountResourceBinSet;
@@ -54,8 +59,9 @@ public class EquipmentInventory
 		this.cargoCapacity = cargoCapacity;
 	
 		// Create equipment set
-		equipmentSet = new UnitSet<>();
-
+		suitSet = new UnitSet<>();
+		containerSet = new UnitSet<>();
+		
 		// Create the amount resource bin set
 		amountResourceBinSet = new HashSet<>();
 		
@@ -90,14 +96,17 @@ public class EquipmentInventory
 	@Override
 	public double getStoredMass() {
 		double result = 0;
-		for (Equipment e: equipmentSet) {
+		for (Equipment e: suitSet) {
+			result += e.getMass();
+		}
+		for (Equipment e: containerSet) {
 			result += e.getMass();
 		}
 		return result + microInventory.getStoredMass();
 	}
 
 	/**
-	 * Gets the modified mass. Useful when accounting for pushing a wheelbarrow, 
+	 * Gets the modified mass for a container. Useful when accounting for pushing a wheelbarrow, 
 	 * instead of carrying a wheelbarrow.
 	 * 
 	 * @param type  the equipment type of interest
@@ -106,7 +115,7 @@ public class EquipmentInventory
 	 */
 	public double getModifiedMass(EquipmentType type, double percent) {
 		double result = 0;
-		for (Equipment e: equipmentSet) {
+		for (Equipment e: containerSet) {
 			if (type == EquipmentType.WHEELBARROW) {
 				result += e.getMass() * percent / 100;
 			}
@@ -123,40 +132,29 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		if (equipmentSet == null)
-			equipmentSet = new UnitSet<>();
-		return Collections.unmodifiableSet(equipmentSet);
+		Set<Equipment> result = new HashSet<>(containerSet);
+		result.addAll(suitSet);
+		return Collections.unmodifiableSet(result);
 	}
 
 	/**
-	 * Finds all of the containers (excluding EVA suit).
+	 * Gets the container set.
 	 *
-	 * @return collection of containers or empty collection if none.
+	 * @return
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
-		Collection<Container> result = new HashSet<>();
-		for (Equipment e : equipmentSet) {
-			if (e != null && e.getUnitType() == UnitType.CONTAINER) {
-				result.add((Container)e);
-			}
-		}
-		return result;
+	public Set<Equipment> getContainerSet() {
+		return Collections.unmodifiableSet(containerSet);
 	}
 
 	/**
-	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 *
-	 * @return collection of containers or empty collection if none.
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
 	 */
-	public Collection<Container> findContainersOfType(EquipmentType type) {
-		Collection<Container> result = new HashSet<>();
-		for (Equipment e : equipmentSet) {
-			if (e != null && e.getUnitType() == UnitType.CONTAINER && type == e.getEquipmentType()) {
-				result.add((Container)e);
-			}
-		}
-		return result;
+	@Override
+	public Set<Equipment> getSuitSet() {
+		return suitSet;
 	}
 
 	/**
@@ -167,12 +165,14 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
-		for (Equipment e: equipmentSet) {
-			if (type == e.getEquipmentType()) {
-				return true;
-			}
+		if (type == EquipmentType.EVA_SUIT) {
+			if (suitSet.isEmpty())
+				return false;
 		}
-		return false;
+		else if (containerSet.isEmpty())
+			return false;
+		
+		return true;
 	}
 
 	/**
@@ -183,11 +183,26 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		boolean contained = equipmentSet.contains(equipment);
+		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+			return addSet(suitSet, equipment);
+		}
+		
+		return addSet(containerSet, equipment);
+	}
+	
+	/**
+	 * Adds the equipment (suit or container) to a particular equipment set.
+	 * 
+	 * @param set
+	 * @param equipment
+	 * @return true if this unit can carry it
+	 */
+	private boolean addSet(Set<Equipment> set, Equipment equipment) {
+		boolean contained = set.contains(equipment);
 		if (!contained) {
 			double newCapacity = cargoCapacity - (getStoredMass() + equipment.getMass());
 			if (newCapacity >= 0D) {
-				contained = equipmentSet.add(equipment);
+				contained = set.add(equipment);
 			}
 			else {
 				logger.warning(owner, "No capacity to hold " + equipment.getName()
@@ -204,7 +219,10 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		return equipmentSet.remove(equipment);
+		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+			return suitSet.remove(equipment);
+		}
+		return containerSet.remove(equipment);
 	}
 
 
@@ -422,14 +440,19 @@ public class EquipmentInventory
 		double result = 0;
 		// Do not consume resources from container Equipment. THis is an expensive
 		// and can generate concurrency issues
-		for (Equipment e: equipmentSet) {
+		for (Equipment e: suitSet) {
+		 	result += e.getAmountResourceStored(resource);
+		 }
+		for (Equipment e: containerSet) {
 		 	result += e.getAmountResourceStored(resource);
 		 }
 		return result + getAmountResourceStored(resource);
 	}
-
+	
 	/**
 	 * Finds the number of empty containers of a particular equipment type.
+	 * 
+	 * Note: NOT for EVA suits.
 	 * 
 	 * @param containerType the equipment type.
 	 * @param brandNew  does it include brand new bag only
@@ -437,8 +460,87 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return (int) equipmentSet.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+		return (int) containerSet.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
 								.count();
+	}
+
+	/**
+	 * Finds the number of containers of a particular type.
+	 *
+	 * Note: will not count EVA suits.
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	@Override
+	public int findNumContainersOfType(EquipmentType containerType) {
+		return (int) containerSet.stream().filter(e -> e.getEquipmentType() == containerType).count();
+	}
+	
+	/**
+	 * Finds all of the containers of a particular type (excluding EVA suit).
+	 *
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Container> findContainersOfType(EquipmentType type) {
+		Collection<Container> result = new HashSet<>();
+		for (Equipment e : containerSet) {
+			if (type == e.getEquipmentType()) {
+				result.add((Container)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds a container in storage.
+	 *
+	 * Note: will not count EVA suits.
+	 *
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	@Override
+	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
+		for (Equipment e : containerSet) {
+			if (e.getEquipmentType() == containerType) {
+				 Container c = (Container)e;
+				// Check it matches the resource spec
+				int containerResource = c.getResource();
+				if (resource == -1 || containerResource == resource || containerResource == -1) {
+					if (!empty || (c.getStoredMass() == 0D)) {
+						return c;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Finds a container in storage.
+	 *
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	public Container findOwnedContainer(EquipmentType containerType, int personId, int resource) {
+		for (Equipment e : containerSet) {
+			if (e.getEquipmentType() == containerType) {
+				 Container c = (Container)e;
+				// Check it matches the resource spec
+				int containerResource = c.getResource();
+				if (resource == -1 || containerResource == resource || containerResource == -1) {
+					if (e.getRegisteredOwnerID() == personId) {
+						return c;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -474,66 +576,6 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Finds the number of containers of a particular type.
-	 *
-	 * @param containerType the equipment type.
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumContainersOfType(EquipmentType containerType) {
-		return (int) equipmentSet.stream().filter(e -> e.getEquipmentType() == containerType).count();
-	}
-
-	/**
-	 * Finds a container in storage.
-	 *
-	 * @param containerType
-	 * @param empty does it need to be empty ?
-	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
-	 */
-	@Override
-	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		for (Equipment e : equipmentSet) {
-			if (e.getEquipmentType() == containerType) {
-				Container c = (Container) e;
-				// Check it matches the resource spec
-				int containerResource = c.getResource();
-				if (resource == -1 || containerResource == resource || containerResource == -1) {
-					if (!empty || (c.getStoredMass() == 0D)) {
-						return c;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Finds a container in storage.
-	 *
-	 * @param containerType
-	 * @param empty does it need to be empty ?
-	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
-	 */
-	public Container findOwnedContainer(EquipmentType containerType, int personId, int resource) {
-		for (Equipment e : equipmentSet) {
-			if (e.getEquipmentType() == containerType) {
-				Container c = (Container) e;
-				// Check it matches the resource spec
-				int containerResource = c.getResource();
-				if (resource == -1 || containerResource == resource || containerResource == -1) {
-					if (e.getRegisteredOwnerID() == personId) {
-						return c;
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
 	 * Gets a set of item resources in storage.
 	 *
 	 * @return a set of item resources.
@@ -560,9 +602,14 @@ public class EquipmentInventory
 	 */
 	public Set<Integer> getAllAmountResourceIDs() {
 		Set<Integer> set = new HashSet<>(getAmountResourceIDs());
-		for (Equipment e: equipmentSet) {
-			if (e instanceof ResourceHolder) {
-				set.addAll(((ResourceHolder) e).getAmountResourceIDs());
+		for (Equipment e: containerSet) {
+			if (e instanceof ResourceHolder rh) {
+				set.addAll(rh.getAmountResourceIDs());
+			}
+		}
+		for (Equipment e: suitSet) {
+			if (e instanceof ResourceHolder rh) {
+				set.addAll(rh.getAmountResourceIDs());
 			}
 		}
 		return set;
@@ -574,7 +621,9 @@ public class EquipmentInventory
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		if (!equipmentSet.isEmpty())
+		if (!containerSet.isEmpty())
+			return false;
+		if (!suitSet.isEmpty())
 			return false;
 		return microInventory.isEmpty();
 	}
@@ -869,8 +918,10 @@ public class EquipmentInventory
 	}
 	
 	public void destroy() {
-		equipmentSet.clear();
-		equipmentSet = null;
+		containerSet.clear();
+		containerSet = null;
+		suitSet.clear();
+		suitSet = null;
 		microInventory = null;
 	}	
 }

@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -424,7 +423,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		// Set inventory total mass capacity based on the person's weight and strength.
 		// Must be able to carry an EVA suit
-		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 1.5D),
+		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 2),
 						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
 		
@@ -739,7 +738,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return the person's settlement
 	 */
 	public Settlement getNearbySettlement() {
-		return CollectionUtils.findSettlement(getCoordinates());
+		return unitManager.findSettlement(getCoordinates());
 	}
 	
 	/**
@@ -1569,11 +1568,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return
 	 */
 	public EVASuit getInventorySuit() {
-		for (Equipment e: getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT)
-				return (EVASuit)e;
-		}
-		return null;
+		return (EVASuit) getSuitSet().stream().findAny().orElse(null);
 	}
 
 	public int getExtrovertmodifier() {
@@ -1636,23 +1631,31 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		if (eqmInventory == null)
-			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 
-	public EquipmentInventory getEquipmentInventory() {
-		return eqmInventory;
+	/**
+	 * Gets the container set.
+	 *
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getContainerSet() {
+		return eqmInventory.getContainerSet();
 	}
 	
 	/**
-	 * Finds all of the containers (excluding EVA suit).
-	 *
-	 * @return collection of containers or empty collection if none.
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
-		return eqmInventory.findAllContainers();
+	public Set<Equipment> getSuitSet() {
+		return eqmInventory.getSuitSet();
+	}
+	
+	public EquipmentInventory getEquipmentInventory() {
+		return eqmInventory;
 	}
 
 	/**
@@ -1858,7 +1861,9 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 	/**
 	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
+	 * an empty inventory. 
+	 * 
+	 * Note: NOT for EVA suits.
 	 *
 	 * @param containerClass  the unit class.
 	 * @param brandNew  does it include brand new bag only
@@ -1872,6 +1877,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Finds the number of containers of a particular type.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
@@ -1883,6 +1890,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	/**
 	 * Finds a container in storage.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -2178,7 +2187,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
-			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
+			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getContainerSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
@@ -2214,9 +2223,8 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 */
 	public void dropOffThermalBottle() {
 
-		if (hasThermalBottle() && isInside()) {
-
-			for(Equipment e : getEquipmentSet()) {
+		if (isInside()) {
+			for(Equipment e : getContainerSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					// Transfer to this person's container unit 
 					e.transfer(getContainerUnit());

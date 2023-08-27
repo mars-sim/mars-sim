@@ -14,11 +14,12 @@ import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.ConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,7 +38,7 @@ public class ConstructBuilding extends EVAOperation {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(ConstructBuilding.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
@@ -50,6 +51,8 @@ public class ConstructBuilding extends EVAOperation {
 
 	// Data members.
 	private boolean operatingLUV;
+	
+	private double cumulativeWorkTime;
 
 	private ConstructionStage stage;
 	private ConstructionSite site;
@@ -253,6 +256,9 @@ public class ConstructBuilding extends EVAOperation {
 		// Work on construction.
 		stage.addWorkTime(workTime);
 
+		// Keep track of cumulative work time
+		cumulativeWorkTime += workTime;
+		
 		// Add experience points
 		addExperience(workTime);
 
@@ -266,6 +272,8 @@ public class ConstructBuilding extends EVAOperation {
 		if (person != null
 			&& (stage.isComplete() || !availableWork)) {
 
+			logger.info(site, person, "cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);
+			
 			// End operating light utility vehicle.
 			if (luv != null
 				&& ((Crewable)luv).isCrewmember(person)) {

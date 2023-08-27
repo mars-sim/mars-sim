@@ -273,7 +273,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		// resource at a site may be more than the single one specified.
 		for(int resourceId : getCollectibleResources()) {
 			double amount = inv.getAmountResourceStored(resourceId);
-			for(Equipment e : inv.getEquipmentSet()) {
+			for(Equipment e : inv.getContainerSet()) {
 				amount += e.getAmountResourceStored(resourceId);
 			}
 

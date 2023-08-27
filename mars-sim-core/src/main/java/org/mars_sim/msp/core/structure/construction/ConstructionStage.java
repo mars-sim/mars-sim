@@ -40,8 +40,8 @@ public class ConstructionStage implements Serializable {
     private ConstructionStageInfo info;
     private ConstructionSite site;
     
-    private Map<Integer, Integer> remainingParts;
-    private Map<Integer, Double> remainingResources;
+    private Map<Integer, Integer> missingParts;
+    private Map<Integer, Double> missingResources;
 
     private Map<Integer, Integer> originalReqParts;
     private Map<Integer, Double> originalReqResources;
@@ -57,16 +57,19 @@ public class ConstructionStage implements Serializable {
     public ConstructionStage(ConstructionStageInfo info, ConstructionSite site) {
         this.info = info;
         this.site = site;
-        completedWorkTime = 0D;
+        
         isSalvaging = false;
+        
+        completedWorkTime = 0D;
         completableWorkTime = 0D;
+        
         originalReqParts = new HashMap<>(info.getParts());
         originalReqResources = new HashMap<>(info.getResources());
 
-        remainingParts = new HashMap<>(info.getParts());
-        remainingResources = new HashMap<>(info.getResources());
+        missingParts = new HashMap<>(info.getParts());
+        missingResources = new HashMap<>(info.getResources());
         
-        // Update the remaining completable work time.
+        // Update the missing completable work time.
         updateCompletableWorkTime();
     }
 
@@ -186,21 +189,21 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Gets the remaining parts needed for construction.
+     * Gets the missing parts needed for construction.
      * 
      * @return map of parts and their numbers.
      */
-    public Map<Integer, Integer> getRemainingParts() {
-        return new HashMap<>(remainingParts);
+    public Map<Integer, Integer> getMissingParts() {
+        return new HashMap<>(missingParts);
     }
 
     /**
-     * Gets the remaining resources needed for construction.
+     * Gets the missing resources needed for construction.
      * 
      * @return map of resources and their amounts (kg).
      */
-    public Map<Integer, Double> getRemainingResources() {
-        return new HashMap<>(remainingResources);
+    public Map<Integer, Double> getMissingResources() {
+        return new HashMap<>(missingResources);
     }
     
     /**
@@ -211,18 +214,18 @@ public class ConstructionStage implements Serializable {
      */
     public void addParts(Integer part, int number) {
 
-        if (remainingParts.containsKey(part)) {
-            int remainingRequiredNum = remainingParts.get(part);
-            if (number <= remainingRequiredNum) {
-                remainingRequiredNum -= number;
-                if (remainingRequiredNum > 0) {
-                    remainingParts.put(part, remainingRequiredNum);
+        if (missingParts.containsKey(part)) {
+            int missingRequiredNum = missingParts.get(part);
+            if (number <= missingRequiredNum) {
+                missingRequiredNum -= number;
+                if (missingRequiredNum > 0) {
+                    missingParts.put(part, missingRequiredNum);
                 }
                 else {
-                    remainingParts.remove(part);
+                    missingParts.remove(part);
                 }
 
-                // Update the remaining completable work time.
+                // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
                 // Fire construction event
@@ -230,7 +233,7 @@ public class ConstructionStage implements Serializable {
             }
             else {
                 throw new IllegalStateException("Trying to add " + number + " " + part + 
-                        " to " + info.getName() + " when only " + remainingRequiredNum + 
+                        " to " + info.getName() + " when only " + missingRequiredNum + 
                         " are needed.");
             }
         }
@@ -248,18 +251,13 @@ public class ConstructionStage implements Serializable {
      */
     public void addResource(Integer resource, double amount) {
 
-        if (remainingResources.containsKey(resource)) {
-            double remainingRequiredAmount = remainingResources.get(resource);
-            if (amount <= remainingRequiredAmount) {
-                remainingRequiredAmount -= amount;
-                if (remainingRequiredAmount > 0D) {
-                    remainingResources.put(resource, remainingRequiredAmount);
-                }
-                else {
-                    remainingResources.remove(resource);
-                }
+        if (missingResources.containsKey(resource)) {
+            double missingRequiredAmount = missingResources.get(resource);
+            if (amount <= missingRequiredAmount) {
+                missingRequiredAmount -= amount;
+                missingResources.put(resource, missingRequiredAmount);
 
-                // Update the remaining completable work time.
+                // Update the missing completable work time.
                 updateCompletableWorkTime();
                 
                 // Fire construction event
@@ -267,7 +265,7 @@ public class ConstructionStage implements Serializable {
             }
             else {
                 throw new IllegalStateException("Trying to add " + amount + " " + resource + 
-                        " to " + info.getName() + " when only " + remainingRequiredAmount + 
+                        " to " + info.getName() + " when only " + missingRequiredAmount + 
                         " are needed.");
             }
         }
@@ -285,12 +283,12 @@ public class ConstructionStage implements Serializable {
         double totalRequiredConstructionMaterial = getConstructionMaterialMass(
                 info.getResources(), info.getParts());
 
-        double remainingConstructionMaterial = getConstructionMaterialMass(
-                remainingResources, remainingParts);
+        double totalMissingConstructionMaterial = getConstructionMaterialMass(
+                missingResources, missingParts);
 
         double proportion = 1D;
         if (totalRequiredConstructionMaterial > 0D) {
-            proportion = (totalRequiredConstructionMaterial - remainingConstructionMaterial) / 
+            proportion = (totalRequiredConstructionMaterial - totalMissingConstructionMaterial) / 
                     totalRequiredConstructionMaterial;
         }
 
@@ -343,13 +341,13 @@ public class ConstructionStage implements Serializable {
 	public void destroy() {
 		info = null;
 	    site = null;
-	    remainingParts.clear();
-	    remainingResources.clear();
+	    missingParts.clear();
+	    missingResources.clear();
 	    originalReqParts.clear();
 	    originalReqResources.clear();
 	    
-	    remainingParts = null;
-	    remainingResources = null;
+	    missingParts = null;
+	    missingResources = null;
 	    originalReqParts = null;
 	    originalReqResources = null;
 	}

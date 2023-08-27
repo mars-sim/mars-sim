@@ -75,7 +75,7 @@ implements Serializable {
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSites() {
-		return new ArrayList<ConstructionSite>(sites);
+		return new ArrayList<>(sites);
 	}
 
 	/**
@@ -108,7 +108,7 @@ implements Serializable {
 					else if (!currentStage.isSalvaging()) {
 					    boolean workNeeded = currentStage.getCompletableWorkTime() >
 					            currentStage.getCompletedWorkTime();
-					    boolean hasConstructionMaterials = hasRemainingConstructionMaterials(currentStage);
+					    boolean hasConstructionMaterials = hasMissingConstructionMaterials(currentStage);
 					    if (workNeeded || hasConstructionMaterials) {
 					        result.add(site);
 					    }
@@ -126,16 +126,16 @@ implements Serializable {
 	 * Checks if the settlement has any construction materials needed for the stage.
 	 * 
 	 * @param stage the construction stage.
-	 * @return true if remaining materials available.
+	 * @return true if missing materials available.
 	 */
-	public boolean hasRemainingConstructionMaterials(ConstructionStage stage) {
+	public boolean hasMissingConstructionMaterials(ConstructionStage stage) {
 
 	    boolean result = false;
 
-	    Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
+	    Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
 	    while (i.hasNext() && !result) {
 	    	Integer resource = i.next();
-	        double amountRequired = stage.getRemainingResources().get(resource);
+	        double amountRequired = stage.getMissingResources().get(resource);
 	        if (amountRequired > 0D) {
 	            double amountStored = settlement.getAmountResourceStored(resource);
 	            if (amountStored > 0D) {
@@ -144,10 +144,10 @@ implements Serializable {
 	        }
 	    }
 
-	    Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
+	    Iterator<Integer> j = stage.getMissingParts().keySet().iterator();
 	    while (j.hasNext() && !result) {
 	    	Integer part = j.next();
-	        int numRequired = stage.getRemainingParts().get(part);
+	        int numRequired = stage.getMissingParts().get(part);
 	        if (numRequired > 0) {
 	            int numStored = settlement.getItemResourceStored(part);
 	            if (numStored > 0) {

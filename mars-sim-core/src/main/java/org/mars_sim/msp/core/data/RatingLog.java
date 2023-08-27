@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * RatingLog.java
+ * @date 2023-08-21
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.data;
 
 import java.io.FileNotFoundException;

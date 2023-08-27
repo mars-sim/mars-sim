@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -88,7 +88,10 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Determine location for unloading.
 		setOutsideLocation(vehicle);
 		
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
+		settlement = unitManager.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
 		}
@@ -145,11 +148,11 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			Set<Equipment> surplus = new HashSet<>();
-			for(Equipment equipment : vehicle.getEquipmentSet()) {
+			for(Equipment equipment : vehicle.getSuitSet()) {
 				boolean doUnload = true;
 				
-				if (vehicle instanceof Crewable crew && equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
-					int numSuit = vehicle.findNumContainersOfType(EquipmentType.EVA_SUIT);
+				if (vehicle instanceof Crewable crew) {
+					int numSuit = vehicle.findNumEVASuits();
 					int numCrew = crew.getCrewNum();
 					// Note: Ensure each crew member in the vehicle has an EVA suit to wear
 					doUnload = (numSuit > numCrew);
@@ -322,17 +325,16 @@ public class UnloadVehicleEVA extends EVAOperation {
 
 	/**
 	 * Returns true if the vehicle is fully unloaded.
-	 * This has to ignore any EVA suits.
+	 * 
+	 * Note: look at EVA suits and remove their mass.
 	 * 
 	 * @param vehicle Vehicle to check.
 	 * @return is vehicle fully unloaded?
 	 */
 	public static boolean isFullyUnloaded(Vehicle vehicle) {
 		double total = vehicle.getStoredMass();
-		for(Equipment e : vehicle.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				total -= e.getMass();
-			}
+		for(Equipment e : vehicle.getSuitSet()) {
+			total -= e.getMass();
 		}
 		
 		return total <= 0.001D;

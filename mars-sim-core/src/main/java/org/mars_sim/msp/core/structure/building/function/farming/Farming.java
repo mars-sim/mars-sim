@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2022-08-10
+ * @date 2023-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -95,9 +95,15 @@ public class Farming extends Function {
 	private int numCrops2Plant;
 
 	private double powerGrowingCrop;
+	
 	private double powerSustainingCrop;
+	/** The total growing area for all crops. */		
 	private double maxGrowingArea;
-	private double remainingGrowingArea;
+	/** The total remaining growing area for all crops. */	
+	private double remainingArea;
+	/** The designated growing area for each crop. */
+	private int designatedCropArea;
+	
 	/** The cumulative time spent in this greenhouse. */
 	private double cumulativeWorkTime;	
 	
@@ -159,21 +165,24 @@ public class Farming extends Function {
 		powerGrowingCrop = spec.getDoubleProperty(POWER_GROWING_CROP);
 		powerSustainingCrop = spec.getDoubleProperty(POWER_SUSTAINING_CROP);
 		maxGrowingArea = spec.getDoubleProperty(GROWING_AREA);
-		remainingGrowingArea = maxGrowingArea;
+		remainingArea = maxGrowingArea;
+		
+		designatedCropArea = (int)(maxGrowingArea / defaultCropNum);
 
 		Map<CropSpec, Integer> alreadyPlanted = new HashMap<>();
 		for (int x = 0; x < defaultCropNum; x++) {
 			CropSpec cropSpec = pickACrop(alreadyPlanted);
 			if (cropSpec == null) {
-				break;// for avoiding NullPointerException during maven test
+				break; // for avoiding NullPointerException during maven test
 			}
 			else {
-				Crop crop = plantACrop(cropSpec, true, 0);
-				cropList.add(crop);
-				cropHistory.put(crop.getIdentifier(), cropSpec.getName());
-				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-				alreadyPlanted.merge(cropSpec, 1, Integer::sum);
+				Crop crop = plantACrop(cropSpec, true, designatedCropArea);
+				if (crop != null) {
+					cropList.add(crop);
+					cropHistory.put(crop.getIdentifier(), cropSpec.getName());
+					building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+					alreadyPlanted.merge(cropSpec, 1, Integer::sum);
+				}
 			}
 		}
 	}
@@ -443,12 +452,12 @@ public class Farming extends Function {
 	/**
 	 * Plants a new crop.
 	 *
-	 * @param cropSpec
-	 * @param isStartup             - true if it's at the start of the sim
-	 * @param designatedGrowingArea
+	 * @param cropSpec		  The spec of the crop
+	 * @param isStartup       True if it's at the start of the sim
+	 * @param designatedArea  Will use this param in near future. FOr now it's set to zero
 	 * @return Crop
 	 */
-	private Crop plantACrop(CropSpec cropSpec, boolean isStartup, double designatedGrowingArea) {
+	private Crop plantACrop(CropSpec cropSpec, boolean isStartup, double designatedArea) {
 		// Implement new way of calculating amount of food in kg,
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
@@ -456,19 +465,26 @@ public class Farming extends Function {
 		// growing-time is in millisol vs. growingDay is in sol
 		// double growingDay = cropType.getGrowingTime() / 1000D ;
 		double cropArea = 0;
-		if (remainingGrowingArea <= 1D) {
-			cropArea = remainingGrowingArea;
-		} else if (designatedGrowingArea != 0) {
-			cropArea = designatedGrowingArea;
-		} else { // if (remainingGrowingArea > 1D)
-			cropArea = maxGrowingArea / (double) defaultCropNum;
+		
+		if (remainingArea == 0)
+			return null;
+		
+		if (remainingArea <= 1) {
+			cropArea = remainingArea;
+		} 
+		else if (designatedArea != 0) {
+			// Note that remainingArea is > 1
+			cropArea = Math.min(remainingArea, designatedArea);
+		} 
+		else {
+			cropArea = Math.min(remainingArea, maxGrowingArea / defaultCropNum);
 		}
 
 		// Sets aside some areas
-		remainingGrowingArea = remainingGrowingArea - cropArea;
+		remainingArea = remainingArea - cropArea;
 
-		if (remainingGrowingArea < 0)
-			remainingGrowingArea = 0;
+		if (remainingArea < 0)
+			remainingArea = 0;
 
 		// Note edible-biomass is [ gram / m^2 / day ]
 		double dailyMaxHarvest = edibleBiomass / 1000D * cropArea;
@@ -847,7 +863,8 @@ public class Farming extends Function {
 				// Remove old crops.
 				if (crop.getPhaseType() == PhaseType.FINISHED) {
 					// Take back the growing area
-					remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
+					remainingArea = remainingArea + crop.getGrowingArea();
+					
 					toRemove.add(crop);
 //					numCrops2Plant++;
 				}
@@ -894,14 +911,23 @@ public class Farming extends Function {
 		return ct;
 	}
 	
+	/**
+	 * Plants a new crop seedling.
+	 * 
+	 * @param ct
+	 * @param time
+	 * @param worker
+	 */
 	public void plantSeedling(CropSpec ct, double time, Worker worker) {
-		Crop crop = plantACrop(ct, false, 0);
-		cropList.add(crop);
-		cropHistory.put(crop.getIdentifier(), crop.getCropName());
-		building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-		logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-		numCrops2Plant--;
+		Crop crop = plantACrop(ct, false, designatedCropArea);
+		if (crop != null) {
+			cropList.add(crop);
+			cropHistory.put(crop.getIdentifier(), crop.getCropName());
+			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+	
+			logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+			numCrops2Plant--;
+		}
 	}
 
 	/**
@@ -969,7 +995,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Gets the total growing area for all crops.
+	 * Gets the total growing area in this building function.
 	 *
 	 * @return growing area in square meters
 	 */
@@ -1214,6 +1240,14 @@ public class Farming extends Function {
 	 */
 	public void addCumulativeWorkTime(double value) {
 		cumulativeWorkTime += value;
+	}
+	
+	public void setDesignatedCropArea(int area) {
+		designatedCropArea = area;
+	}
+	
+	public int getDesignatedCropArea() {
+		return designatedCropArea;
 	}
 	
 	@Override

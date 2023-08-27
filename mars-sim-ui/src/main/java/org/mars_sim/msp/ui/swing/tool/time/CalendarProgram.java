@@ -185,7 +185,6 @@ public class CalendarProgram{
 		
 	}
 
-	@SuppressWarnings("serial")
 	static class tblCalendarRenderer extends DefaultTableCellRenderer{
 		public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
 			super.getTableCellRendererComponent(table, value, selected, focused, row, column);

@@ -207,7 +207,7 @@ class ConstructionSettlementPanel extends WizardPanel {
                     else if (column == 3) 
                         result = settlement.findNumVehiclesOfType(VehicleType.LUV);
                     else if (column == 4) 
-                        result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+                        result = settlement.getNumEVASuit();
                 }
                 catch (Exception e) {}
             }

@@ -994,9 +994,8 @@ class AmountResourceGood extends Good {
 		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
 			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getRemainingResources().containsKey(resource)) {
-					double requiredAmount = stage.getRemainingResources().get(resource);
-//					amount += requiredAmount;
+				if (stage.getMissingResources().containsKey(resource)) {
+					double requiredAmount = stage.getMissingResources().get(resource);
 					demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 				}
 				

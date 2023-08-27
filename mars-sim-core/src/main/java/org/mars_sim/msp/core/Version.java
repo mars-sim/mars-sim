@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Version.java
- * @date 2021-012-05
+ * @date 2023-08-25
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 /**
  * This class will read the properties file automatically created by the Maven build.
  * See the pom.xml plugin git-commit-id-maven-plugin for details.
- * The implementation of this class mut be synchronised with the plugin.
+ * The implementation of this class must be synchronised with the plugin.
  */
 public final class Version {
 
@@ -56,13 +56,14 @@ public final class Version {
 		}
 	}
 
-	// Private constructor to stop instantiation
+	// Private constructor to stop instantiation.
 	private Version() {
 	}
 
 	/**
-	 * Get the build number which is the abbreviated Git commit. If there
+	 * Gets the build number which is the abbreviated Git commit. If there
 	 * are dirty files in the build then a suffix will be added.
+	 * 
 	 * @return
 	 */
 	public static String getBuild() {
@@ -70,7 +71,8 @@ public final class Version {
 	}
 
 	/**
-	 * Get the version number the Maven project.
+	 * Gets the version number the Maven project.
+	 * 
 	 * @return
 	 */
 	public static String getVersion() {

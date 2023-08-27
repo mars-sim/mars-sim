@@ -1729,21 +1729,29 @@ public abstract class Vehicle extends Unit
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		if (eqmInventory == null)
-			return new UnitSet<>();
 		return eqmInventory.getEquipmentSet();
 	}
 
 	/**
-	 * Finds all of the containers (excluding EVA suit).
+	 * Gets the container set.
 	 *
-	 * @return collection of containers or empty collection if none.
+	 * @return
 	 */
 	@Override
-	public Collection<Container> findAllContainers() {
-		return eqmInventory.findAllContainers();
+	public Set<Equipment> getContainerSet() {
+		return eqmInventory.getContainerSet();
 	}
 
+	/**
+	 * Gets the EVA suit set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getSuitSet() {
+		return eqmInventory.getSuitSet();
+	}
+	
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
 	 *
@@ -1928,6 +1936,8 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Finds the number of containers of a particular type
+	 * 
+	 * Note: will not count EVA suits.
 	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
@@ -1940,6 +1950,8 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Finds a container in storage.
 	 *
+	 * Note: will not count EVA suits.
+	 * 
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
@@ -1957,13 +1969,7 @@ public abstract class Vehicle extends Unit
 	 * @return number of EVA suits
 	 */
 	public int findNumEVASuits() {
-		int result = 0;
-		for (Equipment e : eqmInventory.getEquipmentSet()) {
-			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
-				result++;
-			}
-		}
-		return result;
+		return getSuitSet().size();
 	}
 
 	/**

@@ -49,8 +49,12 @@ import com.jogamp.opencl.CLProgram;
  	public static double MIN_RHO;
 
  	private static final double TWO_PI = Math.PI * 2;
+ 	
 	// The default rho at the start of the sim
  	public static double RHO_DEFAULT;
+ 	
+ 	// The default magnification at the start of the sim
+  	public static double MAG_DEFAULT;
 
  	// Data members.
  	private int[][] baseMapPixels = null;
@@ -72,8 +76,6 @@ import com.jogamp.opencl.CLProgram;
 	
 	private CLKernel kernel;
  	
-//	private Image mapImage = null;
-	
  	/**
  	 * Constructor.
  	 * 
@@ -93,10 +95,11 @@ import com.jogamp.opencl.CLProgram;
 			logger.log(Level.SEVERE, "Unable to load map. " + e.getMessage());
 		}
 		
-		rho =  pixelHeight / Math.PI;
+		rho = pixelHeight / Math.PI;
 		RHO_DEFAULT = rho;
 		MAX_RHO = RHO_DEFAULT * 6;
 		MIN_RHO = RHO_DEFAULT / 6;
+		MAG_DEFAULT = rho / RHO_DEFAULT;
 		
 		logger.info("Loaded " + metaMap + " with pixels " + pixelWidth + " by " + pixelHeight + ".");
 		
@@ -128,7 +131,16 @@ import com.jogamp.opencl.CLProgram;
 	public MapMetaData getMetaData() {
 		return meta;
 	}
-	
+
+    /**
+     * Gets the magnification of the Mars surface map.
+     * 
+     * @return
+     */
+    public double getMagnification() {
+    	return rho / RHO_DEFAULT;
+    }
+    
 	/**
 	 * Gets the scale of the Mars surface map.
 	 * 
@@ -139,15 +151,6 @@ import com.jogamp.opencl.CLProgram;
 		return rho;
 	}
 	
-    /**
-     * Gets the magnification of the Mars surface map.
-     * 
-     * @return
-     */
-    public double getMagnification() {
-    	return rho / RHO_DEFAULT;
-    }
-    
 	/**
 	 * Sets the rho of the Mars surface map.
 	 * 

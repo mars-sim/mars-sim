@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -21,6 +23,8 @@ import org.mars_sim.msp.core.robot.Robot;
  */
 public abstract class FactoryMetaTask extends MetaTask {
     
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	protected FactoryMetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super(name, workerType, scope);
 	}

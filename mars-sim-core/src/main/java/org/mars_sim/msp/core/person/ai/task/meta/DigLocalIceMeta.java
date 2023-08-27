@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
@@ -42,12 +41,11 @@ public class DigLocalIceMeta extends DigLocalMeta {
 
     @Override
     public double getProbability(Person person) {
-    	
-    	if (!CollectionUtils.isSettlement(person.getCoordinates())) {
+    	if (!unitManager.isSettlement(person.getCoordinates())) {
     		return 0;
     	}
     	
-    	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+    	Settlement settlement = unitManager.findSettlement(person.getCoordinates());
     	double rate = settlement.getIceCollectionRate();
     	if (rate <= 0D) {
     		return 0D;

@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.MSolDataItem;
@@ -27,40 +26,38 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 
-/** Weather represents the weather on Mars */
+/** This class represents the weather properties on Mars. */
 public class Weather implements Serializable, Temporal {
 
-	private static final int MAX_RECORDED_DAYS = 2;
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
+	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
-	// Static data
-	public static final int WINDSPEED_REFRESH = 3;
+	// Non-static data
+	private final int MAX_RECORDED_DAYS = 2;
 	/** The maximum initial windspeed of a new location. */
-	private static final double MAX_INITIAL_WINDSPEED = 20;
+	private final double MAX_INITIAL_WINDSPEED = 20;
 	/** The maximum initial windspeed of a new location. */
-	private static final double AVERAGE_WINDSPEED = 15;
-	
+	private final double AVERAGE_WINDSPEED = 15;
 	/** The effect of sunlight on the surface temperatures on Mars. */
-	private static final double LIGHT_EFFECT = 1.2;
-	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C] */
-	private static final double EXTREME_COLD = 120D; 
-
-	/** Viking 1's latitude */
-	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
-	private final static double VIKING_DT = Math.round((28D - 15D *
+	private final double LIGHT_EFFECT = 1.2;
+	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C]. */
+	private final double EXTREME_COLD = 120D; 
+	/** Viking 1's latitude. */
+	private final double VIKING_LATITUDE = 22.48D;
+	private final double VIKING_DT = Math.round((28D - 15D *
 			Math.sin(2 * Math.PI / 180D * VIKING_LATITUDE + Math.PI / 2D) - 13D) * 100.0) / 100.00;
 	
-	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; // in kPa
-	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; // in kPa
-	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; // in kPa. under Earth's atmosphere,
-																					// at 25 C, 50% relative humidity
+	public final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; // in kPa
+	public final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; // in kPa
+	
+	/** Under Earth's atmosphere, at 25 C, 50% relative humidity, in kPa. */
+	public final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 
 
-	private static final int MILLISOLS_PER_UPDATE = 2; // one update per x millisols
+	private final int MILLISOLS_PER_UPDATE = 2; // one update per x millisols
 
-	private static final double DX = 255D * Math.PI / 180D - Math.PI;
+	private final double DX = 255D * Math.PI / 180D - Math.PI;
 	
 	// Opportunity Rover landed at coordinates 1.95 degrees south, 354.47 degrees
 	// east.
@@ -71,13 +68,13 @@ public class Weather implements Serializable, Temporal {
 	// longitude.
 	// From the chart, it has an average of 25 C temperature variation on the
 	// maximum and minimum temperature curves
-	private static final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
+	private final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
 	
 	// A day has 1000 mSols. Take 500 samples
-	private static final int MSOL_PER_SAMPLE = 1000/250;
+	private final int MSOL_PER_SAMPLE = 1000/250;
 
-	private boolean isNewSol = true;
-
+	private final int WINDSPEED_REFRESH = 3;
+	
 	private int newStormID = 1;
 
 	private int checkStorm = 0;
@@ -101,7 +98,7 @@ public class Weather implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
 	private SurfaceFeatures surfaceFeatures;
-
+	
 	public Weather(MasterClock clock, OrbitInfo orbitInfo) {
 		weatherDataMap = new HashMap<>();
 		sunDataMap = new HashMap<>();
@@ -180,46 +177,51 @@ public class Weather implements Serializable, Temporal {
 			// Load the previous wind speed
 			double currentSpeed = windSpeedCacheMap.get(location);
 			
-			// Check for the passing of each day only
-			if (isNewSol) {
-				Settlement focus = CollectionUtils.findSettlement(location);
-				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
-				if (ds != null) {
-					double stormSpeed = 0;
-					
-					double dustSpeed = ds.getSpeed();
-					switch (ds.getType()) {
-						case DUST_DEVIL:
-							// arbitrary speed determination
-							stormSpeed = .8 * currentSpeed + .2 * dustSpeed;
-							break;
-	
-						case LOCAL:
-							// arbitrary speed determination
-							stormSpeed = .985 * currentSpeed + .015 * dustSpeed;
-							break;
-						
-						case REGIONAL:
-							// arbitrary speed determination
-							stormSpeed = .99 * currentSpeed + .01 * dustSpeed;
-							break;
-	
-						case PLANET_ENCIRCLING:
-							// arbitrary speed determination
-							stormSpeed = .995 * currentSpeed + .005 * dustSpeed;
-							break;
-							
-						default :
-							stormSpeed = .99 * currentSpeed;
-					}
-					
-					// Assume the max surface wind speed of up to 800 m/s
-					if (stormSpeed > 800) {
-						stormSpeed = 800;
-					}
-					
-					newSpeed = stormSpeed;
+			// Check if the location is covered by a Dust Storm
+			DustStorm ds = null;
+			for(DustStorm s : dustStorms) {
+				// Maybe it should include the width of the DustStorm also
+				if (s.getCoordinates().equals(location)) {
+					ds = s;
+					break;
 				}
+			}
+
+			// Storm governs the wind speed
+			if (ds != null) {
+				double stormSpeed = 0;
+				double dustSpeed = ds.getSpeed();
+				switch (ds.getType()) {
+					case DUST_DEVIL:
+						// arbitrary speed determination
+						stormSpeed = .8 * currentSpeed + .2 * dustSpeed;
+						break;
+
+					case LOCAL:
+						// arbitrary speed determination
+						stormSpeed = .985 * currentSpeed + .015 * dustSpeed;
+						break;
+					
+					case REGIONAL:
+						// arbitrary speed determination
+						stormSpeed = .99 * currentSpeed + .01 * dustSpeed;
+						break;
+
+					case PLANET_ENCIRCLING:
+						// arbitrary speed determination
+						stormSpeed = .995 * currentSpeed + .005 * dustSpeed;
+						break;
+						
+					default :
+						stormSpeed = .99 * currentSpeed;
+				}
+				
+				// Assume the max surface wind speed of up to 800 m/s
+				if (stormSpeed > 800) {
+					stormSpeed = 800;
+				}
+				
+				newSpeed = stormSpeed;
 			}
 			
 			else { // not a new sol, no need to check for dust storm
@@ -654,7 +656,7 @@ public class Weather implements Serializable, Temporal {
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		isNewSol = pulse.isNewSol();
+		boolean isNewSol = pulse.isNewSol();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		int msol = pulse.getMarsTime().getMillisolInt();
@@ -678,8 +680,7 @@ public class Weather implements Serializable, Temporal {
 			// with a peak period at 255 deg Ls.
 
 			// Note : The Mars dust storm season begins just after perihelion at around Ls =
-			// 260°.
-			
+			// 260°.			
 			double aLs = (int) (Math.round(orbitInfo.getSunAreoLongitude()));
 			int aLon = (int) (aLs);
 					
@@ -698,8 +699,9 @@ public class Weather implements Serializable, Temporal {
 			double probability = -2.475 * Math.cos(aLs * Math.PI / 180D - DX) + (2.475 + .05);
 			// probability is 5% at max
 			double size = dustStorms.size();
+			
 			// Artificially limit the # of dust storm to 10
-		if (aLon > 240 && aLon < 271 && size <= 10  && checkStorm < 200) {
+			if (aLon > 240 && aLon < 271 && size <= 10  && checkStorm < 200) {
 				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
 				// closed to Mars.
 
@@ -827,10 +829,7 @@ public class Weather implements Serializable, Temporal {
 	 * @return
 	 */
 	public SunData getSunRecord(Coordinates c) {
-		if (sunDataMap.containsKey(c))
-			return sunDataMap.get(c);
-		
-		return null;
+		return sunDataMap.get(c);
 	}
 	
 
@@ -855,19 +854,29 @@ public class Weather implements Serializable, Temporal {
 					// a dust devil
 					// on each sol since it is usually created in Martian spring or summer day,
 					checkStorm++;
-
-					// Assuming all storms start out as a dust devil
-					DustStorm ds = new DustStorm(DustStormType.DUST_DEVIL, newStormID,
-							 this, s.getIdentifier());
-					dustStorms.add(ds);
-					s.setDustStorm(ds);
-					newStormID++;
-
-					logger.info(s, "On L_s = " + Math.round(ls * 100.0) / 100.0
-									+ ", " + ds.getName()); 
+					createStorm(s, DustStormType.DUST_DEVIL); 
 				}
 			}
 		}
+	}
+
+	/**
+	 * Creates a dust storm at a certain Settlement.
+	 * 
+	 * @param s Settlement where the storm is focused
+	 * @param stormType Type of storm to create
+	 * @return
+	 */
+	public DustStorm createStorm(Settlement s, DustStormType stormType) {
+		// Assuming all storms start out as a dust devil
+		DustStorm ds = new DustStorm(stormType, newStormID, this, s);
+		dustStorms.add(ds);
+		s.setDustStorm(ds);
+		newStormID++;
+
+		logger.info(s, "New dust storm " + ds.getName() + " of type " + stormType.getName());
+		
+		return ds;
 	}
 
 
