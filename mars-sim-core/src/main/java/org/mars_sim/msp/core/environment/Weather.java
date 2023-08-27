@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Weather.java
- * @date 2023-08-25
+ * @date 2023-08-27
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
