@@ -28,13 +28,15 @@ Copyright (C) 2023 Scott Davis
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
+  <LI>Crop: allow changing growing area per crop in Agriculture tab in Dashboard.</LI>
   <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
-  <LI>static: convert static primitive data members to non-static </LI>
 <OL>
 
 ### B. FIXES :
 <OL>
-  <LI>Food Production: correct potato typo</LI>
+  <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
+  <LI>Food Production: correct potato typo.</LI>
+  <LI>Map: correct magnification and zooming issues.</LI>
 <OL>
 
 ------------------------------------------|---------------------
