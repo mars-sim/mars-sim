@@ -7,13 +7,13 @@
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.7.0</version>
+	<version>3.6.X</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>17</release>
-		<project.version>3.7.0</project.version>
+		<project.version>3.6.X</project.version>
 		<fxgl.version>11.17</fxgl.version>
 		<junit-jupiter.version>5.10.0</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
@@ -72,25 +72,11 @@
 	<!-- ************************************************************************************************* -->
 	<developers>
 		<developer>
-			<name>Scott Davis</name>
-			<roles>
-				<role>manager</role>
-			</roles>
-			<timezone>-8</timezone>
-		</developer>
-		<developer>
 			<name>Manny Kung</name>
 			<roles>
 				<role>developer</role>
 			</roles>
 			<timezone>-8</timezone>
-		</developer>
-		<developer>
-			<name>Shirish Agarwal</name>
-			<roles>
-				<role>integration and testing</role>
-			</roles>
-			<timezone>+5.5</timezone>
 		</developer>
 		<developer>
 			<name>Dennis Krenz</name>
@@ -119,8 +105,8 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-headless</module>
-    <module>mars-sim-tools</module>
-    <!--module>mars-sim-base</module-->
+    	<module>mars-sim-tools</module>
+    	<!--module>mars-sim-base</module-->
 	</modules>
   
 	<!-- ************************************************************************************************* -->

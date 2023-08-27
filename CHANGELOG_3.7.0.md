@@ -24,6 +24,25 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
+## 3.6.2 build ___ (__ ___ 2023)
+
+### A. FIXES :
+<OL>
+  <LI></LI>
+<OL>
+
+------------------------------------------|---------------------
+
+## 3.6.1 build 0ac7103 (25 Aug 2023)
+
+### A. FIXES :
+<OL>
+  <LI>Mineral Map: Avoid NPE after a reload by serializing a list of mineral types 
+    - <a href="https://github.com/mars-sim/mars-sim/issues/1005">#1005</a></LI>
+<OL>
+
+------------------------------------------|---------------------
+
 
 ## 3.6.0 build 8557 (24 Aug 2023)
 

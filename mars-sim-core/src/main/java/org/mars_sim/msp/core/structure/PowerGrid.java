@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGrid.java
- * @date 2023-06-02
+ * @date 2023-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
- * The PowerGrid class is a settlement's building power grid.
+ * This class is a settlement's building power grid.
  */
 public class PowerGrid implements Serializable, Temporal {
 
@@ -291,7 +291,7 @@ public class PowerGrid implements Serializable, Temporal {
 	
 		
 	/**
-	 * Handle an excess of power
+	 * Handles excess power.
 	 * 
 	 * @param time
 	 */
@@ -309,7 +309,7 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Handle an excess of power
+	 * Generates more power.
 	 * 
 	 * @param time
 	 */
@@ -490,9 +490,6 @@ public class PowerGrid implements Serializable, Temporal {
 								.mapToDouble(b -> b.getPowerGeneration().getGeneratedPower())
 								.sum();
 		setGeneratedPower(power);
-
-		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.totalPowerGenerated", //$NON-NLS-1$
-					Double.toString(power)));
 	}
 
 	/**
@@ -505,9 +502,6 @@ public class PowerGrid implements Serializable, Temporal {
 								.mapToDouble(b -> b.getPowerStorage().getkWattHourStored())
 								.sum();
 		setStoredEnergy(store);
-
-		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.totalPowerStored", //$NON-NLS-1$
-					Double.toString(totalEnergyStored)));
 	}
 
 	/**
@@ -517,34 +511,19 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private void updateTotalRequiredPower() {
 		double power = 0D;
-		boolean powerUp = powerMode == PowerMode.POWER_UP;
+		// Gets all buildings, not just power producers
 		Iterator<Building> iUsed = manager.getBuildingSet().iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
-			if (powerUp) {
-				building.setPowerMode(PowerMode.FULL_POWER);
+			if (building.getPowerMode() == PowerMode.FULL_POWER) {
 				power += building.getFullPowerRequired();
-				logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.buildingFullPowerUsed", //$NON-NLS-1$
-							building.getNickName(), 
-							Double.toString(
-									Math.round(building.getFullPowerRequired()*100.00)/100.00
-									)));
 			}
-
-			power += building.getPoweredDownPowerRequired();
-
-			logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.buildingPowerDownPowerUsed", //$NON-NLS-1$
-						building.getNickName(), 
-						Double.toString(
-								Math.round(building.getPoweredDownPowerRequired()*100.00)/100.00
-								)));
-
+			else if (building.getPowerMode() == PowerMode.POWER_DOWN) {
+				power += building.getPoweredDownPowerRequired();
+			}
 		}
 
 		setRequiredPower(power);
-
-		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.totalPowerRequired", //$NON-NLS-1$
-					Double.toString(powerRequired)));
 	}
 
 	/**
@@ -557,9 +536,6 @@ public class PowerGrid implements Serializable, Temporal {
 									.mapToDouble(b -> b.getPowerStorage().getCurrentMaxCapacity())
 									.sum();
 		setStoredEnergyCapacity(capacity);
-
-		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.totalPowerStorageCapacity", //$NON-NLS-1$
-					Double.toString(energyStorageCapacity)));
 	}
 
 	/**

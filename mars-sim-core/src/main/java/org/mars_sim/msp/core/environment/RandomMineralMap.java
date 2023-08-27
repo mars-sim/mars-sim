@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,58 +44,56 @@ public class RandomMineralMap implements MineralMap {
 
 	private static final SimLogger logger = SimLogger.getLogger(RandomMineralMap.class.getName());
 
-	private static final int W = 300;
-	private static final int H = 150;
+	private final int W = 300;
+	private final int H = 150;
 	
-	private static final int NUM_REGIONS = 50;
+	private final int NUM_REGIONS = 50;
 
-	private static final int REGION_FACTOR = 1500;
-	private static final int NON_REGION_FACTOR = 50;
+	private final int REGION_FACTOR = 1500;
+	private final int NON_REGION_FACTOR = 50;
 	
-	private static final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
+	private final double PIXEL_RADIUS = Coordinates.KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR; //(Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 	
-	private static final String IMAGES_FOLDER = "/images/";
+	private final String IMAGES_FOLDER = "/images/";
 	
 	// Topographical Region Strings
-	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
-	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
-	private static final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
+	private final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
+	private final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
+	private final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
 
-	private static final String CRATER_REGION = "crater";
-	private static final String VOLCANIC_REGION = "volcanic";
-	private static final String SEDIMENTARY_REGION = "sedimentary";
+	private final String CRATER_REGION = "crater";
+	private final String VOLCANIC_REGION = "volcanic";
+	private final String SEDIMENTARY_REGION = "sedimentary";
 
 	// Frequency Strings
-	private static final String COMMON_FREQUENCY = "common";
-	private static final String UNCOMMON_FREQUENCY = "uncommon";
-	private static final String RARE_FREQUENCY = "rare";
-	private static final String VERY_RARE_FREQUENCY = "very rare";
+	private final String COMMON_FREQUENCY = "common";
+	private final String UNCOMMON_FREQUENCY = "uncommon";
+	private final String RARE_FREQUENCY = "rare";
+	private final String VERY_RARE_FREQUENCY = "very rare";
 
-	private static final double LIMIT = Math.PI / 7;
-	
-//	private double angleCache;
-	
+	private final double LIMIT = Math.PI / 7;
+
 	// A map of all mineral concentrations
-	private Map<Coordinates, Map<String, Integer>> allMineralsByLocation;
+	private Map<Coordinates, Map<String, Integer>> allMineralsByLoc;
 
 	private String[] mineralTypeNames;
 	
-	private static Set<Coordinates> allLocations;
+	private transient Set<Coordinates> allLocations;
 	
 	private transient MineralMapConfig mineralMapConfig;
 	
-	private UnitManager unitManager;
+	private transient UnitManager unitManager;
 	
 	/**
 	 * Constructor.
 	 */
 	RandomMineralMap() {
 	
-		allMineralsByLocation = new HashMap<>();
+		allMineralsByLoc = new HashMap<>();
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
 		
-		allLocations = allMineralsByLocation.keySet();
+		allLocations = allMineralsByLoc.keySet();
 	}
 
 	/**
@@ -167,7 +164,7 @@ public class RandomMineralMap implements MineralMap {
 			
 		} // end of iterating MineralType
 
-		logger.info("# of Global Mineral Locations: " + allMineralsByLocation.size());
+		logger.info("# of Global Mineral Locations: " + allMineralsByLoc.size());
 	}
 
 	/**
@@ -200,10 +197,10 @@ public class RandomMineralMap implements MineralMap {
 		
 		Map<String, Integer> map = new HashMap<>();
 		
-		if (allMineralsByLocation.containsKey(newLocation)) {
+		if (allMineralsByLoc.containsKey(newLocation)) {
 			
-			if (allMineralsByLocation.get(oldLocation).containsKey(mineralName)) {
-				double oldConc = allMineralsByLocation.get(oldLocation).get(mineralName);
+			if (allMineralsByLoc.get(oldLocation).containsKey(mineralName)) {
+				double oldConc = allMineralsByLoc.get(oldLocation).get(mineralName);
 				map.put(mineralName, (int)Math.round(.5 * (oldConc + concentration)));
 			}
 			else {
@@ -215,7 +212,7 @@ public class RandomMineralMap implements MineralMap {
 			map.put(mineralName, (int)Math.round(concentration));
 		}
 		
-		allMineralsByLocation.put(newLocation, map);
+		allMineralsByLoc.put(newLocation, map);
 
 		return remainingConc;
 	}
@@ -375,7 +372,7 @@ public class RandomMineralMap implements MineralMap {
 		boolean emptyMap = true;
 		
 		if (allLocations == null) {
-			allLocations = allMineralsByLocation.keySet();
+			allLocations = allMineralsByLoc.keySet();
 		}
 		
 		Iterator<Coordinates> i = allLocations.iterator();
@@ -391,7 +388,7 @@ public class RandomMineralMap implements MineralMap {
 			if (concentrationPhi > LIMIT && concentrationPhi < Math.PI - LIMIT
 				&& phiDiff < angle && thetaDiff < angle) {
 				
-				Map<String, Integer> map = allMineralsByLocation.get(c);
+				Map<String, Integer> map = allMineralsByLoc.get(c);
 				
 				Set<String> mineralNames = updateMineralDisplay(mineralsDisplaySet, map.keySet());
 				if (mineralNames.isEmpty()) {
@@ -456,13 +453,13 @@ public class RandomMineralMap implements MineralMap {
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
 	public Map<String, Integer> getAllMineralConcentrations(Coordinates location) {
-		if (allMineralsByLocation.isEmpty()
-			|| !allMineralsByLocation.containsKey(location)) {
+		if (allMineralsByLoc.isEmpty()
+			|| !allMineralsByLoc.containsKey(location)) {
 			
 			return new HashMap<>();
 		}
 		else {
-			return allMineralsByLocation.get(location);
+			return allMineralsByLoc.get(location);
 		}
 	}
 
@@ -477,7 +474,7 @@ public class RandomMineralMap implements MineralMap {
 	 */
 	public double getMineralConcentration(String mineralType, Coordinates location) {
 		
-		Map<String, Integer> map = allMineralsByLocation.get(location);
+		Map<String, Integer> map = allMineralsByLoc.get(location);
 		if (map == null || map.isEmpty()) {
 			return 0;
 		}
@@ -531,7 +528,7 @@ public class RandomMineralMap implements MineralMap {
 		Set<Coordinates> locales = new HashSet<>();
 		
 		if (allLocations == null) {
-			allLocations = allMineralsByLocation.keySet();
+			allLocations = allMineralsByLoc.keySet();
 		}
 		
 		Iterator<Coordinates> i = allLocations.iterator();
@@ -607,7 +604,7 @@ public class RandomMineralMap implements MineralMap {
 	@Override
 	public void destroy() {
 //		mineralConcentrations = null;
-		allMineralsByLocation = null;
+		allMineralsByLoc = null;
 		mineralMapConfig = null;
 	}
 }
