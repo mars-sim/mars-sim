@@ -14,6 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<starterClass>org.mars_sim.main.MarsProjectStarter</starterClass>
 		<mainClass>org.mars_sim.main.MarsProject</mainClass>
+		<target.name>mars-sim_swing_${project.version}</target.name>
 	</properties>
 	
 	<dependencies>
@@ -89,40 +90,8 @@
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
 		<plugins>
-						
-			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
-			<!-- https://www.mojohaus.org/exec-maven-plugin/ -->
-			<!-- https://github.com/mojohaus/mojo-parent -->
+		<!--
 			<plugin>
-		        <groupId>org.codehaus.mojo</groupId>
-		        <artifactId>exec-maven-plugin</artifactId>
-		        <!-- >version>1.6.0</version-->
-		        <version>3.1.0</version>
-		        <executions>
-		            <execution>
-			             <id>java-agent</id>
-			             <goals>
-			                 <goal>exec</goal>
-			             </goals>		            
-		                <!--goals>
-		                    <goal>java</goal>
-		                </goals-->
-		            </execution>
-		        </executions>
-		        <configuration>
-		            <executable>java</executable>
-		            <!--mainClass>org.mars_sim.main.MarsProject</mainClass-->
-		            <arguments>
-               			<argument>-Djava.util.logging.config.file=logging.properties -cp .;*;jars\*</argument>
-               			<argument>-classpath</argument>
-            			<classpath/>
-            			<argument>org.mars_sim.main.MarsProject</argument>           			
-               			<argument>-Xms256m -Xmx1536m -new</argument>
-              		</arguments>
-		        </configuration>
-		    </plugin>		
-			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin  : 27 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.3.0</version>
@@ -135,11 +104,9 @@
 					</archive>
 				</configuration>
 			</plugin>
+			-->
+			<!-- Build the executable JAR file -->
 			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin 
-					 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB 
-					 For creating a self-contained Jar file containing the code from modules along with dependencies
-				-->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.6.0</version>
@@ -167,9 +134,27 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Rename create JAR to a constant name -->
 			<plugin>
-				<!-- https://github.com/tcurdt/jdeb -->
-				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-file</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
+    						<destinationFile>${project.build.directory}/${target.name}.jar</destinationFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+			<!-- Package into a DEB file as well -->
+			<plugin>
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
 				<version>1.10</version>
@@ -182,7 +167,7 @@
 						<configuration>
 							<dataSet>
 								<data>
-									<src>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</src>
+									<src>${project.build.directory}/${target.name}.jar</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
