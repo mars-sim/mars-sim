@@ -150,6 +150,7 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>
+							<deb>${project.build.directory}/${target.name}.deb</deb>
 							<dataSet>
 								<data>
 									<src>${project.build.directory}/${target.name}.jar</src>

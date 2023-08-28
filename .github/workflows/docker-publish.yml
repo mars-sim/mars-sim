@@ -21,7 +21,7 @@ env:
 jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
-  push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,31 +33,47 @@ jobs:
           
       - name: Build with Maven
         run: mvn -B package -DskipTests=true --file pom.xml 
+
+      - name: Copy Jar file
+        run: mv mars-sim-headless/target/$(ls mars-sim-headless/target/mars-sim*.jar) mars-sim-console.jar
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: jar-file
+          path: mars-sim-console.jar
+    
+  build-image:
+    runs-on: ubuntu-latest
+    needs: build
         
-      - name: Build imagewith Package Docker
-        run: |
-          # Find the project version off the MVN pom
-          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-          
-          # Build the image
-          docker build . --build-arg version_name=$MARS_VERSION --file Dockerfile --tag $IMAGE_NAME
+    steps:          
+    - uses: actions/checkout@v3
 
-          
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+    - uses: actions/download-artifact@master
+      with:
+        name: jar-file
+        path: mars-sim-console.jar
 
-      - name: Push image
-        run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
-
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+    - name: Build image with Package Docker
+      run: |
+        # Build the image
+        docker build . --build-arg --file Dockerfile --tag $IMAGE_NAME
           
-          # Find the project version off the MVN pom
-          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-          
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$MARS_VERSION
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
-          docker tag $IMAGE_NAME $IMAGE_ID:$MARS_VERSION
-          docker push $IMAGE_ID:$MARS_VERSION
+    - name: Push image
+      run: |
+        IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+
+        # Change all uppercase to lowercase
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+        # Find the project version off the MVN pom
+        MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$MARS_VERSION
+
+        docker tag $IMAGE_NAME $IMAGE_ID:$MARS_VERSION
+        docker push $IMAGE_ID:$MARS_VERSION
