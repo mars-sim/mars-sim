@@ -1,10 +1,19 @@
 name: Docker
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
   label:
-    types:
-      - created
+    types: [created]
 
 env:
   IMAGE_NAME: mars-sim
