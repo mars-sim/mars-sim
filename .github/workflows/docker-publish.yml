@@ -1,6 +1,10 @@
 name: Docker
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch
+  label:
+    types:
+      - created
 
 env:
   IMAGE_NAME: mars-sim
@@ -10,7 +14,6 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/
   push:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
