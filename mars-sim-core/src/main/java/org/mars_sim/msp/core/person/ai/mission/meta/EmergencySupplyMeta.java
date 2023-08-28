@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -21,8 +22,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class EmergencySupplyMeta extends AbstractMetaMission {
 
-    private double jobModifier;
-
 	EmergencySupplyMeta() {
     	super(MissionType.EMERGENCY_SUPPLY,  null);
     }
@@ -33,28 +32,28 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public Rating getProbability(Person person) {
 
-        double missionProbability = 0D;
+        Rating missionProbability = Rating.ZERO_RATING;
 
         if (person.isInSettlement()) {
         		
             Settlement settlement = person.getSettlement();
         	
-            missionProbability = 1;
+            missionProbability = new Rating(EmergencySupply.BASE_STARTING_PROBABILITY);
     		
 	        // Determine job modifier.
-            jobModifier = getLeaderSuitability(person);
+            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
 	
 	        // Check if person is in a settlement.
-	        if (jobModifier > 0D) {
+	        if (missionProbability.getScore() > 0D) {
 
 	            Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 	            if (rover != null) {
 	                Settlement targetSettlement = EmergencySupply.findSettlementNeedingEmergencySupplies(
 	                        settlement, rover);
 	                if (targetSettlement == null) {
-	                    return 0;
+	                    return Rating.ZERO_RATING;
 	                }
 	            }
 	            
@@ -73,38 +72,28 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	    	    
 	            // Check if min number of EVA suits at settlement.
 	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
-	    	        return 0;
+	    	        return Rating.ZERO_RATING;
 	    	    }
 	
-	            missionProbability = EmergencySupply.BASE_STARTING_PROBABILITY;
-	        	missionProbability *= getSettlementPopModifier(settlement, 8);
-	    		if (missionProbability <= 0)
-	    			return 0;
+	        	missionProbability.addModifier(SETTLEMENT_POPULATION,
+									getSettlementPopModifier(settlement, 8));
 	    		
 	           	RoleType roleType = person.getRole().getType();
-            	
-            	if (RoleType.MISSION_SPECIALIST == roleType)
-            		missionProbability *= 1.5;
-            	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
-            		missionProbability *= 3;
-            	else if (RoleType.SUB_COMMANDER == roleType)
-            		missionProbability *= 4.5;
-            	else if (RoleType.COMMANDER == roleType)
-            		missionProbability *= 6;
-            	
+            	double roleModifier = switch(roleType) {
+					case MISSION_SPECIALIST -> 1.5;
+            		case CHIEF_OF_MISSION_PLANNING -> 3;
+            		case SUB_COMMANDER -> 4.5;
+            		case COMMANDER -> 6;
+					default -> 1;
+				};
+            	missionProbability.addModifier("Role", roleModifier);
+
 	            // Crowding modifier.
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-	            if (crowding > 0) missionProbability *= (crowding + 1);
+	            if (crowding > 0) missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
 	
-	            // Job modifier.
-	            missionProbability *= jobModifier;
-	
-				if (missionProbability > LIMIT)
-					missionProbability = LIMIT;
-				else if (missionProbability < 0)
-					missionProbability = 0;
+	            missionProbability.applyRange(0, LIMIT);
 	        }
-	        
         }
 
         return missionProbability;

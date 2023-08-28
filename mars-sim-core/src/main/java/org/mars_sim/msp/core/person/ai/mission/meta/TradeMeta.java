@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
@@ -42,14 +43,14 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public double getProbability(Person person) {
+	public Rating getProbability(Person person) {
 
-		double missionProbability = 0D;
+		Rating missionProbability = Rating.ZERO_RATING;
 
 		Settlement settlement = person.getAssociatedSettlement();
 		
 		if (settlement.isFirstSol())
-			return 0;
+			return missionProbability;
 		
 		// Check if person is in a settlement.
 		if (settlement != null) {
@@ -68,73 +69,63 @@ public class TradeMeta extends AbstractMetaMission {
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
 					missionProbability = getSettlementProbability(settlement);
-
-				
-			} else {
-				missionProbability = 0;
 			}
 			
-			if (missionProbability <= 0)
-				return 0;
+			if (missionProbability.getScore() <= 0)
+				return missionProbability;
 
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
 			int extrovert = person.getExtrovertmodifier();
-			missionProbability = missionProbability * (1 + extrovert/2.0);
-			
-			if (missionProbability < 0)
-				missionProbability = 0;
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+			missionProbability.applyRange(0, LIMIT);
 		}
 
         
 		return missionProbability;
 	}
 
-	private double getSettlementProbability(Settlement settlement) {
-
-		double missionProbability;
+	private Rating getSettlementProbability(Settlement settlement) {
 		
 		// Check for the best trade settlement within range.			
 		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 		if (rover == null) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}
 		GoodsManager gManager = settlement.getGoodsManager();
 
 		Deal deal = gManager.getBestDeal(MissionType.TRADE, rover);
 		if (deal == null) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}	
-		double tradeProfit = deal.getProfit();
-
-		// Trade value modifier.
-		missionProbability = tradeProfit / 1000D * gManager.getTradeFactor();
-		if (missionProbability > Trade.MAX_STARTING_PROBABILITY) {
-			missionProbability = Trade.MAX_STARTING_PROBABILITY;
-		}
 
 		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRADE, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}			
-		
 		else if (numThisMission > 1)
-			return 0;	
-		
+			return Rating.ZERO_RATING;	
+
+		double tradeProfit = deal.getProfit();
+
+		// Trade value modifier.
+		Rating missionProbability = new Rating(tradeProfit / 1000D * gManager.getTradeFactor());
+		missionProbability.applyRange(0, Trade.MAX_STARTING_PROBABILITY);
+
 
 		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+		missionProbability.addModifier("missionratio", settlement.getNumCitizens() / f1 / f2 / 2D);
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
 		if (crowding > 0) {
-			missionProbability *= (crowding + 1);
+			missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
 		}
 
 		return missionProbability;

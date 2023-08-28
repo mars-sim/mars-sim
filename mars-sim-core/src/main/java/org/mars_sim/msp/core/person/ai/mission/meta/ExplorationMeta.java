@@ -7,9 +7,8 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -31,9 +30,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 	private static final int MAX = 200;
 
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
-
 	ExplorationMeta() {
 		super(MissionType.EXPLORATION, 
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
@@ -45,9 +41,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public double getProbability(Person person) {
+	public Rating getProbability(Person person) {
 
-		double missionProbability = 0D;
+		Rating missionProbability = Rating.ZERO_RATING;
 
 		Settlement settlement = person.getSettlement();
 		
@@ -68,46 +64,36 @@ public class ExplorationMeta extends AbstractMetaMission {
 				// 1. Check if there are enough specimen containers at the settlement for
 				// collecting rock samples.
 				if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
-					return 0;
+					return Rating.ZERO_RATING;
 				}
 
-				missionProbability = getSettlementPopModifier(settlement, 8);
-				if (missionProbability == 0) {
-	    			return 0;
+				missionProbability = new Rating(1);
+				missionProbability.addModifier(SETTLEMENT_POPULATION,
+									getSettlementPopModifier(settlement, 8));
+				if (missionProbability.getScore() == 0) {
+	    			return Rating.ZERO_RATING;
 	    		}
 
-				try {
-					// Get available rover.
-					Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
-					if (rover != null) {
-						// Check if any mineral locations within rover range and obtain their concentration
-						missionProbability *= Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;
-						if (missionProbability < 0) {
-							missionProbability = 0;
-						}
-					}
-
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Error exploring mineral values.", e);
-					return 0;
+				// Get available rover.
+				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
+				if (rover != null) {
+					// Check if any mineral locations within rover range and obtain their concentration
+					missionProbability.addModifier(MINERALS, Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE);
 				}
 
 				// Job modifier.
-				missionProbability *= getLeaderSuitability(person)
-						* (settlement.getGoodsManager().getTourismFactor()
-	               		 + settlement.getGoodsManager().getResearchFactor())/2;
+				missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+				missionProbability.addModifier(GOODS, (settlement.getGoodsManager().getTourismFactor()
+	               		 + settlement.getGoodsManager().getResearchFactor())/2);
 
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Increase probability if extrovert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability = missionProbability * (1 + extrovert/2.0);
+				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 
-				if (missionProbability < 0)
-					missionProbability = 0;
-				else if (missionProbability > LIMIT)
-					missionProbability = LIMIT;
+				missionProbability.applyRange(0, LIMIT);
  			}
 		}
 
