@@ -4,7 +4,7 @@ FROM amazoncorretto:17
 WORKDIR /app
 
 # Copy the MVN generated JAR into a standard name in the image
-COPY mars-sim-headless/target/mars-sim-console.jar mars-sim-console.jar
+COPY mars-sim-console.jar mars-sim-console.jar
 
 # The folder /app/data/mars-sim build be a bind volume if the simulation state is persistent
 ENV JAVA_OPTS="-Xmx1536m"
