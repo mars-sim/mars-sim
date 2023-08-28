@@ -35,7 +35,10 @@ jobs:
         run: mvn -B package -DskipTests=true --file pom.xml 
 
       - name: Copy Jar file
-        run: mv mars-sim-headless/target/$(ls mars-sim-headless/target/mars-sim*.jar) mars-sim-console.jar
+        run: |
+          # Find the project version off the MVN pom
+          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          mv mars-sim-headless/target/mars-sim_console_$MARS_VERSION.jar mars-sim-console.jar
 
       - uses: actions/upload-artifact@master
         with:
@@ -57,7 +60,7 @@ jobs:
     - name: Build image with Package Docker
       run: |
         # Build the image
-        docker build . --build-arg --file Dockerfile --tag $IMAGE_NAME
+        docker build . --file Dockerfile --tag $IMAGE_NAME
           
     - name: Log into registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
