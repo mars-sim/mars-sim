@@ -732,12 +732,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		return (eqmInventory.getStoredMass() == 0D);
+		return eqmInventory.isEmpty();
 	}
 
 
 	/**
-	 * Gets the stored mass
+	 * Gets the stored mass.
 	 */
 	@Override
 	public double getStoredMass() {

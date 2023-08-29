@@ -1907,7 +1907,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		return (eqmInventory.getStoredMass() == 0D);
+		return eqmInventory.isEmpty();
 	}
 
 

@@ -24,7 +24,7 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.2 build 8571 (27 Aug 2023)
+## 3.6.2 build ____ (__ Aug 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -35,6 +35,7 @@ Copyright (C) 2023 Scott Davis
 ### B. FIXES :
 <OL>
   <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
+  <LI>Equipment: correct how an equipment is added to increase its capacity.</LI> 
   <LI>Food Production: correct potato typo.</LI>
   <LI>Map: correct magnification and zooming issues.</LI>
 <OL>
