@@ -201,9 +201,19 @@ public class EquipmentInventory
 				suitMass += e.getMass();
 			}
 			double containerMass = 0;
+			String containerName = "";
 			for (Equipment e: containerSet) {
+				Container c = (Container)e;
+				Set<Integer> ids = c.getAmountResourceIDs();
+				String arNames = "";
+				for (int i: ids) {
+					arNames += ResourceUtil.findAmountResourceName(i) 
+							+ " (" + Math.round(c.getAmountResourceStored(i) * 100.0)/100.0 + ")";
+				}
+				containerName += e.getName() + " [" + arNames + "]";
 				containerMass += e.getMass();
 			}
+
 			double microInvMass = microInventory.getStoredMass();
 			
 			double totalStored = suitMass + containerMass + microInvMass;
@@ -215,6 +225,7 @@ public class EquipmentInventory
 			else {
 				logger.warning(owner, "No capacity to hold " + equipment.getName()
 								+ ": cargoCapacity = " + cargoCapacity 
+								+ ", container name = " + containerName
 								+ ", totalStored = " + totalStored 
 								+ ", microInvMass = " + microInvMass
 								+ ", containerMass = " + containerMass 

@@ -33,6 +33,7 @@ public class TabPanelGeneral extends TabPanel {
 	private Person person;
 	
 	private JLabel birthDateTF;
+	private JLabel storedMassLabel;
 	
 	private String birthDate;
 	
@@ -58,7 +59,7 @@ public class TabPanelGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare attribute panel.
-		AttributePanel infoPanel = new AttributePanel(8);
+		AttributePanel infoPanel = new AttributePanel(9);
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
@@ -114,6 +115,11 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare loading cap label
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
 				StyleManager.DECIMAL_KG.format(person.getCarryingCapacity()), null); 
+		
+		// Prepare total mass label
+		storedMassLabel = infoPanel.addTextField(Msg.getString("TabPanelGeneral.storedMass"), //$NON-NLS-1$
+				StyleManager.DECIMAL_KG.format(person.getStoredMass()), 
+				Msg.getString("TabPanelGeneral.storedMass.tooltip"));  //$NON-NLS-2$
 	}
 	
 	/**
@@ -133,5 +139,8 @@ public class TabPanelGeneral extends TabPanel {
 					
 			birthDateTF.setText(birthdate); 
 		}
+		
+		// Prepare total mass label
+		storedMassLabel.setText(StyleManager.DECIMAL_KG.format(person.getStoredMass()));
 	}
 }
