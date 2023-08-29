@@ -735,7 +735,7 @@ public class EnterAirlock extends Task {
 		
 			
 			// 1. Doff off the suit, transfer it to the entity, take back the garment and thermal bottle
-			EVASuitUtil.checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity(), false);
 			
 			// 2. Records the person as the owner (if it hasn't been done)
 			suit.setRegisteredOwner(person);

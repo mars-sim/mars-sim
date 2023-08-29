@@ -515,8 +515,9 @@ public abstract class EVAOperation extends Task {
  			logger.warning(worker, "EVA " + getName() + " aborted: " + reason);
 		}
 		
-		if (person.isOutside())
+		if (person.isOutside()) {
             setPhase(WALK_BACK_INSIDE);
+		}
     	else
         	endTask();
 	}

@@ -187,44 +187,6 @@ public class Storage extends Function {
 		return 10D;
 	}
 
-
-//	/**
-//	 * Stores a resource.
-//	 *
-//	 * @param amount
-//	 * @param ar
-//	 * @param inv
-//	 * @return true if all mounts is being stored properly
-//	 */
-//	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh) {
-//		return storeAnResource(amount, ar, rh, "");
-//	}
-//
-//	/**
-//	 * Stores a resource.
-//	 *
-//	 * @param amount
-//	 * @param ar     {@link AmountResource}
-//	 * @param inv    {@link Inventory}
-//	 * @param method the name of the calling java method
-//	 * @return true if all amounts is being stored properly
-//	 */
-//	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh, String method) {
-//		return storeAnResource(amount, ar.getID(), rh, method);
-//	}
-//
-//	/**
-//	 * Stores a resource.
-//	 *
-//	 * @param name
-//	 * @param Amount
-//	 * @param inv
-//	 * @return true if all amounts is being stored properly
-//	 */
-//	public static boolean storeAnResource(double amount, String name, ResourceHolder rh) {
-//		return storeAnResource(amount, ResourceUtil.findIDbyAmountResourceName(name), rh, "");
-//	}
-
 	/**
 	 * Stores a resource.
 	 *
@@ -257,37 +219,7 @@ public class Storage extends Function {
 			    	);
 				
 				return false;
-			} 
-
-//			try {
-//				double remainingCapacity = rh.getAmountResourceRemainingCapacity(id);
-//
-//				if (remainingCapacity < amount) {
-////					// TODO: how to increase VP of barrel/bag/gas canister for storage to prompt for
-////					// manufacturing more of them
-//
-//					if (!method.equals(""))
-//						method = " at " + method;
-//					logger.log(rh.getHolder(), Level.SEVERE, 30_000, method
-//				    		+ "The storage capacity for "
-//				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
-//					    	+ Math.round(remainingCapacity*10000.0)/10000.0
-//					    	+ " kg can be stored."
-//				    	);
-//					rh.storeAmountResource(id, remainingCapacity);
-//
-//					result = false;
-//				}
-//
-//				else {
-//					rh.storeAmountResource(id, amount);
-//					result = true;
-//				}
-//
-//			} catch (Exception e) {
-//				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
-//						"Issues with storeAmountResource on " + ResourceUtil.findAmountResourceName(id) + " : ", e);
-//			}
+			}
 		}
 		
 		else {

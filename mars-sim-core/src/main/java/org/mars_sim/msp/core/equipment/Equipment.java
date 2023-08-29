@@ -470,7 +470,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		if (!canRetrieve) {
-				logger.warning(this + " could not be retrieved from '"
+				logger.warning(this + " could not be retrieved/transferred from '"
 						+ cu + "'.");
 		}
 		else {	
