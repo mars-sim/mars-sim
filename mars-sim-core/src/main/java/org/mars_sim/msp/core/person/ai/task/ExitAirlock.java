@@ -877,14 +877,14 @@ public class ExitAirlock extends Task {
 			
 			if (isSuperUnFit()) {
 				// Doff the suit, get back the garment and thermal bottle
-				EVASuitUtil.checkIn(person, airlock.getEntity());
+				EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 				walkAway(person, NOT_FIT + " to don an EVA suit.");
 				return time;
 			}
 	
 			if (isOccupant3QuartersPrebreathed()) {
 				// Doff the suit, get back the garment and thermal bottle
-				EVASuitUtil.checkIn(person, airlock.getEntity());
+				EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 				walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
 				return time;
 			}
@@ -1066,7 +1066,7 @@ public class ExitAirlock extends Task {
 	
 		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
-			EVASuitUtil.checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 			
 			walkAway(person, NOT_FIT + " to depressurize chamber.");
 			return time;
@@ -1122,7 +1122,7 @@ public class ExitAirlock extends Task {
 					//					
 					
 					// Get back the garment and thermal bottle
-					EVASuitUtil.checkIn(p, airlock.getEntity());
+					EVASuitUtil.checkIn(p, airlock.getEntity(), true);
 					
 					// Without an EVA suit, one needs to leave the airlock 
 					// while the airlock is still being pressurized 

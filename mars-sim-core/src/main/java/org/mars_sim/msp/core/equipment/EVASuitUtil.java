@@ -37,7 +37,7 @@ public class EVASuitUtil {
 	 * @param person
 	 * @param entity
 	 */
-	public static void checkIn(Person person, Object entity) {
+	public static void checkIn(Person person, Object entity, boolean disqualified) {
 		EquipmentOwner housing = null;
 
 		boolean inS = person.isInSettlement();
@@ -64,19 +64,21 @@ public class EVASuitUtil {
 			}
 		}
 		
-		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
+		if (disqualified) {
+			// Remove pressure suit and put on garment
+			if (inS) {
+				if (person.unwearPressureSuit(housing)) {
+					person.wearGarment(housing);
+				}
+			}
+			// Note: vehicle may or may not have garment available
+			else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
 				person.wearGarment(housing);
 			}
+	
+			// Assign thermal bottle
+			person.assignThermalBottle();
 		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
-		// Assign thermal bottle
-		person.assignThermalBottle();
 	}
 	
 	/**
