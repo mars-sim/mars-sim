@@ -44,8 +44,8 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		StructuredResponse buffer = new StructuredResponse();
 		
 		Collection<Equipment> equipment = null;
-		if (source instanceof EquipmentOwner) {
-			equipment = ((EquipmentOwner)source).getEquipmentSet();
+		if (source instanceof EquipmentOwner eo) {
+			equipment = eo.getEquipmentSet();
 		}
 		else {
 			context.println("Sorry this Entity does not hold Equipment");
@@ -57,8 +57,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 			String stored = null;
 			
 			// Container must come first
-			if (e instanceof Container) {
-				Container c = (Container) e;
+			if (e instanceof Container c) {
 				int resourceID = c.getResource();
 				if (resourceID >= 0) {
 					stored = formatResource(c, resourceID);
@@ -67,8 +66,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 					stored = "empty";
 				}
 			}
-			else if (e instanceof ResourceHolder) {
-				ResourceHolder suit = (ResourceHolder) e;
+			else if (e instanceof ResourceHolder suit) {
 				StringBuilder builder = new StringBuilder();
 
 				for(int resourceID: suit.getAmountResourceIDs()) {

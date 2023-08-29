@@ -81,9 +81,8 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 		Malfunctionable owner = null;
 		
 		// If EquipmentHOwner then check if the Equipment should be source
-		if (source instanceof EquipmentOwner) {
+		if (source instanceof EquipmentOwner eo) {
 			// Get the smart equipment that have failures
-			EquipmentOwner eo = (EquipmentOwner) source;
 			List<Malfunctionable> smartEqm = eo.getEquipmentSet().stream()
 										.filter(Malfunctionable.class::isInstance)
 										.map(Malfunctionable.class::cast)
@@ -98,13 +97,11 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 
 		// Create malfunction on the selection
 		if (owner == null) {
-			if (source instanceof Malfunctionable) {
-				owner = (Malfunctionable) source;
+			if (source instanceof Malfunctionable m) {
+				owner = m;
 			}
-			else if (source instanceof Settlement) {
-				// Offer the user a lis tof buildings
-				Settlement settlement = (Settlement) source;
-				
+			else if (source instanceof Settlement settlement) {
+				// Offer the user a list of buildings		
 				List <Building> buildings = settlement.getBuildingManager().getBuildings();
 				owner = pickSelection(context, "building in " + settlement.getName(), buildings);
 			}
