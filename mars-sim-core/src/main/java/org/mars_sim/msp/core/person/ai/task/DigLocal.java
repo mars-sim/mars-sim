@@ -533,9 +533,9 @@ public abstract class DigLocal extends EVAOperation {
 		boolean inS = person.isInSettlement();
 		
 		if (inS)
-			housing = person.getSettlement();
+			housing = ((Building)airlock.getEntity()).getSettlement();
 		else
-			housing = person.getVehicle();
+			housing = (Vehicle)airlock.getEntity();
 		
 		// Remove pressure suit and put on garment
 		if (inS) {
