@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -24,7 +25,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class TravelToSettlementMeta extends AbstractMetaMission {
     
     private static final int EARLIEST_SOL_TRAVEL = 28;
-	private static final double LIMIT = 0;
 
 	public TravelToSettlementMeta() {
 		// Anyone can start ??
@@ -37,14 +37,13 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public Rating getProbability(Person person) {
 
+        Rating missionProbability = Rating.ZERO_RATING;
     	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
-    		return 0;
+    		return Rating.ZERO_RATING;
     	}
     	
-        double missionProbability = 0D;
-
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their
             // circumstance.
@@ -52,66 +51,63 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
             missionProbability = getMissionProbability(settlement, person);
 
-    		if (missionProbability <= 0) {
-    			return 0;
+    		if (missionProbability.getScore() <= 0) {
+    			return Rating.ZERO_RATING;
     		}
     		
 	        // Job modifier.
-    		missionProbability *= getLeaderSuitability(person)
-    				* settlement.getGoodsManager().getTourismFactor();
-			
-			if (missionProbability > LIMIT)
-				missionProbability = LIMIT;
+    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+    	    missionProbability.addModifier(GOODS, settlement.getGoodsManager().getTourismFactor());
 			
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
 			int extrovert = person.getExtrovertmodifier();
-			missionProbability = missionProbability * (1 + extrovert/2.0);
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 			
-			if (missionProbability < 0)
-				missionProbability = 0;
+			missionProbability.applyRange(0, LIMIT);
         }
 		 
         return missionProbability;
     }
 
-    private double getMissionProbability(Settlement settlement, Worker member) {
-        double missionProbability = 0;
+    private Rating getMissionProbability(Settlement settlement, Worker member) {
         
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
-        if (vehicle != null) {
-        	Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
-                    member, settlement, vehicle.getRange());
+        if (vehicle == null) {
+            return Rating.ZERO_RATING;
+        }
 
-            if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
-            	return 0;
-            }
+        Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
+                member, settlement, vehicle.getRange());
 
-            Iterator<Settlement> i = desirableSettlements.keySet().iterator();
-            while (i.hasNext()) {
-                Settlement desirableSettlement = i.next();
-                double desirability = desirableSettlements.get(desirableSettlement);
-                if (desirability > topSettlementDesirability) {
-                    topSettlementDesirability = desirability;
-                }
+        if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
+            return Rating.ZERO_RATING;
+        }
+
+        Iterator<Settlement> i = desirableSettlements.keySet().iterator();
+        while (i.hasNext()) {
+            Settlement desirableSettlement = i.next();
+            double desirability = desirableSettlements.get(desirableSettlement);
+            if (desirability > topSettlementDesirability) {
+                topSettlementDesirability = desirability;
             }
         }
 
-
         // Determine mission probability.
-        missionProbability = TravelToSettlement.BASE_MISSION_WEIGHT
-                + (topSettlementDesirability / 100D);
+        Rating missionProbability = new Rating(TravelToSettlement.BASE_MISSION_WEIGHT
+                                                + (topSettlementDesirability / 100D));
         
-        missionProbability *= getSettlementPopModifier(settlement, 8);
+        missionProbability.addModifier(SETTLEMENT_POPULATION,
+                            getSettlementPopModifier(settlement, 8));
 		
         // Crowding modifier.
         int crowding = settlement.getIndoorPeopleCount()
                 - settlement.getPopulationCapacity();
         if (crowding > 0) {
-            missionProbability *= (crowding + 1);
+            missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
         }
 
         return missionProbability;

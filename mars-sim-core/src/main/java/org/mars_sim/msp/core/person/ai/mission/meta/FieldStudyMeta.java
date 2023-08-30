@@ -8,9 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.FieldStudyMission;
@@ -24,9 +23,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 public class FieldStudyMeta extends AbstractMetaMission {
 
-    /** default logger. */
-    private static final Logger logger = Logger.getLogger(FieldStudyMeta.class.getName());
-
     private static final double WEIGHT = 10D;
 	private ScienceType science;
 
@@ -37,14 +33,13 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public double getProbability(Person person) {
+	public Rating getProbability(Person person) {
 
 		if (FieldStudyMission.determineStudy(science, person) == null) {
-			return 0;
+			return Rating.ZERO_RATING;
 		}
 
-	    double missionProbability = 0D;
-	    MissionType mType = getType();
+	    Rating missionProbability = Rating.ZERO_RATING;
 
 	    if (person.isInSettlement()) {
 	    	Settlement settlement = person.getSettlement();
@@ -60,60 +55,54 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-				missionProbability = 1D;
+				missionProbability = new Rating(1D);
 				
-	            try {
-	                // Get available rover.
-	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
-	                if (rover != null) {
+				// Get available rover.
+				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+				if (rover != null) {
+					double newBase = 0;
 
-	                    // Add probability for researcher's primary study (if any).
-	                    ScientificStudy primaryStudy = person.getStudy();
-	                    if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
-	                    		&& !primaryStudy.isPrimaryResearchCompleted()
-	                            && (science == primaryStudy.getScience())) {
-	                    	missionProbability += WEIGHT;
-	                    }
+					// Add probability for researcher's primary study (if any).
+					ScientificStudy primaryStudy = person.getStudy();
+					if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
+							&& !primaryStudy.isPrimaryResearchCompleted()
+							&& (science == primaryStudy.getScience())) {
+						newBase += WEIGHT;
+					}
 
-	                    // Add probability for each study researcher is collaborating on.
-	                    Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
-	                    while (i.hasNext()) {
-	                        ScientificStudy collabStudy = i.next();
-	                        if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
-	                        		&& !collabStudy.isCollaborativeResearchCompleted(person)
-	                        		&& (science == collabStudy.getContribution(person))) {
-	                        	missionProbability += WEIGHT/2D;
-	                        }
-	                    }
-	                }
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error determining rover gpt mission " + mType.getName(), e);
-	                return 0;
-	            }
+					// Add probability for each study researcher is collaborating on.
+					Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
+					while (i.hasNext()) {
+						ScientificStudy collabStudy = i.next();
+						if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
+								&& !collabStudy.isCollaborativeResearchCompleted(person)
+								&& (science == collabStudy.getContribution(person))) {
+							newBase += WEIGHT/2D;
+						}
+					}
 
-				missionProbability *= getSettlementPopModifier(settlement, 4);
+					missionProbability.setBase(newBase);
+				}
+
+				missionProbability.addModifier(SETTLEMENT_POPULATION,
+								getSettlementPopModifier(settlement, 4));
 
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-	            if (crowding > 0) missionProbability *= (crowding + 1);
+	            if (crowding > 0) missionProbability.addModifier(OVER_CROWDING, crowding + 1);
 
 	            // Job modifier.
-	            missionProbability *= getLeaderSuitability(person)
-	                	* (settlement.getGoodsManager().getTourismFactor()
-	                    + settlement.getGoodsManager().getResearchFactor())/1.5;
+	            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+	            missionProbability.addModifier(GOODS, (settlement.getGoodsManager().getTourismFactor()
+	                    + settlement.getGoodsManager().getResearchFactor())/1.5);
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability = missionProbability * (1 + extrovert/2.0);
+				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 
-				if (missionProbability > LIMIT)
-					missionProbability = LIMIT;
-
-				if (missionProbability < 0)
-					missionProbability = 0;
+				missionProbability.applyRange(0, LIMIT);
 	        }
 	    }
 

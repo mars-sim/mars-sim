@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.logging;
 import java.io.FileNotFoundException;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.RatingLog;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 
 public class DiagnosticsManager {
@@ -39,7 +40,8 @@ public class DiagnosticsManager {
 			break;
 		
 		default:
-			return false;
+			RatingLog.setDiagnostics(module, enabled);
+			break;
 		}
 		return true;
 	}

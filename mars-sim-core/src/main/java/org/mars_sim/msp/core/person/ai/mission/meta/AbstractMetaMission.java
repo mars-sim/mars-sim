@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -25,6 +26,14 @@ import org.mars_sim.msp.core.time.MasterClock;
  * default implementations.
  */
 public class AbstractMetaMission implements MetaMission {
+
+	protected static final String GOODS = "goods";
+	protected static final String LEADER = "leader";
+	protected static final String SETTLEMENT_POPULATION = "population";
+	protected static final String PERSON_EXTROVERT = "extrovert";
+	protected static final String OVER_CROWDING = "crowding";
+	protected static final String MINERALS = "minerals";
+
 	private static MasterClock masterClock;
 	private static MissionManager missionMgr;
 
@@ -65,8 +74,8 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	@Override
-	public double getProbability(Person person) {
-		return 0;
+	public Rating getProbability(Person person) {
+		return Rating.ZERO_RATING;
 	}
 
 	@Override
