@@ -528,26 +528,11 @@ public abstract class DigLocal extends EVAOperation {
 			unloadContainer(container, amount, getTimeCompleted());
 		}
 		
-		EquipmentOwner housing = null;
-		
-		boolean inS = person.isInSettlement();
-		
-		if (inS)
-			housing = person.getSettlement();
-		else
-			housing = person.getVehicle();
-		
 		// Remove pressure suit and put on garment
-		if (inS) {
-			if (person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
-			}
+		if (person.unwearPressureSuit(settlement)) {
+			person.wearGarment(settlement);
 		}
-		// Note: vehicle may or may not have garment available
-		else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-			person.wearGarment(housing);
-		}
-
+	
 		// Assign thermal bottle
 		person.assignThermalBottle();
     }
