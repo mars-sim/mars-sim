@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.List;
+
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -66,49 +68,46 @@ public class ConnectWithEarth extends Task {
 			// set the boolean to true so that it won't be done again today
 //			person.getPreference().setTaskDue(this, true);
 			
-			// Find a comm facility.
-			Building bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.COMMUNICATION);
-			if (bldg != null) {
-				// Walk to the facility.
-				walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
-				
-				proceed = true;
-			} 
+			List<FunctionType> types = List.of(FunctionType.COMMUNICATION, 
+											FunctionType.ADMINISTRATION,
+											FunctionType.MANAGEMENT,
+											FunctionType.DINING);
 			
-			if (!proceed) {
-				// Find an admin facility.
-				bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+			Building bldg = null;
+			
+			for (int i = 0; i < 4; i++) {
+				// Find a facility.
+				bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, types.get(i));
 				if (bldg != null) {
-					// Walk to the facility.
-					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.ADMINISTRATION, false);
-					
+					// Walk to the facility
+					walkToTaskSpecificActivitySpotInBuilding(bldg, types.get(i), false);
 					proceed = true;
-				} 		
+					break;
+				} 
 			}
 			
-			if (!proceed) {
+			if (bldg != null) {
 				// Go back to his quarters
 				Building quarters = person.getQuarters();
 				if (quarters != null) {
-					walkToBed(quarters, person, true);
-					
+					// Walk to the bed
+					walkToBed(quarters, person, true);	
 					proceed = true;
 				}
 			}
 		}
 		
 		else if (person.isInVehicle()) {
-			if (person.getVehicle() instanceof Rover) {
-				
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-
+			if (person.getVehicle() instanceof Rover r) {
+				// Walk to the passenger spot
+				walkToPassengerActivitySpotInRover(r, true);
 				proceed = true;
 			}
 		}
 		
 		// Note: this task can be done in principle anywhere using tablets and handheld device
 		// but preferably it will look for a suitable location first
-		proceed = true;
+//		proceed = true;
 
 		if (proceed) {
 			connection = person.getPreference().getRandomConnection();

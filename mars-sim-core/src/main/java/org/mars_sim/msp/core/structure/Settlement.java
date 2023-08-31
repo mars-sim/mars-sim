@@ -1853,7 +1853,7 @@ public class Settlement extends Structure implements Temporal,
 			numCitizens = citizens.size();
 
 			// Update active mission limit; always at least 1
-			double optimalMissions = Math.max(1D, Math.floor(numCitizens/PERSON_PER_MISSION));
+			double optimalMissions = Math.max(1D, 1.0 * numCitizens/PERSON_PER_MISSION);
 			setPreferenceModifier(MISSION_LIMIT, optimalMissions);
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);

@@ -63,7 +63,7 @@ public class Exploration extends EVAMission
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 	/** Amount of time to explore a site. */
-	private static final int STANDARD_TIME_PER_SITE = 250;
+	private static final double STANDARD_TIME_PER_SITE = 250.0;
 	
 	/** Number of collection sites. */
 	private int numSites;
@@ -396,14 +396,19 @@ public class Exploration extends EVAMission
 			el = declareARegionOfInterest(currentLocation, areologySkill);
 		}
 
+		
 		if (currentLocation != null) {
 			unorderedSites.add(currentLocation);
 		}
-		else if (el == null) {
-			logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to analyze map more.");
+		else {
+			if (el == null) {
+				logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Unable to pinpoint a good site. Need to further analyze maps.");
+			}
+			else {
+				logger.info(unitManager.findSettlement(startingLocation), 10_000L, "Could not determine first exploration site.");
+			}
+			return unorderedSites;
 		}
-		else
-			throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");
 
 		// Determine remaining exploration sites.
 		double siteDistance = Coordinates.computeDistance(startingLocation, currentLocation);

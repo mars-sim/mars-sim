@@ -420,15 +420,8 @@ public class EatDrink extends Task {
 			return null;
 		}
 
-		if (person != null) {
-			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot();
-		} else {
-			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot();
-		}
-
-		return loc;
+		// Find available activity spot in building.
+		return f.getAvailableActivitySpot();
 	}
 
 	private void goForWater() {
@@ -665,8 +658,8 @@ public class EatDrink extends Task {
 			// Take preserved food from container and store it in a person if it is available 
 			double shortfall = ((ResourceHolder)person.getSettlement()).retrieveAmountResource(FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
 			if (shortfall > 0) {
-				if (shortfall == PACKED_PRESERVED_FOOD_CARRIED) {
-					logger.info(person, 20_000L, "Unable to check out preserved food.");
+				if (shortfall - PACKED_PRESERVED_FOOD_CARRIED < MIN) {
+					logger.info(person, 20_000L, "No preserved food available.");
 				}
 				else {
 					// Store the food on a person
@@ -674,9 +667,6 @@ public class EatDrink extends Task {
 					if (excess > 0) {
 						// Transfer any excess that a person cannot carry back to the settlement
 						((ResourceHolder)container).storeAmountResource(FOOD_ID, excess);
-//									logger.info(person, 10_000L, "Just checked out " 
-//											+ Math.round((PACKED_PRESERVED_FOOD_CARRIED - shortfall) *1000.0)/1000.0 
-//											+ " kg preserved food.");
 					}
 				}
 			}

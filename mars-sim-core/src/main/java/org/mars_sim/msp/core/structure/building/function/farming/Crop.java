@@ -644,8 +644,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 					remainingHarvest -= lastHarvest;
 					totalHarvest += lastHarvest;
 
-//					remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
-
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
 						logger.log(building, this, Level.INFO, 4_000, 
@@ -753,7 +751,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		// Calculate the amount of leaves and crop wastes that are generated
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
-		double cropWaste = inedible * RATIO_LEAVES;
+		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
 		if (cropWaste > 0) {
 			store(cropWaste, CROP_WASTE_ID, source);
 		}

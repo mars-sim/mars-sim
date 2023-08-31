@@ -78,7 +78,7 @@ public class History<T> implements Serializable {
         if (!history.isEmpty()) {
             HistoryItem<T> previous = history.get(history.size()-1);
             if (now.equals(previous.getWhen())) {
-                // Time has not avance so replace existing
+                // Time has not advance so replace existing
                 history.remove(history.size()-1);
             }
             else if (value.equals(previous.getWhat())) {

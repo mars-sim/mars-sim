@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.goods.GoodType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 
@@ -26,6 +27,9 @@ public class ItemResourceUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ItemResourceUtil.class.getName());
 
 	private static final String EXTINGUISHER = "fire extinguisher";
 	private static final String PATCH = "airleak patch";
@@ -104,12 +108,14 @@ public class ItemResourceUtil implements Serializable {
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
-		        		manufactureProcessInfo = info;
-		        		break;
+		        	manufactureProcessInfo = info;
+		        	evaSuitPartIDs = convertNameListToResourceIDs(manufactureProcessInfo.getInputNames());
+		        	break;
 				}
 			}
 
-			evaSuitPartIDs = convertNameListToResourceIDs(manufactureProcessInfo.getInputNames());
+			if (manufactureProcessInfo == null)
+				logger.config("Unable to find EVA suit part IDs.");
 		}
 	}
 	

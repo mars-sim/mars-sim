@@ -54,7 +54,7 @@ public class MissionDisembarkStep extends MissionStep {
         // If not unloading; then leave Vehicle
         if (worker.isInVehicle() && !workOn) {
             // leave Vehicle
-            boolean inGarage = true;
+            boolean inGarage = v.isInAGarage();
             if (!inGarage) {
                 // Not in garage so walking to airlock
                 workOn = walkToAirLock(worker, v.getSettlement());
