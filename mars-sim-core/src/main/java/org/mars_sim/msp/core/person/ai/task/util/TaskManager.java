@@ -681,14 +681,14 @@ public abstract class TaskManager implements Serializable {
 				return false;	
 		}
 		
-		if (newTask.getName() != currentTask.getName())
-			replaceTask(newTask);
+		// End current task and replace with the new task
+		replaceTask(newTask);
 		
 		return true;
 	}
 	
 	/**
-	 * Replaces old task with a new task.
+	 * Ends current task and replaces old task with a new task.
 	 * 
 	 * @param newTask
 	 */
@@ -700,11 +700,11 @@ public abstract class TaskManager implements Serializable {
 			// Inform that the current task will be terminated
 			if ((currentTask != null) && !currentTask.isDone()) {
 				String des = currentTask.getDescription();
-	
-				logger.info(worker, 20_000, "Quitting '" + des + "' to start new Task '"
-							+ newTask.getDescription() + "'.");
 				
 				currentTask.endTask();
+				
+				logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
+							+ newTask.getName() + "'.");
 			}
 			
 			// Make the new task as the current task
@@ -784,7 +784,7 @@ public abstract class TaskManager implements Serializable {
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a pending/appointed task '" + task.getDescription() + "'.");
+			logger.info(worker, 20_000L, "Added an appointed task '" + task.getDescription() + "'.");
 			return true;
 		}
 		return false;
@@ -797,23 +797,35 @@ public abstract class TaskManager implements Serializable {
 	 */
 	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
-		logger.info(worker, "Removed the pending/appointed task '" + task + "'.");
+		logger.info(worker, "Removed an appointed task '" + task.getDescription() + "'.");
 	}
 
 	/**
 	 * Gets the first pending meta task in the queue.
+	 * Note: It no longer automatically remove the retrieved task. 
+	 * Must call removePendingTask() separately to remove it.
 	 *
 	 * @return
 	 */
 	protected TaskJob getPendingTask() {
 		if (!pendingTasks.isEmpty()) {
 			TaskJob firstTask = pendingTasks.get(0);
-			pendingTasks.remove(firstTask);
 			return firstTask;
 		}
 		return null;
 	}
 
+	/**
+	 * Removes a pending task in the queue.
+	 *
+	 * @return
+	 */
+	protected void removePendingTask(TaskJob taskJob) {
+		if (!pendingTasks.isEmpty()) {
+			pendingTasks.remove(taskJob);
+		}
+	}
+	
 	/**
 	 * Checks if the worker is currently performing this task.
 	 * 

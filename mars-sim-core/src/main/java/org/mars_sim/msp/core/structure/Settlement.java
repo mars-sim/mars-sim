@@ -1005,11 +1005,13 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setAppointedTask(int sol) {
 		for (Person p: citizens) {
-			if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+			// Select personnel without a mission
+			if (p.getMission() == null
+			 && (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
 					|| p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST
 					|| p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
 					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
-					) {
+					)) {
 				
 				int startTimeEVA = WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
 				int numDigits = ("" + startTimeEVA).length();

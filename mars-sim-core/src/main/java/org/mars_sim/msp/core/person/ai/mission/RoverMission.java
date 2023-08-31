@@ -361,8 +361,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			// Marks everyone departed
 			for(Worker m : getMembers()) {
-				Person p = (Person) m;
-				p.getTaskManager().recordActivity(getName(), "Departed", getName(), this);
+				((Person) m).getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
 		}
 		else {			
@@ -370,9 +369,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
 			
-			if (member instanceof Person) {
-				Person person = (Person) member;
-
+			if (member instanceof Person person) {
 				// If person is not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
@@ -391,8 +388,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 
-			else if (member instanceof Robot) {
-				Robot robot = (Robot) member;
+			else if (member instanceof Robot robot) {
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
 					boolean canDo = assignTask(robot, walkingTask);

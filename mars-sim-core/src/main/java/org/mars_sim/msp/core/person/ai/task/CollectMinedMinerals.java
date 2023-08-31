@@ -267,6 +267,9 @@ public class CollectMinedMinerals extends EVAOperation {
 			if (person.getPerformanceRating() < .2D)
 				return false;
 
+			if (person.isSuperUnFit())
+				return false;
+			
 			// Checks if available bags with remaining capacity for resource.
 			Container bag = ContainerUtil.findLeastFullContainer(rover,
 																EquipmentType.LARGE_BAG,
