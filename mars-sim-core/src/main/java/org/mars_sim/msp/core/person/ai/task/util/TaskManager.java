@@ -669,7 +669,7 @@ public abstract class TaskManager implements Serializable {
 		
 		if (hasActiveTask()) {
 			String currentDes = currentTask.getDescription();
-			String taskName = currentTask.getName(); //
+			String taskName = currentTask.getName();
 			
 			// Note: make sure robot's 'Sleep Mode' won't return false
 			if (currentDes.contains(SLEEPING)
@@ -704,7 +704,7 @@ public abstract class TaskManager implements Serializable {
 				currentTask.endTask();
 				
 				logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
-							+ newTask.getName() + "'.");
+							+ newTask.getDescription() + "'.");
 			}
 			
 			// Make the new task as the current task

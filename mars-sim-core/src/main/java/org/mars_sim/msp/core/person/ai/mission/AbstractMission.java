@@ -792,8 +792,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected boolean assignTask(Person person, Task task) {
 		boolean canPerformTask = !task.isEffortDriven() 
-				|| person.getPerformanceRating() != 0D
-				|| !person.isSuperUnFit();
+				|| person.getPerformanceRating() != 0D;
+		
+		if (person.isSuperUnFit())
+			return false;
 
 		// If task is effort-driven and person too ill, do not assign task.
 		Task currentTask = person.getMind().getTaskManager().getTask();
