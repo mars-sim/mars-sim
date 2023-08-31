@@ -287,9 +287,9 @@ public abstract class EVAOperation extends Task {
 				Settlement s = unitManager.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
-					if (interiorObject instanceof Building)
+					if (interiorObject instanceof Building io)
 						logger.log(person, Level.INFO, 30_000,
-							"Found " + ((Building)interiorObject).getName()
+							"Found " + io.getName()
 							+ " to enter.");
 				}
 				else {

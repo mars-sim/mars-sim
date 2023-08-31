@@ -232,7 +232,7 @@ public class PersonTaskManager extends TaskManager {
 	}
 	
 	/**
-	 * Start a new Task by first checking for pending tasks.
+	 * Starts a new Task by first checking for pending tasks.
 	 */
 	@Override
 	public void startNewTask() {
@@ -241,7 +241,8 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
-				replaceTask(newTask);
+				if (newTask.getName() != currentTask.getName())
+					replaceTask(newTask);
 			}
 
 			return;

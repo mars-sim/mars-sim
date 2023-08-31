@@ -681,7 +681,8 @@ public abstract class TaskManager implements Serializable {
 				return false;	
 		}
 		
-		replaceTask(newTask);
+		if (newTask.getName() != currentTask.getName())
+			replaceTask(newTask);
 		
 		return true;
 	}
@@ -696,7 +697,7 @@ public abstract class TaskManager implements Serializable {
 			// Backup the current task as last task
 			lastTask = currentTask;
 			
-			// Inform that the current task will be termined
+			// Inform that the current task will be terminated
 			if ((currentTask != null) && !currentTask.isDone()) {
 				String des = currentTask.getDescription();
 	
