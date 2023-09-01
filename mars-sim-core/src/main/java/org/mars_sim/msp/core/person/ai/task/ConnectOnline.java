@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * ConnectWithEarth.java
- * @date 2022-07-13
+ * ConnectOnline.java
+ * @date 2023-08-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -21,21 +21,20 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * The ConnectWithEarth class is a task of connecting with Earth's family,
- * relatives and friends
+ * The ConnectOnline class is a task of connecting online.
  */
-public class ConnectWithEarth extends Task {
+public class ConnectOnline extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static SimLogger logger = SimLogger.getLogger(ConnectWithEarth.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ConnectOnline.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.connectWithEarth"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.connectOnline"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase CONNECTING_EARTH = new TaskPhase(Msg.getString("Task.phase.connectingWithEarth")); //$NON-NLS-1$
+	private static final TaskPhase CONNECTING_EARTH = new TaskPhase(Msg.getString("Task.phase.connectingOnline")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -46,20 +45,20 @@ public class ConnectWithEarth extends Task {
     /** Computing Units needed per millisol. */		
 	private double computingNeeded;
 	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.005, 0.025);
+    private final double seed = RandomUtil.getRandomDouble(.005, 0.025);
     
 	private final double TOTAL_COMPUTING_NEEDED;
 
-	private Connection connection;
+	private final Connection connection = person.getPreference().getRandomConnection();
 	
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public ConnectWithEarth(Person person) {
+	public ConnectOnline(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomDouble(5, 15));
+		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomDouble(5, 25));
 
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
@@ -71,11 +70,13 @@ public class ConnectWithEarth extends Task {
 			List<FunctionType> types = List.of(FunctionType.COMMUNICATION, 
 											FunctionType.ADMINISTRATION,
 											FunctionType.MANAGEMENT,
+											FunctionType.RECREATION,
 											FunctionType.DINING);
 			
 			Building bldg = null;
+			int size = types.size();
 			
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < size; i++) {
 				// Find a facility.
 				bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, types.get(i));
 				if (bldg != null) {
@@ -110,7 +111,6 @@ public class ConnectWithEarth extends Task {
 //		proceed = true;
 
 		if (proceed) {
-			connection = person.getPreference().getRandomConnection();
 			setDescription(connection.getName());
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);

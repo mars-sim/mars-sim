@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConnectOnlineMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConversationMeta;
@@ -118,7 +118,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
 		allMetaTasks.add(new ChargeMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
-		allMetaTasks.add(new ConnectWithEarthMeta());
+		allMetaTasks.add(new ConnectOnlineMeta());
 		
 		allMetaTasks.add(new ConsolidateContainersMeta());
 		allMetaTasks.add(new ConstructBuildingMeta());
