@@ -61,8 +61,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/** The rate of taking care of the health of the crop. */
 	private static final double RECOVER_HEALTH_RATE = .5;
 	
-	/** The mininum time offset [in millisols] for a crop that requires work. */
-	public static final double CROP_TIME_OFFSET = 10;
+	/** The minimum time offset [in millisols] for a crop that requires work. */
+	public static final double CROP_RESILIENCY = -100;
 	
 	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
@@ -436,11 +436,11 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				)
 			return true;
 		
-		return currentWorkRequired > CROP_TIME_OFFSET;
+		return currentWorkRequired > CROP_RESILIENCY;
 	}
 
 	/**
-	 * Get the priority scroe for this crop based on the phase
+	 * Gets the priority score for this crop based on the phase.
 	 */
 	public int getTendingScore() {
 		switch (currentPhase.getPhaseType()) {
@@ -451,7 +451,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			case INCUBATION:
 				return 2;
 			default:
-				return (currentWorkRequired > CROP_TIME_OFFSET ? 1 : 0);
+				return (currentWorkRequired > CROP_RESILIENCY ? 1 : 0);
 		}
 	}
 
@@ -644,8 +644,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 					remainingHarvest -= lastHarvest;
 					totalHarvest += lastHarvest;
 
-//					remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
-
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
 						logger.log(building, this, Level.INFO, 4_000, 
@@ -753,7 +751,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		// Calculate the amount of leaves and crop wastes that are generated
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
-		double cropWaste = inedible * RATIO_LEAVES;
+		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
 		if (cropWaste > 0) {
 			store(cropWaste, CROP_WASTE_ID, source);
 		}

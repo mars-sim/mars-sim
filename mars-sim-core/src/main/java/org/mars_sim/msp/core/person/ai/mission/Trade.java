@@ -262,8 +262,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
-				if (member instanceof Person) {
-					Person person = (Person) member;
+				if (member instanceof Person person) {
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
 					if (walk != null) {
 						assignTask(person, walk);
@@ -272,8 +271,7 @@ public class Trade extends RoverMission implements CommerceMission {
 						logger.severe(person, "Is unable to walk to building " + destinationBuilding);
 					}
 				}
-				else if (member instanceof Robot) {
-					Robot robot = (Robot) member;
+				else if (member instanceof Robot robot) {
 					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
 					if (walkingTask != null) {
 //						assignTask(robot, walkingTask);
@@ -316,8 +314,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					Person settlementTrader = getSettlementTrader();
 
 					if (settlementTrader != null) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
+						if (member instanceof Person person) {
 							negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
 									sellLoad, person, settlementTrader);
 							assignTask(person, negotiationTask);
@@ -429,14 +426,12 @@ public class Trade extends RoverMission implements CommerceMission {
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
 			// Elect a new mission lead if the previous one was dead
-			if (member instanceof Person) {
-				Person lead = (Person) member;
+			if (member instanceof Person lead) {
 				if (lead.isDeclaredDead()) {
 					logger.info(lead, "No longer alive.");
 					int bestSkillLevel = 0;
 					for (Worker mm: getMembers()) {
-						if (mm instanceof Person) {
-							Person p = (Person) mm;
+						if (mm instanceof Person p) {
 							int level = lead.getSkillManager().getSkillExp(SkillType.TRADING);
 							if (level > bestSkillLevel) {
 								bestSkillLevel = level;
@@ -452,8 +447,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			// Question: is the trading settlement responsible
 			// for providing an EVA suit for each person
 			for (Worker mm: getMembers()) {
-				if (mm instanceof Person) {
-					Person person = (Person) mm;
+				if (mm instanceof Person person) {
 					if (person.isDeclaredDead()) {
 						continue;
 					}
@@ -714,8 +708,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		Iterator<Worker> i = getMembers().iterator();
 		while (i.hasNext()) {
 			Worker member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
+			if (member instanceof Person person) {
 				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;

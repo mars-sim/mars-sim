@@ -71,8 +71,9 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	}
 
     /**
-     * Get the score for a Settlement task for a person. THis considers the number of Person farmers
+     * Gets the score for a settlement task for a person, considering the number of person farmers
      * and any personal preferences.
+     * 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -97,7 +98,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	}
 
     /**
-     * For a robot the over crowding probability is considered
+     * Gets the score for a settlement task for a robot. The over crowding probability is considered.
+     * 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
@@ -121,7 +123,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         GoodsManager gm = settlement.getGoodsManager();
         double goodsFactor = gm.getCropFarmFactor();
 
-        for(Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
+        for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
             double result = farm.getTendingScore() * 2D;
@@ -130,7 +132,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
             result *= goodsFactor;
 
             if (result > 0) {
-                int workTask = farm.getNumNeedTending() / 4; // Each farmer can do 4 crop per visit
+                int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
                 workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
                 workTask = Math.max(1, workTask);
                 tasks.add(new CropTaskJob(this, farm, workTask, result));

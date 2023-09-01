@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
@@ -27,13 +28,10 @@ public class ListenToMusicMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.listenToMusic"); //$NON-NLS-1$
 
-    private static final double CAP = 1_000D;
+    private static final double CAP = 500D;
     
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .2D;
-
-    /** default logger. */
-//  May bring back private static final Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName())
 
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -53,23 +51,16 @@ public class ListenToMusicMeta extends FactoryMetaTask {
         if (person.isInside()) {
 	        double pref = person.getPreference().getPreferenceScore(this);
 
-	     	result = pref * 2.5D;
+	     	result = (RandomUtil.getRandomDouble(10) + pref) * .25;
 
 	        // Probability affected by the person's stress and fatigue.
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double stress = condition.getStress();
 
-	        if (pref > 0) {
-	         	if (stress > 45D)
-	         		result*=1.5;
-	         	else if (stress > 65D)
-	         		result*=2D;
-	         	else if (stress > 85D)
-	         		result*=3D;
-	         	else
-	         		result*=4D;
-	        }
-
+            if (pref > 0) {
+            	result *= Math.max(1, stress/20);
+            }
+            
 	        if (person.isInSettlement()) {
 				// Check if a person has a designated bed
 				Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);
@@ -77,14 +68,15 @@ public class ListenToMusicMeta extends FactoryMetaTask {
 
 	            // Modify probability if during person's work shift.
 	            if (person.isOnDuty()) {
-	                result*= WORK_SHIFT_MODIFIER;
+	            	// Incur penalty if doing it on-duty
+	                result *= WORK_SHIFT_MODIFIER;
 	            }
 	        }
 
 	        else if (person.isInVehicle()) {
 		        // Check if person is in a moving rover.
 		        if (Vehicle.inMovingRover(person)) {
-		        	result += 20D;
+		        	result *= 2;
 		        }
 	        }
         }

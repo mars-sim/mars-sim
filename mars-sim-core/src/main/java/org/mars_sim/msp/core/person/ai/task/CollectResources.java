@@ -278,6 +278,9 @@ public class CollectResources extends EVAOperation {
 			if (person.getPerformanceRating() < .2D)
 				return false;
 
+			if (person.isSuperUnFit())
+				return false;
+			
 			// Checks if available container with remaining capacity for resource.
 			Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
 			boolean containerAvailable = (container != null);

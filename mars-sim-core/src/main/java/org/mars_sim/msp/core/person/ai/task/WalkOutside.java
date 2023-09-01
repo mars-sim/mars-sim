@@ -617,14 +617,16 @@ public class WalkOutside extends Task {
 
 		// Determine walking distance.
 		double coveredKm = speed * timeHours;
-		double coveredMeters = coveredKm * 1000D;
+		double coveredMeters = coveredKm * 1_000;
 		double remainingPathDistance = getRemainingPathDistance();
 
 		// Determine time left after walking.
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
-
-			remainingTime = time - MarsTime.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
+			
+			if (speed > 0)
+				remainingTime = time - MarsTime.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
+			
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
@@ -683,7 +685,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Walk in a given direction for a given distance.
+	 * Walks in a given direction for a given distance.
 	 *
 	 * @param direction the direction (radians) of travel.
 	 * @param distance  the distance (meters) to travel.
@@ -714,7 +716,8 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
+	 * 
 	 * @return false
 	 */
 	@Override

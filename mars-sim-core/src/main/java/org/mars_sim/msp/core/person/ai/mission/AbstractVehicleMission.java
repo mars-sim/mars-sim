@@ -847,9 +847,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (!pp.getShiftSlot().setOnCall(true) && (deadline > 0)) {
 					// First call so 
 					Task active = pp.getTaskManager().getTask();
-					if (active instanceof Sleep) {
+					if (active instanceof Sleep sp) {
 						// Not create but the only way
-						((Sleep) active).setAlarm(deadline);
+						sp.setAlarm(deadline);
 					}
 				}
 			}

@@ -23,17 +23,18 @@ public interface TaskJob extends Serializable {
     double getScore();
 
     /**
-     * Description of the task to be performed
+     * Gets the description of the task to be performed.
      */
     String getDescription();
 
     /**
-     * Create the Task for a person
+     * Creates the task for a person.
      */
     Task createTask(Person person);
 
     /**
-     * Create the Task for a Robot
+     * Creates the task for a Robot.
+     * 
      * @param robot 
      */
     Task createTask(Robot robot);

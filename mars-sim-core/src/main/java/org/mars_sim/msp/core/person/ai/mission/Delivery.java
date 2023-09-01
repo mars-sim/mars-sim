@@ -289,8 +289,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 						for (Worker mm: getMembers()) {
 
-							if (mm instanceof Person) {
-								Person person = (Person) mm;
+							if (mm instanceof Person person) {
 								negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
 										sellLoad, person, settlementTrader);
 								assigned = assignTask(person, negotiationTask);
@@ -359,15 +358,13 @@ public class Delivery extends DroneMission implements CommerceMission {
 		// If person is not aboard the drone, board drone.
 		if (!isDone()) {
 
-			if (member instanceof Person) {
-				Person pilot = (Person) member;
+			if (member instanceof Person pilot) {
 				if (pilot.isDeclaredDead()) {
 					logger.info(pilot, "No longer alive. Switching to another pilot.");
 					int bestSkillLevel = 0;
 					// Pick another member to head the delivery
 					for (Worker mm: getMembers()) {
-						if (member instanceof Person) {
-							Person p = (Person) mm;
+						if (member instanceof Person p) {
 							if (!p.isDeclaredDead()) {
 								int level = p.getSkillManager().getSkillExp(SkillType.PILOTING);
 								if (level > bestSkillLevel) {

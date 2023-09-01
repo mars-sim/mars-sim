@@ -1111,13 +1111,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 
 		LocalPosition settlementLoc = null;
-		if (person != null) {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
-		} else {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
-		}
+		// Find available activity spot in building.
+		settlementLoc = f.getAvailableActivitySpot();
 
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.

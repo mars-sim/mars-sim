@@ -236,9 +236,8 @@ public class BotTaskManager extends TaskManager {
 			if (pending != null) {
 				Task newTask = pending.createTask(robot);
 				replaceTask(newTask);
+				removePendingTask(pending);
 			}
-
-			return;
 		}
 
 		super.startNewTask();

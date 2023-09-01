@@ -54,25 +54,26 @@ public class ScheduleManager implements Serializable { //, Temporal {
 		while (i.hasNext()) {
 			Appointment ap = i.next();
 			if (ap.getSol() == pulse.getMarsTime().getMissionSol()) {
-				
+				// TODO: need to account for a person's work shift
 				if (ap.getMillisolInt() - STANDARD_SLEEP_TIME - TIME_GAP <= pulse.getMarsTime().getMillisolInt() ) {			
 					if (ap.getTaskName().equalsIgnoreCase(DIG_LOCAL_REOGOLITH)) {
 						// Execute the sleep task
+						// TODO: need to account for a person being outside
 						person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
 						// Add DigLocalReogth as a pending task
 						person.getTaskManager().addAPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
 						
 						logger.info(person, "Getting some sleep before executing the appointed task '" + ap.getTaskName() + "'.");
-						// Remove this appointment once execute
+						// Remove this appointment once executed
 						i.remove();
 					}	
 				}
 				else if (ap.getMillisolInt() - STANDARD_PREPARATION_TIME <= pulse.getMarsTime().getMillisolInt() ) {
-					// Execute the sleep task
+					// Add a pending task
 					person.getTaskManager().addAPendingTask(ap.getTaskName(), false, STANDARD_PREPARATION_TIME, ap.getDuration());
 					
 					logger.info(person, "Ready to show up for the appointed task '" + ap.getTaskName() + "'.");
-					// Remove this appointment once execuite
+					// Remove this appointment once executed
 					i.remove();
 				}
 			}

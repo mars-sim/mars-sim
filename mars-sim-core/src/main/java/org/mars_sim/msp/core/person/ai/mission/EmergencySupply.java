@@ -326,8 +326,7 @@ public class EmergencySupply extends RoverMission {
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
-				if (member instanceof Person) {
-					Person person = (Person) member;
+				if (member instanceof Person person) {
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
 					if (walk != null) {
 						assignTask(person, walk);
@@ -336,8 +335,7 @@ public class EmergencySupply extends RoverMission {
 						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				}
-				else if (member instanceof Robot) {
-					Robot robot = (Robot) member;
+				else if (member instanceof Robot robot) {
 					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
 					if (walkingTask != null) {
 //						assignTask(robot, walkingTask);
@@ -382,8 +380,7 @@ public class EmergencySupply extends RoverMission {
 			// sometimes)
 			if (RandomUtil.lessThanRandPercent(50)) {
 				// TODO Refactor to allow robots.
-				if (member instanceof Person) {
-					Person person = (Person) member;
+				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
@@ -393,7 +390,12 @@ public class EmergencySupply extends RoverMission {
 						}
 					}
 				}
-
+				else if (member instanceof Robot robot) {
+					if (isInAGarage()) {
+						assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
+					}
+				}
+				
 				return;
 			}
 		} else {
@@ -415,8 +417,7 @@ public class EmergencySupply extends RoverMission {
 			// sometimes)
 			if (RandomUtil.lessThanRandPercent(50)) {
 				// TODO Refactor to allow robots.
-				if (member instanceof Person) {
-					Person person = (Person) member;
+				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person,
 								new LoadVehicleGarage(person, this));
@@ -447,8 +448,7 @@ public class EmergencySupply extends RoverMission {
 			// Move person to random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 			// TODO Refactor
-			if (member instanceof Person) {
-				Person person = (Person) member;
+			if (member instanceof Person person) {
 				if (!person.isDeclaredDead()) {
 					
 					if (v == null)
@@ -468,8 +468,7 @@ public class EmergencySupply extends RoverMission {
 				}
 			}
 
-			else if (member instanceof Robot) {
-				Robot robot = (Robot) member;
+			else if (member instanceof Robot robot) {
 				// If robot is not aboard the rover, board rover.
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
@@ -636,8 +635,7 @@ public class EmergencySupply extends RoverMission {
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof EmergencySupply) {
-				EmergencySupply emergencyMission = (EmergencySupply) mission;
+			if (mission instanceof EmergencySupply emergencyMission) {
 				if (settlement.equals(emergencyMission.getEmergencySettlement())) {
 					result = true;
 					break;
@@ -751,8 +749,7 @@ public class EmergencySupply extends RoverMission {
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof RoverMission) {
-				RoverMission roverMission = (RoverMission) mission;
+			if (mission instanceof RoverMission roverMission) {
 				boolean isTradeMission = roverMission instanceof Trade;
 				boolean isEmergencySupplyMission = roverMission instanceof EmergencySupply;
 				if (!isTradeMission && !isEmergencySupplyMission) {

@@ -18,7 +18,6 @@ import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -33,8 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The DigLocal class is a task for collecting a resource outside a settlement.
@@ -301,7 +298,7 @@ public abstract class DigLocal extends EVAOperation {
 		}
 			
      	if (person.isInSettlement()) {
-			abortEVA("Person in settlement.");
+			abortEVA("Person still in settlement.");
      		return time;
      	}
 
@@ -484,7 +481,7 @@ public abstract class DigLocal extends EVAOperation {
         // Set the bin drop off location (next to the bin)    	
 		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1D);
 		if (p == null) {
-			abortEVA("Can not find a suitable drop-off location near " + b);
+			abortEVA("No suitable drop-off location near " + b + ".");
 		}
 		return p;
     }
@@ -508,9 +505,8 @@ public abstract class DigLocal extends EVAOperation {
      */
     @Override
     protected void clearDown() {
-		if (person.isOutside()) {
-			// THis has no effect as Task is closing down
-            setPhase(WALK_BACK_INSIDE);
+		if (settlement == null) {
+			return;
 		}
 
 		// This is the end of the Task so must return 

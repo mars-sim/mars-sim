@@ -55,6 +55,8 @@ public class TendGreenhouse extends Task {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
 
+	private static final double CROP_RESILIENCY = Crop.CROP_RESILIENCY;
+	
 	// Data members
 	/** The goal of the task at hand. */
 	private String goal;
@@ -151,7 +153,7 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Select a suitab le sub-task in the greenhouse
+	 * Select a suitable sub-task in the greenhouse
 	 */
 	private void selectTask() {
 		if (greenhouse.getNumCrops2Plant() > 0) {
@@ -243,52 +245,36 @@ public class TendGreenhouse extends Task {
 		}
 
 		if (needyCrop == null)
+			// Select a new needy crop
 			needyCrop = greenhouse.getNeedyCrop();
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
-			return 0;
-		}
-
-		boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
-		
-		if (needTending) {
-			remainingTime = tend(time);
-			return remainingTime;
-		}
-		
-		// Select a new needy crop
-		needyCrop = greenhouse.getNeedyCrop();
-		
-		if (needyCrop == null) {
-			setDescriptionCropDone();
+			endTask();
 			return 0;
 		}
 		
-		needTending = needyCrop.getCurrentWorkRequired() > -50;
+		boolean needTending = needyCrop.getCurrentWorkRequired() > CROP_RESILIENCY;
 		
 		if (needTending) {
-			remainingTime = tend(time);
+			remainingTime = tendCrop(time);
 			return remainingTime;
 		}
 
 		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 5_000, 
 				"Tending " + needyCrop.getCropName() + " was no longer needed.");
 		setDescriptionCropDone();
-		
-		// Set needyCrop to null since needTending is false
-		// This allow another needyCrop to be picked
-		
-		// Select a new needy crop
-		needyCrop = greenhouse.getNeedyCrop();	
-		if (needyCrop == null) {
-			endTask();
-		}
-		
+
 		return remainingTime;
 	}
 	
-	public double tend(double time) {
+	/**
+	 * Tends a crop.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	private double tendCrop(double time) {
 		double remainingTime = 0;
 		double workTime = time;
 		double mod = 0;

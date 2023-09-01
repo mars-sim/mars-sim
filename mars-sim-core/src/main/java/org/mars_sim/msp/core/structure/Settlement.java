@@ -1005,11 +1005,13 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setAppointedTask(int sol) {
 		for (Person p: citizens) {
-			if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+			// Select personnel without a mission
+			if (p.getMission() == null
+			 && (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
 					|| p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST
 					|| p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
 					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
-					) {
+					)) {
 				
 				int startTimeEVA = WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
 				int numDigits = ("" + startTimeEVA).length();
@@ -1853,7 +1855,7 @@ public class Settlement extends Structure implements Temporal,
 			numCitizens = citizens.size();
 
 			// Update active mission limit; always at least 1
-			double optimalMissions = Math.max(1D, Math.floor(numCitizens/PERSON_PER_MISSION));
+			double optimalMissions = Math.max(1D, 1.0 * numCitizens/PERSON_PER_MISSION);
 			setPreferenceModifier(MISSION_LIMIT, optimalMissions);
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);

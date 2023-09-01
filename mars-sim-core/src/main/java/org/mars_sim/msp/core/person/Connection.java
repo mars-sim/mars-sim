@@ -11,8 +11,7 @@ public enum Connection {
 	CHECKING_MESSAGES 		("Checking Personal Messages"),
 	WATCHING_EARTH_NEWS		("Watching Earth News"),
 	BROWSING_MARSLINK		("Browsing MarsLink"),
-	WATCHING_EARTH_TV		("Watching Earth TV"),
-	WATCHING_A_MOVIE		("Watching a Movie"),
+	WATCHING_TV_MOVIE		("Watching TV or Movie"),
 	BROWSING_EARTHLINK 		("Browsing EarthLink"),
 	;
 		

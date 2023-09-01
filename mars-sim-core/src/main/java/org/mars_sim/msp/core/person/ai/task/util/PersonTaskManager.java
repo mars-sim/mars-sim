@@ -11,6 +11,7 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -232,7 +233,7 @@ public class PersonTaskManager extends TaskManager {
 	}
 	
 	/**
-	 * Start a new Task by first checking for pending tasks.
+	 * Starts a new Task by first checking for pending tasks.
 	 */
 	@Override
 	public void startNewTask() {
@@ -241,10 +242,22 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
-				replaceTask(newTask);
+				boolean isEVATask = newTask instanceof EVAOperation;
+				if (isEVATask && person.isOutside()) {
+					// Note :the person should 
+					// come in and rest and is no longer eligible for performing
+					// another EVA task
+//					logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+				}
+				else if (person.getMission() != null) {
+//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+				}
+				
+				else if (!newTask.getName().equals(getTaskName())) {
+					replaceTask(newTask);
+					removePendingTask(pending);
+				}
 			}
-
-			return;
 		}
 
 		super.startNewTask();
