@@ -169,7 +169,7 @@ public class MaintainBuilding extends Task  {
 		int shortfall = manager.transferMaintenanceParts((EquipmentOwner) containerUnit);
 		
 		if (shortfall == -1) {
-			clearTask("No spare parts for maintenance");
+			clearTask("No spare parts for maintenance.");
 			return 0;
 		}
 

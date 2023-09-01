@@ -83,7 +83,7 @@ extends EVAOperation {
 		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		if (effectiveTime < 10D) {
-			clearTask("Maintenance already done");
+			clearTask("Maintenance already done.");
 			return;
 		}
 

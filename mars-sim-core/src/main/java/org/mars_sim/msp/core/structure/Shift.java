@@ -144,4 +144,15 @@ public class Shift implements ScheduledEventHandler {
         }
         return duration;
     }
+    
+    public boolean isOnDuty(int time) {
+    	int start0 = start;
+    	int end0 = end;
+    	if (start0 > end0)
+    		end0 = end0 + 1000;
+    	if (time > start0 && time < end0)
+    		return true;
+    	
+    	return false;
+    }
 }

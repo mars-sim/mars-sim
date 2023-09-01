@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * ShiftManager.java
+ * @date 2023-09-01
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
@@ -82,7 +88,7 @@ public class ShiftManager implements Serializable {
         if (shiftDefinition.getShifts().isEmpty()) {
             throw new  IllegalArgumentException("No shift defined in " + shiftDefinition.getName());
         }
-        for(ShiftSpec ss : shiftDefinition.getShifts()) {
+        for (ShiftSpec ss : shiftDefinition.getShifts()) {
             Shift s = new Shift(ss, offset);
             shifts.add(s);
 
