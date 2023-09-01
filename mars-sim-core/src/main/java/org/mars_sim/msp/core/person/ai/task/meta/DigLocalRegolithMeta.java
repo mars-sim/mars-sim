@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalRegolithMeta extends DigLocalMeta {
     
-	// can add back private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName())
+	// May add back private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName())
 	
 	private static final int THRESHOLD_AMOUNT = 50;
 	
@@ -39,14 +39,16 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
 
     @Override
     public double getProbability(Person person) {
-    	if (!unitManager.isSettlement(person.getCoordinates())) {
-    		return 0;
-    	}
     	
-    	Settlement settlement = unitManager.findSettlement(person.getCoordinates());
-    	double rate = settlement.getRegolithCollectionRate();
-    	if (rate <= 0D) {
-    		return 0D;
+    	Settlement settlement = person.getSettlement();
+    	double rate = 0;
+    	
+    	if (settlement != null) {
+    		
+    		rate = settlement.getIceCollectionRate();
+	    	if (rate <= 0D) {
+	    		return 0D;
+	    	}
     	}
     	
         // Check if settlement has DIG_LOCAL_REGOLITH override flag set.
@@ -62,7 +64,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	double result = getProbability(ResourceUtil.regolithID, settlement, 
     			person, rate * settlement.getRegolithProbabilityValue());
     	
-//    	logger.info(settlement, 20_000, "rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
+//    	logger.info(settlement, 20_000, "DigLocalMeta - rate: " + Math.round(settlement.getRegolithCollectionRate() * 100.0)/100.0 
 //    			+ "  Final regolith: " + Math.round(result* 100.0)/100.0);
         
         return result;

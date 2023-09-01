@@ -153,7 +153,7 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Select a suitable sub-task in the greenhouse
+	 * Selects a suitable sub-task in the greenhouse.s
 	 */
 	private void selectTask() {
 		if (greenhouse.getNumCrops2Plant() > 0) {
@@ -280,9 +280,9 @@ public class TendGreenhouse extends Task {
 		double mod = 0;
 		
 		if (worker.getUnitType() == UnitType.PERSON)
-			mod = 1;
+			mod = 1.2;
 		else
-			mod = .25 * RandomUtil.getRandomDouble(.85, 1.15);
+			mod = .3 * RandomUtil.getRandomDouble(.85, 1.15);
 		
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
@@ -377,7 +377,7 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Grows the tissue culture.
+	 * Grows tissue culture.
 	 * 
 	 * @param time
 	 * @return

@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.Shift;
  */
 public abstract class DigLocalMeta extends FactoryMetaTask {
 
-	// can add back SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName())
+	// May add back private static final SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName())
 
 	private static final double VALUE = 50;
 	private static final int MAX = 2_000;
@@ -52,17 +52,10 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
     	if (collectionProbability == 0.0)
     		return 0;
     	
-        double result = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
-       
-//        logger.info(settlement, 10_000, "Early " + ResourceUtil.findAmountResourceName(resourceId) + (int)result);
-        
     	// Will not perform this task if he has a mission
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
-
-      if (result > MAX)
-    	  result = MAX;
 
     	// Check if an airlock is available for egress
         if (!Walk.anyAirlocksForIngressEgress(person, false)) {
@@ -85,12 +78,17 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
             return 0;
         }
 
+        double result = RandomUtil.getRandomDouble(collectionProbability / 10, collectionProbability) * VALUE;
+        
+        if (result > MAX)
+        	result = MAX;
+      
+//        logger.info(settlement, 10_000, "1. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
+        
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
-        	result *= .2;
-        
-//        logger.info(settlement, 10_000, "Mid " + ResourceUtil.findAmountResourceName(resourceId) + (int)result);
-        
+        	result *= .5;
+ 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
@@ -99,12 +97,14 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         double hunger = condition.getHunger();
         double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
         
-        result -= stress * 2 + fatigue/2 + hunger/2 - exerciseMillisols;
+        result = result - stress * 2 - fatigue/2 - hunger/2 - exerciseMillisols;
 
-        result *= getRadiationModifier(settlement);
-
+//        logger.info(settlement, 10_000, "2. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
+        
         if (result <= 0)
         	return 0;
+        
+        result *= getRadiationModifier(settlement);
 
 	    int indoor = settlement.getIndoorPeopleCount(); 
 	    int citizen = settlement.getNumCitizens();
@@ -120,7 +120,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         	result *= Math.max(1, 1.5 * (33 - citizen));
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
-        result *= 1.0 / (1 + settlement.getNumOutsideEVA());
+        result *= 5.0 / (1 + settlement.getNumOutsideEVA());
 
         // Encourage to get this task done early in a work shift
         result *= getShiftModifier(person);
@@ -138,7 +138,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         if (result > CAP)
         	result = CAP;
 
-//        logger.info(settlement, 10_000, "End: " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
+//        logger.info(settlement, 10_000, "3. DigLocalMeta - " + ResourceUtil.findAmountResourceName(resourceId) + ": " + (int)result);
         return result;
     }
 

@@ -44,6 +44,7 @@ public abstract class TaskManager implements Serializable {
 	private static final String SLEEPING = "Sleeping";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK = "Airlock";
+	private static final String DIG = "Digging";
 	
 	/*
 	 * This class represents a record of a given activity (task or mission)
@@ -674,7 +675,8 @@ public abstract class TaskManager implements Serializable {
 			// Note: make sure robot's 'Sleep Mode' won't return false
 			if (currentDes.contains(SLEEPING)
 				|| currentDes.contains(EVA)
-				|| taskName.contains(AIRLOCK))
+				|| taskName.contains(AIRLOCK)
+				|| taskName.contains(DIG))
 				return false;
 			
 			if (newTask.getDescription().equalsIgnoreCase(currentDes))
@@ -760,7 +762,7 @@ public abstract class TaskManager implements Serializable {
 			currentTask.setDuration(newDuration);
 			
 			logger.info(worker, "Updating current task '" + currentTask.getName() 
-				+ "''s duration: " + oldDuration + " -> " + Math.round(newDuration * 10.0)/10.0 + "'.");
+				+ "''s duration: " + oldDuration + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
 		}
 		
 		// Potential ClassCast but only temp. measure

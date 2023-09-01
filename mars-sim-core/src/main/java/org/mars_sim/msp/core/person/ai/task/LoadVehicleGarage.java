@@ -75,18 +75,18 @@ public class LoadVehicleGarage extends Task {
 
 		settlement = worker.getSettlement();
 		if (settlement == null) {
-			clearTask("Worker no in settlement");
+			clearTask("Worker not in settlement.");
 			return;
 		}
 
 		vehicle = vehicleMission.getVehicle();
 		if (vehicle == null) {
-			clearTask("Mission has no vehicle");
+			clearTask("Mission has no vehicle.");
 			return;
 		}
 		loadController = vehicleMission.getLoadingPlan();
 		if (loadController == null) {
-			clearTask("Vehicle has no loading plan");
+			clearTask("Vehicle has no loading plan.");
 			return;
 		}
  
@@ -98,7 +98,7 @@ public class LoadVehicleGarage extends Task {
 		
 			// End task if vehicle or garage not available
 			if (garage == null) {
-				clearTask("Cannot put in garage");
+				clearTask("Cannot put in garage.");
 				return;
 			}
 		}

@@ -68,11 +68,11 @@ public class ToggleResourceProcess extends Task {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 
 		if (process.isFlagged()) {
-			clearTask("Process toggle already active with someone else");
+			clearTask("Process toggle already active with someone else.");
 			return;
 		}
 		else if (!process.isToggleAvailable()) {
-			clearTask("Process already completed toggled");
+			clearTask("Process already completed toggled.");
 			return;
 		}
 
@@ -153,7 +153,7 @@ public class ToggleResourceProcess extends Task {
 			if (perf == 0D) {
 				// reset it to 10% so that he can walk inside
 				person.getPhysicalCondition().setPerformanceFactor(.1);
-				clearTask(": poor performance in " + process.getProcessName());
+				clearTask(": poor performance in " + process.getProcessName() + ".");
 			}
 
 		} else {
