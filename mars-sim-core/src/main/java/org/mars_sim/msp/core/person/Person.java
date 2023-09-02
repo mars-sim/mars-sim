@@ -100,7 +100,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	public static final int CARRYING_CAPACITY_FOOD = 1;
 	
 	/** A small amount. */
-	private static final double SMALL_AMOUNT = 0.00001D;
+	private static final double SMALL_AMOUNT = 0.01;
 
 	private final static String EARTH_BIRTHPLACE = "Earth";
 	private final static String MARS_BIRTHPLACE = "Mars";
@@ -1589,13 +1589,14 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 	}
 
 	/**
-	 * Calculates the modifier for walking speed based on how much this unit is carrying.
+	 * Calculates the modifier for walking speed based on how much the person is carrying.
 	 */
-	public double calculateWalkSpeed() {
+	public double getWalkSpeedMod() {
+		// Get the modified stored mass and base mass 
 		double mass = getMass();
-		// At full capacity, may still move at 10%.
-		// Make sure is doesn't go -ve and there is always some movement
-		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
+		// The modifier is a ratio of the mass the person carry and the carrying capacity 
+		// Make sure it doesn't go to zero or -ve as there is always some movement
+		return Math.max(carryingCapacity/mass/1.2, SMALL_AMOUNT);
 	}
 
 	/**

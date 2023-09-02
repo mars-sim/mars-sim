@@ -657,7 +657,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return modifier
 	 */
-	public double calculateWalkSpeed() {
+	public double calculateWalkSpeedMod() {
 		double mass = getMass();
 		// At full capacity, may still move at 10%.
 		// Make sure is doesn't go -ve and there is always some movement
