@@ -203,7 +203,7 @@ public class MissionManager implements Serializable {
 				if (baseProb.getScore() > 0D) {
 					// Get any overriding ratio
 					double settlementRatio = startingSettlement.getPreferenceModifier(
-										new PreferenceKey(PreferenceKey.Type.MISSION,
+										new PreferenceKey(PreferenceKey.Type.MISSION_WEIGHT,
 														metaMission.getType().name()));
 					baseProb.addModifier("settlementratio", settlementRatio);
 

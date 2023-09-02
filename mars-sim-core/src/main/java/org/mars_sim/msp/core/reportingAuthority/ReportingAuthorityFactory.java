@@ -89,7 +89,13 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				Map<PreferenceKey, Double> preferences = new HashMap<>();	
 				for (Element preNode : subNode.getChildren(PERFERENCE_EL)) {
 					double value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
-					PreferenceKey.Type pType = PreferenceKey.Type.valueOf(preNode.getAttributeValue(TYPE_ATTR));
+
+					// Backwar compatiable with the old naming scheme
+					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
+					if (pTypeValue.equals("MISSION")) {
+						pTypeValue = "MISSION_WEIGHT";
+					}
+					PreferenceKey.Type pType = PreferenceKey.Type.valueOf(pTypeValue);
 					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
 
 					preferences.put(new PreferenceKey(pType, pName), value);

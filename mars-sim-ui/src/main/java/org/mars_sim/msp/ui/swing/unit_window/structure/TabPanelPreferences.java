@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -97,7 +98,6 @@ public class TabPanelPreferences extends TabPanel {
 		scrollPane.setViewportView(table);
 		
 		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(1, true));
 		TableColumnModel cModel = table.getColumnModel();
 		cModel.getColumn(0).setPreferredWidth(30);
 		cModel.getColumn(2).setPreferredWidth(20);
@@ -158,10 +158,10 @@ public class TabPanelPreferences extends TabPanel {
 				}
 			break;
 
-			case MISSION:
+			case MISSION_WEIGHT:
 				newItems = new ArrayList<>();
 				for(MissionType mt : MissionType.values()) {
-					newItems.add(getRendered(new PreferenceKey(Type.MISSION, mt.name())));
+					newItems.add(getRendered(new PreferenceKey(Type.MISSION_WEIGHT, mt.name())));
 				}
 				break;
 
@@ -169,6 +169,13 @@ public class TabPanelPreferences extends TabPanel {
 				newItems = ScienceType.valuesList().stream()
 									.map(mt -> getRendered(new PreferenceKey(Type.SCIENCE, mt.name())))
 									.toList();
+				break;
+
+			case PROCESS_OVERRIDE:
+				newItems = new ArrayList<>();
+				for(OverrideType mt : OverrideType.values()) {
+					newItems.add(getRendered(new PreferenceKey(Type.PROCESS_OVERRIDE, mt.name())));
+				}
 				break;
 			default:
 				newItems = null;
@@ -197,7 +204,7 @@ public class TabPanelPreferences extends TabPanel {
 			label = switch (key.getType()) {
 				case TASK -> MetaTaskUtil.getMetaTask(key.getName()).getName();
 				case SCIENCE -> ScienceType.valueOf(key.getName()).getName();
-				case MISSION -> MissionType.valueOf(key.getName()).getName();
+				case MISSION_WEIGHT -> MissionType.valueOf(key.getName()).getName();
 				default -> key.getName();
 			};
 		}
@@ -217,32 +224,27 @@ public class TabPanelPreferences extends TabPanel {
 
 		private Settlement manager;
 		private List<RenderableKey> items;
-		private List<Double> target;
+		private Map<PreferenceKey,Object> target;
 
 		private PreferenceTableModel(Settlement manager) {
 			this.manager = manager;
-			items = new ArrayList<>(manager.getKnownPreferences().stream()
+			this.target = manager.getPreferences();
+			items = new ArrayList<>(target.keySet().stream()
 										.map(v -> getRendered(v)).toList());
-			target = new ArrayList<>();
-			for(RenderableKey i : items) {
-				target.add(manager.getPreferenceModifier(i.key()));
-			}
 		}
 
 		/**
 		 * Adds an entry to the table and the Settlement.
 		 */
-		public void addEntry(RenderableKey preference, double modifier) {
+		public void addEntry(RenderableKey preference, Object value) {
 			if (!items.contains(preference)) {
 				items.add(preference);
-				target.add(modifier);
-
-				manager.setPreferenceModifier(preference.key(), modifier);
+				target.put(preference.key(), value);
 				int newRow = items.size()-1;
 				fireTableRowsInserted(newRow, newRow);
 				
-				logger.info(manager, preference.label().toString() + " @ " 
-						+ Math.round(modifier * 10.0)/10.0 
+				logger.info(manager, preference.label() + " @ " 
+						+ value.toString()
 						+ " manually added by Player in Settlement's Preference tab.");
 			}
 		}
@@ -261,8 +263,8 @@ public class TabPanelPreferences extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch(columnIndex) {
 				case 0, 1 -> String.class;
-				case 2 -> Double.class;
-				default -> throw new IllegalArgumentException("Unexpected value: " + columnIndex);
+				case 2 -> Object.class;
+				default -> throw new IllegalArgumentException("Unexpected column class index: " + columnIndex);
 			};
 		}
 
@@ -272,7 +274,7 @@ public class TabPanelPreferences extends TabPanel {
 				case 0 -> "Type";
 				case 1 -> "Name";
 				case 2 -> "Modifier";
-				default -> throw new IllegalArgumentException("Unexpected value: " + columnIndex);
+				default -> throw new IllegalArgumentException("Unexpected column name index: " + columnIndex);
 			};
 		}
 
@@ -283,7 +285,7 @@ public class TabPanelPreferences extends TabPanel {
 				return switch(column) {
 					case 0 -> entry.key().getType();
 					case 1 -> entry.label();
-					case 2 -> target.get(row);
+					case 2 -> target.get(entry.key());
 					default -> throw new IllegalArgumentException("Unexpected value: " + column);
 				};
 			}
@@ -298,9 +300,8 @@ public class TabPanelPreferences extends TabPanel {
 		@Override
 		public void setValueAt(Object value, int row, int col) {
 			if (col == 2) {
-				Double newValue = (Double) value;
-				target.set(row, newValue);
-				manager.setPreferenceModifier(items.get(row).key(), newValue);
+				PreferenceKey key = items.get(row).key();
+				target.put(key, value);
 			}
 		}
 	}

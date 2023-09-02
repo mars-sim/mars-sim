@@ -19,7 +19,7 @@ public class PreferenceKey implements Serializable {
      * Type of Preference
      */
     public enum Type {
-        TASK, MISSION, SCIENCE, CONFIGURATION
+        TASK, MISSION_WEIGHT, SCIENCE, CONFIGURATION, PROCESS_OVERRIDE
     };
 
     private Type type;
