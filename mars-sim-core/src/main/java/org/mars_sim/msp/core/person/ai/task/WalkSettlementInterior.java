@@ -50,9 +50,9 @@ public class WalkSettlementInterior extends Task {
 	// Static members
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
-	private static final double MIN_PULSE_TIME = 0.25;
+	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
+	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 	
 	// Data members
 	private double destZLoc;
@@ -216,15 +216,15 @@ public class WalkSettlementInterior extends Task {
 	 */
 	private double walkingPhase(double time) {
 		double remainingTime = time - minPulseTime;
-		
-		double speed = 0;
+		double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;		
+		double speedKPH = 0;
 		
 		if (person != null) {
-			speed = person.calculateWalkSpeed();
+			speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
 
 		}
 		else {
-			speed = robot.calculateWalkSpeed();
+			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod();
 		}
 		
 		// Check that remaining path locations are valid.
@@ -236,13 +236,17 @@ public class WalkSettlementInterior extends Task {
 		}
 		
 		// Determine walking distance.
-		double coveredMeters =  1000D * speed * MarsTime.HOURS_PER_MILLISOL * time;
+		double coveredKm = speedKPH * timeHours;
+		double coveredMeters = coveredKm * 1_000;
 		double remainingPathDistance = getRemainingPathDistance();
 
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
-
-			remainingTime = time - MarsTime.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
+			
+			if (speedKPH > 0)
+				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredKm / speedKPH * 3600);
+			if (remainingTime < 0)
+				remainingTime = 0;
 		}
 		else {
 			remainingTime = 0D; // Use all the remaining time
@@ -292,6 +296,7 @@ public class WalkSettlementInterior extends Task {
 
 		// If path destination is reached, end task.
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
+			
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 
 			logger.log(worker, Level.FINEST, 0, "Close enough to final destination ("

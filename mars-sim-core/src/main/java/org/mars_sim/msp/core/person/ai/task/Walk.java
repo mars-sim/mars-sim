@@ -53,9 +53,10 @@ public class Walk extends Task {
 	private static SimLogger logger = SimLogger.getLogger(Walk.class.getName());
 
 	// Static members
-	private static final double MIN_PULSE_TIME = 0.25;
-	static final double PERSON_WALKING_SPEED = 1D; // [kph].
-	static final double ROBOT_WALKING_SPEED = 0.25; // [kph].
+	static final double MIN_PULSE_TIME = 0.0129;
+	// See https://en.wikipedia.org/wiki/Preferred_walking_speed
+	static final double PERSON_WALKING_SPEED = 5.1; // [kph].
+	static final double ROBOT_WALKING_SPEED = 2D; // [kph].
 	static final double PERSON_WALKING_SPEED_PER_MILLISOL = PERSON_WALKING_SPEED * MarsTime.MILLISOLS_PER_HOUR; // [km per millisol].
 	static final double ROBOT_WALKING_SPEED_PER_MILLISOL = ROBOT_WALKING_SPEED * MarsTime.MILLISOLS_PER_HOUR; // [km per millisol].
 
@@ -78,7 +79,7 @@ public class Walk extends Task {
 	private static final TaskPhase CLIMB_DOWN_LADDER = new TaskPhase(Msg.getString("Task.phase.climbDownLadder")); //$NON-NLS-1$
 	
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
+	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private int walkingStepIndex;
@@ -396,8 +397,8 @@ public class Walk extends Task {
 						result = member.getSettlement().getClosestAvailableAirlock(person, true);
 					} else if (member.isInVehicle()) {
 						Vehicle vehicle = member.getVehicle();
-						if (vehicle instanceof Airlockable) {
-							result = ((Airlockable) vehicle).getAirlock();
+						if (vehicle instanceof Airlockable v) {
+							result = v.getAirlock();
 						}
 					}
 				}
@@ -425,8 +426,8 @@ public class Walk extends Task {
 			while (i.hasNext() && (result == null)) {
 				Vehicle vehicle = i.next();
 				if (person.getCoordinates().equals(vehicle.getCoordinates())) {
-					if (vehicle instanceof Airlockable) {
-						result = ((Airlockable) vehicle).getAirlock();
+					if (vehicle instanceof Airlockable v) {
+						result = v.getAirlock();
 					}
 				}
 			}
@@ -723,7 +724,6 @@ public class Walk extends Task {
 					endTask();
 				}
 			} else {
-//				logger.finest("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
 				logger.log(person, Level.SEVERE, 5_000,
 					"Starting WalkRoverInterior.");
 				addSubTask(new WalkRoverInterior(robot, step.rover, step.loc));
@@ -1004,7 +1004,7 @@ public class Walk extends Task {
 				endTask();
 				
 				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
-				remainingTime = time - timeTraveled;
+				remainingTime = remainingTime - timeTraveled;
 				if (remainingTime < 0)
 					remainingTime = 0;
 				return remainingTime ;
@@ -1020,7 +1020,7 @@ public class Walk extends Task {
 				endTask();
 				
 				timeTraveled = distance / ROBOT_WALKING_SPEED_PER_MILLISOL;
-				remainingTime = time - timeTraveled;
+				remainingTime = remainingTime - timeTraveled;
 				if (remainingTime < 0)
 					remainingTime = 0;
 				return remainingTime ;
@@ -1151,7 +1151,8 @@ public class Walk extends Task {
 	}
 
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
+	 * 
 	 * @return false
 	 */
 	@Override

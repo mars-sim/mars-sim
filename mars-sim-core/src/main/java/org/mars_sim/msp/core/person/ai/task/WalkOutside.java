@@ -46,7 +46,7 @@ public class WalkOutside extends Task {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	private static final double MIN_PULSE_TIME = 0.25;
+	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
 	/** The greater than zero distance [km] */
@@ -58,7 +58,7 @@ public class WalkOutside extends Task {
 	/** Obstacle avoidance path neighbor distance (meters). */
 	public static final double NEIGHBOR_DISTANCE = 7D;
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
+	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private boolean obstaclesInPath;
@@ -587,8 +587,8 @@ public class WalkOutside extends Task {
 	 */
 	private double walkingPhase(double time) {
 		double remainingTime = time - minPulseTime;
-		double timeHours = MarsTime.HOURS_PER_MILLISOL * time;
-		double speed = 0;
+		double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;
+		double speedKPH = 0;
 
 		if (person != null) {
 			// Check for accident.
@@ -608,15 +608,15 @@ public class WalkOutside extends Task {
 				return time;
 			}
 			else
-				speed = person.calculateWalkSpeed() * EVA_MOD;
+				speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod() * EVA_MOD;
 		}
 
 		else if (robot != null) {
-			speed = robot.calculateWalkSpeed() * EVA_MOD;
+			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod() * EVA_MOD;
 		}
 
 		// Determine walking distance.
-		double coveredKm = speed * timeHours;
+		double coveredKm = speedKPH * timeHours;
 		double coveredMeters = coveredKm * 1_000;
 		double remainingPathDistance = getRemainingPathDistance();
 
@@ -624,11 +624,15 @@ public class WalkOutside extends Task {
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 			
-			if (speed > 0)
-				remainingTime = time - MarsTime.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
-			
+			if (speedKPH > 0)
+				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredKm / speedKPH * 3600);
+			if (remainingTime < 0)
+				remainingTime = 0;
 		}
-
+		else {
+			remainingTime = 0D; // Use all the remaining time
+		}
+		
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			LocalPosition location = walkingPath.get(walkingPathIndex);
@@ -664,8 +668,10 @@ public class WalkOutside extends Task {
 		// If path destination is reached, end task.
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
-			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
 			LocalPosition finalLocation = walkingPath.get(walkingPath.size() - 1);
+			
+			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
+			
 			worker.setPosition(finalLocation);
 
 			endTask();

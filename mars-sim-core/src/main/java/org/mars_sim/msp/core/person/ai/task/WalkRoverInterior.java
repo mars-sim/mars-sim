@@ -36,11 +36,11 @@ public class WalkRoverInterior extends Task {
 
 	// Static members
 	/** km per hour. */
-	private static final double MIN_PULSE_TIME = 0.25;
+	private static final double MIN_PULSE_TIME = Walk.MIN_PULSE_TIME;
 	private static final double STRESS_MODIFIER = -.1D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	/** The minimum pulse time for completing a task phase in this class.  */
-	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
+	private static double minPulseTime = 0; //Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private Rover rover;
@@ -121,36 +121,50 @@ public class WalkRoverInterior extends Task {
      */
     double walkingPhase(double time) {
 		double remainingTime = time - minPulseTime;
+        double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;
+		double speedKPH = 0;
+
+		if (person != null) {
+			speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
+
+		}
+		else {
+			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod();
+		}
 		
-        // Determine walking distance.
-        double timeHours = MarsTime.HOURS_PER_MILLISOL * time;
-		double speed = person.calculateWalkSpeed();
-		double distanceKm = speed * timeHours;
-        double distanceMeters = distanceKm * 1000D;
         LocalPosition currentPosition = worker.getPosition(); 
         double remainingWalkingDistance = currentPosition.getDistanceTo(destLoc);
-
+   
+		// Determine walking distance.
+		double coveredKm = speedKPH * timeHours;
+		double coveredMeters = coveredKm * 1_000;
+		
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
 
             // Determine time left after walking.
-            if (distanceMeters >= remainingWalkingDistance) {
-                distanceMeters = remainingWalkingDistance;
-                remainingTime = time - MarsTime.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
+            if (coveredMeters >= remainingWalkingDistance) {
+            	coveredMeters = remainingWalkingDistance;
+ 
+    			if (speedKPH > 0)
+    				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredKm / speedKPH * 3600);
+    			if (remainingTime < 0)
+    				remainingTime = 0;
             }
-
-            if (distanceMeters < remainingWalkingDistance) {
+            
+            else {
+//            if (coveredMeters < remainingWalkingDistance) {
                 // Determine direction to destination.
                 double direction = currentPosition.getDirectionTo(destLoc);
                 // Determine person's new location at distance and direction.
-                worker.setPosition(currentPosition.getPosition(distanceMeters, direction));
+                worker.setPosition(currentPosition.getPosition(coveredMeters, direction));
             }
-            else {
-                // Set person's location at destination.
-                worker.setPosition(destLoc);
-        		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
-        				+ destLoc + ") in " + rover.getName() + ".");
-                endTask();
-            }
+//            else {
+//                // Set person's location at destination.
+//                worker.setPosition(destLoc);
+//        		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
+//        				+ destLoc + ") in " + rover.getName() + ".");
+//                endTask();
+//            }
         }
         else {
             // Set person's location at destination.
@@ -165,7 +179,8 @@ public class WalkRoverInterior extends Task {
     }
 
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
+	 * 
 	 * @return false
 	 */
 	@Override
