@@ -29,6 +29,7 @@ public class ScheduleManager implements Serializable { //, Temporal {
 	private static final int STANDARD_PREPARATION_TIME = 10;
 	
 	private String DIG_LOCAL_REOGOLITH = DigLocalRegolith.SIMPLE_NAME;
+	private String SLEEP = Sleep.SIMPLE_NAME;
 	
 	private Person person;
 	
@@ -56,10 +57,18 @@ public class ScheduleManager implements Serializable { //, Temporal {
 			if (ap.getSol() == pulse.getMarsTime().getMissionSol()) {
 				// TODO: need to account for a person's work shift
 				if (ap.getMillisolInt() - STANDARD_SLEEP_TIME - TIME_GAP <= pulse.getMarsTime().getMillisolInt() ) {			
-					if (ap.getTaskName().equalsIgnoreCase(DIG_LOCAL_REOGOLITH)) {
-						// Execute the sleep task
-						// TODO: need to account for a person being outside
-						person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
+					if (person.getMission() == null && ap.getTaskName().equalsIgnoreCase(DIG_LOCAL_REOGOLITH)) {
+						
+						// Add the sleep task
+						// Account for a person being outside
+						if (person.isOutside()) {
+							// Add DigLocalReogth as a pending task
+							person.getTaskManager().addAPendingTask(SLEEP, false, TIME_GAP * 2, STANDARD_SLEEP_TIME - TIME_GAP);
+						}
+						else {	
+							person.getTaskManager().addAPendingTask(SLEEP, false, TIME_GAP, STANDARD_SLEEP_TIME);
+//							person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
+						}
 						// Add DigLocalReogth as a pending task
 						person.getTaskManager().addAPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
 						

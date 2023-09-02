@@ -669,18 +669,19 @@ public abstract class TaskManager implements Serializable {
 		}
 		
 		if (hasActiveTask()) {
+			
 			String currentDes = currentTask.getDescription();
-			String taskName = currentTask.getName();
-			
-			// Note: make sure robot's 'Sleep Mode' won't return false
-			if (currentDes.contains(SLEEPING)
-				|| currentDes.contains(EVA)
-				|| taskName.contains(AIRLOCK)
-				|| taskName.contains(DIG))
-				return false;
-			
+//			String taskName = currentTask.getName();
+	
 			if (newTask.getDescription().equalsIgnoreCase(currentDes))
 				return false;	
+		
+			if (isFilteredTask(currentDes))
+				return false;
+			
+			if (newTask.getName().equals(getTaskName())) {
+				return false;
+			}
 		}
 		
 		// End current task and replace with the new task
@@ -688,6 +689,18 @@ public abstract class TaskManager implements Serializable {
 		
 		return true;
 	}
+	
+
+	protected boolean isFilteredTask(String des) {
+		if (des.contains(SLEEPING)
+				|| des.contains(EVA)
+				|| des.contains(AIRLOCK)
+				|| des.contains(DIG))
+				return true;
+		
+		return false;
+	}
+	
 	
 	/**
 	 * Ends current task and replaces old task with a new task.
@@ -700,13 +713,13 @@ public abstract class TaskManager implements Serializable {
 			lastTask = currentTask;
 			
 			// Inform that the current task will be terminated
-			if ((currentTask != null) && !currentTask.isDone()) {
+			if (hasActiveTask()) {
 				String des = currentTask.getDescription();
 				
 				currentTask.endTask();
 				
 				logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
-							+ newTask.getDescription() + "'.");
+							+ newTask.getName() + "'.");
 			}
 			
 			// Make the new task as the current task
@@ -759,10 +772,12 @@ public abstract class TaskManager implements Serializable {
 		if (countDownTime >= 0) {
 			double oldDuration = currentTask.getDuration();
 			double newDuration = countDownTime + currentTask.getTimeCompleted();
-			currentTask.setDuration(newDuration);
 			
-			logger.info(worker, "Updating current task '" + currentTask.getName() 
-				+ "''s duration: " + oldDuration + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
+			if (newDuration < oldDuration) {
+				currentTask.setDuration(newDuration);
+				logger.info(worker, "Updating current task '" + currentTask.getName() 
+					+ "''s duration: " + Math.round(oldDuration * 10.0)/10.0 + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
+			}
 		}
 		
 		// Potential ClassCast but only temp. measure

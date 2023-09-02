@@ -48,10 +48,12 @@ public class DigLocalIceMeta extends DigLocalMeta {
     	if (settlement != null) {
     		
     		rate = settlement.getIceCollectionRate();
-	    	if (rate <= 0D) {
-	    		return 0D;
+	    	if (rate <= 0) {
+	    		return 0;
 	    	}
     	}
+    	else
+    		return 0;
     	
         // Check if settlement has DIG_LOCAL_ICE override flag set.
         if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE)) {

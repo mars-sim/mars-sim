@@ -120,7 +120,7 @@ public abstract class DigLocalMeta extends FactoryMetaTask {
         	result *= Math.max(1, 1.5 * (33 - citizen));
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
-        result *= 5.0 / (1 + settlement.getNumOutsideEVA());
+        result *= 1.0 / (1 + settlement.getNumOutsideEVA());
 
         // Encourage to get this task done early in a work shift
         result *= getShiftModifier(person);
