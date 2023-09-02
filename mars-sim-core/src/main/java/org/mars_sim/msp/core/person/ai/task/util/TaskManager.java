@@ -763,13 +763,14 @@ public abstract class TaskManager implements Serializable {
 	 *
 	 * @param task				the pending task 
 	 * @param allowDuplicate	Can this pending task be repeated in the queue
-	 * @param countDownTime 	the count down time for executing the new task
+	 * @param countDownTime 	the count down time for executing the new pending task
 	 * @param duration 			the duration of the new task
 	 * @return
 	 */
 	public boolean addAPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
 		
-		if (countDownTime >= 0) {
+		// Shorten the remaining duration of the current task so as to execute the pending time right after the countDownTime in a timely manner
+		if (currentTask != null && countDownTime >= 0) {
 			double oldDuration = currentTask.getDuration();
 			double newDuration = countDownTime + currentTask.getTimeCompleted();
 			
