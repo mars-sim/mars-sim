@@ -253,16 +253,23 @@ public class PersonTaskManager extends TaskManager {
 //					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
 				}
 				
-				else if (!newTask.getName().equals(getTaskName())) {
+				else if (currentTask != null 
+					&& !newTask.getName().equals(getTaskName())
+					&& !newTask.getDescription().equals(currentTask.getDescription())
+					&& !isFilteredTask(currentTask.getDescription())) {
+					
 					replaceTask(newTask);
 					removePendingTask(pending);
 				}
+				
+				// Warning: do NOT need to call super.startNewTask()
+				// or else the newTask will be replaced
+				return;
 			}
 		}
 
 		super.startNewTask();
 	}
-
 
 	@Override
 	protected Task createTask(TaskJob selectedWork) {

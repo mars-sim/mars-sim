@@ -1164,7 +1164,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Pass pulse to Citizens that are not dead. Thos etht are buried are removed.
+	 * Passes a pulse to citizens that are not dead. Those that are buried are removed.
 	 */
 	private void timePassingCitizens(ClockPulse pulse) {
 		List<Person> remove = null;
