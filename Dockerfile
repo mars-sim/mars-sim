@@ -7,7 +7,7 @@ WORKDIR /app
 COPY mars-sim-console.jar mars-sim-console.jar
 
 # The folder /app/data/mars-sim build be a bind volume if the simulation state is persistent
-ENV JAVA_OPTS="-Xmx1536m"
+ENV JAVA_OPTS="-Xmx2048m"
 
 # Attempt to load if saved simulation is present or new if not. Use a different data directory that is mapped to a 
 # Docker volume
