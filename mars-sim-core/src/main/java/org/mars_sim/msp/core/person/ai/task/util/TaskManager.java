@@ -776,7 +776,7 @@ public abstract class TaskManager implements Serializable {
 			if (newDuration < oldDuration) {
 				currentTask.setDuration(newDuration);
 				logger.info(worker, "Updating current task '" + currentTask.getName() 
-					+ "''s duration: " + Math.round(oldDuration * 10.0)/10.0 + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
+					+ "'  duration: " + Math.round(oldDuration * 10.0)/10.0 + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
 			}
 		}
 		

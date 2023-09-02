@@ -45,7 +45,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	
     	if (settlement != null) {
     		
-    		rate = settlement.getIceCollectionRate();
+    		rate = settlement.getRegolithCollectionRate();
 	    	if (rate <= 0) {
 	    		return 0;
 	    	}
