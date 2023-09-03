@@ -102,11 +102,13 @@ public class MissionLoadVehicleStep extends MissionStep {
     private Task createLoadTask(Worker worker, Vehicle vehicle) {
         boolean inGarage = vehicle.isInAGarage();
         VehicleMission target = (VehicleMission) getMission();
+        if (worker.isInSettlement())
+        	return null;
         if (worker instanceof Person p) {
             if (inGarage) {
-                return new LoadVehicleEVA(p, target);
+                return new LoadVehicleGarage(p, target);
             }
-            return new LoadVehicleGarage(p, target);
+            return new LoadVehicleEVA(p, target);
         }
         else if ((worker instanceof Robot r) && inGarage) {
             return new LoadVehicleGarage(r, target);
