@@ -282,7 +282,7 @@ public class Exploration extends EVAMission
 
 		// If person can explore the site, start that task.
 		if (ExploreSite.canExploreSite(person, getRover())) {
-			assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
+			assignTask(person, new ExploreSite(person, currentSite, getRover()));
 		}
 
 		return true;

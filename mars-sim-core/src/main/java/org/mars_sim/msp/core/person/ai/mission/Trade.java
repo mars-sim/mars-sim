@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ObjectiveType;
@@ -263,22 +264,33 @@ public class Trade extends RoverMission implements CommerceMission {
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 				if (member instanceof Person person) {
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
-					if (walk != null) {
-						assignTask(person, walk);
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
-						logger.severe(person, "Is unable to walk to building " + destinationBuilding);
+						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				}
 				else if (member instanceof Robot robot) {
-					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
-					if (walkingTask != null) {
-//						assignTask(robot, walkingTask);
-						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
+					
+					WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
-						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
+						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				}
 			}
@@ -458,11 +470,16 @@ public class Trade extends RoverMission implements CommerceMission {
 					// Check if an EVA suit is available
 					EVASuitUtil.fetchEVASuitFromAny(person, v, tradingSettlement);
 
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					// Walk back to the vehicle and be ready to embark and go home
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
-					if (walk != null) {
-						assignTask(person, walk);
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.warning(person, "Unable to start walking to " + v + ".");
+						}
 					}
+
 					else {
 						endMissionProblem(person, "Unable to enter rover " + v.getName());
 					}

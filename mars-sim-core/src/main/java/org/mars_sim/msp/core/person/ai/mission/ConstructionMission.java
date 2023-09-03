@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
-import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -788,7 +787,7 @@ public class ConstructionMission extends AbstractMission
 		if (!getPhaseEnded()) {
 			// Assign construction task to member.
 			Person p = (Person) member;
-			if (RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
+			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& member.getUnitType() == UnitType.PERSON
 				&& ConstructBuilding.canConstruct(p, site)) {
 

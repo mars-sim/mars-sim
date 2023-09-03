@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -373,11 +374,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// If person is not aboard the rover, board the rover and be ready to depart.
 				if (!getRover().isCrewmember(person)) {
 
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
-					if (walk != null) {
-						boolean canDo = assignTask(person, walk);
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 						if (!canDo) {
-							logger.warning(person, "Unable to start walk to " + v + ".");
+							logger.warning(person, "Unable to start walking to " + v + ".");
 						}
 					}
 
@@ -389,13 +392,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			else if (member instanceof Robot robot) {
-				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
-				if (walkingTask != null) {
-					boolean canDo = assignTask(robot, walkingTask);
+				
+				WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, 0, v);
+				boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
+				
+				if (canWalk) {
+					boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
 					if (!canDo) {
-						logger.warning(robot, "Unable to walk to " + v + ".");
+						logger.warning(robot, "Unable to start walk to " + v + ".");
 					}
 				}
+
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
 							v.getName()));
@@ -692,58 +699,58 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued
 	 *
 	 * @param rover
-	 * @param p
+	 * @param person
 	 * @param disembarkSettlement
 	 */
-	private void walkToAirlock(Rover rover, Person p, Settlement disembarkSettlement) {
+	private void walkToAirlock(Rover rover, Person person, Settlement disembarkSettlement) {
 
-		if (p.isInVehicle() || p.isOutside()) {
+		if (person.isInVehicle() || person.isOutside()) {
 			// Get random inhabitable building at emergency settlement.
 			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
-				boolean hasStrength = p.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
+				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
-				if (walk != null) {
-					// walk back home
-					boolean canDo = assignTask(p, walk);
+				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, rover);
+				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+				
+				if (canWalk) {
+					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(p, "Unable to walk to " + destinationBuilding + ".");
+						logger.warning(person, "Unable to walk to " + destinationBuilding + ".");
 					}
-//					p.getMind().getTaskManager().getTask().addSubTask(walk);
 				}
 
 				else if (!hasStrength) {
 					// Note 1: Help this person put on an EVA suit
 					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
-					logger.info(p,
-							 Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(),
+					logger.info(person,
+							 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
 
 					// Initiate an rescue operation
 					// Note: Gets a lead person to perform it and give him a rescue badge
-					rescueOperation(rover, p, disembarkSettlement);
+					rescueOperation(rover, person, disembarkSettlement);
 
-					logger.info(p, "Transported to ("
-							+ p.getPosition() + ") in "
-							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
+					logger.info(person, "Transported to ("
+							+ person.getPosition() + ") in "
+							+ person.getBuildingLocation().getNickName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?
 		
-    				p.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
+    				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
 
 				}
 				else {
-					logger.severe(p, "Cannot find a walk path from "
+					logger.severe(person, "Cannot find a walk path from "
 									+ rover.getName() + " to " + disembarkSettlement.getName());
 				}
 			}
 
 			else {
-				logger.severe(p, 20_000L, "No airlock found at " + disembarkSettlement);
+				logger.severe(person, 20_000L, "No airlock found at " + disembarkSettlement);
 			}
 		}
 	}
