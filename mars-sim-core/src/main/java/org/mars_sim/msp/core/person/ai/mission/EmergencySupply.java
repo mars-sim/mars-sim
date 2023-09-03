@@ -378,22 +378,16 @@ public class EmergencySupply extends RoverMission {
 		if (!roverUnloaded) {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
-				// TODO Refactor to allow robots.
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
 				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
-					} else {
-						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-							assignTask(person, new UnloadVehicleEVA(person, getRover()));
-						}
+					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+						assignTask(person, new UnloadVehicleEVA(person, getRover()));
 					}
 				}
-				else if (member instanceof Robot robot) {
-					if (isInAGarage()) {
-						assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
-					}
+				else if (member instanceof Robot robot && isInAGarage()) {
+					assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
 				}
 				
 				return;
@@ -415,19 +409,16 @@ public class EmergencySupply extends RoverMission {
 		if (!isDone() && !isVehicleLoaded()) {
 			// Random chance of having person load (this allows person to do other things
 			// sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
-				// TODO Refactor to allow robots.
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
 				if (member instanceof Person person) {
 					if (isInAGarage()) {
-						assignTask(person,
-								new LoadVehicleGarage(person, this));
-					} else {
-						// Check if it is day time.
-						if (EVAOperation.isGettingDark(person)) {
-							assignTask(person,
-									new LoadVehicleEVA(person, this));
-						}
+						assignTask(person, new LoadVehicleGarage(person, this));
+					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+						assignTask(person, new LoadVehicleEVA(person, this));
 					}
+				}
+				else if (member instanceof Robot robot && isInAGarage()) {
+					assignTask(robot, new LoadVehicleGarage(robot, this));
 				}
 			}
 		} else {

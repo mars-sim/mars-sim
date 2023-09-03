@@ -404,17 +404,12 @@ public class SalvageMission extends AbstractMission
 			setPhaseEnded(true);
 
 		if (!getPhaseEnded()) {
-
 			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(75D)) {
-
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(75D)) {
 				// Assign salvage building task to person.
-				// TODO Refactor.
-				if (member instanceof Person person) {
-					if (SalvageBuilding.canSalvage(person)) {
-						assignTask(person,
-								new SalvageBuilding(person, constructionStage, constructionSite, constructionVehicles));
-					}
+				if (member instanceof Person person && SalvageBuilding.canSalvage(person)) {
+					assignTask(person,
+							new SalvageBuilding(person, constructionStage, constructionSite, constructionVehicles));
 				}
 			}
 		}

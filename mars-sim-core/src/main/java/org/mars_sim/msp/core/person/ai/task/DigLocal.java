@@ -416,6 +416,9 @@ public abstract class DigLocal extends EVAOperation {
 			else
 				newResourceID = resourceID;
 		}
+		else if (resourceID == ResourceUtil.iceID) {
+			newResourceID = resourceID;
+		}
 		
 		// Add to the daily output
 		settlement.addOutput(newResourceID, amount, effort);

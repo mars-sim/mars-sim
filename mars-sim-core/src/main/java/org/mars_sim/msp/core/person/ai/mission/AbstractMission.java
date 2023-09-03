@@ -803,7 +803,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null && currentTask.getName().equals(task.getName()))
 			// If the person has been doing this task, 
 			// then there is no need of adding it.
-			return true;
+			return false;
 		
         if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().checkAndReplaceTask(task);
@@ -835,7 +835,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (currentTask != null && currentTask.getName().equals(task.getName()))
 			// If the robot has been doing this task, 
 			// then there is no need of adding it.
-			return true;
+			return false;
 		
 		return robot.getBotMind().getBotTaskManager().checkAndReplaceTask(task);
 	}

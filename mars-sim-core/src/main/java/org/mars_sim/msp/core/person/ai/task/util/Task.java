@@ -314,7 +314,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param reason Reason for the end.
 	 */
 	protected void clearTask(String reason) {
-		logger.warning(worker, "Early end of " + name + ": " + reason);
+		logger.warning(worker, "Ended '" + name + "' early. " + reason);
 		endTask();
 	}
 

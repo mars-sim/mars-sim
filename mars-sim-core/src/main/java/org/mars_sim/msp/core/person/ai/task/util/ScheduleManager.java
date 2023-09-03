@@ -63,14 +63,14 @@ public class ScheduleManager implements Serializable { //, Temporal {
 						// Account for a person being outside
 						if (person.isOutside()) {
 							// Add DigLocalReogth as a pending task
-							person.getTaskManager().addAPendingTask(SLEEP, false, TIME_GAP * 2, STANDARD_SLEEP_TIME - TIME_GAP);
+							person.getTaskManager().addPendingTask(SLEEP, false, TIME_GAP * 2, STANDARD_SLEEP_TIME - TIME_GAP);
 						}
 						else {	
-							person.getTaskManager().addAPendingTask(SLEEP, false, TIME_GAP, STANDARD_SLEEP_TIME);
+							person.getTaskManager().addPendingTask(SLEEP, false, TIME_GAP, STANDARD_SLEEP_TIME);
 //							person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
 						}
 						// Add DigLocalReogth as a pending task
-						person.getTaskManager().addAPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
+						person.getTaskManager().addPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
 						
 						logger.info(person, "Getting some sleep before executing the appointed task '" + ap.getTaskName() + "'.");
 						// Remove this appointment once executed
@@ -79,7 +79,7 @@ public class ScheduleManager implements Serializable { //, Temporal {
 				}
 				else if (ap.getMillisolInt() - STANDARD_PREPARATION_TIME <= pulse.getMarsTime().getMillisolInt() ) {
 					// Add a pending task
-					person.getTaskManager().addAPendingTask(ap.getTaskName(), false, STANDARD_PREPARATION_TIME, ap.getDuration());
+					person.getTaskManager().addPendingTask(ap.getTaskName(), false, STANDARD_PREPARATION_TIME, ap.getDuration());
 					
 					logger.info(person, "Ready to show up for the appointed task '" + ap.getTaskName() + "'.");
 					// Remove this appointment once executed

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-09-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -58,7 +58,6 @@ public class PrescribeMedication extends Task {
 
 	// Data members.
 	private Person patient = null;
-	//private Medication medication = null;
 
 	/**
 	 * Constructor.
@@ -68,13 +67,10 @@ public class PrescribeMedication extends Task {
         // Use task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
-        // Determine patient needing medication.
-        //if (patient == null)
+        // Determine patient needing medication
         patient = determinePatient(person);
         if (patient != null) {
-            // Determine medication to prescribe.
-            //medication = determineMedication(patient);
-
+        	
             if (person.isOutside())
             	endTask();
             // If in settlement, move doctor to building patient is in.
@@ -85,7 +81,7 @@ public class PrescribeMedication extends Task {
             	walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false, -1, -1);
+            	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
             }
             else
             	endTask();
@@ -104,13 +100,9 @@ public class PrescribeMedication extends Task {
         // Use task constructor.
         super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
-        // Determine patient needing medication.
-        //if (patient == null)
+        // Determine patient needing medication
         patient = determinePatient(robot);
         if (patient != null) {
-            // Determine medication to prescribe.
-            //medication = determineMedication(patient);
-
             // If in settlement, move doctor to building patient is in.
             if (robot.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
@@ -119,12 +111,11 @@ public class PrescribeMedication extends Task {
             	walkToActivitySpotInBuilding(robot.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
             	
-            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false, -1, -1);
+            	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
             }
             else
             	endTask();
-            //logger.info(robot.getName() + " prescribing " + medication.getName() +
-            //        " to " + patient.getName());
+
         }
         else {
             endTask();
@@ -135,75 +126,9 @@ public class PrescribeMedication extends Task {
         setPhase(MEDICATING);
     }
 
-
-//	   public static int determineNumPatients(Unit doctor) {
-//	        int result = 0;
-//	        Person p = null;
-//	        Robot r = null;
-//	        if (doctor instanceof Person)
-//	        	p = (Person) doctor;
-//	        else
-//	        	r = (Robot) doctor;
-//	        
-//	        // Get possible patient list.
-//	        // Note: Doctor can also prescribe medication for himself.
-//	        Collection<Person> patientList = null;
-//	        
-//	        if (p != null) {
-//		        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
-//		            patientList = p.getSettlement().getInhabitants();
-//		        }
-//		        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
-//		            Vehicle vehicle = p.getVehicle();
-//		            if (vehicle instanceof Crewable) {
-//		                Crewable crewVehicle = (Crewable) vehicle;
-//		                patientList = crewVehicle.getCrew();
-//		            }
-//		        }
-//	        }
-//	        
-//	        else if (r != null) {
-//		        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
-//		            patientList = r.getSettlement().getInhabitants();
-//		        }
-//		        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
-//		            Vehicle vehicle = r.getVehicle();
-//		            if (vehicle instanceof Crewable) {
-//		                Crewable crewVehicle = (Crewable) vehicle;
-//		                patientList = crewVehicle.getCrew();
-//		            }
-//		        }
-//	        }
-//
-//	        // Determine patient.
-//	        if (patientList != null) {
-//	            Iterator<Person> i = patientList.iterator();
-//	            while (i.hasNext()) {
-//	                Person person = i.next();
-//	                PhysicalCondition condition = person.getPhysicalCondition();
-//	                RadiationExposure exposure = condition.getRadiationExposure();
-//	                if (!condition.isDead()) {
-//	                	if (condition.isStressedOut()) {
-//	                        // Only prescribing anti-stress medication at the moment.
-//	                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
-//	                            result++;
-//	                        }
-//	                	}
-//	                	else if (exposure.isSick()) {
-//	                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
-//	                            result++;
-//	                        }
-//	                	}
-//	                }
-//	            }
-//	        }
-//
-//	        return result;
-//	    }
-
-	
     /**
      * Determines if there is a patient nearby needing medication.
+     * 
      * @param doctor the doctor prescribing the medication.
      * @return patient if one found, null otherwise.
      */
@@ -259,14 +184,6 @@ public class PrescribeMedication extends Task {
         if (doctor.isInSettlement()) {
             patientList = doctor.getSettlement().getIndoorPeople();
         }
-       
-//        else if (loc == LocationSituation.IN_VEHICLE) {
-//            Vehicle vehicle = doctor.getVehicle();
-//            if (vehicle instanceof Crewable) {
-//                Crewable crewVehicle = (Crewable) vehicle;
-//                patientList = crewVehicle.getCrew();
-//            }
-//        }
 
         // Determine patient.
         if (patientList != null) {
@@ -294,20 +211,9 @@ public class PrescribeMedication extends Task {
         return result;
     }
 
-
-//    /**
-//     * Determines a medication for the patient.
-//     * @param patient the patient to medicate.
-//     * @return medication.
-//    */ 
-//    private Medication determineMedication(Person patient) {
-//        // Only allow anti-stress medication for now.
-//        return new AnxietyMedication(patient); 
-//    }
-
-    
     /**
      * Performs the medicating phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
@@ -316,61 +222,57 @@ public class PrescribeMedication extends Task {
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
             if (patient != null && patient.getSettlement() != null && patient.getBuildingLocation() != null) {
-               // if (medication != null) {
-                    PhysicalCondition condition = patient.getPhysicalCondition();
+                PhysicalCondition condition = patient.getPhysicalCondition();
 
-                    boolean needMeds = false;
-                    Medication medication = null;
-                    
-                    if (condition.isRadiationPoisoned()) {
-                    
-                    	medication = new RadioProtectiveAgent(patient);                    
-	                    // Check if patient already has taken medication.
-	                    if (!condition.hasMedication(medication.getName())) {
-	                        // Medicate patient.
-	                        condition.addMedication(medication);
-	                        needMeds = true;              
-	                    }
+                boolean needMeds = false;
+                Medication medication = null;
+                
+                if (condition.isRadiationPoisoned()) {
+                
+                	medication = new RadioProtectiveAgent(patient);                    
+                    // Check if patient already has taken medication.
+                    if (!condition.hasMedication(medication.getName())) {
+                        // Medicate patient.
+                        condition.addMedication(medication);
+                        needMeds = true;              
                     }
-                    
-                    else if (condition.isStressedOut()) {
-                    	
-                    	medication = new AnxietyMedication(patient);                	
-	                    // Check if patient already has taken medication.
-	                    if (!condition.hasMedication(medication.getName())) {
-	                        // Medicate patient.
-	                        condition.addMedication(medication);
-	                        needMeds = true;            		
-	                    }
+                }
+                
+                else if (condition.isStressedOut()) {
+                	
+                	medication = new AnxietyMedication(patient);                	
+                    // Check if patient already has taken medication.
+                    if (!condition.hasMedication(medication.getName())) {
+                        // Medicate patient.
+                        condition.addMedication(medication);
+                        needMeds = true;            		
                     }
+                }
+                
+                if (needMeds) {
+                	StringBuilder phrase = new StringBuilder();
                     
-                    if (needMeds) {
-                    	StringBuilder phrase = new StringBuilder();
-                        
-                    	if (!worker.equals(patient)) {
-                    		phrase = phrase.append("Prescribing ").append(medication.getName())
-                    			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                	if (!worker.equals(patient)) {
+                		phrase = phrase.append("Prescribing ").append(medication.getName())
+                			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                			.append("."); 
+                	}
+                	else {
+                		phrase = phrase.append("Is self-prescribing ").append(medication.getName())
+                    			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
                     			.append("."); 
-                    	}
-                    	else {
-                    		phrase = phrase.append("Is self-prescribing ").append(medication.getName())
-                        			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
-                        			.append("."); 
-                    	}
-                		logger.log(worker, Level.INFO, 5000,  phrase.toString());
-                    }
-                    
-                    produceMedicalWaste();
+                	}
+            		logger.log(worker, Level.INFO, 5000,  phrase.toString());
+                }
+                
+                produceMedicalWaste();
 
-                    Building b = patient.getBuildingLocation();
-                    if (b != null && b.hasFunction(FunctionType.MEDICAL_CARE))
-                    	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
-                //}
-               // else throw new IllegalStateException("medication is null");
+                Building b = patient.getBuildingLocation();
+                if (b != null && b.hasFunction(FunctionType.MEDICAL_CARE))
+                	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
             }
             else 
             	logger.info(patient, "Is not in a proper place to receive medication.");
-            	//throw new IllegalStateException ("patient is null");
         }
 
         // Add experience.

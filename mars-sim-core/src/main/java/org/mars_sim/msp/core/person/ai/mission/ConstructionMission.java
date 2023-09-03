@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -649,7 +650,9 @@ public class ConstructionMission extends AbstractMission
 		Person p = (Person) member;
 		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)
 			&& member.getUnitType() == UnitType.PERSON) {
-			boolean accepted = assignTask(p, new DigLocalRegolith(p));
+			
+			boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.SIMPLE_NAME);
+
 			if (accepted)
 				logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
 		}		
@@ -788,6 +791,7 @@ public class ConstructionMission extends AbstractMission
 			if (RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& member.getUnitType() == UnitType.PERSON
 				&& ConstructBuilding.canConstruct(p, site)) {
+
 				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, constructionVehicles));
 			}
 		}
