@@ -415,19 +415,20 @@ public class EmergencySupply extends RoverMission {
 		if (!isDone() && !isVehicleLoaded()) {
 			// Random chance of having person load (this allows person to do other things
 			// sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
 				// TODO Refactor to allow robots.
 				if (member instanceof Person person) {
 					if (isInAGarage()) {
-						assignTask(person,
-								new LoadVehicleGarage(person, this));
+						assignTask(person, new LoadVehicleGarage(person, this));
 					} else {
 						// Check if it is day time.
 						if (EVAOperation.isGettingDark(person)) {
-							assignTask(person,
-									new LoadVehicleEVA(person, this));
+							assignTask(person, new LoadVehicleEVA(person, this));
 						}
 					}
+				}
+				else if (member instanceof Robot robot && isInAGarage()) {
+					assignTask(robot, new LoadVehicleGarage(robot, this));
 				}
 			}
 		} else {
