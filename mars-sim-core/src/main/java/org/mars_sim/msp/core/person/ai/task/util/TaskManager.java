@@ -750,12 +750,10 @@ public abstract class TaskManager implements Serializable {
 	 * Adds a pending task if it is not in the pendingTask list yet.
 	 *
 	 * @param task
-	 * @param countDownTime
-	 * @param duration
 	 * @return
 	 */
-	public boolean addAPendingTask(String taskName, int countDownTime, int duration) {
-		return addAPendingTask(taskName, false, countDownTime, duration);
+	public boolean addPendingTask(String taskName) {
+		return addPendingTask(taskName, false, 0, 0);
 	}
 	
 	/**
@@ -767,10 +765,10 @@ public abstract class TaskManager implements Serializable {
 	 * @param duration 			the duration of the new task
 	 * @return
 	 */
-	public boolean addAPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
+	public boolean addPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
 		
 		// Shorten the remaining duration of the current task so as to execute the pending time right after the countDownTime in a timely manner
-		if (currentTask != null && countDownTime >= 0) {
+		if (currentTask != null && countDownTime > 0) {
 			double oldDuration = currentTask.getDuration();
 			double newDuration = countDownTime + currentTask.getTimeCompleted();
 			
