@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,8 +73,8 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -116,7 +117,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(Type.CONFIGURATION,
+	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(PreferenceCategory.CONFIGURATION,
 																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
 	
@@ -2280,7 +2281,7 @@ public class Settlement extends Structure implements Temporal,
 	public void setProcessOverride(OverrideType type, boolean override) {
 		logger.log(this, Level.CONFIG, 0L, "Player " + (override ? "enables" : "disable")
 						+ " the override on '" + type.toString() + "'.");
-		PreferenceKey overrideKey = new PreferenceKey(Type.PROCESS_OVERRIDE, type.name());
+		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
 		preferences.put(overrideKey, Boolean.valueOf(override));
 	}
 
@@ -2291,7 +2292,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		PreferenceKey overrideKey = new PreferenceKey(Type.PROCESS_OVERRIDE, type.name());
+		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
 		Object result = preferences.get(overrideKey);
 		if (result instanceof Boolean b) {
 			return b.booleanValue();
@@ -2952,7 +2953,7 @@ public class Settlement extends Structure implements Temporal,
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
 		double newValue = (disable ? 0D : 1D);
-		preferences.put(new PreferenceKey(Type.MISSION_WEIGHT, mission.name()), newValue);
+		preferences.put(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name()), newValue);
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -2970,7 +2971,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return (getPreferenceModifier(new PreferenceKey(Type.MISSION_WEIGHT, mission.name())) > 0D);
+		return (getPreferenceModifier(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name())) > 0D);
 	}
 
 	/**
@@ -3772,10 +3773,33 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the preference that this Settlement influences
+	 * Get the preference that this Settlement influences.
+	 * @return A read onycopy of preferences
 	 */
 	public Map<PreferenceKey,Object> getPreferences() {
-		return preferences;
+		return Collections.unmodifiableMap(preferences);
+	}
+
+	/**
+	 * Update a saved preference value. Check it is the correct type for the category
+	 * @param key Key of the preference
+	 * @param value New value.
+	 */
+	public void setPreference(PreferenceKey key, Object value) {
+		switch (key.getCategory().getValueType()) {
+			case BOOLEAN:
+				if (!(value instanceof Boolean)) {
+					throw new IllegalArgumentException("Value is not type Boolean");
+				}
+				break;
+			case DOUBLE:
+				if (!(value instanceof Double)) {
+					throw new IllegalArgumentException("Value is not type Double");
+				}
+				break;
+		}
+		logger.info(this, "Preference "+ key + " now has value " + value);
+		preferences.put(key, value);
 	}
 
 	/**

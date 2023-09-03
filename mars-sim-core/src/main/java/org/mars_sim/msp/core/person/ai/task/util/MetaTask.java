@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -250,7 +251,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score = score * person.getAssociatedSettlement().getPreferenceModifier(
-							new PreferenceKey(PreferenceKey.Type.TASK, getID()));
+							new PreferenceKey(PreferenceCategory.TASK_WEIGHT, getID()));
 
         if (score < 0) score = 0;
         return score;

@@ -15,22 +15,15 @@ public class PreferenceKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-     * Type of Preference
-     */
-    public enum Type {
-        TASK, MISSION_WEIGHT, SCIENCE, CONFIGURATION, PROCESS_OVERRIDE
-    };
-
-    private Type type;
+	private PreferenceCategory type;
     private String name;
     
-    public PreferenceKey(Type type, String name) {
+    public PreferenceKey(PreferenceCategory type, String name) {
         this.type = type;
         this.name = name;
     }
 
-    public Type getType() {
+    public PreferenceCategory getCategory() {
         return type;
     }
 
