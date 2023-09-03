@@ -1216,8 +1216,8 @@ public class Farming extends Function {
 	 * 
 	 * @return
 	 */
-	public int getTendingScore() {
-		int score = 0;
+	public double getTendingScore() {
+		double score = 0;
 		for (Crop c : cropList) {
 			score += c.getTendingScore();
 		}

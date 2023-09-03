@@ -64,6 +64,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/** The minimum time offset [in millisols] for a crop that requires work. */
 	public static final double CROP_RESILIENCY = -100;
 	
+	public static final double POSITIVE_ENTROPY = 0;
+	
 	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
 	private static final double CHECK_CROP_PERIOD = 4;
@@ -436,23 +438,29 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				)
 			return true;
 		
-		return currentWorkRequired > CROP_RESILIENCY;
+		return currentWorkRequired > POSITIVE_ENTROPY ;
 	}
 
 	/**
 	 * Gets the priority score for this crop based on the phase.
 	 */
-	public int getTendingScore() {
+	public double getTendingScore() {
+		double score = 0;
+		if (currentWorkRequired > POSITIVE_ENTROPY) {
+			score = (int)Math.floor(currentWorkRequired / 50); 
+		}
 		switch (currentPhase.getPhaseType()) {
 			case HARVESTING:
-				return 3;
+				score = score + 3;
 			case PLANTING:
-				return 1;
+				score = score + 1;
 			case INCUBATION:
-				return 2;
+				score = score + 1.5;
 			default:
-				return (currentWorkRequired > CROP_RESILIENCY ? 1 : 0);
+				score = score + 2;
 		}
+		
+		return score;
 	}
 
 	/**

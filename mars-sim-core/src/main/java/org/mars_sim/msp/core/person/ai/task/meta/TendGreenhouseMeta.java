@@ -126,16 +126,16 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            double result = farm.getTendingScore() * 2D;
+            double score = farm.getTendingScore();
 
             // Settlement factors
-            result *= goodsFactor;
+            score *= goodsFactor;
 
-            if (result > 0) {
+            if (score > 0) {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
                 workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
                 workTask = Math.max(1, workTask);
-                tasks.add(new CropTaskJob(this, farm, workTask, result));
+                tasks.add(new CropTaskJob(this, farm, workTask, score));
             }
         }
 
