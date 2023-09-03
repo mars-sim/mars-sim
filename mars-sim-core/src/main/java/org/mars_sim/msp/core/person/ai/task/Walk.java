@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Walk.java
- * @date 2021-10-21
+ * @date 2023-09-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -97,7 +97,8 @@ public class Walk extends Task {
 	public Walk(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
-		unitManager = Simulation.instance().getUnitManager();
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
 
 		LocalBoundedObject targetObject = null;
 		if (person.isInSettlement()) {
@@ -198,7 +199,7 @@ public class Walk extends Task {
 	 * @param person         the person performing the task.
 	 * @param walkingSteps	 Precalculated and verified walking steps
 	 */
-	private Walk(Person person, WalkingSteps walkingSteps) {
+	public Walk(Person person, WalkingSteps walkingSteps) {
 		super("Walk", person, false, false, 0D, null, 100D);
 
 		this.walkingSteps = walkingSteps;
@@ -223,7 +224,7 @@ public class Walk extends Task {
 		setPhase(getWalkingStepPhase());
 	}
 
-	private Walk(Robot robot, WalkingSteps walkingSteps) {
+	public Walk(Robot robot, WalkingSteps walkingSteps) {
 		super("Walk", robot, false, false, 0D, null, 100D);
 
 		// Initialize data members.
@@ -260,6 +261,20 @@ public class Walk extends Task {
 		return null;
 	}
 
+	/**
+	 * This is a factory method to create a Walk task if there is a valid path.
+	 *
+	 * @param person Person doing the walking
+	 * @param destPosition FInal destination within an interior object
+	 * @param destZ Vertical destination
+	 * @param destObject Destination
+	 * @return
+	 */
+	public static boolean canWalk(Person person, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destZ, destObject);
+		return canWalkAllSteps(person, walkingSteps);
+	}
+
 
 	/**
 	 * This is a factory method to create a Walk task if there is a valid path.
@@ -280,18 +295,32 @@ public class Walk extends Task {
 	}
 	
 	/**
+	 * This is a factory method to create a Walk task if there is a valid path.
+	 *
+	 * @param robot Robot doing the walking
+	 * @param destPosition FInal destination within an interior object
+	 * @param destZ Vertical destination
+	 * @param destObject Destination
+	 * @return
+	 */
+	public static boolean canWalk(Robot robot, LocalPosition destPosition, double destZ, LocalBoundedObject destObject) {
+		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destZ, destObject);
+		return canWalkAllSteps(robot, walkingSteps);
+	}
+	
+	/**
 	 * Check if person can walk to a local destination.
 	 *
 	 * @param person       the person.
 	 * @param walkingSteps the walking steps.
 	 * @return true if a person can walk all the steps to the destination.
 	 */
-	private static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
-
-		boolean result = walkingSteps.canWalkAllSteps();
-
+	public static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
 		// Check if all steps can be walked.
-
+		boolean result = walkingSteps.canWalkAllSteps();
+		if (!result)
+			return false;
+		
         // Check if all airlocks can be exited.
 		// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
 		if (!canExitAllAirlocks(person, walkingSteps)) {
@@ -299,6 +328,18 @@ public class Walk extends Task {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Check if robot can walk to a local destination.
+	 *
+	 * @param robot       the robot.
+	 * @param walkingSteps the walking steps.
+	 * @return true if a person can walk all the steps to the destination.
+	 */
+	public static boolean canWalkAllSteps(Robot robot, WalkingSteps walkingSteps) {
+		// Check if all steps can be walked.
+		return walkingSteps.canWalkAllSteps();
 	}
 	
 	/**
@@ -435,9 +476,6 @@ public class Walk extends Task {
 
 		return result;
 	}
-
-
-
 	
 	/**
 	 * Removes all airlock reservations

@@ -660,9 +660,9 @@ public abstract class TaskManager implements Serializable {
 	/**
 	 * Checks to see if it's okay to replace a task.
 	 * 
-	 * @param newTask the task to be added
+	 * @param newTask the task to be executed
 	 */
-	public boolean checkAndReplaceTask(Task newTask) {
+	public boolean checkReplaceTask(Task newTask) {
 		
 		if (newTask == null) {
 			return false;
@@ -671,8 +671,7 @@ public abstract class TaskManager implements Serializable {
 		if (hasActiveTask()) {
 			
 			String currentDes = currentTask.getDescription();
-//			String taskName = currentTask.getName();
-	
+
 			if (newTask.getDescription().equalsIgnoreCase(currentDes))
 				return false;	
 		
@@ -684,7 +683,7 @@ public abstract class TaskManager implements Serializable {
 			}
 		}
 		
-		// End current task and replace with the new task
+		// Records current task as last task and replaces it with a new task.
 		replaceTask(newTask);
 		
 		return true;
@@ -703,7 +702,7 @@ public abstract class TaskManager implements Serializable {
 	
 	
 	/**
-	 * Ends current task and replaces old task with a new task.
+	 * Records current task as last task and replaces it with a new task.
 	 * 
 	 * @param newTask
 	 */

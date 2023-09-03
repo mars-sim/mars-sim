@@ -806,7 +806,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			return false;
 		
         if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkAndReplaceTask(task);
+			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
 		}
 
 		return canPerformTask;
@@ -837,7 +837,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// then there is no need of adding it.
 			return false;
 		
-		return robot.getBotMind().getBotTaskManager().checkAndReplaceTask(task);
+		return robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 	}
 
 	/**

@@ -111,7 +111,7 @@ public abstract class MissionStep extends ProjectStep {
         }
 
         if (assignTask) {
-            assignTask = worker.getTaskManager().checkAndReplaceTask(task);
+            assignTask = worker.getTaskManager().checkReplaceTask(task);
         }
         if (!assignTask) {
             logger.warning(worker, "Unable to start " + task.getName());

@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -327,19 +328,15 @@ public class EmergencySupply extends RoverMission {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
 				if (member instanceof Person person) {
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
-					if (walk != null) {
-						assignTask(person, walk);
-					}
-					else {
-						logger.severe("Unable to walk to building " + destinationBuilding);
-					}
-				}
-				else if (member instanceof Robot robot) {
-					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
-					if (walkingTask != null) {
-//						assignTask(robot, walkingTask);
-						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);						
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -438,7 +435,7 @@ public class EmergencySupply extends RoverMission {
 
 			// Move person to random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
-			// TODO Refactor
+
 			if (member instanceof Person person) {
 				if (!person.isDeclaredDead()) {
 					
@@ -449,25 +446,20 @@ public class EmergencySupply extends RoverMission {
 					EVASuitUtil.fetchEVASuitFromAny(person, v, emergencySettlement);
 
 					// If person is not aboard the rover, board rover.
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
-					if (walk != null) {
-						assignTask(person, walk);
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.warning(person, "Unable to start walk to " + v + ".");
+						}
 					}
+					
 					else {
-						endMissionProblem(person, "Cannot enter rover");
+						endMissionProblem(person, "Cannot enter " + v.getName());
 					}
-				}
-			}
-
-			else if (member instanceof Robot robot) {
-				// If robot is not aboard the rover, board rover.
-				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
-				if (walkingTask != null) {
-//					assignTask(robot, walkingTask);
-					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
-				}
-				else {
-					endMissionProblem(robot, "Can not enter Rover");
 				}
 			}
 		}
