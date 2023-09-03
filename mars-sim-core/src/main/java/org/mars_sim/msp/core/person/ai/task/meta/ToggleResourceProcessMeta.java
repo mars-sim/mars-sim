@@ -291,9 +291,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		// Score is influence if a Toggle is active but no one working. Finish Toggles that have started
 		double[] toggleTime = process.getToggleSwitchDuration();
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
-			score = score / 2 + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
+			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
-		return score;
+		return score / 4;
 	}
 
 }
