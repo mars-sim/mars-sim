@@ -40,7 +40,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
         private DeathInfo patient;
 
         public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, double score) {
-			super(owner, "Examine body of " + patient.getPerson().getName(), score);
+			super(owner, "Examine Body of " + patient.getPerson().getName(), score);
             this.patient = patient;
         }
 

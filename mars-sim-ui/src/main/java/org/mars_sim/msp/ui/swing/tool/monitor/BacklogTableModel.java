@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
- * This class model how SettlementTasks are organized and displayed
+ * This class models how SettlementTasks are organized and displayed
  * within the Monitor Window for a settlement.
  */
 @SuppressWarnings("serial")
@@ -32,7 +32,7 @@ implements UnitListener {
 	private static final Class<?>[] columnTypes;
 	
 	private static final int DESC_COL = 0;
-	private static final int BUILDING_COL = 1;
+	private static final int ENTITY_COL = 1;
 	private static final int DEMAND_COL = 2;
 	static final int SCORE_COL = 3;
 
@@ -40,8 +40,8 @@ implements UnitListener {
 	static {
 		columnNames = new String[SCORE_COL + 1];
 		columnTypes = new Class[SCORE_COL + 1];
-		columnNames[BUILDING_COL] = "Building";
-		columnTypes[BUILDING_COL] = String.class;
+		columnNames[ENTITY_COL] = "Entity";
+		columnTypes[ENTITY_COL] = String.class;
 		columnNames[DESC_COL] = "Description";
 		columnTypes[DESC_COL] = String.class;
 		columnNames[DEMAND_COL] =  "Demand";
@@ -82,29 +82,32 @@ implements UnitListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to?
+	 * Has this model got a natural order that the model conforms to ?
 	 * If true, then it implies that the user should not be allowed to order.
 	 */
 	public boolean getOrdered() {
 		return false;
 	}
 
+	/**
+	 * Gets the value of the object.
+	 */
 	protected Object getEntityValue(SettlementTask selectedTask, int columnIndex) {
 		switch(columnIndex) {
-			case BUILDING_COL:
+			case ENTITY_COL:
 				String des = selectedTask.getDescription();
 				int index = des.indexOf(" @");
 				if (index == -1)
 					return "None";
 				else
-					return Conversion.capitalize(des.substring(index).replace("@", "")).trim();
+					return des.substring(index).replace("@", "");
 			case DESC_COL:
 				des = selectedTask.getDescription();
 				index = des.indexOf(" @");
 				if (index == -1)
 					return des;
 				else
-					return Conversion.capitalize(des.substring(0, index));
+					return des.substring(0, index);
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
@@ -144,7 +147,8 @@ implements UnitListener {
 	}
 
 	/**
-	 * Set the Settlement filter
+	 * Sets the Settlement filter.
+	 * 
 	 * @param filter Settlement
 	 */
     public boolean setSettlementFilter(Settlement filter) {
@@ -165,6 +169,9 @@ implements UnitListener {
 		return true;
     }
 
+    /**
+     * Resets tasks.
+     */
 	private void resetTasks() {
 		// Initialize task list; backlog maybe null.
 		List<SettlementTask> tasks = selectedSettlement.getTaskManager().getAvailableTasks();

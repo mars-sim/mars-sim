@@ -91,7 +91,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	}
 
 	/**
-	 * Get repair tasks suitable for this Person as individual tasks if they are inside a Vehicle.
+	 * Gets repair tasks suitable for this Person as individual tasks if they are inside a Vehicle.
+	 * 
 	 * @param person Person looking for Repairs.
 	 */
     @Override
@@ -117,7 +118,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 	
 	/**
-	 * Robots do not get any individual repairs assigned as they never go in a Vehicle
+	 * Robots do not get any individual repairs assigned as they never go in a Vehicle.
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
@@ -125,9 +126,10 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	}
 	
 	/**
-     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param p Person requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -148,8 +150,9 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
+     * 
 	 * @param t Task being scored
-	 * @parma r Robot requesting work.
+	 * @param r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
@@ -162,7 +165,8 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
     }
 
 	/**
-	 * Get a collection of Tasks for any vehicle that needs unloading
+	 * Gets a collection of Tasks for any vehicle that needs unloading.
+	 * 
 	 * @param settlement Settlement to scan for vehicles
 	 */
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
@@ -172,8 +176,9 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	}
 
 	/**
-	 * Create any repair tasks needed for a set of Malfunctionable.
-	 * @parma source Source of repair tasks
+	 * Creates any repair tasks needed for a set of Malfunctionable.
+	 * 
+	 * @param source Source of repair tasks
 	 * @param partStore Where any needed Parts come from
 	 */
     private List<SettlementTask> getRepairTasks(Collection<Malfunctionable> source, EquipmentOwner partStore) {
@@ -210,7 +215,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	}
 
 	/**
-     * Create a repair task for a Malfunction.
+     * Creates a repair task for a Malfunction.
      * 
 	 * @param partsStore Where are spare parts coming from
 	 * @param entity Entity suffering the malfunction
