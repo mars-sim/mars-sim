@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class model how SettlementTasks are organized and displayed
@@ -24,24 +25,23 @@ import org.mars_sim.msp.core.structure.Settlement;
 @SuppressWarnings("serial")
 public class BacklogTableModel extends EntityTableModel<SettlementTask>
 implements UnitListener {
-	
-	protected static final int NUM_INITIAL_COLUMNS = 2;
-	protected static final int NUM_DATA_COL = 7;
 
 	/** Names of Columns. */
 	private static final String[] columnNames;
 	/** Types of columns. */
 	private static final Class<?>[] columnTypes;
-
+	
 	private static final int DESC_COL = 0;
-	private static final int DEMAND_COL = 1;
-	static final int SCORE_COL = 2;
+	private static final int BUILDING_COL = 1;
+	private static final int DEMAND_COL = 2;
+	static final int SCORE_COL = 3;
 
 	
 	static {
-		columnNames = new String[SCORE_COL+1];
-		columnTypes = new Class[SCORE_COL+1];
-
+		columnNames = new String[SCORE_COL + 1];
+		columnTypes = new Class[SCORE_COL + 1];
+		columnNames[BUILDING_COL] = "Building";
+		columnTypes[BUILDING_COL] = String.class;
 		columnNames[DESC_COL] = "Description";
 		columnTypes[DESC_COL] = String.class;
 		columnNames[DEMAND_COL] =  "Demand";
@@ -65,7 +65,7 @@ implements UnitListener {
 	}
 
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
@@ -82,8 +82,8 @@ implements UnitListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to. If this value
-	 * is true, then it implies that the user should not be allowed to order.
+	 * Has this model got a natural order that the model conforms to?
+	 * If true, then it implies that the user should not be allowed to order.
 	 */
 	public boolean getOrdered() {
 		return false;
@@ -91,8 +91,20 @@ implements UnitListener {
 
 	protected Object getEntityValue(SettlementTask selectedTask, int columnIndex) {
 		switch(columnIndex) {
+			case BUILDING_COL:
+				String des = selectedTask.getDescription();
+				int index = des.indexOf(" @");
+				if (index == -1)
+					return "None";
+				else
+					return Conversion.capitalize(des.substring(index).replace("@", "")).trim();
 			case DESC_COL:
-				return selectedTask.getDescription();
+				des = selectedTask.getDescription();
+				index = des.indexOf(" @");
+				if (index == -1)
+					return des;
+				else
+					return Conversion.capitalize(des.substring(0, index));
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
@@ -103,8 +115,9 @@ implements UnitListener {
 	}
     
 	/**
-	 * Set whether the changes to the Entities should be monitor for change. Set up the 
-	 * Unitlisteners for the selected Settlement where Food comes from for the table.
+	 * Sets whether the changes to the Entities should be monitor for change. Sets up the 
+	 * unit listeners for the selected Settlement where Food comes from for the table.
+	 * 
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate) {

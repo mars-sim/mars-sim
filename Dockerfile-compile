@@ -23,7 +23,7 @@ COPY --from=build /app/src/mars-sim-headless/target/mars-sim-headless.jar mars-s
 
 # The folder /app/data/mars-sim build be a bind volume if the simulation state is persistent
 
-# Cannot pass coommand line argument when using the JAR launcher
+# Cannot pass command line argument when using the JAR launcher
 # Attempt to load if saved simulation is present or new if not. Use a different data directory that is mapped to a 
 # Docker volume
 ENTRYPOINT [ "java", "-cp", "/app/mars-sim-headless.jar", "org.mars_sim.headless.MarsProjectHeadless", "-load", "-new", "-timeratio", "1024", "-remote", "18080", "-datadir", "/app/data/mars-sim" ]
