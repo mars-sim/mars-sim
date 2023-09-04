@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Fishery.java
- * @date 2021-10-29
+ * @date 2023-09-03
  * @author Barry Evans
  */
 
@@ -75,8 +75,12 @@ public class Fishery extends Function {
 	private static final int MANY_WEEDS = 120;
 	// Average number of weeds nibbled by a fish per frame
 	private static final double AVERAGE_NIBBLES = 0.005;
-	// Kw per litre of water
-	private static final double POWER_PER_LITRE = 0.00005D;
+	// kW per litre of water
+	private static final double POWER_PER_LITRE = 0.0001D;
+	// kW per fish
+	private static final double POWER_PER_FISH = 0.001D;
+	// kW per weed mass
+	private static final double POWER_PER_WEED_MASS = 0.0001D;
 	// Tend time per weed
 	private static final double TIME_PER_WEED = 0.2D;
 	// Adult fish length per litre
@@ -134,11 +138,17 @@ public class Fishery extends Function {
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 	    int numFish = (int)(maxFish * IDEAL_PERCENTAGE);
+
 	    int numWeeds = (numFish * 30 + MANY_WEEDS)/2;
-	        
+	    
 	    // Healthy stock is the initial number of fish
 	    idealFish = numFish;
 		weedTendertime = numWeeds * TIME_PER_WEED;
+	    
+		// Give variation to the amount of weeds and fish at the start for each tank
+	    numWeeds = (int)RandomUtil.getRandomDouble(numWeeds * 0.85, numWeeds * 1.15);
+	    numFish = (int)RandomUtil.getRandomDouble(numFish * 0.85, numFish * 1.15);
+
 		weedAge = 0;
 		
 		fish = new ArrayList<>(numFish);
@@ -167,7 +177,7 @@ public class Fishery extends Function {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// Demand is number of fish needed to produce food for settlement population.
-		// B ut it is not essential food
+		// But it is not essential food
 		double demand = 2D * settlement.getNumCitizens();
 
 		// Supply is total number of fish at settlement.
@@ -207,8 +217,7 @@ public class Fishery extends Function {
 				houseKeeping.resetCleaning();
 				
 				// Inspect every 2 days
-				if ((pulse.getMarsTime().getMissionSol() % 2) == 0)
-				{
+				if ((pulse.getMarsTime().getMissionSol() % 2) == 0) {
 					houseKeeping.resetInspected();
 				}
 			}
@@ -230,8 +239,8 @@ public class Fishery extends Function {
 	**/
 	private void simulatePond(double time) {
 	   int i;
-
 	   int index;
+	   
 	   Herbivore nextFish;
 	   Plant nextWeed;
 	
@@ -298,8 +307,7 @@ public class Fishery extends Function {
 	public static <T extends Organism> double totalMass(List<T> organisms) {
 	   double answer = 0;
 	   
-	   for (Organism next : organisms)
-	   {
+	   for (Organism next : organisms) {
 	      if (next != null)
 	         answer += next.getSize( );
 	   }
@@ -315,7 +323,7 @@ public class Fishery extends Function {
 	@Override
 	public double getFullPowerRequired() {
 		// Power (kW) required for normal operations.
-		return tankSize * POWER_PER_LITRE;
+		return tankSize * POWER_PER_LITRE + getNumFish() * POWER_PER_FISH + getWeedMass() * POWER_PER_WEED_MASS;
 	}
 
 	/**
@@ -325,9 +333,8 @@ public class Fishery extends Function {
 	 */
 	@Override
 	public double getPoweredDownPowerRequired() {
-		return tankSize * POWER_PER_LITRE;
+		return getFullPowerRequired() * .1;
 	}
-
 
 	@Override
 	public double getMaintenanceTime() {
@@ -354,6 +361,14 @@ public class Fishery extends Function {
 		return fish.size();
 	}
 
+	public int getIdealFish() {
+		return idealFish;
+	}
+	
+	public int getMaxFish() {
+		return maxFish;
+	}
+	
 	public int getTankSize() {
 		return tankSize;
 	}
@@ -367,7 +382,8 @@ public class Fishery extends Function {
 	}
 
 	/**
-	 * Spend some time on weed maintenance.
+	 * Spends some time on weed maintenance.
+	 * 
 	 * @param workTime
 	 * @return
 	 */

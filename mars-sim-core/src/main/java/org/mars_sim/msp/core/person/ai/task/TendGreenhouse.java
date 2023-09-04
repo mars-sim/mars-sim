@@ -222,7 +222,7 @@ public class TendGreenhouse extends Task {
 	 * Sets the task description of being done with tending crops.
 	 */
 	public void setDescriptionCropDone() {
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, 
+		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, 
 				previousCropName + " no longer needed to be tended.");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.done"), false);
 	}
@@ -291,7 +291,7 @@ public class TendGreenhouse extends Task {
 		double mod = 0;
 		
 		if (worker.getUnitType() == UnitType.PERSON)
-			mod = 1.2;
+			mod = 1;
 		else
 			mod = .3 * RandomUtil.getRandomDouble(.85, 1.15);
 		
@@ -300,7 +300,7 @@ public class TendGreenhouse extends Task {
 		if (greenhouseSkill == 0)
 			mod *= RandomUtil.getRandomDouble(.85, 1.15);
 		else
-			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.25;
+			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.1;
 		
 		double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
 		
