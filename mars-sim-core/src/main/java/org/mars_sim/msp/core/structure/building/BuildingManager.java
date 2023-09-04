@@ -2340,8 +2340,7 @@ public class BuildingManager implements Serializable {
 
 		else {
 			farmTimeCache = m;
-			Set<Building> farmBuildings = getLeastCrowdedBuildings(
-					getNonMalfunctioningBuildings(getBuildingSet(FunctionType.FARMING)));
+			Set<Building> farmBuildings = getNonMalfunctioningBuildings(getBuildingSet(FunctionType.FARMING));
 			result = new UnitSet<>();
 
 			for (Building b : farmBuildings) {

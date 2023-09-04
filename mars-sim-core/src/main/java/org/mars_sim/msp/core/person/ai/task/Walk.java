@@ -1029,7 +1029,7 @@ public class Walk extends Task {
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
 		Building garageBuilding = step.building;
-		double distance = garageBuilding.getWidth() /2.0;
+		double distance = garageBuilding.getWidth() / 2.0;
 		double timeTraveled = 0;
 		setDescription(Msg.getString("Task.description.walk.enteringRoverInsideGarage")); //$NON-NLS-1$
 

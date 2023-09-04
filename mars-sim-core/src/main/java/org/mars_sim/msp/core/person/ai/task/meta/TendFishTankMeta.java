@@ -61,9 +61,10 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             "Task.description.tendFishTank"); //$NON-NLS-1$
 	
     public TendFishTankMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
-		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
+		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST, JobType.CHEMIST);
+
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
         
         addPreferredRobot(RobotType.GARDENBOT);
@@ -85,7 +86,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             // Crowding modifier.
             factor *= getBuildingModifier(b, p);
 
-            factor *= getPersonModifier(p);
+            factor *= (1 + getPersonModifier(p));
 		}
 		return factor;
 	}

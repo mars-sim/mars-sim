@@ -228,6 +228,15 @@ public abstract class MetaTask {
 	}
 
 	/**
+	 * Sets the preferred jobs for this Task.
+	 * 
+	 * @param jobs
+	 */
+    protected void addPreferredRobot(RobotType... rt) {
+        Collections.addAll(this.preferredRobots, rt);
+	}
+	
+	/**
 	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
 	 * 2. Apply the Job start modifier for this task
@@ -246,7 +255,7 @@ public abstract class MetaTask {
 		
 		score *= getJobModifier(person);
 
-        score = score * (1D + (person.getPreference().getPreferenceScore(this)/5D));
+        score = score * (1 + (person.getPreference().getPreferenceScore(this)/5D));
 
 		// Apply the home base modifier
 		score = score * person.getAssociatedSettlement().getPreferenceModifier(

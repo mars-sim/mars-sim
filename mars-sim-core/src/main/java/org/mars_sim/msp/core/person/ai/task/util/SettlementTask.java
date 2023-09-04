@@ -14,9 +14,9 @@ public abstract class SettlementTask extends AbstractTaskJob {
 
 	private static final long serialVersionUID = 1L;
 	
-    private SettlementMetaTask metaTask;
     private int demand;
-
+    
+    private SettlementMetaTask metaTask;
 
     protected SettlementTask(SettlementMetaTask parent, String description, double score) {
         super(description, score);
@@ -24,6 +24,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
         this.demand = 1;
     }
 
+    
     /**
      * Sets a specific level of demand for this job.
      * 

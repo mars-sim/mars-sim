@@ -625,7 +625,7 @@ public class WalkOutside extends Task {
 			coveredMeters = remainingPathDistance;
 			
 			if (speedKPH > 0)
-				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredKm / speedKPH * 3600);
+				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
 			if (remainingTime < 0)
 				remainingTime = 0;
 		}

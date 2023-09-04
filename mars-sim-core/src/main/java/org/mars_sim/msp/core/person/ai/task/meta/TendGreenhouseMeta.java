@@ -62,9 +62,10 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
     public TendGreenhouseMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
-		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
+		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST, JobType.CHEMIST);
+		
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
 
         addPreferredRobot(RobotType.GARDENBOT);
@@ -81,17 +82,16 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         double factor = 0D;
         if (p.isInSettlement()) {
             Building b = ((CropTaskJob)t).farm.getBuilding();
-
-            // Do not calculate farmers until we need it as expensive
             Farming farm = b.getFarming();
             LifeSupport ls = b.getLifeSupport();
-            if (farm.getFarmerNum() < ls.getOccupantCapacity()) {
-                factor = 1D;
+            factor = 1;
 
+            if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
+    
                 // Crowding modifier.
                 factor *= getBuildingModifier(b, p);
                                     
-                factor *= getPersonModifier(p);
+                factor *= 2 * (1 + getPersonModifier(p));
             }
 		}
 		return factor;
@@ -129,7 +129,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
             double score = farm.getTendingScore();
 
             // Settlement factors
-            score *= goodsFactor;
+            score *= goodsFactor ;
 
             if (score > 0) {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
