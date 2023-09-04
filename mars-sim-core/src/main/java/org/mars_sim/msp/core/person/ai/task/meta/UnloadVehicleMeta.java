@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
@@ -47,6 +48,14 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
             super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
             this.target = target;
             this.eva = eva;
+        }
+
+        /**
+         * The vehicle being unloaded is the focus.
+         */
+        @Override
+        public Entity getFocus() {
+            return target;
         }
 
         @Override

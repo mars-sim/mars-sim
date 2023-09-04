@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -40,9 +41,17 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
         private DeathInfo patient;
 
         public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, double score) {
-			super(owner, "Examine Body of " + patient.getPerson().getName(), score);
+			super(owner, "Examine Body", score);
             this.patient = patient;
         }
+
+		/**
+		 * Focus of this Task is the dead person
+		 */
+		@Override
+		public Entity getFocus() {
+			return patient.getPerson();
+		}
 
         @Override
         public Task createTask(Person person) {

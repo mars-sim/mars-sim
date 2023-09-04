@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
@@ -39,9 +40,17 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		private boolean eva;
 
         public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Maintain " + (eva ? "via EVA " : "") + " " + target.getName(), score);
+            super(owner, "Vehicle Maintenance " + (eva ? "via EVA " : ""), score);
             this.target = target;
 			this.eva = eva;
+        }
+
+		/**
+         * The vehicle needing maintenance is the focus.
+         */
+        @Override
+        public Entity getFocus() {
+            return target;
         }
 
         @Override

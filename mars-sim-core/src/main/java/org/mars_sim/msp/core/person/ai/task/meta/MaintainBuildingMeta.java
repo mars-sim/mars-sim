@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -33,10 +34,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  * Meta task for maintaining buildings.
  */
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
-	
-	/** default logger. */
-	// May add back SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
-	
+		
 	/**
      * Represents a Job needed for internal maintenance on a Building
      */
@@ -48,10 +46,18 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		private boolean eva;
 
         public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, double score) {
-			super(owner, "Maintain " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
+			super(owner, "Building Maintenance " + (eva ? "via EVA " : ""), score);
             this.target = target;
 			this.eva = eva;
         }
+
+		/**
+		 * The Building undergoing maintenance is the focus of this Task.
+		 */
+		@Override
+		public Entity getFocus() {
+			return target;
+		}
 
         @Override
         public Task createTask(Person person) {

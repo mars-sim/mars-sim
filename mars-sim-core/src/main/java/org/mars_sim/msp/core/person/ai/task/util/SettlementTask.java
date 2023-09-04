@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import org.mars_sim.msp.core.Entity;
+
 /**
  * This represents a TaskJob created by a SettlementMetaTask. 
  * It has a demand property that allows the same task to be used multiple times.
@@ -60,5 +62,13 @@ public abstract class SettlementTask extends AbstractTaskJob {
      */
     SettlementMetaTask getMeta() {
         return metaTask;
+    }
+
+    /**
+     * Get the Entity that is the focus of this Task. Default returns null as this is overridden
+     * @return
+     */
+    public Entity getFocus() {
+        return null;
     }
 }

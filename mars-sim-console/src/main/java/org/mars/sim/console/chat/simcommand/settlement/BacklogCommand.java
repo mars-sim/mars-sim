@@ -11,6 +11,7 @@ import java.util.List;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -36,9 +37,16 @@ class BacklogCommand extends AbstractSettlementCommand {
 
         List<SettlementTask> tasks = stm.getAvailableTasks();
         if (tasks != null) {
-            response.appendTableHeading("Tasks", 55, "#", 3, "Score");
+            response.appendTableHeading("Tasks", 50, "Subject", CommandHelper.BUILIDNG_WIDTH,
+                            "#", 3, "Score");
             for(SettlementTask t : tasks) {
-                response.appendTableRow(t.getDescription(), t.getDemand(),
+                String subjectName = null;
+                Entity subject = t.getFocus();
+                if (subject != null) {
+                    subjectName = subject.getName();
+                }
+                response.appendTableRow(t.getDescription(), subjectName,
+                                t.getDemand(),
                                 String.format(CommandHelper.DOUBLE_FORMAT, t.getScore()));
             }
         }

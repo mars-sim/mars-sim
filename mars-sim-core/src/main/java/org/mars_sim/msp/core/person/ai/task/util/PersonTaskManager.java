@@ -242,29 +242,33 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
-				boolean isEVATask = newTask instanceof EVAOperation;
-				if (isEVATask && person.isOutside()) {
-					// Note :the person should 
-					// come in and rest and is no longer eligible for performing
-					// another EVA task
-//					logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
-				}
-				else if (person.getMission() != null) {
-//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
-				}
-				
-				else if (currentTask != null 
-					&& !newTask.getName().equals(getTaskName())
-					&& !newTask.getDescription().equals(currentTask.getDescription())
-					&& !isFilteredTask(currentTask.getDescription())) {
+				if (newTask != null) {
+					boolean isEVATask = newTask instanceof EVAOperation;
+					if (isEVATask && person.isOutside()) {
+						// Note :the person should 
+						// come in and rest and is no longer eligible for performing
+						// another EVA task
+	//					logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+					}
+					else if (person.getMission() != null) {
+	//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+					}
 					
-					replaceTask(newTask);
-					removePendingTask(pending);
+					else if (currentTask != null 
+						&& !newTask.getName().equals(getTaskName())
+						&& !newTask.getDescription().equals(currentTask.getDescription())
+						&& !isFilteredTask(currentTask.getDescription())) {
+						
+						replaceTask(newTask);
+						removePendingTask(pending);
+					}
+					
+					// Warning: do NOT need to call super.startNewTask()
+					// or else the newTask will be replaced
+					return;
 				}
-				
-				// Warning: do NOT need to call super.startNewTask()
-				// or else the newTask will be replaced
-				return;
+
+				removePendingTask(pending);
 			}
 		}
 

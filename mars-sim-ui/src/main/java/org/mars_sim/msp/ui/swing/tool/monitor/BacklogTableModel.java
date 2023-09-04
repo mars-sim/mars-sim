@@ -10,13 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class models how SettlementTasks are organized and displayed
@@ -73,11 +73,9 @@ implements UnitListener {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if (eventType == UnitEventType.BACKLOG_EVENT) {
-			if (unit.equals(selectedSettlement)) {
-				// Reset the Tasks
-				resetTasks();
-			}
+		if ((eventType == UnitEventType.BACKLOG_EVENT) && unit.equals(selectedSettlement)) {
+			// Reset the Tasks
+			resetTasks();
 		}
 	}
 
@@ -95,19 +93,12 @@ implements UnitListener {
 	protected Object getEntityValue(SettlementTask selectedTask, int columnIndex) {
 		switch(columnIndex) {
 			case ENTITY_COL:
-				String des = selectedTask.getDescription();
-				int index = des.indexOf(" @");
-				if (index == -1)
-					return "None";
-				else
-					return des.substring(index + 3).replace("@", "");
+				Entity des = selectedTask.getFocus();
+				if (des != null)
+					return des.getName();
+				return null;
 			case DESC_COL:
-				des = selectedTask.getDescription();
-				index = des.indexOf(" @");
-				if (index == -1)
-					return des;
-				else
-					return des.substring(0, index);
+				return selectedTask.getDescription();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
@@ -117,6 +108,14 @@ implements UnitListener {
 		}
 	}
     
+	/**
+	 * The Object 
+	 */
+	@Override
+	public Object getObject(int row) {
+		return getEntity(row).getFocus();
+	}
+
 	/**
 	 * Sets whether the changes to the Entities should be monitor for change. Sets up the 
 	 * unit listeners for the selected Settlement where Food comes from for the table.

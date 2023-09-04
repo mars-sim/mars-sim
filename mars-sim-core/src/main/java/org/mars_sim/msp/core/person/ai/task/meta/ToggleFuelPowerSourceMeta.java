@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -45,10 +46,18 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 		private Building building;
 
         public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource, double score) {
-            super(owner, "Toggle " + powerSource.getType().getName() + " @ " + building.getName(), score);
+            super(owner, "Toggle " + powerSource.getType().getName(), score);
 			this.building = building;
 			this.powerSource = powerSource;
 		}
+
+         /**
+         * The Building holding the power source is the focus.
+         */
+        @Override
+        public Entity getFocus() {
+            return building;
+        }
 
         @Override
         public Task createTask(Person person) {

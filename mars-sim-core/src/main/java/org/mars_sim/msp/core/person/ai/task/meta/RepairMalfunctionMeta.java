@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -50,13 +51,21 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
 							 int demand, boolean eva, double score) {
-			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName()
-							+ " @ " + entity, score);
+			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), score);
 			setDemand(demand);
 			this.entity = entity;
 			this.mal = mal;
 			this.eva = eva;
 		}
+		
+		/**
+		 * The Malfunctionable with the fault is the focus of this Task.
+		 */
+		@Override
+		public Entity getFocus() {
+			return entity;
+		}
+
 
 		@Override
 		public Task createTask(Person person) {

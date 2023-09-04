@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -41,9 +42,17 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
         private Fishery tank;
 
         public FishTaskJob(SettlementMetaTask owner, Fishery tank, double score) {
-            super(owner, "Tend Fish Tank @ " + tank.getBuilding().getName(), score);
+            super(owner, "Tend Fish Tank", score);
             this.tank = tank;
         }
+
+		/**
+		 * The fisk task home is the focus of this Task.
+		 */
+		@Override
+		public Entity getFocus() {
+			return tank.getBuilding();
+		}
 
         @Override
         public Task createTask(Person person) {

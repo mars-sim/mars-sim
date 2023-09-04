@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -40,10 +41,18 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         private Farming farm;
 
         public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, double score) {
-            super(owner, "Tend crop @ " + farm.getBuilding().getName(), score);
+            super(owner, "Tend crop", score);
             this.farm = farm;
 
             setDemand(demand);
+        }
+
+        /**
+         * The Building holding the farm is the focus.
+         */
+        @Override
+        public Entity getFocus() {
+            return farm.getBuilding();
         }
 
         @Override
