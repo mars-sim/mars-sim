@@ -37,7 +37,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		private static final long serialVersionUID = 1L;
 
 		public ConsolidateTaskJob(SettlementMetaTask owner, double score) {
-			super(owner, "Consolidate containers", score);
+			super(owner, "Consolidate Containers", score);
 		}
 
 		@Override
@@ -136,7 +136,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
         // Note: if in a vehicle, do not use main store. keep resources in containers
         for (Equipment e: topContainer.getContainerSet()) {
         	Container c = (Container)e;
-            if (e.getStoredMass() > 0D) {
+            if (!e.isEmpty(false)) {
                 // Only check one type of amount resource for container.
                 int resource = c.getResource();
                 // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.

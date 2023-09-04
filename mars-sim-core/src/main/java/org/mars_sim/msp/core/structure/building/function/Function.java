@@ -246,7 +246,7 @@ public abstract class Function implements Serializable, Temporal {
 		if (activitySpots == null || activitySpots.isEmpty())
 			return true;
 
-		boolean result = false;
+		boolean result = true;
 
 		// Convert activity spot from building local to settlement local.
 		Building b = getBuilding();
@@ -255,16 +255,16 @@ public abstract class Function implements Serializable, Temporal {
 		for (Person person : b.getInhabitants()) {
 			// Check if person's location is identical or very very close (1e-5 meters) to
 			// activity spot.
-			if (person.isInSettlement() && !settlementActivitySpot.isClose(person.getPosition())) {
-				return true;
+			if (person.isInSettlement() && settlementActivitySpot.isClose(person.getPosition())) {
+				return false;
 			}
 		}
 
 		for (Robot robot : b.getRobots()) {
 			// Check if robot location is identical or very very close (1e-5 meters) to
 			// activity spot.
-			if (!settlementActivitySpot.isClose(robot.getPosition())) {
-				return true;
+			if (settlementActivitySpot.isClose(robot.getPosition())) {
+				return false;
 			}
 		}
 

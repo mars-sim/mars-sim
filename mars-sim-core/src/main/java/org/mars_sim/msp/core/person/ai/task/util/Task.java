@@ -1104,15 +1104,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
-			// If the functionType does not exist in this building, go to random location in
-			// building.
-//			walkToRandomLocInBuilding(building, allowFail);
 			return canWalk;
 		}
-
-		LocalPosition settlementLoc = null;
+		
 		// Find available activity spot in building.
-		settlementLoc = f.getAvailableActivitySpot();
+		LocalPosition settlementLoc = f.getAvailableActivitySpot();
 
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.
