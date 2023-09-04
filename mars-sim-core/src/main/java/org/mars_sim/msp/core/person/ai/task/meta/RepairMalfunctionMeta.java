@@ -103,7 +103,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
         if (person.isInVehicle()) {
 			EquipmentOwner partStore = person.getVehicle();
 			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
-			for(SettlementTask t: getRepairTasks(source, partStore)) {
+			for (SettlementTask t: getRepairTasks(source, partStore)) {
 				// Repairs in Vehicles are important so apply constant factor
 				double factor = 3D;
 

@@ -69,11 +69,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final double URGENT_FACTOR = 2.5;
 	
     public ToggleResourceProcessMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 
-		addPreferredRobot(RobotType.REPAIRBOT);
+		addPreferredRobot(RobotType.REPAIRBOT, RobotType.CONSTRUCTIONBOT, 
+				RobotType.MAKERBOT, RobotType.DELIVERYBOT);
 	}
 
 	/**

@@ -32,7 +32,7 @@ public abstract class MonitorTab extends JPanel {
 	private boolean hasEntity;
 
 	/**
-	 * Tee constructor that creates a view within a tab displaying the specified model.
+	 * The constructor that creates a view within a tab displaying the specified model.
 	 *
 	 * @param model     The model of entities to display.
 	 * @param mandatory This view is a mandatory view can can not be removed.
@@ -52,7 +52,7 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Remove this view.
+	 * Removes this view.
 	 */
 	public void removeTab() {
 		if (ownModel) {
@@ -62,7 +62,7 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Display property window controlling this view.
+	 * Displays property window controlling this view.
 	 */
 	public abstract void displayProps(MainDesktopPane desktop);
 
@@ -74,7 +74,7 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Get the icon associated with this view.
+	 * Gets the icon associated with this view.
 	 *
 	 * @return Icon for this view
 	 */
@@ -83,7 +83,7 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Get the associated model.
+	 * Gets the associated model.
 	 *
 	 * @return Monitored model associated to the tab.
 	 */
@@ -92,7 +92,7 @@ public abstract class MonitorTab extends JPanel {
 	}
 
 	/**
-	 * Get the mandatory state of this view
+	 * Gets the mandatory state of this view.
 	 *
 	 * @return Mandatory view.
 	 */
@@ -125,8 +125,9 @@ public abstract class MonitorTab extends JPanel {
     }
 
 	/**
-	 * Get the Coordinates that best represent the selected rows
-	 * @return Cooridnates, maybe null
+	 * Gets the Coordinates that best represent the selected rows
+	 * 
+	 * @return Coordinates, maybe null
 	 */
     public Coordinates getSelectedCoordinates() {
         return null;

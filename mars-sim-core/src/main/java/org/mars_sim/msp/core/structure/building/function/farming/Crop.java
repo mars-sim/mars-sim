@@ -592,21 +592,18 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @throws Exception if error adding work.
 	 */
 	public double addWork(Worker worker, double workTime) {
-		double time = workTime * WORK_FACTOR;
+		double modTime = workTime * WORK_FACTOR;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
 		double remainingTime = 0;
 		// Record the work time in Farming
 		farm.addCumulativeWorkTime(workTime);
 		// Reduce the work required
-		currentWorkRequired -= time;
-		// Allow the plant to be over-tended so that it won't need to be taken care of for a while
-//		if (currentWorkRequired < 0) {
-//			currentWorkRequired = 0;
-//			return workTime;
-//		}
+		currentWorkRequired -= modTime;
+		// Note: Allow the plant to be over-tended (thus currentWorkRequired becomes negative) 
+		// so that it won't need to be taken care of for a while
 		
-//		// Improve the health of the crop each time it's being worked on
-		healthCondition += RECOVER_HEALTH_RATE * time;
+		// Improve the health of the crop each time it's being worked on
+		healthCondition += RECOVER_HEALTH_RATE * modTime;
 		if (healthCondition > 1)
 			healthCondition = 1;
 
@@ -623,7 +620,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		case INCUBATION:
 		case PLANTING:
 			// At a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 			
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 //				remainingTime = currentPhaseWorkCompleted - workMillisols;
@@ -638,13 +635,13 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		case MATURATION:
 		case HARVESTING:
 			// at the maturation or harvesting phase
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 			// Set the harvest multiplier
 			int multiplier = 5;
 
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 				// Modify parameter list to include crop name
-				double lastHarvest = multiplier * dailyHarvest * time/ phaseWorkReqMillisols;
+				double lastHarvest = multiplier * dailyHarvest * modTime/ phaseWorkReqMillisols;
 
 				if (remainingHarvest > 0) {
 					collectProduce(lastHarvest);
@@ -681,7 +678,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			else {
 				if (dailyHarvest > 0.00001) {
 					// Continue the harvesting process
-					double modifiedHarvest = multiplier * dailyHarvest * time / phaseWorkReqMillisols;
+					double modifiedHarvest = multiplier * dailyHarvest * modTime / phaseWorkReqMillisols;
 					// Store the crop harvest
 					if (modifiedHarvest > 0 && remainingHarvest > 0) {
 						collectProduce(modifiedHarvest);
@@ -699,7 +696,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		default:
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 //				remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);

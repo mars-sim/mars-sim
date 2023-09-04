@@ -100,7 +100,7 @@ implements UnitListener {
 				if (index == -1)
 					return "None";
 				else
-					return des.substring(index).replace("@", "");
+					return des.substring(index + 3).replace("@", "");
 			case DESC_COL:
 				des = selectedTask.getDescription();
 				index = des.indexOf(" @");

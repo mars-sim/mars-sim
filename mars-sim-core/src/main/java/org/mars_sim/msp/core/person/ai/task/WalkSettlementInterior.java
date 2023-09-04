@@ -243,8 +243,11 @@ public class WalkSettlementInterior extends Task {
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 			
-			if (speedKPH > 0)
-				remainingTime = remainingTime - MarsTime.convertSecondsToMillisols(coveredKm / speedKPH * 3600);
+			if (speedKPH > 0) {
+				double usedTime = MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
+				remainingTime = remainingTime - usedTime;
+//				logger.info(worker, "time: " + time + "  remainingTime: " + remainingTime + "  usedTime: " + usedTime);
+			}
 			if (remainingTime < 0)
 				remainingTime = 0;
 		}
