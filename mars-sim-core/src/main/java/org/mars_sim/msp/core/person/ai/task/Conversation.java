@@ -414,6 +414,8 @@ public class Conversation extends Task {
 		// Set up rules that allows
 
 		if (sameSettlement) {
+			if (unitManager == null)
+				unitManager = Simulation.instance().getUnitManager();
 			// could be either radio (non face-to-face) conversation, don't care
 			i = unitManager.getPeople().iterator();
 			sameBuilding = false;

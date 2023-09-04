@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class models how SettlementTasks are organized and displayed

@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Level;
-
-import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -24,9 +22,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RescueSalvageVehicleMeta extends AbstractMetaMission {
    
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
-
     RescueSalvageVehicleMeta() {
     	super(MissionType.RESCUE_SALVAGE_VEHICLE, null);
     }
@@ -37,9 +32,9 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     }
 
     @Override
-    public double getProbability(Person person) {
+    public Rating getProbability(Person person) {
 
-        double missionProbability = 0D;
+        Rating missionProbability = Rating.ZERO_RATING;
 
         if (person.isInSettlement()) {
 
@@ -48,30 +43,23 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             Vehicle vehicleTarget = null;
 
             // Check if there are any beacon vehicles within range that need help.
-            try {
-                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-                if (vehicle != null) {
-                    vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
-                            vehicle.getRange());
-                    if (vehicle == vehicleTarget)
-                        return 0;
-                    else if (vehicleTarget == null)
-                        return 0;
-                    else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-                        return 0;  
-                    
-                    missionProbability = (1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT)
-                    		* RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget);                  
-                }
+            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+            if (vehicle != null) {
+                vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
+                        vehicle.getRange());
+                if (vehicle == vehicleTarget)
+                    return Rating.ZERO_RATING;
+                else if (vehicleTarget == null)
+                    return Rating.ZERO_RATING;
+                else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
+                    return Rating.ZERO_RATING;  
+                
+                missionProbability = new Rating(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
+                missionProbability.addModifier("stranded", 
+                                    RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget));                  
             }
-            catch (Exception e) {
-              	logger.log(Level.SEVERE, "Cannot find a vehicle: "+ e.getMessage());
-    			return 0;
-            }
-    
-            // Check if available rover.
-            if (!RoverMission.areVehiclesAvailable(settlement, true)) {
-                return 0;
+            else {
+                return Rating.ZERO_RATING;
             }
     
             int min_num = 0;
@@ -84,48 +72,41 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     	    
             // Check if min number of EVA suits at settlement.
             if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
-    	        return 0;
+    	        return Rating.ZERO_RATING;
     	    }
    
             // Check if minimum number of people are available at the settlement.
             if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, min_num)) {
-                return 0;
+                return Rating.ZERO_RATING;
             }
 
             // Check if available backup rover.
             else if (!RoverMission.hasBackupRover(settlement)) {
-                return 0;
+                return Rating.ZERO_RATING;
             }
             
-			missionProbability *= getSettlementPopModifier(settlement, 4);
-    		if (missionProbability <= 0)
-    			return 0;
-    	
+			missionProbability.addModifier(SETTLEMENT_POPULATION,
+                            getSettlementPopModifier(settlement, 4));
 
            	RoleType roleType = person.getRole().getType();
-        	
-        	if (RoleType.MISSION_SPECIALIST == roleType)
-        		missionProbability *= 1.5;
-        	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
-        		missionProbability *= 3;
-        	else if (RoleType.SUB_COMMANDER == roleType)
-        		missionProbability *= 4.5;
-        	else if (RoleType.COMMANDER == roleType)
-        		missionProbability *= 6;
-        	
+            double roleModifier = switch(roleType) {
+                case MISSION_SPECIALIST -> 1.5;
+                case CHIEF_OF_MISSION_PLANNING -> 3;
+                case SUB_COMMANDER -> 4.5;
+                case COMMANDER -> 6;
+                default -> 1;
+            };
+            missionProbability.addModifier("Role", roleModifier);
+ 
             // Crowding modifier.
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {
-                missionProbability *= (crowding + 1);
+                missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
             }
             
             // Job modifier.
-            missionProbability *= getLeaderSuitability(person);
-
-			if (missionProbability > LIMIT)
-				missionProbability = LIMIT;
-			else if (missionProbability < 0)
-				missionProbability = 0;
+            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+            missionProbability.applyRange(0, LIMIT);
         }
 
         return missionProbability;
