@@ -253,7 +253,7 @@ public class PersonTaskManager extends TaskManager {
 //					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
 				}
 				
-				else if (currentTask != null 
+				else if (newTask != null && currentTask != null 
 					&& !newTask.getName().equals(getTaskName())
 					&& !newTask.getDescription().equals(currentTask.getDescription())
 					&& !isFilteredTask(currentTask.getDescription())) {

@@ -543,7 +543,7 @@ public class Farming extends Function {
 	 * Uses available tissue culture to shorten Germinating Phase when planting the
 	 * crop.
 	 *
-	 * @parama cropType
+	 * @param cropType
 	 * @param cropArea
 	 * @return percentAvailable
 	 */
