@@ -242,6 +242,12 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
+				
+				if (newTask == null) {
+					// Note: need to understand why some newTask can be null.
+					removePendingTask(pending);
+				}
+				
 				boolean isEVATask = newTask instanceof EVAOperation;
 				if (isEVATask && person.isOutside()) {
 					// Note :the person should 
@@ -253,7 +259,7 @@ public class PersonTaskManager extends TaskManager {
 //					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
 				}
 				
-				else if (currentTask != null 
+				else if (newTask != null && currentTask != null 
 					&& !newTask.getName().equals(getTaskName())
 					&& !newTask.getDescription().equals(currentTask.getDescription())
 					&& !isFilteredTask(currentTask.getDescription())) {
