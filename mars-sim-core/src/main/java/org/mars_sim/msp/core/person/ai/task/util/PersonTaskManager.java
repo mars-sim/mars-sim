@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTaskManager.java
- * @date 2021-12-05
+ * @date 2023-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -242,15 +242,35 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
+				
 				boolean isEVATask = newTask instanceof EVAOperation;
-				if (isEVATask && person.isOutside()) {
-					// Note :the person should 
-					// come in and rest and is no longer eligible for performing
-					// another EVA task
-//					logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+				
+				if (newTask == null) {
+					// Note: need to understand why some newTask can be null.
+					removePendingTask(pending);
+					
+					// Next, go to super.startNewTask() to find a new task
 				}
+
+				else if (person.isOutside()) {
+					
+					if (newTask.getName().contains("Sleep") || isEVATask) {
+						// Note :the person should 
+						// come in and rest and is no longer eligible for performing
+						// another EVA task
+//						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+						
+						// Skip doing anything for now
+					}
+
+					// Next, go to super.startNewTask() to find a new task
+				}
+				
 				else if (person.getMission() != null) {
 //					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+					
+					// Skip doing anything for now
+					// Next, go to super.startNewTask() to find a new task
 				}
 				
 				else if (newTask != null && currentTask != null 
@@ -258,13 +278,16 @@ public class PersonTaskManager extends TaskManager {
 					&& !newTask.getDescription().equals(currentTask.getDescription())
 					&& !isFilteredTask(currentTask.getDescription())) {
 					
+					// Note: this is the only eligible condition for replacing the
+					// current task with the new task
 					replaceTask(newTask);
+					// Remove the new task from the pending task list
 					removePendingTask(pending);
+					
+					// At this point, do NOT need to call super.startNewTask()
+					// or else the newTask will be replaced
+					return;
 				}
-				
-				// Warning: do NOT need to call super.startNewTask()
-				// or else the newTask will be replaced
-				return;
 			}
 		}
 
