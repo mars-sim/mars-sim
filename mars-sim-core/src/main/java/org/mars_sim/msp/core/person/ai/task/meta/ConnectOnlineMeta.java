@@ -1,39 +1,39 @@
 /*
  * Mars Simulation Project
- * ConnectWithEarthMeta.java
- * @date 2022-07-25
+ * ConnectOnlineMeta.java
+ * @date 2023-08-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars.sim.tools.Msg;
+import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
+import org.mars_sim.msp.core.person.ai.task.ConnectOnline;
 import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.structure.ShiftSlot.WorkStatus;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for the ConnectWithEarth task.
+ * Meta task for the ConnectOnline task.
  */
-public class ConnectWithEarthMeta extends FactoryMetaTask {
+public class ConnectOnlineMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.connectWithEarth"); //$NON-NLS-1$
+            "Task.description.connectOnline"); //$NON-NLS-1$
 
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .2D;
 
-    public ConnectWithEarthMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+    public ConnectOnlineMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
 		setTrait(TaskTrait.PEOPLE);
 		setPreferredJob(JobType.POLITICIAN, JobType.REPORTER);
@@ -41,7 +41,7 @@ public class ConnectWithEarthMeta extends FactoryMetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new ConnectWithEarth(person);
+        return new ConnectOnline(person);
     }
 
     @Override
@@ -63,43 +63,39 @@ public class ConnectWithEarthMeta extends FactoryMetaTask {
             double pref = person.getPreference().getPreferenceScore(this);
             
             // Use preference modifier
-         	result += pref * .1D;
+         	result = (RandomUtil.getRandomDouble(10) + pref) * .5;
          	
             if (pref > 0) {
             	result *= Math.max(1, stress/20);
             }
 
             result -= fatigue/100 + hunger/100;
-   
-	        if (result < 0) result = 0;
 	        
 	        if (person.isInSettlement()) {	
 	            // Get an available office space.
 	            Building building = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.COMMUNICATION);
 	
 	            if (building != null) {
-	            	result += 5;
 	            	// A comm facility has terminal equipment that provides communication access with Earth
 	            	// It is necessary
 	                result *= getBuildingModifier(building, person);
 	            }
+	            
+	            // Modify probability if during person's work shift.
+		        if (person.isOnDuty()) {
+	            	// Incur penalty if doing it on-duty
+	                result *= WORK_SHIFT_MODIFIER;
+	            }  
 	        }
             
             else if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
-    	        	result += 10;
+    	        	result *= 1.5;
     	        }
             }
-        
-            // Modify probability if during person's work shift.
-            WorkStatus status = person.getShiftSlot().getStatus();
-            if (status == WorkStatus.ON_DUTY) {
-                result*= WORK_SHIFT_MODIFIER;
-            }
-            
+                
 	        if (result < 0) result = 0;
-
         }
             
         return result;

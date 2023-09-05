@@ -21,7 +21,7 @@ public abstract class AbstractTaskJob implements TaskJob {
     private String description;
 
     protected AbstractTaskJob(String description, double score) {
-        this.description = description;
+    	this.description = description;
   
         if (score > CAP) {
             score = CAP;

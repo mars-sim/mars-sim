@@ -117,11 +117,9 @@ public class SalvageMission extends AbstractMission
 			// Determine construction site and stage.
 			// TODO Refactor.
 			int constructionSkill = 0;
-			if (startingMember instanceof Person) {
-				Person person = (Person) startingMember;
+			if (startingMember instanceof Person person) {
 				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			} else if (startingMember instanceof Robot) {
-				Robot robot = (Robot) startingMember;
+			} else if (startingMember instanceof Robot robot) {
 				constructionSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			}
 			ConstructionManager manager = settlement.getConstructionManager();
@@ -406,18 +404,12 @@ public class SalvageMission extends AbstractMission
 			setPhaseEnded(true);
 
 		if (!getPhaseEnded()) {
-
 			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(75D)) {
-
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(75D)) {
 				// Assign salvage building task to person.
-				// TODO Refactor.
-				if (member instanceof Person) {
-					Person person = (Person) member;
-					if (SalvageBuilding.canSalvage(person)) {
-						assignTask(person,
-								new SalvageBuilding(person, constructionStage, constructionSite, constructionVehicles));
-					}
+				if (member instanceof Person person && SalvageBuilding.canSalvage(person)) {
+					assignTask(person,
+							new SalvageBuilding(person, constructionStage, constructionSite, constructionVehicles));
 				}
 			}
 		}
@@ -555,8 +547,7 @@ public class SalvageMission extends AbstractMission
 		while (i.hasNext() && (result == null)) {
 			Vehicle vehicle = i.next();
 
-			if (vehicle instanceof LightUtilityVehicle) {
-				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
+			if (vehicle instanceof LightUtilityVehicle luvTemp) {
 				StatusType primStatus = luvTemp.getPrimaryStatus();
 				if (((primStatus == StatusType.PARKED) || (primStatus == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {

@@ -133,12 +133,10 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static String getNearbyVehicleName(Coordinates c) {
-//		if (isSettlement(c)) {
-			Vehicle vehicle = CollectionUtils.findVehicle(c);
-			if (vehicle != null) {
-				return vehicle.getName();
-			}
-//		}
+		Vehicle vehicle = CollectionUtils.findVehicle(c);
+		if (vehicle != null) {
+			return vehicle.getName();
+		}
 		return "No Vehicle";
 	}
 	

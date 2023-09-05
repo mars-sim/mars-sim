@@ -44,9 +44,11 @@ public class LivingAccommodations extends Function {
 	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.0001;
-	/** 1/5 of chance of going to a restroom per frame */
-	public static final int TOILET_CHANCE = 20;
-
+	/** The chance of going to a restroom. */
+	public static final int TOILET_CHANCE = 50;
+	
+	public static final String wasteName = "LivingAccomodation::generateWaste";
+	
 	/** max # of beds. */
 	private int maxNumBeds;
 	/** The # of registered sleepers. */
@@ -234,22 +236,6 @@ public class LivingAccommodations extends Function {
 					+ bed.getShortFormat() + ".");
 	}
 
-//	/**
-//	 * Gets an empty bed location.
-//	 *
-//	 * @return
-//	 */
-//	public LocalPosition getEmptyBed() {
-//		List<LocalPosition> beds = super.getActivitySpotsList();
-//		for (LocalPosition bed : beds) {
-//			if (!assignedBeds.containsValue(bed)) {
-//				return bed.getAbsolutePosition(building.getPosition());
-//			}
-//		}
-//		return null;
-//	}
-
-
 	/**
 	 * Assigns/designates an available bed to a person.
 	 *
@@ -272,10 +258,7 @@ public class LivingAccommodations extends Function {
 			
 			// Convert the activity spot (the bed location) to the settlement reference coordinate
 			bed = LocalAreaUtil.getLocalRelativePosition(spot, building);
-//			System.out.println("1. building: " + building.getPosition().getX() + ", " + building.getPosition().getY());
-//			System.out.println("2.      bed: " + bed.getX() + ", " + bed.getY());
-//			System.out.println("3.     spot: " + spot.getX() + ", " + spot.getY());
-			
+	
 			if (!assignedBeds.containsValue(bed)) {
 				if (!guest) {
 					assignABed(person, bed);
@@ -353,7 +336,7 @@ public class LivingAccommodations extends Function {
 	 * @param time amount of time passing (millisols)
 	 */
 	private void generateWaste(double time) {
-		double random_factor = 1 + RandomUtil.getRandomDouble(0.1);
+		double random = 1 + RandomUtil.getRandomDouble(0.5);
 		int numBed = getNumAssignedBeds();
 		// int pop = settlement.getNumCurrentPopulation();
 		// Total average wash water used at the settlement over this time period.
@@ -369,8 +352,8 @@ public class LivingAccommodations extends Function {
 		// settlement
 		double absenteeFactor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
 
-		double usage =  (washWaterUsage * time / 1_000D) * numBed * absenteeFactor;
-		double waterUsed = usage * TOILET_CHANCE * random_factor * ration;
+		double usage =  washWaterUsage * time / 1_000 * numBed * absenteeFactor;
+		double waterUsed = usage * RandomUtil.getRandomDouble(TOILET_CHANCE) * random * ration;
 		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
@@ -384,19 +367,21 @@ public class LivingAccommodations extends Function {
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
-		String wasteName = "LivingAccomodation::generateWaste";
+
 		if (greyWaterProduced > MIN) {
 			store(greyWaterProduced, GREY_WATER_ID, wasteName);
 			// Track daily average
 			addDailyGreyWaterGen(greyWaterProduced);
 		}
+		
 		if (blackWaterProduced > MIN)
 			store(blackWaterProduced, BLACK_WATER_ID, wasteName);
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
-		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
+		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000;
 
-		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;																									// buildingProportionCap;
+		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random;		
+		// buildingProportionCap;
 		if (toiletPaperUsageBuilding > MIN) {
 			retrieve(toiletPaperUsageBuilding, TOILET_TISSUE_ID, true);
 			store(toiletPaperUsageBuilding, TOXIC_WASTE_ID, wasteName);

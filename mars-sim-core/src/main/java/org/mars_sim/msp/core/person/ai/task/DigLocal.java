@@ -17,6 +17,7 @@ import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -187,12 +188,12 @@ public abstract class DigLocal extends EVAOperation {
 	        else if (collectionPhase.equals(getPhase())) {
 	            time = collectResource(time);
 	        }
-	        else if (DROP_OFF_RESOURCE.equals(getPhase())) {
-	            time = dropOffResource(time);
-	        }
 			else if (WALK_TO_BIN.equals(getPhase())) {
 				time = walkToBin(time);
 			}
+	        else if (DROP_OFF_RESOURCE.equals(getPhase())) {
+	            time = dropOffResource(time);
+	        }
 		}
         return time;
     }
@@ -211,6 +212,7 @@ public abstract class DigLocal extends EVAOperation {
 				endTask();
 			}
         	else if (!person.getPosition().equals(dropOffLoc)) {
+        		// TODO: how to get the walk time and return the remaining time ?
         		addSubTask(new WalkOutside(person, person.getPosition(),
         			dropOffLoc, true));
         	}
@@ -223,9 +225,58 @@ public abstract class DigLocal extends EVAOperation {
             endTask();
         }
 
-        return time * .9;
+        return 0;
     }
 
+    /**
+     * Drops off resources from container.
+     * 
+     * @param time
+     * @return
+     */
+	private double dropOffResource(double time) {
+    	double remainingTime = time;
+    	
+    	Container container = person.findContainer(containerType, false, resourceID);
+    	if (container == null)
+    		return 0D;
+    	
+    	double amount = container.getAmountResourceStored(resourceID);	
+    	
+        if (amount > 0) {
+        	 	
+           	double portion = LOADING_RATE * time;
+           	         	
+           	if (portion > amount) {
+           		portion = amount;
+           	} 	
+           	
+            if (portion > 0) {
+	        	double loadingTime = portion / LOADING_RATE;
+	        	
+	        	remainingTime = remainingTime - loadingTime;
+	        	
+				// Transfer the resource out of the Container
+				unloadContainer(container, portion, time);
+	            
+	        	if (isDone() || getTimeLeft() - time < 0) {
+	    			// Need to extend the duration so as to drop off the resources
+	    			setDuration(getDuration() + EXTENDED_TIME);
+	
+	    			return remainingTime;
+	    		}
+            }
+        }
+        else {
+        	// Reset this holder
+        	collectionLimit = 0;
+        	// Go back to the digging site
+        	setPhase(WALK_TO_OUTSIDE_SITE);
+        }
+        
+    	return remainingTime;
+    }
+	
 	/**
      * Performs collect resource phase.
      *
@@ -234,24 +285,28 @@ public abstract class DigLocal extends EVAOperation {
      * @throws Exception
      */
     private double collectResource(double time) {
-   	
+    	// Get a container
+        Container container = person.findContainer(containerType, false, resourceID);
+        
 		if (checkReadiness(time, false) > 0) {
-			checkLocation();
+			if (!((Equipment)container).isEmpty(false)) {
+				setPhase(WALK_TO_BIN);
+			}
+			else
+				checkLocation();
 			return time;
 		}
 			
      	if (person.isInSettlement()) {
-			abortEVA("Person in settlement.");
+			abortEVA("Person still in settlement.");
      		return time;
      	}
 
-     	// Get a container
-        Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
         	abortEVA("Found no " + containerType.getName() + " for " + resourceName + ".");
         	return time;
         }
-     
+        
         double collected = time * compositeRate;
 
 		// Modify collection rate by "Areology" skill.
@@ -307,14 +362,16 @@ public abstract class DigLocal extends EVAOperation {
             	+ Math.round(collectionLimit*100D)/100D
         		+ " kg " + resourceName + ".");        
            
-         	if (person.getPosition().equals(dropOffLoc)) {
-    			setPhase(DROP_OFF_RESOURCE);
-    		}
-         	
-         	else if (person.getPosition().equals(diggingLoc)) {  		 	
-    	    	// If not at the bin location, go to there first
-        		setPhase(WALK_TO_BIN);
-    		}
+            setPhase(WALK_TO_BIN);
+            
+//         	if (person.getPosition().equals(dropOffLoc)) {
+//    			setPhase(DROP_OFF_RESOURCE);
+//    		}
+//         	
+//         	else if (person.getPosition().equals(diggingLoc)) {  		 	
+//    	    	// If not at the bin location, go to there first
+//        		setPhase(WALK_TO_BIN);
+//    		}
     	}
 
 	    // Check for an accident during the EVA operation.
@@ -327,90 +384,46 @@ public abstract class DigLocal extends EVAOperation {
 		
         return 0;
     }
-
-    /**
-     * Drops off resources from container.
-     * 
-     * @param time
-     * @return
-     */
-	private double dropOffResource(double time) {
-    	double remainingTime = time;
-    	
-    	Container container = person.findContainer(containerType, false, resourceID);
-    	if (container == null)
-    		return 0D;
-    	
-    	double amount = container.getAmountResourceStored(resourceID);	
-    	
-        if (amount > 0) {
-        	 	
-           	double portion = LOADING_RATE * time;
-           	         	
-           	if (portion > amount) {
-           		portion = amount;
-           	} 	
-           	
-            if (portion > 0) {
-	        	double loadingTime = portion / LOADING_RATE;
-	        	
-	        	remainingTime = remainingTime - loadingTime;
-	        	
-				// Transfer the resource out of the Container
-				unloadContainer(container, portion, time);
-	            
-	        	if (isDone() || getTimeLeft() - time < 0) {
-	    			// Need to extend the duration so as to drop off the resources
-	    			setDuration(getDuration() + EXTENDED_TIME);
-	
-	    			return remainingTime;
-	    		}
-            }
-        }
-        else {
-        	// Reset this holder
-        	collectionLimit = 0;
-        	// Go back to the digging site
-        	setPhase(WALK_TO_OUTSIDE_SITE);
-        }
-        
-    	return remainingTime;
-    }
     
 	/**
 	 * Unloads resources from the Container.
+	 * 
+	 * @param container
+	 * @param amount
+	 * @param effort
 	 */
     private void unloadContainer(Container container, double amount, double effort) {
-       	boolean remapped = false;
-    	// Remapping regoliths by allowing the possibility of misclassifying regolith types
+ 
+		// Retrieve this amount from the container
+		container.retrieveAmountResource(resourceID, amount);
+
+      	int newResourceID = 0;
+      	
+    	// Remap regoliths by allowing the possibility of misclassifying regolith types
 		if (resourceID == ResourceUtil.regolithID) {
 			int rand = RandomUtil.getRandomInt(10);
 			
 			// Reassign as the other 3 types of regoliths
-			if (rand == 8) {						
-				resourceID = ResourceUtil.regolithBID;
-				remapped = true;
+			if (rand == 8) {			
+				newResourceID = ResourceUtil.regolithBID;
 			}
 			else if (rand == 9) {						
-				resourceID = ResourceUtil.regolithCID;
-				remapped = true;
+				newResourceID = ResourceUtil.regolithCID;
 			}
 			else if (rand == 10) {					
-				resourceID = ResourceUtil.regolithDID;
-				remapped = true;
+				newResourceID = ResourceUtil.regolithDID;
 			}
+			else
+				newResourceID = resourceID;
+		}
+		else if (resourceID == ResourceUtil.iceID) {
+			newResourceID = resourceID;
 		}
 		
-		// Retrieve this amount from the container
-		container.retrieveAmountResource(resourceID, amount);
 		// Add to the daily output
-		settlement.addOutput(resourceID, amount, effort);
+		settlement.addOutput(newResourceID, amount, effort);
 		// Store the amount in the settlement
-		settlement.storeAmountResource(resourceID, amount);
-		
-    	// Map it back to regolithID
-    	if (remapped)
-    		resourceID = ResourceUtil.regolithID;
+		settlement.storeAmountResource(newResourceID, amount);
 	}
 
 	/**
@@ -471,7 +484,7 @@ public abstract class DigLocal extends EVAOperation {
         // Set the bin drop off location (next to the bin)    	
 		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), 1D);
 		if (p == null) {
-			abortEVA("Can not find a suitable drop-off location near " + b);
+			abortEVA("No suitable drop-off location near " + b + ".");
 		}
 		return p;
     }
@@ -495,9 +508,8 @@ public abstract class DigLocal extends EVAOperation {
      */
     @Override
     protected void clearDown() {
-		if (person.isOutside()) {
-			// THis has no effect as Task is closing down
-            setPhase(WALK_BACK_INSIDE);
+		if (settlement == null) {
+			return;
 		}
 
 		// This is the end of the Task so must return 
@@ -506,11 +518,21 @@ public abstract class DigLocal extends EVAOperation {
 			return;
 
 		// Transfer the container back to the settlement
-		container.transfer(settlement);
+		boolean success = container.transfer(settlement);
+		if (!success)
+			logger.warning(settlement, person, "Unable to transfer " + containerType.getName() + " back.");
 
 		double amount = container.getAmountResourceStored(resourceID);
 		if (amount > 0) {
 			unloadContainer(container, amount, getTimeCompleted());
 		}
+		
+		// Remove pressure suit and put on garment
+		if (person.unwearPressureSuit(settlement)) {
+			person.wearGarment(settlement);
+		}
+	
+		// Assign thermal bottle
+		person.assignThermalBottle();
     }
 }

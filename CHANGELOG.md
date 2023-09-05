@@ -24,17 +24,25 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.2 build 8571 (27 Aug 2023)
+## 3.6.2 (01 Sep 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
-  <LI>Crop: allow changing growing area per crop in Agriculture tab in Dashboard.</LI>
+  <LI>Crop: allow changing growing area per crop in Farming.</LI>
   <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
 <OL>
 
-### B. FIXES :
+
+### B. UI IMPROVEMENT :
+<OL>
+  <LI>Crop: use spinner to change growing area for each farm in Agriculture tab in Dashboard.</LI>
+</OL> 
+
+### C. FIXES :
 <OL>
   <LI>Computing: rework work time related to consuming computing resources when analyzing map data.</LI>
+  <LI>Digging Local: correct not being able to start digging ice and regolith on its own.</LI>  
+  <LI>Equipment: correct transferring container back to settlement after digging regolith/ice.</LI> 
   <LI>Food Production: correct potato typo.</LI>
   <LI>Map: correct magnification and zooming issues.</LI>
 <OL>

@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EVASuitUtil;
@@ -877,14 +878,14 @@ public class ExitAirlock extends Task {
 			
 			if (isSuperUnFit()) {
 				// Doff the suit, get back the garment and thermal bottle
-				EVASuitUtil.checkIn(person, airlock.getEntity());
+				EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 				walkAway(person, NOT_FIT + " to don an EVA suit.");
 				return time;
 			}
 	
 			if (isOccupant3QuartersPrebreathed()) {
 				// Doff the suit, get back the garment and thermal bottle
-				EVASuitUtil.checkIn(person, airlock.getEntity());
+				EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 				walkAway(person, CANT_DON_SUIT + PREBREATH_THREE_QUARTERS_DONE);
 				return time;
 			}
@@ -1066,7 +1067,7 @@ public class ExitAirlock extends Task {
 	
 		if (isSuperUnFit()) {
 			// Get back the garment and thermal bottle
-			EVASuitUtil.checkIn(person, airlock.getEntity());
+			EVASuitUtil.checkIn(person, airlock.getEntity(), true);
 			
 			walkAway(person, NOT_FIT + " to depressurize chamber.");
 			return time;
@@ -1122,7 +1123,7 @@ public class ExitAirlock extends Task {
 					//					
 					
 					// Get back the garment and thermal bottle
-					EVASuitUtil.checkIn(p, airlock.getEntity());
+					EVASuitUtil.checkIn(p, airlock.getEntity(), true);
 					
 					// Without an EVA suit, one needs to leave the airlock 
 					// while the airlock is still being pressurized 
@@ -1292,6 +1293,9 @@ public class ExitAirlock extends Task {
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
 			try {
+				if (unitManager == null)
+					unitManager = Simulation.instance().getUnitManager();
+				
 				if (person.isInVehicle()) {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
 					if (nearbySettlement != null) {				

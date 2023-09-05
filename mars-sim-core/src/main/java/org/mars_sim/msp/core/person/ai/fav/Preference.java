@@ -30,6 +30,10 @@ public class Preference implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String CONNECT_ONLINE = "Connect Online";
+	
+	private final int WEIGHT = 2;
+	
 	/** A map of MetaTasks that can only be done once a day. */
 	private Map<MetaTask, Boolean> onceADayMap;
 	/** A map of MetaTasks that has been accomplished once a day. */
@@ -57,14 +61,7 @@ public class Preference implements Serializable {
 		scoreStringMap = new HashMap<>();
 		taskAccomplishedMap = new HashMap<>();
 		onceADayMap = new HashMap<>();
-		
 		connectionMap = new HashMap<>();
-		Connection[] connections = Connection.values();
-		int size = connections.length;
-		for (int i = 0; i < size; i++) {
-			int p = RandomUtil.getRandomInt(0, 100);
-			connectionMap.put(connections[i], p);
-		}
 	}
 
 	/*
@@ -198,8 +195,30 @@ public class Preference implements Serializable {
 				scoreStringMap.put(s, result);
 			}
 		}
+		
+		int connectionScore = scoreStringMap.get(CONNECT_ONLINE);
+		initializeConnections(connectionScore);
 	}
 
+	/**
+	 * Initializes probability for each connection.
+	 * 
+	 * @param scoreStringMap
+	 */
+	private void initializeConnections(int scoreStringMap) {
+		
+		Connection[] connections = Connection.values();
+		int size = connections.length;
+		
+		for (int i = 0; i < size; i++) {
+			int p = RandomUtil.getRandomInt(0, 100) + scoreStringMap * WEIGHT;
+			if (p < 5)
+				p = 5;
+			if (p > 100)
+				p = 100;
+			connectionMap.put(connections[i], p);
+		}
+	}
 
 	/**
 	 * Obtains the preference score modified by its priority for a meta task.
@@ -279,6 +298,10 @@ public class Preference implements Serializable {
 
 	public Connection getRandomConnection() {
 		return RandomUtil.getWeightedIntegerRandomObject(connectionMap);
+	}
+	
+	public int getConnectionScore(Connection connection) {
+		return connectionMap.get(connection);
 	}
 	
 	/**

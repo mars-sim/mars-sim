@@ -256,58 +256,57 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 */
 	private void performDeliveryNegotiatingPhase(Worker member) {
 		if (doNegotiation) {
-				if (negotiationTask != null) {
-					if (negotiationTask.isDone()) {
-						buyLoad = negotiationTask.getBuyLoad();
-						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
-											buyLoad, sellLoad);
-						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-						setPhaseEnded(true);
-					}
-					else {
-						// Check if the caller should be doing negotiation
-						Worker dealer = negotiationTask.getWorker();
-						if (dealer == null) {
-							// Task has not be reinit after a restore
-							logger.warning(member, "Reinit the Negotiation Task");
-							negotiationTask.reinit();
-							dealer = negotiationTask.getWorker();
-						}
-						if (dealer.equals(member)) {
-							// It's the caller so restart and it will be a Person
-							logger.info(member, "Resuming negotiation for " + getName());
-							assignTask((Person)member, negotiationTask);
-						}
-					}
+			if (negotiationTask != null) {
+				if (negotiationTask.isDone()) {
+					buyLoad = negotiationTask.getBuyLoad();
+					profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
+										buyLoad, sellLoad);
+					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					setPhaseEnded(true);
 				}
-
 				else {
-					Person settlementTrader = getSettlementTrader();
-
-					if (settlementTrader != null) {
-						boolean assigned = false;
-
-						for (Worker mm: getMembers()) {
-
-							if (mm instanceof Person) {
-								Person person = (Person) mm;
-								negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
-										sellLoad, person, settlementTrader);
-								assigned = assignTask(person, negotiationTask);
-							}
-
-							if (assigned)
-								break;
-						}
-
+					// Check if the caller should be doing negotiation
+					Worker dealer = negotiationTask.getWorker();
+					if (dealer == null) {
+						// Task has not be reinit after a restore
+						logger.warning(member, "Reinit the Negotiation Task");
+						negotiationTask.reinit();
+						dealer = negotiationTask.getWorker();
 					}
-					else if (getPhaseDuration() > 1000D) {
-						buyLoad = new HashMap<>();
-						profit = 0D;
-						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
-						setPhaseEnded(true);
+					if (dealer.equals(member)) {
+						// It's the caller so restart and it will be a Person
+						logger.info(member, "Resuming negotiation for " + getName());
+						assignTask((Person)member, negotiationTask);
 					}
 				}
+			}
+
+			else {
+				Person settlementTrader = getSettlementTrader();
+
+				if (settlementTrader != null) {
+					boolean assigned = false;
+
+					for (Worker mm: getMembers()) {
+
+						if (mm instanceof Person person) {
+							negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
+									sellLoad, person, settlementTrader);
+							assigned = assignTask(person, negotiationTask);
+						}
+
+						if (assigned)
+							break;
+					}
+
+				}
+				else if (getPhaseDuration() > 1000D) {
+					buyLoad = new HashMap<>();
+					profit = 0D;
+					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					setPhaseEnded(true);
+				}
+			}
 		} else {
 			setPhaseEnded(true);
 		}
@@ -359,15 +358,13 @@ public class Delivery extends DroneMission implements CommerceMission {
 		// If person is not aboard the drone, board drone.
 		if (!isDone()) {
 
-			if (member instanceof Person) {
-				Person pilot = (Person) member;
+			if (member instanceof Person pilot) {
 				if (pilot.isDeclaredDead()) {
 					logger.info(pilot, "No longer alive. Switching to another pilot.");
 					int bestSkillLevel = 0;
 					// Pick another member to head the delivery
 					for (Worker mm: getMembers()) {
-						if (member instanceof Person) {
-							Person p = (Person) mm;
+						if (member instanceof Person p) {
 							if (!p.isDeclaredDead()) {
 								int level = p.getSkillManager().getSkillExp(SkillType.PILOTING);
 								if (level > bestSkillLevel) {

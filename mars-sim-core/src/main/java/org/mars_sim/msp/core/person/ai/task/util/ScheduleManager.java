@@ -29,6 +29,7 @@ public class ScheduleManager implements Serializable { //, Temporal {
 	private static final int STANDARD_PREPARATION_TIME = 10;
 	
 	private String DIG_LOCAL_REOGOLITH = DigLocalRegolith.SIMPLE_NAME;
+	private String SLEEP = Sleep.SIMPLE_NAME;
 	
 	private Person person;
 	
@@ -54,25 +55,34 @@ public class ScheduleManager implements Serializable { //, Temporal {
 		while (i.hasNext()) {
 			Appointment ap = i.next();
 			if (ap.getSol() == pulse.getMarsTime().getMissionSol()) {
-				
+				// TODO: need to account for a person's work shift
 				if (ap.getMillisolInt() - STANDARD_SLEEP_TIME - TIME_GAP <= pulse.getMarsTime().getMillisolInt() ) {			
-					if (ap.getTaskName().equalsIgnoreCase(DIG_LOCAL_REOGOLITH)) {
-						// Execute the sleep task
-						person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
+					if (person.getMission() == null && ap.getTaskName().equalsIgnoreCase(DIG_LOCAL_REOGOLITH)) {
+						
+						// Add the sleep task
+						// Account for a person being outside
+						if (person.isOutside()) {
+							// Add DigLocalReogth as a pending task
+							person.getTaskManager().addPendingTask(SLEEP, false, TIME_GAP * 2, STANDARD_SLEEP_TIME - TIME_GAP);
+						}
+						else {	
+							person.getTaskManager().addPendingTask(SLEEP, false, TIME_GAP, STANDARD_SLEEP_TIME);
+//							person.getTaskManager().replaceTask(new Sleep(person, STANDARD_SLEEP_TIME));
+						}
 						// Add DigLocalReogth as a pending task
-						person.getTaskManager().addAPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
+						person.getTaskManager().addPendingTask(DIG_LOCAL_REOGOLITH, false, STANDARD_SLEEP_TIME + TIME_GAP, ap.getDuration());
 						
 						logger.info(person, "Getting some sleep before executing the appointed task '" + ap.getTaskName() + "'.");
-						// Remove this appointment once execute
+						// Remove this appointment once executed
 						i.remove();
 					}	
 				}
 				else if (ap.getMillisolInt() - STANDARD_PREPARATION_TIME <= pulse.getMarsTime().getMillisolInt() ) {
-					// Execute the sleep task
-					person.getTaskManager().addAPendingTask(ap.getTaskName(), false, STANDARD_PREPARATION_TIME, ap.getDuration());
+					// Add a pending task
+					person.getTaskManager().addPendingTask(ap.getTaskName(), false, STANDARD_PREPARATION_TIME, ap.getDuration());
 					
 					logger.info(person, "Ready to show up for the appointed task '" + ap.getTaskName() + "'.");
-					// Remove this appointment once execuite
+					// Remove this appointment once executed
 					i.remove();
 				}
 			}

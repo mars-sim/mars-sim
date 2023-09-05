@@ -553,7 +553,7 @@ public class Farming extends Function {
 		double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
 		String tissueName = cropType.getName() + TISSUE;
-		// String name = Conversion.capitalize(cropType.getName()) + TISSUE_CULTURE;
+
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
 
 		boolean available = false;
@@ -1216,8 +1216,8 @@ public class Farming extends Function {
 	 * 
 	 * @return
 	 */
-	public int getTendingScore() {
-		int score = 0;
+	public double getTendingScore() {
+		double score = 0;
 		for (Crop c : cropList) {
 			score += c.getTendingScore();
 		}

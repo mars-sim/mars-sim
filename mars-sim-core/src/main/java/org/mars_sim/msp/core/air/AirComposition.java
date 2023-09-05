@@ -248,14 +248,14 @@ public class AirComposition implements Serializable {
 		totalPressure = 0;
 		totalMass = 0;
 
-		for(Entry<Integer,GasDetails> g : gases.entrySet()) {
+		for (Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			GasDetails gas = g.getValue();
 
 			double pp = getIdealPressure(gasId);
 			double p = gas.partialPressure;
 			double tolerance = 0;
-			if (pp != 0)		
+			if (pp > 0)		
 				tolerance =	p / pp;
 
 			// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
@@ -284,7 +284,7 @@ public class AirComposition implements Serializable {
 				if (newM < 0) {
 					newM = 0;
 				}
-				else {
+				else if (molecularMass > 0) {
 					newMoles = newM / molecularMass;
 				}
 

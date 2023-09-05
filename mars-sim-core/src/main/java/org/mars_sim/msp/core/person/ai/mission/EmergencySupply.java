@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -326,22 +327,16 @@ public class EmergencySupply extends RoverMission {
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
 
-				if (member instanceof Person) {
-					Person person = (Person) member;
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
-					if (walk != null) {
-						assignTask(person, walk);
-					}
-					else {
-						logger.severe("Unable to walk to building " + destinationBuilding);
-					}
-				}
-				else if (member instanceof Robot) {
-					Robot robot = (Robot) member;
-					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
-					if (walkingTask != null) {
-//						assignTask(robot, walkingTask);
-						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);						
+				if (member instanceof Person person) {
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -380,20 +375,18 @@ public class EmergencySupply extends RoverMission {
 		if (!roverUnloaded) {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
-				// TODO Refactor to allow robots.
-				if (member instanceof Person) {
-					Person person = (Person) member;
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
+				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
-					} else {
-						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-							assignTask(person, new UnloadVehicleEVA(person, getRover()));
-						}
+					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+						assignTask(person, new UnloadVehicleEVA(person, getRover()));
 					}
 				}
-
+				else if (member instanceof Robot robot && isInAGarage()) {
+					assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
+				}
+				
 				return;
 			}
 		} else {
@@ -413,20 +406,16 @@ public class EmergencySupply extends RoverMission {
 		if (!isDone() && !isVehicleLoaded()) {
 			// Random chance of having person load (this allows person to do other things
 			// sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
-				// TODO Refactor to allow robots.
-				if (member instanceof Person) {
-					Person person = (Person) member;
+			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
+				if (member instanceof Person person) {
 					if (isInAGarage()) {
-						assignTask(person,
-								new LoadVehicleGarage(person, this));
-					} else {
-						// Check if it is day time.
-						if (EVAOperation.isGettingDark(person)) {
-							assignTask(person,
-									new LoadVehicleEVA(person, this));
-						}
+						assignTask(person, new LoadVehicleGarage(person, this));
+					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+						assignTask(person, new LoadVehicleEVA(person, this));
 					}
+				}
+				else if (member instanceof Robot robot && isInAGarage()) {
+					assignTask(robot, new LoadVehicleGarage(robot, this));
 				}
 			}
 		} else {
@@ -446,9 +435,8 @@ public class EmergencySupply extends RoverMission {
 
 			// Move person to random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
-			// TODO Refactor
-			if (member instanceof Person) {
-				Person person = (Person) member;
+
+			if (member instanceof Person person) {
 				if (!person.isDeclaredDead()) {
 					
 					if (v == null)
@@ -458,26 +446,20 @@ public class EmergencySupply extends RoverMission {
 					EVASuitUtil.fetchEVASuitFromAny(person, v, emergencySettlement);
 
 					// If person is not aboard the rover, board rover.
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
-					if (walk != null) {
-						assignTask(person, walk);
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.warning(person, "Unable to start walk to " + v + ".");
+						}
 					}
+					
 					else {
-						endMissionProblem(person, "Cannot enter rover");
+						endMissionProblem(person, "Cannot enter " + v.getName());
 					}
-				}
-			}
-
-			else if (member instanceof Robot) {
-				Robot robot = (Robot) member;
-				// If robot is not aboard the rover, board rover.
-				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
-				if (walkingTask != null) {
-//					assignTask(robot, walkingTask);
-					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
-				}
-				else {
-					endMissionProblem(robot, "Can not enter Rover");
 				}
 			}
 		}
@@ -636,8 +618,7 @@ public class EmergencySupply extends RoverMission {
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof EmergencySupply) {
-				EmergencySupply emergencyMission = (EmergencySupply) mission;
+			if (mission instanceof EmergencySupply emergencyMission) {
 				if (settlement.equals(emergencyMission.getEmergencySettlement())) {
 					result = true;
 					break;
@@ -751,8 +732,7 @@ public class EmergencySupply extends RoverMission {
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof RoverMission) {
-				RoverMission roverMission = (RoverMission) mission;
+			if (mission instanceof RoverMission roverMission) {
 				boolean isTradeMission = roverMission instanceof Trade;
 				boolean isEmergencySupplyMission = roverMission instanceof EmergencySupply;
 				if (!isTradeMission && !isEmergencySupplyMission) {

@@ -80,7 +80,9 @@ public class InventoryTabPanel extends TabPanel {
 
 		NumberCellRenderer digit2Renderer = new NumberCellRenderer(2);
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-
+		// Align the preference score to the right of the cell
+		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		
         // Create resources panel
 		if (unit instanceof ResourceHolder rHolder) {
 			JScrollPane resourcesPanel = new JScrollPane();
@@ -94,20 +96,17 @@ public class InventoryTabPanel extends TabPanel {
 			JTable resourceTable = new JTable(resourceTableModel);
 			resourceTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
 
-
 			resourceTable.setRowSelectionAllowed(true);
 			resourcesPanel.setViewportView(resourceTable);
 
 			// Add sorting
 			resourceTable.setAutoCreateRowSorter(true);
-
-			// Align the preference score to the right of the cell
-			rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 			
 			TableColumnModel resourceColumns = resourceTable.getColumnModel();
 			resourceColumns.getColumn(0).setPreferredWidth(140);
 			resourceColumns.getColumn(1).setPreferredWidth(30);
 			resourceColumns.getColumn(2).setPreferredWidth(30);
+			
 			resourceColumns.getColumn(0).setCellRenderer(rightRenderer);
 			resourceColumns.getColumn(1).setCellRenderer(digit2Renderer);
 			resourceColumns.getColumn(2).setCellRenderer(digit2Renderer);
@@ -138,14 +137,14 @@ public class InventoryTabPanel extends TabPanel {
 			itemColumns.getColumn(2).setPreferredWidth(30);
 			itemColumns.getColumn(3).setPreferredWidth(30);
 			itemColumns.getColumn(4).setPreferredWidth(30);
-			// Align the preference score to the right of the cell
+			
 			itemColumns.getColumn(0).setCellRenderer(rightRenderer);
 			itemColumns.getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 			itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
-			itemColumns.getColumn(2).setCellRenderer(digit2Renderer);
+			itemColumns.getColumn(3).setCellRenderer(digit2Renderer);
 			itemColumns.getColumn(4).setCellRenderer(digit2Renderer);
 		}
-
+		
         // Create equipment panel
         if (unit instanceof EquipmentOwner eo) {
             JScrollPane equipmentPanel = new JScrollPane();
@@ -167,27 +166,25 @@ public class InventoryTabPanel extends TabPanel {
 			
 	        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
 	
+			// Align the preference score to the center of the cell
+			DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
+			renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
+	        
 			TableColumnModel equipmentColumns = equipmentTable.getColumnModel();
 	        equipmentColumns.getColumn(0).setPreferredWidth(80);
 	        equipmentColumns.getColumn(1).setPreferredWidth(30);
 	        equipmentColumns.getColumn(2).setPreferredWidth(50);
 	        equipmentColumns.getColumn(3).setPreferredWidth(70);
 	
-			// Align the preference score to the center of the cell
-			DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
-			renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
 			equipmentColumns.getColumn(0).setCellRenderer(renderer2);
 			equipmentColumns.getColumn(1).setCellRenderer(digit2Renderer);
 			equipmentColumns.getColumn(2).setCellRenderer(renderer2);
 			equipmentColumns.getColumn(3).setCellRenderer(renderer2);
 	
-	
 			// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
 	        equipmentTable.addMouseListener(new UnitTableLauncher(getDesktop()));
         }
     }
-
-	
 	
     /**
      * Updates the info on this panel.
@@ -229,43 +226,11 @@ public class InventoryTabPanel extends TabPanel {
 					.map(ar -> ResourceUtil.findAmountResource(ar))
 					.filter(Objects::nonNull)
 					.toList();
- 
-//        	if (unit.getUnitType() == UnitType.PERSON) {
-//
-//        		List<AmountResource> ars = ((Person)unit).getEquipmentInventory()
-//        				.getAllAmountResourceIDs().stream()
-//    					.map(ar -> ResourceUtil.findAmountResource(ar))
-//    					.filter(Objects::nonNull)
-//    					.toList();
-//
-//        		kys.addAll(ars);	
-//        		
-//    			for (AmountResource resource : arItems) {
-//    				stored.put(resource, ((Person)unit).getAllAmountResourceStored(resource.getID()));
-//    				cap.put(resource, ((Person)unit).getAmountResourceCapacity(resource.getID()));
-//    			}
-//    			
-//        	}
-//        	else if (unit.getUnitType() == UnitType.ROBOT) {
-//        		List<AmountResource> ars = ((Robot)unit).getEquipmentInventory()
-//        				.getAllAmountResourceIDs().stream()
-//    					.map(ar -> ResourceUtil.findAmountResource(ar))
-//    					.filter(Objects::nonNull)
-//    					.toList();
-//
-//        		kys.addAll(ars);	
-//        		
-//    			for (AmountResource resource : arItems) {
-//    				stored.put(resource, ((Robot)unit).getAllAmountResourceStored(resource.getID()));
-//    				cap.put(resource, ((Robot)unit).getAmountResourceCapacity(resource.getID()));
-//    			}
-//            }
-//        	else {
-        		arItems = holder.getAllAmountResourceIDs().stream()
-				.map(ar -> ResourceUtil.findAmountResource(ar))
-				.filter(Objects::nonNull)
-				.toList();
-//        	}
+
+    		arItems = holder.getAllAmountResourceIDs().stream()
+			.map(ar -> ResourceUtil.findAmountResource(ar))
+			.filter(Objects::nonNull)
+			.toList();
 
 			kys.addAll(arItems);
 			
@@ -424,7 +389,6 @@ public class InventoryTabPanel extends TabPanel {
 			this.unit = unit;
 			equipmentList = new ArrayList<>(unit.getEquipmentSet());
 		}
-
 
 		private String getContent(Equipment e) {
 			String s = "";

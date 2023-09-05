@@ -144,6 +144,9 @@ public class ConstructBuilding extends EVAOperation {
 		if (person.getPerformanceRating() < .3D)
 			return false;
 
+		if (person.isSuperUnFit())
+			return false;
+		
 		// Check if there is work that can be done on the construction stage.
 		ConstructionStage stage = site.getCurrentConstructionStage();
 

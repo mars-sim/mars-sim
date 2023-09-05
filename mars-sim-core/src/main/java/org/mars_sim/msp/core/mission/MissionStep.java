@@ -90,7 +90,8 @@ public abstract class MissionStep extends ProjectStep {
     }
 
     /**
-     * Assign a Task to a Worker as part of this mission step
+     * Assigns a Task to a Worker as part of this mission step.
+     * 
      * @param worker Worker looking to work
      * @param task Task allocated
      */
@@ -104,10 +105,13 @@ public abstract class MissionStep extends ProjectStep {
         }
         else if (worker instanceof Person p) {
             assignTask = (!task.isEffortDriven() || (p.getPerformanceRating() != 0D));
+            
+    		if (p.isSuperUnFit())
+    			return false;
         }
 
         if (assignTask) {
-            assignTask = worker.getTaskManager().checkAndReplaceTask(task);
+            assignTask = worker.getTaskManager().checkReplaceTask(task);
         }
         if (!assignTask) {
             logger.warning(worker, "Unable to start " + task.getName());

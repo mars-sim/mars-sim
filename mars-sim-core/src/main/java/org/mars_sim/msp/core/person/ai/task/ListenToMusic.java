@@ -95,9 +95,9 @@ extends Task {
 		}
 
 		else if (person.isInVehicle()
-                && person.getVehicle() instanceof Rover) {
+                && person.getVehicle() instanceof Rover r) {
 				// If person is in rover, walk to passenger activity spot.
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+				walkToPassengerActivitySpotInRover(r, true);
 		}
 		    
         setDescription(Msg.getString("Task.description.listenToMusic"));

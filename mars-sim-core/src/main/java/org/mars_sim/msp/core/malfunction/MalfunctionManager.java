@@ -728,7 +728,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Note: the need for maintenance should definitely have a higher chance than the onset of malfunction
 			// numberMaintenances increases the chance of having maintenance again
 			// because indicates how many times it has been "patched" up
-			double maintenanceChance = malfunctionChance * Math.log10(10 + numberMaintenances) * MAINTENANCE_FACTOR;
+			double maintenanceChance = malfunctionChance * Math.log10(10.0 + numberMaintenances) * MAINTENANCE_FACTOR;
 //			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
 			// For one orbit, log10 (1.00003351695) * 1000 * 687 is 10.0000. 10 %
 			// Use 1.00003351695 to get 10% as a reasonable lower limit

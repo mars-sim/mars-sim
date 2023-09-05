@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTaskManager.java
- * @date 2021-12-05
+ * @date 2023-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -11,6 +11,7 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -232,7 +233,7 @@ public class PersonTaskManager extends TaskManager {
 	}
 	
 	/**
-	 * Start a new Task by first checking for pending tasks.
+	 * Starts a new Task by first checking for pending tasks.
 	 */
 	@Override
 	public void startNewTask() {
@@ -241,15 +242,57 @@ public class PersonTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(person);
-				replaceTask(newTask);
-			}
+				
+				boolean isEVATask = newTask instanceof EVAOperation;
+				
+				if (newTask == null) {
+					// Note: need to understand why some newTask can be null.
+					removePendingTask(pending);
+					
+					// Next, go to super.startNewTask() to find a new task
+				}
 
-			return;
+				else if (person.isOutside()) {
+					
+					if (newTask.getName().contains("Sleep") || isEVATask) {
+						// Note :the person should 
+						// come in and rest and is no longer eligible for performing
+						// another EVA task
+//						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+						
+						// Skip doing anything for now
+					}
+
+					// Next, go to super.startNewTask() to find a new task
+				}
+				
+				else if (person.getMission() != null) {
+//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+					
+					// Skip doing anything for now
+					// Next, go to super.startNewTask() to find a new task
+				}
+				
+				else if (newTask != null && currentTask != null 
+					&& !newTask.getName().equals(getTaskName())
+					&& !newTask.getDescription().equals(currentTask.getDescription())
+					&& !isFilteredTask(currentTask.getDescription())) {
+					
+					// Note: this is the only eligible condition for replacing the
+					// current task with the new task
+					replaceTask(newTask);
+					// Remove the new task from the pending task list
+					removePendingTask(pending);
+					
+					// At this point, do NOT need to call super.startNewTask()
+					// or else the newTask will be replaced
+					return;
+				}
+			}
 		}
 
 		super.startNewTask();
 	}
-
 
 	@Override
 	protected Task createTask(TaskJob selectedWork) {

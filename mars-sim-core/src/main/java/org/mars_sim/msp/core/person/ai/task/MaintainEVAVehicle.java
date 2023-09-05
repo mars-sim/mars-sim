@@ -65,7 +65,7 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Choose an available needy ground vehicle.
         vehicle = target;
         if (vehicle.isReservedForMaintenance()) {
-            clearTask(vehicle.getName() + " already reserved for EVA maintenance");
+            clearTask(vehicle.getName() + " already reserved for EVA maintenance.");
             checkLocation();
             return;
         }

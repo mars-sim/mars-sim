@@ -657,7 +657,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return modifier
 	 */
-	public double calculateWalkSpeed() {
+	public double calculateWalkSpeedMod() {
 		double mass = getMass();
 		// At full capacity, may still move at 10%.
 		// Make sure is doesn't go -ve and there is always some movement
@@ -732,12 +732,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
 	public boolean isEmpty() {
-		return (eqmInventory.getStoredMass() == 0D);
+		return eqmInventory.isEmpty();
 	}
 
 
 	/**
-	 * Gets the stored mass
+	 * Gets the stored mass.
 	 */
 	@Override
 	public double getStoredMass() {

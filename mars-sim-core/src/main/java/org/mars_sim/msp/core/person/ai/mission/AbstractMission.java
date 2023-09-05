@@ -791,18 +791,26 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Person person, Task task) {
-		boolean canPerformTask = !task.isEffortDriven() || (person.getPerformanceRating() != 0D);
+		boolean canPerformTask = !task.isEffortDriven() 
+				|| person.getPerformanceRating() != 0D;
+		
+		if (person.isSuperUnFit())
+			return false;
 
 		// If task is effort-driven and person too ill, do not assign task.
 		Task currentTask = person.getMind().getTaskManager().getTask();
 		
-		if (currentTask != null && currentTask.getName().equals(task.getName()))
-			// If the person has been doing this task, 
-			// then there is no need of adding it.
-			return true;
+		if (currentTask != null) {
+			logger.info(person, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+		
+			if (currentTask.getName().equals(task.getName()))
+				// If the person has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+		}
 		
         if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkAndReplaceTask(task);
+			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task);
 		}
 
 		return canPerformTask;
@@ -828,12 +836,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
 		
-		if (currentTask != null && currentTask.getName().equals(task.getName()))
-			// If the robot has been doing this task, 
-			// then there is no need of adding it.
-			return true;
+		if (currentTask != null) {
+			logger.info(robot, 10_000L, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
 		
-		return robot.getBotMind().getBotTaskManager().checkAndReplaceTask(task);
+			if (currentTask.getName().equals(task.getName()))
+				// If the person has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+		}
+		
+		return robot.getBotMind().getBotTaskManager().checkReplaceTask(task);
 	}
 
 	/**

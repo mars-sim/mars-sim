@@ -44,7 +44,7 @@ public interface ResourceHolder {
 
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity

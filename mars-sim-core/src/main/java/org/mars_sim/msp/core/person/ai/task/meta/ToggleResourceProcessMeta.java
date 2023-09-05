@@ -61,23 +61,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
     }
 
 	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
+//	may add back SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName())
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final double URGENT_FACTOR = 5;
+	private static final double URGENT_FACTOR = 2.5;
 	
     public ToggleResourceProcessMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN, JobType.ENGINEER);
 
-		addPreferredRobot(RobotType.REPAIRBOT);
+		addPreferredRobot(RobotType.REPAIRBOT, RobotType.CONSTRUCTIONBOT, 
+				RobotType.MAKERBOT, RobotType.DELIVERYBOT);
 	}
 
 	/**
 	 * Robots can toggle resource processes.
+	 * 
 	 * @param t Task 
 	 * @param r Robot making the request
 	 */
@@ -88,6 +90,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 	/**
 	 * Evaluates if a Person can do a Settlement task, based on in settlement.
+	 * 
 	 * @param t Task 
 	 * @param p Person making the request
 	 */
@@ -100,7 +103,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	}
 
 	/**
-	 * Build a list of TaskJob covering the most suitable Resoruce Processes to toggle.
+	 * Builds a list of TaskJob covering the most suitable Resource Processes to toggle.
+	 * 
 	 * @param settlement Settlement to check
 	 */
 	@Override
@@ -123,7 +127,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	}
 
 	/**
-	 * Select a resource process (from a building) based on its resource score.
+	 * Selects a resource process (from a building) based on its resource score.
 	 *
 	 * @param building the building
 	 * @return the resource process to toggle or null if none.
@@ -288,9 +292,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		// Score is influence if a Toggle is active but no one working. Finish Toggles that have started
 		double[] toggleTime = process.getToggleSwitchDuration();
 		if ((toggleTime[0] > 0) && !process.isFlagged()) {
-			score = (score * 2) + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
+			score = score + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
 		}
-		return score;
+		return score / 4;
 	}
 
 }

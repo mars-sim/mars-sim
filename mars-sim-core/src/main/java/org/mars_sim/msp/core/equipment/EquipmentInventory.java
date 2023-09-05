@@ -22,10 +22,8 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
- * The represents an Inventory that can hold Equipment as well as Resources. It provides
+ * This class represents an Inventory that can hold equipment as well as resources. It provides
  * basic capacity management.
- * Resources can be retrieved from held Equipment. But resources can not be stored
- * in the underlying Equipment.
  */
 public class EquipmentInventory
 		implements EquipmentOwner, ItemHolder, BinHolder, Serializable {
@@ -38,9 +36,6 @@ public class EquipmentInventory
 
 	private double cargoCapacity;
 
-	/** Locally held equipment set. */
-//	private Set<Equipment> equipmentSet;
-	
 	/** Locally held EVA suit set. */
 	private Set<Equipment> suitSet;
 	
@@ -89,7 +84,7 @@ public class EquipmentInventory
 	}
 	
 	/**
-	 * Gets the total mass of this inventory including the total mass of any held equipment.
+	 * Gets the total mass (stored resource and base equipment) of this inventory.
 	 * 
 	 * @return
 	 */
@@ -104,7 +99,7 @@ public class EquipmentInventory
 		}
 		return result + microInventory.getStoredMass();
 	}
-
+	
 	/**
 	 * Gets the modified mass for a container. Useful when accounting for pushing a wheelbarrow, 
 	 * instead of carrying a wheelbarrow.
@@ -184,10 +179,10 @@ public class EquipmentInventory
 	@Override
 	public boolean addEquipment(Equipment equipment) {
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
-			return addSet(suitSet, equipment);
+			return addToSet(suitSet, equipment);
 		}
 		
-		return addSet(containerSet, equipment);
+		return addToSet(containerSet, equipment);
 	}
 	
 	/**
@@ -197,19 +192,51 @@ public class EquipmentInventory
 	 * @param equipment
 	 * @return true if this unit can carry it
 	 */
-	private boolean addSet(Set<Equipment> set, Equipment equipment) {
+	private boolean addToSet(Set<Equipment> set, Equipment equipment) {
 		boolean contained = set.contains(equipment);
 		if (!contained) {
-			double newCapacity = cargoCapacity - (getStoredMass() + equipment.getMass());
+			
+			double suitMass = 0;
+			for (Equipment e: suitSet) {
+				suitMass += e.getMass();
+			}
+			double containerMass = 0;
+			String containerName = "";
+			for (Equipment e: containerSet) {
+				Container c = (Container)e;
+				Set<Integer> ids = c.getAmountResourceIDs();
+				String arNames = "";
+				for (int i: ids) {
+					arNames += ResourceUtil.findAmountResourceName(i) 
+							+ " (" + Math.round(c.getAmountResourceStored(i) * 100.0)/100.0 + ")";
+				}
+				containerName += e.getName() + " [" + arNames + "]";
+				containerMass += e.getMass();
+			}
+
+			double microInvMass = microInventory.getStoredMass();
+			
+			double totalStored = suitMass + containerMass + microInvMass;
+			
+			double newCapacity = cargoCapacity - totalStored - equipment.getMass();
 			if (newCapacity >= 0D) {
-				contained = set.add(equipment);
+				return set.add(equipment);
 			}
 			else {
 				logger.warning(owner, "No capacity to hold " + equipment.getName()
-								+ ", new cap=" + newCapacity);
+								+ ": cargoCapacity = " + cargoCapacity 
+								+ ", container name = " + containerName
+								+ ", totalStored = " + totalStored 
+								+ ", microInvMass = " + microInvMass
+								+ ", containerMass = " + containerMass 
+								+ ", suitMass = " + suitMass
+								+ ", equipmentMass = " + equipment.getMass() 
+								+ ".");
+				return false;
 			}
 		}
-		return contained;
+		
+		return !contained;
 	}
 
 	/**

@@ -460,7 +460,7 @@ public class Mining extends EVAMission
 
 			for(ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
-						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
+						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
@@ -502,7 +502,7 @@ public class Mining extends EVAMission
 
 			for (ExploredLocation site : surfaceFeatures.getAllRegionOfInterestLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
-						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2, MATURE_ESTIMATE_NUM));
+						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))

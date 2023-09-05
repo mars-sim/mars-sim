@@ -119,7 +119,7 @@ public class MaintainGarageVehicle extends Task {
 
 		// End task if vehicle or garage not available.
 		if (garage == null) {
-			clearTask(vehicle.getName() + " Can not find available garage for maintenance");
+			clearTask(vehicle.getName() + " Can not find available garage for maintenance.");
 		}
 
 		logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
@@ -181,7 +181,7 @@ public class MaintainGarageVehicle extends Task {
 		
 		int shortfall = manager.transferMaintenanceParts(settlement);
 		if (shortfall == -1) {
-			clearTask("No spare parts for maintenance");
+			clearTask("No spare parts for maintenance.");
 			return time;
 		}
 

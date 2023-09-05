@@ -338,22 +338,25 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update farmers label if necessary.
-		if (farmersCache != farm.getFarmerNum()) {
-			farmersCache = farm.getFarmerNum();
-			farmersTF.setText(farmersCache + "");
+		int farmers = farm.getFarmerNum();
+		if (farmersCache != farmers) {
+			farmersCache = farmers;
+			farmersTF.setText(String.valueOf(farmers));
 		}
 
+		
 		// Update crops label if necessary.
-		if (cropsCache != farm.getCrops().size()) {
-			cropsCache = farm.getCrops().size();
-			cropsTF.setText(cropsCache + "");
+		int crops = farm.getCrops().size();
+		if (cropsCache != crops) {
+			cropsCache = crops;
+			cropsTF.setText(String.valueOf(crops));
 		}
 
 		// Update solar irradiance label
 		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
-			radTF.setText(radCache + " W/m");
+			radTF.setText(String.valueOf(rad) + " W/m");
 		}
 
 		// Update the average water usage

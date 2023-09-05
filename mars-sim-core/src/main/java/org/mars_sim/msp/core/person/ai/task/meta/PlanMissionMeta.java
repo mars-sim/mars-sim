@@ -70,7 +70,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         int optimalMissions = (int) settlement.getPreferenceModifier(Settlement.MISSION_LIMIT);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
-            results.add(new PlanTaskJob(this, shortfall * START_FACTOR));
+            results.add(new PlanTaskJob(this, 1.0 * shortfall * START_FACTOR));
         }
         return results;
     }

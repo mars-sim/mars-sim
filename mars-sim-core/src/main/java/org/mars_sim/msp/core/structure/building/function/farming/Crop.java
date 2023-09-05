@@ -61,8 +61,10 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	/** The rate of taking care of the health of the crop. */
 	private static final double RECOVER_HEALTH_RATE = .5;
 	
-	/** The mininum time offset [in millisols] for a crop that requires work. */
-	public static final double CROP_TIME_OFFSET = 10;
+	/** The minimum time offset [in millisols] for a crop that requires work. */
+	public static final double CROP_RESILIENCY = -100;
+	
+	public static final double POSITIVE_ENTROPY = 0;
 	
 	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
@@ -436,23 +438,29 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				)
 			return true;
 		
-		return currentWorkRequired > CROP_TIME_OFFSET;
+		return currentWorkRequired > POSITIVE_ENTROPY ;
 	}
 
 	/**
-	 * Get the priority scroe for this crop based on the phase
+	 * Gets the priority score for this crop based on the phase.
 	 */
-	public int getTendingScore() {
+	public double getTendingScore() {
+		double score = 0;
+		if (currentWorkRequired > POSITIVE_ENTROPY) {
+			score = (int)Math.floor(currentWorkRequired / 50); 
+		}
 		switch (currentPhase.getPhaseType()) {
 			case HARVESTING:
-				return 3;
+				score = score + 3;
 			case PLANTING:
-				return 1;
+				score = score + 1;
 			case INCUBATION:
-				return 2;
+				score = score + 1.5;
 			default:
-				return (currentWorkRequired > CROP_TIME_OFFSET ? 1 : 0);
+				score = score + 2;
 		}
+		
+		return score;
 	}
 
 	/**
@@ -584,21 +592,18 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * @throws Exception if error adding work.
 	 */
 	public double addWork(Worker worker, double workTime) {
-		double time = workTime * WORK_FACTOR;
+		double modTime = workTime * WORK_FACTOR;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
 		double remainingTime = 0;
 		// Record the work time in Farming
 		farm.addCumulativeWorkTime(workTime);
 		// Reduce the work required
-		currentWorkRequired -= time;
-		// Allow the plant to be over-tended so that it won't need to be taken care of for a while
-//		if (currentWorkRequired < 0) {
-//			currentWorkRequired = 0;
-//			return workTime;
-//		}
+		currentWorkRequired -= modTime;
+		// Note: Allow the plant to be over-tended (thus currentWorkRequired becomes negative) 
+		// so that it won't need to be taken care of for a while
 		
-//		// Improve the health of the crop each time it's being worked on
-		healthCondition += RECOVER_HEALTH_RATE * time;
+		// Improve the health of the crop each time it's being worked on
+		healthCondition += RECOVER_HEALTH_RATE * modTime;
 		if (healthCondition > 1)
 			healthCondition = 1;
 
@@ -615,7 +620,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		case INCUBATION:
 		case PLANTING:
 			// At a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 			
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 //				remainingTime = currentPhaseWorkCompleted - workMillisols;
@@ -630,21 +635,19 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		case MATURATION:
 		case HARVESTING:
 			// at the maturation or harvesting phase
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 			// Set the harvest multiplier
 			int multiplier = 5;
 
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 				// Modify parameter list to include crop name
-				double lastHarvest = multiplier * dailyHarvest * time/ phaseWorkReqMillisols;
+				double lastHarvest = multiplier * dailyHarvest * modTime/ phaseWorkReqMillisols;
 
 				if (remainingHarvest > 0) {
 					collectProduce(lastHarvest);
 
 					remainingHarvest -= lastHarvest;
 					totalHarvest += lastHarvest;
-
-//					remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
 
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
@@ -675,7 +678,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			else {
 				if (dailyHarvest > 0.00001) {
 					// Continue the harvesting process
-					double modifiedHarvest = multiplier * dailyHarvest * time / phaseWorkReqMillisols;
+					double modifiedHarvest = multiplier * dailyHarvest * modTime / phaseWorkReqMillisols;
 					// Store the crop harvest
 					if (modifiedHarvest > 0 && remainingHarvest > 0) {
 						collectProduce(modifiedHarvest);
@@ -693,7 +696,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		default:
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += time;
+			currentPhaseWorkCompleted += modTime;
 
 			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 //				remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
@@ -753,7 +756,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		// Calculate the amount of leaves and crop wastes that are generated
 		double inedible = harvestMass / cropSpec.getEdibleBiomass() * cropSpec.getInedibleBiomass();
-		double cropWaste = inedible * RATIO_LEAVES;
+		double cropWaste = inedible * RandomUtil.getRandomDouble(RATIO_LEAVES);
 		if (cropWaste > 0) {
 			store(cropWaste, CROP_WASTE_ID, source);
 		}

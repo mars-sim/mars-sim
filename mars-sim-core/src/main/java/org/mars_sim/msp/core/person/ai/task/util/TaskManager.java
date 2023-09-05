@@ -44,6 +44,7 @@ public abstract class TaskManager implements Serializable {
 	private static final String SLEEPING = "Sleeping";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK = "Airlock";
+	private static final String DIG = "Digging";
 	
 	/*
 	 * This class represents a record of a given activity (task or mission)
@@ -659,35 +660,49 @@ public abstract class TaskManager implements Serializable {
 	/**
 	 * Checks to see if it's okay to replace a task.
 	 * 
-	 * @param newTask the task to be added
+	 * @param newTask the task to be executed
 	 */
-	public boolean checkAndReplaceTask(Task newTask) {
+	public boolean checkReplaceTask(Task newTask) {
 		
 		if (newTask == null) {
 			return false;
 		}
 		
 		if (hasActiveTask()) {
+			
 			String currentDes = currentTask.getDescription();
-			String taskName = currentTask.getName(); //
-			
-			// Note: make sure robot's 'Sleep Mode' won't return false
-			if (currentDes.contains(SLEEPING)
-				|| currentDes.contains(EVA)
-				|| taskName.contains(AIRLOCK))
-				return false;
-			
+
 			if (newTask.getDescription().equalsIgnoreCase(currentDes))
 				return false;	
+		
+			if (isFilteredTask(currentDes))
+				return false;
+			
+			if (newTask.getName().equals(getTaskName())) {
+				return false;
+			}
 		}
 		
+		// Records current task as last task and replaces it with a new task.
 		replaceTask(newTask);
 		
 		return true;
 	}
 	
+
+	protected boolean isFilteredTask(String des) {
+		if (des.contains(SLEEPING)
+				|| des.contains(EVA)
+				|| des.contains(AIRLOCK)
+				|| des.contains(DIG))
+				return true;
+		
+		return false;
+	}
+	
+	
 	/**
-	 * Replaces old task with a new task.
+	 * Records current task as last task and replaces it with a new task.
 	 * 
 	 * @param newTask
 	 */
@@ -696,14 +711,14 @@ public abstract class TaskManager implements Serializable {
 			// Backup the current task as last task
 			lastTask = currentTask;
 			
-			// Inform that the current task will be termined
-			if ((currentTask != null) && !currentTask.isDone()) {
+			// Inform that the current task will be terminated
+			if (hasActiveTask()) {
 				String des = currentTask.getDescription();
-	
-				logger.info(worker, 20_000, "Quitting '" + des + "' to start new Task '"
-							+ newTask.getDescription() + "'.");
 				
 				currentTask.endTask();
+				
+				logger.info(worker, 20_000, "Quit '" + des + "' to start the new task of '"
+							+ newTask.getName() + "'.");
 			}
 			
 			// Make the new task as the current task
@@ -734,12 +749,10 @@ public abstract class TaskManager implements Serializable {
 	 * Adds a pending task if it is not in the pendingTask list yet.
 	 *
 	 * @param task
-	 * @param countDownTime
-	 * @param duration
 	 * @return
 	 */
-	public boolean addAPendingTask(String taskName, int countDownTime, int duration) {
-		return addAPendingTask(taskName, false, countDownTime, duration);
+	public boolean addPendingTask(String taskName) {
+		return addPendingTask(taskName, false, 0, 0);
 	}
 	
 	/**
@@ -747,19 +760,22 @@ public abstract class TaskManager implements Serializable {
 	 *
 	 * @param task				the pending task 
 	 * @param allowDuplicate	Can this pending task be repeated in the queue
-	 * @param countDownTime 	the count down time for executing the new task
+	 * @param countDownTime 	the count down time for executing the new pending task
 	 * @param duration 			the duration of the new task
 	 * @return
 	 */
-	public boolean addAPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
+	public boolean addPendingTask(String taskName, boolean allowDuplicate, int countDownTime, int duration) {
 		
-		if (countDownTime >= 0) {
+		// Shorten the remaining duration of the current task so as to execute the pending time right after the countDownTime in a timely manner
+		if (currentTask != null && countDownTime > 0) {
 			double oldDuration = currentTask.getDuration();
 			double newDuration = countDownTime + currentTask.getTimeCompleted();
-			currentTask.setDuration(newDuration);
 			
-			logger.info(worker, "Updating current task '" + currentTask.getName() 
-				+ "''s duration: " + oldDuration + " -> " + Math.round(newDuration * 10.0)/10.0 + "'.");
+			if (newDuration < oldDuration) {
+				currentTask.setDuration(newDuration);
+				logger.info(worker, "Updating current task '" + currentTask.getName() 
+					+ "'  duration: " + Math.round(oldDuration * 10.0)/10.0 + " -> " + Math.round(newDuration * 10.0)/10.0 + ".");
+			}
 		}
 		
 		// Potential ClassCast but only temp. measure
@@ -783,7 +799,7 @@ public abstract class TaskManager implements Serializable {
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a pending/appointed task '" + task.getDescription() + "'.");
+			logger.info(worker, 20_000L, "Added an appointed task '" + task.getDescription() + "'.");
 			return true;
 		}
 		return false;
@@ -796,23 +812,35 @@ public abstract class TaskManager implements Serializable {
 	 */
 	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
-		logger.info(worker, "Removed the pending/appointed task '" + task + "'.");
+		logger.info(worker, "Removed an appointed task '" + task.getDescription() + "'.");
 	}
 
 	/**
 	 * Gets the first pending meta task in the queue.
+	 * Note: It no longer automatically remove the retrieved task. 
+	 * Must call removePendingTask() separately to remove it.
 	 *
 	 * @return
 	 */
 	protected TaskJob getPendingTask() {
 		if (!pendingTasks.isEmpty()) {
 			TaskJob firstTask = pendingTasks.get(0);
-			pendingTasks.remove(firstTask);
 			return firstTask;
 		}
 		return null;
 	}
 
+	/**
+	 * Removes a pending task in the queue.
+	 *
+	 * @return
+	 */
+	protected void removePendingTask(TaskJob taskJob) {
+		if (!pendingTasks.isEmpty()) {
+			pendingTasks.remove(taskJob);
+		}
+	}
+	
 	/**
 	 * Checks if the worker is currently performing this task.
 	 * 

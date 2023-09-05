@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ShiftSlot.java
- * @date 2022-11-19
+ * @date 2023-09-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -21,7 +21,26 @@ public class ShiftSlot implements ScheduledEventHandler {
      * The work status of this slot.
      */
     public enum WorkStatus {
-        ON_DUTY, OFF_DUTY, ON_CALL, ON_LEAVE;
+        ON_DUTY ("On Duty"), 
+        OFF_DUTY ("Off Duty"), 
+        ON_CALL ("On Call"), 
+        ON_LEAVE ("On Leave");
+
+    	private String name;
+
+		/** hidden constructor. */
+		private WorkStatus(String name) {
+			this.name = name;
+		}
+		
+		public final String getName() {
+			return this.name;
+		}
+
+		@Override
+		public final String toString() {
+			return getName();
+		}
     }
 
     private boolean onCall = false;

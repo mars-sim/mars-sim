@@ -41,15 +41,19 @@ public class DigLocalIceMeta extends DigLocalMeta {
 
     @Override
     public double getProbability(Person person) {
-    	if (!unitManager.isSettlement(person.getCoordinates())) {
-    		return 0;
-    	}
     	
-    	Settlement settlement = unitManager.findSettlement(person.getCoordinates());
-    	double rate = settlement.getIceCollectionRate();
-    	if (rate <= 0D) {
-    		return 0D;
+    	Settlement settlement = person.getSettlement();
+    	double rate = 0;
+    	
+    	if (settlement != null) {
+    		
+    		rate = settlement.getIceCollectionRate();
+	    	if (rate <= 0) {
+	    		return 0;
+	    	}
     	}
+    	else
+    		return 0;
     	
         // Check if settlement has DIG_LOCAL_ICE override flag set.
         if (settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE)) {

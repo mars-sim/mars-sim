@@ -92,17 +92,17 @@ public class UnloadVehicleGarage extends Task {
 		settlement = worker.getSettlement();
 
 		if (isFullyUnloaded(vehicle)) {
-			clearTask(vehicle.getName() + " already unloaded");
+			clearTask(vehicle.getName() + " already unloaded.");
 			return;
 		}
-		logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName());
+		logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
 
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 
 		// End task if vehicle or garage not available
 		if (garage == null) {
-			clearTask(vehicle.getName() + " no garage found");
+			clearTask(vehicle.getName() + " no garage found.");
 			return;
 		}
 

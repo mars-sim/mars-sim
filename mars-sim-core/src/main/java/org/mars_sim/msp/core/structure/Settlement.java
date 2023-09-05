@@ -120,10 +120,8 @@ public class Settlement extends Structure implements Temporal,
 	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(PreferenceCategory.CONFIGURATION,
 																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
-	
-//	private static final int START_TIME = 400;
+	private static final int AIRLOCK_OPERATION_OFFSET = 40;
 	private static final int DURATION = 150;
-	
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -572,8 +570,7 @@ public class Settlement extends Structure implements Temporal,
 	 * 
 	 * @return
 	 */
-	public double getElevation() {
-//		terrainProfile = terrainElevation.getTerrainProfile(location);		
+	public double getElevation() {	
 		return terrainProfile[0];
 	}
 
@@ -949,9 +946,7 @@ public class Settlement extends Structure implements Temporal,
 			setAppointedTask(sol);
 		}
 		
-//		int rand = RandomUtil.getRandomInt(100);
-	
-		// At the beginnning of a new sol,
+		// At the beginning of a new sol,
 		// there's a chance a new site is automatically discovered
 		if (pulse.isNewSol()) {
 			
@@ -1003,16 +998,26 @@ public class Settlement extends Structure implements Temporal,
 	 * @param sol
 	 */
 	public void setAppointedTask(int sol) {
+		int numAirlocks = getAirlockNum();
+		// Note: leave 1 chamber open
+		int numPerAirlock = 3; 
+		int count = 0; 
+		double multiplier = 0.1 + numAirlocks / numPerAirlock;	
 		for (Person p: citizens) {
-			if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-					|| p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST
-					|| p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-					|| p.getRole().getType() == RoleType.RESOURCE_SPECIALIST
-					) {
-				
-				int startTimeEVA = WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
+			count++;
+			double deltaTime = AIRLOCK_OPERATION_OFFSET * Math.floor(count * multiplier);
+			
+			int startTimeEVA = (int)deltaTime +  WAIT_FOR_SUNLIGHT_DELAY + (int)(surfaceFeatures.getOrbitInfo().getSunriseSunsetTime(location))[0];
+			
+			boolean isOnDuty = p.isOnDuty(startTimeEVA);
+			
+			// Select only personnel on duty and without a mission
+			if (isOnDuty && p.getMission() == null) {
+
+				// Gets the number of digits in millisol time 
 				int numDigits = ("" + startTimeEVA).length();
 				String startTimeEVAString = ""; 
+				
 				if (numDigits == 1) {
 					startTimeEVAString = "00" + startTimeEVA;
 				}
@@ -1025,8 +1030,15 @@ public class Settlement extends Structure implements Temporal,
 				
 				Appointment ap = new Appointment(p, sol, startTimeEVA, DURATION, null, DigLocalRegolith.SIMPLE_NAME, null);
 				p.getScheduleManager().setAppointment(ap);
-				logger.info(this, p, "Authorized the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME 
-						+ "' at sol " + sol + ":" + startTimeEVAString + " for " + DURATION + " millisols.");
+				logger.info(this, p, 
+						"On Sol " + sol + ":" + startTimeEVAString 
+						+ ", the daily EVA task '" + DigLocalRegolith.SIMPLE_NAME 
+						+ "' was authorized for " + DURATION + " millisols ("
+						+ "deltaTime: " + deltaTime + ")."
+						);
+			}
+			else {
+				count--;
 			}
 		}
 	}
@@ -1151,7 +1163,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Pass pulse to Citizens that are not dead. Thos etht are buried are removed.
+	 * Passes a pulse to citizens that are not dead. Those that are buried are removed.
 	 */
 	private void timePassingCitizens(ClockPulse pulse) {
 		List<Person> remove = null;

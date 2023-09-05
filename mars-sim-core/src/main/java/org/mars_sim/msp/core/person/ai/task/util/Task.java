@@ -314,7 +314,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param reason Reason for the end.
 	 */
 	protected void clearTask(String reason) {
-		logger.warning(worker, "Early end of " + name + ": " + reason);
+		logger.warning(worker, "Ended '" + name + "' early. " + reason);
 		endTask();
 	}
 
@@ -1104,20 +1104,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
-			// If the functionType does not exist in this building, go to random location in
-			// building.
-//			walkToRandomLocInBuilding(building, allowFail);
 			return canWalk;
 		}
-
-		LocalPosition settlementLoc = null;
-		if (person != null) {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
-		} else {
-			// Find available activity spot in building.
-			settlementLoc = f.getAvailableActivitySpot();
-		}
+		
+		// Find available activity spot in building.
+		LocalPosition settlementLoc = f.getAvailableActivitySpot();
 
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.

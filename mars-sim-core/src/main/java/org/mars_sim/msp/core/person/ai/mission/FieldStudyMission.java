@@ -246,9 +246,7 @@ public abstract class FieldStudyMission extends EVAMission {
 	public double getMissionQualification(Worker member) {
 		double result = super.getMissionQualification(member);
 
-		if ((result > 0D) && (member instanceof Person)) {
-
-			Person person = (Person) member;
+		if ((result > 0D) && (member instanceof Person person)) {
 
 			// Add modifier if person is a researcher on the same scientific study.
 			if (study != null) {

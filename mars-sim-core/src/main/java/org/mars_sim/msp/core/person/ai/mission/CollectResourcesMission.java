@@ -111,7 +111,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		
 		Settlement s = startingPerson.getSettlement();
 
-		if (s == null && isDone()) {
+		if (s == null || isDone()) {
 			return;
 		}
 		

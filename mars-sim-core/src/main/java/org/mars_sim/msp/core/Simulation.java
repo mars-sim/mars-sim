@@ -690,7 +690,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 		
 	/**
-	 * Starts the simulation.
+	 * Starts the simulation clock.
 	 *
 	 * @param autosaveDefault True if default is used for autosave
 	 */
@@ -700,7 +700,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Add a listener to trigger the auto save
 		autoSaveHandler = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
 		long autoSaveDuration = simulationConfig.getAutosaveInterval() * 60000L;
-		logger.config("Adding autosave handled for every " + autoSaveDuration + "ms (" +
+		logger.config("Setting up autosave to be triggered every " + autoSaveDuration + " ms (" +
 				autoSaveDuration/60.0/1000.0 + " mins).");
 		masterClock.addClockListener(autoSaveHandler, autoSaveDuration);
 		masterClock.start();

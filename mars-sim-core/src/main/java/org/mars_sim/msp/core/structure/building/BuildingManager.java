@@ -416,13 +416,12 @@ public class BuildingManager implements Serializable {
 
 		if (buildingTypeIDMap == null)
 			createBuildingTypeIDMap();
-		
+	
 		if (buildingTypeIDMap != null && buildingTypeIDMap.containsKey(buildingType)) {
 			int old_id = buildingTypeIDMap.get(buildingType);
 			if (old_id < new_id)
 				buildingTypeIDMap.put(buildingType, new_id);
-		} else
-			buildingTypeIDMap.put(buildingType, new_id);
+		}
 	}
 	
 	/**
@@ -2033,6 +2032,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public void createBuildingTypeIDMap() {
 		buildingTypeIDMap = new HashMap<>();
+		
 		for (Building b : buildings) {
 			String buildingType = b.getBuildingType();
 			String n = b.getNickName();
@@ -2340,8 +2340,7 @@ public class BuildingManager implements Serializable {
 
 		else {
 			farmTimeCache = m;
-			Set<Building> farmBuildings = getLeastCrowdedBuildings(
-					getNonMalfunctioningBuildings(getBuildingSet(FunctionType.FARMING)));
+			Set<Building> farmBuildings = getNonMalfunctioningBuildings(getBuildingSet(FunctionType.FARMING));
 			result = new UnitSet<>();
 
 			for (Building b : farmBuildings) {

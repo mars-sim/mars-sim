@@ -55,9 +55,13 @@ public class TendGreenhouse extends Task {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
 
+	private static final double CROP_RESILIENCY = Crop.CROP_RESILIENCY;
+	
 	// Data members
 	/** The goal of the task at hand. */
 	private String goal;
+	/** The previous tended crop. */
+	private String previousCropName;
 	/** The greenhouse the person is tending. */
 	private Farming greenhouse;
 	/** The task accepted for the duration. */
@@ -75,7 +79,7 @@ public class TendGreenhouse extends Task {
 	 */
 	public TendGreenhouse(Person person, Farming greenhouse) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 10D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, RandomUtil.getRandomDouble(10, 50));
 
 		if (person.isOutside()) {
 			endTask();
@@ -88,6 +92,8 @@ public class TendGreenhouse extends Task {
 		// Walk to greenhouse.
 		walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
 
+//		logger.info(person, 20_000L, "Walked to " + greenhouse.getBuilding() + ".");
+		
 		// Plant a crop or tending a crop
 		selectTask();
 	}
@@ -110,10 +116,14 @@ public class TendGreenhouse extends Task {
 		this.greenhouse = greenhouse;
 
 		// Checks quickly to see if a needy crop is available	
-		needyCrop = greenhouse.getNeedyCrop();		
+		needyCrop = greenhouse.getNeedyCrop();
+		
 		if (needyCrop != null) {
+			previousCropName = needyCrop.getCropName();
 			// Walk to greenhouse.
 			walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
+			
+//			logger.info(robot, 20_000L, "Tending in " + greenhouse.getBuilding() + ".");
 			
 			acceptedTask = TENDING;
 
@@ -151,7 +161,7 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Select a suitab le sub-task in the greenhouse
+	 * Selects a suitable task for the greenhouse.
 	 */
 	private void selectTask() {
 		if (greenhouse.getNumCrops2Plant() > 0) {
@@ -177,6 +187,7 @@ public class TendGreenhouse extends Task {
 					acceptedTask = INSPECTING;
 				}
 				else {
+					previousCropName = needyCrop.getCropName();
 					acceptedTask = TENDING;
 				}
 			}
@@ -193,7 +204,7 @@ public class TendGreenhouse extends Task {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, text + ".");
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, text + ".");
 	}
 	
 	/**
@@ -202,7 +213,7 @@ public class TendGreenhouse extends Task {
 	 * @param needyCrop
 	 */
 	public void setCropDescription(Crop needyCrop) {
-		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Tending " + needyCrop.getCropName() + ".");
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, "Tending " + needyCrop.getCropName() + ".");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.detail",
 								needyCrop.getCropName()), false);
 	}
@@ -211,7 +222,8 @@ public class TendGreenhouse extends Task {
 	 * Sets the task description of being done with tending crops.
 	 */
 	public void setDescriptionCropDone() {
-		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Done tending crops.");
+		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, 
+				previousCropName + " no longer needed to be tended.");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.done"), false);
 	}
 	
@@ -242,53 +254,38 @@ public class TendGreenhouse extends Task {
 			return 0;
 		}
 
-		if (needyCrop == null)
+		if (needyCrop == null) {
+			// Select a new needy crop
 			needyCrop = greenhouse.getNeedyCrop();
+		}
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
-			return 0;
-		}
-
-		boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
-		
-		if (needTending) {
-			remainingTime = tend(time);
-			return remainingTime;
-		}
-		
-		// Select a new needy crop
-		needyCrop = greenhouse.getNeedyCrop();
-		
-		if (needyCrop == null) {
-			setDescriptionCropDone();
-			return 0;
-		}
-		
-		needTending = needyCrop.getCurrentWorkRequired() > -50;
-		
-		if (needTending) {
-			remainingTime = tend(time);
-			return remainingTime;
-		}
-
-		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 5_000, 
-				"Tending " + needyCrop.getCropName() + " was no longer needed.");
-		setDescriptionCropDone();
-		
-		// Set needyCrop to null since needTending is false
-		// This allow another needyCrop to be picked
-		
-		// Select a new needy crop
-		needyCrop = greenhouse.getNeedyCrop();	
-		if (needyCrop == null) {
 			endTask();
+			return 0;
 		}
 		
+		previousCropName = needyCrop.getCropName();
+		
+		boolean needTending = needyCrop.getCurrentWorkRequired() > CROP_RESILIENCY;
+		
+		if (needTending) {
+			remainingTime = tendCrop(time);
+			return remainingTime;
+		}
+
+		setDescriptionCropDone();
+
 		return remainingTime;
 	}
 	
-	public double tend(double time) {
+	/**
+	 * Tends a crop.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	private double tendCrop(double time) {
 		double remainingTime = 0;
 		double workTime = time;
 		double mod = 0;
@@ -296,14 +293,14 @@ public class TendGreenhouse extends Task {
 		if (worker.getUnitType() == UnitType.PERSON)
 			mod = 1;
 		else
-			mod = .25 * RandomUtil.getRandomDouble(.85, 1.15);
+			mod = .3 * RandomUtil.getRandomDouble(.85, 1.15);
 		
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
 		if (greenhouseSkill == 0)
 			mod *= RandomUtil.getRandomDouble(.85, 1.15);
 		else
-			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.25;
+			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.1;
 		
 		double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
 		
@@ -325,8 +322,6 @@ public class TendGreenhouse extends Task {
 			checkForAccident(greenhouse.getBuilding(), time, 0.005);
 		}
 		else {
-			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
-					"usedTime: " + usedTime + ".");
 			setDescriptionCropDone();
 		}
 		
@@ -391,7 +386,7 @@ public class TendGreenhouse extends Task {
 	}
 
 	/**
-	 * Grows the tissue culture.
+	 * Grows tissue culture.
 	 * 
 	 * @param time
 	 * @return

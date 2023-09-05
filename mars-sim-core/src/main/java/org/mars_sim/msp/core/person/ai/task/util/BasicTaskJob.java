@@ -23,6 +23,7 @@ public class BasicTaskJob extends AbstractTaskJob {
 
     public BasicTaskJob(FactoryMetaTask metaTask, double score, int duration) {
         super(metaTask.getName(), score);
+        
         this.mtID = metaTask.getID();
         this.mt = metaTask;
         this.duration = duration;

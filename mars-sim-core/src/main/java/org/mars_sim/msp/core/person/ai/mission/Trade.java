@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ObjectiveType;
@@ -262,25 +263,34 @@ public class Trade extends RoverMission implements CommerceMission {
 			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(destinationBuilding);
-				if (member instanceof Person) {
-					Person person = (Person) member;
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, destinationBuilding);
-					if (walk != null) {
-						assignTask(person, walk);
+				if (member instanceof Person person) {
+					
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
-						logger.severe(person, "Is unable to walk to building " + destinationBuilding);
+						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				}
-				else if (member instanceof Robot) {
-					Robot robot = (Robot) member;
-					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
-					if (walkingTask != null) {
-//						assignTask(robot, walkingTask);
-						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
+				else if (member instanceof Robot robot) {
+					
+					WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, 0, destinationBuilding);
+					boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
+					
+					if (canWalk) {
+						boolean canDo = assignTask(robot, new Walk(robot, walkingSteps));
+						if (!canDo) {
+							logger.severe("Unable to start walking to building " + destinationBuilding);
+						}
 					}
 					else {
-						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
+						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				}
 			}
@@ -316,8 +326,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					Person settlementTrader = getSettlementTrader();
 
 					if (settlementTrader != null) {
-						if (member instanceof Person) {
-							Person person = (Person) member;
+						if (member instanceof Person person) {
 							negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
 									sellLoad, person, settlementTrader);
 							assignTask(person, negotiationTask);
@@ -429,14 +438,12 @@ public class Trade extends RoverMission implements CommerceMission {
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
 			// Elect a new mission lead if the previous one was dead
-			if (member instanceof Person) {
-				Person lead = (Person) member;
+			if (member instanceof Person lead) {
 				if (lead.isDeclaredDead()) {
 					logger.info(lead, "No longer alive.");
 					int bestSkillLevel = 0;
 					for (Worker mm: getMembers()) {
-						if (mm instanceof Person) {
-							Person p = (Person) mm;
+						if (mm instanceof Person p) {
 							int level = lead.getSkillManager().getSkillExp(SkillType.TRADING);
 							if (level > bestSkillLevel) {
 								bestSkillLevel = level;
@@ -452,8 +459,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			// Question: is the trading settlement responsible
 			// for providing an EVA suit for each person
 			for (Worker mm: getMembers()) {
-				if (mm instanceof Person) {
-					Person person = (Person) mm;
+				if (mm instanceof Person person) {
 					if (person.isDeclaredDead()) {
 						continue;
 					}
@@ -464,11 +470,16 @@ public class Trade extends RoverMission implements CommerceMission {
 					// Check if an EVA suit is available
 					EVASuitUtil.fetchEVASuitFromAny(person, v, tradingSettlement);
 
+					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, 0, v);
+					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 					// Walk back to the vehicle and be ready to embark and go home
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
-					if (walk != null) {
-						assignTask(person, walk);
+					if (canWalk) {
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.warning(person, "Unable to start walking to " + v + ".");
+						}
 					}
+
 					else {
 						endMissionProblem(person, "Unable to enter rover " + v.getName());
 					}
@@ -714,8 +725,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		Iterator<Worker> i = getMembers().iterator();
 		while (i.hasNext()) {
 			Worker member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
+			if (member instanceof Person person) {
 				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;
