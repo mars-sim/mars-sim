@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -27,16 +30,15 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.StyleManager;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-@SuppressWarnings("serial")
 public class TabPanelPreferences extends TabPanel {
 
 	/** Default logger. */
@@ -58,7 +60,7 @@ public class TabPanelPreferences extends TabPanel {
 	// Maintains a cache of preferences already having a renderable equivalent
 	private static Map<PreferenceKey,RenderableKey> keys = new HashMap<>();
 	private PreferenceTableModel tableModel;
-	private JComboBox<PreferenceKey.Type> typeCombo;
+	private JComboBox<PreferenceCategory> typeCombo;
 	private JComboBox<RenderableKey> nameCombo;
 
 	/**
@@ -97,7 +99,6 @@ public class TabPanelPreferences extends TabPanel {
 		scrollPane.setViewportView(table);
 		
 		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(1, true));
 		TableColumnModel cModel = table.getColumnModel();
 		cModel.getColumn(0).setPreferredWidth(30);
 		cModel.getColumn(2).setPreferredWidth(20);
@@ -114,15 +115,16 @@ public class TabPanelPreferences extends TabPanel {
 		newPanel.setBorder(StyleManager.createLabelBorder("Add new Preference"));
 		topPanel.add(newPanel, BorderLayout.NORTH);
 
-		typeCombo = new JComboBox<>(PreferenceKey.Type.values());
-		typeCombo.addItemListener(i -> {populateNameCombo(); });
+		typeCombo = new JComboBox<>(PreferenceCategory.values());
+		typeCombo.addItemListener(i -> populateNameCombo());
+		typeCombo.setRenderer(new PreferenceCategoryRenderer());
 		newPanel.add(typeCombo);
 
 		nameCombo = new JComboBox<>();
 		newPanel.add(nameCombo);
 
 		JButton add = new JButton(ImageLoader.getIconByName("action/add"));
-		add.addActionListener(i -> {addEntry();});
+		add.addActionListener(i -> addEntry());
 		newPanel.add(add);
 
 		// Add an explanation
@@ -138,37 +140,49 @@ public class TabPanelPreferences extends TabPanel {
 	 * Adds a new entry to the settlement.
 	 */
 	private void addEntry() {
-		tableModel.addEntry((RenderableKey) nameCombo.getSelectedItem(), 1D);
+		RenderableKey key = (RenderableKey) nameCombo.getSelectedItem();
+		Object newValue = switch(key.key().getCategory().getValueType()) {
+			case BOOLEAN -> Boolean.TRUE;
+			case DOUBLE -> Double.valueOf(1D);
+		};
+		tableModel.addEntry(key, newValue);
 	}
 
 	/**
 	 * Populates the name combo based on the type of preference.
 	 */
 	private void populateNameCombo() {
-		PreferenceKey.Type selectedType = (Type) typeCombo.getSelectedItem();
+		PreferenceCategory selectedType = (PreferenceCategory) typeCombo.getSelectedItem();
 		nameCombo.removeAllItems();
 
 		List<RenderableKey> newItems = null;
 		switch(selectedType) {
-			case TASK: {
+			case TASK_WEIGHT: {
 				newItems = MetaTaskUtil.getAllMetaTasks().stream()
-									.map(mt -> getRendered(new PreferenceKey(Type.TASK, mt.getID())))
+									.map(mt -> getRendered(new PreferenceKey(PreferenceCategory.TASK_WEIGHT, mt.getID())))
 									.sorted((v1, v2) -> v1.label().compareTo(v2.label()))
 									.toList();
 				}
 			break;
 
-			case MISSION:
+			case MISSION_WEIGHT:
 				newItems = new ArrayList<>();
 				for(MissionType mt : MissionType.values()) {
-					newItems.add(getRendered(new PreferenceKey(Type.MISSION, mt.name())));
+					newItems.add(getRendered(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mt.name())));
 				}
 				break;
 
 			case SCIENCE:
 				newItems = ScienceType.valuesList().stream()
-									.map(mt -> getRendered(new PreferenceKey(Type.SCIENCE, mt.name())))
+									.map(mt -> getRendered(new PreferenceKey(PreferenceCategory.SCIENCE, mt.name())))
 									.toList();
+				break;
+
+			case PROCESS_OVERRIDE:
+				newItems = new ArrayList<>();
+				for(OverrideType mt : OverrideType.values()) {
+					newItems.add(getRendered(new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, mt.name())));
+				}
 				break;
 			default:
 				newItems = null;
@@ -191,18 +205,20 @@ public class TabPanelPreferences extends TabPanel {
 			return keys.get(key);
 		}
 
-		// Create a better readable number of the user
+		// Create a better readable version for the user
 		String label = "?";
 		try {
-			label = switch (key.getType()) {
-				case TASK -> MetaTaskUtil.getMetaTask(key.getName()).getName();
+			label = switch (key.getCategory()) {
+				case TASK_WEIGHT -> MetaTaskUtil.getMetaTask(key.getName()).getName();
 				case SCIENCE -> ScienceType.valueOf(key.getName()).getName();
-				case MISSION -> MissionType.valueOf(key.getName()).getName();
+				case MISSION_WEIGHT -> MissionType.valueOf(key.getName()).getName();
+				case PROCESS_OVERRIDE -> OverrideType.valueOf(key.getName()).getName();
+
 				default -> key.getName();
 			};
 		}
 		catch (RuntimeException e) {
-			// Problem with the specifc user value not matching any known item
+			// Problem with the specfic user value not matching any known item
 		}
 		RenderableKey result = new RenderableKey(key, label);
 		keys.put(key, result);
@@ -216,33 +232,28 @@ public class TabPanelPreferences extends TabPanel {
 				extends AbstractTableModel {
 
 		private Settlement manager;
-		private List<RenderableKey> items;
-		private List<Double> target;
+		private transient List<RenderableKey> items;
+		private transient Map<PreferenceKey,Object> target;
 
 		private PreferenceTableModel(Settlement manager) {
 			this.manager = manager;
-			items = new ArrayList<>(manager.getKnownPreferences().stream()
+			this.target = manager.getPreferences();
+			items = new ArrayList<>(target.keySet().stream()
 										.map(v -> getRendered(v)).toList());
-			target = new ArrayList<>();
-			for(RenderableKey i : items) {
-				target.add(manager.getPreferenceModifier(i.key()));
-			}
 		}
 
 		/**
 		 * Adds an entry to the table and the Settlement.
 		 */
-		public void addEntry(RenderableKey preference, double modifier) {
+		public void addEntry(RenderableKey preference, Object value) {
 			if (!items.contains(preference)) {
 				items.add(preference);
-				target.add(modifier);
-
-				manager.setPreferenceModifier(preference.key(), modifier);
+				manager.setPreference(preference.key(), value);
 				int newRow = items.size()-1;
 				fireTableRowsInserted(newRow, newRow);
 				
-				logger.info(manager, preference.label().toString() + " @ " 
-						+ Math.round(modifier * 10.0)/10.0 
+				logger.info(manager, preference.label() + " @ " 
+						+ value.toString()
 						+ " manually added by Player in Settlement's Preference tab.");
 			}
 		}
@@ -261,18 +272,18 @@ public class TabPanelPreferences extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch(columnIndex) {
 				case 0, 1 -> String.class;
-				case 2 -> Double.class;
-				default -> throw new IllegalArgumentException("Unexpected value: " + columnIndex);
+				case 2 -> Object.class;
+				default -> throw new IllegalArgumentException("Unexpected column class index: " + columnIndex);
 			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> "Type";
+				case 0 -> "Category";
 				case 1 -> "Name";
 				case 2 -> "Modifier";
-				default -> throw new IllegalArgumentException("Unexpected value: " + columnIndex);
+				default -> throw new IllegalArgumentException("Unexpected column name index: " + columnIndex);
 			};
 		}
 
@@ -281,9 +292,9 @@ public class TabPanelPreferences extends TabPanel {
 			if (row < getRowCount()) {
 				RenderableKey entry = items.get(row);
 				return switch(column) {
-					case 0 -> entry.key().getType();
+					case 0 -> entry.key().getCategory().getName();
 					case 1 -> entry.label();
-					case 2 -> target.get(row);
+					case 2 -> target.get(entry.key());
 					default -> throw new IllegalArgumentException("Unexpected value: " + column);
 				};
 			}
@@ -298,10 +309,29 @@ public class TabPanelPreferences extends TabPanel {
 		@Override
 		public void setValueAt(Object value, int row, int col) {
 			if (col == 2) {
-				Double newValue = (Double) value;
-				target.set(row, newValue);
-				manager.setPreferenceModifier(items.get(row).key(), newValue);
+				PreferenceKey key = items.get(row).key();
+				Object newValue = switch(key.getCategory().getValueType()) {
+					case BOOLEAN -> Boolean.parseBoolean((String)value);
+					case DOUBLE -> Double.parseDouble((String)value);
+				};
+				manager.setPreference(key, newValue);
 			}
+		}
+	}
+
+	/**
+	 * Renderer for preference category items
+	 */
+	private static class PreferenceCategoryRenderer extends BasicComboBoxRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+					int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected,
+				cellHasFocus);
+
+			PreferenceCategory item = (PreferenceCategory) value;
+			setText(item.getName());
+			return this;
 		}
 	}
 }
