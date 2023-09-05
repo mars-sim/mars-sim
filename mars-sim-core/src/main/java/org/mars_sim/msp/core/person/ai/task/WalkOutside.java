@@ -612,7 +612,7 @@ public class WalkOutside extends Task {
 		}
 
 		else if (robot != null) {
-			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod() * EVA_MOD;
+			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod() * EVA_MOD;
 		}
 
 		// Determine walking distance.

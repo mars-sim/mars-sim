@@ -224,7 +224,7 @@ public class WalkSettlementInterior extends Task {
 
 		}
 		else {
-			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod();
+			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod();
 		}
 		
 		// Check that remaining path locations are valid.

@@ -657,11 +657,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 *
 	 * @return modifier
 	 */
-	public double calculateWalkSpeedMod() {
+	public double getWalkSpeedMod() {
+		// Get the modified stored mass and base mass 
 		double mass = getMass();
-		// At full capacity, may still move at 10%.
-		// Make sure is doesn't go -ve and there is always some movement
-		return 1.1 - Math.min(mass/Math.max(carryingCapacity, SMALL_AMOUNT), 1D);
+		// The modifier is a ratio of the mass the person carry and the carrying capacity 
+		// Make sure it doesn't go to zero or -ve as there is always some movement
+		return Math.max(carryingCapacity/mass/1.2, SMALL_AMOUNT);
 	}
 
 	public int getAge() {
