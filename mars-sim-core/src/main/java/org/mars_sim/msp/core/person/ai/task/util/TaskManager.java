@@ -184,7 +184,11 @@ public abstract class TaskManager implements Serializable {
 	private static int reuseRebuild = 0;
 	private static Map<Settlement,MarsTime> metrics;
 	
-
+	/**
+	 * Constructor.
+	 * 
+	 * @param worker
+	 */
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
 		allActivities = new History<>(150);   // Equivalent of 3 days
