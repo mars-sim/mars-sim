@@ -633,7 +633,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 
 			else {
-				// If task is effort-driven and person is incapacitated, end task.
+				// If task is effort-driven and robot is disabled, end task.
 				if (effortDriven && (robot.getPerformanceRating() == 0D)) {
 					endTask();
 				} else {

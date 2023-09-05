@@ -709,7 +709,8 @@ public abstract class TaskManager implements Serializable {
 	public void replaceTask(Task newTask) {
 		if (newTask != null) {
 			// Backup the current task as last task
-			lastTask = currentTask;
+			if (currentTask != null)
+				lastTask = currentTask;
 			
 			// Inform that the current task will be terminated
 			if (hasActiveTask()) {
