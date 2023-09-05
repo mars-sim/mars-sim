@@ -116,6 +116,7 @@ public class WalkRoverInterior extends Task {
 
     /**
      * Performs the walking phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the walking phase.
      * @return the amount of time (millisol) left after performing the walking phase.
      */
@@ -125,11 +126,11 @@ public class WalkRoverInterior extends Task {
 		double speedKPH = 0;
 
 		if (person != null) {
-			speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
+			speedKPH = Walk.PERSON_WALKING_SPEED;// * person.getWalkSpeedMod();
 
 		}
 		else {
-			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod();
+			speedKPH =  Walk.ROBOT_WALKING_SPEED;// * robot.getWalkSpeedMod();
 		}
 		
         LocalPosition currentPosition = worker.getPosition(); 
