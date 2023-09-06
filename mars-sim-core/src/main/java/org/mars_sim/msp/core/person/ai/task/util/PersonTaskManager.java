@@ -240,60 +240,60 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
-		if (!getPendingTasks().isEmpty()) {
-			TaskJob pending = getPendingTask();
-			if (pending != null) {
-				Task newTask = pending.createTask(person);
-				
-				boolean isEVATask = newTask instanceof EVAOperation;
-				
-				if (newTask == null) {
-					// Note: need to track how some TaskJob has been done and no longer available.
-					logger.info(person, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
-					
-					removePendingTask(pending);
-					
-					// Next, go to super.startNewTask() to find a new task
-				}
-
-				else if (person.isOutside()) {
-					
-					if (newTask.getName().toLowerCase().contains(SLEEP) || isEVATask) {
-						// Note :the person should 
-						// come in and rest and is no longer eligible for performing
-						// another EVA task
-//						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
-						
-						// Skip doing anything for now
-					}
-
-					// Next, go to super.startNewTask() to find a new task
-				}
-				
-				else if (person.getMission() != null) {
-//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
-					
-					// Skip doing anything for now
-					// Next, go to super.startNewTask() to find a new task
-				}
-				
-				else if (newTask != null && currentTask != null 
-					&& !newTask.getName().equals(getTaskName())
-					&& !newTask.getDescription().equals(currentTask.getDescription())
-					&& !isFilteredTask(currentTask.getDescription())) {
-					
-					// Note: this is the only eligible condition for replacing the
-					// current task with the new task
-					replaceTask(newTask);
-					// Remove the new task from the pending task list
-					removePendingTask(pending);
-					
-					// At this point, do NOT need to call super.startNewTask()
-					// or else the newTask will be replaced
-					return;
-				}
-			}
-		}
+//		if (!getPendingTasks().isEmpty()) {
+//			TaskJob pending = getPendingTask();
+//			if (pending != null) {
+//				Task newTask = pending.createTask(person);
+//				
+//				boolean isEVATask = newTask instanceof EVAOperation;
+//				
+//				if (newTask == null) {
+//					// Note: need to track how some TaskJob has been done and no longer available.
+//					logger.info(person, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+//					
+//					removePendingTask(pending);
+//					
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//
+//				else if (person.isOutside()) {
+//					
+//					if (newTask.getName().toLowerCase().contains(SLEEP) || isEVATask) {
+//						// Note :the person should 
+//						// come in and rest and is no longer eligible for performing
+//						// another EVA task
+////						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+//						
+//						// Skip doing anything for now
+//					}
+//
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//				
+//				else if (person.getMission() != null) {
+////					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+//					
+//					// Skip doing anything for now
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//				
+//				else if (newTask != null && currentTask != null 
+//					&& !newTask.getName().equals(getTaskName())
+//					&& !newTask.getDescription().equals(currentTask.getDescription())
+//					&& !isFilteredTask(currentTask.getDescription())) {
+//					
+//					// Note: this is the only eligible condition for replacing the
+//					// current task with the new task
+//					replaceTask(newTask);
+//					// Remove the new task from the pending task list
+//					removePendingTask(pending);
+//					
+//					// At this point, do NOT need to call super.startNewTask()
+//					// or else the newTask will be replaced
+//					return;
+//				}
+//			}
+//		}
 
 		super.startNewTask();	
 		// Note that in super.startNewTask() in TaskManager, 
