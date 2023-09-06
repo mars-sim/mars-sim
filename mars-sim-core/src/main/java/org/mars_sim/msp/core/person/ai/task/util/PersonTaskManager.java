@@ -34,6 +34,8 @@ public class PersonTaskManager extends TaskManager {
 
 	private static TaskCache defaultInsideTasks;
 	private static TaskCache defaultOutsideTasks;
+	
+	private static final String SLEEP = "sleep";
 
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
@@ -246,7 +248,9 @@ public class PersonTaskManager extends TaskManager {
 				boolean isEVATask = newTask instanceof EVAOperation;
 				
 				if (newTask == null) {
-					// Note: need to understand why some newTask can be null.
+					// Note: need to track how some TaskJob has been done and no longer available.
+					logger.info(person, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+					
 					removePendingTask(pending);
 					
 					// Next, go to super.startNewTask() to find a new task
@@ -254,7 +258,7 @@ public class PersonTaskManager extends TaskManager {
 
 				else if (person.isOutside()) {
 					
-					if (newTask.getName().contains("Sleep") || isEVATask) {
+					if (newTask.getName().toLowerCase().contains(SLEEP) || isEVATask) {
 						// Note :the person should 
 						// come in and rest and is no longer eligible for performing
 						// another EVA task
@@ -291,7 +295,9 @@ public class PersonTaskManager extends TaskManager {
 			}
 		}
 
-		super.startNewTask();
+		super.startNewTask();	
+		// Note that in super.startNewTask() in TaskManager, 
+		// it will run replaceTask(selectedTask)
 	}
 
 	@Override

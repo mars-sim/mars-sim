@@ -173,8 +173,10 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
-		logger.info(getVehicle(), "Target amount of resource per site: "
-				+ (int)siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
+		logger.info(getVehicle(), "Estimating amount of "
+				+ ResourceUtil.findAmountResourceName(resourceID)
+				+ " per site: "
+				+ (int)siteResourceGoal + " kg " 
 				+ ".");
 
 		// Add home settlement for return
@@ -439,8 +441,9 @@ public abstract class CollectResourcesMission extends EVAMission
 				}
 
 				totalSiteScore += bestScore;
-				logger.log(Level.INFO, getName() + " totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0
-						+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
+				logger.log(Level.INFO, "Analyzing sites for " + getName() 
+						+ ".  Total Score: " + Math.round(totalSiteScore * 100.0)/100.0
+						+ ".  Best Score: " + Math.round(bestScore * 100.0)/100.0);
 				unorderedSites.add(bestLocation);
 				currentLocation = bestLocation;
 

@@ -852,7 +852,7 @@ public class CommanderWindow extends ToolWindow {
 	public void deleteATask() {
 		TaskJob n = list.getSelectedValue();
 		if (n != null) {
-			((Person) personBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(n);
+			((Person) personBox.getSelectedItem()).getMind().getTaskManager().removePendingTask(n);
 			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
 		}
 		else
