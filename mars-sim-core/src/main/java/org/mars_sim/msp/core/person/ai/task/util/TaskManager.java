@@ -736,7 +736,7 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Get the current mars time.
+	 * Gets the current mars time.
 	 */
 	protected static MarsTime getMarsTime() {
 		return master.getMarsTime();
