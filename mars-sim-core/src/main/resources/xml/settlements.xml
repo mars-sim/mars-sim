@@ -128,6 +128,9 @@
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
 		
+		<!-- 1 Phase 0 templates -->
+		<template name="Phase 0-MS"/>
+		
 		<!-- 7 Phase 1 templates -->
 		<template name="Phase 1-BR"/>
 		<template name="Phase 1-CN"/>

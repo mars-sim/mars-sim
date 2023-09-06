@@ -730,15 +730,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	private void modifyStress(double time) {
 
-		double effectiveStressModifier = stressModifier;
+		double stress = stressModifier;
 
-		if (effectiveStressModifier != 0D) {
+		if (stress != 0D) {
 			// Reduce stress modifier for person's skill related to the task.
 			int skill = getEffectiveSkillLevel();
-			effectiveStressModifier -= (effectiveStressModifier * skill * SKILL_STRESS_MODIFIER);
+			stress -= (stress * skill * SKILL_STRESS_MODIFIER);
 
-			if (effectiveStressModifier != 0D) {
-				double deltaStress = effectiveStressModifier * time;
+			if (stress != 0D) {
+				double deltaStress = stress * time;
 				person.getPhysicalCondition().addStress(deltaStress);
 			}
 		}
