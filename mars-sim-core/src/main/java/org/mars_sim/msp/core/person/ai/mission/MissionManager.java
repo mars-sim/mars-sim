@@ -211,10 +211,10 @@ public class MissionManager implements Serializable {
 														metaMission.getType().name()));
 					probability *= settlementRatio;
 
-					logger.info(person, "Proposing '" + metaMission.getType().getName() 
+					logger.info(person, "Mission '" + metaMission.getType().getName() 
 							+ "'  probability: " + Math.round(probability * 100.0)/100.0
-									+ ".  base prob: " + Math.round(baseProb * 100.0)/100.0
-									+ ".  sponsor: " + settlementRatio);
+									+ "  base prob: " + Math.round(baseProb * 100.0)/100.0
+									+ "  sponsor: " + settlementRatio);
 					if (probability > 0) {
 						missionProbCache.put(metaMission, probability);
 						totalProbCache += probability;
