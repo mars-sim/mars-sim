@@ -62,7 +62,7 @@ public class LoadVehicleGarage extends Task {
 	private LoadingController loadController;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param person            the person performing the task.
 	 * @param mission           the vehicle to be loaded.

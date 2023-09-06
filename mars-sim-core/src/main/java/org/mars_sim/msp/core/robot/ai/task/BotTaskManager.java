@@ -235,12 +235,29 @@ public class BotTaskManager extends TaskManager {
 			TaskJob pending = getPendingTask();
 			if (pending != null) {
 				Task newTask = pending.createTask(robot);
-				replaceTask(newTask);
-				removePendingTask(pending);
+
+				if (newTask == null) {
+					// Note: need to track how some TaskJob has been done and no longer available.
+					logger.info(robot, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+					
+					// Next, go to super.startNewTask() to find a new task
+				}
 				
-				// Warning: do NOT need to call super.startNewTask()
-				// or else the newTask will be replaced
-				return;
+				else if (newTask != null && currentTask != null 
+					&& !newTask.getName().equals(getTaskName())
+					&& !newTask.getDescription().equals(currentTask.getDescription())
+					&& !isFilteredTask(currentTask.getDescription())) {
+					
+					// Note: this is the only eligible condition for replacing the
+					// current task with the new task
+					replaceTask(newTask);
+					// Remove the new task from the pending task list
+					removePendingTask(pending);
+					
+					// At this point, do NOT need to call super.startNewTask()
+					// or else the newTask will be replaced
+					return;
+				}
 			}
 		}
 

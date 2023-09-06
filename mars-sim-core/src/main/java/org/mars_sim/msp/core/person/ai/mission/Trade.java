@@ -256,7 +256,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			}
 		}
 
-		// Have person exit rover if necessary.
+		// Have member exit rover if necessary.
 		if (!member.isInSettlement()) {
 
 			// Get random inhabitable building at trading settlement.

@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -67,6 +68,8 @@ public class ConstructionMission extends AbstractMission
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionMission.class.getName());
 
+	public static final String DIG = "dig";
+	
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.CONSTRUCTION;
 
@@ -650,10 +653,12 @@ public class ConstructionMission extends AbstractMission
 		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)
 			&& member.getUnitType() == UnitType.PERSON) {
 			
-			boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.SIMPLE_NAME);
-
-			if (accepted)
-				logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
+			Task currenTask = p.getMind().getTaskManager().getTask();
+			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(DigLocalRegolith.SIMPLE_NAME)) {
+				boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.SIMPLE_NAME);
+				if (accepted)
+					logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
+			}
 		}		
 	}
 	
@@ -693,6 +698,11 @@ public class ConstructionMission extends AbstractMission
 	 */
 	private boolean loadAvailableConstructionMaterials() {
 		boolean enough = true;
+		// TODO: account for the situation when all the input materials are ready 
+		// but since some processes take time to produce the output materials (the construction materials)
+		// It should simply wait for it to finish, without having to compute if resources are 
+		// missing over and over again.
+		
 		// Load amount resources.
 		Iterator<Integer> i = stage.getMissingResources().keySet().iterator();
 		while (i.hasNext()) {
@@ -709,12 +719,15 @@ public class ConstructionMission extends AbstractMission
 				// Store the materials at this site
 				stage.addResource(resource, amountLoading);
 			}
-			else
+			else {
 				enough = false;
+				break;
+			}
 			
 			// Use a 10% buffer just in case other tasks will consume this materials at the same time
 			if (amountAvailable < amountNeeded * 1.1) {
 				enough = false;
+				break;
 			}
 		}
 		

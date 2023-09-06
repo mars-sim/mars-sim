@@ -35,10 +35,10 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
-import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -689,10 +689,16 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
-		if (job != null) {
-			person.getMind().getTaskManager().addPendingTask(job, false);
+		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(rover)) {
+			assignTask(person, new UnloadVehicleGarage(person, rover));
+		} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+			assignTask(person, new UnloadVehicleEVA(person, rover));
 		}
+		
+//		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
+//		if (job != null) {
+//			person.getMind().getTaskManager().addPendingTask(job, false);
+//		}
 	}
 
 	/**
@@ -739,9 +745,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							+ person.getBuildingLocation().getNickName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?
-		
-    				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
-
+			
+        			Task currenTask = person.getMind().getTaskManager().getTask();
+        			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(RequestMedicalTreatment.SIMPLE_NAME)) {
+        				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
+        			}
 				}
 				else {
 					logger.severe(person, "Cannot find a walk path from "
