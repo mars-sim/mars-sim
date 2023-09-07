@@ -11,7 +11,6 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -35,8 +34,9 @@ public class PersonTaskManager extends TaskManager {
 	private static TaskCache defaultInsideTasks;
 	private static TaskCache defaultOutsideTasks;
 	
-	private static final String SLEEP = "sleep";
-
+	private static final String SLEEP = "Sleep";
+	private static final String EAT = "Eat";
+	
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
@@ -186,7 +186,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks = new TaskCache("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
-			TaskJob sleepJob = new AbstractTaskJob("Sleep", 1D) {
+			TaskJob sleepJob = new AbstractTaskJob(SLEEP, 1D) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -197,7 +197,7 @@ public class PersonTaskManager extends TaskManager {
 			};
 			defaultInsideTasks.put(sleepJob);
 
-			TaskJob eatJob = new AbstractTaskJob("Eat", 1D) {
+			TaskJob eatJob = new AbstractTaskJob(EAT, 1D) {
 				
 				private static final long serialVersionUID = 1L;
 

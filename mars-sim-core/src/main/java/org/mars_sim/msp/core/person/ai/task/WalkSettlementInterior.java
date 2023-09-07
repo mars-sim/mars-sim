@@ -1,7 +1,7 @@
 /*
 `* Mars Simulation Project
  * WalkSettlementInterior.java
- * @date 2022-07-23
+ * @date 2023-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -196,9 +195,7 @@ public class WalkSettlementInterior extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-
-			logger.severe(worker, "Task phase is null");
-			throw new IllegalArgumentException("Task phase is null");
+			logger.severe(worker, "Task phase is null.");
 		}
 		if (WALKING.equals(getPhase())) {
 			return walkingPhase(time);
@@ -215,6 +212,14 @@ public class WalkSettlementInterior extends Task {
 	 *         phase.
 	 */
 	private double walkingPhase(double time) {
+		// Check that remaining path locations are valid.
+		if (!checkRemainingPathLocations()) {
+			// Flooding with the following statement in stacktrace
+			logger.severe(worker, 30_000L, "Unable to continue walking due to missing path objects.");
+			endTask();
+			return 0;
+		}
+		
 		double remainingTime = time - minPulseTime;
 		double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;		
 		double speedKPH = 0;
@@ -225,14 +230,6 @@ public class WalkSettlementInterior extends Task {
 		}
 		else {
 			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod();
-		}
-		
-		// Check that remaining path locations are valid.
-		if (!checkRemainingPathLocations()) {
-			// Flooding with the following statement in stacktrace
-			logger.severe(worker, 30_000L, "Unable to continue walking due to missing path objects.");
-			endTask();
-			return 0;
 		}
 		
 		// Determine walking distance.
@@ -246,8 +243,13 @@ public class WalkSettlementInterior extends Task {
 			if (speedKPH > 0) {
 				double usedTime = MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
 				remainingTime = remainingTime - usedTime;
-//				logger.info(worker, "time: " + time + "  remainingTime: " + remainingTime + "  usedTime: " + usedTime);
+//				logger.info(worker, 20_000L, "time: " + Math.round(time * 1000.0)/1000.0
+//						+ "  speedKPH: " + Math.round(speedKPH * 1000.0)/1000.0
+//						+ "  coveredMeters: " + Math.round(coveredMeters * 1000.0)/1000.0
+//						+ "  remainingTime: " + Math.round(remainingTime * 1000.0)/1000.0
+//						+ "  usedTime: " + Math.round(usedTime * 1000.0)/1000.0);
 			}
+			
 			if (remainingTime < 0)
 				remainingTime = 0;
 		}
@@ -269,10 +271,10 @@ public class WalkSettlementInterior extends Task {
 				
 				if (!changeBuildings(location)) {
 					logger.severe(worker, "Unable to change building.");
-					if (worker.getUnitType() == UnitType.PERSON)
-						((Person)worker).getMind().getTaskManager().clearAllTasks("Unable to change building");
-					else
-						((Robot)worker).getBotMind().getBotTaskManager().clearAllTasks("Unable to change building");
+//					if (worker.getUnitType() == UnitType.PERSON)
+//						((Person)worker).getMind().getTaskManager().clearAllTasks("Unable to change building");
+//					else
+//						((Robot)worker).getBotMind().getBotTaskManager().clearAllTasks("Unable to change building");
 				}
 				
 				if (!walkingPath.isEndOfPath()) {
@@ -333,30 +335,25 @@ public class WalkSettlementInterior extends Task {
 		Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
 		while (i.hasNext()) {
 			InsidePathLocation loc = i.next();
-			if (loc instanceof Building) {
+			if (loc instanceof Building building) {
 				// Check that building still exists.
-				Building building = (Building) loc;
 				if (!settlement.getBuildingManager().containsBuilding(building)) {
 					return false;
 				}
-			} else if (loc instanceof BuildingLocation) {
+			} else if (loc instanceof BuildingLocation buildingLoc) {
 				// Check that building still exists.
-				BuildingLocation buildingLoc = (BuildingLocation) loc;
 				Building building = buildingLoc.getBuilding();
 				if (!settlement.getBuildingManager().containsBuilding(building)) {
 					return false;
 				}
-			} else if (loc instanceof BuildingConnector) {
+			} else if (loc instanceof BuildingConnector connector) {
 				// Check that building connector still exists.
-				BuildingConnector connector = (BuildingConnector) loc;
 				if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
 					return false;
 				}
-			} else if (loc instanceof Hatch) {
+			} else if (loc instanceof Hatch hatch) {
 				// Check that building connector for hatch still exists.
-				Hatch hatch = (Hatch) loc;
-				BuildingConnector connector = hatch.getBuildingConnector();
-				if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
+				if (!settlement.getBuildingConnectorManager().containsBuildingConnector(hatch.getBuildingConnector())) {
 					return false;
 				}
 			}
@@ -392,10 +389,8 @@ public class WalkSettlementInterior extends Task {
 	 */
 	private boolean changeBuildings(InsidePathLocation location) {
 
-		if (location instanceof Hatch) {
+		if (location instanceof Hatch hatch) {
 			// If hatch leads to new building, place person in the new building.
-			Hatch hatch = (Hatch) location;
-
 			if (person != null) {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
@@ -412,9 +407,8 @@ public class WalkSettlementInterior extends Task {
 				}
 			}
 
-		} else if (location instanceof BuildingConnector) {
+		} else if (location instanceof BuildingConnector connector) {
 			// If non-split building connector, place person in the new building.
-			BuildingConnector connector = (BuildingConnector) location;
 			if (!connector.isSplitConnection()) {
 				Building currentBuilding = null;
 				if (person != null) {
