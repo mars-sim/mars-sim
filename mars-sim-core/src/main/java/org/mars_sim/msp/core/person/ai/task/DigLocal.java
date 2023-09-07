@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -183,7 +184,7 @@ public abstract class DigLocal extends EVAOperation {
         time = super.performMappedPhase(time);
 		if (!isDone()) {
 	        if (getPhase() == null) {
-	        	throw new IllegalArgumentException("Task phase is null");
+				logger.severe(worker, "Task phase is null.");
 	        }
 	        else if (collectionPhase.equals(getPhase())) {
 	            time = collectResource(time);
@@ -208,20 +209,26 @@ public abstract class DigLocal extends EVAOperation {
     	// Go to the drop off location
         if (person.isOutside()) {
 			if (dropOffLoc == null) {
+        		// TODO: walk to next to a workshop or manufacturing shed or lander hab
 				logger.severe(person, "No location for storage bin.");
 				endTask();
 			}
         	else if (!person.getPosition().equals(dropOffLoc)) {
         		// TODO: how to get the walk time and return the remaining time ?
-        		addSubTask(new WalkOutside(person, person.getPosition(),
-        			dropOffLoc, true));
+        		Task currentTask = person.getMind().getTaskManager().getTask();
+        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+        		if ((currentTask != null && !currentTask.getName().toLowerCase().contains("walk"))
+        			|| (subTask != null && !subTask.getName().toLowerCase().contains("walk"))) {	
+        				addSubTask(new WalkOutside(person, person.getPosition(),
+        					dropOffLoc, true));
+        		}
         	}
         	else {
         		setPhase(DROP_OFF_RESOURCE);
         	}
         }
         else {
-        	logger.severe(person, "Not outside. Can't walk to the storage bin.");
+        	logger.severe(person, "Not outside. Unable to walk to the storage bin.");
             endTask();
         }
 
