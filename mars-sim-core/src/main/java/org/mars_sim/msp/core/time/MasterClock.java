@@ -152,7 +152,14 @@ public class MasterClock implements Serializable {
 
 		// Create a dedicated thread for the Clock
 		clockThreadTask = new ClockThreadTask();
-		desiredTR = (int)simulationConfig.getTimeRatio();
+		
+		if (userTimeRatio > 0) {
+			desiredTR = userTimeRatio;
+		}
+		else {
+			desiredTR = (int)simulationConfig.getTimeRatio();
+		}
+
 		actualTR = desiredTR;
 		
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
