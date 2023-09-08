@@ -151,7 +151,7 @@ public class MasterClock implements Serializable {
 		timestampPulseStart();
 
 		// Create a dedicated thread for the Clock
-		clockThreadTask = new ClockThreadTask();		
+		clockThreadTask = new ClockThreadTask();	
 		if (userTimeRatio > 0) {
 			desiredTR = userTimeRatio;
 		}
