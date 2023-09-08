@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TimeWindow.java
- * @date 2023-04-01
+ * @date 2023-09-08
  * @author Scott Davis
  */
 
@@ -46,6 +46,8 @@ public class TimeWindow extends ToolWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
+	public static final String TARGET = "x (Target : ";
+	public static final String X_BRACKET = "x)";
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 	public static final String ICON = "time";
 	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
@@ -255,7 +257,7 @@ public class TimeWindow extends ToolWindow {
 		marsPulseLabel = paramPane.addTextField(MARS_PULSE_TIME, "", null);
 		actuallTRLabel = paramPane.addTextField(Msg.getString("TimeWindow.actualTRHeader"), "",
 									"Master clock's actual time ratio");
-		timeCompressionLabel = paramPane.addTextField("01s [real-time]", "", null);
+		timeCompressionLabel = paramPane.addTextField("01s real-time", "", null);
 		uptimeLabel = paramPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", null);
 	
 		// Pack window
@@ -294,9 +296,9 @@ public class TimeWindow extends ToolWindow {
 		// Update actual TR label
 		StringBuilder trText = new StringBuilder();
 		trText.append((int)mc.getActualTR())
-			  .append("x (target ")
+			  .append(TARGET)
 			  .append(mc.getDesiredTR())
-			  .append("x)");
+			  .append(X_BRACKET);
 		actuallTRLabel.setText(trText.toString());
 
 		// Update time compression label
@@ -415,5 +417,4 @@ public class TimeWindow extends ToolWindow {
 			}
 		}
 	}
-
 }
