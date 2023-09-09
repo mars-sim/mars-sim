@@ -29,6 +29,9 @@ public class WalkRoverInterior extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(WalkRoverInterior.class.getName());
 	
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = WalkRoverInterior.class.getSimpleName();
+	
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -163,7 +166,11 @@ public class WalkRoverInterior extends Task {
             endTask();
         }
 
-        return remainingTime;
+        // Warning: see GitHub issue #1039 for details on return a 
+        // non-zero value from this method
+        
+//      return remainingTime;
+        return 0;
     }
 
 	/**

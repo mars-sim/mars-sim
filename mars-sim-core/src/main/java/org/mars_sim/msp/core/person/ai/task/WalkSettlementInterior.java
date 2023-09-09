@@ -40,6 +40,9 @@ public class WalkSettlementInterior extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(WalkSettlementInterior.class.getName());
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walkSettlementInterior"); //$NON-NLS-1$
 

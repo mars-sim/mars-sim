@@ -42,6 +42,9 @@ public class WalkOutside extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(WalkOutside.class.getName());
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
@@ -72,7 +75,7 @@ public class WalkOutside extends Task {
 
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 *
 	 * @param person               the person performing the task.
 	 * @param start                the starting local location.
@@ -94,7 +97,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor 2.
 	 *
 	 * @param robot                the robot performing the walk.
 	 * @param start                the starting local location.
