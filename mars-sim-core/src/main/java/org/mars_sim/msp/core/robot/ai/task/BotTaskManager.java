@@ -226,7 +226,7 @@ public class BotTaskManager extends TaskManager {
 	}
 
 	/**
-	 * Start a new Task by first checking for pending tasks.
+	 * Starts a new Task by first checking for pending tasks.
 	 */
 	@Override
 	public void startNewTask() {

@@ -27,12 +27,12 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -407,15 +407,26 @@ public class EmergencySupply extends RoverMission {
 			// Random chance of having person load (this allows person to do other things
 			// sometimes)
 			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
+				
+				TaskJob job = LoadVehicleMeta.createLoadJob(this, emergencySettlement);
+				
 				if (member instanceof Person person) {
-					if (isInAGarage()) {
-						assignTask(person, new LoadVehicleGarage(person, this));
-					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-						assignTask(person, new LoadVehicleEVA(person, this));
+					
+					if (job != null) {
+						person.getMind().getTaskManager().addPendingTask(job, false);
 					}
+//					if (isInAGarage()) {
+//						assignTask(person, new LoadVehicleGarage(person, this));
+//					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+//						assignTask(person, new LoadVehicleEVA(person, this));
+//					}
 				}
 				else if (member instanceof Robot robot && isInAGarage()) {
-					assignTask(robot, new LoadVehicleGarage(robot, this));
+
+					if (job != null) {
+						robot.getBotMind().getBotTaskManager().addPendingTask(job, false);
+					}
+//					assignTask(robot, new LoadVehicleGarage(robot, this));
 				}
 			}
 		} else {
