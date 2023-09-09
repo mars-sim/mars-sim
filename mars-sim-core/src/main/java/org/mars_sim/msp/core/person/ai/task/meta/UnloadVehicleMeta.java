@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * UnloadVehicleGarageMeta.java
+ * UnloadVehicleMeta.java
  * @date 2022-09-24
  * @author Scott Davis
  */
@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for the UnloadVehicleGarage task.
+ * Meta task for the UnloadVehicleGarage or UnloadVehicleEVA task.
  */
 public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     private static class UnloadJob extends SettlementTask {
@@ -65,7 +65,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         @Override
         public Task createTask(Robot robot) {
             if (eva) {
-				// SHould not happen
+				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA unload vehicle");
 			}
             return new UnloadVehicleGarage(robot, getVehicle());
@@ -89,9 +89,10 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
        
     /**
-     * Get the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * Gets the score for a Settlement task for a person. This considers and EVA factor for eva maintenance.
+     * 
 	 * @param t Task being scored
-	 * @parma p Person requesting work.
+	 * @param p Person requesting work
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
@@ -102,7 +103,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
 			factor = getPersonModifier(p);
 			if (mtj.eva) {
-				// EVA factor is the radition and the EVA modifiers applied extra
+				// EVA factor is the radiation and the EVA modifiers applied extra
 				factor *= getRadiationModifier(p.getSettlement());
 				factor *= getEVAModifier(p);
 			}
@@ -112,8 +113,9 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
     /**
      * For a robot can not do EVA tasks so will return a zero factor in this case.
+     * 
 	 * @param t Task being scored
-	 * @parma r Robot requesting work.
+	 * @param r Robot requesting work.
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
@@ -126,7 +128,8 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     }
 
 	/**
-	 * Get a collection of Tasks for any vehicle that needs unloading
+	 * Gets a collection of Tasks for any vehicle that needs unloading.
+	 * 
 	 * @param settlement Settlement to scan for vehicles
 	 */
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
@@ -139,8 +142,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         
         // Check Vehicle Missions first
 		for (Mission mission : missionManager.getMissions()) {
-			if ((mission instanceof VehicleMission) && !mission.isDone()) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
+			if ((mission instanceof VehicleMission vehicleMission) && !mission.isDone()) {
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
                     Vehicle v = vehicleMission.getVehicle();
                     if (v != null) {
@@ -158,7 +160,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
         }
 
         // Check non-mission vehicles
-        for(Vehicle vehicle : settlement.getParkedVehicles()) {
+        for (Vehicle vehicle : settlement.getParkedVehicles()) {
 			if (!vehicle.isReserved() && !assessed.contains(vehicle)) {
                 SettlementTask job = scoreVehicle(settlement, vehicle, insideTasks, modifier, this);
                 if (job != null) {
@@ -170,8 +172,9 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     }
 
     /**
-     * Score a vehicle for it's suitability to be unloaded.
-     * @param settlement Location of Vehcile
+     * Scores a vehicle for it's suitability to be unloaded.
+     * 
+     * @param settlement Location of Vehicle
      * @param vehicle Vehicle to unload
      * @param insideOnlyTasks Only do Garage inside Tasks
      * @param modifier Modifier for inside task score
@@ -199,14 +202,14 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     }
 
     /**
-     * Create an appropriate Unload job for a vehicle.
+     * Creates an appropriate Unload job for a vehicle.
      */
     public static TaskJob createUnloadJob(Settlement settlement, Vehicle vehicle) {
         return scoreVehicle(settlement, vehicle, false, 1D, null);
     }
 
     /**
-	 * Attached to the common controllign classes.
+	 * Attached to the common controlling classes.
 	 */
 	public static void initialiseInstances(Simulation sim) {
 		missionManager = sim.getMissionManager();

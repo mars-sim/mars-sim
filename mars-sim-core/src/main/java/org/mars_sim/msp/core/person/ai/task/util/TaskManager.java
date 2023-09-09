@@ -184,7 +184,11 @@ public abstract class TaskManager implements Serializable {
 	private static int reuseRebuild = 0;
 	private static Map<Settlement,MarsTime> metrics;
 	
-
+	/**
+	 * Constructor.
+	 * 
+	 * @param worker
+	 */
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
 		allActivities = new History<>(150);   // Equivalent of 3 days
@@ -533,7 +537,7 @@ public abstract class TaskManager implements Serializable {
 	}
 
 	/**
-	 * Record an activity on the Task Activity log
+	 * Record an activity on the Task Activity log.
 	 */
 	public void recordActivity(String newTask, String newPhase, String newDescription, Mission mission) {
 		String missionName = (mission != null ? mission.getName() : null);
@@ -652,7 +656,7 @@ public abstract class TaskManager implements Serializable {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
 
-			// Start this new task
+			// Start this newly selected task
 			replaceTask(selectedTask);
 		}
 	}
@@ -708,8 +712,10 @@ public abstract class TaskManager implements Serializable {
 	 */
 	public void replaceTask(Task newTask) {
 		if (newTask != null) {
+			
 			// Backup the current task as last task
-			lastTask = currentTask;
+			if (currentTask != null)
+				lastTask = currentTask;
 			
 			// Inform that the current task will be terminated
 			if (hasActiveTask()) {
@@ -730,7 +736,7 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Get the current mars time.
+	 * Gets the current mars time.
 	 */
 	protected static MarsTime getMarsTime() {
 		return master.getMarsTime();
@@ -798,21 +804,14 @@ public abstract class TaskManager implements Serializable {
 	 */
 	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
-			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Added an appointed task '" + task.getDescription() + "'.");
-			return true;
+			boolean success = pendingTasks.add(task);
+			if (success) 
+				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getDescription() + "'.");
+			else
+				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getDescription() + "'.");
+			return success;
 		}
 		return false;
-	}
-
-	/**
-	 * Deletes a pending task.
-	 *
-	 * @param task
-	 */
-	public void deleteAPendingTask(TaskJob task) {
-		pendingTasks.remove(task);
-		logger.info(worker, "Removed an appointed task '" + task.getDescription() + "'.");
 	}
 
 	/**
@@ -835,10 +834,16 @@ public abstract class TaskManager implements Serializable {
 	 *
 	 * @return
 	 */
-	protected void removePendingTask(TaskJob taskJob) {
-		if (!pendingTasks.isEmpty()) {
-			pendingTasks.remove(taskJob);
+	public boolean removePendingTask(TaskJob taskJob) {
+		boolean success = false;
+		if (!pendingTasks.isEmpty() && pendingTasks.contains(taskJob)) {
+			success = pendingTasks.remove(taskJob);
+			if (success)
+				logger.info(worker, "Successfully removed the pending task '" + taskJob.getDescription() + "'.");
+			else
+				logger.info(worker, "Failed to remove the pending task '" + taskJob.getDescription() + "'.");
 		}
+		return success;
 	}
 	
 	/**

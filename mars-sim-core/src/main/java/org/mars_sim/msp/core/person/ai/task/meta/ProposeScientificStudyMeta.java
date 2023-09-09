@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -142,7 +143,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
 				// Check the favourite research of the Reporting Authority
 				result *= settlement.getPreferenceModifier(
-								new PreferenceKey(PreferenceKey.Type.SCIENCE, science.name()));
+								new PreferenceKey(PreferenceCategory.SCIENCE, science.name()));
 	        }
 
 	        // Crowding modifier

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,8 +73,8 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.reportingAuthority.PreferenceKey;
-import org.mars_sim.msp.core.reportingAuthority.PreferenceKey.Type;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.PreferenceCategory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -116,7 +117,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(Type.CONFIGURATION,
+	public static final PreferenceKey MISSION_LIMIT = new PreferenceKey(PreferenceCategory.CONFIGURATION,
 																	"Active Missions");
 	private static final int WAIT_FOR_SUNLIGHT_DELAY = 40;
 	private static final int AIRLOCK_OPERATION_OFFSET = 40;
@@ -322,8 +323,6 @@ public class Settlement extends Structure implements Temporal,
 	/** The last 20 mission scores */
 	private List<Double> missionScores;
 
-	/** The set of processes being overridden. */
-	private Set<OverrideType> processOverrides = new HashSet<>();
 	/** The set of available pressurized/pressurizing airlocks. */
 	private Set<Integer> availablePAirlocks = new HashSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
@@ -340,8 +339,8 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
-	/** The settlement's preference modifiers map. */
-	private Map<PreferenceKey, Double> preferenceModifiers = new HashMap<>();
+	/** The settlement's preference map. */
+	private Map<PreferenceKey, Object> preferences = new HashMap<>();
 	/** A set of nearby mineral locations. */
 	private Set<Coordinates> nearbyMineralLocations = new HashSet<>();
 	
@@ -428,7 +427,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Determine the reporting authority
 		this.sponsor = sponsor;
-		preferenceModifiers.putAll(sponsor.getPreferences());
+		preferences.putAll(sponsor.getPreferences());
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -1865,8 +1864,8 @@ public class Settlement extends Structure implements Temporal,
 			numCitizens = citizens.size();
 
 			// Update active mission limit; always at least 1
-			double optimalMissions = Math.max(1D, 1.0 * numCitizens/PERSON_PER_MISSION);
-			setPreferenceModifier(MISSION_LIMIT, optimalMissions);
+			double optimalMissions = Math.max(1, (numCitizens/PERSON_PER_MISSION));
+			preferences.put(MISSION_LIMIT, optimalMissions);
 
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			return true;
@@ -2292,14 +2291,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @param override override for processes.
 	 */
 	public void setProcessOverride(OverrideType type, boolean override) {
-		if (override) {
-			logger.log(this, Level.CONFIG, 0L, "Player enables the override on '" + type.toString() + "'.");
-			this.processOverrides.add(type);
-		}
-		else {
-			logger.log(this, Level.CONFIG, 0L, "Player disables the override on '" + type.toString() + "'.");
-			this.processOverrides.remove(type);
-		}
+		logger.log(this, Level.CONFIG, 0L, "Player " + (override ? "enables" : "disable")
+						+ " the override on '" + type.toString() + "'.");
+		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
+		preferences.put(overrideKey, Boolean.valueOf(override));
 	}
 
 	/**
@@ -2309,7 +2304,12 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		return this.processOverrides.contains(type);
+		PreferenceKey overrideKey = new PreferenceKey(PreferenceCategory.PROCESS_OVERRIDE, type.name());
+		Object result = preferences.get(overrideKey);
+		if (result instanceof Boolean b) {
+			return b.booleanValue();
+		}
+		return false;
 	}
 
 	/**
@@ -2965,7 +2965,7 @@ public class Settlement extends Structure implements Temporal,
 
 	public void setMissionDisable(MissionType mission, boolean disable) {
 		double newValue = (disable ? 0D : 1D);
-		setPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name()), newValue);
+		preferences.put(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name()), newValue);
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -2983,7 +2983,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return (getPreferenceModifier(new PreferenceKey(Type.MISSION, mission.name())) > 0D);
+		return (getPreferenceModifier(new PreferenceKey(PreferenceCategory.MISSION_WEIGHT, mission.name())) > 0D);
 	}
 
 	/**
@@ -3777,23 +3777,41 @@ public class Settlement extends Structure implements Temporal,
 	 * @return The appropriate modifier; return 1 by default
 	 */
 	public double getPreferenceModifier(PreferenceKey key) {
-		return preferenceModifiers.getOrDefault(key, 1D);
+		Object result = preferences.get(key);
+		if (result instanceof Double d) {
+			return d.doubleValue();
+		}
+		return 1D;
 	}
 
 	/**
-	 * Set the modifier to apply to preference of a certain type.
-	 * @param key The preference to update
-	 * @param value The new modifier value
+	 * Get the preference that this Settlement influences.
+	 * @return A read onycopy of preferences
 	 */
-	public void setPreferenceModifier(PreferenceKey key, double value) {
-		preferenceModifiers.put(key, value);
+	public Map<PreferenceKey,Object> getPreferences() {
+		return Collections.unmodifiableMap(preferences);
 	}
 
 	/**
-	 * Get the preference that this Settlement influences
+	 * Update a saved preference value. Check it is the correct type for the category
+	 * @param key Key of the preference
+	 * @param value New value.
 	 */
-	public Set<PreferenceKey> getKnownPreferences() {
-		return preferenceModifiers.keySet();
+	public void setPreference(PreferenceKey key, Object value) {
+		switch (key.getCategory().getValueType()) {
+			case BOOLEAN:
+				if (!(value instanceof Boolean)) {
+					throw new IllegalArgumentException("Value is not type Boolean");
+				}
+				break;
+			case DOUBLE:
+				if (!(value instanceof Double)) {
+					throw new IllegalArgumentException("Value is not type Double");
+				}
+				break;
+		}
+		logger.info(this, "Preference "+ key + " now has value " + value);
+		preferences.put(key, value);
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WalkOutside.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-09-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -42,6 +42,9 @@ public class WalkOutside extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(WalkOutside.class.getName());
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
@@ -72,7 +75,7 @@ public class WalkOutside extends Task {
 
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 *
 	 * @param person               the person performing the task.
 	 * @param start                the starting local location.
@@ -94,7 +97,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor 2.
 	 *
 	 * @param robot                the robot performing the walk.
 	 * @param start                the starting local location.
@@ -136,7 +139,7 @@ public class WalkOutside extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			logger.severe(worker, "Task phase is null.");
 		}
 		if (WALKING.equals(getPhase())) {
 			return walkingPhase(time);
@@ -153,7 +156,7 @@ public class WalkOutside extends Task {
 	}
 	
 	/**
-	 * Determine the outside walking path, avoiding obstacles as necessary.
+	 * Determines the outside walking path, avoiding obstacles as necessary.
 	 *
 	 * @return walking path as list of X,Y locations.
 	 */
@@ -191,7 +194,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Determine obstacle avoidance path.
+	 * Determines obstacle avoidance path.
 	 *
 	 * @return path as list of points or null if no path found.
 	 */
@@ -226,7 +229,7 @@ public class WalkOutside extends Task {
 		Map<LocalPosition, LocalPosition> cameFrom = new ConcurrentHashMap<>();
 
 		// Check each location in openSet.
-		while (openSet.size() > 0) {
+		while (!openSet.isEmpty()) {
 
 			// Find loc in openSet with lowest fScore value.
 			// FScore is distance (m) from start through currentLoc to destination.
@@ -294,7 +297,7 @@ public class WalkOutside extends Task {
 	}
 	
 	/**
-	 * Find location in openSet with lowest fScore value. The fScore value is the
+	 * Finds location in openSet with lowest fScore value. The fScore value is the
 	 * distance (m) from start through location to destination.
 	 *
 	 * @param openSet a set of locations.
@@ -318,7 +321,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Recreate a path from the cameFromMap.
+	 * Recreates a path from the cameFromMap.
 	 *
 	 * @param cameFrom a map of locations and their previous locations.
 	 * @param currentLoc2 the last location in a path (not destination location).
@@ -407,7 +410,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Get search location neighbors to a given location. This method gets a set of
+	 * Gets search location neighbors to a given location. This method gets a set of
 	 * four locations at 1m distance North, South, East and West of the current
 	 * location.
 	 *
@@ -536,7 +539,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Check if point location is within the obstacle search limits.
+	 * Checks if point location is within the obstacle search limits.
 	 *
 	 * @param neighborLoc the location.
 	 * @return true if location is within search limits.
@@ -570,7 +573,7 @@ public class WalkOutside extends Task {
 	}
 
 	/**
-	 * Check if there are any obstacles in the walking path.
+	 * Checks if there are any obstacles in the walking path.
 	 *
 	 * @return true if any obstacles in walking path.
 	 */
@@ -612,7 +615,7 @@ public class WalkOutside extends Task {
 		}
 
 		else if (robot != null) {
-			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod() * EVA_MOD;
+			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod() * EVA_MOD;
 		}
 
 		// Determine walking distance.

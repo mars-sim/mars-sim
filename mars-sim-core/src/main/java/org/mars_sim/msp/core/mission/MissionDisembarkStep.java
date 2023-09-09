@@ -156,7 +156,7 @@ public class MissionDisembarkStep extends MissionStep {
 		boolean assigned = false;
         if (job != null) {
             Task task = null;
-            // Create the Task ready for assingment
+            // Create the Task ready for assignment
             if (worker instanceof Person p) {
                 task = job.createTask(p);
             }

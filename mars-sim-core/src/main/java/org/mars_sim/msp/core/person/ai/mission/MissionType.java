@@ -6,37 +6,33 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Map;
-
 import org.mars.sim.tools.Msg;
 
 public enum MissionType {
 
-	AREOLOGY				(Msg.getString("Mission.description.areologyFieldStudy")), //$NON-NLS-1$
-	BIOLOGY					(Msg.getString("Mission.description.biologyFieldStudy")), //$NON-NLS-1$
-	COLLECT_ICE				(Msg.getString("Mission.description.collectIce")), //$NON-NLS-1$
-	COLLECT_REGOLITH		(Msg.getString("Mission.description.collectRegolith")), //$NON-NLS-1$
-	DELIVERY				(Msg.getString("Mission.description.delivery")), //$NON-NLS-1$
+	AREOLOGY,
+	BIOLOGY,
+	COLLECT_ICE,
+	COLLECT_REGOLITH,
+	DELIVERY,
 
-	EMERGENCY_SUPPLY		(Msg.getString("Mission.description.emergencySupply")), //$NON-NLS-1$
-	EXPLORATION				(Msg.getString("Mission.description.exploration")), //$NON-NLS-1$
-	METEOROLOGY				(Msg.getString("Mission.description.meteorologyFieldStudy")), //$NON-NLS-1$
-	MINING					(Msg.getString("Mission.description.mining")), //$NON-NLS-1$
-	RESCUE_SALVAGE_VEHICLE	(Msg.getString("Mission.description.rescueSalvageVehicle")), //$NON-NLS-1$
+	EMERGENCY_SUPPLY,
+	EXPLORATION,
+	METEOROLOGY,
+	MINING,
+	RESCUE_SALVAGE_VEHICLE,
 
-	TRADE					(Msg.getString("Mission.description.trade")), //$NON-NLS-1$
-	TRAVEL_TO_SETTLEMENT	(Msg.getString("Mission.description.travelToSettlement")), //$NON-NLS-1$
-	CONSTRUCTION			(Msg.getString("Mission.description.construction")), //$NON-NLS-1$
-	SALVAGE					(Msg.getString("Mission.description.salvage")), //$NON-NLS-1$
+	TRADE,
+	TRAVEL_TO_SETTLEMENT,
+	CONSTRUCTION,
+	SALVAGE
 	;
 
 	private String name;
 
-	static Map<Integer, MissionType> lookup = null;
-
 	/** hidden constructor. */
-	private MissionType(String name) {
-		this.name = name;
+	private MissionType() {
+		this.name = Msg.getString("MissionType." + name().toLowerCase());
 	}
 
 	/** gives the internationalized name of this skill for display in user interface. */

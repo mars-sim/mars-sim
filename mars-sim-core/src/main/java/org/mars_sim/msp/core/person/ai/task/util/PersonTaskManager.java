@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTaskManager.java
- * @date 2021-12-05
+ * @date 2023-09-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.util;
@@ -11,7 +11,6 @@ import java.util.List;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -34,7 +33,10 @@ public class PersonTaskManager extends TaskManager {
 
 	private static TaskCache defaultInsideTasks;
 	private static TaskCache defaultOutsideTasks;
-
+	
+	private static final String SLEEP = "Sleep";
+	private static final String EAT = "Eat";
+	
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
@@ -184,7 +186,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks = new TaskCache("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
-			TaskJob sleepJob = new AbstractTaskJob("Sleep", 1D) {
+			TaskJob sleepJob = new AbstractTaskJob(SLEEP, 1D) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -195,7 +197,7 @@ public class PersonTaskManager extends TaskManager {
 			};
 			defaultInsideTasks.put(sleepJob);
 
-			TaskJob eatJob = new AbstractTaskJob("Eat", 1D) {
+			TaskJob eatJob = new AbstractTaskJob(EAT, 1D) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -238,41 +240,64 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
-		if (!getPendingTasks().isEmpty()) {
-			TaskJob pending = getPendingTask();
-			if (pending != null) {
-				Task newTask = pending.createTask(person);
-				if (newTask != null) {
-					boolean isEVATask = newTask instanceof EVAOperation;
-					if (isEVATask && person.isOutside()) {
-						// Note :the person should 
-						// come in and rest and is no longer eligible for performing
-						// another EVA task
-	//					logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
-					}
-					else if (person.getMission() != null) {
-	//					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
-					}
-					
-					else if (currentTask != null 
-						&& !newTask.getName().equals(getTaskName())
-						&& !newTask.getDescription().equals(currentTask.getDescription())
-						&& !isFilteredTask(currentTask.getDescription())) {
-						
-						replaceTask(newTask);
-						removePendingTask(pending);
-					}
-					
-					// Warning: do NOT need to call super.startNewTask()
-					// or else the newTask will be replaced
-					return;
-				}
+//		if (!getPendingTasks().isEmpty()) {
+//			TaskJob pending = getPendingTask();
+//			if (pending != null) {
+//				Task newTask = pending.createTask(person);
+//				
+//				boolean isEVATask = newTask instanceof EVAOperation;
+//				
+//				if (newTask == null) {
+//					// Note: need to track how some TaskJob has been done and no longer available.
+//					logger.info(person, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+//					
+//					removePendingTask(pending);
+//					
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//
+//				else if (person.isOutside()) {
+//					
+//					if (newTask.getName().toLowerCase().contains(SLEEP) || isEVATask) {
+//						// Note :the person should 
+//						// come in and rest and is no longer eligible for performing
+//						// another EVA task
+////						logger.info(person, "Outside already doing a EVA task. Not eligible for performing " + newTask.getName() + ".");
+//						
+//						// Skip doing anything for now
+//					}
+//
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//				
+//				else if (person.getMission() != null) {
+////					logger.info(person, "On a mission. Not eligible for performing " + newTask.getName() + ".");
+//					
+//					// Skip doing anything for now
+//					// Next, go to super.startNewTask() to find a new task
+//				}
+//				
+//				else if (newTask != null && currentTask != null 
+//					&& !newTask.getName().equals(getTaskName())
+//					&& !newTask.getDescription().equals(currentTask.getDescription())
+//					&& !isFilteredTask(currentTask.getDescription())) {
+//					
+//					// Note: this is the only eligible condition for replacing the
+//					// current task with the new task
+//					replaceTask(newTask);
+//					// Remove the new task from the pending task list
+//					removePendingTask(pending);
+//					
+//					// At this point, do NOT need to call super.startNewTask()
+//					// or else the newTask will be replaced
+//					return;
+//				}
+//			}
+//		}
 
-				removePendingTask(pending);
-			}
-		}
-
-		super.startNewTask();
+		super.startNewTask();	
+		// Note that in super.startNewTask() in TaskManager, 
+		// it will run replaceTask(selectedTask)
 	}
 
 	@Override

@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * WalkRoverInterior.java
- * @version 3.2.0 2021-06-20
+ * @date 2023-09-06
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
@@ -30,6 +29,9 @@ public class WalkRoverInterior extends Task {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(WalkRoverInterior.class.getName());
 	
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = WalkRoverInterior.class.getSimpleName();
+	
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -45,7 +47,8 @@ public class WalkRoverInterior extends Task {
 	// Data members
 	private Rover rover;
 	private LocalPosition destLoc;
-	/*
+	
+	/**
 	 * Constructor 1.
 	 */
     public WalkRoverInterior(Person person, Rover rover, LocalPosition destLoc) {
@@ -65,26 +68,15 @@ public class WalkRoverInterior extends Task {
         // Initialize task phase.
         addPhase(WALKING);
         setPhase(WALKING);
-
-        //logger.finer(person.getName() + " starting to walk to new location in " + rover.getName() +
-        //        " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
 
-	/*
+	/**
 	 * Constructor 2.
 	 */
     public WalkRoverInterior(Robot robot, Rover rover, LocalPosition destLoc) {
         super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the robot is currently inside a rover.
-//        LocationSituation location = robot.getLocationSituation();
-//        if (location != LocationSituation.IN_VEHICLE) {
-////            throw new IllegalStateException(
-//            	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-//                    robot + " is not in a vheicle but doing WalkRoverInterior task in rover "
-//                    		+ rover.getName() + "."); 
-//        }
-
         if (!robot.isInVehicle()) {
         	logger.severe(robot, "Is supposed to be inside rover "
            			+ rover.getName() + "."); 
@@ -97,14 +89,12 @@ public class WalkRoverInterior extends Task {
         // Initialize task phase.
         addPhase(WALKING);
         setPhase(WALKING);
-
-        //logger.finer(robot.getName() + " starting to walk to new location in " + rover.getName() +
-        //        " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
+    
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+			logger.severe(worker, "Task phase is null.");
         }
         if (WALKING.equals(getPhase())) {
             return walkingPhase(time);
@@ -116,6 +106,7 @@ public class WalkRoverInterior extends Task {
 
     /**
      * Performs the walking phase of the task.
+     * 
      * @param time the amount of time (millisol) to perform the walking phase.
      * @return the amount of time (millisol) left after performing the walking phase.
      */
@@ -125,11 +116,11 @@ public class WalkRoverInterior extends Task {
 		double speedKPH = 0;
 
 		if (person != null) {
-			speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
+			speedKPH = Walk.PERSON_WALKING_SPEED;// * person.getWalkSpeedMod();
 
 		}
 		else {
-			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.calculateWalkSpeedMod();
+			speedKPH =  Walk.ROBOT_WALKING_SPEED;// * robot.getWalkSpeedMod();
 		}
 		
         LocalPosition currentPosition = worker.getPosition(); 
@@ -175,7 +166,11 @@ public class WalkRoverInterior extends Task {
             endTask();
         }
 
-        return remainingTime;
+        // Warning: see GitHub issue #1039 for details on return a 
+        // non-zero value from this method
+        
+//      return remainingTime;
+        return 0;
     }
 
 	/**

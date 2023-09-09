@@ -15,10 +15,11 @@ import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.PilotDrone;
-import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
-import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -306,17 +307,24 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Give a person the task from unloading the drone
+	 * Gives a person the task from unloading the drone.
 	 *
 	 * @param p
 	 * @param drone
 	 */
 	private boolean unloadCargo(Person person, Drone drone) {
 		boolean result = false;
-		TaskJob job =  UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), drone);
-		if (job != null) {
-			result = person.getMind().getTaskManager().addPendingTask(job, false);
-		}	
+		
+		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(drone)) {
+			assignTask(person, new UnloadVehicleGarage(person, drone));
+		} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+			assignTask(person, new UnloadVehicleEVA(person, drone));
+		}
+		
+//		TaskJob job =  UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), drone);
+//		if (job != null) {
+//			result = person.getMind().getTaskManager().addPendingTask(job, false);
+//		}	
 
 		return result;
 	}

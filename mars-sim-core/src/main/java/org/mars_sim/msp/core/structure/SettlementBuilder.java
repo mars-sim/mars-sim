@@ -443,15 +443,13 @@ public final class SettlementBuilder {
 		if (crew == null) {
 			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}
+		logger.config("Crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 
 		// Check for any duplicate full Name
 		Collection<Person> people = unitManager.getPeople();
 		
 		Set<String> existingfullnames = people.stream()
 				.map(Person::getName).collect(Collectors.toSet());
-		
-//		List<String> existingfullnames = people.stream()
-//				.map(Person::getName).collect(Collectors.toList());
 
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 
@@ -471,7 +469,6 @@ public final class SettlementBuilder {
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
 					logger.warning("Person already called " + name + ".");
-//					name = crew.getName() + " Member" + settlement.getNumCitizens();
 					
 					// Choose the next gender based on the current ratio of M/F
 					GenderType gender;
@@ -489,7 +486,6 @@ public final class SettlementBuilder {
 					name = spec.generateName(gender, existingfullnames);
 					
 				}
-				logger.config(name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 				existingfullnames.add(name);
 
 				// Get person's gender or randomly determine it if not configured.

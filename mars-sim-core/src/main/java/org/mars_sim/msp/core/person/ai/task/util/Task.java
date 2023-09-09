@@ -73,7 +73,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	// Static members
 	/** The maximum allowable width of a time pulse. */
-	private static final double MAX_PULSE_WIDTH = .855;
+	private static final double MAX_PULSE_WIDTH = MasterClock.MAX_PULSE_WIDTH; // .855;
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 	/** The standard stress effect of a task within a person's job. */
@@ -257,7 +257,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Set standard pulse time to a quarter of the value of the current pulse width
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getMarsPulseTime());
+		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getLastPulseTime());
 	}
 
 	/**
@@ -633,7 +633,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 
 			else {
-				// If task is effort-driven and person is incapacitated, end task.
+				// If task is effort-driven and robot is disabled, end task.
 				if (effortDriven && (robot.getPerformanceRating() == 0D)) {
 					endTask();
 				} else {
@@ -730,15 +730,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	private void modifyStress(double time) {
 
-		double effectiveStressModifier = stressModifier;
+		double stress = stressModifier;
 
-		if (effectiveStressModifier != 0D) {
+		if (stress != 0D) {
 			// Reduce stress modifier for person's skill related to the task.
 			int skill = getEffectiveSkillLevel();
-			effectiveStressModifier -= (effectiveStressModifier * skill * SKILL_STRESS_MODIFIER);
+			stress -= (stress * skill * SKILL_STRESS_MODIFIER);
 
-			if (effectiveStressModifier != 0D) {
-				double deltaStress = effectiveStressModifier * time;
+			if (stress != 0D) {
+				double deltaStress = stress * time;
 				person.getPhysicalCondition().addStress(deltaStress);
 			}
 		}

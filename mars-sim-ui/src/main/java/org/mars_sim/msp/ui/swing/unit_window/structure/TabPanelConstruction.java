@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -67,11 +65,8 @@ extends TabPanel {
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelConstruction.checkbox.overrideConstructionAndSalvage")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelConstruction.tooltip.overrideConstructionAndSalvage")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setConstructionOverride(overrideCheckbox.isSelected());
-			}
-		});
+		overrideCheckbox.addActionListener(a -> 
+				setConstructionOverride(overrideCheckbox.isSelected()));
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.CONSTRUCTION));
 		overridePanel.add(overrideCheckbox);
 		
