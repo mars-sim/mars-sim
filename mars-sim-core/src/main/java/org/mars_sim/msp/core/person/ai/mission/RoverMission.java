@@ -35,10 +35,11 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -689,16 +690,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		if (person.getAssociatedSettlement().getBuildingManager().addToGarage(rover)) {
-			assignTask(person, new UnloadVehicleGarage(person, rover));
-		} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-			assignTask(person, new UnloadVehicleEVA(person, rover));
+		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
+		if (job != null) {
+			person.getMind().getTaskManager().addPendingTask(job, false);
 		}
-		
-//		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
-//		if (job != null) {
-//			person.getMind().getTaskManager().addPendingTask(job, false);
-//		}
 	}
 
 	/**
