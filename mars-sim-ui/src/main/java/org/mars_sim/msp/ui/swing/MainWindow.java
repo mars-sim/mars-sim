@@ -72,7 +72,10 @@ public class MainWindow
 
 	private static final Icon PAUSE_ICON = ImageLoader.getIconByName("speed/pause");
 	private static final Icon PLAY_ICON = ImageLoader.getIconByName("speed/play");
-
+	private static final Icon DECREASE_ICON = ImageLoader.getIconByName("speed/decrease");
+	private static final Icon INCREASE_ICON = ImageLoader.getIconByName("speed/increase");
+	
+	
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
@@ -463,7 +466,7 @@ public class MainWindow
 	private void createSpeedButtons(JStatusBar statusBar) {
 		// Add the decrease speed button
 		JButton decreaseSpeed = new JButton();
-		decreaseSpeed.setIcon(ImageLoader.getIconByName("speed/decrease"));
+		decreaseSpeed.setIcon(DECREASE_ICON);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
 		
@@ -482,7 +485,7 @@ public class MainWindow
 		statusBar.addLeftComponent(pauseSwitch, false);
 
 		JButton increaseSpeed = new JButton();
-		increaseSpeed.setIcon(ImageLoader.getIconByName("speed/increase"));
+		increaseSpeed.setIcon(INCREASE_ICON);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(new ActionListener() {

@@ -57,7 +57,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// On earth, use 15; On Mars, use 14.6 instead.
 	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D;
 
-	private static final double HRS_TO_MILLISOLS = 1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
+	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
 	
 	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
 	private static final double NAUTICAL_DAWN_ANGLE = 12D; // in degree

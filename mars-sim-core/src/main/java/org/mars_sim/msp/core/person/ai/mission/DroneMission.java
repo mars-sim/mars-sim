@@ -140,8 +140,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
-		if (member instanceof Person) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
+			
 			Drone d = getDrone();
 			// Note : should it check for fatigue
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
@@ -159,8 +159,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			}
 		}
 		
-		else if (member instanceof Robot) {
-			Robot robot = (Robot) member;
+		else if (member instanceof Robot robot) {
 
 			if (!robot.getSystemCondition().isBatteryAbove(10)) {
 				return null;

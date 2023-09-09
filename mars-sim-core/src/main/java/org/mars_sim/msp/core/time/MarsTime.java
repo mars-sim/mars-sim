@@ -59,13 +59,20 @@ public class MarsTime implements Serializable {
 	// Note: 1 millisol = 88.775244 sec
 
 	/** Number of seconds per millisol. */
-	public static final double SECONDS_PER_MILLISOL = 88.775244D;
+	public static final double SECONDS_PER_MILLISOL = 88.775244;
+	/** Number of minutes per millisol. */
+	public static final double MINUTES_PER_MILLISOL  = SECONDS_PER_MILLISOL / 60;
 	/** Number of hours per millisol. */
-	public static final double HOURS_PER_MILLISOL  = SECONDS_PER_MILLISOL / 3600D;
+	public static final double HOURS_PER_MILLISOL = SECONDS_PER_MILLISOL / 3600;
+	
+	/** Number of millisols per minute. */
+	public static final double MILLISOLS_PER_SEC  = 1 / SECONDS_PER_MILLISOL;
+	/** Number of millisols per minute. */
+	public static final double MILLISOLS_PER_MINUTE  = 1 / MINUTES_PER_MILLISOL;
 	/** Number of millisols per hour. */
-	public static final double MILLISOLS_PER_HOUR  = 3600D / SECONDS_PER_MILLISOL;
+	public static final double MILLISOLS_PER_HOUR  = 60 * MILLISOLS_PER_MINUTE;
 	/** Number of millisols per day. */	
-	public static final double MILLISOLS_PER_DAY = MILLISOLS_PER_HOUR * 24D;
+	public static final double MILLISOLS_PER_DAY = 24 * MILLISOLS_PER_HOUR;
 
 	// Mars is near perihelion when it is summer in the southern hemisphere and
 	// winter in the north, and near aphelion when it is winter in the southern

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SpeedCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2023-09-09
  * @author Barry Evans
  */
 
@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 public class SpeedCommand extends ChatCommand {
 
-	private static final int MAX_RATE = MasterClock.MAX_TIME_RATIO;
+	private static final int MAX_RATE = (int)MasterClock.MAX_TIME_RATIO;
 
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed",
@@ -28,9 +28,9 @@ public class SpeedCommand extends ChatCommand {
         double desiredRatio = clock.getDesiredTR();
         double currentRatio = clock.getActualTR();
         
-        context.println("The current target time ratio is " + desiredRatio + "x");
-        context.println("The actual time ratio achieved is " + currentRatio + "x");
-        context.println("Input your desired time ratio : ");
+        context.println("The current 'desired' time ratio is " + desiredRatio + "x");
+        context.println("The 'actual' time ratio achieved is " + currentRatio + "x");
+        context.println("Input your 'desired' time ratio : ");
         
 		if (input != null) {
 			boolean failed = false;
@@ -38,7 +38,7 @@ public class SpeedCommand extends ChatCommand {
 				int newRate = Integer.parseInt(input);
 				if ((1 <= newRate) && (newRate <= MAX_RATE)) {
 					clock.setDesiredTR(newRate);
-					context.println("The new time ratio is " + newRate+ "x");
+					context.println("The new 'desired' time ratio is " + newRate + "x");
 				}
 				else {
 					failed = true;

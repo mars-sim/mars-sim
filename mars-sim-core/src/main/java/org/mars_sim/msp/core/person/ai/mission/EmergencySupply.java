@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -376,6 +377,7 @@ public class EmergencySupply extends RoverMission {
 			// Random chance of having person unload (this allows person to do other things
 			// sometimes)
 			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
+				
 				if (member instanceof Person person) {
 					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
