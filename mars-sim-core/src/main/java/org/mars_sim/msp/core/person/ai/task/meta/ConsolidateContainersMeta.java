@@ -37,7 +37,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		private static final long serialVersionUID = 1L;
 
 		public ConsolidateTaskJob(SettlementMetaTask owner, double score) {
-			super(owner, "Consolidate Containers", score);
+			super(owner, "Consolidate Containers", null, score);
 		}
 
 		@Override

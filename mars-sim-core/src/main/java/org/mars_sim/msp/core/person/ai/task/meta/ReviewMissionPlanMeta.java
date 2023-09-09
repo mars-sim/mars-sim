@@ -39,9 +39,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
         private MissionPlanning plan;
 
         public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, double score) {
-			super(owner, "Review Mission " + plan.getMission().getName(), score);
+			super(owner, "Review Mission", plan.getMission(), score);
             this.plan = plan;
         }
+
 
         @Override
         public Task createTask(Person person) {

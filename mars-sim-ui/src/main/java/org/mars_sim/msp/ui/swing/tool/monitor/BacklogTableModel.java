@@ -6,61 +6,49 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.task.util.SettlementTask;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class models how SettlementTasks are organized and displayed
  * within the Monitor Window for a settlement.
  */
 @SuppressWarnings("serial")
-public class BacklogTableModel extends EntityTableModel<SettlementTask>
-implements UnitListener {
+public class BacklogTableModel extends AbstractTableModel
+					implements MonitorModel, UnitListener {
 
-	/** Names of Columns. */
-	private static final String[] columnNames;
-	/** Types of columns. */
-	private static final Class<?>[] columnTypes;
 	
 	private static final int DESC_COL = 0;
 	private static final int ENTITY_COL = 1;
 	private static final int DEMAND_COL = 2;
 	static final int SCORE_COL = 3;
 
-	
-	static {
-		columnNames = new String[SCORE_COL + 1];
-		columnTypes = new Class[SCORE_COL + 1];
-		columnNames[ENTITY_COL] = "Entity";
-		columnTypes[ENTITY_COL] = String.class;
-		columnNames[DESC_COL] = "Description";
-		columnTypes[DESC_COL] = String.class;
-		columnNames[DEMAND_COL] =  "Demand";
-		columnTypes[DEMAND_COL] = Integer.class;
-		columnNames[SCORE_COL] = "Score";
-		columnTypes[SCORE_COL] = Double.class;
-	};
-
+	private String name = null;
 	private Settlement selectedSettlement;
 	private boolean monitorSettlement = false;
+	private List<SettlementTask> tasks;
 
 	/**
 	 * Constructor.
 	 */
 	public BacklogTableModel(Settlement selectedSettlement) {
-		super(Msg.getString("BacklogTableModel.tabName"), "BacklogTableModel.counting",
-							columnNames, columnTypes);
+		name = Msg.getString("BacklogTableModel.tabName");
 		
-
 		setSettlementFilter(selectedSettlement);
 	}
 
@@ -73,11 +61,9 @@ implements UnitListener {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if (eventType == UnitEventType.BACKLOG_EVENT) {
-			if (unit.equals(selectedSettlement)) {
-				// Reset the Tasks
-				resetTasks();
-			}
+		if ((eventType == UnitEventType.BACKLOG_EVENT) && unit.equals(selectedSettlement)) {
+			// Reset the Tasks
+			resetTasks();
 		}
 	}
 
@@ -88,41 +74,22 @@ implements UnitListener {
 	public boolean getOrdered() {
 		return false;
 	}
-
-	/**
-	 * Gets the value of the object.
-	 */
-	protected Object getEntityValue(SettlementTask selectedTask, int columnIndex) {
-		switch(columnIndex) {
-			case ENTITY_COL:
-				String des = selectedTask.getDescription();
-				int index = des.indexOf(" @");
-				if (index == -1)
-					return "None";
-				else
-					return des.substring(index + 3).replace("@", "");
-			case DESC_COL:
-				des = selectedTask.getDescription();
-				index = des.indexOf(" @");
-				if (index == -1)
-					return des;
-				else
-					return des.substring(0, index);
-			case DEMAND_COL:
-				return selectedTask.getDemand();
-			case SCORE_COL:
-				return selectedTask.getScore();
-			default:
-				return null;
-		}
-	}
     
+	/**
+	 * The Object 
+	 */
+	@Override
+	public Object getObject(int row) {
+		return tasks.get(row).getFocus();
+	}
+
 	/**
 	 * Sets whether the changes to the Entities should be monitor for change. Sets up the 
 	 * unit listeners for the selected Settlement where Food comes from for the table.
 	 * 
 	 * @param activate 
 	 */
+	@Override
     public void setMonitorEntites(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
@@ -140,7 +107,6 @@ implements UnitListener {
 	 */
 	@Override
 	public void destroy() {
-		super.destroy();
 
 		// Remove as listener for all settlements.
 		selectedSettlement.removeUnitListener(this);
@@ -151,6 +117,7 @@ implements UnitListener {
 	 * 
 	 * @param filter Settlement
 	 */
+	@Override
     public boolean setSettlementFilter(Settlement filter) {
 		if (selectedSettlement != null) {
 			selectedSettlement.removeUnitListener(this);
@@ -159,7 +126,15 @@ implements UnitListener {
 		// Initialize settlements.
 		selectedSettlement = filter;	
 
-		resetTasks();
+		// Initialize task list; backlog maybe null.
+		List<SettlementTask> newTasks = selectedSettlement.getTaskManager().getAvailableTasks();
+		if (newTasks == null) {
+			tasks = Collections.emptyList();
+		}
+		else {
+			tasks = new ArrayList<>(newTasks);
+		}
+		fireTableDataChanged();
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
@@ -173,11 +148,98 @@ implements UnitListener {
      * Resets tasks.
      */
 	private void resetTasks() {
-		// Initialize task list; backlog maybe null.
-		List<SettlementTask> tasks = selectedSettlement.getTaskManager().getAvailableTasks();
-		if (tasks == null) {
-			tasks = Collections.emptyList();
+		List<SettlementTask> oldTasks = tasks;
+		tasks = new ArrayList<>(selectedSettlement.getTaskManager().getAvailableTasks());
+
+		Set<SettlementTask> common = tasks.stream()
+						.filter(oldTasks::contains)
+						.collect(Collectors.toSet());
+		
+		// CHeck for deleted Task
+		int i = 0;
+		for(SettlementTask old : oldTasks) {
+			if (!common.contains(old)) {
+				fireTableRowsDeleted(i, i);
+			}
+			else {
+				i++;
+			}
 		}
-		resetEntities(tasks);
+		i = 0;
+		for(SettlementTask newTask : tasks) {
+			if (!common.contains(newTask)) {
+				fireTableRowsInserted(i, i);
+			}
+			i++;
+		}
+
+		if (!tasks.isEmpty())
+			fireTableRowsUpdated(0, tasks.size()-1);
 	}
+
+	@Override
+	public int getRowCount() {
+		return tasks.size();
+	}
+
+	@Override
+	public int getColumnCount() {
+		return SCORE_COL+1;
+	}
+
+	@Override
+	public String getColumnName(int index) {
+		return switch(index) {
+			case ENTITY_COL -> "Entity";
+			case DESC_COL -> "Description";
+			case DEMAND_COL -> "Demand";
+			case SCORE_COL -> "Score";
+			default -> throw new IllegalArgumentException("Unexpected value: " + index);
+		};
+	}
+
+	@Override
+	public Class<?> getColumnClass(int index) {
+		return switch(index) {
+			case ENTITY_COL ->  String.class;
+			case DESC_COL ->  String.class;
+			case DEMAND_COL ->  Integer.class;
+			case SCORE_COL ->  Double.class;
+			default -> throw new IllegalArgumentException("Unexpected value: " + index);
+		};
+	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		SettlementTask selectedTask = tasks.get(rowIndex);
+		switch(columnIndex) {
+			case ENTITY_COL:
+				Entity des = selectedTask.getFocus();
+				if (des != null)
+					return des.getName();
+				return null;
+			case DESC_COL:
+				return selectedTask.getDescription();
+			case DEMAND_COL:
+				return selectedTask.getDemand();
+			case SCORE_COL:
+				return selectedTask.getScore();
+			default:
+				return null;
+		}
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+    /**
+	 * Gets the model count string.
+	 */
+	@Override
+	public String getCountString() {
+		return Msg.getString("BacklogTableModel.counting", tasks.size());
+	}
+
 }

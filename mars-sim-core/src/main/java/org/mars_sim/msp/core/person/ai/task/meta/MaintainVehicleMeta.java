@@ -35,21 +35,26 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		private static final long serialVersionUID = 1L;
 
-        private Vehicle target;
 		private boolean eva;
 
         public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Maintain " + (eva ? "via EVA " : "") + " " + target.getName(), score);
-            this.target = target;
+            super(owner, "Vehicle Maintenance " + (eva ? "via EVA " : ""), target, score);
 			this.eva = eva;
+        }
+
+		/**
+         * The vehicle needing maintenance is the focus.
+         */
+        private Vehicle getVehicle() {
+            return (Vehicle) getFocus();
         }
 
         @Override
         public Task createTask(Person person) {
 			if (eva) {
-				return new MaintainEVAVehicle(person, target);
+				return new MaintainEVAVehicle(person, getVehicle());
 			}
-            return new MaintainGarageVehicle(person, target);
+            return new MaintainGarageVehicle(person, getVehicle());
         }
 
         @Override
@@ -57,7 +62,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			if (eva) {
 				throw new IllegalStateException("Robots can not do EVA Vehicel maintenance");
 			}
-            return new MaintainGarageVehicle(robot, target);
+            return new MaintainGarageVehicle(robot, getVehicle());
         }
     }
 

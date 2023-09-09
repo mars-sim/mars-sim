@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.malfunction;
 
-import java.io.Serializable;
 import java.util.Collection;
 
+import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.Person;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
-public interface Malfunctionable extends Loggable, Serializable {
+public interface Malfunctionable extends Entity, Loggable {
 
 	/**
 	 * Gets the entity's malfunction manager.

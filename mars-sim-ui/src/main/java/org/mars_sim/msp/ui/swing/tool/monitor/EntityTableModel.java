@@ -31,8 +31,6 @@ import org.mars.sim.tools.Msg;
 public abstract class EntityTableModel<T> extends AbstractTableModel
             implements MonitorModel {
 
-//    private static final Logger logger = Logger.getLogger(EntityTableModel.class.getName());
-
 	private String name;
     private String[] columnNames;
     private Class<?>[] columnTypes;

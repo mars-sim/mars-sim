@@ -41,13 +41,15 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        private VehicleMission target;
         private boolean eva;
 
         private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
-            super(owner, "Load " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
-            this.target = target;
+            super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
             this.eva = eva;
+        }
+
+        private VehicleMission getMission() {
+            return (VehicleMission) getFocus();
         }
 
         @Override
@@ -55,9 +57,9 @@ public class LoadVehicleMeta extends MetaTask
             if (!person.isInSettlement())
             	return null;
             if (eva) {
-                return new LoadVehicleEVA(person, target);
+                return new LoadVehicleEVA(person, getMission());
             }
-            return new LoadVehicleGarage(person, target);
+            return new LoadVehicleGarage(person, getMission());
         }
 
         @Override
@@ -66,7 +68,7 @@ public class LoadVehicleMeta extends MetaTask
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA load vehicle");
 			}
-            return new LoadVehicleGarage(robot, target);
+            return new LoadVehicleGarage(robot, getMission());
         }
     }
 

@@ -41,7 +41,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
         private Fishery tank;
 
         public FishTaskJob(SettlementMetaTask owner, Fishery tank, double score) {
-            super(owner, "Tend Fish Tank @ " + tank.getBuilding().getName(), score);
+            super(owner, "Tend Fish Tank", tank.getBuilding(), score);
             this.tank = tank;
         }
 
