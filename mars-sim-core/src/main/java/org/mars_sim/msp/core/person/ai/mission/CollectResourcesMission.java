@@ -176,8 +176,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		logger.info(getVehicle(), "Estimating amount of "
 				+ ResourceUtil.findAmountResourceName(resourceID)
 				+ " per site: "
-				+ (int)siteResourceGoal + " kg " 
-				+ ".");
+				+ (int)siteResourceGoal + " kg.");
 
 		// Add home settlement for return
 		addNavpoint(s);

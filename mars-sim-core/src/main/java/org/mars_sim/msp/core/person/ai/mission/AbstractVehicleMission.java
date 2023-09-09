@@ -36,13 +36,13 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
@@ -686,16 +686,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 					
 					if (!hasAnotherMission) {
 						
-						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-							assignTask(person, new LoadVehicleGarage(person, this));
-						} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-							assignTask(person, new LoadVehicleEVA(person, this));
-						}
-						
-//						TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
-//						if (job != null) {
-//							person.getMind().getTaskManager().addPendingTask(job, false);
+//						if (settlement.getBuildingManager().addToGarage(vehicle)) {
+//							assignTask(person, new LoadVehicleGarage(person, this));
+//						} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
+//							assignTask(person, new LoadVehicleEVA(person, this));
 //						}
+						
+						TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+						if (job != null) {
+							person.getMind().getTaskManager().addPendingTask(job, false);
+						}
 					}
 				}
 			}

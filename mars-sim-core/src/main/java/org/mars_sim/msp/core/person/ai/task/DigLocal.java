@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -217,13 +216,13 @@ public abstract class DigLocal extends EVAOperation {
 			}
         	else if (!person.getPosition().equals(dropOffLoc)) {
         		// TODO: how to get the walk time and return the remaining time ?
-        		Task currentTask = person.getMind().getTaskManager().getTask();
-        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-        		if ((currentTask != null && !currentTask.getName().toLowerCase().contains(WALK))
-        			|| (subTask != null && !subTask.getName().toLowerCase().contains(WALK))) {	
+//        		Task currentTask = person.getMind().getTaskManager().getTask();
+//        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+//        		if ((currentTask != null && !currentTask.getName().toLowerCase().contains(WALK))
+//        			|| (subTask != null && !subTask.getName().toLowerCase().contains(WALK))) {	
         				addSubTask(new WalkOutside(person, person.getPosition(),
         					dropOffLoc, true));
-        		}
+//        		}
         	}
         	else {
         		setPhase(DROP_OFF_RESOURCE);

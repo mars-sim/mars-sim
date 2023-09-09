@@ -823,8 +823,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
-		if (member.getUnitType() == UnitType.PERSON) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
+
 			// Check for fitness
 			if (person.isSuperUnFit()) {
 				logger.warning(person, 10_000L, "Not fit to operate " + getRover() + ".");

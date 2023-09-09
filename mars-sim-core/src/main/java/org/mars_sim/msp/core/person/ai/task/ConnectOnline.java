@@ -34,7 +34,7 @@ public class ConnectOnline extends Task {
 	private static final String NAME = Msg.getString("Task.description.connectOnline"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase CONNECTING_EARTH = new TaskPhase(Msg.getString("Task.phase.connectingOnline")); //$NON-NLS-1$
+	private static final TaskPhase CONNECTING_ONLINE = new TaskPhase(Msg.getString("Task.phase.connectingOnline")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -113,8 +113,8 @@ public class ConnectOnline extends Task {
 		if (proceed) {
 			setDescription(connection.getName());
 			// Initialize phase
-			addPhase(CONNECTING_EARTH);
-			setPhase(CONNECTING_EARTH);
+			addPhase(CONNECTING_ONLINE);
+			setPhase(CONNECTING_ONLINE);
 		}
 		else {
 			endTask();
@@ -125,7 +125,7 @@ public class ConnectOnline extends Task {
 	public double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
-		} else if (CONNECTING_EARTH.equals(getPhase())) {
+		} else if (CONNECTING_ONLINE.equals(getPhase())) {
 			return connectingEarth(time);
 		} else {
 			return time;
