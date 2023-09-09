@@ -33,7 +33,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 		private static final long serialVersionUID = 1L;
 
         public PlanTaskJob(SettlementMetaTask owner, double score) {
-            super(owner, "Plan Mission", score);
+            super(owner, "Plan Mission", null, score);
         }
 
         @Override

@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -42,29 +41,26 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        private Building target;
 		private boolean eva;
 
         public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, double score) {
-			super(owner, "Building Maintenance " + (eva ? "via EVA " : ""), score);
-            this.target = target;
+			super(owner, "Building Maintenance " + (eva ? "via EVA " : ""), target, score);
 			this.eva = eva;
         }
 
 		/**
 		 * The Building undergoing maintenance is the focus of this Task.
 		 */
-		@Override
-		public Entity getFocus() {
-			return target;
+		private Building getBuilding() {
+			return (Building) getFocus();
 		}
 
         @Override
         public Task createTask(Person person) {
 			if (eva) {
-				return new MaintainBuildingEVA(person, target);
+				return new MaintainBuildingEVA(person, getBuilding());
 			}
-            return new MaintainBuilding(person, target);
+            return new MaintainBuilding(person, getBuilding());
         }
 
         @Override
@@ -73,7 +69,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 				// SHould not happen
 				throw new IllegalStateException("Robots can not do EVA maintenance");
 			}
-            return new MaintainBuilding(robot, target);
+            return new MaintainBuilding(robot, getBuilding());
         }
     }
 
@@ -186,8 +182,6 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			}
 		}
 
-//		logger.info(entity, 10_000L, "score: " + score + "  effectiveTime: " 
-//				+ effectiveTime + "  minMaintenance: " + minMaintenance);
 		return score;
 	}
 }

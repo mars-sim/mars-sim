@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
@@ -41,29 +40,26 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
 		private static final long serialVersionUID = 1L;
 
-        private Vehicle target;
         private boolean eva;
 
         public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, double score) {
-            super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), score);
-            this.target = target;
+            super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
             this.eva = eva;
         }
 
         /**
          * The vehicle being unloaded is the focus.
          */
-        @Override
-        public Entity getFocus() {
-            return target;
+        private Vehicle getVehicle() {
+            return (Vehicle) getFocus();
         }
 
         @Override
         public Task createTask(Person person) {
             if (eva) {
-                return new UnloadVehicleEVA(person, target);
+                return new UnloadVehicleEVA(person, getVehicle());
             }
-            return new UnloadVehicleGarage(person, target);
+            return new UnloadVehicleGarage(person, getVehicle());
         }
 
         @Override
@@ -72,7 +68,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 				// SHould not happen
 				throw new IllegalStateException("Robots can not do EVA unload vehicle");
 			}
-            return new UnloadVehicleGarage(robot, target);
+            return new UnloadVehicleGarage(robot, getVehicle());
         }
     }
     /** Task name */

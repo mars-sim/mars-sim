@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -43,25 +42,43 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 		private static final long serialVersionUID = 1L;
 
 		private FuelPowerSource powerSource;
-		private Building building;
 
-        public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource, double score) {
-            super(owner, "Toggle " + powerSource.getType().getName(), score);
-			this.building = building;
+        public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource,
+                                    double score) {
+            super(owner, "Toggle " + powerSource.getType().getName(), building, score);
 			this.powerSource = powerSource;
 		}
 
          /**
          * The Building holding the power source is the focus.
          */
-        @Override
-        public Entity getFocus() {
-            return building;
+        private Building getBuilding() {
+            return (Building) getFocus();
         }
 
         @Override
         public Task createTask(Person person) {
-            return new ToggleFuelPowerSource(person, building, powerSource);
+            return new ToggleFuelPowerSource(person, getBuilding(), powerSource);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (super.equals(obj)) {
+                PowerTaskJob other = (PowerTaskJob) obj;
+                if (powerSource == null) {
+                    if (other.powerSource != null)
+                        return false;
+                } else if (!powerSource.equals(other.powerSource))
+                    return false;
+                else
+                    return true;
+            }
+            return false;
         }
     }
     
@@ -85,7 +102,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	public double getPersonSettlementModifier(SettlementTask t, Person p) {
         double factor = 0D;
         if (p.isInSettlement()) {
-            Building building = ((PowerTaskJob)t).building;
+            Building building = ((PowerTaskJob)t).getBuilding();
       
             // Checks if this is a standalone power building that requires EVA to reach
             if ((BuildingCategory.POWER == building.getCategory()) 

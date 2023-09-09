@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -40,17 +39,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
         private MissionPlanning plan;
 
         public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, double score) {
-			super(owner, "Review Mission", score);
+			super(owner, "Review Mission", plan.getMission(), score);
             this.plan = plan;
         }
 
-		/**
-		 * The Mission under review is the focus of this Task.
-		 */
-		@Override
-		public Entity getFocus() {
-			return plan.getMission();
-		}
 
         @Override
         public Task createTask(Person person) {

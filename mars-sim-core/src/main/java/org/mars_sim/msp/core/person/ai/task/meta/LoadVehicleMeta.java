@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -42,31 +41,25 @@ public class LoadVehicleMeta extends MetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        private VehicleMission target;
         private boolean eva;
 
         private LoadJob(SettlementMetaTask owner, VehicleMission target, boolean eva, double score) {
-            super(owner, "Load " + (eva ? "via EVA " : ""), score);
-            this.target = target;
+            super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
             this.eva = eva;
         }
 
-        /**
-         * The vehicle being loaded is the focus of the Task.
-         */
-        @Override
-        public Entity getFocus() {
-            return target;
+        private VehicleMission getMission() {
+            return (VehicleMission) getFocus();
         }
-        
+
         @Override
         public Task createTask(Person person) {
             if (!person.isInSettlement())
             	return null;
             if (eva) {
-                return new LoadVehicleEVA(person, target);
+                return new LoadVehicleEVA(person, getMission());
             }
-            return new LoadVehicleGarage(person, target);
+            return new LoadVehicleGarage(person, getMission());
         }
 
         @Override
@@ -75,7 +68,7 @@ public class LoadVehicleMeta extends MetaTask
 				// Should not happen
 				throw new IllegalStateException("Robots can not do EVA load vehicle");
 			}
-            return new LoadVehicleGarage(robot, target);
+            return new LoadVehicleGarage(robot, getMission());
         }
     }
 

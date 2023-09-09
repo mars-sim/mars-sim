@@ -19,11 +19,13 @@ public abstract class SettlementTask extends AbstractTaskJob {
     private int demand;
     
     private SettlementMetaTask metaTask;
+    private Entity focus;
 
-    protected SettlementTask(SettlementMetaTask parent, String description, double score) {
+    protected SettlementTask(SettlementMetaTask parent, String description, Entity focus, double score) {
         super(description, score);
         this.metaTask = parent;
         this.demand = 1;
+        this.focus = focus;
     }
 
     
@@ -69,6 +71,39 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * @return
      */
     public Entity getFocus() {
-        return null;
+        return focus;
+    }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((metaTask == null) ? 0 : metaTask.hashCode());
+        result = prime * result + ((focus == null) ? 0 : focus.hashCode());
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SettlementTask other = (SettlementTask) obj;
+        if (metaTask == null) {
+            if (other.metaTask != null)
+                return false;
+        } else if (!metaTask.equals(other.metaTask))
+            return false;
+        if (focus == null) {
+            if (other.focus != null)
+                return false;
+        } else if (!focus.equals(other.focus))
+            return false;
+        return true;
     }
 }

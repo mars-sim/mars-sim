@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -41,31 +40,28 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 		private static final long serialVersionUID = 1L;
 
-        private Building processBuilding;
 		private ResourceProcess process;
 
         public ToggleProcessJob(SettlementMetaTask mt, Building processBuilding, ResourceProcess process, double score) {
-			super(mt, "Toggle " + process.getProcessName(), score);
-            this.processBuilding = processBuilding;
+			super(mt, "Toggle " + process.getProcessName(), processBuilding, score);
 			this.process = process;
         }
 
  		/**
          * The Building holding the process is the focus.
          */
-        @Override
-        public Entity getFocus() {
-            return processBuilding;
+        private Building getProcessBuilding() {
+            return (Building) getFocus();
         }
 
         @Override
         public Task createTask(Person person) {
-            return new ToggleResourceProcess(person, processBuilding, process);
+            return new ToggleResourceProcess(person, getProcessBuilding(), process);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new ToggleResourceProcess(robot, processBuilding, process);
+            return new ToggleResourceProcess(robot, getProcessBuilding(), process);
         }
     }
 

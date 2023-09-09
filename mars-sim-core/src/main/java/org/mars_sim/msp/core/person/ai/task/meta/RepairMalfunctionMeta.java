@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.Entity;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -45,15 +44,14 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		
 		private static final long serialVersionUID = 1L;
 
-		private Malfunctionable entity;
 		private Malfunction mal;
 		private boolean eva;
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
 							 int demand, boolean eva, double score) {
-			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), score);
+			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), entity,
+						score);
 			setDemand(demand);
-			this.entity = entity;
 			this.mal = mal;
 			this.eva = eva;
 		}
@@ -61,18 +59,17 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		/**
 		 * The Malfunctionable with the fault is the focus of this Task.
 		 */
-		@Override
-		public Entity getFocus() {
-			return entity;
+		Malfunctionable getProblem() {
+			return (Malfunctionable) getFocus();
 		}
 
 
 		@Override
 		public Task createTask(Person person) {
 			if (eva) {
-				return new RepairEVAMalfunction(person, entity, mal);
+				return new RepairEVAMalfunction(person, getProblem(), mal);
 			}
-			return new RepairInsideMalfunction(person, entity, mal);
+			return new RepairInsideMalfunction(person, getProblem(), mal);
 		}
 
 		@Override
@@ -80,7 +77,29 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 			if (eva) {
 				throw new IllegalStateException("Robots cannot perform eva repairs");
 			}
-			return new RepairInsideMalfunction(robot, entity, mal);
+			return new RepairInsideMalfunction(robot, getProblem(), mal);
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (super.equals(obj)) {
+				// Check the actual malfunction to distinguish between 2 repiar task on the same entity
+				RepairTaskJob other = (RepairTaskJob) obj;
+				if (mal == null) {
+					if (other.mal != null)
+						return false;
+				} else if (!mal.equals(other.mal))
+					return false;
+				if (eva != other.eva)
+					return false;
+				return true;
+			}
+			return false;
 		}
 	}
 	
@@ -117,7 +136,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 				double factor = 3D;
 
 				RepairTaskJob rtj = (RepairTaskJob) t;
-				tasks.add(new RepairTaskJob(this, rtj.entity, rtj.mal, rtj.getDemand(),
+				tasks.add(new RepairTaskJob(this, rtj.getProblem(), rtj.mal, rtj.getDemand(),
 											rtj.eva, rtj.getScore() * factor));
 			}
 		}
