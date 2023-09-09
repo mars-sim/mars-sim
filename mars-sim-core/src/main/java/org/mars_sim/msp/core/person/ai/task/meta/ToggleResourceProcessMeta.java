@@ -47,7 +47,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			this.process = process;
         }
 
- 		/**
+		/**
          * The Building holding the process is the focus.
          */
         private Building getProcessBuilding() {
@@ -63,10 +63,22 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
         public Task createTask(Robot robot) {
             return new ToggleResourceProcess(robot, getProcessBuilding(), process);
         }
-    }
+		
+ 		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
 
-	/** default logger. */
-//	may add back SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName())
+		@Override
+		public boolean equals(Object obj) {
+			if (super.equals(obj)) {
+				// Same building & metatask so compare on Process
+				ToggleProcessJob other = (ToggleProcessJob) obj;
+				return process.equals(other.process);
+			}
+			return false;
+		}
+    }
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
