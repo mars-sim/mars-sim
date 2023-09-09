@@ -62,9 +62,11 @@ public class TimeWindow extends ToolWindow {
 	/** the sleep time label string */
 	private static final String SLEEP_TIME = "Sleep";
 	/** the residual time label string */
-	private static final String MARS_PULSE_TIME = "Pulse Width";
+	private static final String MARS_PULSE_TIME = "Pulse Width (millisols)";
+	/** the pulse time label string */
+	private static final String OPTIMAL = " (Optimal : ";
 	/** the execution time unit */
-	private static final String MILLISOLS = " millisols";
+//	private static final String MILLISOLS = " millisols";
 	/** the execution time unit */
 	private static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
@@ -290,8 +292,15 @@ public class TimeWindow extends ToolWindow {
 		sleepTimeLabel.setText(sleepTime + MS);
 
 		// Update pulse width label
-		double pulseTime = mc.getMarsPulseTime();
-		marsPulseLabel.setText(StyleManager.DECIMAL_PLACES3.format(pulseTime) + MILLISOLS);
+		double lastPulseTime = mc.getLastPulseTime();
+		double OptPulseTime = mc.getOptPulseTime();
+		
+		StringBuilder pulseText = new StringBuilder();
+		pulseText.append(StyleManager.DECIMAL_PLACES4.format(lastPulseTime))
+			  .append(OPTIMAL)
+			  .append(StyleManager.DECIMAL_PLACES4.format(OptPulseTime))
+			  .append(")");
+		marsPulseLabel.setText(pulseText.toString());
 
 		// Update actual TR label
 		StringBuilder trText = new StringBuilder();

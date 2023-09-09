@@ -724,7 +724,13 @@ public class Walk extends Task {
 				if (person.isInVehicle() || person.isInVehicleInGarage()) {
 					logger.log(person, Level.FINE , 5_000,
 						"Starting WalkRoverInterior.");
-					addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
+					
+					Task currentTask = person.getMind().getTaskManager().getTask();
+	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.SIMPLE_NAME))
+	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.SIMPLE_NAME))) {	
+						addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
+	        		}
 				}
 
 				else if (person.isOutside()) {
@@ -805,7 +811,12 @@ public class Walk extends Task {
 					setDescription("Walking outside toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
-					addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
+					Task currentTask = person.getMind().getTaskManager().getTask();
+	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
+	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
+						addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
+	        		}
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,

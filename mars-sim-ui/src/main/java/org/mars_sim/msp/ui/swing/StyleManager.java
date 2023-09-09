@@ -42,6 +42,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
+    public static final DecimalFormat DECIMAL_PLACES4 = new DecimalFormat("#,###,##0.0000");
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
