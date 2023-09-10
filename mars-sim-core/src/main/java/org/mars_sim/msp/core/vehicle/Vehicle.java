@@ -1909,6 +1909,7 @@ public abstract class Vehicle extends Unit
 	public double getAmountResourceStored(int resource) {
 		return eqmInventory.getAmountResourceStored(resource);
 	}
+	
 	/**
 	 * Gets all the amount resource resource stored, including inside equipment.
 	 *
@@ -1924,9 +1925,9 @@ public abstract class Vehicle extends Unit
 	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
 	 *
-	 * @param containerClass  the unit class.
+	 * @param containerClass  the unit class
 	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers.
+	 * @return number of empty containers
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
@@ -1934,12 +1935,12 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Finds the number of containers of a particular type
+	 * Finds the number of containers of a particular type.
 	 * 
 	 * Note: will not count EVA suits.
 	 *
-	 * @param containerType the equipment type.
-	 * @return number of empty containers.
+	 * @param containerType the equipment type
+	 * @return number of empty containers
 	 */
 	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
@@ -1954,7 +1955,7 @@ public abstract class Vehicle extends Unit
 	 * @param containerType
 	 * @param empty does it need to be empty ?
 	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
+	 * @return instance of container or null if none
 	 */
 	@Override
 	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
@@ -1990,8 +1991,9 @@ public abstract class Vehicle extends Unit
 	public Set<Integer> getAmountResourceIDs() {
 		return eqmInventory.getAmountResourceIDs();
 	}
+	
 	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment
+	 * Gets all stored amount resources in eqmInventory, including inside equipment.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -2001,7 +2003,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Obtains the remaining general storage space
+	 * Obtains the remaining general storage space.
 	 *
 	 * @return quantity
 	 */
@@ -2219,7 +2221,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Check if battery charging is needed and charge the vehicle.
+	 * Checks if battery charging is needed and charge the vehicle.
 	 * 
 	 * @param settlement
 	 */ 
@@ -2268,7 +2270,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Compares if an object is the same as this unit
+	 * Compares if an object is the same as this unit.
 	 *
 	 * @param obj
 	 */

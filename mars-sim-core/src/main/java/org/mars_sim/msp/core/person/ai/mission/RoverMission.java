@@ -300,13 +300,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return;
 		}
 
-		// While still in the settlement, check if the beacon is turned on and and endMission()
+		// While still in the vicinity of the settlement, check if the beacon is turned on. 
+		// If true, call endMission
 		else if (v.isBeaconOn()) {
 			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 
-		// Can depart if every is on the vehicle or time has run out
+		// Can depart if everyone is on the vehicle or time has run out
 		boolean canDepart = isEveryoneInRover();
 			
 		if (!canDepart && (getPhaseDuration() > DEPARTURE_DURATION)) {
@@ -332,10 +333,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					canDepart = true;
 				}
 			}
-			else {
+//			else {
 				// Too many generated
-				//logger.info(member, "Leader " + getStartingPerson().getName() + " still not boarded for mission " + getName());
-			}
+				// logger.info(member, "Leader " + getStartingPerson().getName() + " still not boarded for mission " + getName());
+//			}
 		}
 
 		// Check if everyone is boarded
@@ -355,10 +356,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {
+				logger.info(settlement, v, 10_000L, "Just embarked from the settlement.");
 				setPhaseEnded(true);
 			}
 			else {
-				endMissionProblem(v, "Could not exit Settlement");
+				endMissionProblem(v, "Could not exit Settlement.");
 			}
 
 			// Marks everyone departed
