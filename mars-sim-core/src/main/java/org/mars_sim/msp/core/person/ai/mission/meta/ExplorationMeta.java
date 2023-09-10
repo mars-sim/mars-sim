@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -41,9 +41,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
+	public RatingScore getProbability(Person person) {
 
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		Settlement settlement = person.getSettlement();
 		
@@ -64,14 +64,14 @@ public class ExplorationMeta extends AbstractMetaMission {
 				// 1. Check if there are enough specimen containers at the settlement for
 				// collecting rock samples.
 				if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
-					return Rating.ZERO_RATING;
+					return RatingScore.ZERO_RATING;
 				}
 
-				missionProbability = new Rating(1);
+				missionProbability = new RatingScore(1);
 				missionProbability.addModifier(SETTLEMENT_POPULATION,
 									getSettlementPopModifier(settlement, 8));
 				if (missionProbability.getScore() == 0) {
-	    			return Rating.ZERO_RATING;
+	    			return RatingScore.ZERO_RATING;
 	    		}
 
 				// Get available rover.

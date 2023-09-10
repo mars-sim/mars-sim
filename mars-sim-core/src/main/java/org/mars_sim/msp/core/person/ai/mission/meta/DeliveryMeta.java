@@ -7,7 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -44,9 +44,9 @@ public class DeliveryMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
+	public RatingScore getProbability(Person person) {
 
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
@@ -91,14 +91,14 @@ public class DeliveryMeta extends AbstractMetaMission {
 	 * @param settlement
 	 * @return
 	 */
-	private Rating getSettlementProbability(Settlement settlement) {
+	private RatingScore getSettlementProbability(Settlement settlement) {
 
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		// Check for the best delivery settlement within range.
 		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(settlement, false);
 		if (drone == null) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}
 		
 		logger.info(drone, 10_000L, "Available for delivery mission.");
@@ -106,23 +106,23 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 		Deal deal = gManager.getBestDeal(MissionType.DELIVERY, drone);
 		if (deal == null) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}
 		
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.DELIVERY, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}			
 		
 		else if (numThisMission > 1)
-			return Rating.ZERO_RATING;	
+			return RatingScore.ZERO_RATING;	
 
 		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
-		missionProbability = new Rating(deliveryProfit / DIVISOR * gManager.getTradeFactor());
+		missionProbability = new RatingScore(deliveryProfit / DIVISOR * gManager.getTradeFactor());
 		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
 		
 		int f2 = 2 * numThisMission + 1;

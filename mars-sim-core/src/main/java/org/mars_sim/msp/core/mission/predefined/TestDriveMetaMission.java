@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.mission.predefined;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -46,7 +46,7 @@ public class TestDriveMetaMission implements MetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getProbability'");
     }

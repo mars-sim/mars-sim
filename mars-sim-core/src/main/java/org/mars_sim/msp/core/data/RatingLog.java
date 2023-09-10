@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,7 +70,7 @@ public class RatingLog {
      * @param options The options selected from
      */
     public static void logSelectedRating(String module, String selector,
-                        Rateable selected, Map<? extends Rateable,Rating> options) {
+                        Rating selected, List<? extends Rating> options) {
         if (modules.contains(module)) {
             StringBuilder output = new StringBuilder();
             output.append("{\"time\":\"")
@@ -84,9 +84,9 @@ public class RatingLog {
                         .append("\",\"options\":[");
 
             // Output each output
-            output.append(options.entrySet().stream()
-                .map(entry -> "{\"rated\":\"" + entry.getKey().getName() + "\",\"rating\":"
-                             + ratingToJsonLines(entry.getValue()) + "}")
+            output.append(options.stream()
+                .map(entry -> "{\"rated\":\"" + entry.getName() + "\",\"rating\":"
+                             + ratingToJsonLines(entry.getScore()) + "}")
                             .collect(Collectors.joining(",")));
 
             output.append("]}");
@@ -104,7 +104,7 @@ public class RatingLog {
      * @param r Rating to be described
      * @return JSONLines fragment
      */
-    private static String ratingToJsonLines(Rating r) {
+    private static String ratingToJsonLines(RatingScore r) {
         return "{\"score\":" + SCORE_FORMAT.format(r.getScore())
                 + ",\"base\":" + SCORE_FORMAT.format(r.getBase())
                 + ",\"modifiers\":{"

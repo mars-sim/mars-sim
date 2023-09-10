@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -38,9 +38,9 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
 
-        Rating missionProbability = Rating.ZERO_RATING;
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
   
         // Check if person is in a settlement.
         if (person.isInSettlement()) {
@@ -48,11 +48,11 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 
             // Check if settlement has construction override flag set.
             if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
-            	return Rating.ZERO_RATING;
+            	return RatingScore.ZERO_RATING;
             
             // Check if available light utility vehicles.
             if (!SalvageMission.isLUVAvailable(settlement))
-                return Rating.ZERO_RATING;
+                return RatingScore.ZERO_RATING;
             
 	        RoleType roleType = person.getRole().getType();
 			
@@ -79,11 +79,11 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 	            }
 	
 	            if (availablePeopleNum < SalvageMission.MIN_PEOPLE)
-	                return Rating.ZERO_RATING;
+	                return RatingScore.ZERO_RATING;
 	
 	            // Check if min number of EVA suits at settlement.
 	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < SalvageMission.MIN_PEOPLE) {
-	            	return Rating.ZERO_RATING;
+	            	return RatingScore.ZERO_RATING;
 	            }
 	
 				int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -94,7 +94,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 				if (salvageProfit > 10D) {
 					salvageProfit = 10D;
 				}
-				missionProbability = new Rating(salvageProfit);
+				missionProbability = new RatingScore(salvageProfit);
 	
 	            // Job modifier.
 	            missionProbability.addModifier(LEADER, getLeaderSuitability(person));  

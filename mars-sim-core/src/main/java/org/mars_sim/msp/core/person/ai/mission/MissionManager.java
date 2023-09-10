@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.tools.util.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.data.Rating;
 import org.mars_sim.msp.core.data.RatingLog;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
@@ -35,6 +37,28 @@ import org.mars_sim.msp.core.structure.Settlement;
  * The simulation has only one mission manager.
  */
 public class MissionManager implements Serializable {
+
+	private static class MissionRating implements Rating {
+
+		MetaMission meta;
+		RatingScore score;
+
+		public MissionRating(MetaMission meta, RatingScore score) {
+			this.meta = meta;
+			this.score = score;
+		}
+
+		@Override
+		public String getName() {
+			return meta.getName();
+		}
+
+		@Override
+		public RatingScore getScore() {
+			return score;
+		}
+
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -190,7 +214,7 @@ public class MissionManager implements Serializable {
 		Mission result = null;
 
 		// Probably must be calculated as a local otherwise method is not threadsafe using a shared cache
-		Map<MetaMission, Rating> missionProbCache = new HashMap<>();
+		List<MissionRating> missionProbCache = new ArrayList<>();
 
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;
@@ -200,7 +224,7 @@ public class MissionManager implements Serializable {
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
-				Rating baseProb = metaMission.getProbability(person);
+				RatingScore baseProb = metaMission.getProbability(person);
 				if (baseProb.getScore() > 0D) {
 					// Get any overriding ratio
 					double settlementRatio = startingSettlement.getPreferenceModifier(
@@ -211,7 +235,7 @@ public class MissionManager implements Serializable {
 					logger.info(person, "Mission '" + metaMission.getType().getName() 
 							+ "' score: " + baseProb.getOutput());
 					if (baseProb.getScore() > 0) {
-						missionProbCache.put(metaMission, baseProb);
+						missionProbCache.add(new MissionRating(metaMission, baseProb));
 						totalProbCache += baseProb.getScore();
 					}
 				}
@@ -228,11 +252,11 @@ public class MissionManager implements Serializable {
 		double r = RandomUtil.getRandomDouble(totalProbCache);
 
 		// Determine which mission is selected.
-		MetaMission selectedMetaMission = null;
-		for (Entry<MetaMission, Rating> possible : missionProbCache.entrySet()) {
-			double probWeight = possible.getValue().getScore();
+		MissionRating selectedMetaMission = null;
+		for (MissionRating possible : missionProbCache) {
+			double probWeight = possible.score.getScore();
 			if (r <= probWeight) {
-				selectedMetaMission = possible.getKey();
+				selectedMetaMission = possible;
 				break;
 			} 
 
@@ -245,8 +269,9 @@ public class MissionManager implements Serializable {
 
 		RatingLog.logSelectedRating("missionstart", person.getName(),
 						selectedMetaMission, missionProbCache);
+						
 		// Construct the mission and needs a review
-		result = selectedMetaMission.constructInstance(person, true);
+		result = selectedMetaMission.meta.constructInstance(person, true);
 
 		return result;
 	}

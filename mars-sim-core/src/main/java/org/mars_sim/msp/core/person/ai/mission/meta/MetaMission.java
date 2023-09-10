@@ -6,8 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.data.Rateable;
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -17,7 +16,7 @@ import org.mars_sim.msp.core.robot.Robot;
  * Interface for a meta mission, responsible for determining mission probability
  * and constructing mission instances.
  */
-public interface MetaMission extends Rateable {
+public interface MetaMission {
 
     public static final double LIMIT = 200D;
 	
@@ -59,7 +58,7 @@ public interface MetaMission extends Rateable {
 	 * @param person the person to perform the mission.
 	 * @return Rating of this mission starting
 	 */
-	public Rating getProbability(Person person);
+	public RatingScore getProbability(Person person);
 
 	public double getProbability(Robot robot);
 }
