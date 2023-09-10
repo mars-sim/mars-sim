@@ -46,24 +46,24 @@ public class MasterClock implements Serializable {
 	/** The mid speed setting. */
 	public static final int MID_SPEED = 8;
 
-	// From 1x to 256x
+	// 256x
 	public static final double MID_TIME_RATIO = (int)Math.pow(2, MID_SPEED); 
-	// From 256x to 2916x
+	// 2916x
 	public static final double HIGH_TIME_RATIO = MID_TIME_RATIO 
 							* Math.pow(1.5, HIGH_SPEED - MID_SPEED);
-	// 2916x to 21870x
+	// 21870x
 	public static final double MAX_TIME_RATIO = HIGH_TIME_RATIO
 							* Math.pow(1.25, MAX_SPEED - HIGH_SPEED);
 	
 	/** The Maximum number of pulses in the log .*/
-	private static final int MAX_PULSE_LOG = 20;
+	private final int MAX_PULSE_LOG = 20;
 	
 	// Note: What is a reasonable jump in the observed real time to be allow for 
 	//       long simulation steps ? 15 seconds for debugging ? 
 	//       How should it trigger in the next pulse ? 
 	
 	/** The maximum allowable elapsed time [in ms] before action is taken. */
-	private static final long MAX_ELAPSED = 30000;
+	private final long MAX_ELAPSED = 30000;
 
 	/** The maximum pulse time allowed in one frame for a task phase. */
 	public static final double MAX_PULSE_WIDTH = .855;
@@ -71,7 +71,7 @@ public class MasterClock implements Serializable {
 	/** The multiplier for reducing the width of a pulse. */
 //	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
-	private static final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
+	private final double MILLISECONDS_PER_MILLISOL = MarsTime.SECONDS_PER_MILLISOL * 1000.0;
 
 	// Transient members
 	/** Runnable flag. */
@@ -120,12 +120,16 @@ public class MasterClock implements Serializable {
 	/** Number of millisols covered in the last pulse. */
 	private double lastPulseTime;
 	/** The minimum time span covered by each simulation pulse in millisols. */
-	private double minMilliSolPerPulse;
+	private final double minMilliSolPerPulse;
 	/** The maximum time span covered by each simulation pulse in millisols. */
-	private double maxMilliSolPerPulse;
+	private final double maxMilliSolPerPulse;
 	/** The optimal time span covered by each simulation pulse in millisols. */
 	private double optMilliSolPerPulse;
-
+	/** The reference pulse in millisols. */
+	private double referencePulse;
+	/** The optimal pulse deviation in fraction. */
+	private double optPulseDeviation;
+	
 	/** The Martian Clock. */
 	private MarsTime marsTime;
 	/** A copy of the initial martian clock at the start of the sim. */
@@ -183,7 +187,7 @@ public class MasterClock implements Serializable {
 		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
 
 		// Check pulse width
-		checkPulseWidth();
+		AdjustPulseWidth();
 		
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
@@ -206,17 +210,19 @@ public class MasterClock implements Serializable {
 	private void adjustOptimalPulseWidth() {
 		// Re-evaluate the optimal width of a pulse
 		if (desiredTR > HIGH_TIME_RATIO) {
-			optMilliSolPerPulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / 6 - minMilliSolPerPulse) * desiredTR / HIGH_TIME_RATIO);
+			referencePulse = minMilliSolPerPulse 
+				+ 2 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
 		else if (desiredTR > MID_TIME_RATIO) {
-			optMilliSolPerPulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / 8 - minMilliSolPerPulse) * desiredTR / HIGH_TIME_RATIO);
+			referencePulse = minMilliSolPerPulse 
+				+ 3 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
 		else {
-			optMilliSolPerPulse = minMilliSolPerPulse 
-				+ ((maxMilliSolPerPulse / 10 - minMilliSolPerPulse) * desiredTR / HIGH_TIME_RATIO);
+			referencePulse = minMilliSolPerPulse 
+				+ 4 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
+		
+		optMilliSolPerPulse = referencePulse;
 	}
 
 	/**
@@ -229,7 +235,8 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Override the mars time. This must be used with caution
+	 * Overrides the mars time. This must be used with caution.
+	 * 
 	 * @param newTime New Mars time
 	 */
     public void setMarsTime(MarsTime newTime) {
@@ -470,13 +477,15 @@ public class MasterClock implements Serializable {
 		double desiredMsolPerSecond = (actualTR + desiredTR - deltaTR * 3) / 2 / MarsTime.SECONDS_PER_MILLISOL;
 
 		// Get the desired number of pulses
-		double desiredPulses = desiredMsolPerSecond / ((optMilliSolPerPulse + lastPulseTime) / 2);
+		double desiredPulses = desiredMsolPerSecond / (0.2 * optMilliSolPerPulse + 0.7 * lastPulseTime + 0.1 * referencePulse);
+		
+		// Limit the desired pulses to at least 1
 		desiredPulses = Math.max(desiredPulses, 1D);
 		
 		// Get the milliseconds between each pulse
 		double milliSecondsPerPulse = 1000 / desiredPulses;
 
-		// Sleep time allows for the execution time
+		// Update the sleep time that will allow room for the execution time
 		sleepTime = (long)(milliSecondsPerPulse - executionTime);
 
 		// if sleepTime is negative, will increase pulse width in checkPulseWidth() 
@@ -490,19 +499,6 @@ public class MasterClock implements Serializable {
 }
 
 	/**
-	 * Sets the pause time for the Command Mode.
-	 *
-	 * @param value0
-	 * @param value1
-	 */
-	public void setCommandPause(boolean value0, double value1) {
-		// Check GameManager.mode == GameMode.COMMAND ?
-		canPauseTime = value0;
-		// Note: will need to re-implement the auto pause time for command mode
-		logger.info("Auto pause time: " + value1);
-	}
-
-	/**
 	 * Adds earth time and mars time.
 	 *
 	 * @return true if the pulse was accepted
@@ -514,34 +510,28 @@ public class MasterClock implements Serializable {
 			// Find the new up time
 			long tnow = System.currentTimeMillis();
 
-			// Calculate the elapsed time in milli-seconds
+			// Calculate the real time elapsed [in milliseconds]
+			// Note: this should not include time for rendering UI elements
 			long realElapsedMillisec = tnow - tLast;
-			
-			double modifiedPulseTime = 0;
-			
+
 			// Make sure there is not a big jump; suggest power save so skip it
 			if (realElapsedMillisec > MAX_ELAPSED) {
-
-				modifiedPulseTime = optMilliSolPerPulse;
 				// Reset lastPulseTime
-				lastPulseTime = modifiedPulseTime;
-				
+				lastPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
-				realElapsedMillisec = (long) (modifiedPulseTime * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
+				realElapsedMillisec = (long) (lastPulseTime * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
 				// Reset the elapsed clock to ignore this pulse
-				logger.warning("Elapsed real time is " + realElapsedMillisec + " ms, longer than the max time "
+				logger.warning(10_000, "Elapsed real time is " + realElapsedMillisec + " ms, longer than the max time "
 			                   + MAX_ELAPSED + " ms.");
 			}
 			
 			else if (realElapsedMillisec == 0.0) {
-	
-				modifiedPulseTime = optMilliSolPerPulse;
 				// Reset lastPulseTime
-				lastPulseTime = modifiedPulseTime;
-				
-				realElapsedMillisec = (long) (modifiedPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
+				lastPulseTime = optMilliSolPerPulse;
+				// Reset realElaspedMilliSec back to its default time ratio
+				realElapsedMillisec = (long) (lastPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.warning("Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
+				logger.warning(10_000, "Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
 			}
 			
 			else {
@@ -550,15 +540,13 @@ public class MasterClock implements Serializable {
 
 				// NOTE: actualTR is just the ratio of the simulation's pulse time to the real elapsed time 	
 				
-				// Obtain the latest time pulse width in millisols.
-				lastPulseTime = (realElapsedMillisec * actualTR) / MILLISECONDS_PER_MILLISOL;
+				// Obtain the latest time pulse width [in millisols], given the ratio of realElapsedMillisec to desiredTR
+				lastPulseTime = (realElapsedMillisec * desiredTR) / MILLISECONDS_PER_MILLISOL;
 				
 				// Adjust the time pulse
-				modifiedPulseTime = checkPulseWidth();
+				optPulseDeviation = AdjustPulseWidth();
 			}
 
-			// Gets the timestamp for the pulse
-			timestampPulseStart();
 			
 			if (lastPulseTime > 0) {
 				acceptablePulse = true;
@@ -567,26 +555,29 @@ public class MasterClock implements Serializable {
 			// Elapsed time is acceptable
 			if (keepRunning && acceptablePulse) {
 				
-				// The time elapsed for the EarthClock aligned to adjusted Mars time
-				long earthMillisec = (long) (modifiedPulseTime * MILLISECONDS_PER_MILLISOL);
+				// Calculate the time elapsed for EarthClock, based on latest Mars time pulse
+				long earthMillisec = (long) (lastPulseTime * MILLISECONDS_PER_MILLISOL);
 
-				// Update the actual time ratio
-				actualTR = (double)earthMillisec / realElapsedMillisec;
+				// Update the actual time ratio, given the ratio of Earth time to real time elapsed
+				actualTR = (double) earthMillisec / realElapsedMillisec;
 
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {
 
 					// Update the uptimer
-					uptimer.updateTime(lastPulseTime * MILLISECONDS_PER_MILLISOL / actualTR);
+					uptimer.updateTime(realElapsedMillisec);
 
+					// Gets the timestamp for the pulse
+					timestampPulseStart();
+					
 					// Add time to the Earth clock.
 					earthTime = earthTime.plus(earthMillisec, ChronoField.MILLI_OF_SECOND.getBaseUnit());
 
 					// Add time pulse to Mars clock.
-					marsTime = marsTime.addTime(modifiedPulseTime);
+					marsTime = marsTime.addTime(lastPulseTime);
 
 					// Run the clock listener tasks that are in other package
-					fireClockPulse(modifiedPulseTime);
+					fireClockPulse(lastPulseTime);
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero
@@ -600,6 +591,8 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Checks for the actual time ratio.
+	 * 
+	 * @return deviation of the optimal pulse width
 	 */
 	private void calculateDeltaTR() {
 		deltaTR = actualTR - desiredTR;
@@ -612,27 +605,34 @@ public class MasterClock implements Serializable {
 	 * Checks for the value of pulse width. Adjust the pulse width accordingly. Let 
 	 * it gradually catch up to the value of optMilliSolPerPulse.
 	 */
-	private double checkPulseWidth() {
+	private double AdjustPulseWidth() {
 		
 		double lastPulse = lastPulseTime;
 		double optPulse = optMilliSolPerPulse;
 		
 		if (sleepTime < 0) {
-			optPulse = 1.05 * optPulse;
+			// Increase the optimal pulse width proportionally so as to avoid negative sleep time 
+			optPulse = Math.max(1.2, (1 - sleepTime / 1000)) * optPulse;
 		}
 
 		else {
+			optPulse = .999 * optPulse;
 			
 			double ratio = actualTR / desiredTR;
 
-			if (ratio < 0.999 || ratio > 1.001) {
-				double factor = Math.min(1.05, Math.max(0.95, ratio));
-				optPulse = optPulse * factor;
-				lastPulse = (lastPulse + optPulse) / 2;
-//				logger.config(20_000, "Setting last pulse width " + Math.round(lastPulseTime * 10_000.0) / 10_000.0
-//						+ " based on deviation from TR ratio to " + Math.round(lastPulse * 10_000.0) / 10_000.0 + ".");
+			if (ratio < 0.999) {
+				// Increase the optimal pulse width
+				optPulse = optPulse * (1 + (desiredTR - actualTR) / 100);
+//				logger.config(20_000, "Setting optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
-
+			else if (ratio > 1.001) {
+				// Decrease the optimal pulse width
+				optPulse = optPulse * (1 - (actualTR - desiredTR) / 100);
+//				logger.config(20_000, "Setting optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " based on TR deviation to " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+			}
+			
 			// Note: need to limit the optPulse to a max
 			if (optPulse / maxMilliSolPerPulse > 1.05) {
 //				logger.config(20_000, "Restricting optimal pulse width " + Math.round(optPulse * 10_000.0) / 10_000.0
@@ -646,23 +646,35 @@ public class MasterClock implements Serializable {
 				optPulse = minMilliSolPerPulse;
 			}
 			
-//			else if (lastPulse / optPulse > 1.05) {
-//				double diff = lastPulse - optPulse;
-//				optPulse = optPulse - diff / 20;
-//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
-//
-//			}
-//			
-//			else if (lastPulse / optPulse < .95) {
-//				double diff = optPulse - lastPulse;
-//				optPulse = optPulse + diff / 20;
-//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
-//			}
+			else if (referencePulse / optPulse > 1.05) {
+				double diff = referencePulse - optPulse;
+				optPulse = optPulse + diff / 40;
+				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+						+ " toward ref pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
+			}
+			
+			else if (referencePulse / optPulse < .95) {
+				double diff = optPulse - referencePulse;
+				optPulse = optPulse - diff / 40;
+				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+						+ " toward ref pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
+			}
+			
+			else if (lastPulse / optPulse > 1.05) {
+				double diff = lastPulse - optPulse;
+				optPulse = optPulse + diff / 40;
+				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+			}
+			
+			else if (lastPulse / optPulse < .95) {
+				double diff = optPulse - lastPulse;
+				optPulse = optPulse - diff / 40;
+				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+			}
 		}
-		
-		lastPulseTime = lastPulse;
+				
 		optMilliSolPerPulse = optPulse;
 		
 		// Update the pulse time for use in tasks
@@ -671,8 +683,8 @@ public class MasterClock implements Serializable {
 		if (newPulse != oldPulse) {
 			Task.setStandardPulseTime(newPulse);
 		}
-		
-		return lastPulseTime;
+
+		return (optPulse - referencePulse) / referencePulse;
 	}
 	
 	/**
@@ -878,7 +890,7 @@ public class MasterClock implements Serializable {
 		// Recompute the delta TR
 		calculateDeltaTR();
 		// Adjust the optimal pulse width
-		checkPulseWidth();
+		AdjustPulseWidth();
 	}
 
 	/**
@@ -906,7 +918,7 @@ public class MasterClock implements Serializable {
 		// Compute the delta TR
 		calculateDeltaTR();
 		// Adjust the optimal pulse width
-		checkPulseWidth();
+		AdjustPulseWidth();
 	}
 
 
@@ -1013,6 +1025,24 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
+	 * Gets the reference pulse.
+	 *
+	 * @return
+	 */
+	public double getReferencePulse() {
+		return referencePulse;
+	}
+	
+	/**
+	 * Gets the optimal pulse deviation.
+	 *
+	 * @return
+	 */
+	public double getOptPulseDeviation() {
+		return optPulseDeviation;
+	}
+	
+	/**
 	 * Gets the time [in microseconds] taken to execute one frame in the game loop.
 	 *
 	 * @return
@@ -1076,6 +1106,19 @@ public class MasterClock implements Serializable {
 	 */
 	public ClockPulse getClockPulse() {
 		return currentPulse;
+	}
+
+	/**
+	 * Sets the pause time for the Command Mode.
+	 *
+	 * @param value0
+	 * @param value1
+	 */
+	public void setCommandPause(boolean value0, double value1) {
+		// Check GameManager.mode == GameMode.COMMAND ?
+		canPauseTime = value0;
+		// Note: will need to re-implement the auto pause time for command mode
+		logger.info("Auto pause time: " + value1);
 	}
 
 	/**

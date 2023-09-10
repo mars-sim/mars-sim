@@ -21,7 +21,7 @@ public class ClockUtils implements Serializable {
 	private static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400;
 
 	/** the sim time label string */
-	private static final String SIM_TIME = " sim-time";
+	private static final String SIM_TIME = " Sim Time Clock";
 
 	private static final String HOURS = "h ";
 	private static final String MINUTES = "m ";
