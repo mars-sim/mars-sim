@@ -1599,6 +1599,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		robot = null;
 		worker = null;
 		eventTarget = null;
+		subTask.destroy();
 		subTask = null;
 		phase = null;
 		phases.clear();

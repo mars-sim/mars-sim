@@ -39,13 +39,14 @@ import org.mars_sim.msp.ui.swing.utils.JHistoryPanel;
 public class TabPanelSchedule extends TabPanel {
 
 	private static final String SCH_ICON = "schedule";
-
-	private String descCache; 
+	private static final String NOTE = "Note : ";
+	
+	private String noteCache; 
 	private String shiftCache;
 	private String timeCache;
 	private String statusCache;
 	
-	private JTextField shiftTF;
+	private JTextField shiftNoteTF;
 
 	private JLabel shiftLabel;
 	private JLabel timeLabel;
@@ -112,17 +113,17 @@ public class TabPanelSchedule extends TabPanel {
 			statusLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.status.label"), //$NON-NLS-1$
 					statusCache);
 			
-			descCache = getShiftDescription(shiftSlot);	
+			noteCache = getShiftNote(shiftSlot);	
 			
-			shiftTF = new JTextField();
-			shiftTF.setFont(new Font("Arial", Font.ITALIC | Font.PLAIN, 12));
-			shiftTF.setText("Note : " + descCache);
+			shiftNoteTF = new JTextField();
+			shiftNoteTF.setFont(new Font("Arial", Font.ITALIC | Font.PLAIN, 12));
+			shiftNoteTF.setText(NOTE + noteCache);
 			
-			shiftTF.setEditable(false);
-			shiftTF.setColumns(20);
-			shiftTF.setHorizontalAlignment(JTextField.CENTER);
+			shiftNoteTF.setEditable(false);
+			shiftNoteTF.setColumns(20);
+			shiftNoteTF.setHorizontalAlignment(JTextField.CENTER);
 			
-			shiftPane.add(shiftTF);
+			shiftPane.add(shiftNoteTF);
 		}
 
 		activityPanel = new ActivityPanel(taskManager.getAllActivities());
@@ -134,25 +135,25 @@ public class TabPanelSchedule extends TabPanel {
 	}
 
 	/**
-	 * Gets the shift description.
+	 * Gets the shift note.
 	 * 
 	 * @param shift
 	 * @return
 	 */
-	public static String getShiftDescription(ShiftSlot shift) {
-		WorkStatus status = shift.getStatus();
+	public static String getShiftNote(ShiftSlot shiftSlot) {
+		WorkStatus status = shiftSlot.getStatus();
 		
-		Shift s = shift.getShift();
+		Shift s = shiftSlot.getShift();
 		int start = s.getStart();
 		int end = s.getEnd();
-	
+
 		switch(status) {
 			case ON_CALL:
 				return "None";
 			case ON_DUTY:
-				return "On Duty ends @ " + end + " millisols";
+				return "Off Duty starts @ " + end + " millisols";
 			case OFF_DUTY:
-				return "Off Duty starts @ " + start + " millisols";
+				return "Off Duty ends @ " + start + " millisols";
 			case ON_LEAVE:
 				return "On Leave";
 		}
@@ -236,11 +237,11 @@ public class TabPanelSchedule extends TabPanel {
 				statusLabel.setText(status);
 			}
 					
-			String shiftDesc = getShiftDescription(shiftSlot);
+			String shiftDesc = getShiftNote(shiftSlot);
 			
-			if (!descCache.equalsIgnoreCase(shiftDesc)) {
-				descCache = shiftDesc;
-				shiftTF.setText("Note : " + shiftDesc);
+			if (!noteCache.equalsIgnoreCase(shiftDesc)) {
+				noteCache = shiftDesc;
+				shiftNoteTF.setText(NOTE + shiftDesc);
 			}
 		}
 		

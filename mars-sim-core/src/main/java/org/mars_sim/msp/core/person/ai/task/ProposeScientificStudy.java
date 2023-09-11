@@ -94,8 +94,8 @@ public class ProposeScientificStudy extends Task {
 
 				if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.
-					if (person.getVehicle() instanceof Rover) {
-						walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+					if (person.getVehicle() instanceof Rover rover) {
+						walkToPassengerActivitySpotInRover(rover, false);
 					}
 				} else {
 					// Walk to random location.

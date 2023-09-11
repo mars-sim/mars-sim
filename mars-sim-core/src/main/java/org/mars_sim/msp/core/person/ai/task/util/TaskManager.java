@@ -304,7 +304,7 @@ public abstract class TaskManager implements Serializable {
 			return "";
 	}
 
-	public String getSubTask2Description() {
+	public String getSubTask1Description() {
 		if (currentTask != null && currentTask.getSubTask() != null
 				&& currentTask.getSubTask().getSubTask() != null) {
 			String t = currentTask.getSubTask().getSubTask().getDescription();
@@ -316,6 +316,19 @@ public abstract class TaskManager implements Serializable {
 			return "";
 	}
 
+	public String getSubTask2Description() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null
+				&& currentTask.getSubTask().getSubTask().getSubTask() != null) {
+			String t = currentTask.getSubTask().getSubTask().getSubTask().getDescription();
+			if (t != null) // || !t.equals(""))
+				return t;
+			else
+				return "";
+		} else
+			return "";
+	}
+	
 	/**
 	 * Returns the current task phase if there is one. Returns null if current task
 	 * has no phase. Returns null if there is no current task.
@@ -338,7 +351,7 @@ public abstract class TaskManager implements Serializable {
 		}
 	}
 
-	public TaskPhase getSubTask2Phase() {
+	public TaskPhase getSubTask1Phase() {
 		if (currentTask != null && currentTask.getSubTask() != null
 				&& currentTask.getSubTask().getSubTask() != null) {
 			return currentTask.getSubTask().getSubTask().getPhase();
@@ -347,6 +360,16 @@ public abstract class TaskManager implements Serializable {
 		}
 	}
 
+	public TaskPhase getSubTask2Phase() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null
+				&& currentTask.getSubTask().getSubTask().getSubTask() != null) {
+			return currentTask.getSubTask().getSubTask().getSubTask().getPhase();
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Returns the current task. Return null if there is no current task.
 	 * 

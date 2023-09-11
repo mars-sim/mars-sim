@@ -657,8 +657,25 @@ public class BuildingManager implements Serializable {
 	 * @param type ScienceType
 	 * @return list of buildings
 	 */
-	public Set<Building>getBuildingsWithScienceType(ScienceType type) {
-		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toSet());
+	public Set<Building>getBuildingsWithScienceType(Person person, ScienceType type) {
+//		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toSet());
+		
+		if (person.getBuildingLocation() != null) {
+			return buildings
+					.stream()
+					.filter(b -> b.hasSpecialty(type)
+							&& b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		
+		return buildings
+				.stream()
+				.filter(b -> b.hasSpecialty(type)
+						&& b.getZone() == 0
+						&& !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toSet());		
+		
 	}
 
 	/**
@@ -675,9 +692,8 @@ public class BuildingManager implements Serializable {
 			Set<Building> buildings = null;
 
 			if (study != null) {
-				ScienceType science = study.getScience();
-
-				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);
+				buildings = person.getSettlement().getBuildingManager()
+						.getBuildingsWithScienceType(person, study.getScience());
 			}
 
 			if (buildings == null || buildings.isEmpty()) {
@@ -2362,27 +2378,37 @@ public class BuildingManager implements Serializable {
 	 * @return an available space or null if none found.
 	 */
 	public static Building getAvailableFunctionTypeBuilding(Person person, FunctionType functionType) {
-		Building result = null;
-
+	
 		// If person is in a settlement, try to find a building of functionType
 		if (person.isInSettlement()) {
-
-			Set<Building> bldgs0 = person.getSettlement().getBuildingManager().getBuildingSet(functionType)
-							.stream()
-							.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
-									&& !b.getMalfunctionManager().hasMalfunction())
-							.collect(Collectors.toSet());
-
+			
+			Set<Building> bldgs0 = null;
+					
+			if (person.getBuildingLocation() != null) {
+				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				bldgs0 = person.getSettlement().getBuildingManager().getBuildings(functionType)
+						.stream()
+						.filter(b -> b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
+			
 			Set<Building> bldgs1 = getLeastCrowdedBuildings(bldgs0);
 
-			if (bldgs1.isEmpty()) {
-				return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs0));
+			if (!bldgs1.isEmpty()) {
+				return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs1));
 			}
 			
 			return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, bldgs0));
 		}
-
-		return result;
+		
+		return null;
 	}
 
 	/**
