@@ -211,15 +211,15 @@ public class MasterClock implements Serializable {
 		// Re-evaluate the optimal width of a pulse
 		if (desiredTR > HIGH_TIME_RATIO) {
 			referencePulse = minMilliSolPerPulse 
-				+ 2 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
+				+ ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
 		else if (desiredTR > MID_TIME_RATIO) {
 			referencePulse = minMilliSolPerPulse 
-				+ 3 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
+				+ 2 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
 		else {
 			referencePulse = minMilliSolPerPulse 
-				+ 4 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
+				+ 3 * ((maxMilliSolPerPulse / 4 - minMilliSolPerPulse) * desiredTR * desiredTR / HIGH_TIME_RATIO / HIGH_TIME_RATIO);
 		}
 		
 		optMilliSolPerPulse = referencePulse;

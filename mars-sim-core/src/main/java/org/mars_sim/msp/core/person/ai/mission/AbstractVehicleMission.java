@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -675,29 +676,22 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Note: randomly select this member to load resources for the rover
 				// This allows person to do other important things such as eating
 				&& RandomUtil.lessThanRandPercent(75)) {
-				
-				if (member.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) member;
-
-					boolean hasAnotherMission = false;
-					Mission m = person.getMission();
-					if (m != null && m != this)
-						hasAnotherMission = true;
-					
-					if (!hasAnotherMission) {
-						
-//						if (settlement.getBuildingManager().addToGarage(vehicle)) {
-//							assignTask(person, new LoadVehicleGarage(person, this));
-//						} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-//							assignTask(person, new LoadVehicleEVA(person, this));
-//						}
-						
-						TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
-						if (job != null) {
-							person.getMind().getTaskManager().addPendingTask(job, false);
-						}
-					}
-				}
+								
+				TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+		        if (job != null) {
+		            Task task = null;
+		            // Create the Task ready for assignment
+		            if (member instanceof Person p) {
+		                task = job.createTask(p);
+		                // Task may be rejected because of the Worker's profile
+		                assignTask(p, task);
+		            }
+		            else if (member instanceof Robot r && v.isInAGarage()) {
+		                task = job.createTask(r);
+		                // Task may be rejected because of the Worker's profile
+		                assignTask(r, task);
+		            }
+		        }
 			}
 		}
 		else {

@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -409,29 +410,25 @@ public class EmergencySupply extends RoverMission {
 			// Random chance of having person load (this allows person to do other things
 			// sometimes)
 			if (member.isInSettlement() && RandomUtil.lessThanRandPercent(50)) {
-				
-				TaskJob job = LoadVehicleMeta.createLoadJob(this, emergencySettlement);
-				
-				if (member instanceof Person person) {
-					
-					if (job != null) {
-						person.getMind().getTaskManager().addPendingTask(job, false);
-					}
-//					if (isInAGarage()) {
-//						assignTask(person, new LoadVehicleGarage(person, this));
-//					} else if (!EVAOperation.isGettingDark(person) && person.isNominallyFit()) {
-//						assignTask(person, new LoadVehicleEVA(person, this));
-//					}
-				}
-				else if (member instanceof Robot robot && isInAGarage()) {
 
-					if (job != null) {
-						robot.getBotMind().getBotTaskManager().addPendingTask(job, false);
-					}
-//					assignTask(robot, new LoadVehicleGarage(robot, this));
-				}
+				TaskJob job = LoadVehicleMeta.createLoadJob(this, emergencySettlement);
+		        if (job != null) {
+		            Task task = null;
+		            // Create the Task ready for assignment
+		            if (member instanceof Person p) {
+		                task = job.createTask(p);
+		                // Task may be rejected because of the Worker's profile
+		                assignTask(p, task);
+		            }
+		            else if (member instanceof Robot r && isInAGarage()) {
+		                task = job.createTask(r);
+		                // Task may be rejected because of the Worker's profile
+		                assignTask(r, task);
+		            }
+		        }
 			}
-		} else {
+		} 
+		else {
 			setPhaseEnded(true);
 		}
 	}
