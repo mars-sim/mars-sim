@@ -283,7 +283,7 @@ public class PersonUnitWindow extends UnitWindow {
 		}
 
 		ShiftSlot newShiftType = person.getShiftSlot();
-		String shiftDesc = TabPanelSchedule.getShiftDescription(newShiftType);
+		String shiftDesc = TabPanelSchedule.getShiftNote(newShiftType);
 		shiftLabel.setText(TWO_SPACES + newShiftType.getShift().getName());
 		shiftLabel.setToolTipText(shiftDesc);
 	}

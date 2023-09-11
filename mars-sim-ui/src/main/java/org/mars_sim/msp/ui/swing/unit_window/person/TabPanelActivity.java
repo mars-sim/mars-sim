@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelActivity.java
- * @date 2022-07-09
+ * @date 2023-09-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -50,10 +50,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private String taskTextCache = "";
 	/** current phase text cache */
 	private String taskPhaseCache = "";
-	/** sub task 1 text cache */
+	/** sub task text cache */
 	private String subTaskTextCache = "";
-	/** sub phase 1 text cache */
+	/** sub phase text cache */
 	private String subTaskPhaseCache = "";
+	/** sub task 1 text cache */
+	private String subTask1TextCache = "";
+	/** sub phase 1 text cache */
+	private String subTask1PhaseCache = "";
 	/** sub task 2 text cache */
 	private String subTask2TextCache = "";
 	/** sub phase 2 text cache */
@@ -70,6 +74,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private JLabel subTaskTextArea;
 	private JLabel subTaskPhaseArea;
 
+	private JLabel subTask1TextArea;
+	private JLabel subTask1PhaseArea;
+	
 	private JLabel subTask2TextArea;
 	private JLabel subTask2PhaseArea;
 
@@ -106,22 +113,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		content.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare activity panel
-		AttributePanel activityPanel = new AttributePanel(8);
-		topPanel.add(activityPanel, BorderLayout.CENTER);
-
-		// Prepare task labels. Create empty and then update
-		taskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.task"), "", null); //$NON-NLS-1$
-		taskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.taskPhase"), "", null); //$NON-NLS-1$
-		subTaskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask"), "", null); //$NON-NLS-1$
-		subTaskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTaskPhase"), "", null); //$NON-NLS-1$
-		subTask2TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2"), "", null); //$NON-NLS-1$
-		subTask2PhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2Phase"), "", null); //$NON-NLS-1$
-		missionTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.missionDesc"), "", null); //$NON-NLS-1$
-		missionPhaseTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.missionPhase"), "", null); //$NON-NLS-1$
+		AttributePanel missionPanel = new AttributePanel(2);
+		addBorder(missionPanel, "Mission");
+		topPanel.add(missionPanel, BorderLayout.NORTH);
+		
+		missionTextArea = missionPanel.addTextField(Msg.getString("TabPanelActivity.missionDesc"), "", null); //$NON-NLS-1$
+		missionPhaseTextArea = missionPanel.addTextField(Msg.getString("TabPanelActivity.missionPhase"), "", null); //$NON-NLS-1$
 
 		// Prepare mission button panel.
 		JPanel missionButtonPanel = new JPanel(new FlowLayout());
-		topPanel.add(missionButtonPanel, BorderLayout.SOUTH);
+		topPanel.add(missionButtonPanel, BorderLayout.CENTER);
 
 		// Prepare mission tool button.
 		missionButton = new JButton(ImageLoader.getIconByName(MissionWindow.ICON)); //$NON-NLS-1$
@@ -136,6 +137,21 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
 		monitorButton.addActionListener(this);
 		missionButtonPanel.add(monitorButton);
+		
+		// Prepare activity panel
+		AttributePanel activityPanel = new AttributePanel(8);
+		addBorder(activityPanel, "Task");
+		topPanel.add(activityPanel, BorderLayout.SOUTH);
+
+		// Prepare task labels. Create empty and then update
+		taskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.task"), "", null); //$NON-NLS-1$
+		taskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.taskPhase"), "", null); //$NON-NLS-1$
+		subTaskTextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask"), "", null); //$NON-NLS-1$
+		subTaskPhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTaskPhase"), "", null); //$NON-NLS-1$
+		subTask1TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask1"), "", null); //$NON-NLS-1$
+		subTask1PhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask1Phase"), "", null); //$NON-NLS-1$
+		subTask2TextArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2"), "", null); //$NON-NLS-1$
+		subTask2PhaseArea = activityPanel.addTextField(Msg.getString("TabPanelActivity.subTask2Phase"), "", null); //$NON-NLS-1$
 
 		update();
 	}
@@ -153,7 +169,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		String newTaskPhase = "";
 
 		String newSubTaskPhase = "";
-
+		String newSubTask1Phase = "";
 		String newSubTask2Phase = "";
 
 		String newMissionText = "";
@@ -161,22 +177,29 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		String newTaskText = taskManager.getTaskDescription(false);
 		String newSubTaskText = taskManager.getSubTaskDescription();
+		String newSubTask1Text = taskManager.getSubTask1Description();
 		String newSubTask2Text = taskManager.getSubTask2Description();
-
+		
 		TaskPhase taskPhase = taskManager.getPhase();
 		TaskPhase subTaskPhase = taskManager.getSubTaskPhase();
+		TaskPhase subTask1Phase = taskManager.getSubTask1Phase();
 		TaskPhase subTask2Phase = taskManager.getSubTask2Phase();
-
+		
 		if (taskPhase != null) {
 			newTaskPhase = taskPhase.getName();
 		} 
 		if (subTaskPhase != null) {
 			newSubTaskPhase = subTaskPhase.getName();
 		} 
+		if (subTask1Phase != null) {
+			newSubTask1Phase = subTask1Phase.getName();
+		} 
 		if (subTask2Phase != null) {
 			newSubTask2Phase = subTask2Phase.getName();
 		} 
-
+		
+		///////
+		
 		if (!taskTextCache.equals(newTaskText)) {
 			taskTextCache = newTaskText;
 			updateLabel(taskTextArea, newTaskText);
@@ -190,6 +213,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			updateLabel(taskPhaseArea, newTaskPhase);
 		}
 
+		///////
 
 		if (!subTaskTextCache.equals(newSubTaskText)) {
 			subTaskTextCache = newSubTaskText;
@@ -204,6 +228,23 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			updateLabel(subTaskPhaseArea, newSubTaskPhase);
 		}
 
+		///////
+		
+		if (!subTask1TextCache.equals(newSubTask1Text)) {
+			subTask1TextCache = newSubTask1Text;
+			updateLabel(subTask1TextArea, newSubTask1Text);
+		}
+
+		if (subTask1TextCache.equals(""))
+			updateLabel(subTask1PhaseArea, "");
+
+		else if (!subTask1PhaseCache.equals(newSubTask1Phase)) {
+			subTask1PhaseCache = newSubTask1Phase;
+			updateLabel(subTask1PhaseArea, newSubTask1Phase);
+		}
+		
+		///////
+		
 		if (!subTask2TextCache.equals(newSubTask2Text)) {
 			subTask2TextCache = newSubTask2Text;
 			updateLabel(subTask2TextArea, newSubTask2Text);

@@ -192,7 +192,7 @@ public class DeathInfo implements Serializable {
 		
 		subTask2 = taskMgr.getSubTask2Name();
 
-		subTask2Phase = taskMgr.getSubTask2Description();
+		subTask2Phase = taskMgr.getSubTask1Description();
 
 		Mission mm = mind.getMission();
 		if (mm != null) {

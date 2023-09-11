@@ -659,7 +659,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// thus allowing person to do other urgent things
 //			for (Worker mm : getMembers()) {
 				if (RandomUtil.lessThanRandPercent(50)) {
-					unloadCargo(p, rover);
+					unloadCargo(member, rover);
 				}
 //			}
 		}
@@ -685,17 +685,31 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 *
 	 * @param p
 	 * @param rover
+	 * @return
 	 */
-	private void unloadCargo(Person person, Rover rover) {
+	private boolean unloadCargo(Worker worker, Rover rover) {
 
-		Mission m = person.getMission();
-		if (m != null && !m.equals(this))
-			return;
+//		Mission m = worker.getMission();
+//		if (m != null && !m.equals(this))
+//			return;
 
-		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getAssociatedSettlement(), rover);
-		if (job != null) {
-			person.getMind().getTaskManager().addPendingTask(job, false);
+		TaskJob job = UnloadVehicleMeta.createUnloadJob(worker.getAssociatedSettlement(), rover);
+		boolean assigned = false;
+        if (job != null) {
+            Task task = null;
+            // Create the Task ready for assignment
+            if (worker instanceof Person p) {
+                task = job.createTask(p);
+                // Task may be rejected because of the Worker's profile
+                assigned = assignTask(p, task);
+            }
+            else if (worker instanceof Robot r && isInAGarage()) {
+                task = job.createTask(r);
+                // Task may be rejected because of the Worker's profile
+                assigned = assignTask(r, task);
+            }
 		}
+        return assigned;
 	}
 
 	/**

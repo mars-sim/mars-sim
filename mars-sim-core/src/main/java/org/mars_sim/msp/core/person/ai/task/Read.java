@@ -109,8 +109,8 @@ public class Read extends Task {
 
 			else if (person.isInVehicle()) {
 				// If person is in rover, walk to passenger activity spot.
-				if (person.getVehicle() instanceof Rover) {
-					walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+				if (person.getVehicle() instanceof Rover rover) {
+					walkToPassengerActivitySpotInRover(rover, true);
 				} else {
 					// Walk to random location.
 					walkToRandomLocation(true);
