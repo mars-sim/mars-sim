@@ -104,7 +104,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
 		            	// Check if a person has a designated bed
 		                Building quarters = person.getQuarters();    
 		                if (quarters == null) {
-		                	quarters = LivingAccommodations.getBestAvailableQuarters(person, true);
+		                	quarters = LivingAccommodations.getBestAvailableQuarters(person, true, true);
 		
 			            	if (quarters == null) {
 			            		result *= RandomUtil.getRandomDouble(0.8);

@@ -2232,11 +2232,27 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Gets a computing node for having the worst entropy by probability.
 	 * 
+	 * @param person
 	 * @return
 	 */
-	public Computation getWorstEntropyComputingNodeByProbability() {
+	public Computation getWorstEntropyComputingNodeByProbability(Person person) {
 		Map<Computation, Double> scores = new HashMap<>();
 		Set<Building> nodeBldgs = getBuildingSet(FunctionType.COMPUTATION);
+		if (person.getBuildingLocation() != null) {
+			nodeBldgs = nodeBldgs
+					.stream()
+					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());
+		}
+		else {
+			nodeBldgs = nodeBldgs
+					.stream()
+					.filter(b -> b.getZone() == 0
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toSet());		
+		}
+				
 		if (nodeBldgs.isEmpty())
 			return null;
 		for (Building b: nodeBldgs) {

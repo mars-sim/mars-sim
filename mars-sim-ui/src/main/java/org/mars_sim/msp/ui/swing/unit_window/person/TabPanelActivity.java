@@ -167,7 +167,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		Mission mission = worker.getMission();
 
 		String newTaskPhase = "";
-
 		String newSubTaskPhase = "";
 		String newSubTask1Phase = "";
 		String newSubTask2Phase = "";

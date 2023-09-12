@@ -237,7 +237,7 @@ public class Sleep extends Task {
 		
 		//////////////////// Case 1 - 3 /////////////////////////
 
-		Building q0 = LivingAccommodations.getBestAvailableQuarters(person, true);
+		Building q0 = LivingAccommodations.getBestAvailableQuarters(person, true, false);
 
 		if (q0 != null) {
 			// Case 1 : (the BEST case for a guest) unmarked, empty (UE) bed(s)
@@ -249,7 +249,7 @@ public class Sleep extends Task {
 		else { 
 			// There is no unmarked/guest bed
 
-			q0 = LivingAccommodations.getBestAvailableQuarters(person, false);
+			q0 = LivingAccommodations.getBestAvailableQuarters(person, false, false);
 
 			if (q0 != null) {
 				// Case 2 : marked, empty (ME) bed(s)
@@ -292,7 +292,7 @@ public class Sleep extends Task {
 	private void lookTobeAssignedABed() {
 		
 		// Case 7: unmarked, empty (UE) bed
-		Building q7 = LivingAccommodations.getBestAvailableQuarters(person, true);
+		Building q7 = LivingAccommodations.getBestAvailableQuarters(person, true, false);
 		
 		if (q7 != null) {
 			// Register this sleeper
@@ -308,7 +308,7 @@ public class Sleep extends Task {
 		
 		else { // no unmarked bed
 
-			q7 = LivingAccommodations.getBestAvailableQuarters(person, false);
+			q7 = LivingAccommodations.getBestAvailableQuarters(person, false, false);
 
 			if (q7 != null)
 				// Case 9: marked, empty (ME)

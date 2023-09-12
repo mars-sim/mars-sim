@@ -917,7 +917,7 @@ public class Settlement extends Structure implements Temporal,
 			
 			for (Person p : citizens) {
 				// Register each settler a quarter/bed
-				Building b = LivingAccommodations.getBestAvailableQuarters(p, true);
+				Building b = LivingAccommodations.getBestAvailableQuarters(p, true, true);
 				if (b != null)
 					b.getLivingAccommodations().registerSleeper(p, false);
 			}
