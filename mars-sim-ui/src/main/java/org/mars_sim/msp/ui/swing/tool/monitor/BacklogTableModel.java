@@ -210,6 +210,11 @@ public class BacklogTableModel extends AbstractTableModel
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		if (tasks.size() <= rowIndex) {
+			// Request is in the middle of an updating
+			return null;
+		}
+
 		SettlementTask selectedTask = tasks.get(rowIndex);
 		switch(columnIndex) {
 			case ENTITY_COL:

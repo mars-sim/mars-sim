@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.data;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,25 +31,45 @@ public class RatingLog {
 	private static final SimLogger logger = SimLogger.getLogger(RatingLog.class.getName());
 
     private static PrintWriter diagnosticFile;
-    private static Set<String> modules = new HashSet<>();
+    private static Map<String,Set<String>> modules = new HashMap<>();
 
     private RatingLog() {
         // Prevent instance creation
     }
+
     /**
-	 * Enable the detailed diagnostics
+	 * Enable the detailed diagnostics according to a diagnostic spec. 
+     * @param spec Ths has the format of a module & optional selector
+     * @param enabled Are the diagnostics enabled for this specification
 	 * @throws FileNotFoundException 
 	 */
-	public static void setDiagnostics(String module, boolean diagnostics) throws FileNotFoundException {
-        module = module.toLowerCase();
-		if (diagnostics) {
-            logger.info("Start Ratings logging for " + module);
-            modules.add(module);
-		}
+	public static void setDiagnostics(String spec, boolean enabled) throws FileNotFoundException {
+        String []parts = spec.toLowerCase().split(":");
+        String module = parts[0];
+
+        // Different logic according if there is a selector to the module
+        if (parts.length == 2) {
+            // Has a selector
+            Set<String> existing = modules.computeIfAbsent(module, m -> new HashSet<>());
+            String selector = parts[1].toLowerCase(); // Selector always converted to lower case
+            if (enabled) {
+                existing.add(selector); 
+            }
+            else {
+                existing.remove(selector);
+            }
+        }
+        // Process just on a module wildcard
+        else if (enabled) {
+            // No selector so add a catch all new Set
+            modules.put(module, new HashSet<>());
+        }
         else {
-            logger.info("Stop Ratings logging for " + module);
+            // No selector so remove everything
             modules.remove(module);
         }
+
+        logger.info((enabled ? "Start" : "Stop") + " Ratings logging for " + spec);
 
         // Decide on action
         if (!modules.isEmpty() && (diagnosticFile == null)) {
@@ -71,7 +93,13 @@ public class RatingLog {
      */
     public static void logSelectedRating(String module, String selector,
                         Rating selected, List<? extends Rating> options) {
-        if (modules.contains(module)) {
+        Set<String> selectors = modules.get(module);
+
+        // Active if this module has selectors and the selectors are emtpy meaning match on module
+        // or selectors are not empty and the selector has to be present
+        if ((selectors != null) && (selectors.isEmpty()
+                            || selectors.contains(selector.toLowerCase()))) {
+
             StringBuilder output = new StringBuilder();
             output.append("{\"time\":\"")
                         .append(History.getMarsTime().getDateTimeStamp())
@@ -129,4 +157,3 @@ public class RatingLog {
         return output.toString();
     }
 }
- 
