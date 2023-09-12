@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.util.RandomUtil;
@@ -70,7 +71,7 @@ public class LivingAccommodations extends Function {
 	private SolSingleMetricDataLogger greyWaterGen;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param building the building this function is for.
 	 * @param spec Details of the Living details
@@ -424,17 +425,31 @@ public class LivingAccommodations extends Function {
 	 * available.
 	 *
 	 * @param person   the person
-	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
-	 *                 not.
+	 * @param unmarked does the person wants an unmarked(aka undesignated) bed ?
+	 * @param sameZone must be in the same zone. True if it's optional to be in the same zone.                
 	 * @return a building with available bed(s)
 	 */
-	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
+	public static Building getBestAvailableQuarters(Person person, boolean unmarked, boolean sameZone) {
 
 		Building result = null;
 
 		if (person.isInSettlement()) {
 			Set<Building> set0 = person.getSettlement().getBuildingManager()
 					.getBuildingSet(FunctionType.LIVING_ACCOMMODATIONS);
+
+			if (sameZone && person.getBuildingLocation() != null) {
+				set0 = set0
+						.stream()
+						.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else if (!sameZone) {
+				set0 = set0
+						.stream()
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
 			
 			Set<Building> set1 = BuildingManager.getNonMalfunctioningBuildings(set0);
 			if (!set1.isEmpty()) {
