@@ -250,7 +250,7 @@ public class PersonTaskManager extends TaskManager {
 				
 				if (newTask == null) {
 					// Note: need to track how some TaskJob has been done and no longer available.
-					logger.info(person, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+					logger.info(person, "'" + pending.getName() + "' was no longer needed and should be removed.");
 					
 					removePendingTask(pending);
 					

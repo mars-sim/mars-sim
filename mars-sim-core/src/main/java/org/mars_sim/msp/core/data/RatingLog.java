@@ -81,15 +81,20 @@ public class RatingLog {
                         .append(selector)
                         .append("\",\"selected\":\"")
                         .append(selected.getName())
-                        .append("\",\"options\":[");
+                        .append("\"");
+            
+            if (!options.isEmpty()) {
+                // Output each output
+                output.append(",\"options\":[");
 
-            // Output each output
-            output.append(options.stream()
-                .map(entry -> "{\"rated\":\"" + entry.getName() + "\",\"rating\":"
-                             + ratingToJsonLines(entry.getScore()) + "}")
-                            .collect(Collectors.joining(",")));
+                output.append(options.stream()
+                    .map(entry -> "{\"rated\":\"" + entry.getName() + "\",\"rating\":"
+                                + ratingToJsonLines(entry.getScore()) + "}")
+                                .collect(Collectors.joining(",")));
 
-            output.append("]}");
+                output.append(']');
+            }
+            output.append('}');
 
             // Must be thread safe
             synchronized(diagnosticFile) {
@@ -105,14 +110,23 @@ public class RatingLog {
      * @return JSONLines fragment
      */
     private static String ratingToJsonLines(RatingScore r) {
-        return "{\"score\":" + SCORE_FORMAT.format(r.getScore())
-                + ",\"base\":" + SCORE_FORMAT.format(r.getBase())
-                + ",\"modifiers\":{"
-                + r.getModifiers().entrySet().stream()
+        StringBuilder output = new StringBuilder();
+
+        output.append("{\"score\":").append(SCORE_FORMAT.format(r.getScore()))
+                .append(",\"base\":").append(SCORE_FORMAT.format(r.getBase()));
+
+        var modifiers = r.getModifiers();     
+        if (!modifiers.isEmpty()) {
+            output.append(",\"modifiers\":{");
+            output.append(modifiers.entrySet().stream()
                             .map(entry -> "\"" + entry.getKey() + "\":"
                                         + SCORE_FORMAT.format(entry.getValue()))
-                            .collect(Collectors.joining(","))
-                + "}}";
+                            .collect(Collectors.joining(",")));
+            output.append('}');
+        };
+        output.append('}');
+
+        return output.toString();
     }
 }
  

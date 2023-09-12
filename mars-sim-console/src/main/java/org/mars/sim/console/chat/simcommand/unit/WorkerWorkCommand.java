@@ -57,7 +57,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			response.appendTableHeading("Pending Task", 45, 
 							"P Score", 9);
 			for (TaskJob item : pending) {
-				response.appendTableRow(item.getDescription(), item.getScore());
+				response.appendTableRow(item.getName(), item.getScore());
 			}
 			response.appendBlankLine();
 		}
@@ -75,21 +75,21 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			}
 
 			double sum = tasks.getTotal();
-			response.appendTableHeading("Potential Task", 45, 
-										"P Score", 9,
-										"P %", 6);
+			response.appendTableHeading("Potential Task", CommandHelper.TASK_WIDTH, "P %", 6,
+										"P Score", 20);
 
 			// Display the last selected as 1st entry
 			TaskJob lastSelected = tasks.getLastSelected();
 			if (lastSelected != null) {
-				response.appendTableRow(lastSelected.getDescription(), 
-										lastSelected.getScore(), "active");
+				response.appendTableRow(lastSelected.getName(), "active",
+										lastSelected.getScore().getOutput());
 			}
 			// Jobs in the cache
 			for (TaskJob item : tasks.getTasks()) {
-				response.appendTableRow(item.getDescription(), 
-										item.getScore(),
-										String.format(CommandHelper.PERC1_FORMAT, (100D * item.getScore())/sum)
+				response.appendTableRow(item.getName(), 
+										String.format(CommandHelper.PERC1_FORMAT,
+													(100D * item.getScore().getScore())/sum),
+										item.getScore().getOutput()
 										);
 			}
 		}		

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars.sim.tools.Msg;
@@ -219,11 +218,11 @@ public class BacklogTableModel extends AbstractTableModel
 					return des.getName();
 				return null;
 			case DESC_COL:
-				return selectedTask.getDescription();
+				return selectedTask.getName();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
-				return selectedTask.getScore();
+				return selectedTask.getScore().getScore();
 			default:
 				return null;
 		}

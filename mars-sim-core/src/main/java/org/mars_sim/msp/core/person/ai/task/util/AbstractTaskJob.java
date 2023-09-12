@@ -6,37 +6,47 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
- * Abstract implement of a Task Job just holding the description & score.
+ * Abstract implement of a Task Job just holding the name & score.
  */
 public abstract class AbstractTaskJob implements TaskJob {
 
 	private static final long serialVersionUID = 1L;
 	
 	private static final double CAP = 1000D;
-    private double score;
-    private String description;
+    private RatingScore score;
+    private String name;
 
+    /**
+     * Create an abstract task job using the old simple scoring approach. 
+     * THis should be replace with the RatingScore approach.
+     * @param description
+     * @param score
+     * deprecated Use {@link #AbstractTaskJob(String, RatingScore)}
+     */
     protected AbstractTaskJob(String description, double score) {
-    	this.description = description;
+        this(description, new RatingScore(score));
+    }
+
+    protected AbstractTaskJob(String name, RatingScore score) {
+    	this.name = name;
   
-        if (score > CAP) {
-            score = CAP;
-        }
         this.score = score;
+        this.score.applyRange(0, CAP);
     }
 
     @Override
-    public double getScore() {
+    public RatingScore getScore() {
         return score;
     }
 
     @Override
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }  
 
     /**
@@ -44,7 +54,7 @@ public abstract class AbstractTaskJob implements TaskJob {
      */
     @Override
     public Task createTask(Robot robot) {
-        throw new UnsupportedOperationException("Robots cannot do " + description);
+        throw new UnsupportedOperationException("Robots cannot do " + name);
     }
 
     /**
@@ -55,23 +65,11 @@ public abstract class AbstractTaskJob implements TaskJob {
      */
     @Override
     public Task createTask(Person person) {
-        throw new UnsupportedOperationException("Persons cannot do " + description);
-    }
-    
-    /**
-	 * Default implementation throws an Unsupported operation exception.
-	 * 
-	 * @param person the person to perform the task.
-	 * @param duration
-	 * @return task instance.
-	 */
-    public Task createTask(Person person, int duration) {
-        throw new UnsupportedOperationException("Persons cannot do " + description);
+        throw new UnsupportedOperationException("Persons cannot do " + name);
     }
     
     @Override
     public String toString() {
-        return getDescription();
+        return name;
     }
-
 }

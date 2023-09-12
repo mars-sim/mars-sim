@@ -238,7 +238,7 @@ public class BotTaskManager extends TaskManager {
 
 				if (newTask == null) {
 					// Note: need to track how some TaskJob has been done and no longer available.
-					logger.info(robot, "'" + pending.getDescription() + "' was no longer needed and should be removed.");
+					logger.info(robot, "'" + pending.getName() + "' was no longer needed and should be removed.");
 					
 					// Next, go to super.startNewTask() to find a new task
 				}

@@ -43,13 +43,13 @@ public class TaskCache {
      */
 	public void put(TaskJob job) {
 		tasks.add(job);
-		totalProb += job.getScore();
+		totalProb += job.getScore().getScore();
 	}
 
     public void add(List<TaskJob> jobs) {
         for(TaskJob j : jobs) {
             tasks.add(j);
-            totalProb += j.getScore(); 
+            totalProb += j.getScore().getScore(); 
         }
     }
 
@@ -100,13 +100,13 @@ public class TaskCache {
         double r = RandomUtil.getRandomDouble(totalProb);
         // Determine which task is selected.
         for (TaskJob entry: tasks) {
-            double probWeight = entry.getScore();
+            double probWeight = entry.getScore().getScore();
             if (r <= probWeight) {
                 // THis is a transient cache so remove the selected entry
                 if (createdOn != null) {
                     lastSelected = entry;
                     tasks.remove(entry);
-                    totalProb -= entry.getScore();
+                    totalProb -= probWeight;
                 }
                 return entry;
             }

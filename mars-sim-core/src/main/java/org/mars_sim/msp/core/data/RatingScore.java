@@ -35,15 +35,26 @@ public class RatingScore implements Serializable {
         };
     };
 
-    private Map<String,Double> modifiers = new HashMap<>();
+    private Map<String,Double> modifiers;
     private double score = -1;
     private double base;
 
     public RatingScore(double base) {
         this.base = base;
         this.score = base;
+        this.modifiers = new HashMap<>();
     }
  
+    /**
+     * This is a copy constrcutor that takes a private copy of the modifiers.
+     * @param source Source of the copy
+     */
+    public RatingScore(RatingScore source) {
+        this.base = source.base;
+        this.score = source.score;
+        this.modifiers = new HashMap<>(source.modifiers);
+    }
+
     /**
      * Get the score for this rating.
      * @return

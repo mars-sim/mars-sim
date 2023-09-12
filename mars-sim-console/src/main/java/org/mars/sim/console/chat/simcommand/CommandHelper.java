@@ -57,7 +57,7 @@ public class CommandHelper {
 	// Width of a Role value
 	public static final int ROLE_WIDTH = 33;
 	// Width of a Task value
-	public static final int TASK_WIDTH = 30;
+	public static final int TASK_WIDTH = 35;
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
 	// Width of a truncated timestamp 

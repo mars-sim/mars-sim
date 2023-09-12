@@ -19,14 +19,19 @@ public class BasicTaskJob extends AbstractTaskJob {
     // MetaTask cannot be serialised
     private transient FactoryMetaTask mt;
     private String mtID;
-    private int duration;
 
+    /**
+     * Create a basic implemmation of a TaskJob that references a MetaTask as the generator
+     * of the actual Task.
+     * @param metaTask Creator of the Task
+     * @param score The score of the activity
+     * @param duration Not used
+     */
     public BasicTaskJob(FactoryMetaTask metaTask, double score, int duration) {
         super(metaTask.getName(), score);
         
         this.mtID = metaTask.getID();
         this.mt = metaTask;
-        this.duration = duration;
     }
 
     /**
@@ -43,15 +48,6 @@ public class BasicTaskJob extends AbstractTaskJob {
     @Override
     public Task createTask(Person person) {
     	return getMeta().constructInstance(person);
-    }
-
-    @Override
-    public Task createTask(Person person, int duration) {
-    	if (duration == -1) {
-    		return getMeta().constructInstance(person);
-    	}
-    	
-    	return getMeta().constructInstance(person, duration);
     }
     
     @Override
