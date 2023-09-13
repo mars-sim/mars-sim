@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
@@ -95,8 +96,8 @@ public class Weather implements Serializable, Temporal {
 	
 	private Map<Coordinates, SunData> sunDataMap;
 	
-//	private final ReentrantLock tempLock = new ReentrantLock();
-//	private final ReentrantLock pressureLock = new ReentrantLock();
+	private final ReentrantLock tempLock = new ReentrantLock(true);
+	private final ReentrantLock pressureLock = new ReentrantLock(true);
 	
 	private OrbitInfo orbitInfo;
 	private MasterClock clock;
@@ -371,7 +372,7 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap = new HashMap<>();
 		}
 
-//		pressureLock.lock();
+		pressureLock.lock();
 		
 		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 1) {
 			newP = calculateAirPressure(location, 0);
@@ -387,7 +388,7 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap.put(location, newP);
 		}
 		
-//		pressureLock.unlock();
+		pressureLock.unlock();
 		
 		return newP;
 	}
@@ -441,7 +442,7 @@ public class Weather implements Serializable, Temporal {
 			temperatureCacheMap = new HashMap<>();
 		}
 	
-//		tempLock.lock();
+		tempLock.lock();
 		
 		if (clock.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
 			newT = calculateTemperature(location);
@@ -457,7 +458,7 @@ public class Weather implements Serializable, Temporal {
 			temperatureCacheMap.put(location, newT);
 		}
 		
-//		tempLock.unlock();
+		tempLock.unlock();
 
 		return newT;
 	}
