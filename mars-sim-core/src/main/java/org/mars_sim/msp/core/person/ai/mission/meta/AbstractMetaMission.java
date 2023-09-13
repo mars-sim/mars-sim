@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -74,8 +74,8 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
-		return Rating.ZERO_RATING;
+	public RatingScore getProbability(Person person) {
+		return RatingScore.ZERO_RATING;
 	}
 
 	@Override

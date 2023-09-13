@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
@@ -43,9 +43,9 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
+	public RatingScore getProbability(Person person) {
 
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		Settlement settlement = person.getAssociatedSettlement();
 		
@@ -86,18 +86,18 @@ public class TradeMeta extends AbstractMetaMission {
 		return missionProbability;
 	}
 
-	private Rating getSettlementProbability(Settlement settlement) {
+	private RatingScore getSettlementProbability(Settlement settlement) {
 		
 		// Check for the best trade settlement within range.			
 		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 		if (rover == null) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}
 		GoodsManager gManager = settlement.getGoodsManager();
 
 		Deal deal = gManager.getBestDeal(MissionType.TRADE, rover);
 		if (deal == null) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}	
 
 		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
@@ -105,15 +105,15 @@ public class TradeMeta extends AbstractMetaMission {
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}			
 		else if (numThisMission > 1)
-			return Rating.ZERO_RATING;	
+			return RatingScore.ZERO_RATING;	
 
 		double tradeProfit = deal.getProfit();
 
 		// Trade value modifier.
-		Rating missionProbability = new Rating(tradeProfit / 1000D * gManager.getTradeFactor());
+		RatingScore missionProbability = new RatingScore(tradeProfit / 1000D * gManager.getTradeFactor());
 		missionProbability.applyRange(0, Trade.MAX_STARTING_PROBABILITY);
 
 

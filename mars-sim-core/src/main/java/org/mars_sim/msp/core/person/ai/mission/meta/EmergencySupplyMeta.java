@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -32,15 +32,15 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
 
-        Rating missionProbability = Rating.ZERO_RATING;
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
 
         if (person.isInSettlement()) {
         		
             Settlement settlement = person.getSettlement();
         	
-            missionProbability = new Rating(EmergencySupply.BASE_STARTING_PROBABILITY);
+            missionProbability = new RatingScore(EmergencySupply.BASE_STARTING_PROBABILITY);
     		
 	        // Determine job modifier.
             missionProbability.addModifier(LEADER, getLeaderSuitability(person));
@@ -53,7 +53,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	                Settlement targetSettlement = EmergencySupply.findSettlementNeedingEmergencySupplies(
 	                        settlement, rover);
 	                if (targetSettlement == null) {
-	                    return Rating.ZERO_RATING;
+	                    return RatingScore.ZERO_RATING;
 	                }
 	            }
 	            
@@ -72,7 +72,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	    	    
 	            // Check if min number of EVA suits at settlement.
 	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
-	    	        return Rating.ZERO_RATING;
+	    	        return RatingScore.ZERO_RATING;
 	    	    }
 	
 	        	missionProbability.addModifier(SETTLEMENT_POPULATION,

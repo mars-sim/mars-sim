@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -37,11 +37,11 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
 
-        Rating missionProbability = Rating.ZERO_RATING;
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
     	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
-    		return Rating.ZERO_RATING;
+    		return RatingScore.ZERO_RATING;
     	}
     	
         if (person.isInSettlement()) {
@@ -52,7 +52,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
             missionProbability = getMissionProbability(settlement, person);
 
     		if (missionProbability.getScore() <= 0) {
-    			return Rating.ZERO_RATING;
+    			return RatingScore.ZERO_RATING;
     		}
     		
 	        // Job modifier.
@@ -71,20 +71,20 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
-    private Rating getMissionProbability(Settlement settlement, Worker member) {
+    private RatingScore getMissionProbability(Settlement settlement, Worker member) {
         
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
         if (vehicle == null) {
-            return Rating.ZERO_RATING;
+            return RatingScore.ZERO_RATING;
         }
 
         Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
                 member, settlement, vehicle.getRange());
 
         if ((desirableSettlements == null) || desirableSettlements.isEmpty()) {
-            return Rating.ZERO_RATING;
+            return RatingScore.ZERO_RATING;
         }
 
         Iterator<Settlement> i = desirableSettlements.keySet().iterator();
@@ -97,7 +97,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         }
 
         // Determine mission probability.
-        Rating missionProbability = new Rating(TravelToSettlement.BASE_MISSION_WEIGHT
+        RatingScore missionProbability = new RatingScore(TravelToSettlement.BASE_MISSION_WEIGHT
                                                 + (topSettlementDesirability / 100D));
         
         missionProbability.addModifier(SETTLEMENT_POPULATION,

@@ -20,12 +20,12 @@ import org.mars_sim.msp.core.logging.DiagnosticsManager;
  * Controls which diagnostics are enabled.
  */
 public class DiagnosticsCommand extends ChatCommand {
-	public final static ChatCommand DIAGNOSTICS = new DiagnosticsCommand();
+	public static final ChatCommand DIAGNOSTICS = new DiagnosticsCommand();
 	
 
 	private DiagnosticsCommand() {
 		super(TopLevel.SIMULATION_GROUP, "dg", "diagnostics", "Change a module diagnostic logging");
-		addRequiredRole(ConversationRole.EXPERT);
+		addRequiredRole(ConversationRole.ADMIN);
 	}
 
 	@Override
@@ -34,12 +34,15 @@ public class DiagnosticsCommand extends ChatCommand {
 		boolean enabled = true;
 		if (input != null) {
 			String []parts = input.split(" ");
-			if (parts.length == 2) {
-				module = parts[0];
-				if (parts[1].equalsIgnoreCase("Y")) {
+			if (parts.length >= 2) {
+				// Stripp of the flag
+				module = input.substring(0, input.length()-2).trim();
+
+				String flag = parts[parts.length-1];
+				if (flag.equalsIgnoreCase("Y")) {
 					enabled = true;
 				}
-				else if (parts[1].equalsIgnoreCase("N")) {
+				else if (flag.equalsIgnoreCase("N")) {
 					enabled = false;
 				}
 				else {
@@ -60,7 +63,7 @@ public class DiagnosticsCommand extends ChatCommand {
 								+ e.getMessage());	
 			}
 		}
-		if (result == false) {
+		if (!result) {
 			printHelp(context);
 		}
 		return result;

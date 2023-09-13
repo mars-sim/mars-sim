@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.FieldStudyMission;
@@ -33,13 +33,13 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
+	public RatingScore getProbability(Person person) {
 
 		if (FieldStudyMission.determineStudy(science, person) == null) {
-			return Rating.ZERO_RATING;
+			return RatingScore.ZERO_RATING;
 		}
 
-	    Rating missionProbability = Rating.ZERO_RATING;
+	    RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 	    if (person.isInSettlement()) {
 	    	Settlement settlement = person.getSettlement();
@@ -55,7 +55,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-				missionProbability = new Rating(1D);
+				missionProbability = new RatingScore(1D);
 				
 				// Get available rover.
 				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);

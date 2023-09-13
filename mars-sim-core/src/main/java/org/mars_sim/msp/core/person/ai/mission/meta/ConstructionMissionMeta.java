@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -41,19 +41,19 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
          
         // No construction until after the x sols of the simulation.
         if ((getMarsTime().getMissionSol() < ConstructionMission.FIRST_AVAILABLE_SOL)
 			|| !person.isInSettlement()) {
-        	return Rating.ZERO_RATING;
+        	return RatingScore.ZERO_RATING;
         }
 	
 		Settlement settlement = person.getSettlement();
 	
 		RoleType roleType = person.getRole().getType();
 		
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.getMind().getJob() == JobType.ARCHITECT
 //					|| RoleType.MISSION_SPECIALIST == roleType
 //					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
@@ -65,12 +65,12 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
 			// Check if settlement has construction override flag set.
 			if (settlement.getProcessOverride(OverrideType.CONSTRUCTION)) {
-				return Rating.ZERO_RATING;
+				return RatingScore.ZERO_RATING;
 			}
 
 			// Check if available light utility vehicles.
 			if (!ConstructionMission.isLUVAvailable(settlement)) {
-				return Rating.ZERO_RATING;
+				return RatingScore.ZERO_RATING;
 			}
 			
 			int availablePeopleNum = 0;
@@ -85,13 +85,13 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 
 			// Check if enough available people at settlement for mission.
 			if (availablePeopleNum < ConstructionMission.MIN_PEOPLE) {
-				return Rating.ZERO_RATING;
+				return RatingScore.ZERO_RATING;
 			}
 			
 			// Check if min number of EVA suits at settlement.
 			if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
 					ConstructionMission.MIN_PEOPLE) {
-				return Rating.ZERO_RATING;
+				return RatingScore.ZERO_RATING;
 			}
 			
 			int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -100,10 +100,10 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			// Add construction profit for existing or new construction sites.
 			double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
 			if (constructionProfit <= 0D) {
-				return Rating.ZERO_RATING;
+				return RatingScore.ZERO_RATING;
 			}
 			
-			missionProbability = new Rating(100D);
+			missionProbability = new RatingScore(100D);
 			missionProbability.addModifier(SETTLEMENT_POPULATION,
 								getSettlementPopModifier(settlement, 8)/2);
 

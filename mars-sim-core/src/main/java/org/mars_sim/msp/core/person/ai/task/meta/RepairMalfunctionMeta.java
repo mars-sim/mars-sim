@@ -8,9 +8,11 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -48,7 +50,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		private boolean eva;
 
 		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
-							 int demand, boolean eva, double score) {
+							 int demand, boolean eva, RatingScore score) {
 			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), entity,
 						score);
 			setDemand(demand);
@@ -132,12 +134,11 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 			EquipmentOwner partStore = person.getVehicle();
 			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
 			for (SettlementTask t: getRepairTasks(source, partStore)) {
-				// Repairs in Vehicles are important so apply constant factor
-				double factor = 3D;
-
 				RepairTaskJob rtj = (RepairTaskJob) t;
+				RatingScore score = new RatingScore(rtj.getScore());
+				score.addModifier("inside", 3D); //Repairs in Vehicles are important
 				tasks.add(new RepairTaskJob(this, rtj.getProblem(), rtj.mal, rtj.getDemand(),
-											rtj.eva, rtj.getScore() * factor));
+											rtj.eva, score));
 			}
 		}
 
@@ -150,7 +151,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
-		return null;
+		return Collections.emptyList();
 	}
 	
 	/**
@@ -256,16 +257,17 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 											MalfunctionRepairWork workType) {    
 		if (!malfunction.isWorkDone(workType)
 				&& (malfunction.numRepairerSlotsEmpty(workType) > 0)) {
-	        double result = WEIGHT * malfunction.getSeverity();
+			RatingScore score = new RatingScore(WEIGHT);
+	        score.addModifier("severity", malfunction.getSeverity());
 	        
 	        if (RepairHelper.hasRepairParts(partsStore, malfunction)) {
-	    		result *= 2;
+	    		score.addModifier("parts", 2);
 	    	}
 		
 			return new RepairTaskJob(this, entity, malfunction,
 									malfunction.numRepairerSlotsEmpty(workType),
 									(workType == MalfunctionRepairWork.EVA),
-									result);
+									score);
 		}
 		return null;
 	}

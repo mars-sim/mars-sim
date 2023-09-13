@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task.util;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.History;
+import org.mars_sim.msp.core.data.RatingLog;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -142,27 +140,6 @@ public abstract class TaskManager implements Serializable {
 
 	/** Number of days to record Tack Activities. */	
 	private static MasterClock master;
-
-	private static PrintWriter diagnosticFile = null;
-
-	/**
-	 * Enables the detailed diagnostics.
-	 * 
-	 * @throws FileNotFoundException 
-	 */
-	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
-		if (diagnostics) {
-			if (diagnosticFile == null) {
-				String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
-				diagnosticFile  = new PrintWriter(filename);
-				logger.config("Diagnostics enabled to " + filename);
-			}
-		}
-		else if (diagnosticFile != null){
-			diagnosticFile.close();
-			diagnosticFile = null;
-		}
-	}
 
 	/**The worker **/
 	protected transient Unit worker;
@@ -520,26 +497,6 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Outputs the cache to a file for diagnostics.
-	 * 
-	 * @param extras Extra details about Task
-	 */
-	private void outputCache(TaskCache current) {	
-		synchronized (diagnosticFile) {	
-			diagnosticFile.println(current.getCreatedOn().getDateTimeStamp());
-			diagnosticFile.println("Worker:" + worker.getName());
-			diagnosticFile.println(current.getContext());				
-			diagnosticFile.println("Total:" + current.getTotal());
-			for (TaskJob task : taskProbCache.getTasks()) {
-				diagnosticFile.println(task.getDescription() + ":" + task.getScore());
-			}
-			
-			diagnosticFile.println();
-			diagnosticFile.flush();
-		}
-	}
-
-	/**
 	 * Records a task onto the schedule.
 	 * 
 	 * @param changed The active task.
@@ -658,14 +615,6 @@ public abstract class TaskManager implements Serializable {
 		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
 				|| (now.getMillisol() != taskProbCache.getCreatedOn().getMillisol())) {
 			taskProbCache = rebuildTaskCache();
-			
-			// Comment out to stop capturing stats
-			//captureStats();
-			
-			// Output shift
-			if (diagnosticFile != null) {
-				outputCache(taskProbCache);
-			}
 		}
 
 		if (taskProbCache.getTasks().isEmpty()) { 
@@ -678,6 +627,9 @@ public abstract class TaskManager implements Serializable {
 
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
+
+			RatingLog.logSelectedRating("task", worker.getName(), selectedJob,
+									taskProbCache.getTasks());
 
 			// Start this newly selected task
 			replaceTask(selectedTask);
@@ -829,9 +781,9 @@ public abstract class TaskManager implements Serializable {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			boolean success = pendingTasks.add(task);
 			if (success) 
-				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getDescription() + "'.");
+				logger.info(worker, 20_000L, "Successfully added pending task '" + task.getName() + "'.");
 			else
-				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getDescription() + "'.");
+				logger.info(worker, 20_000L, "Failed to add pending task '" + task.getName() + "'.");
 			return success;
 		}
 		return false;
@@ -862,9 +814,9 @@ public abstract class TaskManager implements Serializable {
 		if (!pendingTasks.isEmpty() && pendingTasks.contains(taskJob)) {
 			success = pendingTasks.remove(taskJob);
 			if (success)
-				logger.info(worker, "Successfully removed the pending task '" + taskJob.getDescription() + "'.");
+				logger.info(worker, "Successfully removed the pending task '" + taskJob.getName() + "'.");
 			else
-				logger.info(worker, "Failed to remove the pending task '" + taskJob.getDescription() + "'.");
+				logger.info(worker, "Failed to remove the pending task '" + taskJob.getName() + "'.");
 		}
 		return success;
 	}

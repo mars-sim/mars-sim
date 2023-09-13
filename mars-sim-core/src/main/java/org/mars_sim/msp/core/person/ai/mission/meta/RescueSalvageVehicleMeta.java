@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -32,9 +32,9 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
 
-        Rating missionProbability = Rating.ZERO_RATING;
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
 
         if (person.isInSettlement()) {
 
@@ -48,18 +48,18 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                 vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
                         vehicle.getRange());
                 if (vehicle == vehicleTarget)
-                    return Rating.ZERO_RATING;
+                    return RatingScore.ZERO_RATING;
                 else if (vehicleTarget == null)
-                    return Rating.ZERO_RATING;
+                    return RatingScore.ZERO_RATING;
                 else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-                    return Rating.ZERO_RATING;  
+                    return RatingScore.ZERO_RATING;  
                 
-                missionProbability = new Rating(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
+                missionProbability = new RatingScore(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
                 missionProbability.addModifier("stranded", 
                                     RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget));                  
             }
             else {
-                return Rating.ZERO_RATING;
+                return RatingScore.ZERO_RATING;
             }
     
             int min_num = 0;
@@ -72,17 +72,17 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     	    
             // Check if min number of EVA suits at settlement.
             if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
-    	        return Rating.ZERO_RATING;
+    	        return RatingScore.ZERO_RATING;
     	    }
    
             // Check if minimum number of people are available at the settlement.
             if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, min_num)) {
-                return Rating.ZERO_RATING;
+                return RatingScore.ZERO_RATING;
             }
 
             // Check if available backup rover.
             else if (!RoverMission.hasBackupRover(settlement)) {
-                return Rating.ZERO_RATING;
+                return RatingScore.ZERO_RATING;
             }
             
 			missionProbability.addModifier(SETTLEMENT_POPULATION,

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -35,8 +36,8 @@ public class SettlementTaskManager implements Serializable {
         private SettlementTask source;
         private SettlementTaskManager manager;
 
-        SettlementTaskProxy(SettlementTaskManager owner, SettlementTask source, double score) {
-            super(source.getDescription(), score);
+        SettlementTaskProxy(SettlementTaskManager owner, SettlementTask source, RatingScore score) {
+            super(source.getName(), score);
             this.source = source;
             this.manager = owner;
         }
@@ -63,8 +64,6 @@ public class SettlementTaskManager implements Serializable {
             return source.createTask(robot);
         }
     }
-
-//	Can add back private static final SimLogger logger = SimLogger.getLogger(SettlementTaskManager.class.getName())
 
     private Settlement owner;
     private transient List<SettlementTask> tasks;
@@ -134,7 +133,8 @@ public class SettlementTaskManager implements Serializable {
             if (mt.getPreferredRobot().contains(r.getRobotType())) {
                 double factor = mt.getRobotSettlementModifier(st,r);
                 if (factor > 0) {
-                    double score = st.getScore() * factor;
+                    RatingScore score = new RatingScore(st.getScore());
+                    score.addModifier("robot", factor);
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }
@@ -156,7 +156,8 @@ public class SettlementTaskManager implements Serializable {
             SettlementMetaTask mt = st.getMeta();
             double factor = mt.getPersonSettlementModifier(st, p);
             if (factor > 0) {
-                double score = st.getScore() * factor;
+                RatingScore score = new RatingScore(st.getScore());
+                score.addModifier("person", factor);
                 result.add(new SettlementTaskProxy(this, st, score));
             }
         }

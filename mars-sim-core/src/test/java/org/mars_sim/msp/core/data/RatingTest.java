@@ -15,7 +15,7 @@ public class RatingTest extends TestCase {
     private static final double MOD2_VALUE = 0.5D;
 
     public void testAddModifier() {
-        Rating r = new Rating(BASE);
+        RatingScore r = new RatingScore(BASE);
         assertEquals("Only base", BASE, r.getScore());
         assertEquals("Base", BASE, r.getBase());
 
@@ -32,7 +32,7 @@ public class RatingTest extends TestCase {
     }
 
     public void testSetBase() {
-        Rating r = new Rating(BASE);
+        RatingScore r = new RatingScore(BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
         r.setBase(BASE2);

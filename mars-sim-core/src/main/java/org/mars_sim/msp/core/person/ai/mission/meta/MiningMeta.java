@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -36,9 +36,9 @@ public class MiningMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Rating getProbability(Person person) {
+    public RatingScore getProbability(Person person) {
 
-        Rating missionProbability = Rating.ZERO_RATING;
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
 
         if (person.isInSettlement()) {
 
@@ -58,19 +58,19 @@ public class MiningMeta extends AbstractMetaMission {
 
 	            // Check if there are enough bags at the settlement for collecting minerals.
 	            if (settlement.findNumContainersOfType(EquipmentType.LARGE_BAG) < Mining.NUMBER_OF_LARGE_BAGS)
-	            	return Rating.ZERO_RATING;
+	            	return RatingScore.ZERO_RATING;
 
 	            // Check if available light utility vehicles.
 	            //boolean reservableLUV =
 	            if (!Mining.isLUVAvailable(settlement))
-	            	return Rating.ZERO_RATING;
+	            	return RatingScore.ZERO_RATING;
 
 	            // Check if LUV attachment parts available.
 	            //boolean availableAttachmentParts =
 	            if (!Mining.areAvailableAttachmentParts(settlement))
-	            	return Rating.ZERO_RATING;
+	            	return RatingScore.ZERO_RATING;
 
-				missionProbability = new Rating(1D);
+				missionProbability = new RatingScore(1D);
 				missionProbability.addModifier(SETTLEMENT_POPULATION, 
 									getSettlementPopModifier(settlement, 8));
 	

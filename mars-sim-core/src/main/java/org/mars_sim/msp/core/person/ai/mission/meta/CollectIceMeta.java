@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.data.Rating;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
@@ -38,9 +38,9 @@ public class CollectIceMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Rating getProbability(Person person) {
+	public RatingScore getProbability(Person person) {
 
-		Rating missionProbability = Rating.ZERO_RATING;
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		if (person.isInSettlement()) {
 
@@ -59,7 +59,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-				missionProbability = new Rating(1);
+				missionProbability = new RatingScore(1);
 				missionProbability.addModifier(SETTLEMENT_POPULATION,
 										getSettlementPopModifier(settlement, 8));
 				if (missionProbability.getScore() == 0) {
