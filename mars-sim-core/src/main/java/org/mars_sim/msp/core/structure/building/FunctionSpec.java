@@ -16,7 +16,7 @@ import org.mars.sim.mapdata.location.LocalPosition;
  * Represents a specification of a Building Function in a generic fashion
  */
 public class FunctionSpec {
-  // Name  of the standard capacity property
+  // Name of the standard capacity property
   public static final String CAPACITY = "capacity";
   public static final String GUEST_BED = "guest";
 
@@ -89,8 +89,8 @@ public class FunctionSpec {
      */
     public double getDoubleProperty(String propName) {
     	Object value = props.get(propName);
-    	if (value instanceof Double) {
-    		return (Double)value;
+    	if (value instanceof Double v) {
+    		return v;
     	}
     	return Double.parseDouble((String) value);
 	}
@@ -103,8 +103,8 @@ public class FunctionSpec {
      */
     public int getIntegerProperty(String propName) {
     	Object value = props.get(propName);
-    	if (value instanceof Integer) {
-    		return (Integer)value;
+    	if (value instanceof Integer v) {
+    		return v;
     	}
     	return Integer.parseInt((String) value);
     }

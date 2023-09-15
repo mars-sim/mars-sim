@@ -348,7 +348,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				meetBaselineNumEVASuits(settlement, v);
 				
 				// Put the rover outside.
-				BuildingManager.removeFromGarage(v);
+				// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//				BuildingManager.removeFromGarage(v);
 			}
 
 			// Record the start mass right before departing the settlement
@@ -364,7 +365,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			// Marks everyone departed
-			for(Worker m : getMembers()) {
+			for (Worker m : getMembers()) {
 				((Person) m).getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
 		}

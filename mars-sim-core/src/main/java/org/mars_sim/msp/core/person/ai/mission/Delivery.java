@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -385,8 +384,11 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 			// If the rover is in a garage, put the rover outside.
 			Vehicle v = getVehicle();
-			BuildingManager.removeFromGarage(v);
 
+			// Put the rover outside.
+			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//			BuildingManager.removeFromGarage(v);
+				
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {
 				setPhaseEnded(true);

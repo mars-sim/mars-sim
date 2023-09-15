@@ -520,7 +520,8 @@ public class MasterClock implements Serializable {
 				// Reset lastPulseTime
 				lastPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec back to its default time ratio
-				realElapsedMillisec = (long) (lastPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
+				if (lastPulseTime > 0)
+					realElapsedMillisec = (long) (lastPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning(10_000, "Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
 			}
@@ -641,29 +642,29 @@ public class MasterClock implements Serializable {
 			else if (referencePulse / optPulse > 1.05) {
 				double diff = referencePulse - optPulse;
 				optPulse = optPulse + diff / referencePulse / 40;
-				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
+//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			else if (referencePulse / optPulse < .95) {
 				double diff = optPulse - referencePulse;
 				optPulse = optPulse - diff / referencePulse / 40;
-				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
+//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward reference pulse " + Math.round(referencePulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			else if (lastPulse / optPulse > 1.05) {
 				double diff = lastPulse - optPulse;
 				optPulse = optPulse + diff / lastPulse / 40;
-				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+//				logger.config(20_000, "Increasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 			
 			else if (lastPulse / optPulse < .95) {
 				double diff = optPulse - lastPulse;
 				optPulse = optPulse - diff / lastPulse / 40;
-				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
-						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
+//				logger.config(20_000, "Decreasing optimal pulse width " + Math.round(optMilliSolPerPulse * 10_000.0) / 10_000.0
+//						+ " toward " + Math.round(optPulse * 10_000.0) / 10_000.0 + ".");
 			}
 		}
 				

@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -81,6 +82,9 @@ public abstract class Vehicle extends Unit
 	private static final double RANGE_FACTOR = 1.2;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
+    public static final double VEHICLE_CLEARANCE_0 = 1.4;
+    public static final double VEHICLE_CLEARANCE_1 = 2.8;
+    
 	private static final int MAX_NUM_SOLS = 14;
 	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
@@ -390,8 +394,7 @@ public abstract class Vehicle extends Unit
 		Map<Person, LocalPosition> result = null;
 
 		// Record current object-relative crew positions if vehicle is crewable.
-		if (this instanceof Crewable) {
-			Crewable crewable = (Crewable) this;
+		if (this instanceof Crewable crewable) {
 			result = new HashMap<>(crewable.getCrewNum());
 			Iterator<Person> i = crewable.getCrew().iterator();
 			while (i.hasNext()) {
@@ -414,8 +417,7 @@ public abstract class Vehicle extends Unit
 		Map<Robot, LocalPosition> result = null;
 
 		// Record current object-relative crew positions if vehicle is crewable.
-		if (this instanceof Crewable) {
-			Crewable crewable = (Crewable) this;
+		if (this instanceof Crewable crewable) {
 			result = new HashMap<>(crewable.getRobotCrewNum());
 			Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
 			while (i.hasNext()) {
@@ -437,8 +439,8 @@ public abstract class Vehicle extends Unit
 	private void setCrewPositions(Map<Person, LocalPosition> currentCrewPositions) {
 
 		// Only move crew if vehicle is Crewable.
-		if (this instanceof Crewable) {
-			Iterator<Person> i = ((Crewable) this).getCrew().iterator();
+		if (this instanceof Crewable crewable) {
+			Iterator<Person> i = crewable.getCrew().iterator();
 			while (i.hasNext()) {
 				Person crewmember = i.next();
 
@@ -459,8 +461,8 @@ public abstract class Vehicle extends Unit
 	private void setRobotCrewPositions(Map<Robot, LocalPosition> currentRobotCrewPositions) {
 
 		// Only move crew if vehicle is Crewable.
-		if (this instanceof Crewable) {
-			Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
+		if (this instanceof Crewable crewable) {
+			Iterator<Robot> i = crewable.getRobotCrew().iterator();
 			while (i.hasNext()) {
 				Robot robotCrewmember = i.next();
 
@@ -598,10 +600,11 @@ public abstract class Vehicle extends Unit
 			for (Building garageBuilding : settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null) {
-					if (garage.containsVehicle(this)
-						|| (getVehicleType() == VehicleType.DELIVERY_DRONE
-						&& garage.containsFlyer((Flyer)this))) {
-							return true;
+					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
+						return true;
+					}
+					else if (garage.containsVehicle(this)) {
+						return true;
 					}
 				}
 			}
@@ -1284,8 +1287,13 @@ public abstract class Vehicle extends Unit
 		if (settlement != null) {
 			for (Building garageBuilding : settlement.getBuildingManager().getGarages()) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null && garage.containsVehicle(this)) {
-					return garageBuilding;
+				if (garage != null) {
+					if (this instanceof Flyer flyer && garage.containsFlyer(flyer)) {
+						return garageBuilding;
+					}
+					else if (garage.containsVehicle(this)) {
+						return garageBuilding;
+					}
 				}
 			}
 		}
@@ -1415,14 +1423,14 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this vehicle.
-			if ((task instanceof MaintainBuilding)
-				&& this.equals(((MaintainBuilding) task).getEntity())) {
+			if (task instanceof MaintainBuilding t
+				&& this.equals(t.getEntity())) {
 				people.add(person);
 			}
 
 			// Add all people repairing this vehicle.
-			if ((task instanceof Repair)
-				&& this.equals(((Repair) task).getEntity())) {
+			if (task instanceof Repair t
+				&& this.equals(t.getEntity())) {
 				people.add(person);
 			}
 		}
@@ -1468,15 +1476,15 @@ public abstract class Vehicle extends Unit
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
 
 			// Add all robots maintaining this vehicle.
-			if (task instanceof MaintainBuilding) {
-				if (((MaintainBuilding) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding t) {
+				if (t.getEntity() == this) {
 					robots.add(robot);
 				}
 			}
 
 			// Add all robots repairing this vehicle.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
+			if (task instanceof Repair t) {
+				if (t.getEntity() == this) {
 					robots.add(robot);
 				}
 			}
@@ -1591,10 +1599,91 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Sets initial parked location and facing at settlement.
+	 * Finds a new parking location and facing.
 	 */
-	public abstract void findNewParkingLoc();
+	public void findNewParkingLoc() {
 
+		Settlement settlement = getSettlement();
+		if (settlement == null) {
+			logger.severe(this, "Not found to be parked in a settlement.");
+		}
+
+		else {
+			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
+			
+			// Place the vehicle starting from the settlement center (0,0).
+
+			int oX = 15;
+			int oY = 0;
+
+			int weight = 2;
+
+			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
+			int numGarages = settlement.getBuildingManager().getGarages().size();
+			int total = (int)(evas.size() + numGarages * weight - 1);
+			if (total < 0)
+				total = 0;
+			int rand = RandomUtil.getRandomInt(total);
+
+			if (rand != 0) {
+
+				// Try parking near the eva for short walk
+				if (rand < evas.size()) {
+					Building eva = evas.get(rand);
+					centerLoc = eva.getPosition();
+				}
+
+				else {
+					// Try parking near a garage
+					
+					Building garage = BuildingManager.getAGarage(getSettlement());
+					centerLoc = garage.getPosition();
+				}
+			}
+
+			double newFacing = 0D;
+			LocalPosition newLoc = null;
+			double step = 10D;
+			boolean foundGoodLocation = false;
+
+			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
+					|| getVehicleType() == VehicleType.LUV;
+
+			double d = VEHICLE_CLEARANCE_0;
+			if (isSmallVehicle)
+				d = VEHICLE_CLEARANCE_1;
+			
+			double w = getWidth() * d;
+			double l = getLength() * d;
+			
+			// Try iteratively outward from 10m to 500m distance range.
+			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
+				// Try ten random locations at each distance range.
+				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
+					double distance = RandomUtil.getRandomDouble(step) + x;
+					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+					
+					newLoc = centerLoc.getPosition(distance, radianDirection);
+					newFacing = RandomUtil.getRandomDouble(360D);
+
+					// Check if new vehicle location collides with anything.
+					foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
+									newLoc.getX(), newLoc.getY(), 
+									newFacing, getCoordinates());
+					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
+					// surrounded by buildings or hallways.
+					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
+					// TODO: need a permanent solution by figuring out how to detect those enclosed space
+				}
+			}
+
+			setParkedLocation(newLoc, newFacing);
+		}
+	}
+	
+	/**
+	 * Relocates a vehicle. 
+	 */
 	public void relocateVehicle() {
 		if (isInAGarage()) {
 			BuildingManager.removeFromGarage(this);
@@ -2143,11 +2232,7 @@ public abstract class Vehicle extends Unit
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 
-		// Note: in future, WITHIN_SETTLEMENT_VICINITY will
-		// mean that the vehicle is NOT in the settlement.
-		// But for now, it loosely means the vehicle is still in the settlement.
-
-		// if the vehicle is parked in the vicinity of a settlement
+		// if the vehicle is parked in the vicinity of a settlement and not in a garage
 		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 
@@ -2176,6 +2261,9 @@ public abstract class Vehicle extends Unit
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
 			transferred = currentBase.removeParkedVehicle(this);
+			if (isInAGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
 			this.setCoordinates(currentBase.getCoordinates());
 		}
 

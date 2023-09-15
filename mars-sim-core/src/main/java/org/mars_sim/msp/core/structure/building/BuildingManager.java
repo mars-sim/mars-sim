@@ -1242,8 +1242,8 @@ public class BuildingManager implements Serializable {
 			return false;
 		}
 		
-		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-			if (garage.getVehicleMaintenance().removeFlyer((Flyer)vehicle)) {
+		if (vehicle instanceof Flyer flyer) {
+			if (garage.getVehicleMaintenance().removeFlyer(flyer)) {
 				return true;
 			}
 		}

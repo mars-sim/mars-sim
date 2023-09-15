@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;

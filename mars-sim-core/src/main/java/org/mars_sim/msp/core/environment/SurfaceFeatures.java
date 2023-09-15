@@ -88,7 +88,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private final ReentrantLock opticalDepthLock = new ReentrantLock(true);
 	private final ReentrantLock sunlightLock = new ReentrantLock(true);
 
-	/** The set of locations that have been declared as Region of Interst (ROI). */
+	/** The set of locations that have been declared as Region of Interest (ROI). */
 	private Set<ExploredLocation> regioOfInterestLocations;
 
 	/**

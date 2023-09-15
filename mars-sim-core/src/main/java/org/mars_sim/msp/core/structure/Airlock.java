@@ -67,7 +67,7 @@ public abstract class Airlock implements Serializable {
 	private AirlockMode airlockMode = AirlockMode.EGRESS;
 	
 	/**
-	 * Available Airlock mode
+	 * Available Airlock modes.
 	 */
 	public enum AirlockMode {
 		NOT_IN_USE 	("Not in use"),
@@ -210,8 +210,8 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean removeReservation(int personInt) {
-		if (getEntity() instanceof Building) {
-			Airlock a = ((Building)getEntity()).getEVA().getAirlock();
+		if (getEntity() instanceof Building b) {
+			Airlock a = b.getEVA().getAirlock();
 			if (a.getReservationMap().containsKey(personInt)) {
 				a.getReservationMap().remove(personInt);
 				return true;

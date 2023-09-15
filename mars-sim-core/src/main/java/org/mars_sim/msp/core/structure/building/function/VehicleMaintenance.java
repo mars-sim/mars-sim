@@ -160,7 +160,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				flyer.setFlyerLocation(newLoc, newFacing);
 		
-				logger.fine(flyer, "Added to " + building.getNickName() + " in " + building.getSettlement());
+				logger.fine(flyer, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
 				
 				return true;
 			}
@@ -210,7 +210,7 @@ public abstract class VehicleMaintenance extends Function {
 				double newFacing = getBuilding().getFacing();
 				vehicle.setParkedLocation(newLoc, newFacing);
 		
-				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
+				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement() + ".");
 				
 				return true;
 			}
@@ -235,11 +235,11 @@ public abstract class VehicleMaintenance extends Function {
 		if (vehicles.remove(vehicle)) {
 			
 			if (transferCrew)
-				handleCrew(vehicle);
+				relocateCrew(vehicle);
 			 
 			handleParking(vehicle);
 
-			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
+			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement() + ".");
 			
 			return true;
 		}
@@ -264,7 +264,7 @@ public abstract class VehicleMaintenance extends Function {
 			 
 			handleParking(flyer);
 
-			logger.fine(flyer, "Removed from " + building.getNickName() + " in " + building.getSettlement());
+			logger.fine(flyer, "Removed from " + building.getNickName() + " in " + building.getSettlement() + ".");
 			
 			return true;
 		}
@@ -273,44 +273,43 @@ public abstract class VehicleMaintenance extends Function {
 	}
 	
 	/**
-	 * Handles the crew.
+	 * Relocates the crew.
 	 * 
 	 * @param vehicle
 	 */
-	public void handleCrew(Vehicle vehicle) {
+	public void relocateCrew(Vehicle vehicle) {
 		
-		if (vehicle instanceof Crewable) {
+		if (vehicle instanceof Crewable c) {
 			// Remove the human occupants from the settlement
 			// But is this needed ? These should already be in the Vehicle
 			// if there are in the crew
-			Crewable c = ((Crewable)vehicle);
 			for (Person p: new ArrayList<>(c.getCrew())) {
 				// If person's origin is already in this vehicle
 				// and it's called by removeFromGarage()
 				Vehicle v = p.getVehicle();
 				if (v != null) {
-					if (p.getVehicle().equals(vehicle)) {
-						p.setContainerUnit(vehicle);
-						p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-					}
-					else {
-						p.transfer(vehicle);
+//					if (p.getVehicle().equals(vehicle)) {
+//						p.setContainerUnit(vehicle);
+//						p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+//					}
+//					else {
+//						p.transfer(vehicle);
 						BuildingManager.removePersonFromBuilding(p, building);
-					}
+//					}
 				}
 			}
 			// Remove the robot occupants from the settlement
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
 				Vehicle v = r.getVehicle();
 				if (v != null) {
-					if (r.getVehicle().equals(vehicle)) {
-						r.setContainerUnit(vehicle);
-						r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-					}
-					else {
-						r.transfer(vehicle);
+//					if (r.getVehicle().equals(vehicle)) {
+//						r.setContainerUnit(vehicle);
+//						r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+//					}
+//					else {
+//						r.transfer(vehicle);
 						BuildingManager.removeRobotFromBuilding(r, building);
-					}
+//					}
 				}
 			}
 		}
@@ -345,7 +344,7 @@ public abstract class VehicleMaintenance extends Function {
 	}
 	
 	/**
-	 * Checks if a vehicle is in the building.
+	 * Checks if a vehicle (Rover or LUV only, but NOT including Drone) is in the building.
 	 * 
 	 * @return true if vehicle is in the building.
 	 */
@@ -396,8 +395,7 @@ public abstract class VehicleMaintenance extends Function {
 				// Do not touch any reserved vehicle since they need garage 
 				// for maintenance or for preparing for mission
 				if (!vehicle.isReserved()) {
-					if (vehicle instanceof Crewable) {
-						Crewable crewableVehicle = (Crewable) vehicle;
+					if (vehicle instanceof Crewable crewableVehicle) {
 						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
 							i.remove();
 							handleParking(vehicle);

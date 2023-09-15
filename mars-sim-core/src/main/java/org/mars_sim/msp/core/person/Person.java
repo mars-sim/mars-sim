@@ -1018,7 +1018,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 		}
 
 		Vehicle vehicle = getVehicle();
-		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
+		if ((vehicle != null) && (vehicle instanceof LifeSupportInterface v)) {
 
 			if (vehicle.isInVehicleInGarage()) {
 				// Note: if the vehicle is inside a garage
@@ -1027,7 +1027,7 @@ public class Person extends Unit implements Worker, Temporal, ResearcherInterfac
 			}
 
 			else {
-				return (LifeSupportInterface) vehicle;
+				return v;
 			}
 		}
 

@@ -217,11 +217,10 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			// Set the members' work shift to on-call to get ready. No deadline
 			callMembersToMission(0);
 
-			// If the rover is in a garage, put the rover outside.
-			if (v.isInAGarage()) {
-				BuildingManager.removeFromGarage(v);
-			}
-
+			// Put the rover outside.
+			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//			BuildingManager.removeFromGarage(v);
+			
 			// Record the start mass right before departing the settlement
 			recordStartMass();
 

@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -40,7 +39,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsTime;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -476,13 +474,18 @@ public class EmergencySupply extends RoverMission {
 
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (isEveryoneInRover()) {
-
-			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(v);
-
+			
+			// Put the rover outside.
+			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//			BuildingManager.removeFromGarage(v);
+			
 			// Embark from settlement
-			emergencySettlement.removeParkedVehicle(v);
-			setPhaseEnded(true);
+			if (v.transfer(unitManager.getMarsSurface())) {
+				setPhaseEnded(true);
+			}
+			else {
+				endMissionProblem(v, "Could not transfer to the surface.");
+			}
 		}
 	}
 
