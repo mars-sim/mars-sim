@@ -419,7 +419,7 @@ public abstract class Vehicle extends Unit
 		// Record current object-relative crew positions if vehicle is crewable.
 		if (this instanceof Crewable crewable) {
 			result = new HashMap<>(crewable.getRobotCrewNum());
-			Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
+			Iterator<Robot> i = crewable.getRobotCrew().iterator();
 			while (i.hasNext()) {
 				Robot robotCrewmember = i.next();
 				LocalPosition crewPos = LocalAreaUtil.getObjectRelativePosition(robotCrewmember.getPosition(), this);
@@ -1610,11 +1610,6 @@ public abstract class Vehicle extends Unit
 
 		else {
 			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
-			
-			// Place the vehicle starting from the settlement center (0,0).
-
-			int oX = 15;
-			int oY = 0;
 
 			int weight = 2;
 
@@ -1641,9 +1636,13 @@ public abstract class Vehicle extends Unit
 				}
 			}
 
+			// Place the vehicle starting from the settlement center (0,0).
+
+			int oX = 15;
+			int oY = 0;
 			double newFacing = 0D;
 			LocalPosition newLoc = null;
-			double step = 10D;
+			int step = 10;
 			boolean foundGoodLocation = false;
 
 			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
@@ -1657,8 +1656,8 @@ public abstract class Vehicle extends Unit
 			double l = getLength() * d;
 			
 			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
-				// Try ten random locations at each distance range.
+			for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
+				// Try random locations at each distance range.
 				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
 					double distance = RandomUtil.getRandomDouble(step) + x;
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
@@ -1670,10 +1669,12 @@ public abstract class Vehicle extends Unit
 					foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
 									newLoc.getX(), newLoc.getY(), 
 									newFacing, getCoordinates());
-					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
+					
+					// Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
 					// surrounded by buildings or hallways.
+					
 					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
-					// TODO: need a permanent solution by figuring out how to detect those enclosed space
+					// May need a more permanent solution by figuring out how to detect those enclosed space
 				}
 			}
 
@@ -2251,6 +2252,7 @@ public abstract class Vehicle extends Unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit destination) {
+		boolean leaving = false;
 		boolean transferred = false;
 		// Set the old container unit
 		Unit cu = getContainerUnit();
@@ -2261,15 +2263,14 @@ public abstract class Vehicle extends Unit
 		else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 			Settlement currentBase = (Settlement)cu;
 			transferred = currentBase.removeParkedVehicle(this);
-			if (isInAGarage()) {
-				BuildingManager.removeFromGarage(this);
-			}
-			this.setCoordinates(currentBase.getCoordinates());
+			leaving = true;
+			setCoordinates(currentBase.getCoordinates());
 		}
 
 		if (transferred) {
 			if (destination.getUnitType() == UnitType.MARS) {
 				transferred = ((MarsSurface)destination).addVehicle(this);
+				leaving = leaving && true;
 			}
 			else if (cu.getUnitType() == UnitType.SETTLEMENT) {
 				transferred = ((Settlement)destination).addParkedVehicle(this);
@@ -2280,6 +2281,10 @@ public abstract class Vehicle extends Unit
 				// NOTE: need to revert back the storage action
 			}
 			else {
+				if (leaving && isInAGarage()) {
+					BuildingManager.removeFromGarage(this);
+				}
+				
 				// Set the new container unit (which will internally set the container unit id)
 				setContainerUnit(destination);
 				// Fire the unit event type

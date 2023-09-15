@@ -1776,6 +1776,23 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets all people within this settlement or in vicinity of this settlement, 
+	 * even if they are out on missions.
+	 *
+	 * @return collection of people.
+	 */
+	public Collection<Person> getPeopleInVicinity() {
+		return citizens.stream()
+				.filter(p -> !p.getPhysicalCondition().isDead() 
+					&& (p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
+					|| p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+					|| (p.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
+						&& (p.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						|| p.getVehicle().getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT))))
+				.collect(Collectors.toList());
+	}
+	
+	/**
 	 * Returns a collection of people buried outside this settlement
 	 *
 	 * @return {@link Collection<Person>}

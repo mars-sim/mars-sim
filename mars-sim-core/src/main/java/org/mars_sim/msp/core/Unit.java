@@ -357,12 +357,17 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 		if (getUnitType() == UnitType.SETTLEMENT) {	
 			return location;
 		}
-
+//		else if (LocationStateType.MARS_SURFACE == currentStateType) {	
+//			return location;
+//		}
+		
 		Unit container = getContainerUnit();
 		if (container.getUnitType() == UnitType.MARS) {	
 			return location;
 		}
 		
+		// For Vehicle, Person, Robot and Equipment,
+		// Get its container unit's coordinates
 		return container.getCoordinates();
 	}
 

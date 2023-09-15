@@ -117,7 +117,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 	/**
 	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children)
+	 * overridden by children).
 	 *
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
@@ -249,7 +249,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Disembarks the vehicle and unload cargo upon arrival
+	 * Disembarks the vehicle and unload cargo upon arrival.
 	 *
 	 * @param member
 	 * @param v
