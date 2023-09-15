@@ -171,12 +171,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         boolean hasDestination = false;
 
         Mission mission = vehicle.getMission();
-        if (mission instanceof VehicleMission) {
-
-            VehicleMission vehicleMission = (VehicleMission) mission;
-            if (vehicleMission.isTravelling()) {
+        if (mission instanceof VehicleMission vm) {
+            if (vm.isTravelling()) {
                 hasDestination = true;
-                NavPoint destinationPoint = vehicleMission.getCurrentDestination();
+                NavPoint destinationPoint = vm.getCurrentDestination();
                 destinationLocationCache = destinationPoint.getLocation();
                 if (destinationPoint.isSettlementAtNavpoint()) {
                     // If destination is settlement, add destination button.
@@ -223,8 +221,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare distance label.
         String distanceText;
-		if ((mission instanceof VehicleMission) &&
-                ((VehicleMission) mission).isTravelling()) {
+		if (mission instanceof VehicleMission vm &&
+                vm.isTravelling()) {
         	try {
         		remainingDistanceCache = ((VehicleMission) mission).getTotalDistanceRemaining();
         	}
@@ -321,9 +319,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         boolean hasDestination = false;
         		
-        if ((mission instanceof VehicleMission)
-                && ((VehicleMission) mission).isTravelling()) {
-        	NavPoint destinationPoint = ((VehicleMission) mission).getCurrentDestination();
+        if (mission instanceof VehicleMission vm
+                && vm.isTravelling()) {
+        	NavPoint destinationPoint = vm.getCurrentDestination();
         	
         	hasDestination = true;
         	
@@ -357,10 +355,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
 
         // Update latitude and longitude panels if necessary.
-        if ((mission instanceof VehicleMission)
-                && ((VehicleMission) mission).isTravelling()) {
-            VehicleMission vehicleMission = (VehicleMission) mission;
-        	destinationLocationCache = vehicleMission.getCurrentDestination().getLocation();
+        if (mission instanceof VehicleMission vm
+                && vm.isTravelling()) {
+        	destinationLocationCache = vm.getCurrentDestination().getLocation();
             destinationLatitudeLabel.setText("" +
                     destinationLocationCache.getFormattedLatitudeString());
             destinationLongitudeLabel.setText("" +
@@ -375,14 +372,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update distance to destination if necessary.
-        if (mission instanceof VehicleMission vehicleMission) {
-            double remaining = vehicleMission.getTotalDistanceRemaining();
+        if (mission instanceof VehicleMission vm) {
+            double remaining = vm.getTotalDistanceRemaining();
             if (remainingDistanceCache != remaining) {
                 remainingDistanceCache = remaining;
                 remainingDistanceLabel.setText(StyleManager.DECIMAL_KM.format(remainingDistanceCache));
             }
 
-            MarsTime newETA = vehicleMission.getLegETA();
+            MarsTime newETA = vm.getLegETA();
             if (newETA != null) {
                 String newText = newETA.toString();
                 if (!etaCache.equals(newText)) {

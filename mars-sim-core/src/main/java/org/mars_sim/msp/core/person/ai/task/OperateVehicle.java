@@ -153,8 +153,8 @@ public abstract class OperateVehicle extends Task {
 		}
 		
 		// Walk to operation activity spot in vehicle.
-		if (vehicle instanceof Rover) {
-		    walkToOperatorActivitySpotInRover((Rover) vehicle, false);
+		if (vehicle instanceof Rover rover) {
+		    walkToOperatorActivitySpotInRover(rover, false);
 		}
 		
 		addPhase(MOBILIZE);
@@ -215,8 +215,8 @@ public abstract class OperateVehicle extends Task {
 		}
 		
 		// Walk to operation activity spot in vehicle.
-		if (vehicle instanceof Rover) {
-		    walkToOperatorActivitySpotInRover((Rover) vehicle, false);
+		if (vehicle instanceof Rover rover) {
+		    walkToOperatorActivitySpotInRover(rover, false);
 		}
 		
 		addPhase(MOBILIZE);
@@ -744,8 +744,7 @@ public abstract class OperateVehicle extends Task {
     		double baseSpeed = vehicle.getBaseSpeed();
     		double mod = 1;
     		
-    		if (operator.getUnitType() == UnitType.PERSON) {
-    			Person p = (Person)operator;
+    		if (operator instanceof Person p) {
     			
     			// If the person's current job is pilot
     			if (p.getMind().getJob() == JobType.PILOT) {
@@ -852,8 +851,8 @@ public abstract class OperateVehicle extends Task {
     private String getNavpointName() {
     	Mission mission = vehicle.getMission();
     
-    	if (mission instanceof VehicleMission) {
-    		NavPoint np = ((VehicleMission) mission).getCurrentDestination();
+    	if (mission instanceof VehicleMission vm) {
+    		NavPoint np = vm.getCurrentDestination();
     		return np.getDescription();
     	}
     	
@@ -870,6 +869,4 @@ public abstract class OperateVehicle extends Task {
         	vehicle.setOperator(null);
     	}
     }
-    
-
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2022-12-31
+ * @date 2023-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -364,7 +364,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected final void claimVehicle(Vehicle v) {
 		if (v.getMission() != null) {
-			logger.warning(v, "Aready assigned to a Mission when assigning " + getName());
+			logger.warning(v, "Aready assigned to a Mission when assigning " + getName() + ".");
 		}
 
 		v.setReservedForMission(true);
@@ -483,7 +483,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param reason The reason why help is needed.
 	 */
 	public void getHelp(MissionStatus reason) {
-		logger.info(vehicle, 20_000, "Needs help.");
+		logger.info(vehicle, 20_000, "Requesting help.");
 		addMissionStatus(reason);
 		
 		// Set emergency beacon if vehicle is not at settlement.
@@ -557,7 +557,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		double tripTime = getEstimatedRemainingMissionTime(true);
 		if (tripTime == 0) {
 			// Disapprove this mission
-			logger.warning(settlement, "Estimated zero trip time");
+			logger.warning(settlement, "Estimated zero trip time.");
 			return false;
 		}
 
@@ -718,10 +718,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			Coordinates current = vehicle.getCoordinates();
 			Coordinates target =  destination.getLocation();
-
+			double distance = Coordinates.computeDistance(current, target);
+			
 			reachedDestination = current.equals(target)
-					|| Coordinates.computeDistance(current, target) < SMALL_DISTANCE;
+					|| distance < SMALL_DISTANCE;
 
+			logger.info(vehicle, " current: " + current + "  destination: " + target + "  distance: " + distance);
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
@@ -1174,7 +1176,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (enough) {
 					travelDirectToSettlement(newDestination);
 
-					logger.info(getVehicle(), "Returning to " + newDestination.getName());
+					logger.info(getVehicle(), "Returning to " + newDestination.getName() + ".");
 					// Creating emergency destination mission event for going to a new settlement.
 					if (!newDestination.equals(oldHome)) {
 						HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
@@ -1661,7 +1663,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * What is the current desitnation of the Mission. The isTravelling flag
+	 * What is the current destination of the Mission. The isTravelling flag
 	 * identifies if the Mission is on the way.
 	 */
 	@Override
