@@ -265,7 +265,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 
 	/**
-	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits.
+	 * Calculates the mission capacity the lower of desired capacity or number of EVASuits.
 	 */
 	protected void calculateMissionCapacity(int desiredCap) {
 		if (!isDone()) {
@@ -325,8 +325,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (!ejectedMembers.contains(getStartingPerson())) {
 				// Still enough members ? If so eject late arrivals
 				if ((getMembers().size() - ejectedMembers.size()) >= 2) {
-					for(Person ej : ejectedMembers) {
-						logger.info(ej, "Ejected from mission " + getName() + " missed Departure");
+					for (Person ej : ejectedMembers) {
+						logger.info(ej, "Ejected from mission " + getName() + " missed the departure.");
 						removeMember(ej);
 						addMissionLog(ej.getName() + " evicted");
 					}
@@ -339,7 +339,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 //			}
 		}
 
-		// Check if everyone is boarded
 		if (canDepart) {
 			// If the rover is in a garage
 			if (v.isInAGarage()) {
@@ -348,7 +347,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				meetBaselineNumEVASuits(settlement, v);
 				
 				// Put the rover outside.
-				BuildingManager.removeFromGarage(v);
+				// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//				BuildingManager.removeFromGarage(v);
 			}
 
 			// Record the start mass right before departing the settlement
@@ -364,11 +364,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			// Marks everyone departed
-			for(Worker m : getMembers()) {
+			for (Worker m : getMembers()) {
 				((Person) m).getTaskManager().recordActivity(getName(), "Departed", getName(), this);
 			}
 		}
-		else {			
+		else {
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 			callMembersToMission((int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));

@@ -293,7 +293,7 @@ public class Settlement extends Structure implements Temporal,
 	private EquipmentInventory eqmInventory;
 	/** The settlement's CreditManager instance manages trade credit between settlements. */
 	private CreditManager creditManager;
-	/** Mananges the shifts */
+	/** Manages the shifts */
 	private ShiftManager shiftManager;
 	private SettlementTaskManager taskManager;
 	private ScheduledEventManager futureEvents;
@@ -1286,8 +1286,6 @@ public class Settlement extends Structure implements Temporal,
 		return average;
 	}
 
-
-
 	/**
 	 * Provides the daily reports for the settlement
 	 */
@@ -1777,6 +1775,23 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets all people within this settlement or in vicinity of this settlement, 
+	 * even if they are out on missions.
+	 *
+	 * @return collection of people.
+	 */
+	public Collection<Person> getPeopleInVicinity() {
+		return citizens.stream()
+				.filter(p -> !p.getPhysicalCondition().isDead() 
+					&& (p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
+					|| p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+					|| (p.getLocationStateType() == LocationStateType.INSIDE_VEHICLE
+						&& (p.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						|| p.getVehicle().getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT))))
+				.collect(Collectors.toList());
+	}
+	
+	/**
 	 * Returns a collection of people buried outside this settlement
 	 *
 	 * @return {@link Collection<Person>}
@@ -1991,7 +2006,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a parked vehicle
+	 * Removes a parked vehicle.
 	 *
 	 * @param vehicle
 	 * @param true if the parked vehicle can be removed
@@ -2019,7 +2034,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a vehicle into ownership
+	 * Adds a vehicle into ownership.
 	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be added
@@ -2038,7 +2053,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a vehicle from ownership
+	 * Removes a vehicle from ownership.
 	 *
 	 * @param vehicle
 	 * @param true if the vehicle can be removed
@@ -2077,7 +2092,6 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		if (eqmInventory.addEquipment(e)) {
-//			System.out.println("addEquipment: " + true);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
 			return true;
 		}
@@ -2164,7 +2178,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Gets all associated vehicles currently already embarked on missions out there
-	 * (include vehicles doing building construction/salvage missions in a settlement)
+	 * (include vehicles doing building construction/salvage missions in a settlement).
 	 *
 	 * @return collection of vehicles.
 	 */
@@ -2176,7 +2190,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets numbers vehicles currently on mission
+	 * Gets numbers vehicles currently on mission.
 	 *
 	 * @return numbers of vehicles on mission.
 	 */
@@ -2226,7 +2240,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Finds the number of vehicles of a particular type
+	 * Finds the number of vehicles of a particular type.
 	 *
 	 * @param vehicleType the vehicle type.
 	 * @return number of vehicles.
@@ -2239,9 +2253,9 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Finds the number of parked rovers
+	 * Finds the number of parked rovers.
 	 *
-	 * @return number of parked rovers.
+	 * @return number of parked rovers
 	 */
 	public int findNumParkedRovers() {
 		return Math.toIntExact(ownedVehicles
@@ -2352,10 +2366,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Add achievement credit to the settlement in a scientific field.
-	 * Must be synchronized because Scientific Research is cross-Settlement
-	 * @param achievementCredit the achievement credit.
-	 * @param science           the scientific field.
+	 * Adds achievement credit to the settlement in a scientific field.
+	 * Must be synchronized because Scientific Research is cross-Settlement.
+	 * 
+	 * @param achievementCredit the achievement credit
+	 * @param science           the scientific field
 	 */
 	public synchronized void addScientificAchievement(double achievementCredit, ScienceType science) {
 		if (scientificAchievement.containsKey(science))
@@ -2367,7 +2382,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets the initial population of the settlement.
 	 *
-	 * @return initial population number.
+	 * @return initial population number
 	 */
 	public int getInitialPopulation() {
 		return initialPopulation;
@@ -2376,14 +2391,14 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Gets the initial number of robots the settlement.
 	 *
-	 * @return initial number of robots.
+	 * @return initial number of robots
 	 */
 	public int getInitialNumOfRobots() {
 		return initialNumOfRobots;
 	}
 
 	/**
-	 * Returns the chain of command
+	 * Returns the chain of command.
 	 *
 	 * @return chainOfCommand
 	 */
@@ -2392,7 +2407,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the shift manager for this Settlement
+	 * Gets the shift manager for this Settlement.
 	 */
 	public ShiftManager getShiftManager() {
 		return shiftManager;
@@ -2403,7 +2418,8 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/*
-	 * Update the status of Radiation exposure
+	 * Updates the status of Radiation exposure.
+	 * 
 	 * @param newExposed
 	 */
 	public void setExposed(RadiationStatus newExposed) {
@@ -2458,7 +2474,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Sets the objective
+	 * Sets the objective.
 	 *
 	 * @param {@link ObjectiveType}
 	 * @param level
@@ -2501,7 +2517,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the objective level
+	 * Gets the objective level.
 	 *
 	 * @param {@link ObjectiveType}
 	 * @return the level
@@ -3752,7 +3768,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */

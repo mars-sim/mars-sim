@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -489,9 +488,6 @@ public class Trade extends RoverMission implements CommerceMission {
 
 		// If rover is loaded and everyone is aboard, embark from settlement.
 		if (!isDone() && isEveryoneInRover()) {
-
-			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(v);
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {

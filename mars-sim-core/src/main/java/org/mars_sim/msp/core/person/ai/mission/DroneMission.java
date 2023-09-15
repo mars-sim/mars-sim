@@ -117,7 +117,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 	/**
 	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children)
+	 * overridden by children).
 	 *
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
@@ -217,11 +217,10 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			// Set the members' work shift to on-call to get ready. No deadline
 			callMembersToMission(0);
 
-			// If the rover is in a garage, put the rover outside.
-			if (v.isInAGarage()) {
-				BuildingManager.removeFromGarage(v);
-			}
-
+			// Put the rover outside.
+			// Note: calling removeFromGarage has already been included in Vehicle::transfer() below
+//			BuildingManager.removeFromGarage(v);
+			
 			// Record the start mass right before departing the settlement
 			recordStartMass();
 
@@ -250,7 +249,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Disembarks the vehicle and unload cargo upon arrival
+	 * Disembarks the vehicle and unload cargo upon arrival.
 	 *
 	 * @param member
 	 * @param v

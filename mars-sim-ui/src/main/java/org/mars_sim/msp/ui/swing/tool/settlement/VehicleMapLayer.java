@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.mars.sim.mapdata.location.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -60,7 +59,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement,Building building,
+	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building,
 			double xPos, double yPos, int mapWidth, int mapHeight,
 			double rotation, double scale) {
 
@@ -96,15 +95,10 @@ public class VehicleMapLayer implements SettlementMapLayer {
 
 		if (settlement != null) {
 
-			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+			// Draw all parked vehicles at this settlement location
+			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// Draw vehicles that are at the settlement location.
-				Coordinates vehicleLoc = vehicle.getCoordinates();
-				if (vehicleLoc.equals(settlement.getCoordinates())) {
-					drawVehicle(vehicle, g2d);
-				}
+				drawVehicle(i.next(), g2d);
 			}
 		}
 	}

@@ -7,19 +7,10 @@
 package org.mars_sim.msp.core.vehicle;
 
 
-import java.util.List;
-
 import org.mars.sim.mapdata.location.Direction;
 import org.mars.sim.mapdata.location.LocalPosition;
-import org.mars.sim.tools.util.RandomUtil;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.environment.TerrainElevation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingCategory;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * This abstract class represents a ground-type vehicle and 
@@ -31,12 +22,9 @@ public abstract class GroundVehicle extends Vehicle {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	private static final SimLogger logger = SimLogger.getLogger(GroundVehicle.class.getName());
+	// May add back SimLogger logger = SimLogger.getLogger(GroundVehicle.class.getName());
 		
     public static final double LEAST_AMOUNT = .001D;
-    
-    public static final double VEHICLE_CLEARANCE_0 = 1.4;
-    public static final double VEHICLE_CLEARANCE_1 = 2.8;
 	
 	// Data members
 	/** Current elevation in km. */
@@ -140,89 +128,6 @@ public abstract class GroundVehicle extends Vehicle {
 			setPrimaryStatus(StatusType.PARKED, StatusType.STUCK);
 			setSpeed(0D);
 			setParkedLocation(LocalPosition.DEFAULT_POSITION, getDirection().getDirection());
-		}
-	}
-
-	/**
-	 * Finds a new parking location and facing.
-	 */
-	@Override
-	public void findNewParkingLoc() {
-
-		Settlement settlement = getSettlement();
-		if (settlement == null) {
-			logger.severe(this, "Not found in any settlements.");
-		}
-
-		else {
-			LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
-
-			// Start from near the settlement map center (0,0).
-
-			int oX = 0;
-			int oY = 0;
-
-			int weight = 2;
-
-			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
-			int numGarages = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE)
-					.size();
-			int total = (int)(evas.size() + numGarages * weight - 1);
-			if (total < 0)
-				total = 0;
-			int rand = RandomUtil.getRandomInt(total);
-
-			if (rand != 0) {
-
-				// Try parking near the EVA for shortest walk	
-				if (rand < evas.size()) {
-					Building eva = evas.get(rand);
-					centerLoc = eva.getPosition();
-				}
-
-				else {
-					// Try parking near a garage
-					Building garage = BuildingManager.getAGarage(getSettlement());
-					centerLoc = garage.getPosition();
-				}
-			}
-
-			LocalPosition newLoc = LocalPosition.DEFAULT_POSITION;
-			double newFacing = 0D;
-
-			double step = 10D;
-			boolean foundGoodLocation = false;
-
-			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
-					|| getVehicleType() == VehicleType.LUV;
-
-			double d = VEHICLE_CLEARANCE_0;
-			if (isSmallVehicle)
-				d = VEHICLE_CLEARANCE_1;
-			
-			double w = getWidth() * d;
-			double l = getLength() * d;
-
-			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
-				// Try ten random locations at each distance range.
-				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
-					double distance = RandomUtil.getRandomDouble(step) + x;
-					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-					newLoc = centerLoc.getPosition(distance, radianDirection);
-					newFacing = RandomUtil.getRandomDouble(360D);
-			
-					// Check if new vehicle location collides with anything.
-					foundGoodLocation =	LocalAreaUtil.isObjectCollisionFree(this, w, l, 
-							newLoc.getX(), newLoc.getY(), newFacing, getCoordinates());
-					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
-					// surrounded by buildings or hallways.
-					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
-					// TODO: need a permanent solution by figuring out how to detect those enclosed space
-				}
-			}
-
-			setParkedLocation(newLoc, newFacing);
 		}
 	}
 }

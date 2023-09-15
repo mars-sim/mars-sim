@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.tools.util.RandomUtil;
@@ -84,10 +85,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private OrbitInfo orbitInfo;
 	private TerrainElevation terrainElevation;
 	
-//	private final ReentrantLock opticalDepthLock = new ReentrantLock();
-//	private final ReentrantLock sunlightLock = new ReentrantLock();
+	private final ReentrantLock opticalDepthLock = new ReentrantLock(true);
+	private final ReentrantLock sunlightLock = new ReentrantLock(true);
 
-	/** The set of locations that have been declared as Region of Interst (ROI). */
+	/** The set of locations that have been declared as Region of Interest (ROI). */
 	private Set<ExploredLocation> regioOfInterestLocations;
 
 	/**
@@ -132,7 +133,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (value != null)
 			return value.doubleValue();
 
-//		opticalDepthLock.lock();
+		opticalDepthLock.lock();
 		
 		double result = computeOpticalDepth(location);
 
@@ -140,7 +141,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //		synchronized(opticalDepthMap)
 			opticalDepthMap.put(location, result);
 		
-//		opticalDepthLock.unlock();
+		opticalDepthLock.unlock();
 
 		return result;
 	}
@@ -271,14 +272,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (cachedValue != null)
 			return cachedValue.doubleValue();
 
-//		sunlightLock.lock();
+		sunlightLock.lock();
 			
 		double result = calculateSolarIrradiance(location);
 		// Make cache thread safe as this may be done on demand
 //		synchronized(currentIrradiance)
 			currentIrradiance.put(location, result);
 			
-//		sunlightLock.unlock();
+		sunlightLock.unlock();
 
 		return result;
 	}

@@ -187,7 +187,7 @@ public class EnterAirlock extends Task {
 	}
 	
 	/**
-	 * Checks if the person is already in a particular zone
+	 * Checks if the person is already in a particular zone.
 	 *
 	 * @param zone
 	 * @return true if the person is a particular zone
@@ -226,7 +226,7 @@ public class EnterAirlock extends Task {
 	}
 
 	/**
-	 * Moves the person to a particular zone
+	 * Moves the person to a particular zone.
 	 *
 	 * @param newPos the target position in that zone
 	 * @param zone
@@ -927,8 +927,8 @@ public class EnterAirlock extends Task {
 	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getEntity() instanceof Building) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+			if (airlock.getEntity() instanceof Building b) {
+				logger.log(b, person, Level.FINE, 4_000,
 						"Concluded the building airlock operator task.");
 			}
 			else {

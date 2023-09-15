@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.project.Stage;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -87,17 +86,13 @@ public class MissionBoardVehicleStep extends MissionStep {
     }
 
 	/**
-     * Prepare the vehicle to depart the Settlement
+     * Prepares the vehicle to depart the Settlement.
+     * 
 	 * @param m Mission in control
      * @param v Vehicle to prepare
      */
     private void depart(MissionProject m, Vehicle v) {
 		logger.info(v, "Ready to depart for " + m.getName());
-
-        // If the vehcile is in a garage, put the rover outside.
-        if (v.isInAGarage()) {
-            BuildingManager.removeFromGarage(v);
-        }
 
         // Record the start mass right before departing the settlement
         //recordStartMass();
@@ -108,13 +103,14 @@ public class MissionBoardVehicleStep extends MissionStep {
 		}
 
         // Marks everyone departed
-        for(Worker w : m.getMembers()) {
+        for (Worker w : m.getMembers()) {
             w.getTaskManager().recordActivity(m.getName(), "Departed", m.getName(), m);
         }
     }
 
     /**
-     * Evict any members not on board the vehicle.
+     * Evicts any members not on board the vehicle.
+     * 
      * @param v Vehicle to check
 	 * @return Has all evictions completed?
      */
@@ -161,7 +157,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		// Set the members' work shift to on-call to get ready
 		for (Worker w : getMission().getMembers()) {
 			if (w instanceof Person p) {
-				// If first time this person has been caleld and there is a limit interrupt them
+				// If first time this person has been called and there is a limit interrupt them
 				if (!p.getShiftSlot().setOnCall(true) && (boardingTime > 0)) {
 					// First call so 
 					if (p.getTaskManager().getTask() instanceof Sleep s) {

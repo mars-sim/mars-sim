@@ -18,15 +18,14 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mars.sim.mapdata.location.Coordinates;
 import org.mars.sim.mapdata.location.LocalPosition;
 import org.mars.sim.tools.Msg;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -400,27 +399,21 @@ implements SettlementMapLayer {
 			size = Math.max(size, 12);
 					
 			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-				// Draw vehicles that are at the settlement location.
-				Coordinates settlementLoc = settlement.getCoordinates();
-				Coordinates vehicleLoc = vehicle.getCoordinates();
-				if (vehicleLoc.equals(settlementLoc)) {
-					
-					if (vehicle.getVehicleType() == VehicleType.LUV) {
-						drawStructureLabel(g2d,vehicle.getName(), vehicle.getPosition(),
-							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
-					}
-					
-					else {
-						// Split up the name into multiple lines
-						String words[] = vehicle.getName().split(" ");
-						int s = words.length;
-						for (int j = 0; j < s; j++) {
-							drawStructureLabel(g2d, words[j], vehicle.getPosition(),
-								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * size);
-						}
+				if (vehicle.getVehicleType() == VehicleType.LUV) {
+					drawStructureLabel(g2d,vehicle.getName(), vehicle.getPosition(),
+						VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
+				}
+				
+				else {
+					// Split up the name into multiple lines
+					String words[] = vehicle.getName().split(" ");
+					int s = words.length;
+					for (int j = 0; j < s; j++) {
+						drawStructureLabel(g2d, words[j], vehicle.getPosition(),
+							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * size);
 					}
 				}
 			}
@@ -439,7 +432,7 @@ implements SettlementMapLayer {
 		boolean showNonSelectedPeople
 	) {
 
-		List<Person> people = CollectionUtils.getPeopleToDisplay(settlement);
+		Collection<Person> people = settlement.getPeopleInVicinity();
 		Person selectedPerson = mapPanel.getSelectedPerson();
 		int xoffset = 5;
 		double scale = mapPanel.getScale();

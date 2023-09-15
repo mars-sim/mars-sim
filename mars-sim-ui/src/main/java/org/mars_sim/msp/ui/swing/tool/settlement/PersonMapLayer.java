@@ -9,10 +9,9 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -83,7 +82,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 */
 	private void drawPeople(Graphics2D g2d, Settlement settlement, double scale) {
 
-		List<Person> people = CollectionUtils.getPeopleToDisplay(settlement);
+		Collection<Person> people = settlement.getPeopleInVicinity();//  CollectionUtils.getPeopleToDisplay(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
 		// Draw all people except selected person.
