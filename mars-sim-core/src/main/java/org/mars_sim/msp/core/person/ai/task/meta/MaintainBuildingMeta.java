@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars.sim.tools.util.RandomUtil;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -96,16 +97,15 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			MaintainTaskJob mtj = (MaintainTaskJob) t;
 
-			factor = getPersonModifier(p);
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 			if (mtj.eva) {
-				// EVA factor is the radiation and the EVA modifiers applied extra
-				factor *= getRadiationModifier(p.getSettlement());
-				factor *= getEVAModifier(p);
+				factor = applyEVASuitability(factor, p);
 			}
 		}
 		return factor;
@@ -119,14 +119,18 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
 		MaintainTaskJob mtj = (MaintainTaskJob) t;
-		if (mtj.eva) {
-			return 0D;
-		}
-		return ROBOT_FACTOR;
-	}
+        if (mtj.eva) {
+            return RatingScore.ZERO_RATING;
+        }
 
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+		factor.addModifier("robot", ROBOT_FACTOR);
+        return factor;
+    }
+	
 	/**
 	 * Scans the Settlement for any Building that need maintenance.
 	 * 

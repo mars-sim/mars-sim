@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
@@ -82,21 +83,18 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
      * 
 	 * @param t Task being scored
 	 * @parma p Person requesting work.
-	 * @return The factor to adjust task score; 0 means task is not applicable
+	 * @return The score for this person
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
 
-			if (p.isInSettlement()) {
-				factor = getPersonModifier(p);
-				if (mtj.eva) {
-					// EVA factor is the radiation and the EVA modifiers applied extra
-					factor *= getRadiationModifier(p.getSettlement());
-					factor *= getEVAModifier(p);
-				}
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+			if (mtj.eva) {
+				factor = applyEVASuitability(factor, p);
 			}
 		}
 		return factor;
@@ -110,13 +108,16 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
 		VehicleMaintenanceJob mtj = (VehicleMaintenanceJob) t;
-		if (!mtj.eva && r.isInSettlement()) {
-			return r.getPerformanceRating();
-		}
-		return 0D;
-	}
+        if (mtj.eva) {
+            return RatingScore.ZERO_RATING;
+        }
+
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+        return factor;
+    }
 
 	/**
 	 * Gets a collection of Tasks for any Vehicle maintenance that is required.

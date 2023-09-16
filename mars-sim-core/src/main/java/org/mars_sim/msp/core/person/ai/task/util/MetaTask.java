@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -47,6 +48,13 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR
 	}
 	
+	protected static final String PERSON_MODIFIER = "person";
+	protected static final String ROBOT_PERF_MODIFIER = "robot-perf";
+	protected static final String BUILDING_MODIFIER = "building";
+	private static final String EVA_MODIFIER = "eva";
+	private static final String RADIATION_MODIFIER = "radiation";
+
+
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
 		= Set.of(TaskTrait.RELAXATION, 
@@ -343,7 +351,21 @@ public abstract class MetaTask {
 		return 1D;
 	}
 
-	
+	/**
+	 * Apply the suitability of a Person to do an EVA.
+	 * @param factor Current rating
+	 * @param p Person to assess
+	 * @return Update rating
+	 */
+	protected static RatingScore applyEVASuitability(RatingScore factor, Person p) {
+
+		// EVA factor is the radiation and the EVA modifiers applied extra
+		factor.addModifier(RADIATION_MODIFIER, getRadiationModifier(p.getSettlement()));
+		factor.addModifier(EVA_MODIFIER, getEVAModifier(p));
+
+		return factor;
+	}
+
 	/**
 	 * Gets the modifier for a Person using a building.
 	 * 

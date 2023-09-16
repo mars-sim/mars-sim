@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.util.List;
 import java.util.Set;
 
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -38,20 +39,23 @@ public interface SettlementMetaTask {
     List<SettlementTask> getSettlementTasks(Settlement settlement);
 
     /**
-     * Gets the Person applicable modifiers for this  Meta Task.
+     * Assess a Person for a specific SettlementTask of this type.
      * 
      * @param t The Settlement task being evaluated
      * @param p Person in question
-     * @return Default returns 0 being no applicable Task
+     * @return A new rating score applying the Person's modifiers
      */
-    double getPersonSettlementModifier(SettlementTask t, Person p);
+    RatingScore assessPersonSuitability(SettlementTask t, Person p);
 
     /**
-     * Gets the Robot applicable modifiers for this  Meta Task.
+     * Assess a Robot for a specific SettlementTask of this type.
+     * Default implementation return Robot is not suitable.
      * 
      * @param t The Settlement task being evaluated
      * @param r Robot in question
-     * @return Default returns 0 
+     * @return A new rating score applying the Robot's modifiers
      */
-    double getRobotSettlementModifier(SettlementTask t, Robot r);
+    default RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
+        return RatingScore.ZERO_RATING;
+    }
 }

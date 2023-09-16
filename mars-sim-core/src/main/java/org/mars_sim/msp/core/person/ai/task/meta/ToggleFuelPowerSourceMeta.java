@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -99,8 +100,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
             Building building = ((PowerTaskJob)t).getBuilding();
       
@@ -109,14 +110,15 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
                     &&     // Checks if the person is physically fit for heavy EVA tasks
                     !EVAOperation.isEVAFit(p)) {
                 // Probability affected by the person's stress, hunger, thirst and fatigue.
-                return 0D;
+                return factor;
             }
-	                      
+	          
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
             if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 // Factor in building crowding and relationship factors.
-                factor *= getBuildingModifier(building, p);
+                factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(building, p));
             }
-            factor *= getPersonModifier(p);
 		}
 		return factor;
 	}
@@ -227,11 +229,5 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
         }
 
         return result;
-    }
-
-    @Override
-    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 }

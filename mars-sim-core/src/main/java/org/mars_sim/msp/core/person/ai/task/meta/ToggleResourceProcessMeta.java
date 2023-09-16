@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -101,9 +102,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param r Robot making the request
 	 */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		return 1D;
-	}
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+        return factor;
+    }
 
 	/**
 	 * Evaluates if a Person can do a Settlement task, based on in settlement.
@@ -111,12 +114,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param t Task 
 	 * @param p Person making the request
 	 */
-	@Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
+    @Override
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
 		if (p.isInSettlement()) {
-			return getPersonModifier(p);
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 		}
-		return 0D;
+		return factor;
 	}
 
 	/**

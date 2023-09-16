@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -112,16 +113,20 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
     }
 
     @Override
-    public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        return getPersonModifier(p);
+    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+        return factor;
     }
 
     /**
      * Score modifier for a Robot is based on it's performance rating
      */
     @Override
-    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        return r.getPerformanceRating();
+    public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+        return factor;
     }
 
     /**

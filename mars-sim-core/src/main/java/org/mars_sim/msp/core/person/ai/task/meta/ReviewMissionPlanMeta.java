@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -74,8 +75,8 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
 			Mission m = mp.getMission();			
@@ -83,20 +84,19 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
 			// Is this Person allowed to review this Mission
 			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p.getName(), pop)) {
-				// This reviewer is valid
-				factor = 1D;
+				factor = new RatingScore(t.getScore());
+				factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 
-				RoleType roleType = p.getRole().getType();   	
-				if (RoleType.MISSION_SPECIALIST == roleType)
-					factor *= 1.5;
-				else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
-					factor *= 3;
-				else if (RoleType.SUB_COMMANDER == roleType)
-					factor *= 4.5;
-				else if (RoleType.COMMANDER == roleType)
-					factor *= 6;
-				
-				factor *= getPersonModifier(p);
+				// This reviewer is valid
+				RoleType roleType = p.getRole().getType();  
+				double reviewer = switch(roleType) {
+					case MISSION_SPECIALIST -> 1.5;
+					case CHIEF_OF_MISSION_PLANNING -> 3;
+					case SUB_COMMANDER -> 4.5;
+					case COMMANDER -> 6;
+					default -> 1;
+				};
+				factor.addModifier("reviewer", reviewer);
 			}
 		}
 		return factor;
@@ -139,17 +139,6 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	
         return tasks;
     }
-
-	/**
-	 * Robots can not do review missions.
-	 * 
-	 * @param t Task to be reviewed
-	 * @param r Robot asking
-	 */
-	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		return 0;
-	}
 
 	public static void initialiseInstances(MissionManager mm) {
 		missionManager = mm;

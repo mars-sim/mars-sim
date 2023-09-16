@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.PlanMission;
@@ -79,9 +80,9 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
      * Creates the person modifier based on their role in the settlement.
      */
     @Override
-    public double getPersonSettlementModifier(SettlementTask t, Person p) {
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         if (!p.isInSettlement() || !p.getMind().canStartNewMission()) {
-            return 0;
+            return RatingScore.ZERO_RATING;
         }
     		
         // Probability affected by the person's stress and fatigue.
@@ -90,32 +91,24 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         double stress = condition.getStress();
         double hunger = condition.getHunger();            
         if (fatigue > 1000 || stress > 75 || hunger > 750)
-            return 0;
+            return RatingScore.ZERO_RATING;
             
-        double result = 1.5 * ( 1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 
-        if (result > 0) {	 
-            double roleFactor = switch (p.getRole().getType()) {
-                case CHIEF_OF_MISSION_PLANNING  -> 2.0;
-                case MISSION_SPECIALIST -> 1.75;
-                case COMMANDER -> 1.5;
-                case SUB_COMMANDER -> 1.25;
-                default -> 0.75;
-            };
-            result *= roleFactor;
+        double roleFactor = switch (p.getRole().getType()) {
+            case CHIEF_OF_MISSION_PLANNING  -> 2.0;
+            case MISSION_SPECIALIST -> 1.75;
+            case COMMANDER -> 1.5;
+            case SUB_COMMANDER -> 1.25;
+            default -> 0.75;
+        };
+        factor.addModifier("role", roleFactor);
 
-            // Get an available office space.
-            Building building = BuildingManager.getAvailableFunctionTypeBuilding(p, FunctionType.ADMINISTRATION);
-            result *= getBuildingModifier(building, p);
+        // Get an available office space.
+        Building building = BuildingManager.getAvailableFunctionTypeBuilding(p, FunctionType.ADMINISTRATION);
+        factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(building, p));
 
-            result *= getPersonModifier(p);
-        }
-
-        return result;
-    }
-
-    @Override
-    public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        return 0;
+        return factor;
     }
 }

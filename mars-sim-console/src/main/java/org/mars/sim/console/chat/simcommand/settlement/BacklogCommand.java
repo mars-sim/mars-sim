@@ -45,7 +45,7 @@ class BacklogCommand extends AbstractSettlementCommand {
                 if (subject != null) {
                     subjectName = subject.getName();
                 }
-                response.appendTableRow(t.getName(), subjectName,
+                response.appendTableRow(t.getShortName(), subjectName,
                                 t.getDemand(),
                                 t.getScore().getOutput());
             }

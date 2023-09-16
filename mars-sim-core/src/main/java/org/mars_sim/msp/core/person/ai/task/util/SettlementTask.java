@@ -21,6 +21,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
     
     private SettlementMetaTask metaTask;
     private Entity focus;
+    private String shortName;
 
     /**
      * Old approach where a single double is used for scoring
@@ -43,10 +44,19 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * @param score The Rating score for this work
      */
     protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScore score) {
-        super(name, score);
+        super(name + (focus != null ? " @ " + focus.getName() : ""), score);
         this.metaTask = parent;
         this.demand = 1;
         this.focus = focus;
+        this.shortName = name;
+    }
+
+    /**
+     * Get a short name that does not include the Entity reference.
+     * @return
+     */
+    public String getShortName() {
+        return shortName;
     }
 
     /**

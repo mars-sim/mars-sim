@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mars.sim.tools.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -99,16 +100,15 @@ public class LoadVehicleMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			LoadJob mtj = (LoadJob) t;
 
-			factor = getPersonModifier(p);
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 			if (mtj.eva) {
-				// EVA factor is the radiation and the EVA modifiers applied extra
-				factor *= getRadiationModifier(p.getSettlement());
-				factor *= getEVAModifier(p);
+				factor = applyEVASuitability(factor, p);
 			}
 		}
 		return factor;
@@ -122,12 +122,16 @@ public class LoadVehicleMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         LoadJob mtj = (LoadJob) t;
         if (mtj.eva) {
-            return 0D;
+            return RatingScore.ZERO_RATING;
         }
-        return r.getPerformanceRating();
+
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+
+        return factor;
     }
 
 	/**

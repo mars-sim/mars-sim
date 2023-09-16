@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -21,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -75,18 +75,19 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement() &&
 				p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
 			// Effort-driven task modifier.
-			factor = getPersonModifier(p);
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
 
 			double skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)
 				skill = 0.01D;
-			factor *= skill;
+			factor.addModifier("medical", skill);
 		}
 		return factor;
 	}
@@ -132,14 +133,6 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Robots 
-	 */
-	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-		return 0;
 	}
 
 	public static void initialiseInstances(MedicalManager mm) {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars.sim.tools.Msg;
+import org.mars_sim.msp.core.data.RatingScore;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -77,16 +78,15 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public double getPersonSettlementModifier(SettlementTask t, Person p) {
-        double factor = 0D;
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
-            factor = 1D;
-            Building b = ((FishTaskJob)t).tank.getBuilding();
-
+			factor = new RatingScore(t.getScore());
+			factor.addModifier(PERSON_MODIFIER, getPersonModifier(p));
+            
             // Crowding modifier.
-            factor *= getBuildingModifier(b, p);
-
-            factor *= (1 + getPersonModifier(p));
+            Building b = ((FishTaskJob)t).tank.getBuilding();
+            factor.addModifier(BUILDING_MODIFIER, getBuildingModifier(b, p));
 		}
 		return factor;
 	}
@@ -96,11 +96,10 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public double getRobotSettlementModifier(SettlementTask t, Robot r) {
-        
-        // Crowding modifier.
-        return r.getPerformanceRating();
-
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+        var factor = new RatingScore(t.getScore());
+        factor.addModifier(ROBOT_PERF_MODIFIER, r.getPerformanceRating());
+        return factor;
     }
 
     /**

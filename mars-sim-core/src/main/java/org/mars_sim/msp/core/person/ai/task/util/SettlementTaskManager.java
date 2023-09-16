@@ -131,10 +131,8 @@ public class SettlementTaskManager implements Serializable {
 
             // Check this type of Robot can do the Job
             if (mt.getPreferredRobot().contains(r.getRobotType())) {
-                double factor = mt.getRobotSettlementModifier(st,r);
-                if (factor > 0) {
-                    RatingScore score = new RatingScore(st.getScore());
-                    score.addModifier("robot", factor);
+                RatingScore score = mt.assessRobotSuitability(st, r);
+                if (score.getScore() > 0) {
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }
@@ -148,16 +146,14 @@ public class SettlementTaskManager implements Serializable {
      * to the particular worker by applying their personal modifier. 
      * 
      * @return Custom list of jobs applicable
-     * @see SettlementMetaTask#getPersonSettlementModifier(Person)
+     * @see SettlementMetaTask#assessPersonSuitability(SettlementTask, Person)
      */
     public List<TaskJob> getTasks(Person p) {
         List<TaskJob> result = new ArrayList<>();
         for(SettlementTask st : getTasks()) {
             SettlementMetaTask mt = st.getMeta();
-            double factor = mt.getPersonSettlementModifier(st, p);
-            if (factor > 0) {
-                RatingScore score = new RatingScore(st.getScore());
-                score.addModifier("person", factor);
+            RatingScore score = mt.assessPersonSuitability(st, p);
+            if (score.getScore() > 0) {
                 result.add(new SettlementTaskProxy(this, st, score));
             }
         }

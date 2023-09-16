@@ -223,7 +223,7 @@ public class BacklogTableModel extends AbstractTableModel
 					return des.getName();
 				return null;
 			case DESC_COL:
-				return selectedTask.getName();
+				return selectedTask.getShortName();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:
