@@ -24,18 +24,21 @@ Copyright (C) 2023 Scott Davis
 
 ------------------------------------------|---------------------
 
-## 3.6.2 (01 Sep 2023)
+## 3.6.2 (Sat 16 Sep 2023)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
   <LI>Crop: allow changing growing area per crop in Farming.</LI>
   <LI>Log: remove excessive CPU loads in generating log statements in PowerGrid and ThermalSystem.</LI>
+  <LI>Pending Task: optimize the use of pending task vs. assigning/replacing task directly.</LI> 
+  <LI>Time Ratio: optimize how time ratio increase/decrease can dynamically affect pulse width and TPS in MasterClock.</LI> 
 <OL>
 
 
 ### B. UI IMPROVEMENT :
 <OL>
   <LI>Crop: use spinner to change growing area for each farm in Agriculture tab in Dashboard.</LI>
+  <LI>Task: display subTask2 and subTaskPhase2 in Activity Tab.</LI>
 </OL> 
 
 ### C. FIXES :
@@ -45,6 +48,8 @@ Copyright (C) 2023 Scott Davis
   <LI>Equipment: correct transferring container back to settlement after digging regolith/ice.</LI> 
   <LI>Food Production: correct potato typo.</LI>
   <LI>Map: correct magnification and zooming issues.</LI>
+  <LI>Settlement: select correctly whether settlers and vehicles are in settlement or its vicinity in Settlement Map.</LI>
+  <LI>Weather: Correct weather param concurrency during reload.</LI>
 <OL>
 
 ------------------------------------------|---------------------

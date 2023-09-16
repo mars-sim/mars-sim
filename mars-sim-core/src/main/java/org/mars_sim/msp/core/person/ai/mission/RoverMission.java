@@ -628,15 +628,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	    							);
     					}
     					
-    					else {
+    					else { 
+    						
+    						// Not in settlement yet
     						// Welcome this person home
     						
     						// Is the manual transfer below needed ?
     						
-   							logger.info(rover, "Status report on " + p.getName() 
-								+ ".  Rover: " + roverName
-								+ ".  Rover's Location: " + rover.getBuildingLocation().getName()
-								);
+//   							logger.info(rover, "Status report on " + p.getName() 
+//								+ ".  Rover: " + roverName
+//								+ ".  Rover's Location: " + rover.getBuildingLocation().getName()
+//								);
     						
 //    				        p.transfer(disembarkSettlement);
 //    						BuildingManager.addPersonOrRobotToBuilding(p, rover.getBuildingLocation());

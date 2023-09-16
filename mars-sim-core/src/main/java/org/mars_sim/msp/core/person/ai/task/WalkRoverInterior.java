@@ -142,20 +142,20 @@ public class WalkRoverInterior extends Task {
     				remainingTime = 0;
             }
             
-            else {
-//            if (coveredMeters < remainingWalkingDistance) {
+
+            if (coveredMeters < remainingWalkingDistance) {
                 // Determine direction to destination.
                 double direction = currentPosition.getDirectionTo(destLoc);
                 // Determine person's new location at distance and direction.
                 worker.setPosition(currentPosition.getPosition(coveredMeters, direction));
             }
-//            else {
-//                // Set person's location at destination.
-//                worker.setPosition(destLoc);
-//        		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
-//        				+ destLoc + ") in " + rover.getName() + ".");
-//                endTask();
-//            }
+            else {
+                // Set person's location at destination.
+                worker.setPosition(destLoc);
+        		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
+        				+ destLoc + ") in " + rover.getName() + ".");
+                endTask();
+            }
         }
         else {
             // Set person's location at destination.
