@@ -2139,11 +2139,11 @@ public abstract class Vehicle extends Unit
 				// Since it's on the surface of Mars,
 				// First set its initial location to its old parent's location as it's leaving its parent.
 				// Later it may move around and updates its coordinates by itself
-				setCoordinates(getContainerUnit().getCoordinates());
+//				setCoordinates(getContainerUnit().getCoordinates());
 			}
-			else {
-				setCoordinates(newContainer.getCoordinates());
-			}
+//			else {
+//				setCoordinates(newContainer.getCoordinates());
+//			}
 			// 2. Set new LocationStateType
 			updateVehicleState(newContainer);
 			// 3. Set containerID
@@ -2264,7 +2264,8 @@ public abstract class Vehicle extends Unit
 			Settlement currentBase = (Settlement)cu;
 			transferred = currentBase.removeParkedVehicle(this);
 			leaving = true;
-			setCoordinates(currentBase.getCoordinates());
+			// Q: do we need to set the coordinate to the settlement one last time prior to leaving
+//			setCoordinates(currentBase.getCoordinates());
 		}
 
 		if (transferred) {

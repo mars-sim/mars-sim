@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -36,6 +38,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
+import org.mars_sim.msp.ui.swing.utils.AttributePanel;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;
 import eu.hansolo.steelseries.gauges.DisplaySingle;
@@ -65,7 +68,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 	private Unit containerCache;
 	private Unit topContainerCache;
-
+	private Settlement settlementCache;
+	private LocationStateType locationStateTypeCache;
+	
+	private JLabel topContainerLabel;
+	private JLabel containerLabel;
+	private JLabel settlementLabel;
+	private JLabel locationStateLabel;
+	
 	private Coordinates locationCache;
 
 	private JButton locatorButton;
@@ -98,17 +108,19 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		if (containerCache != container) {
 			containerCache = container;
 		}
-
+		String n1 = container != null ? container.getName() : "";
+		
 		Unit topContainer = unit.getTopContainerUnit();
 		if (topContainerCache != topContainer) {
 			topContainerCache = topContainer;
 		}
-
+		String n0 = topContainer != null ? topContainer.getName() : "";
+		
 		// Create location panel
 		JPanel locationPanel = new JPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
 		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
-		content.add(locationPanel);
+		content.add(locationPanel, BorderLayout.NORTH);
 
 		// Initialize location cache
 		locationCache = unit.getCoordinates();
@@ -193,18 +205,18 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(4);
-		lcdLong.setSize(new Dimension(150, 45));
-		lcdLong.setMaximumSize(new Dimension(150, 45));
-		lcdLong.setPreferredSize(new Dimension(150, 45));
+		lcdLong.setSize(new Dimension(150, 40));
+		lcdLong.setMaximumSize(new Dimension(150, 40));
+		lcdLong.setPreferredSize(new Dimension(150, 40));
 		lcdLong.setVisible(true);
 		lcdPanel.add(lcdLong);
 		northPanel.add(lcdPanel);
 
 		JPanel gaugePanel = new JPanel();
 		gauge = new DisplayCircular();
-		gauge.setSize(new Dimension(120, 120));
-		gauge.setMaximumSize(new Dimension(120, 120));
-		gauge.setPreferredSize(new Dimension(120, 120));
+		gauge.setSize(new Dimension(100, 100));
+		gauge.setMaximumSize(new Dimension(100, 100));
+		gauge.setPreferredSize(new Dimension(100, 100));
 		setGauge(gauge, elevationCache);
 		gaugePanel.add(gauge);
 		
@@ -230,6 +242,21 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
+		/////
+		
+		settlementCache = unit.getSettlement();
+		String n2 = settlementCache != null ? settlementCache.getName() : "";
+		LocationStateType locationStateTypeCache = unit.getLocationStateType();
+		String n3 = locationStateTypeCache != null ? locationStateTypeCache.getName() : "";
+		
+		// Prepare info panel.
+		AttributePanel containerPanel = new AttributePanel(4);
+		content.add(containerPanel, BorderLayout.CENTER);
+		topContainerLabel = containerPanel.addRow("Top Container Unit", n0);
+		containerLabel = containerPanel.addRow("Container Unit", n1);
+		settlementLabel = containerPanel.addRow("Settlement Container", n2);
+		locationStateLabel = containerPanel.addRow("Location State", n3);
+		
 		updateLocationBanner(unit);
 
 		checkTheme(true);
@@ -473,17 +500,38 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		}
 
-		// Update location button or location text label as necessary.
+		/////////////////
+		
+		// Update labels as necessary
+		
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
+			String n = container != null ? container.getName() : "";
+			containerLabel.setText(n);
 		}
 
 		Unit topContainer = unit.getTopContainerUnit();
 		if (topContainerCache != topContainer) {
 			topContainerCache = topContainer;
+			String n = topContainer != null ? topContainer.getName() : "";
+			topContainerLabel.setText(n);
 		}
-
+		
+		Settlement settlement = unit.getSettlement();
+		if (settlementCache != settlement) {
+			settlementCache = settlement;
+			String n = settlement != null ? settlement.getName() : "";
+			settlementLabel.setText(n);
+		}
+		
+		LocationStateType locationStateType = unit.getLocationStateType();
+		if (locationStateTypeCache != locationStateType) {
+			locationStateTypeCache = locationStateType;
+			String n = locationStateType != null ? locationStateType.getName() : "";
+			locationStateLabel.setText(n);
+		}
+		
 		updateLocationBanner(unit);
 	}
 

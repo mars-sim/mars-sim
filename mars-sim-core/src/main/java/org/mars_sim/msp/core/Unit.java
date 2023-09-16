@@ -377,7 +377,7 @@ public abstract class Unit implements Loggable, UnitIdentifer, Comparable<Unit> 
 	 * @param newLocation the new location of the unit
 	 */
 	public void setCoordinates(Coordinates newLocation) {
-		if ((location == null) || !location.equals(newLocation)) {
+		if (location == null || !location.equals(newLocation)) {
 			location = newLocation;
 			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 		}
