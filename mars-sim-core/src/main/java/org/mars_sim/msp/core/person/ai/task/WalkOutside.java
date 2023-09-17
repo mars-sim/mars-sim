@@ -45,6 +45,9 @@ public class WalkOutside extends Task {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
 	
+	/** Task name */
+	public static final String NAME = Msg.getString("Task.description.walkOutside"); //$NON-NLS-1$
+	
 	/** Task phases. */
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
@@ -87,7 +90,7 @@ public class WalkOutside extends Task {
 			boolean ignoreEndEVA) {
 
 		// Use Task constructor.
-		super("Walking Exterior", person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		// Check that the person is currently outside a settlement or vehicle.
 		if (person.isInside())
@@ -109,7 +112,7 @@ public class WalkOutside extends Task {
 					   boolean ignoreEndEVA) {
 
 		// Use Task constructor.
-		super("Walking Exterior", robot, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+		super(NAME, robot, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		// Check that the robot is currently outside a settlement or vehicle.
 		if (robot.isInside())

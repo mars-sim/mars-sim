@@ -256,13 +256,8 @@ public class EnterAirlock extends Task {
 
 		else if (zone == 4) {
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
-//			Task currentTask = person.getMind().getTaskManager().getTask();
-//    		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//    		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
-//    			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
+					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");	
     			addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
-//    		}
 			return true;
 		}
 

@@ -725,12 +725,12 @@ public class Walk extends Task {
 					logger.log(person, Level.FINE , 5_000,
 						"Starting WalkRoverInterior.");
 					
-//					Task currentTask = person.getMind().getTaskManager().getTask();
-//	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.SIMPLE_NAME))
-//	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.SIMPLE_NAME))) {	
+					Task currentTask = person.getMind().getTaskManager().getTask();
+	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))
+	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))) {	
 						addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
-//	        		}
+	        		}
 				}
 
 				else if (person.isOutside()) {
@@ -811,12 +811,12 @@ public class Walk extends Task {
 					setDescription("Walking outside toward " + step.loc.getShortFormat());
 //					logger.info(person, "Walking outside from (" + x + ", " + y + ") to ("
 //							+ xx + ", " + yy + ")");
-//					Task currentTask = person.getMind().getTaskManager().getTask();
-//	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
-//	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
+					Task currentTask = person.getMind().getTaskManager().getTask();
+	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.NAME))
+	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.NAME))) {	
 						addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
-//	        		}
+	        		}
 				}
 				else {
 					logger.log(person, Level.SEVERE, 5_000,

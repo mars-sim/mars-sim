@@ -259,13 +259,13 @@ public abstract class EVAOperation extends Task {
         }
         else {
         	if (!person.getPosition().equals(outsideSitePos)) {
-//    			Task currentTask = person.getMind().getTaskManager().getTask();
-//        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
-//        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
+    			Task currentTask = person.getMind().getTaskManager().getTask();
+        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
+        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.NAME))
+        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.NAME))) {	
         			addSubTask(new WalkOutside(person, person.getPosition(),
             				outsideSitePos, true));
-//        		}
+        		}
         	}
         	else {
                 // In case of DigLocalRegolith,

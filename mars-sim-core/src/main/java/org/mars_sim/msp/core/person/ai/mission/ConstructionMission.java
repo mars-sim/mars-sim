@@ -653,9 +653,9 @@ public class ConstructionMission extends AbstractMission
 		if (RandomUtil.lessThanRandPercent(DIG_REGOLITH_PERCENT_PROBABILITY)
 			&& member.getUnitType() == UnitType.PERSON) {
 			
-			Task currenTask = p.getMind().getTaskManager().getTask();
-			if (currenTask != null && !currenTask.getName().equalsIgnoreCase(DigLocalRegolith.SIMPLE_NAME)) {
-				boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.SIMPLE_NAME);
+			Task currentTask = p.getMind().getTaskManager().getTask();
+			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(DigLocalRegolith.NAME)) {
+				boolean accepted = p.getMind().getTaskManager().addPendingTask(DigLocalRegolith.NAME);
 				if (accepted)
 					logger.info(p, 60_000, "Confirmed receiving the assigned task of DigLocalRegolith.");
 			}

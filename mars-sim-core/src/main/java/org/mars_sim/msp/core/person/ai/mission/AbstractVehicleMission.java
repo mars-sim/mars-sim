@@ -723,7 +723,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			reachedDestination = current.equals(target)
 					|| distance < SMALL_DISTANCE;
 
-			logger.info(vehicle, " current: " + current + "  destination: " + target + "  distance: " + distance);
+			logger.info(vehicle, "Travelling from (" + current + ") to (" + target + "). Distance: " + Math.round(distance * 100.0)/100.0 + " km.");
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 

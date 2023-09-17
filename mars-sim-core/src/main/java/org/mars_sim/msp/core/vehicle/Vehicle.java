@@ -2253,6 +2253,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public boolean transfer(Unit destination) {
 		boolean leaving = false;
+		boolean arriving = false;
 		boolean transferred = false;
 		// Set the old container unit
 		Unit cu = getContainerUnit();

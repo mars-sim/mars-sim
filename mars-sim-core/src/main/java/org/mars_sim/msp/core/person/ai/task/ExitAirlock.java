@@ -287,13 +287,8 @@ public class ExitAirlock extends Task {
 
 		else if (zone == 4) {
 			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Creating a subtask to walk outside at "
-					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
-//			Task currentTask = person.getMind().getTaskManager().getTask();
-//    		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-//    		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))
-//    			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkOutside.SIMPLE_NAME))) {	
+					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");	
     			addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
-//    		}
 			return true;
 		}
 
@@ -1283,10 +1278,10 @@ public class ExitAirlock extends Task {
 	 * @return true if person can exit the entity
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
-		boolean result = false;
-		// Note: rescueOperation() is more like a hack, rather than a legitimate way 
-		// of transferring a person through the airlock into the settlement 
-		
+
+		if (airlock.areAll4ChambersFull() || !airlock.hasSpace())
+			return false;
+
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
 			// May need to relocate the following code to a proper place
@@ -1301,21 +1296,24 @@ public class ExitAirlock extends Task {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getVehicle().getCoordinates());
 					if (nearbySettlement != null) {				
 						// Attempt a rescue operation
-						result = person.rescueOperation((Rover) person.getVehicle(), person, nearbySettlement);
+						person.rescueOperation((Rover) person.getVehicle(), person, nearbySettlement);
+						// Note: rescueOperation() is more like a hack, rather than a legitimate way 
+						// of transferring a person through the airlock into the settlement 
+						
 					}
 				}
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = unitManager.findSettlement(person.getCoordinates());
 					if (nearbySettlement != null)
 						// Attempt a rescue operation
-						result = person.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
+						person.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
 				}
 
 			} catch (Exception e) {
 				logger.log((Unit)airlock.getEntity(), person, Level.SEVERE, 4_000, "Could not get new action: ", e);
 			}
 
-			return result;
+			return false;
 		}
 
 		// Check if person is outside.

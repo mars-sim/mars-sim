@@ -1171,7 +1171,7 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 *
-	 * @return Building the garage it's in or has just been added to
+	 * @return the garage building the garage
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 
@@ -1274,7 +1274,6 @@ public class BuildingManager implements Serializable {
 
 		return (addToGarageBuilding(vehicle) != null);
 	}
-
 
 	/**
 	 * Checks if the vehicle is currently in a garage or not.
@@ -2439,11 +2438,23 @@ public class BuildingManager implements Serializable {
 		
 		if (worker.isInSettlement()) {
 			BuildingManager manager = worker.getSettlement().getBuildingManager();
-			Set<Building> kitchenBuildings = manager.getBuildingSet(functionType)
-					.stream()
-					.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+			
+			Set<Building> kitchenBuildings = null;
+					
+			if (worker.getBuildingLocation() != null) {
+				kitchenBuildings = manager.getBuildings(functionType)
+						.stream()
+						.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				kitchenBuildings = manager.getBuildings(functionType)
+						.stream()
+						.filter(b -> b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
 			
 			kitchenBuildings = PrepareDessert.getKitchensNeedingCooks(kitchenBuildings);
 			

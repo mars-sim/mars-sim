@@ -187,7 +187,7 @@ public class MasterClock implements Serializable {
 		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
 
 		// Check pulse width
-		adjustOptPulseWidth();
+//		adjustOptPulseWidth();
 		
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
